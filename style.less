@@ -1,5 +1,5 @@
 html {
-  background-color: black;
+  background-color: #202731;
   height: 100;
   line-height: 1.5;
   overflow-x: hidden;
@@ -18,9 +18,9 @@ body {
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
 
-  &, * {
-    cursor: none;
-  }
+  // &, * {
+  //   cursor: none;
+  // }
 }
 
 #particles-js {
@@ -42,6 +42,124 @@ body {
 
 h1:hover ~ .cursor{
   transform: scale(6);
+}
+
+.spacer {
+  aspect-ratio: 960/300;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.layer1 {
+  background-image: url(./Images/layered-waves-haikei.svg);
+}
+
+i {
+	margin-right: 10px;
+}/* ---------horizontal-navbar-menu-----------*/
+#navbar-animmenu {
+	background: #0E86D4;
+	float: left;
+	overflow: hidden;
+	position: relative;
+	padding: 10px 0px;
+  width: 100%;
+}
+#navbar-animmenu ul{
+	padding: 0px;
+	margin: 0px;
+  
+}
+
+#navbar-animmenu ul li a i{
+	margin-right: 10px;
+}
+
+#navbar-animmenu li {
+	list-style-type: none;
+	float: left;
+}
+
+#navbar-animmenu ul li a{
+	color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 15px;
+    line-height: 45px;
+    display: block;
+    padding: 0px 20px;
+    transition-duration:0.6s;
+	transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    position: relative;
+}
+
+#navbar-animmenu>ul>li.active>a{
+	color: #0E86D4;
+	background-color: transparent;
+	transition: all 0.7s;
+}
+
+
+#navbar-animmenu a:not(:only-child):after {
+	content: "\f105";
+	position: absolute;
+	right: 20px;
+	top: 10%;
+	font-size: 14px;
+	font-family: "Font Awesome 5 Free";
+	display: inline-block;
+	padding-right: 3px;
+	vertical-align: middle;
+	font-weight: 900;
+	transition: 0.5s;
+}
+
+#navbar-animmenu .active>a:not(:only-child):after {
+	transform: rotate(90deg);
+}
+.hori-selector{
+	display:inline-block;
+	position:absolute;
+	height: 100%;
+	top: 10px;
+	left: 0px;
+	transition-duration:0.6s;
+	transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	background-color: #fff;
+	border-top-left-radius: 15px;
+	border-top-right-radius: 15px;
+}
+.hori-selector .right,
+.hori-selector .left{
+	position: absolute;
+	width: 25px;
+	height: 25px;
+	background-color: #fff;
+	bottom: 10px;
+}
+.hori-selector .right{
+	right: -25px;
+}
+.hori-selector .left{
+	left: -25px;
+}
+.hori-selector .right:before,
+.hori-selector .left:before{
+	content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #0E86D4;
+}
+.hori-selector .right:before{
+	bottom: 0;
+    right: -25px;
+}
+.hori-selector .left:before{
+	bottom: 0;
+    left: -25px;
 }
 
 .section{
