@@ -8,11 +8,10 @@
     <title>Personal Website</title>
     <link rel="stylesheet/less" type="text/css" href="style.less" />
     <script src="https://cdn.jsdelivr.net/npm/less@4"></script>
-    <!-- <link rel="stylesheet" href="style.scss"/> -->
+    <script src="https://unpkg.com/scrollreveal"></script>
 </head>
-
 <body>
-    <!-- <div class="cursor"></div> -->
+    <div class="cursor"></div>
     <div id="navbar-animmenu">
         <ul class="show-dropdown main-navbar">
             <div class="hori-selector">
@@ -33,50 +32,50 @@
             </li>
         </ul>
     </div>
-    
     <div id="fullpage">
-        <div class="particles-js"></div>
-        <!-- <div class="spacer layer1">
-
-        </div> -->
-        <div class="section" id="section1">
-            <div class="contain">
-                <div class="hero-text">
-                    <div class="hero-title">
-                        <h1>Lorenzo Scaturchio</h1>
+            <div class="section" id="section1">
+                <div id="particles-js">
+                    <div class="title">
+                        <h1 id="first-name">Lorenzo.</h1>
+                        <h1 id="last-name">Scaturchio()</h1>
                     </div>
-                    <div class="content">
-                        <div class="content__container">
-                            <p class="content__container__text">
-                                I'M A</p>
-                            <ul class="content__container__list">
-                                <li class="content__container__list__item">CODER</li>
-                                <li class="content__container__list__item">MUSICIAN</li>
-                                <li class="content__container__list__item">STUDENT</li>
-                                <li class="content__container__list__item">BOBA ADDICT</li>
-                            </ul>
+                    <div class="hero-text">
+                        <div class="content">
+                            <div class="content__container">
+                                <p class="content__container__text">
+                                    I'M A</p>
+                                <ul class="content__container__list">
+                                    <li class="content__container__list__item">CODER</li>
+                                    <li class="content__container__list__item">MUSICIAN</li>
+                                    <li class="content__container__list__item">STUDENT</li>
+                                    <li class="content__container__list__item">BOBA ADDICT</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         <div class="section" id="section2">
-            <div class="contain">
-                <div class="description">
-                    <span class="cat">About Me</span>
-                    <p>Growing up, complex systems on the cutting edge of computer science always exhilarated me.
-                        Curious about the next big thing in tech conferences such as the Consumer Electronics Show, I
-                        constantly fed my curiosity by watching instructional videos and reading articles on code
-                        applications such as interpolation of low frame footage and AI learning how to play chess. I was
-                        introduced to computer science in high school competitive robotics, which brought me pure joy
-                        and excitement from seeing the robot move precisely according to my commands.</p>
-                    <p>This passion and hunger for knowledge have brought me to college as a first-generation college
-                        student. I grew a passion and a sense of belonging for coding when I took on more projects and
-                        saw the impact on colleagues and teammates, making me wonder about the potential impact I could
-                        make if I learned more. My responsibility from that point on has become to benefit humanity with
-                        the knowledge acquired throughout my educational career and the years to come. With my
-                        enthusiasm for computer science and machine learning, this philosophy has drawn me to the
-                        potential future with automation and its democratization to the general public.</p>
+            <div class="container">
+                <div class="description" id="about">
+                    <span class="category">About Me</span>
+                    <div class="text">
+                        <p>Growing up, complex systems on the cutting edge of computer science always exhilarated me.
+                            Curious about the next big thing in tech conferences such as the Consumer Electronics Show, I
+                            constantly fed my curiosity by watching instructional videos and reading articles on code
+                            applicategoryions such as interpolation of low frame footage and AI learning how to play chess. I was
+                            introduced to computer science in high school competitive robotics, which brought me pure joy
+                            and excitement from seeing the robot move precisely according to my commands.</p>
+                            <br>
+                        <p>This passion and hunger for knowledge have brought me to college as a first-generation college
+                            student. I grew a passion and a sense of belonging for coding when I took on more projects and
+                            saw the impact on colleagues and teammates, making me wonder about the potential impact I could
+                            make if I learned more. My responsibility from that point on has become to benefit humanity with
+                            the knowledge acquired throughout my educategoryional career and the years to come. With my
+                            enthusiasm for computer science and machine learning, this philosophy has drawn me to the
+                            potential future with automation and its democratization to the general public.</p>
+                    </div>
+
                 </div>
             </div>
             <div id="bg">
@@ -84,48 +83,53 @@
             </div>
         </div>
         <div class="section" id="section3">
-            <div class="contain">
-                <div class="description">
-                    <span class="cat margin-bottom">Experience</span>
-                    <h3>Research Intern | LBNL Joint Genome Institute</h3>
-                    <ul>
-                        <li>Established a general workflow that compares the genetic homology of two
-                            plant species using R</li>
-                        <li>Analyzed data-set of two plant species to determine microbial interactions of
-                            a fungi via dimensionalreduction using an R package called ”Seurat”.</li>
-                        <li>Automated a pipeline for creating genome references, trimming data, and
-                            mapping it via an R package called ”Drake”</li>
-                    </ul>
-                    <h3>Research Assistant | Vice Lab</h3>
-                    <ul>
-                        <li>Authored git documentation and developed optimized modules hydropower
-                            facilities using a Python library called ”Pywr”.</li>
-                        <li>Established bash scripts forrunning models in one of the super computers
-                            called the Merced Cluster.</li>
-                        <li>Collaborated in creating a web application for data visualization of
-                            hydropower models using Vue.js</li>
-                    </ul>
-                    <h3>Participant | Google Software Product Sprint</h3>
-                    <ul>
-                        <li>Collaborated with a team of fourto understand the fundamentals of both
-                            front-end, back-end, and Google cloud platform specific APIs to develop a
-                            personal website for each of us.</li>
-                        <li>Practiced interviews via interview sessions with team lead, and learned how
-                            to collaborate as a team in a Google fashion.</li>
-                    </ul>
+            <div class="container">
+                <div class="description" id="work-experience">
+                    <span class="category margin-bottom">Experience</span>
+                    <br>
+                    <div class="text">
+                        <h3>Research Intern | LBNL Joint Genome Institute</h3>
+                        <ul>
+                            <li>Established a general workflow that compares the genetic homology of two
+                                plant species using R</li>
+                            <li>Analyzed data-set of two plant species to determine microbial interactions of
+                                a fungi via dimensionalreduction using an R package called ”Seurat”.</li>
+                            <li>Automated a pipeline for creating genome references, trimming data, and
+                                mapping it via an R package called ”Drake”</li>
+                        </ul>
+                        <br>
+                        <h3>Research Assistant | Vice Lab</h3>
+                        <ul>
+                            <li>Authored git documentation and developed optimized modules hydropower
+                                facilities using a Python library called ”Pywr”.</li>
+                            <li>Established bash scripts forrunning models in one of the super computers
+                                called the Merced Cluster.</li>
+                            <li>Collaborated in creating a web applicategoryion for data visualization of
+                                hydropower models using Vue.js</li>
+                        </ul>
+                        <br>
+                        <h3>Participant | Google Software Product Sprint</h3>
+                        <ul>
+                            <li>Collaborated with a team of fourto understand the fundamentals of both
+                                front-end, back-end, and Google cloud platform specific APIs to develop a
+                                personal website for each of us.</li>
+                            <li>Practiced interviews via interview sessions with team lead, and learned how
+                                to collaborate as a team in a Google fashion.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="section" id="section4">
-            <div class="contain">
-                <div class="description">
-                    <span class="cat margin-bottom">Gallery</span>
+            <div class="container">
+                <div class="description" id="gallery">
+                    <span class="category">Gallery</span>
                     <p>The following are generated by an AI with VQGAN + CLIP by Max Woolf. This interests me because of
                         the idea that I could put any artist name as well as a particular object and is able to do so
                         with ease via generation from Google Colab</p>
                 </div>
-                <div class="image-one">
+                <div class="images">
                     <img src="images/ocean_vangogh.png" alt="">
                     <img src="images/piano_picasso.png" alt="">
                     <img src="images/robot_monet.png" alt="">
