@@ -1,5 +1,28 @@
+:root {
+  --dark-color: hsl(var(--hue), 100%, 9%);
+  --light-color: hsl(var(--hue), 95%, 98%);
+  --base: hsl(var(--hue), 95%, 50%);
+  --complimentary1: hsl(var(--hue-complimentary1), 95%, 50%);
+  --complimentary2: hsl(var(--hue-complimentary2), 95%, 50%);
+
+  --font-family: "Poppins", system-ui;
+
+  --bg-gradient: linear-gradient(
+    to bottom,
+    hsl(var(--hue), 95%, 99%),
+    hsl(var(--hue), 95%, 84%)
+  );
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:  'Helvetica Neue', 'Helvetica';
+}
+
 html {
-  background-color: #202731;
+  scroll-behavior: smooth;
   height: 100;
   line-height: 1.5;
   overflow-x: hidden;
@@ -8,9 +31,8 @@ html {
   color: white;
 }
 
-html,
 body {
-  font-family:  'Helvetica Neue', 'Helvetica',;
+  background-color: #0e1212;
   font-size: 20px;
   min-height: 100%;
   -webkit-tap-highlight-color: transparent;
@@ -18,18 +40,47 @@ body {
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
 
-  // &, * {
-  //   cursor: none;
-  // }
+  &, * {
+    cursor: none;
+  }
 }
 
 #particles-js {
   width: 100%;
-  height: 100vh;
+  height: 100%;
+}
+
+.title {
+  align-items: center;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+}
+
+.section {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 100px;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.container {
+  // margin: 0 10%;
+  // position: relative;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
+  // flex-direction: column;
 }
 
 .cursor {
-  position: fixed;
+  position: relative;
   width: 20px;
   height: 20px;
   border-radius: 50%;
@@ -42,18 +93,6 @@ body {
 
 h1:hover ~ .cursor{
   transform: scale(6);
-}
-
-.spacer {
-  aspect-ratio: 960/300;
-  width: 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-}
-
-.layer1 {
-  background-image: url(./Images/layered-waves-haikei.svg);
 }
 
 i {
@@ -162,14 +201,6 @@ i {
     left: -25px;
 }
 
-.section{
-  min-height: 100vh;
-}
-
-img {
-  max-width: 100%;
-}
-
 h1,
 h2,
 h3,
@@ -183,15 +214,17 @@ h1 {
   background: white;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  font-size: 9vw;
+  font-size: 7vw;
   line-height: 1;
-  margin-top: 0;
+  // margin-top: 0;
 }
 
 .content {
   position: absolute;
-  top: 50%;
-  left: 20%;
+  top: 80%;
+  left: 50%;
+  align-items: center;
+  text-align: center;
   transform: translate(-50%, -50%);
   height: 160px;
   overflow: hidden;
@@ -318,20 +351,7 @@ h1 {
   83.3%,95.96% {transform:translate3d(0,-25%,0);}
 }
 
-.section {
-  min-height: 100vh;
-}
-
-.contain {
-  margin: 0 10%;
-}
-
-.hero-text {
-  width: 80%;
-  float: left;
-}
-
-.cat {
+.category {
   font-size: 40px;
   letter-spacing: 2px;
   position: relative;
@@ -339,10 +359,6 @@ h1 {
   text-transform: uppercase;
   color: white;
   margin-top: 30px;
-}
-
-.cat.margin-bottom {
-  margin-bottom: 1rem;
 }
 
 .description {
@@ -357,7 +373,7 @@ h1 {
   font-size: 1.2rem;
 }
 
-.image-one {
+.images {
   width: 80%;
   float: left;
   margin-right: 50%;
