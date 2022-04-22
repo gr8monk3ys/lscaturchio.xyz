@@ -1,3 +1,24 @@
+// Sets the scroll reveal functionality
+ScrollReveal({
+	reset: true,
+	distance: '60px',
+	duration: 2500,
+	delay: 400
+  });
+
+// Reveals my name in a fancy way
+ScrollReveal().reveal('#first-name', {delay: 700, origin: 'left'});
+ScrollReveal().reveal('#last-name', {delay: 700, origin: 'right'});
+ScrollReveal().reveal('.content', {delay: 700, origin: 'bottom'});
+
+// About me section revealed in a fancy way
+ScrollReveal().reveal('.category', {delay: 600, origin: 'top'});
+ScrollReveal().reveal('.text', {delay: 600, origin: 'bottom'});
+
+// Making gallery reveal in a fancy way
+ScrollReveal().reveal('#gallery', {delay: 600, origin: 'top'});
+ScrollReveal().reveal('.images', {delay: 600, origin: 'left'});
+
 const cursor = document.querySelector('.cursor');
 
 document.addEventListener('mousemove', (e) => {
@@ -58,3 +79,10 @@ var scene = new ScrollMagic.Scene({
 }
 )
 .addTo(controller);
+
+var scene = new ScrollMagic.Scene({
+	triggerElement: "#about"
+})
+.setTween("p", {
+	
+})
