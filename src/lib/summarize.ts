@@ -1,0 +1,95 @@
+import OpenAI from 'openai'
+import { logError } from './logger'
+
+let openaiClient: OpenAI | null = null
+
+// Hard cap on how much content we ever forward to the model. The request
+// schema already limits input to 50k chars, but clamping here protects every
+// caller (and bounds cost) regardless of how the function is invoked.
+const MAX_INPUT_CHARS = 12000
+
+function getOpenAI(): OpenAI {
+  if (!openaiClient) {
+    openaiClient = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      timeout: 30000,
+      maxRetries: 1,
+    })
+  }
+  return openaiClient
+}
+
+/**
+ * Generate a concise summary of blog post content using GPT-4
+ * @param content - The full blog post content
+ * @param maxLength - Maximum length of summary in words (default: 50)
+ * @returns Summary text
+ */
+export async function summarizeContent(
+  content: string,
+  maxLength: number = 50
+): Promise<string> {
+  try {
+    const response = await getOpenAI().chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a skilled content summarizer. Create concise, engaging summaries that capture the essence of the content. Keep summaries under ${maxLength} words.`,
+        },
+        {
+          role: 'user',
+          content: `Summarize this blog post in ${maxLength} words or less:\n\n${content.slice(0, MAX_INPUT_CHARS)}`,
+        },
+      ],
+      temperature: 0.3,
+      max_tokens: maxLength * 2, // Rough estimate
+    })
+
+    return response.choices[0]?.message?.content || ''
+  } catch (error) {
+    logError('Summarization error', error, { component: 'summarize', action: 'summarizeContent' })
+    throw new Error('Failed to generate summary')
+  }
+}
+
+/**
+ * Generate key takeaways from content
+ * @param content - The blog post content
+ * @param numTakeaways - Number of takeaways to generate (default: 3)
+ * @returns Array of key takeaways
+ */
+export async function generateKeyTakeaways(
+  content: string,
+  numTakeaways: number = 3
+): Promise<string[]> {
+  try {
+    const response = await getOpenAI().chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a content analyst. Extract the most important ${numTakeaways} key takeaways from content. Return as a JSON array of strings.`,
+        },
+        {
+          role: 'user',
+          content: `Extract ${numTakeaways} key takeaways from this blog post:\n\n${content.slice(0, MAX_INPUT_CHARS)}`,
+        },
+      ],
+      temperature: 0.3,
+      max_tokens: Math.max(256, numTakeaways * 120),
+      response_format: { type: 'json_object' },
+    })
+
+    const result = JSON.parse(response.choices[0]?.message?.content || '{"takeaways":[]}')
+    // The model is asked for a JSON array of strings but can return a wrong
+    // shape (a bare string, mixed types). Keep only string entries so the
+    // string[] return contract always holds.
+    return Array.isArray(result?.takeaways)
+      ? result.takeaways.filter((t: unknown): t is string => typeof t === 'string')
+      : []
+  } catch (error) {
+    logError('Takeaways generation error', error, { component: 'summarize', action: 'generateKeyTakeaways' })
+    throw new Error('Failed to generate takeaways')
+  }
+}
