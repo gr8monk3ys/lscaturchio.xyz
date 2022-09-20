@@ -1,0 +1,53 @@
+"use client"
+
+import * as React from "react"
+import { m, useReducedMotion } from '@/lib/motion'
+
+import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+
+interface TabProps {
+  text: string
+  selected: boolean
+  setSelected: (text: string) => void
+  discount?: boolean
+}
+
+export function Tab({
+  text,
+  selected,
+  setSelected,
+  discount = false,
+}: TabProps) {
+  const reduce = useReducedMotion()
+  return (
+    <button
+      onClick={() => setSelected(text)}
+      className={cn(
+        "relative w-fit px-4 py-2 text-sm font-semibold capitalize",
+        "text-foreground transition-colors",
+        discount && "flex items-center justify-center gap-2.5"
+      )}
+    >
+      <span className="relative z-10">{text}</span>
+      {selected && (
+        <m.span
+          layoutId="tab"
+          transition={reduce ? { duration: 0 } : { type: 'spring' as const, duration: 0.4 }}
+          className="absolute inset-0 z-0 rounded-full bg-background shadow-xs"
+        />
+      )}
+      {discount && (
+        <Badge
+          variant="secondary"
+          className={cn(
+            "relative z-10 whitespace-nowrap shadow-none",
+            selected && "bg-muted"
+          )}
+        >
+          Save 20%
+        </Badge>
+      )}
+    </button>
+  )
+}
