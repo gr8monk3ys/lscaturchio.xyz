@@ -1,0 +1,83 @@
+export const meta = {
+  title: "Open Source Has a Sustainability Problem",
+  description: "The entire internet runs on software maintained by exhausted volunteers. That's not a feature; it's a crisis.",
+  date: "2026-01-25",
+  image: "/images/blog/open-source-sustainability-crisis.webp",
+  tags: ["technology", "open-source", "labor", "economics"],
+}
+
+## The load-bearing volunteers
+
+In March 2024, a Microsoft engineer named Andres Freund noticed something odd. SSH connections to his Debian testing box were taking about 500 milliseconds longer than usual. Half a second. Most people wouldn't have looked twice. Freund investigated, and what he found was one of the most sophisticated supply chain attacks in the history of software: a backdoor inserted into xz Utils, a compression library used by essentially every Linux distribution on earth.
+
+The backdoor didn't come from hacking a server or exploiting a vulnerability. It came from gaining the trust of the sole maintainer of xz Utils, a person who had been keeping this piece of infrastructure alive alone, for free, while burning out. The campaign ran for years, slowly pressuring the maintainer into handing commit access to a pseudonymous actor who then buried malicious code in the build process.
+
+Had Freund not been strangely attentive to a half-second delay, the backdoor would have shipped in every major Linux distribution and handed its creators access to virtually every server on the internet. It was possible because software depended on by billions of devices was maintained by one exhausted person nobody was paying.
+
+## This keeps happening
+
+The xz Utils attack was the most dramatic example, but it wasn't the first warning, or the third.
+
+In 2014, researchers discovered Heartbleed, a catastrophic vulnerability in OpenSSL, the encryption library used by roughly two-thirds of all web servers. OpenSSL was maintained at the time by a team of four, only one of whom worked on it full-time. Annual donations to the project totaled about $2,000. The software protected trillions of dollars in transactions, and it ran on less funding than a suburban lemonade stand.
+
+In late 2021, a vulnerability in Log4j, a Java logging library, sent every major tech company scrambling. Log4j was maintained mostly by a handful of volunteers. Ralph Goers, one of the key maintainers, had a day job and worked on Log4j in his spare time. When the vulnerability hit, he was suddenly expected to drop everything and patch software that companies worth hundreds of billions of dollars ran on. For free.
+
+The pattern doesn't vary much. A critical library held up by a tiny team, a vulnerability discovered, the industry in a panic, the maintainers scrambling, everyone promising to do better. Then the attention moves on and nothing changes, and we wait for the next one.
+
+## The Roads and Bridges report
+
+In 2016, Nadia Eghbal published "Roads and Bridges: The Unseen Labor Behind Our Digital Infrastructure" for the Ford Foundation. The title carries the argument. Open source is digital infrastructure, as essential to the modern economy as roads and bridges are to the physical one, and like physical infrastructure it needs ongoing maintenance. Unlike physical infrastructure, almost nobody pays for it.
+
+Eghbal's research documented what maintainers already knew. Open source underpins virtually every technology company, government system, bank, and hospital, and the value it enables runs to trillions of dollars a year. The people who maintain it are overwhelmingly volunteers. Many are burning out. Some have simply walked away, leaving projects that millions depend on with nobody at the wheel.
+
+She expanded the work in her book *Working in Public*, which looked at how the dynamics of contribution have shifted. The romantic image, a global community of equals building software together, doesn't match reality for most projects. Most open source is maintained by one or two people, and the contributions come overwhelmingly from those same one or two. The "community" is largely a user base filing bug reports and feature requests, which mostly generates more work for maintainers who are already underwater.
+
+## The extraction economy
+
+Here is a partial list of companies that extract enormous value from open source: Amazon, Google, Microsoft, Apple, Meta, Netflix, Uber, Airbnb, every bank, every hedge fund, every insurance company, every hospital system, every government agency with a website.
+
+Here is a partial list of what most of them contribute back: not much.
+
+Some do better than others. Google maintains several major projects, and Microsoft has invested seriously since acquiring GitHub. Even so, the most generous corporate contributors give back a fraction of what they take, and the long tail of smaller companies and startups building their whole business on open source stacks typically contributes nothing at all.
+
+It's rational, in the narrow way that produces disasters. If the software is free, why pay for it? If someone else is maintaining it, why take on the cost? When everyone reasons that way you get a commons that's systematically underfunded, where the people doing the work subsidize the ecosystem and the surplus flows up to the companies that monetize it.
+
+Economists have a name for this. It's the free rider problem, and we've understood it for centuries. We just decided not to apply what we know to software.
+
+## It's a labor problem
+
+The sustainability crisis usually gets framed as a funding problem. How do we get money to maintainers? Donations, grants, corporate sponsorships, foundations?
+
+Fine questions, but they sit on top of the deeper one. We've built an industry norm where certain kinds of labor are expected to be free, and an ideology to match it: open source is about community, not money. That story romanticizes unpaid work on software that generates billions in commercial value.
+
+Try the logic on any other profession. Tell a civil engineer that maintaining a bridge should be a passion project, something done for the love of infrastructure, and that asking to be paid betrays the spirit of bridge-building. It sounds absurd. It's the standard arrangement in open source.
+
+The burnout numbers follow. A 2021 survey by Tidelift found that 46% of open source maintainers are unpaid, and most of the paid ones earn less than $1,000 a year from the work. The same survey found 59% have quit or considered quitting, citing burnout and lack of compensation.
+
+These aren't people short on motivation. They've done important work for years, sometimes decades, with no financial support and no institutional backing, while a growing user base demands more and gives back nothing.
+
+## The security implications are obvious
+
+The xz Utils attack made the security argument hard to wave away. When your infrastructure rests on solo maintainers who are burned out and unpaid, you've built a near-perfect target for supply chain attacks.
+
+An attacker doesn't need a zero-day. They need a tired maintainer and an offer to help, or enough sustained pressure to get the keys handed over, or the patience to wait until the maintainer walks away and the abandoned project can be claimed.
+
+This isn't theoretical. The OpenSSF (Open Source Security Foundation) has documented multiple social engineering campaigns targeting maintainers of widely-used packages. The xz attack was the one we caught. How many did we miss?
+
+The U.S. government has started to pay attention. Executive Order 14028 on cybersecurity addressed software supply chain security directly. But policy attention without funding is just a mandate to do more unpaid work. Telling exhausted maintainers to harden their security practices without paying for the extra labor adds insult to the exhaustion.
+
+## What would actual solutions look like
+
+The answer isn't charity. Donation models have been tried for decades and they don't scale. A project gets a surge of donations after a major vulnerability, then the funding dries up as attention drifts elsewhere. You can't run infrastructure on guilt-driven intermittent payments.
+
+The fix has to be structural. Companies that depend on open source should pay for it the way they pay for any other critical dependency, not as philanthropy but as a cost of doing business. There are several shapes this could take: mandatory contributions to an infrastructure fund proportional to revenue, tax incentives for companies that employ maintainers, government funding for critical digital infrastructure modeled on how we fund roads and bridges, legal requirements that companies relying on open source in critical systems show those dependencies are adequately maintained.
+
+None of it is technically difficult. It's politically difficult, because it asks companies to pay for something they currently get for free.
+
+## The crack is already here
+
+We built the digital economy on unwaged labor and act surprised when the foundation shows cracks. We treat maintainers as a renewable resource: infinitely available, free to draw on, generating value forever without anything owed back.
+
+They're people. They get tired and they walk away, and when they do, the software doesn't maintain itself.
+
+So the question isn't whether the open source sustainability model will fail. It's already failing, one exhausted maintainer at a time. The only open question is whether we patch it before the next xz, or before the one that doesn't get caught by an engineer who happened to notice half a second.

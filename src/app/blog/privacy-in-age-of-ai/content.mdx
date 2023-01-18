@@ -1,0 +1,233 @@
+export const meta = {
+  title: "Privacy in the Age of AI",
+  description:
+    "Better AI usually wants more of your data, but the tradeoff isn't as fixed as it looks. What you can actually do about it, as a user and as a builder.",
+  date: "2024-01-23",
+  image: "/images/blog/privacy-in-age-of-ai.webp",
+  tags: ["data-privacy", "ai-surveillance", "digital-sovereignty", "federated-learning"],
+  series: "AI and Society",
+  seriesOrder: 2,
+};
+
+## The privacy paradox
+
+AI systems learn from data, and the more they have the better they tend to perform. That puts the most capable tools in the hands of the companies with the largest collections, which often means companies whose business model is surveillance by another name. I build software for a living, and the tension shows up in the work constantly: the easy path almost always wants more of your data than the task needs.
+
+A few examples. Google's search quality comes partly from analyzing billions of queries and clicks; privacy-focused alternatives like DuckDuckGo or SearXNG return reasonable results but without the same depth. ChatGPT and similar tools improve through user interactions, so every conversation potentially trains the next version. Netflix knows what you'll enjoy because it knows what millions of others enjoyed, and privacy-preserving collaborative filtering exists but works less well.
+
+This isn't a technical limitation that smarter engineering will dissolve. It's a tradeoff. Better AI usually wants more data. The question is how to navigate that without simply surrendering.
+
+## Understanding the risks
+
+Before the solutions, it's worth being precise about what's at stake.
+
+### Data collection and inference
+
+Modern systems infer surprisingly intimate things from data that looks harmless. Your typing rhythm and mouse movements carry signals about personality and emotional state. Communication patterns expose relationships, political leanings, and social circles. A model can pull sentiment and personal detail out of casual text, and combining several ordinary datasets surfaces facts you never shared with anyone. The exposure isn't only what you hand over deliberately. It's what gets deduced from the indirect signals around it.
+
+### Model training and data persistence
+
+When you interact with these systems your data tends to move down a pipeline. The query gets processed to produce a response. The conversation may be retained for debugging. Anonymized interactions become training data, and from there the information ends up encoded in the model weights themselves.
+
+The result is a kind of data immortality. Delete the records and the statistical patterns your data shaped still live inside the model.
+
+### Centralization of power
+
+Training large models takes millions of dollars and specialized infrastructure, which concentrates power in a handful of organizations. Companies that already hold a data advantage compound it. Most people reach AI only through their centralized services, and the same large players shape the governance and standards meant to constrain them. That concentration is a privacy risk in its own right, separate from anything that happens to your individual records.
+
+## Practical privacy strategies
+
+None of this means giving up on AI. Several approaches keep most of the benefit while shrinking the exposure.
+
+### Local-first AI
+
+Running models locally removes the need to send data anywhere:
+
+```python
+from transformers import pipeline
+
+# Run sentiment analysis locally
+classifier = pipeline("sentiment-analysis",
+                     model="distilbert-base-uncased-finetuned-sst-2-english")
+
+text = "I really enjoyed this article about privacy."
+result = classifier(text)
+# Processed entirely on your machine
+```
+
+**Advantages:**
+- Complete data control
+- No external dependencies
+- Works offline
+- No usage limits
+
+**Limitations:**
+- Requires computational resources
+- Smaller models = reduced capability
+- No automatic improvements
+- Setup complexity
+
+For a lot of everyday tasks, local models are surprisingly capable. Tools like Ollama make it easy to run something like Llama 2 on consumer hardware.
+
+### Privacy-preserving techniques
+
+A few technical approaches keep the functionality while protecting the data.
+
+Differential privacy adds carefully calibrated noise to data or model outputs, which buys you statistical privacy guarantees:
+
+```python
+import numpy as np
+
+def add_laplace_noise(data, epsilon=1.0):
+    """Add Laplace noise for differential privacy"""
+    sensitivity = 1.0
+    scale = sensitivity / epsilon
+    noise = np.random.laplace(0, scale, data.shape)
+    return data + noise
+```
+
+Federated learning trains models across distributed devices without ever centralizing the data:
+
+```python
+# Conceptual example of federated learning
+class FederatedModel:
+    def train_local(self, local_data):
+        """Train on device-local data"""
+        local_model = self.model.copy()
+        local_model.fit(local_data)
+        return local_model.get_weights()
+
+    def aggregate_updates(self, weight_updates):
+        """Combine updates from multiple devices"""
+        averaged_weights = np.mean(weight_updates, axis=0)
+        self.model.set_weights(averaged_weights)
+```
+
+Homomorphic encryption runs the computation on encrypted data:
+
+```python
+from tenseal import Context, BFVVector
+
+# Encrypted computation example
+def encrypted_inference(encrypted_data, model_weights):
+    """Run inference on encrypted data"""
+    encrypted_result = model_weights @ encrypted_data
+    return encrypted_result  # Still encrypted
+```
+
+Each of these costs you something in performance or complexity, but they've gotten practical enough for real applications.
+
+### Selective data sharing
+
+Not every feature needs all your data. Plenty of smartphone AI, face detection and voice recognition, already runs entirely on-device. Some services process your input without retaining it:
+```python
+# Example: Stateless API with no data retention
+import requests
+
+response = requests.post(
+    "https://api.example.com/analyze",
+    json={"text": "your text here"},
+    headers={"X-No-Store": "true"}
+)
+```
+
+Beyond that it's mostly discipline: share only what the task requires, and use synthetic data for testing and development instead of real user records.
+
+### Alternative services
+
+A handful of privacy-focused options are worth knowing. Hugging Face hosts open models you can run yourself. LocalAI is a drop-in replacement for the OpenAI API that runs locally, Ollama makes local deployment easy, Open Assistant is a community-driven alternative, and Mycroft and Home Assistant cover privacy-focused voice. They give up some capability for privacy, but the gap keeps narrowing.
+
+## Building privacy-respecting AI
+
+If you're the one building the application, a few principles do most of the work.
+
+### Data minimization
+
+Collect only what you need:
+
+```python
+# Bad: Collect everything
+user_data = {
+    "email": email,
+    "password": password,
+    "full_history": user.get_all_activity(),
+    "device_info": request.headers,
+    "location": get_precise_location()
+}
+
+# Good: Collect minimum necessary
+user_data = {
+    "user_id": hash(email),  # Anonymized identifier
+    "query": sanitize(query),  # Just the current request
+}
+```
+
+### Transparency
+
+Be explicit about how data gets used:
+
+```python
+class AIService:
+    def __init__(self, privacy_mode="strict"):
+        self.privacy_mode = privacy_mode
+
+    def process(self, data):
+        if self.privacy_mode == "strict":
+            # Process locally, no storage
+            return self.local_inference(data)
+        elif self.privacy_mode == "standard":
+            # Use API, ephemeral storage
+            return self.api_inference(data, store=False)
+        else:
+            # Full features, data retained
+            return self.api_inference(data, store=True)
+```
+
+### User control
+
+Give people meaningful choices. Default to opt-in rather than assuming consent. Make the privacy settings granular enough to toggle feature by feature, let users export what you hold, and implement deletion that actually deletes rather than hiding a row. Show them what data you have on them. None of this is exotic; most of it just doesn't happen unless someone decides it should.
+
+### Privacy by design
+
+Build privacy into the architecture instead of bolting it on:
+
+```python
+class PrivacyFirstAI:
+    def __init__(self):
+        self.local_model = load_local_model()
+        self.api_model = None  # Only load if needed
+
+    def infer(self, data, prefer_local=True):
+        """Try local inference first"""
+        if prefer_local:
+            try:
+                return self.local_model.predict(data)
+            except InsufficientCapability:
+                user_approval = request_api_permission()
+                if not user_approval:
+                    return fallback_result()
+
+        return self.api_model.predict(data)
+```
+
+## The bigger picture
+
+Individual choices only get you so far. The shape of the problem is systemic.
+
+### Regulatory frameworks
+
+Several regions are now writing AI-specific rules. The EU AI Act sorts systems by risk and puts strict requirements on the high-risk ones. GDPR already covers AI that processes personal data. California's CCPA includes AI-related provisions, and various federal bills in the US are circulating. The common direction is toward algorithmic transparency, a right to explanation, human oversight, and data-minimization mandates. Whether the enforcement keeps up with the lobbying is the open question.
+
+### Open source advantages
+
+Open models carry a privacy benefit that's structural rather than promised. Anyone can inspect the code and training process. You can run them entirely under your own control and fork them to fit your own requirements, and they answer less to corporate interests than a closed API does. Llama 2, Mistral, and BLOOM are evidence that competitive AI doesn't require giving up openness.
+
+There's also a longer bet on decentralization, edge computing, peer-to-peer hosting, user-controlled data vaults, that pushes processing back toward its source. Most of it is still experimental, and I wouldn't lean on it yet.
+
+## What you can actually do
+
+For an individual, the near-term moves are unglamorous. Audit which AI services you use and what they collect; most people have never actually checked. Try local alternatives like Ollama or LocalAI for the tasks that don't need a frontier model, which is more of them than you'd guess: summarizing a document, classifying text, transcribing audio. Keep separate accounts for separate purposes so one profile doesn't become a complete picture of you. Check app permissions, and turn on the training opt-outs that most services now bury three menus deep.
+
+Over time the real lever is self-hosting. Once you can stand up a local model for common tasks, you stop feeding the pipeline by default instead of opting out of it case by case. Past that it becomes political: supporting open projects, asking companies plainly what they do with your data, backing the kind of regulation that carries penalties rather than guidelines. None of these is sufficient on its own. A privacy opt-out you have to renew every quarter is not the same as a model that never had your data. But together they move the baseline, and the baseline is what most people actually live inside.
+
+The current arrangement, where capability and privacy trade off against each other, gets presented as a law of nature. It isn't. It's encoded in business models and system designs, both of which were chosen and can be chosen differently. That's the part worth holding onto: the tradeoff is real today, and it's still negotiable. Whether it stays negotiable depends on what gets built next, and who builds it.

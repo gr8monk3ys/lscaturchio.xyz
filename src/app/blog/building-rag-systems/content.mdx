@@ -1,0 +1,117 @@
+export const meta = {
+  title: "Building RAG Systems in Production",
+  description:
+    "Simple RAG fails in production. Notes on what actually fixed it: hybrid retrieval, reranking, contextual chunking, and measuring before adding anything.",
+  date: "2025-01-10",
+  image: "/images/blog/building-rag-systems.webp",
+  tags: ["rag", "vector-databases", "embeddings", "llm-engineering", "AI"],
+  series: "AI Engineering",
+  seriesOrder: 1,
+  stage: "evergreen",
+};
+
+<AssumedAudience>
+  People who've shipped a RAG prototype and watched it quietly get worse with
+  real traffic. Assumes you know what embeddings and vector search are; it won't
+  re-explain them.
+</AssumedAudience>
+
+The chat on this site runs on RAG. So did Talker, a teaching assistant I built that answered course questions from lecture materials. Both taught me the same lesson: the tutorial version of RAG — embed your documents, do a similarity search, stuff the results into a prompt — works in a demo and quietly falls apart with real users. The failures don't announce themselves. The system keeps returning answers. They're just subtly wrong, or grounded in the wrong chunk, and you only find out when someone tells you.
+
+These are my notes on what the research says, what the production systems do, and what I'd actually reach for. Long, because the subject is. Skim the tables, read the parts where I editorialize.
+
+## Where RAG comes from
+
+The term comes from Patrick Lewis and colleagues at Facebook AI Research, in a NeurIPS 2020 paper on knowledge-intensive NLP tasks. The idea: pair a language model's parametric memory with a non-parametric one — in their case, 21 million Wikipedia passages behind a dense retriever. Their system hit 44.5% exact match on Natural Questions, beating T5-11B with far fewer parameters.
+
+The follow-ups matter less for their numbers than for what they proved. Google's REALM (ICML 2020) showed you could pre-train the retriever end to end. DeepMind's RETRO (2021) scaled retrieval to 2 trillion tokens and matched GPT-3-class performance with 25× fewer parameters. Meta's Atlas (2022) reached 42% on Natural Questions with only 64 training examples — outperforming PaLM at 540B parameters. The pattern across all of them: retrieval substitutes for scale. A small model that can look things up beats a huge model that can't.
+
+## The embedding model decides your ceiling
+
+Everything downstream of retrieval can only rerank what the embedding model surfaced. That makes it the most consequential choice in the system, and the one people spend the least time on.
+
+MTEB (the Massive Text Embedding Benchmark, 58 English datasets) is the standard scoreboard. As of early 2025:
+
+| Model | MTEB | Cost | Notes |
+|-------|------|------|-------|
+| Gemini-Embedding-001 | ~74 | API | Top overall |
+| Qwen3-Embedding-8B | ~73.8 | Free | Apache 2.0, open-source leader |
+| Voyage-3-large | — | API | Beats OpenAI v3-large by ~10% on their evals |
+| text-embedding-3-large | 64.6 | $0.13/M tokens | Matryoshka support |
+| text-embedding-3-small | 62.3 | $0.02/M tokens | The cost/quality workhorse |
+| BGE-M3 | — | Free | Dense, sparse, and multi-vector in one model |
+
+The gap between open-source and proprietary has mostly closed. Qwen3 trails Gemini by under a point while being Apache 2.0. Choose on cost, latency, and where you can deploy — "proprietary means better" stopped being true sometime in 2024.
+
+Two things worth knowing beyond the leaderboard. Matryoshka representation learning lets you truncate embeddings to 256 dimensions and still beat ada-002 at 1536 — a 6× storage cut for minimal quality loss; both OpenAI v3 models support it. And for legal, financial, or code retrieval, Voyage's domain models substantially outperform the general-purpose options. MongoDB acquired them in 2024; they're Anthropic's preferred embedding provider.
+
+## Vector databases: pick by constraint, not by hype
+
+The market hit $1.73 billion in 2024, which means every option now has a marketing department. The actual decision tree is short.
+
+Pinecone if you want zero ops and will pay for it. Qdrant if you want the best open-source performance — written in Rust, 30.75ms p50 on 50 million vectors at 99% recall, the best published open-source numbers. Milvus if you genuinely have billions of vectors. Chroma for prototypes under a million vectors. FAISS if you want maximum control and are prepared to build persistence, filtering, and auth yourself.
+
+And pgvector if you already run Postgres, which is the quietly correct answer for most teams. Version 0.8.0 brought 9× faster queries and 100× better filtered search; with Timescale's pgvectorscale it does 471 QPS at 99% recall on 50 million vectors. This site uses it through Neon. One database, one backup story, no new infrastructure to babysit. Boring wins.
+
+## Chunking is where retrieval quality actually lives
+
+NVIDIA's 2024 benchmarks found no universal best chunking strategy — it varies by dataset, query type, and document structure. Which sounds like a non-answer until you treat it as the answer: chunking is a tuning parameter, not a default you set once.
+
+The starting point that survives contact with most corpora: 512 tokens with 50–100 tokens of overlap. Factoid queries like smaller chunks (256–512, precise matching). Analytical queries need bigger ones (1024+, context). Performance degrades by 2,048.
+
+Past the basics, four strategies earn their complexity:
+
+Recursive character splitting handles 80% of applications — split on paragraphs, then lines, then sentences, then words, in that priority order. Semantic chunking splits where embedding similarity between sentences drops, finding topic boundaries instead of arbitrary ones. Parent-child retrieval indexes small chunks for matching but hands the model the larger parent chunk for generation, which resolves the tension between precise matching and sufficient context. Late chunking (Jina) inverts the whole pipeline: embed the full document through a long-context model first, then derive chunk embeddings from the token representations, preserving cross-chunk references.
+
+I learned the cost of getting this wrong on this site's own chat. An early pass stripped chunks at punctuation boundaries and dropped unpunctuated text entirely — headings, list items, half the useful content, silently gone. Retrieval looked fine. The answers just didn't know things the blog clearly said. Chunking bugs fail like that: no errors, just an assistant that's dumber than your corpus.
+
+## Rerank. Just rerank.
+
+Two-stage retrieval — a fast first pass pulling 100–200 candidates, then a cross-encoder reranking them down to the 5–10 you actually use — has become standard because it works regardless of which embedding model you picked. LlamaIndex's benchmarks showed reranking improved hit rate and MRR across every embedding model they tested. It's the rare technique with no real downside except latency.
+
+Cohere Rerank 4.0 is the accuracy leader, 100+ languages, 4K context. ColBERT sits in the middle — documents pre-computed, token-level matching at query time; v2 cut storage 6–10× while improving quality. On the open side, bge-reranker-v2-m3 stays under 600M parameters, and jina-reranker-v3 claims a 33.7% MRR improvement at 15× the throughput.
+
+## The architectures worth knowing
+
+A few patterns from the research that solve specific, nameable failures — which is the only reason to adopt any of them.
+
+HyDE bridges the gap between short queries and long documents: generate a hypothetical answer with the LLM, embed that, and search with it. Query-to-document matching becomes document-to-document matching. RAG-Fusion generates several query variants, searches each, and merges with reciprocal rank fusion. RAPTOR builds a tree of recursive cluster-summaries; with GPT-4 it improved QuALITY accuracy by 20 points absolute. Self-RAG trains the model to emit reflection tokens deciding when to retrieve at all — its 7B and 13B variants beat ChatGPT on fact verification at 81% accuracy. Microsoft's GraphRAG extracts an entity graph and pre-summarizes communities, which handles the "global" questions naive RAG structurally can't, like "what are the main themes in this corpus."
+
+The one I'd single out is Anthropic's contextual retrieval (September 2024), because it attacks the dumbest, most common failure. A chunk that says "the company's revenue grew by 3%" is unanswerable in isolation — which company, which quarter? Contextual retrieval prepends a generated sentence of situating context to every chunk before embedding. Contextual embeddings alone cut retrieval failures 35%; with contextual BM25, 49%; with reranking on top, 67%. Prompt caching brings the one-time cost down to about a dollar per million document tokens. Of everything in this post, this is the highest leverage per line of code.
+
+## Evaluation, or: how you find out you're wrong
+
+You cannot tune what you don't measure, and RAG offers two separate things to measure — retrieval and generation. Conflating them is how teams spend a month prompt-engineering around a retrieval bug.
+
+RAGAS is the framework I see most: reference-free, LLM-as-judge, scoring faithfulness (is the answer consistent with the context), answer relevancy, context precision (do the relevant chunks rank high), and context recall. TruLens, LangSmith, and Arize Phoenix cover the same ground with different observability trade-offs.
+
+The number that should scare you: roughly 60% of enterprise RAG projects fail on stale data, not clever architecture. Freshness is an evaluation metric. Treat it like one.
+
+## What the production systems actually do
+
+Perplexity runs hybrid retrieval on Vespa with a rule I'd frame and hang on the wall: "You are not supposed to say anything that you didn't retrieve." Glean's pipeline is query planning, then vector plus knowledge-graph retrieval, with permissions enforced at retrieval time across 100+ connected apps. GitHub Copilot indexes workspaces with text-embedding-3-small at 512 dimensions, capped at 2,500 files locally. Notion moved their RAG data plumbing off Fivetran and Snowflake onto a Hudi/Kafka/Spark lake and saved over a million dollars a year while getting freshness from days down to minutes.
+
+Different systems, one theme. The sophistication lives in retrieval and data plumbing. The generation step is almost an afterthought.
+
+## Frameworks
+
+| Framework | Good at | Costs you |
+|-----------|---------|-----------|
+| LangChain | Integrations, fast prototyping | Highest token overhead (~2.4k/query) |
+| LlamaIndex | Document Q&A, 300+ data connectors | Less flexible for custom agents |
+| Haystack | Production efficiency (~1.57k tokens) | Smaller community |
+| DSPy | Systematic prompt optimization | A paradigm to learn |
+
+Plenty of teams mix them — LlamaIndex for ingestion, LangChain for agent work, custom code for the core path. The framework matters less than people argue about it. This site's chat is custom code on pgvector, and the framework I didn't use has never been the problem.
+
+## Long context doesn't kill RAG, and agents don't replace it
+
+Gemini 1.5 Pro takes 2 million tokens, Claude 200K, GPT-4 Turbo 128K, and the obvious question is why retrieve at all. Because performance degrades well before the window fills — Llama-3.1-405B after 32K tokens, GPT-4-0125 after 64K — and because shoving a corpus into every prompt is a cost model, not an architecture. The hybrid that's emerging: RAG finds the right documents, long context reads them whole. Under ~500 pages of knowledge, long context alone may genuinely suffice.
+
+On the other end, the January 2025 agentic RAG survey formalizes what practitioners were already doing: retrieval as a tool the model invokes, with reflection on whether the results were good, planning across multi-step queries, and fallbacks (corrective RAG triggers web search when confidence is low). Useful patterns. Also a complexity budget you should spend only after the boring pipeline is measured and solid.
+
+## What I'd actually do
+
+Start with recursive splitting at 512/50, text-embedding-3-small or BGE-M3, and pgvector or Qdrant. Ship it. Then add machinery only when a measured failure demands it: semantic chunking when fixed splits fragment concepts, reranking when precision is the complaint, hybrid search when vocabulary mismatch shows up in the logs, contextual retrieval when chunks lose their referents.
+
+The systems that work share one trait, and it isn't architectural elegance. It's an unglamorous obsession with retrieval quality. If the retrieved context is wrong, nothing downstream can save you — the model will fluently, confidently summarize the wrong thing. Every failed RAG system I've seen failed there, at the bottom of the stack, while everyone was tuning prompts at the top.

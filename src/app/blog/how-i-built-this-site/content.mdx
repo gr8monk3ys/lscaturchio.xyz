@@ -1,0 +1,277 @@
+export const meta = {
+  title: "How I Built This Site: A Technical Deep Dive",
+  description: "The architecture and decisions behind lscaturchio.xyz, from Next.js 14 to RAG-powered search.",
+  date: "2025-01-19",
+  image: "/images/blog/how-i-built-this-site.webp",
+  tags: ["nextjs-14", "rag-implementation", "supabase-vector", "mdx-blog"],
+  stage: "budding",
+};
+
+## Why I built this
+
+I wanted a portfolio that showed off my AI and web work, and I also wanted a place to break things while trying out new tech. Those two goals pull in opposite directions, which is half the fun. The constraints I gave myself were sub-2s load times, some actual AI features rather than a chatbot bolted on for show, a TypeScript codebase I could refactor without fear, and a front end that felt good to use.
+
+## Architecture overview
+
+### The stack
+
+On the front end I'm running Next.js 14 with the App Router, which gives me server components, streaming, and a development experience I genuinely enjoy. Styling is Tailwind, with dark mode built in. Animations and page transitions go through Framer Motion. Everything is TypeScript in strict mode, with zero `any` types.
+
+The backend is mostly Next.js API routes running as serverless functions. Data and vector search live in Supabase (Postgres with pgvector), the chat and embeddings come from the OpenAI API, and the contact form sends through Resend. Hosting is Vercel, with version control and CI/CD on GitHub.
+
+### Why these choices?
+
+I picked Next.js 14 over Gatsby or Astro for the server components and streaming SSR, and because the built-in API routes meant I didn't have to stand up a separate backend. The TypeScript support sealed it.
+
+Supabase won over Firebase and MongoDB for one reason above the others: the pgvector extension. Postgres I already knew, the free tier is generous, and being open source matters to me. Semantic search without a second specialized database was the deciding feature.
+
+Strict-mode TypeScript was non-negotiable. It catches bugs at compile time, the autocomplete is better, and refactoring stops being scary when the types are doing the bookkeeping for you.
+
+---
+
+## Key features & implementation
+
+### 1. AI-powered blog search
+
+The problem was that nobody could find relevant posts by browsing. The fix was retrieval-augmented generation over the blog content, with semantic search doing the matching.
+
+```typescript
+// 1. Generate embeddings for all blog posts
+const embedding = await openai.embeddings.create({
+  model: "text-embedding-ada-002",
+  input: blogContent,
+});
+
+// 2. Store in Supabase with pgvector
+await supabase.from('embeddings').insert({
+  content: blogContent,
+  embedding: embedding.data[0].embedding,
+  metadata: { title, url, date }
+});
+
+// 3. Search with semantic similarity
+const { data } = await supabase.rpc('match_embeddings', {
+  query_embedding: userQueryEmbedding,
+  match_threshold: 0.78,
+  match_count: 3
+});
+```
+
+The result is that vague queries still land. Search for "AI stuff" and you get the RAG tutorials and prompt engineering posts, even though none of them contain that phrase. Vector search runs around 50ms on average, and the full API response comes back in roughly 200ms.
+
+---
+
+### 2. MDX blog system
+
+I wanted rich content, React components inside posts and not just plain markdown, so the blog runs on MDX with custom components.
+
+```typescript
+// src/app/blog/[slug]/content.mdx
+export const meta = {
+  title: "My Post",
+  description: "Description",
+  date: "2025-01-19",
+  image: "/images/blog/post.webp",
+  tags: ["tag1", "tag2"]
+};
+
+## Your content here
+
+<CustomComponent prop="value" />
+```
+
+The custom components that earn their keep are a CodeBlock with a copy button and syntax highlighting, inline newsletter signup forms, and the occasional embedded visualization. I write the prose in markdown, drop into React when a post needs something interactive, and the meta export stays type-safe. The table of contents generates itself from the headings.
+
+---
+
+### 3. Performance optimization
+
+The biggest single win was images. Converting everything to WebP cut total image weight by 89.9%, from 23.7MB down to 2.4MB.
+
+```bash
+# Convert to WebP, optimize quality
+cwebp -q 85 -resize 1920 0 input.jpg -o output.webp
+```
+
+Some individual files were dramatic: coachella.webp went from 16MB to 840KB, a 94.8% reduction, and the portrait dropped from 1.1MB to 124KB. The average across all images landed near 90%.
+
+Beyond images, I lean on dynamic imports to code-split the heavy components, subset the fonts and serve them with `display=swap`, set aggressive cache headers in middleware, and lazy-load anything below the fold. The site ends up scoring 95+ on Lighthouse, with a 1.2s first contentful paint and 2.1s time to interactive.
+
+---
+
+### 4. Rate limiting system
+
+The APIs are public, which means anyone can hammer them. I added an in-memory rate limiter with per-route limits.
+
+```typescript
+// src/lib/rate-limit.ts
+export const RATE_LIMITS = {
+  AI_HEAVY: { requests: 5, window: 60 * 1000 },      // 5 req/min
+  NEWSLETTER: { requests: 3, window: 5 * 60 * 1000 }, // 3 req/5min
+  PUBLIC: { requests: 100, window: 60 * 1000 },       // 100 req/min
+};
+
+// Usage
+export const POST = withRateLimit(handler, RATE_LIMITS.AI_HEAVY);
+```
+
+The AI endpoints get 5 requests a minute, the newsletter and contact form get 3 per five minutes, and everything else gets 100 a minute. I kept it in-memory because it has no external dependencies, the lookups are microsecond-fast, and it's plenty for a personal site. If I ever need it to survive across instances I'll move it to Redis, but that day hasn't come.
+
+---
+
+### 5. Type safety (100%)
+
+The goal was zero `any` types. I started with 16 violations and got to 0.
+
+The hardest cases were the untyped globals, like AdSense hanging things off `window`:
+
+```typescript
+// ❌ Before - loses type safety
+window.adsbygoogle = window.adsbygoogle || [];
+
+// ✅ After - fully typed
+interface AdSenseConfig {
+  google_ad_client?: string;
+  enable_page_level_ads?: boolean;
+  [key: string]: unknown;
+}
+
+declare global {
+  interface Window {
+    adsbygoogle: AdSenseConfig[];
+  }
+}
+```
+
+This wasn't busywork. Tightening the types surfaced a dozen real bugs at compile time that would otherwise have waited to break in production, and the autocomplete and refactoring safety came along for free.
+
+---
+
+## Project structure
+
+```
+lscaturchio.xyz/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── blog/              # Blog posts (MDX)
+│   │   ├── api/               # API routes
+│   │   └── [pages]/           # Other pages
+│   ├── components/
+│   │   ├── blog/              # Blog-specific
+│   │   ├── ui/                # Reusable UI
+│   │   └── [feature]/         # Feature components
+│   ├── lib/                   # Utilities
+│   │   ├── embeddings.ts      # Vector search
+│   │   ├── rate-limit.ts      # Rate limiting
+│   │   └── getAllBlogs.ts     # Blog data
+│   ├── constants/             # Static data
+│   └── types/                 # TypeScript types
+├── public/
+│   └── images/                # Optimized WebP images
+└── scripts/                   # Build scripts
+```
+
+The patterns I hold to: server components by default, with `'use client'` only where I actually need state or effects; components colocated near where they're used; barrel exports to keep imports clean; and types written before the implementation they describe.
+
+---
+
+## Lessons learned
+
+A few things went better than expected. The App Router's development experience and performance held up. Strict TypeScript caught bugs early and often. Supabase's pgvector turned out to be far less work than I'd feared, and the image optimization paid off for almost no effort.
+
+A few things I'd do differently. Rate limiting went in too late, and the APIs nearly got abused before I added it; that should have been there on day one. Tests came after the features instead of alongside them, the error boundaries still let the occasional crash through, and I had to backfill a lot of documentation I should have written as I went.
+
+And a few things just surprised me. MDX meta imports don't behave the way I assumed, so I ended up duplicating some metadata. Search params in server components needed Suspense boundaries in more places than I expected. The dark-mode flash forced me into a theme provider backed by storage. And Vercel build timeouts bit me until I moved the heavier image work out of the build.
+
+---
+
+## Performance breakdown
+
+### Build time
+- Development: ~3s cold start, ~200ms hot reload
+- Production: ~45s full build (49 pages)
+- Sitemap generation: ~1s
+
+### Runtime performance
+- Homepage: 1.2s FCP, 2.1s TTI
+- Blog post: 1.4s FCP, 2.3s TTI
+- Search: ~200ms API response
+
+### Bundle size
+- First Load JS: 86.5 kB
+- Page-specific: 1-4 kB average
+- Shared chunks: optimized with Webpack config
+
+---
+
+## Open source & transparency
+
+The whole thing is public at [github.com/lscaturchio/lscaturchio.xyz](https://github.com/lscaturchio/lscaturchio.xyz): source, commit history, architecture docs, build scripts. What stays private is the obvious set, API keys in `.env.local`, analytics data, and the newsletter list. It's MIT licensed, so fork it and adapt it if it's useful.
+
+---
+
+## Tech stack deep dive
+
+### Next.js 14 configuration
+
+```javascript
+// next.config.mjs
+export default {
+  experimental: {
+    optimizeCss: true,           // Faster CSS
+    scrollRestoration: true,     // Better UX
+  },
+  webpack: (config) => {
+    config.optimization.splitChunks = {
+      chunks: 'all',
+      maxInitialRequests: 25,    // More granular splitting
+    };
+    return config;
+  },
+};
+```
+
+### Supabase setup
+
+Three tables do the work: `embeddings` for vector search (1536-dimensional, from OpenAI's ada-002), `newsletter_subscribers` with unsubscribe tokens, and a planned `views` table for page-view tracking. Two RPC functions sit on top, `match_embeddings(query_embedding, threshold, count)` for semantic search and `count_active_subscribers()` for the newsletter stats.
+
+### API route patterns
+
+```typescript
+// Standard pattern for all routes
+import { withRateLimit } from '@/lib/with-rate-limit';
+import { RATE_LIMITS } from '@/lib/rate-limit';
+
+async function handler(req: NextRequest) {
+  // Validation
+  if (!req.body) return NextResponse.json({ error: "..." }, { status: 400 });
+
+  // Logic
+  const result = await doSomething();
+
+  // Response
+  return NextResponse.json({ data: result });
+}
+
+export const POST = withRateLimit(handler, RATE_LIMITS.STANDARD);
+```
+
+---
+
+## Future improvements
+
+Soon I want a view counter and reactions on posts, blog series, and updated-on dates for older pieces. Further out, I'd like interactive code playgrounds, a guest-post section, and a small analytics dashboard. The someday pile, multi-language support, a React Native app, paid content, has been sitting in my notes long enough that I'm honest about it being someday.
+
+---
+
+## Resources & credits
+
+I borrowed performance ideas from [Lee Robinson's site](https://leerob.io), interactive-demo ideas from [Josh Comeau's blog](https://joshwcomeau.com), and a bias toward simplicity from [Derek Sivers](https://sive.rs). The build leans on [Framer Motion](https://www.framer.com/motion/) for animation, [Lucide Icons](https://lucide.dev/) for the icon set, and [Rehype](https://github.com/rehypejs/rehype) for MDX processing, with the [Next.js](https://nextjs.org/docs) and [Supabase](https://supabase.com/docs) docs open in a tab the whole time.
+
+---
+
+## Conclusion
+
+This site started as a broken build with 14-plus errors and ended as something I'm comfortable putting my name on: full type safety, roughly 90% smaller images, and a search feature I still find genuinely useful. The lessons that stuck were the boring ones. Ship simple and optimize later. Measure before you tune, because you can't improve what you haven't counted. Strict types pay for themselves over a long enough timeline.
+
+It's live, it's open source, and I keep changing it. If you want to talk shop or build something together, [get in touch](/contact).
