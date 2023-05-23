@@ -27,5 +27,5 @@ npm run dev
 ```
 
 ## Contributing
-While this is primarily a personal project, I'm open to contributions. If you find a bug or have an idea for a feature, feel free to open an issue or a pull request.
 
+While this is primarily a personal project, I'm open to contributions. If you find a bug or have an idea for a feature, feel free to open an issue or a pull request.
