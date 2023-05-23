@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import NavBar from '../components/NavBar';
+import NavBar from '../components/sections/Header';
 
 export default function Page() {
   return (
     <div>
-      {/* <NavBar /> */}
-      <h1>Hello</h1>
+      <div className="flex flex-col min-h-screen">
+      <main className="flex-grow">
+        {/* rest of your page */}
+      </main>
+    </div>
     </div>
   );
 }
