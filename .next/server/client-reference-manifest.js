@@ -758,9 +758,9 @@ self.__RSC_MANIFEST={
         "async": false
       }
     },
-    "(app-client)/./app/error.tsx": {
+    "(app-client)/./src/app/error.tsx": {
       "*": {
-        "id": "(sc_client)/./app/error.tsx",
+        "id": "(sc_client)/./src/app/error.tsx",
         "name": "*",
         "chunks": [
           "app/error:static/chunks/app/error.js"
@@ -768,7 +768,7 @@ self.__RSC_MANIFEST={
         "async": false
       },
       "": {
-        "id": "(sc_client)/./app/error.tsx",
+        "id": "(sc_client)/./src/app/error.tsx",
         "name": "",
         "chunks": [
           "app/error:static/chunks/app/error.js"
@@ -776,7 +776,7 @@ self.__RSC_MANIFEST={
         "async": false
       },
       "default": {
-        "id": "(sc_client)/./app/error.tsx",
+        "id": "(sc_client)/./src/app/error.tsx",
         "name": "default",
         "chunks": [
           "app/error:static/chunks/app/error.js"
@@ -787,7 +787,7 @@ self.__RSC_MANIFEST={
   },
   "edgeSSRModuleMapping": {},
   "cssFiles": {
-    "C:\\Code\\gr8monk3ys.github.io\\app\\layout": [
+    "C:\\Code\\gr8monk3ys.github.io\\src\\app\\layout": [
       "static/css/app/layout.css"
     ]
   },
@@ -2520,36 +2520,36 @@ self.__RSC_MANIFEST={
       ],
       "async": false
     },
-    "C:\\Code\\gr8monk3ys.github.io\\app\\error.tsx": {
-      "id": "(app-client)/./app/error.tsx",
+    "C:\\Code\\gr8monk3ys.github.io\\src\\app\\globals.css#": {
+      "id": "null",
+      "name": "default",
+      "chunks": [
+        "static/css/app/layout.css"
+      ]
+    },
+    "C:\\Code\\gr8monk3ys.github.io\\src\\app\\error.tsx": {
+      "id": "(app-client)/./src/app/error.tsx",
       "name": "*",
       "chunks": [
         "app/error:static/chunks/app/error.js"
       ],
       "async": false
     },
-    "C:\\Code\\gr8monk3ys.github.io\\app\\error.tsx#": {
-      "id": "(app-client)/./app/error.tsx",
+    "C:\\Code\\gr8monk3ys.github.io\\src\\app\\error.tsx#": {
+      "id": "(app-client)/./src/app/error.tsx",
       "name": "",
       "chunks": [
         "app/error:static/chunks/app/error.js"
       ],
       "async": false
     },
-    "C:\\Code\\gr8monk3ys.github.io\\app\\error.tsx#default": {
-      "id": "(app-client)/./app/error.tsx",
+    "C:\\Code\\gr8monk3ys.github.io\\src\\app\\error.tsx#default": {
+      "id": "(app-client)/./src/app/error.tsx",
       "name": "default",
       "chunks": [
         "app/error:static/chunks/app/error.js"
       ],
       "async": false
-    },
-    "C:\\Code\\gr8monk3ys.github.io\\app\\globals.css#": {
-      "id": "null",
-      "name": "default",
-      "chunks": [
-        "static/css/app/layout.css"
-      ]
     }
   }
 }
