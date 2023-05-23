@@ -1,65 +1,37 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: 'jit',
-  content: [
-    './app/**/*.{js,ts,jsx,tsx,mdx}', // Note the addition of the `app` directory.
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
- 
-    // Or if using `src` directory:
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   darkMode: false,
   theme: {
-    backgroundColor: theme => ({
-      ...theme('colors'),
-      'ub-grey': '#111111',
-      'ub-warm-grey': "#AEA79F",
-      'ub-cool-grey': "#333333",
-      'ub-orange': "#E95420",
-      'ub-lite-abrgn': "#77216F",
-      'ub-med-abrgn': "#5E2750",
-      'ub-drk-abrgn': "#2C001E",
-      'ub-window-title': "#201f1f",
-      'ub-gedit-dark': "#021B33",
-      'ub-gedit-light': "#003B70",
-      'ub-gedit-darker': "#010D1A",
-    }),
-    textColor: theme => ({
-      ...theme('colors'),
-      'ubt-grey': '#F6F6F5',
-      'ubt-warm-grey': "#AEA79F",
-      'ubt-cool-grey': "#333333",
-      'ubt-blue': "#3465A4",
-      'ubt-green': "#4E9A06",
-      'ubt-gedit-orange': "#F39A21",
-      'ubt-gedit-blue': "#50B6C6",
-      'ubt-gedit-dark': "#003B70",
-    }),
-    borderColor: theme => ({
-      ...theme('colors'),
-      DEFAULT: theme('colors.gray.300', 'currentColor'),
-      'ubb-orange': '#E95420'
-    }),
-    minWidth: {
-      '0': '0',
-      '1/4': '25%',
-      '1/2': '50%',
-      '3/4': '75%',
-      'full': '100%',
-    },
-    minHeight: {
-      '0': '0',
-      '1/4': '25%',
-      '1/2': '50%',
-      '3/4': '75%',
-      'full': '100%',
-    },
     extend: {
-      zIndex: {
-        '-10': '-10',
-      }
+      colors: {
+        primary: {
+          light: '#4fd1c5',
+          DEFAULT: '#38b2ac',
+          dark: '#319795',
+        },
+        secondary: {
+          light: '#ed8936',
+          DEFAULT: '#dd6b20',
+          dark: '#c05621',
+        },
+        dark: {
+          light: '#2d3748',
+          DEFAULT: '#1a202c',
+          dark: '#1a202c',
+        },
+        light: {
+          light: '#f7fafc',
+          DEFAULT: '#edf2f7',
+          dark: '#e2e8f0',
+        },
+      },
     },
+  },
+  fontFamily: {
+    sans: ['Roboto', 'sans-serif'],
+    serif: ['Merriweather', 'serif'],
   },
   variants: {
     extend: {},
