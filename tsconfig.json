@@ -20,16 +20,6 @@
     ],
     "strictNullChecks": true
   },
-  "include": [
-    "next-env.d.ts",
-    ".next/types/**/*.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "pages/500.js",
-    "pages/404.js",
-    "pages/_error.js",
-    "src/app/404/page.tsx",
-    "src/app/about-me/page.js"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
