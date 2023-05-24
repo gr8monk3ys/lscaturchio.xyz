@@ -1,38 +1,50 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: 'jit',
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
-  darkMode: false,
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          light: '#4fd1c5',
-          DEFAULT: '#38b2ac',
-          dark: '#319795',
-        },
-        secondary: {
-          light: '#ed8936',
-          DEFAULT: '#dd6b20',
-          dark: '#c05621',
-        },
-        dark: {
-          light: '#2d3748',
-          DEFAULT: '#1a202c',
-          dark: '#1a202c',
-        },
-        light: {
-          light: '#f7fafc',
-          DEFAULT: '#edf2f7',
-          dark: '#e2e8f0',
-        },
+  content: [
+  './src/**/*.{js,ts,jsx,tsx,mdx}',
+  "./app/**/*.{js,ts,jsx,tsx}",
+  "./pages/**/*.{js,ts,jsx,tsx}",
+  "./components/**/*.{js,ts,jsx,tsx}",
+],
+darkMode: "class",
+theme: {
+  extend: {
+    screens: { sm: "480px", md: "768px", lg: "976px", xl: "1440pd" },
+    animation: {
+      fadeIn: "fadeIn 1.5s",
+      bounce:
+        "bounce 0.5s alternate cubic-bezier(0.95, 0.05, 0.795, 0.035) infinite",
+      slideUp: "slideUp 0.5s",
+      slideUpEaseInOut: "slideUp 0.5s ease-in-out",
+      slideUpCubiBezier: "slideUp 1s cubic-bezier(0.165, 0.84, 0.44, 1)",
+    },
+    animationDelay: {
+      0: "0s",
+      2: "0.2s",
+      4: "0.4s",
+      6: "0.6s",
+    },
+    keyframes: {
+      fadeIn: {
+        from: { opacity: 0 },
+        to: { opacity: 1 },
+      },
+      slideUp: {
+        from: { transform: "translateY(100%)" },
+        to: { transform: "translateY(0)" },
+      },
+      bounce: {
+        from: { transform: "translateY(10px)" },
+        to: { transform: "translateY(0)" },
       },
     },
   },
-  fontFamily: {
-    sans: ['Roboto', 'sans-serif'],
-    serif: ['Merriweather', 'serif'],
-  },
+},
+  // fontFamily: {
+  //   sans: ['Roboto', 'sans-serif'],
+  //   serif: ['Merriweather', 'serif'],
+  // },
   variants: {
     extend: {},
   },
