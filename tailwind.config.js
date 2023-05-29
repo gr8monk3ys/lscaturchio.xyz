@@ -2,51 +2,87 @@
 module.exports = {
   mode: 'jit',
   content: [
-  './src/**/*.{js,ts,jsx,tsx,mdx}',
-  "./app/**/*.{js,ts,jsx,tsx}",
-  "./pages/**/*.{js,ts,jsx,tsx}",
-  "./components/**/*.{js,ts,jsx,tsx}",
-],
-darkMode: "class",
-theme: {
-  extend: {
-    screens: { sm: "480px", md: "768px", lg: "976px", xl: "1440pd" },
-    animation: {
-      fadeIn: "fadeIn 1.5s",
-      bounce:
-        "bounce 0.5s alternate cubic-bezier(0.95, 0.05, 0.795, 0.035) infinite",
-      slideUp: "slideUp 0.5s",
-      slideUpEaseInOut: "slideUp 0.5s ease-in-out",
-      slideUpCubiBezier: "slideUp 1s cubic-bezier(0.165, 0.84, 0.44, 1)",
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx}',
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'blue-gray': {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+        },
+      },
+      screens: { sm: '480px', md: '768px', lg: '976px', xl: '1440pd' },
+      spacing: {
+        '72': '18rem',
+        '84': '21rem',
+        '96': '24rem',
+      },
+      borderRadius: {
+        'xl': '1rem',
+      },
+      animation: {
+        fadeIn: 'fadeIn 1.5s',
+        bounce: 'bounce 0.5s alternate cubic-bezier(0.95, 0.05, 0.795, 0.035) infinite',
+        slideUp: 'slideUp 0.5s',
+        slideUpEaseInOut: 'slideUp 0.5s ease-in-out',
+        slideUpCubiBezier: 'slideUp 1s cubic-bezier(0.165, 0.84, 0.44, 1)',
+      },
+      animationDelay: {
+        0: '0s',
+        2: '0.2s',
+        4: '0.4s',
+        6: '0.6s',
+      },
+      keyframes: {
+        fadeIn: {
+          from: { opacity: 0 },
+          to: { opacity: 1 },
+        },
+        slideUp: {
+          from: { transform: 'translateY(100%)' },
+          to: { transform: 'translateY(0)' },
+        },
+        bounce: {
+          from: { transform: 'translateY(10px)' },
+          to: { transform: 'translateY(0)' },
+        },
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            color: '#333',
+            a: {
+              color: '#3182ce',
+              '&:hover': {
+                color: '#2c5282',
+              },
+            },
+          },
+        },
+      },
     },
-    animationDelay: {
-      0: "0s",
-      2: "0.2s",
-      4: "0.4s",
-      6: "0.6s",
-    },
-    keyframes: {
-      fadeIn: {
-        from: { opacity: 0 },
-        to: { opacity: 1 },
-      },
-      slideUp: {
-        from: { transform: "translateY(100%)" },
-        to: { transform: "translateY(0)" },
-      },
-      bounce: {
-        from: { transform: "translateY(10px)" },
-        to: { transform: "translateY(0)" },
-      },
+    fontFamily: {
+      sans: ['Roboto', 'sans-serif'],
+      serif: ['Merriweather', 'serif'],
     },
   },
-},
-  // fontFamily: {
-  //   sans: ['Roboto', 'sans-serif'],
-  //   serif: ['Merriweather', 'serif'],
-  // },
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 };
