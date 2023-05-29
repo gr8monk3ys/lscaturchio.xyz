@@ -35,7 +35,9 @@ const HeroSection: React.FC = () => {
         </div>
       </div>
       <div className="flex flex-row items-center text-center justify-center">
-        <ScrollLink to="about">
+        <ScrollLink 
+        to="about"
+        className="">
           <HiArrowDown size={35} className="animate-bounce" />
         </ScrollLink>
       </div>
