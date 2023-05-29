@@ -1,20 +1,34 @@
-import Link from "next/link";
-import { PostMetadata } from "../PostMetadata";
+// components/PostsSection.tsx
+import React from 'react';
+import Post from '../Post';
 
-const PostSection = (props: PostMetadata) => {
+// You'll need to import the posts data from the .md files somehow.
+// Assuming the imported posts data is an array of objects similar to this:
+const posts = [
+  {
+    title: 'Title of the post',
+    subtitle: 'Subtitle of the post',
+    slug: 'test',
+    image: '/sample.png',
+  },
+  // more posts...
+];
+
+const PostsSection: React.FC = () => {
   return (
-    <div
-      className="border border-slate-300 p-4 rounded-md shadow-sm
-    bg-white"
-    >
-      <p className="text-sm text-slate-400">{props.date}</p>
+    <section id="posts">
+      <h1 className="my-10 text-center font-bold text-4xl">
+        Blog Posts
+        <hr className="w-6 h-1 mx-auto my-4 bg-blue-500 border-0 rounded"></hr>
+      </h1>
 
-      <Link href={`/posts/${props.slug}`}>
-        <h2 className=" text-violet-600 hover:underline mb-4">{props.title}</h2>
-      </Link>
-      <p className="text-slate-700">{props.subtitle}</p>
-    </div>
+      <div className="grid grid-cols-3 gap-4">
+        {posts.map((post, idx) => (
+          <Post key={idx} post={post} />
+        ))}
+      </div>
+    </section>
   );
 };
 
-export default PostSection;
+export default PostsSection;

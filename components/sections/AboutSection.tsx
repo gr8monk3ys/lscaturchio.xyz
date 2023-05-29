@@ -2,9 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Skill from '../Skill';
 
-const skills = [
-  'Rust', 'Python', 'TypeScript', 'Next.js', 'Tailwind CSS', 'React', 'Pytorch', 'Tensorflow'
-];
+const skills = ['Rust', 'Python', 'TypeScript', 'Next.js', 'Tailwind CSS', 'React', 'Pytorch', 'Tensorflow'];
 
 const AboutSection: React.FC = () => {
   return (
@@ -17,17 +15,20 @@ const AboutSection: React.FC = () => {
 
         <div className="flex flex-col space-y-10 items-stretch justify-center align-top md:space-x-10 md:space-y-0 md:p-4 md:flex-row md:text-left">
           <div className="md:w-1/2">
-            <h1 className="text-center text-2xl font-bold mb-6 md:text-left">
-              Get to know me!
-            </h1>
+            <h1 className="text-center text-2xl font-bold mb-6 md:text-left">Get to know me!</h1>
             <p className="space-y-4">
-              Hi, my name is Lorenzo and I am a software engineer based in Los Angeles, CA. I am <span className="font-bold">highly ambitious</span>, <span className="font-bold">self-motivated</span>, and <span className="font-bold">driven</span>.
+              Hi, my name is Lorenzo and I am a software engineer based in Los Angeles, CA. I am{' '}
+              <span className="font-bold">highly ambitious</span>, <span className="font-bold">self-motivated</span>,
+              and <span className="font-bold">driven</span>.
               <br />
-              I graduated from University of California, Merced in 2022 with a BS in Computer Science & Engineering and am acquiring my Masters of Applied Data Science at the University of Southern California.
+              I graduated from University of California, Merced in 2022 with a BS in Computer Science & Engineering and
+              am acquiring my Masters of Applied Data Science at the University of Southern California.
               <br />
-              Besides coding, I have a strong passion for Chess, music production, and traveling, and I have recently been delving into prompt engineering.
-              <br />
-              I believe that if there is no inherent meaning in life, you should <span className="font-bold text-blue-500">make your own meaning</span>. That is what guides my philosophy in everything I do.
+              Besides coding, I have a strong passion for Chess, music production, and traveling, and I have recently
+              been delving into prompt engineering.
+              <br />I believe that if there is no inherent meaning in life, you should{' '}
+              <span className="font-bold text-blue-500">make your own meaning</span>. That is what guides my philosophy
+              in everything I do.
             </p>
           </div>
           <div className="text-center md:w-1/2 md:text-left">
@@ -37,13 +38,13 @@ const AboutSection: React.FC = () => {
                 <Skill key={idx} skill={skill} />
               ))}
             </div>
-            <Image
-              src="/hero-image.png"
+            {/* <Image
+              src="/ocean_vangogh.png"
               alt=""
               width={325}
               height={325}
               className="hidden md:block md:relative md:bottom-4 md:left-32 md:z-0"
-            />
+            /> */}
           </div>
         </div>
       </div>
