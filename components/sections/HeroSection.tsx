@@ -1,7 +1,7 @@
-'use client'
+'use client';
 import React from 'react';
 import Image from 'next/image';
-import { HiArrowDown } from 'react-icons/hi';
+import {HiArrowDown} from 'react-icons/hi';
 import ScrollLink from '../ScrollLink';
 
 const HeroSection: React.FC = () => {
@@ -20,24 +20,18 @@ const HeroSection: React.FC = () => {
         <div className="md:mt-2 md:w-3/5">
           <h1 className="text-4xl font-bold mt-6 md:mt-0 md:text-7xl">Hi, I&#39;m Lorenzo!</h1>
           <p className="text-lg mt-4 mb-6 md:text-2xl">
-            I&#39;m a{" "}
-            <span className="font-semibold text-blue-600">
-              Data Science Student{" "}
-            </span>
+            I&#39;m a <span className="font-semibold text-blue-600">Data Science Student </span>
             based in Los Angeles, CA. Working on automating my life
           </p>
           <ScrollLink
             to="projects"
-            className="text-neutral-100 font-semibold px-6 py-3 bg-blue-600 rounded shadow hover:bg-blue-700"
-          >
+            className="text-neutral-100 font-semibold px-6 py-3 bg-blue-600 rounded shadow hover:bg-blue-700">
             Projects
           </ScrollLink>
         </div>
       </div>
       <div className="flex flex-row items-center text-center justify-center">
-        <ScrollLink 
-        to="about"
-        className="">
+        <ScrollLink to="about" className="">
           <HiArrowDown size={35} className="animate-bounce" />
         </ScrollLink>
       </div>

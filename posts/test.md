@@ -1,6 +1,6 @@
 ---
 title: "Getting Started with AWS"
-subtitle: "This is a test markdown ffile"
+subtitle: "This is a test markdown file"
 date: "2023-05-24"
 ---
 
