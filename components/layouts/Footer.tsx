@@ -1,9 +1,6 @@
-import React from "react"
-import {
-  AiOutlineGithub,
-  AiOutlineTwitter,
-  AiOutlineLinkedin,
-} from "react-icons/ai"
+'use client';
+import React from 'react';
+import {AiOutlineGithub, AiOutlineTwitter, AiOutlineLinkedin} from 'react-icons/ai';
 
 const Footer = () => {
   return (
@@ -20,37 +17,24 @@ const Footer = () => {
               size={30}
             />
           </a>
-          <a
-            href="https://twitter.com/gr8monk3ys"
-            rel="noreferrer"
-            target="_blank"
-          >
+          <a href="https://twitter.com/gr8monk3ys" rel="noreferrer" target="_blank">
             <AiOutlineTwitter
               className="hover:-translate-y-1 transition-transform cursor-pointer text-neutral-500 dark:text-neutral-100"
               size={30}
             />
           </a>
 
-          <a
-            href="https://www.linkedin.com/in/lorenzo-scaturchio/"
-            rel="noreferrer"
-            target="_blank"
-          >
+          <a href="https://www.linkedin.com/in/lorenzo-scaturchio/" rel="noreferrer" target="_blank">
             <AiOutlineLinkedin
               className="hover:-translate-y-1 transition-transform cursor-pointer text-neutral-500 dark:text-neutral-100"
               size={30}
             />
           </a>
-          <a
-            href="https://www.youtube.com/channel/UCQBMkSDgbxDb8usMeXmOZyA"
-            rel="noreferrer"
-            target="_blank"
-          >
-          </a>
+          <a href="https://www.youtube.com/channel/UCQBMkSDgbxDb8usMeXmOZyA" rel="noreferrer" target="_blank"></a>
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

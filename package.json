@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.9",
+    "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
     "next": "^13.4.3",
     "next-themes": "^0.2.1",
@@ -7,6 +9,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
     "react-scroll": "^1.8.9",
+    "react-spring": "^9.7.1",
     "sass": "^1.62.1"
   },
   "scripts": {

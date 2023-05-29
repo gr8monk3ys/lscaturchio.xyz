@@ -1,35 +1,39 @@
-import React from "react"
-import Image from "next/image"
-import Link from "next/link"
-import SlideUp from "../SlideUp"
+'use client';
+import React from 'react';
 import Project from '../Project';
-import { BsGithub, BsArrowUpRightSquare } from "react-icons/bs"
 
 const projects = [
   {
-    name: "Paper-Summarizer",
+    name: 'Paper-Summarizer',
     description:
-      "ThankfulThoughts is a web app that generates an appreciative sentence of something or someone you are thankful for.",
-    image: "/thankfulthoughts.png",
-    github: "https://github.com/hqasmei/thankful-thoughts",
-    link: "https://thankfulthoughts.io/",
+      'ThankfulThoughts is a web app that generates an appreciative sentence of something or someone you are thankful for.',
+    image: '/sample.png',
+    github: 'https://github.com/gr8monk3ys/Paper-Summarizer',
+    link: 'https://thankfulthoughts.io/',
   },
   {
-    name: "Eyebook-Reader",
-    description: "PlatoIO is a to do list app that built using the PERN stack.",
-    image: "/platoio.png",
-    github: "https://github.com/hqasmei/platoio",
-    link: "https://platoio.com/register",
+    name: 'Eyebook-Reader',
+    description: 'PlatoIO is a to do list app that built using the PERN stack.',
+    image: '/sample.png',
+    github: 'https://github.com/gr8monk3ys/Eyebook-Reader',
+    link: 'https://platoio.com/register',
   },
   {
-    name: "Chess AI",
-    description:
-      "Kator Family Photos is a photos and video digitization service in the LA area.",
-    image: "/familyphotos.png",
-    github: "https://github.com/hqasmei/katorfamilyphotos",
-    link: "https://katorfamilyphotos.com/",
+    name: 'Chess AI',
+    description: 'Kator Family Photos is a photos and video digitization service in the LA area.',
+    image: '/sample.png',
+    github: 'https://github.com/gr8monk3ys/chessAI',
+    link: 'https://katorfamilyphotos.com/',
   },
-]
+  // {
+  //   name: "Poop AI",
+  //   description:
+  //     "Kator Family Photos is a photos and video digitization service in the LA area.",
+  //   image: "/familyphotos.png",
+  //   github: "https://github.com/hqasmei/katorfamilyphotos",
+  //   link: "https://katorfamilyphotos.com/",
+  // },
+];
 
 const ProjectsSection: React.FC = () => {
   return (
@@ -39,7 +43,7 @@ const ProjectsSection: React.FC = () => {
         <hr className="w-6 h-1 mx-auto my-4 bg-blue-500 border-0 rounded"></hr>
       </h1>
 
-      <div className="flex flex-col space-y-28">
+      <div className="grid grid-cols-3 gap-4">
         {projects.map((project, idx) => (
           <Project key={idx} project={project} />
         ))}
@@ -48,4 +52,4 @@ const ProjectsSection: React.FC = () => {
   );
 };
 
-export default ProjectsSection
+export default ProjectsSection;

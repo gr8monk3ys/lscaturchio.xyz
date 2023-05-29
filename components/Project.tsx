@@ -1,49 +1,35 @@
-// components/Project.tsx
+'use client';
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BsGithub, BsArrowUpRightSquare } from 'react-icons/bs';
+import {BsGithub, BsArrowUpRightSquare} from 'react-icons/bs';
 import SlideUp from './SlideUp';
 
-const Project: React.FC<{ project: any }> = ({ project }) => {
+const Project: React.FC<{project: any}> = ({project}) => {
   return (
-    <div>
-      <SlideUp offset="-300px 0px -300px 0px">
-        <div className="flex flex-col animate-slideUpCubiBezier animation-delay-2 md:flex-row md:space-x-12">
-          <div className="md:w-1/2">
+    <SlideUp offset="-300px 0px -300px 0px">
+      <div className="relative group w-64 h-64 m-4">
+        <Image
+          src={project.image}
+          alt=""
+          layout="fill"
+          objectFit="cover"
+          className="rounded-xl shadow-xl hover:opacity-70 transition-opacity duration-300 z-10"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex flex-col items-center justify-center text-white space-y-4 z-20">
+          <h1 className="text-2xl font-bold">{project.name}</h1>
+          <p className="text-sm px-4">{project.description}</p>
+          <div className="flex space-x-4">
+            <Link href={project.github}>
+              <BsGithub size={30} className="hover:-translate-y-1 transition-transform cursor-pointer" />
+            </Link>
             <Link href={project.link}>
-              <Image
-                src={project.image}
-                alt=""
-                width={1000}
-                height={1000}
-                className="rounded-xl shadow-xl hover:opacity-70"
-              />
+              <BsArrowUpRightSquare size={30} className="hover:-translate-y-1 transition-transform cursor-pointer" />
             </Link>
           </div>
-          <div className="mt-8 md:w-1/2">
-            <h1 className="text-4xl font-bold mb-6">{project.name}</h1>
-            <p className="text-xl leading-7 mb-4 text-neutral-600 dark:text-neutral-400">
-              {project.description}
-            </p>
-            <div className="flex flex-row align-bottom space-x-4">
-              <Link href={project.github} target="_blank">
-                <BsGithub
-                  size={30}
-                  className="hover:-translate-y-1 transition-transform cursor-pointer"
-                />
-              </Link>
-              <Link href={project.link} target="_blank">
-                <BsArrowUpRightSquare
-                  size={30}
-                  className="hover:-translate-y-1 transition-transform cursor-pointer"
-                />
-              </Link>
-            </div>
-          </div>
         </div>
-      </SlideUp>
-    </div>
+      </div>
+    </SlideUp>
   );
 };
 
