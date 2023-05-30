@@ -20,6 +20,10 @@ const NAV_ITEMS: Array<NavItem> = [
     page: 'about',
   },
   {
+    label: 'Blog',
+    page: 'posts',
+  },
+  {
     label: 'Projects',
     page: 'projects',
   },
