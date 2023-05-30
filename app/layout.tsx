@@ -2,8 +2,8 @@ import type {Metadata} from 'next';
 
 // These styles apply to every route in the application
 import './globals.css';
-import NavBar from '../components/layouts/NavBar';
 import Footer from '../components/layouts/Footer';
+import NavBar from '../components/layouts/NavBar';
 
 export const metadata: Metadata = {
   title: "Lorenzo's Website",
