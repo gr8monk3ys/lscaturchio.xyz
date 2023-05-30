@@ -1,5 +1,5 @@
 import React from 'react';
-import Image from 'next/image';
+import Image from 'next/legacy/image';
 import Skill from '../Skill';
 
 const skills = ['Rust', 'Python', 'TypeScript', 'Next.js', 'Tailwind CSS', 'React', 'Pytorch', 'Tensorflow'];
@@ -17,7 +17,7 @@ const AboutSection: React.FC = () => {
           <div className="md:w-1/2">
             <h1 className="text-center text-2xl font-bold mb-6 md:text-left">Get to know me!</h1>
             <p className="space-y-4">
-              Hi, my name is Lorenzo and I am a software engineer based in Los Angeles, CA. I am{' '}
+              I am a applied data science based in Los Angeles, CA. I am{' '}
               <span className="font-bold">highly ambitious</span>, <span className="font-bold">self-motivated</span>,
               and <span className="font-bold">driven</span>.
               <br />
@@ -38,13 +38,6 @@ const AboutSection: React.FC = () => {
                 <Skill key={idx} skill={skill} />
               ))}
             </div>
-            {/* <Image
-              src="/ocean_vangogh.png"
-              alt=""
-              width={325}
-              height={325}
-              className="hidden md:block md:relative md:bottom-4 md:left-32 md:z-0"
-            /> */}
           </div>
         </div>
       </div>
