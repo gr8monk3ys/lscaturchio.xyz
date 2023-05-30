@@ -5,6 +5,9 @@ import AboutSection from '../components/sections/AboutSection';
 import ProjectsSection from '../components/sections/ProjectSection';
 import PostSection from '../components/sections/PostSection';
 import getPostMetadata from '../components/getPostMetadata';
+import PostPreview from '../components/PostPreview';
+
+// const HomePage = () => {
 
 export default function Home() {
   return (
