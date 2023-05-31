@@ -7,13 +7,13 @@ import SlideUp from './SlideUp';
 
 const Project: React.FC<{project: any}> = ({project}) => {
   return (
-    <div className="relative group w-64 h-64 m-4">
+    <div className="relative group w-64 h-64 m-4 rounded-3xl overflow-hidden">
       <Image
         src={project.image}
         alt=""
         layout="fill"
         objectFit="cover"
-        className="rounded-xl shadow-xl hover:opacity-70 transition-opacity duration-300 z-10"
+        className="shadow-xl hover:opacity-70 transition-opacity duration-300 z-10 backdrop-blur-md"
       />
       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex flex-col items-center justify-center text-white space-y-4 z-20">
         <h1 className="text-2xl font-bold">{project.name}</h1>
