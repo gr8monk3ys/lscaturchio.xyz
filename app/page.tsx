@@ -7,8 +7,6 @@ import PostSection from '../components/sections/PostSection';
 import getPostMetadata from '../components/getPostMetadata';
 import PostPreview from '../components/PostPreview';
 
-// const HomePage = () => {
-
 export default function Home() {
   return (
     <main className="mx-auto max-w-3xl px-4 sm:px-6 md:max-w-5xl ">
