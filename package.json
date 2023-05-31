@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@tailwindcss/typography": "^0.5.9",
+    "framer-motion": "^10.12.16",
     "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
     "markdown-to-jsx": "^7.2.0",
@@ -12,7 +13,8 @@
     "react-markdown": "^8.0.7",
     "react-scroll": "^1.8.9",
     "react-spring": "^9.7.1",
-    "sass": "^1.62.1"
+    "sass": "^1.62.1",
+    "sharp": "^0.32.1"
   },
   "scripts": {
     "dev": "next dev",
