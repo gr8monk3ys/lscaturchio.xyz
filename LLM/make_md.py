@@ -126,7 +126,7 @@ def create_chapter(index, doc):
 
 
 if __name__ == "__main__":
-    prompt = input("Enter the topice here: ")
+    prompt = input("Enter the topic here: ")
 
     if prompt:
         title = create_title(prompt, doc)
