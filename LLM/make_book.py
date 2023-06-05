@@ -17,7 +17,6 @@ from langchain.utilities import WikipediaAPIWrapper
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import LLMChain, SequentialChain
 
-apikey = "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"
 os.environ["OPENAI_API_KEY"] = apikey
 openai.api_key = os.getenv("OPENAI_API_KEY")
 doc = Document()
