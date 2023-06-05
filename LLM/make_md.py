@@ -107,7 +107,8 @@ def create_chapter(index, doc):
                 input_variables=["book", "chapter", "topic"],
                 template=""" The following is a  book called '{book}' that has a chapter named '{chapter}', 
                 the section name that needs to be focused on in the chapter is called '{topic}' and must be 1500 words. 
-                I don't want transition words such as finally, conclusion, or overall.:""",
+                I don't want transition words such as finally, conclusion, or overall. I don't want spaces between
+                paragraphs and the beginning of all paragraphs must be indented:""",
             )
 
             topic_memory = ConversationBufferMemory(
