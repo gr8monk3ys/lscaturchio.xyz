@@ -5,3 +5,5 @@ openai
 wikipedia
 chromadb
 tiktoken
+python-docx
+tqdm
