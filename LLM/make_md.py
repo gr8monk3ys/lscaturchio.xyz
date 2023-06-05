@@ -17,7 +17,7 @@ from langchain.utilities import WikipediaAPIWrapper
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import LLMChain, SequentialChain
 
-apikey = "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"
+apikey = "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"
 os.environ["OPENAI_API_KEY"] = apikey
 openai.api_key = os.getenv("OPENAI_API_KEY")
 doc = Document()
@@ -56,7 +56,9 @@ def create_title(prompt, doc):
 
 def create_index(title):
     print("Initializing creation of index...")
-    index_prompt = f"""Write me a book outline on a book called '{title}' with only 1 chapter. Each chapter has 3 topics, output as a json code. Please make sure to not say anything else except output the code. Assuming multiple chapters, it should look exactly like the following in terms of structure: 
+    index_prompt = f"""Write me a book outline on a book called '{title}' with 10 chapters. Each chapter has 3 topics, output as a 
+    json code. Please make sure to not say anything else except output the code. Assuming multiple chapters, it should look exactly 
+    like the following in terms of structure: 
         {{\"Title\": \"\",\"Chapters\": [{{\"Chapter 1\": \"\",\"Topics\": [\"\", \"\", \"\"]}},{{\"Chapter 2\": 
         \"\",\"Topics\": [\"\", \"\", \"\"]}},{{\"Chapter 3\": \"\",\"Topics\": [\"\", \"\", \"\"]}}]}}"""
 
@@ -103,7 +105,9 @@ def create_chapter(index, doc):
             )
             topic_template = PromptTemplate(
                 input_variables=["book", "chapter", "topic"],
-                template=""" The following is a  book called '{book}' that has a chapter named '{chapter}', the section name that needs to be focused on in the chapter is called '{topic}' and must be 700 words. I don't want transition words such as finally, conclusion, or overall:""",
+                template=""" The following is a  book called '{book}' that has a chapter named '{chapter}', 
+                the section name that needs to be focused on in the chapter is called '{topic}' and must be 1500 words. 
+                I don't want transition words such as finally, conclusion, or overall.:""",
             )
 
             topic_memory = ConversationBufferMemory(
@@ -122,7 +126,7 @@ def create_chapter(index, doc):
 
             # Document formatting
             doc.add_paragraph(topic_text)
-        doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
+    doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
 
 if __name__ == "__main__":
