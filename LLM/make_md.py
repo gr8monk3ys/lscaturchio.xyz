@@ -6,7 +6,7 @@ import openai
 import langchain
 
 from docx import Document
-from docx.shared import Pt
+from docx.shared import Pt, Length
 from docx.enum.text import WD_BREAK
 from docx.enum.section import WD_SECTION
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -25,6 +25,13 @@ directory = "books/"
 if not os.path.exists(directory):
     os.makedirs(directory)
 
+style = doc.styles['Normal']
+font = style.font
+font.name = 'Arial'
+paragraph_format = style.paragraph_format
+paragraph_format.space_after = Length(0)
+paragraph_format.space_before = Length(0)
+paragraph_format.line_spacing = 1.5 * Pt(12)
 
 def create_title(prompt, doc):
     title_template = PromptTemplate(
