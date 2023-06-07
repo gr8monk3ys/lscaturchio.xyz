@@ -61,32 +61,33 @@ export default function About() {
           </div>
           <div className="lg:order-first lg:row-span-2">
             <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-              I’m Lorenzo Scaturchio. I live in Los Angeles California, where I try to automate my life.
+              I’m Lorenzo Scaturchio. I live in Los Angeles California, where I
+              try to automate my life.
             </h1>
             <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
               <p>
                 Growing up, I was always fascinated with the way things worked.
-                There was nothing that I could not set my mind to that I would try
-                to figure out. I was always taking things apart and putting them
-                back together. Failed a bunched but learned along the way.
+                There was nothing that I could not set my mind to that I would
+                try to figure out. I was always taking things apart and putting
+                them back together. Failed a bunched but learned along the way.
               </p>
               <p>
                 The only thing I loved more than computers as a kid was music.
                 At an early age I learned to play piano by ear and from there I
                 got a guitar. It has been a passion of mine ever since and some
-                day I will make an album that I will publish on here and many 
+                day I will make an album that I will publish on here and many
                 other platforms.
               </p>
               <p>
-                I spent the next few summers indoors not progressing but 
-                still being passionate about learning something. I always
-                had to be busy so there was always a new hobby that I would
-                pick up, for better or for worse.
+                I spent the next few summers indoors not progressing but still
+                being passionate about learning something. I always had to be
+                busy so there was always a new hobby that I would pick up, for
+                better or for worse.
               </p>
               <p>
-                Today, I’m creating projects to make my life easier, where I 
-                am working with AI / ML so that the next generation can
-                inspire to innovate with the new tools provided to us.
+                Today, I’m creating projects to make my life easier, where I am
+                working with AI / ML so that the next generation can inspire to
+                innovate with the new tools provided to us.
               </p>
             </div>
           </div>
@@ -95,13 +96,25 @@ export default function About() {
               {/* <SocialLink href="#" icon={TwitterIcon}>
                 Follow on Twitter
               </SocialLink> */}
-              <SocialLink href="https://www.instagram.com/lorenzo.scaturchio/" icon={InstagramIcon} className="mt-4">
+              <SocialLink
+                href="https://www.instagram.com/lorenzo.scaturchio/"
+                icon={InstagramIcon}
+                className="mt-4"
+              >
                 Follow on Instagram
               </SocialLink>
-              <SocialLink href="https://github.com/gr8monk3ys" icon={GitHubIcon} className="mt-4">
+              <SocialLink
+                href="https://github.com/gr8monk3ys"
+                icon={GitHubIcon}
+                className="mt-4"
+              >
                 Follow on GitHub
               </SocialLink>
-              <SocialLink href="https://www.linkedin.com/in/lorenzo-scaturchio/" icon={LinkedInIcon} className="mt-4">
+              <SocialLink
+                href="https://www.linkedin.com/in/lorenzo-scaturchio/"
+                icon={LinkedInIcon}
+                className="mt-4"
+              >
                 Follow on LinkedIn
               </SocialLink>
               <SocialLink

@@ -25,10 +25,13 @@ const projects = [
     logo: logoAnimaginary,
   },
   {
-    name: 'HelioStream',
+    name: 'Paper Summarizer',
     description:
-      'Real-time video streaming library, optimized for interstellar transmission.',
-    link: { href: '#', label: 'github.com' },
+      'Sumbit any link of a research paper and it is able to summarize for you.',
+    link: {
+      href: 'https://github.com/gr8monk3ys/Paper-Summarizer',
+      label: 'github.com',
+    },
     logo: logoHelioStream,
   },
   {
@@ -65,12 +68,12 @@ export default function Projects() {
         <title>Projects - Lorenzo Scaturchio</title>
         <meta
           name="description"
-          content="Things I’ve made trying to put my dent in the universe."
+          content="Things I’ve made to try and be lazier"
         />
       </Head>
       <SimpleLayout
-        title="Things I’ve made trying to put my dent in the universe."
-        intro="I’ve worked on tons of little projects over the years but these are the ones that I’m most proud of. Many of them are open-source, so if you see something that piques your interest, check out the code and contribute if you have ideas for how it can be improved."
+        title="Things I’ve made to try and be lazier"
+        intro="There have been multiple projects that I have worked on throughout the years but here are the ones that I like the most, if you like them check them out and add some improvements!"
       >
         <ul
           role="list"
