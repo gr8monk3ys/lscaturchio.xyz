@@ -11,17 +11,18 @@ import logoPlanetaria from '@/images/logos/planetaria.svg'
 
 const projects = [
   {
-    name: 'Planetaria',
+    name: 'Eyebook Reader',
     description:
-      'Creating technology to empower civilians to explore space on their own terms.',
-    link: { href: 'http://planetaria.tech', label: 'planetaria.tech' },
+      'A book site that allows you to change the pages in a pdf dependent on where the user is looking',
+    link: { href: 'https://github.com/gr8monk3ys/Eyebook-Reader', label: 'github.com/gr8monk3ys/Eyebook-Reader' },
     logo: logoPlanetaria,
   },
   {
-    name: 'Animaginary',
+    name: 'Children of the Andes',
     description:
-      'High performance web animation library, hand-written in optimized WASM.',
-    link: { href: '#', label: 'github.com' },
+      'A web application for a non-profit organization that teaches children in Peru',
+    link: { href: 'https://github.com/gr8monk3ys/Children-of-the-Andes', 
+    label: 'github.com/gr8monk3ys/Children-of-the-Andes' },
     logo: logoAnimaginary,
   },
   {
@@ -30,23 +31,9 @@ const projects = [
       'Sumbit any link of a research paper and it is able to summarize for you.',
     link: {
       href: 'https://github.com/gr8monk3ys/Paper-Summarizer',
-      label: 'github.com',
+      label: 'github.com/gr8monk3ys/Paper-Summarizer',
     },
     logo: logoHelioStream,
-  },
-  {
-    name: 'cosmOS',
-    description:
-      'The operating system that powers our Planetaria space shuttles.',
-    link: { href: '#', label: 'github.com' },
-    logo: logoCosmos,
-  },
-  {
-    name: 'OpenShuttle',
-    description:
-      'The schematics for the first rocket I designed that successfully made it to orbit.',
-    link: { href: '#', label: 'github.com' },
-    logo: logoOpenShuttle,
   },
 ]
 
