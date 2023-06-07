@@ -32,7 +32,7 @@ export default function Uses() {
         <title>Uses - Lorenzo Scaturchio</title>
         <meta
           name="description"
-          content="Software I use, gadgets I love, and other things I recommend."
+          content="Software I use, and other things I recommend."
         />
       </Head>
       <SimpleLayout
@@ -41,75 +41,53 @@ export default function Uses() {
       >
         <div className="space-y-20">
           <ToolsSection title="Workstation">
-            <Tool title="16” MacBook Pro, M1 Max, 64GB RAM (2021)">
-              I was using an Intel-based 16” MacBook Pro prior to this and the
-              difference is night and day. I’ve never heard the fans turn on a
-              single time, even under the incredibly heavy loads I put it
-              through with our various launch simulations.
+            <Tool title="Custom PC (2018), Intel i7 7700k, Nvidia RTX 3090, 64GB DDR4 RAM, 1000 W Power supply">
+              My custom PC has been my bread and butter for a while. The specs are from a long
+              time of owning and upgrading my computer.
             </Tool>
-            <Tool title="Apple Pro Display XDR (Standard Glass)">
-              The only display on the market if you want something HiDPI and
-              bigger than 27”. When you’re working at planetary scale, every
-              pixel you can get counts.
+            <Tool title="Samsung Crg9 Ultrawide display 120hz">
+              This display lets me have just one screen but it can act like two which couldnt
+              make me any happier.
             </Tool>
-            <Tool title="IBM Model M SSK Industrial Keyboard">
-              They don’t make keyboards the way they used to. I buy these any
-              time I see them go up for sale and keep them in storage in case I
-              need parts or need to retire my main.
+            <Tool title="Custom  Glorious Gaming Keyboard">
+              My custom keyboard was built to be extremely silent. I chose the Gateron Silent Red
+              switches as well as lubed all the keys to ensure minimal sound from typing.
+              Basically I am a loud typer so I wanted to reduce that with the keyboard.
             </Tool>
-            <Tool title="Apple Magic Trackpad">
-              Something about all the gestures makes me feel like a wizard with
-              special powers. I really like feeling like a wizard with special
-              powers.
+            <Tool title="Razer Viper Ulitimate Hyperspeed Lightweight Mouse">
+              This mouse is absurdly light and I just love how I could drag around
+              with it if I am playing a game or if I am playing bullet chess, it
+              does not feel like I am holding anything at all.
             </Tool>
-            <Tool title="Herman Miller Aeron Chair">
-              If I’m going to slouch in the worst ergonomic position imaginable
-              all day, I might as well do it in an expensive chair.
+            <Tool title="Herman Miller Sayl Chair">
+              I am in love with this chair and it frankly makes up most of the 
+              aesthetic
             </Tool>
           </ToolsSection>
           <ToolsSection title="Development tools">
-            <Tool title="Sublime Text 4">
-              I don’t care if it’s missing all of the fancy IDE features
-              everyone else relies on, Sublime Text is still the best text
-              editor ever made.
+            <Tool title="Neovim (NvChad)">
+              This is a suite of plugins for an already amazing IDE that are 
+              added onto nvim that I absolutely love and cant really go back 
+              to any other IDE since it works so well and is pretty efficient.
             </Tool>
-            <Tool title="iTerm2">
-              I’m honestly not even sure what features I get with this that
-              aren’t just part of the macOS Terminal but it’s what I use.
-            </Tool>
-            <Tool title="TablePlus">
-              Great software for working with databases. Has saved me from
-              building about a thousand admin interfaces for my various projects
-              over the years.
+            <Tool title="Arch Linux">
+              I dont want to be that guy... but I run Arch btw but I am that guy. Just started using
+              this instead of ubuntu for my WSL installation and I do enjoy using
+              pacman more than apt-get. Plus their wiki is just insane.
             </Tool>
           </ToolsSection>
           <ToolsSection title="Design">
             <Tool title="Figma">
-              We started using Figma as just a design tool but now it’s become
-              our virtual whiteboard for the entire company. Never would have
-              expected the collaboration features to be the real hook.
+              Figma has been really useful if I want to design something really quick like
+              a basic wireframe. Other than that I rarely ever use this.
             </Tool>
           </ToolsSection>
           <ToolsSection title="Productivity">
-            <Tool title="Alfred">
-              It’s not the newest kid on the block but it’s still the fastest.
-              The Sublime Text of the application launcher world.
-            </Tool>
-            <Tool title="Reflect">
-              Using a daily notes system instead of trying to keep things
-              organized by topics has been super powerful for me. And with
-              Reflect, it’s still easy for me to keep all of that stuff
-              discoverable by topic even though all of my writing happens in the
-              daily note.
-            </Tool>
-            <Tool title="SavvyCal">
-              Great tool for scheduling meetings while protecting my calendar
-              and making sure I still have lots of time for deep work during the
-              week.
-            </Tool>
-            <Tool title="Focus">
-              Simple tool for blocking distracting websites when I need to just
-              do the work and get some momentum going.
+            <Tool title="Notion">
+              I use this for practially everything in my life. From setting up
+              the weekly workouts, to to-do lists, to my recipe book, this has
+              all of the organization that I would need and no I do not consider
+              it a second brain but it is very useful.
             </Tool>
           </ToolsSection>
         </div>
