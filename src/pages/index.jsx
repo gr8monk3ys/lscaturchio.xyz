@@ -148,27 +148,6 @@ function Resume() {
         dateTime: new Date().getFullYear(),
       },
     },
-    {
-      company: 'Airbnb',
-      title: 'Product Designer',
-      logo: logoAirbnb,
-      start: '2014',
-      end: '2019',
-    },
-    {
-      company: 'Facebook',
-      title: 'iOS Software Engineer',
-      logo: logoFacebook,
-      start: '2011',
-      end: '2014',
-    },
-    {
-      company: 'Starbucks',
-      title: 'Shift Supervisor',
-      logo: logoStarbucks,
-      start: '2008',
-      end: '2011',
-    },
   ]
 
   return (
@@ -212,7 +191,7 @@ function Resume() {
         ))}
       </ol>
       <Button href="#" variant="secondary" className="group mt-6 w-full">
-        Download CV
+        Download Resume
         <ArrowDownIcon className="h-4 w-4 stroke-zinc-400 transition group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50" />
       </Button>
     </div>
@@ -251,42 +230,43 @@ export default function Home({ articles }) {
     <>
       <Head>
         <title>
-          Lorenzo Scaturchio - Software designer, founder, and amateur astronaut
+          Lorenzo Scaturchio - Data Science student, avid chess lover, and musician
         </title>
         <meta
           name="description"
-          content="I’m Spencer, a software designer and entrepreneur based in New York City. I’m the founder and CEO of Planetaria, where we develop technologies that empower regular people to explore space on their own terms."
+          content="I’m Lorenzo, a data science student based in Los Angeles CA. I’m currently a student at the University of Southern Calfornia, 
+          where I’m learning about data science and machine learning. I’m also a musician, avid chess lover, and a huge fan of the outdoors."
         />
       </Head>
       <Container className="mt-9">
         <div className="max-w-2xl">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            Software designer, founder, and amateur astronaut.
+            Data Science student, avid chess lover, and musician.
           </h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-            I’m Spencer, a software designer and entrepreneur based in New York
-            City. I’m the founder and CEO of Planetaria, where we develop
-            technologies that empower regular people to explore space on their
-            own terms.
+          I’m Lorenzo, a data science student based in Los Angeles CA. 
+          I’m currently a student at the University of Southern Calfornia, 
+          where I’m learning about data science and machine learning. 
+          I’m also a musician, avid chess lover, and a huge fan of the outdoors.
           </p>
           <div className="mt-6 flex gap-6">
-            <SocialLink
+            {/* <SocialLink
               href="https://twitter.com"
               aria-label="Follow on Twitter"
               icon={TwitterIcon}
-            />
+            /> */}
             <SocialLink
-              href="https://instagram.com"
+              href="https://www.instagram.com/lorenzo.scaturchio/"
               aria-label="Follow on Instagram"
               icon={InstagramIcon}
             />
             <SocialLink
-              href="https://github.com"
+              href="https://github.com/gr8monk3ys"
               aria-label="Follow on GitHub"
               icon={GitHubIcon}
             />
             <SocialLink
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/lorenzo-scaturchio/"
               aria-label="Follow on LinkedIn"
               icon={LinkedInIcon}
             />
