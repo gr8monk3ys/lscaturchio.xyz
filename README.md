@@ -1,4 +1,4 @@
-# gr8monk3ys.github.io
+# lscaturchio.xyz
 
 This is my personal website, built with [Next.js](https://nextjs.org/) and styled with [Tailwind CSS](https://tailwindcss.com/). It serves as a platform to showcase the personal projects I have done, as well as a blog where I write about various topics of interest.
 
