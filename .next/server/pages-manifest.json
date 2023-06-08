@@ -1,14 +1,14 @@
 {
   "/_app": "pages/_app.js",
-  "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/about": "pages/about.html",
-  "/articles/deep-learning-in-nlp": "pages/articles/deep-learning-in-nlp.html",
   "/articles/nick-land-and-a-journey-through-fanged-noumena": "pages/articles/nick-land-and-a-journey-through-fanged-noumena.html",
   "/projects": "pages/projects.html",
   "/thank-you": "pages/thank-you.html",
   "/uses": "pages/uses.html",
-  "/": "pages/index.js",
+  "/articles/deep-learning-in-nlp": "pages/articles/deep-learning-in-nlp.html",
+  "/_error": "pages/_error.js",
   "/articles": "pages/articles.js",
+  "/": "pages/index.js",
   "/404": "pages/404.html"
 }

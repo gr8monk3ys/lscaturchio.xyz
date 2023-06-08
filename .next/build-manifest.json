@@ -5,70 +5,70 @@
   "devFiles": [],
   "ampDevFiles": [],
   "lowPriorityFiles": [
-    "static/EZ-kfutK-P8gld6oZskB-/_buildManifest.js",
-    "static/EZ-kfutK-P8gld6oZskB-/_ssgManifest.js"
+    "static/12Lb-gZ4p_IHeAmot6X-6/_buildManifest.js",
+    "static/12Lb-gZ4p_IHeAmot6X-6/_ssgManifest.js"
   ],
   "rootMainFiles": [],
   "pages": {
     "/": [
-      "static/chunks/webpack-b8f8d6679aaa5f42.js",
+      "static/chunks/webpack-e066814b3d8f164c.js",
       "static/chunks/framework-7751730b10fa0f74.js",
-      "static/chunks/main-67ba2bf7a0dc9dc5.js",
-      "static/chunks/pages/index-62481e43ce8a6fd8.js"
+      "static/chunks/main-8cf9c5100e7267df.js",
+      "static/chunks/pages/index-8275a16d460f545a.js"
     ],
     "/_app": [
-      "static/chunks/webpack-b8f8d6679aaa5f42.js",
+      "static/chunks/webpack-e066814b3d8f164c.js",
       "static/chunks/framework-7751730b10fa0f74.js",
-      "static/chunks/main-67ba2bf7a0dc9dc5.js",
+      "static/chunks/main-8cf9c5100e7267df.js",
       "static/css/70873d8e5a9f2d09.css",
-      "static/chunks/pages/_app-81fb5778cd82791f.js"
+      "static/chunks/pages/_app-abbe262e8ea29900.js"
     ],
     "/_error": [
-      "static/chunks/webpack-b8f8d6679aaa5f42.js",
+      "static/chunks/webpack-e066814b3d8f164c.js",
       "static/chunks/framework-7751730b10fa0f74.js",
-      "static/chunks/main-67ba2bf7a0dc9dc5.js",
+      "static/chunks/main-8cf9c5100e7267df.js",
       "static/chunks/pages/_error-e4f561a102d9bb14.js"
     ],
     "/about": [
-      "static/chunks/webpack-b8f8d6679aaa5f42.js",
+      "static/chunks/webpack-e066814b3d8f164c.js",
       "static/chunks/framework-7751730b10fa0f74.js",
-      "static/chunks/main-67ba2bf7a0dc9dc5.js",
-      "static/chunks/pages/about-d2759e1db5243a10.js"
+      "static/chunks/main-8cf9c5100e7267df.js",
+      "static/chunks/pages/about-1993e7982ee3d168.js"
     ],
     "/articles": [
-      "static/chunks/webpack-b8f8d6679aaa5f42.js",
+      "static/chunks/webpack-e066814b3d8f164c.js",
       "static/chunks/framework-7751730b10fa0f74.js",
-      "static/chunks/main-67ba2bf7a0dc9dc5.js",
-      "static/chunks/pages/articles-a3578c42ce6e909d.js"
+      "static/chunks/main-8cf9c5100e7267df.js",
+      "static/chunks/pages/articles-4435e0ae8f3adedf.js"
     ],
     "/articles/deep-learning-in-nlp": [
-      "static/chunks/webpack-b8f8d6679aaa5f42.js",
+      "static/chunks/webpack-e066814b3d8f164c.js",
       "static/chunks/framework-7751730b10fa0f74.js",
-      "static/chunks/main-67ba2bf7a0dc9dc5.js",
+      "static/chunks/main-8cf9c5100e7267df.js",
       "static/chunks/pages/articles/deep-learning-in-nlp-3a4f5953a1b65247.js"
     ],
     "/articles/nick-land-and-a-journey-through-fanged-noumena": [
-      "static/chunks/webpack-b8f8d6679aaa5f42.js",
+      "static/chunks/webpack-e066814b3d8f164c.js",
       "static/chunks/framework-7751730b10fa0f74.js",
-      "static/chunks/main-67ba2bf7a0dc9dc5.js",
-      "static/chunks/pages/articles/nick-land-and-a-journey-through-fanged-noumena-946d482392663a3d.js"
+      "static/chunks/main-8cf9c5100e7267df.js",
+      "static/chunks/pages/articles/nick-land-and-a-journey-through-fanged-noumena-8e6f49add43d2dcd.js"
     ],
     "/projects": [
-      "static/chunks/webpack-b8f8d6679aaa5f42.js",
+      "static/chunks/webpack-e066814b3d8f164c.js",
       "static/chunks/framework-7751730b10fa0f74.js",
-      "static/chunks/main-67ba2bf7a0dc9dc5.js",
-      "static/chunks/pages/projects-dbabc4c5ab8b0f78.js"
+      "static/chunks/main-8cf9c5100e7267df.js",
+      "static/chunks/pages/projects-dbed8f15639df1b8.js"
     ],
     "/thank-you": [
-      "static/chunks/webpack-b8f8d6679aaa5f42.js",
+      "static/chunks/webpack-e066814b3d8f164c.js",
       "static/chunks/framework-7751730b10fa0f74.js",
-      "static/chunks/main-67ba2bf7a0dc9dc5.js",
+      "static/chunks/main-8cf9c5100e7267df.js",
       "static/chunks/pages/thank-you-68162818db47cb10.js"
     ],
     "/uses": [
-      "static/chunks/webpack-b8f8d6679aaa5f42.js",
+      "static/chunks/webpack-e066814b3d8f164c.js",
       "static/chunks/framework-7751730b10fa0f74.js",
-      "static/chunks/main-67ba2bf7a0dc9dc5.js",
+      "static/chunks/main-8cf9c5100e7267df.js",
       "static/chunks/pages/uses-28368e6c31ced542.js"
     ]
   },

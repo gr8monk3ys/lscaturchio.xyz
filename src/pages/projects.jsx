@@ -14,15 +14,20 @@ const projects = [
     name: 'Eyebook Reader',
     description:
       'A book site that allows you to change the pages in a pdf dependent on where the user is looking',
-    link: { href: 'https://github.com/gr8monk3ys/Eyebook-Reader', label: 'github.com/gr8monk3ys/Eyebook-Reader' },
+    link: {
+      href: 'https://github.com/gr8monk3ys/Eyebook-Reader',
+      label: 'github.com/gr8monk3ys/Eyebook-Reader',
+    },
     logo: logoPlanetaria,
   },
   {
     name: 'Children of the Andes',
     description:
       'A web application for a non-profit organization that teaches children in Peru',
-    link: { href: 'https://github.com/gr8monk3ys/Children-of-the-Andes', 
-    label: 'github.com/gr8monk3ys/Children-of-the-Andes' },
+    link: {
+      href: 'https://github.com/gr8monk3ys/Children-of-the-Andes',
+      label: 'github.com/gr8monk3ys/Children-of-the-Andes',
+    },
     logo: logoAnimaginary,
   },
   {

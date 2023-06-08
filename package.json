@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next export",
+    "predeploy": "npm run build && npm run export",
+    "deploy": "gh-pages -d out"
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
@@ -33,6 +36,7 @@
   "devDependencies": {
     "eslint": "8.19.0",
     "eslint-config-next": "12.2.5",
+    "gh-pages": "^5.0.0",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.11"
   }
