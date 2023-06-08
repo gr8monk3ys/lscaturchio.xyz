@@ -7,6 +7,8 @@ const nextConfig = {
   pageExtensions: ['jsx', 'mdx'],
   reactStrictMode: true,
   swcMinify: true,
+  assetPrefix: '/gr8monk3ys.github.io/',
+  basePath: '/gr8monk3ys.github.io',
   experimental: {
     newNextLinkBehavior: true,
     scrollRestoration: true,
