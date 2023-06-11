@@ -2,21 +2,22 @@ import os
 import json
 import time
 import openai
+import datetime
+from dotenv import find_dotenv, load_dotenv
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.utilities import WikipediaAPIWrapper
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import LLMChain, SequentialChain
 
-os.environ["OPENAI_API_KEY"] = apikey
-openai.api_key = os.getenv("OPENAI_API_KEY")
-directory = "books/"
-if not os.path.exists(directory):
-    os.makedirs(directory)
+load_dotenv(find_dotenv())
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 def create_title(prompt):
     title_template = PromptTemplate(
-        input_variables=["topic"], template="write me a book title about {topic}"
+        input_variables=["topic"], 
+        template="""You are a professional bloggger. Write me a maximum 11 word blog title with optimal SEO in mind about {topic}
+        """
     )
 
     llm = OpenAI(temperature=0.9)
@@ -32,11 +33,11 @@ def create_title(prompt):
     )
     title = title_chain.run(prompt)
     print(f"Title: {title}\n")
-    return title
+    return title.strip()
 
 def create_description(title):
     title_template = PromptTemplate(
-        input_variables=["title"], template="In one to two sentences write a description about {title}"
+        input_variables=["title"], template="You are a professional bloggger. In one to two sentences write a description with optimal SEO in mind about {title} "
     )
 
     llm = OpenAI(temperature=0.9)
@@ -50,17 +51,17 @@ def create_description(title):
         output_key="description",
         memory=title_memory,
     )
-    title = title_chain.run(prompt)
-    print(f"Title: {title}\n")
-    return title
+    description = title_chain.run(title)
+    print(f"Description: {description}\n")
+    return description.strip()
 
 def create_index(title):
     print("Initializing creation of index...")
-    index_prompt = f"""Write me a book outline on a book called '{title}' with 11 chapters. Each chapter has 4 topics, output as a 
-    json code. Please make sure to not say anything else except output the code. Assuming multiple chapters, it should look exactly 
+    index_prompt = f""" You are a professional bloggger. Write me a blog outline on a blog called '{title}' with 7 sections. Each section has 4 subtopics, output as a 
+    json code. Please make sure to not say anything else except output the code. Assuming multiple sections, it should look exactly 
     like the following in terms of structure: 
-        {{\"Title\": \"\",\"Chapters\": [{{\"Chapter 1\": \"\",\"Topics\": [\"\", \"\", \"\"]}},{{\"Chapter 2\": 
-        \"\",\"Topics\": [\"\", \"\", \"\"]}},{{\"Chapter 3\": \"\",\"Topics\": [\"\", \"\", \"\"]}}]}}"""
+        {{\"Title\": \"\",\"Sections\": [{{\"Section 1\": \"\",\"Subtopics\": [\"\", \"\", \"\", \"\"]}},{{\"Section 2\": 
+        \"\",\"Subtopics\": [\"\", \"\", \"\", \"\"]}},{{\"Section 3\": \"\",\"Subtopics\": [\"\", \"\", \"\", \"\"]}}]}}"""
 
     response = openai.Completion.create(
         model="text-davinci-003",
@@ -78,74 +79,77 @@ def create_index(title):
     return response_dict
 
 
-def create_chapter(index):
+def create_section(index):
     json_string = index["text"]
-    json_string = json_string[2:]
+    # Removed the slicing of the string
     data = json.loads(json_string)
-    chapters = data["Chapters"]
+    sections = data["Sections"]
     title = data["Title"]
 
-    article = ""
-    for chapter in chapters:
-        chapter_num, chapter_name = list(chapter.items())[0]
-        topics = chapter["Topics"]
+    blog_post = ""
+    for section in sections:
+        section_num, section_name = list(section.items())[0]
+        subtopics = section["Subtopics"]
 
-        article += f"## {chapter_name}\n\n"
-
-        for topic in topics:
-            llm = OpenAI(
-                model="text-davinci-003",
-                temperature=0.7,
-                max_tokens=3700,
-                top_p=1,
-                frequency_penalty=0,
-                presence_penalty=0,
-            )
-            topic_template = PromptTemplate(
-                input_variables=["book", "chapter", "topic"],
-                template=""" The following is a  book called '{book}' that has a chapter named '{chapter}', 
-                the section name that needs to be focused on in the chapter is called '{topic}' and must be 2000 words. 
+        blog_post += f"## {section_name}\n\n"
+        for subtopic in subtopics:
+            llm = OpenAI(temperature=0.9)
+            subtopic_template = PromptTemplate(
+                input_variables=["blog", "section", "subtopic"],
+                template=""" The following is a blog called '{blog}' that has a section named '{section}' about 350 words each, 
+                the sub-section that needs to be focused on in the section is called '{subtopic}' and must be written with optimal SEO in mind. 
                 I don't want transition words such as finally, conclusion, or overall. I don't want spaces between
                 paragraphs and the beginning of all paragraphs must be indented:""",
             )
 
-            topic_memory = ConversationBufferMemory(
-                input_key="chapter", memory_key="chat_history"
+            subtopic_memory = ConversationBufferMemory(
+                input_key="section", memory_key="chat_history"
             )
-            topic_chain = LLMChain(
+            subtopic_chain = LLMChain(
                 llm=llm,
-                prompt=topic_template,
+                prompt=subtopic_template,
                 verbose=True,
-                output_key="topic",
-                memory=topic_memory,
+                output_key="subtopic",
+                memory=subtopic_memory,
             )
-            topic_text = topic_chain.run(book=title, chapter=chapter_name, topic=topic)
+            subtopic_text = subtopic_chain.run(blog=title, section=section_name, subtopic=subtopic)
             time.sleep(2)
 
-            article += f"{topic_text}\n"
-    return article
-
+            blog_post += f"{subtopic_text}\n"
+    return blog_post
 
 if __name__ == "__main__":
+
     prompt = input("Enter the topic here: ")
+    # for topic in favorites:
+    #     prompt = topic
 
     if prompt:
+        # Removed the quote function as it's not defined in the code
         title = create_title(prompt)
         description = create_description(title)
         index = create_index(title)
-        article = create_chapter(index)
+        blog_post = create_section(index)
 
+        title = title.replace('"', '')
         file_title = title.replace(' ', '-')
+
+        # Get today's date
+        today = datetime.date.today()
+        formatted_date = today.strftime('%Y-%m-%d')
+
         with open(directory + f"{file_title}.mdx", "w") as f:
-            f.write(f"""import {{ ArticleLayout }} from '@/components/ArticleLayout'
-import Image from 'next/future/image'
+            f.write(
+                f"""import {{ ArticleLayout }} from '@/components/ArticleLayout'
+                import Image from 'next/future/image'
 
 export const meta = {{
-  author: 'AutoGenerated',
-  date: '2023-05-03',
-  title: '{title}',
-  description: '{description}',
+author: 'Lorenzo Scaturchio',
+date: '{formatted_date}',
+title: '{title}',
+description: '{description}',
 }}
 
 export default (props) => <ArticleLayout meta={{meta}} {{...props}} />\n\n""")
-            f.write(article)
+                f.write(blog_post)
+
