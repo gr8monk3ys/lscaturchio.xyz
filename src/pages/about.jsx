@@ -44,7 +44,7 @@ export default function About() {
         <title>About - Lorenzo Scaturchio</title>
         <meta
           name="description"
-          content="I’m Lorenzo Scaturchio. I live in Los Angeles California, where I try to automate my life."
+          content="Welcome to the world of Lorenzo Scaturchio, residing in the vibrant city of Los Angeles, California. Follow me on my journey as I strive to automate every aspect of my life."
         />
       </Head>
       <Container className="mt-16 sm:mt-32">
@@ -53,7 +53,7 @@ export default function About() {
             <div className="max-w-xs px-2.5 lg:max-w-none">
               <Image
                 src={portraitImage}
-                alt=""
+                alt="Lorenzo Scaturchio"
                 sizes="(min-width: 1024px) 32rem, 20rem"
                 className="aspect-square rotate-3 rounded-2xl bg-zinc-100 object-cover dark:bg-zinc-800"
               />
@@ -61,68 +61,68 @@ export default function About() {
           </div>
           <div className="lg:order-first lg:row-span-2">
             <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-              I’m Lorenzo Scaturchio. I live in Los Angeles California, where I
-              try to automate my life.
+              Welcome to My World: Lorenzo Scaturchio
             </h1>
             <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
               <p>
-                Growing up, I was always fascinated with the way things worked.
-                There was nothing that I could not set my mind to that I would
-                try to figure out. I was always taking things apart and putting
-                them back together. Failed a bunched but learned along the way.
+                Since my early days, I have been captivated by the intricacies
+                of how things functioned. Nothing was beyond my grasp as I
+                constantly delved into the world of discovery. I would
+                disassemble and reassemble objects, learning valuable lessons
+                even in the face of failure.
               </p>
               <p>
-                The only thing I loved more than computers as a kid was music.
-                At an early age I learned to play piano by ear and from there I
-                got a guitar. It has been a passion of mine ever since and some
-                day I will make an album that I will publish on here and many
-                other platforms.
+                Among my childhood passions, only second to computers, was
+                music. At a tender age, I mastered playing the piano by ear,
+                which later led me to pick up the guitar. It has remained an
+                enduring passion of mine, and I aspire to publish an album that
+                will grace various platforms, including this one.
               </p>
               <p>
-                I spent the next few summers indoors not progressing but still
-                being passionate about learning something. I always had to be
-                busy so there was always a new hobby that I would pick up, for
-                better or for worse.
+                During subsequent summers, while my progress might have been
+                stagnant, my fervor for learning something new was unwavering. I
+                always sought out new hobbies, immersing myself in a multitude
+                of pursuits, for better or worse.
               </p>
               <p>
-                Today, I’m creating projects to make my life easier, where I am
-                working with AI / ML so that the next generation can inspire to
-                innovate with the new tools provided to us.
+                Today, I am engaged in creating projects that simplify my life.
+                Working with AI/ML, I am committed to inspiring the next
+                generation to innovate using the tools now available to us.
               </p>
             </div>
           </div>
           <div className="lg:pl-20">
             <ul role="list">
               {/* <SocialLink href="#" icon={TwitterIcon}>
-                Follow on Twitter
+                Follow me on Twitter
               </SocialLink> */}
               <SocialLink
                 href="https://www.instagram.com/lorenzo.scaturchio/"
                 icon={InstagramIcon}
                 className="mt-4"
               >
-                Follow on Instagram
+                Follow me on Instagram
               </SocialLink>
               <SocialLink
                 href="https://github.com/gr8monk3ys"
                 icon={GitHubIcon}
                 className="mt-4"
               >
-                Follow on GitHub
+                Follow me on GitHub
               </SocialLink>
               <SocialLink
                 href="https://www.linkedin.com/in/lorenzo-scaturchio/"
                 icon={LinkedInIcon}
                 className="mt-4"
               >
-                Follow on LinkedIn
+                Connect with me on LinkedIn
               </SocialLink>
               <SocialLink
                 href="mailto:lorenzosca7@gmail.com"
                 icon={MailIcon}
                 className="mt-8 border-t border-zinc-100 pt-8 dark:border-zinc-700/40"
               >
-                lorenzosca7@gmail.com
+                Email: lorenzosca7@gmail.com
               </SocialLink>
             </ul>
           </div>

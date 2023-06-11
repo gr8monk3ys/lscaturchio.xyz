@@ -33,12 +33,59 @@ const projects = [
   {
     name: 'Paper Summarizer',
     description:
-      'Sumbit any link of a research paper and it is able to summarize for you.',
+      'Submit any link of a research paper and it is able to summarize for you.',
     link: {
       href: 'https://github.com/gr8monk3ys/Paper-Summarizer',
       label: 'github.com/gr8monk3ys/Paper-Summarizer',
     },
     logo: logoHelioStream,
+  },
+  {
+    name: 'lscaturchio.xyz',
+    description: 'This is the personal website of Lorenzo Scaturchio.',
+    link: {
+      href: 'https://github.com/gr8monk3ys/lscaturchio.xyz',
+      label: 'github.com/gr8monk3ys/lscaturchio.xyz',
+    },
+    logo: logoPlanetaria, // Update this with the appropriate logo
+  },
+  {
+    name: 'chessAI',
+    description: 'A bot that plays chess against you.',
+    link: {
+      href: 'https://github.com/gr8monk3ys/chessAI',
+      label: 'github.com/gr8monk3ys/chessAI',
+    },
+    logo: logoAnimaginary, // Update this with the appropriate logo
+  },
+  {
+    name: 'Find-My-Doggo',
+    description:
+      'A dog finding website application where machine learning visual image recognition is used. A user takes a photo of the dog and compares the photo to several others.',
+    link: {
+      href: 'https://github.com/gr8monk3ys/Find-My-Doggo',
+      label: 'github.com/gr8monk3ys/Find-My-Doggo',
+    },
+    logo: logoHelioStream, // Update this with the appropriate logo
+  },
+  {
+    name: 'HackMerced',
+    description:
+      "HackMerced's official hub for all Hackathon iterations and mini-events.",
+    link: {
+      href: 'https://github.com/gr8monk3ys/HackMerced',
+      label: 'github.com/gr8monk3ys/HackMerced',
+    },
+    logo: logoPlanetaria, // Update this with the appropriate logo
+  },
+  {
+    name: 'coursework',
+    description: 'All the labs and school work done by Lorenzo Scaturchio.',
+    link: {
+      href: 'https://github.com/gr8monk3ys/coursework',
+      label: 'github.com/gr8monk3ys/coursework',
+    },
+    logo: logoAnimaginary, // Update this with the appropriate logo
   },
 ]
 
