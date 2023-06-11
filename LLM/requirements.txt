@@ -7,3 +7,5 @@ chromadb
 tiktoken
 python-docx
 tqdm
+dotenbv
+datetime
