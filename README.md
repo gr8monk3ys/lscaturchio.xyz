@@ -21,7 +21,7 @@ This is my personal website, built with [Next.js](https://nextjs.org/) and style
 
 ```bash
 git clone https://github.com/yourusername/yourrepository.git
-cd gr8monk3ys.github.io
+cd lscaturchio.xyz
 npm install
 npm run dev
 ```
