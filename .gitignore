@@ -33,3 +33,6 @@ yarn-error.log*
 
 # generated files
 /public/rss/
+
+# API keys
+/LLM/.env

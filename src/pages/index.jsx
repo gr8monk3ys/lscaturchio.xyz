@@ -139,12 +139,32 @@ function Newsletter() {
 function Resume() {
   let resume = [
     {
-      company: 'Planetaria',
-      title: 'CEO',
+      company: 'Damien High School',
+      title: 'Information Technology Intern',
       logo: logoPlanetaria,
-      start: '2019',
+      start: '2018',
       end: {
-        label: 'Present',
+        label: '2018',
+        dateTime: new Date().getFullYear(),
+      },
+    },
+    {
+      company: 'Google',
+      title: 'Software Product Sprint Participant',
+      logo: logoPlanetaria,
+      start: '2020',
+      end: {
+        label: '2020',
+        dateTime: new Date().getFullYear(),
+      },
+    },
+    {
+      company: 'Damien High School',
+      title: 'Information Technology Intern',
+      logo: logoPlanetaria,
+      start: '2018',
+      end: {
+        label: '2018',
         dateTime: new Date().getFullYear(),
       },
     },
