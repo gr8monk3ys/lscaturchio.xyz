@@ -83,8 +83,9 @@ export default function Uses() {
           <ToolsSection title="Design Resources">
             <Tool title="Figma">
               Figma proves to be a handy tool whenever I need to design
-              something quickly, such as a basic wireframe. Beyond that, I do not
-              use it extensively, but I appreciate its availability when needed.
+              something quickly, such as a basic wireframe. Beyond that, I do
+              not use it extensively, but I appreciate its availability when
+              needed.
             </Tool>
           </ToolsSection>
           <ToolsSection title="Productivity Boosters">
