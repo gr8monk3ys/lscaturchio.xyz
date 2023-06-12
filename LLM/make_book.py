@@ -37,7 +37,7 @@ def create_title(prompt, doc):
         input_variables=["topic"], template="write me a book title about {topic}"
     )
 
-    llm = OpenAI(temperature=0.9)
+    llm = OpenAI(model_name="gpt-3.5-turbo", temperature=0.9)
     title_memory = ConversationBufferMemory(
         input_key="topic", memory_key="chat_history"
     )

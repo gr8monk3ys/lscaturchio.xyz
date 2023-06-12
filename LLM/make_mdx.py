@@ -20,7 +20,7 @@ def create_title(prompt):
         """
     )
 
-    llm = OpenAI(temperature=0.9)
+    llm = OpenAI(model_name="gpt-3.5-turbo", temperature=0.9)
     title_memory = ConversationBufferMemory(
         input_key="topic", memory_key="chat_history"
     )
@@ -40,7 +40,7 @@ def create_description(title):
         input_variables=["title"], template="You are a professional bloggger. In one to two sentences write a description with optimal SEO in mind about {title} "
     )
 
-    llm = OpenAI(temperature=0.9)
+    llm = OpenAI(model_name="gpt-3.5-turbo", temperature=0.9)
     title_memory = ConversationBufferMemory(
         input_key="title", memory_key="chat_history"
     )
@@ -93,7 +93,7 @@ def create_section(index):
 
         blog_post += f"## {section_name}\n\n"
         for subtopic in subtopics:
-            llm = OpenAI(temperature=0.9)
+            llm = OpenAI(model_name="gpt-3.5-turbo", temperature=0.9)
             subtopic_template = PromptTemplate(
                 input_variables=["blog", "section", "subtopic"],
                 template=""" The following is a blog called '{blog}' that has a section named '{section}' about 350 words each, 
@@ -151,5 +151,5 @@ description: '{description}',
 }}
 
 export default (props) => <ArticleLayout meta={{meta}} {{...props}} />\n\n""")
-                f.write(blog_post)
+            f.write(blog_post)
 
