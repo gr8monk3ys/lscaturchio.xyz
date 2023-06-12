@@ -159,7 +159,7 @@ function Resume() {
       },
     },
     {
-      company: 'Damien High School',
+      company: '',
       title: 'Information Technology Intern',
       logo: logoPlanetaria,
       start: '2018',
