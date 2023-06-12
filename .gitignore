@@ -36,3 +36,21 @@ yarn-error.log*
 
 # API keys
 /LLM/.env
+.next/trace
+.next/cache/next-server.js.nft.json
+.next/cache/webpack/client-development/0.pack
+.next/cache/webpack/client-development/1.pack
+.next/cache/webpack/client-development/4.pack
+.next/cache/webpack/client-development/index.pack
+.next/cache/webpack/client-development/index.pack.old
+.next/cache/webpack/client-production/0.pack
+.next/cache/webpack/client-production/index.pack
+.next/cache/webpack/server-development/0.pack
+.next/cache/webpack/server-development/1.pack
+.next/cache/webpack/server-development/3.pack
+.next/cache/webpack/server-development/5.pack
+.next/cache/webpack/server-development/index.pack
+.next/cache/webpack/server-development/index.pack.old
+.next/cache/webpack/server-production/0.pack
+.next/cache/webpack/server-production/index.pack
+.next/server/pages-manifest.json
