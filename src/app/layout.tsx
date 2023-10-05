@@ -1,0 +1,204 @@
+import "./globals.css"
+import { Footer } from "@/components/ui/footer-section";
+import { Navbar } from "@/components/ui/navbar";
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Suspense } from 'react'
+import { ThemeProvider } from '@/components/theme-provider'
+import { Metadata } from 'next'
+import Script from "next/script";
+import { ogCardUrl } from "@/lib/seo";
+import { Instrument_Sans, Fraunces, IBM_Plex_Mono } from "next/font/google";
+import { SITE_URL } from "@/lib/site-url";
+import { IDENTITY } from "@/constants/identity";
+import { DeferredLayoutExtras } from "@/components/layout/deferred-layout-extras";
+import { ConsoleGreeting } from "@/components/layout/console-greeting";
+import { MobileNavbarGate } from "@/components/layout/mobile-navbar-gate";
+import { MotionProvider } from "@/components/layout/motion-provider";
+const WEBMENTION_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, "");
+const ENABLE_VERCEL_ANALYTICS = process.env.VERCEL === "1";
+
+const displayFont = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+  variable: "--site-font-display",
+});
+
+const bodyFont = Instrument_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--site-font-body",
+});
+
+// Wall-label monospace — metadata, kickers, catalogue numbers.
+const monoFont = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+  preload: false,
+  variable: "--site-font-mono",
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: IDENTITY.titleDefault,
+    template: '%s | Lorenzo Scaturchio'
+  },
+  description: IDENTITY.tagline,
+  metadataBase: new URL(SITE_URL),
+  keywords: ['AI engineer', 'applied machine learning', 'RAG systems', 'retrieval', 'essays', 'technology criticism', 'political economy', 'web development', 'Lorenzo Scaturchio'],
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: SITE_URL,
+    siteName: 'Lorenzo Scaturchio Portfolio',
+    title: IDENTITY.titleDefault,
+    description: IDENTITY.tagline,
+    images: [
+      {
+        url: ogCardUrl({
+          title: "Lorenzo Scaturchio",
+          description: IDENTITY.role,
+          type: "default",
+        }),
+        width: 1200,
+        height: 630,
+        alt: `${IDENTITY.name} — ${IDENTITY.role}`
+      }
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: IDENTITY.titleDefault,
+    description: IDENTITY.tagline,
+    images: [ogCardUrl({ title: "Lorenzo Scaturchio", description: IDENTITY.role, type: "default" })],
+    creator: '@lscaturchio'
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    types: {
+      'application/rss+xml': '/api/rss',
+    },
+  },
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: "Lorenzo Scaturchio",
+        description:
+          "Personal site for Lorenzo Scaturchio: RAG systems, machine learning, web development, and writing.",
+        inLanguage: "en",
+      },
+      {
+        "@type": "Person",
+        "@id": `${SITE_URL}/#person`,
+        name: "Lorenzo Scaturchio",
+        url: SITE_URL,
+        image: `${SITE_URL}/images/portrait.webp`,
+        jobTitle: IDENTITY.role,
+        sameAs: [
+          "https://social.lscaturchio.xyz/@gr8monk3ys",
+          "https://github.com/gr8monk3ys",
+          "https://linkedin.com/in/lorenzo-scaturchio",
+          "https://www.instagram.com/lorenzo.scaturchio",
+          "https://letterboxd.com/gr8monk3ys/",
+          "https://www.goodreads.com/user/show/168274083-lorenzo",
+          "https://leetcode.com/u/gr8monk3ys/",
+          "https://substack.com/@gr8monk3ys",
+        ],
+      },
+    ],
+  };
+
+  return (
+    <html
+      lang="en"
+      dir="ltr"
+      suppressHydrationWarning
+      className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable}`}
+    >
+      <head>
+        {/* RSS Feed Autodiscovery */}
+        <link rel="alternate" type="application/rss+xml" title="Lorenzo Scaturchio Blog RSS" href="/api/rss" />
+        <link rel="alternate" type="application/rss+xml" title="Lorenzo Scaturchio Podcast RSS" href="/podcast/rss.xml" />
+        <link rel="alternate" type="application/rss+xml" title="Lorenzo Scaturchio Changelog RSS" href="/changelog/rss.xml" />
+
+        {/* Webmention endpoints (IndieWeb) */}
+        <link rel="webmention" href={`https://webmention.io/${WEBMENTION_DOMAIN}/webmention`} />
+        <link rel="pingback" href={`https://webmention.io/${WEBMENTION_DOMAIN}/xmlrpc`} />
+        <link rel="me" href="https://social.lscaturchio.xyz/@gr8monk3ys" />
+
+        {/* Core Meta Tags */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="theme-color" content="#2c5530" />
+
+        {/* PWA Meta Tags */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Lorenzo S." />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+        {/* Performance Hints */}
+        <link rel="preconnect" href="https://vitals.vercel-insights.com" />
+
+        {/* Global JSON-LD structured data (site-wide) */}
+        <Script id="global-structured-data" type="application/ld+json" strategy="beforeInteractive">
+          {JSON.stringify(jsonLd)}
+        </Script>
+      </head>
+      <body>
+        {/* Skip to content link for accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-hidden"
+        >
+          Skip to content
+        </a>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <MotionProvider>
+            <Suspense fallback={<div className="min-h-[64px]" />}>
+              <Navbar />
+            </Suspense>
+            <Suspense fallback={<div className="min-h-[64px] md:hidden" />}>
+              <MobileNavbarGate />
+            </Suspense>
+            <main id="main-content" className="overflow-x-clip">
+              {children}
+            </main>
+            <DeferredLayoutExtras />
+            <ConsoleGreeting />
+
+            <Suspense fallback={<div className="min-h-[200px]"></div>}>
+              <Footer />
+            </Suspense>
+
+            {ENABLE_VERCEL_ANALYTICS && <Analytics />}
+            {ENABLE_VERCEL_ANALYTICS && <SpeedInsights />}
+          </MotionProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  )
+}

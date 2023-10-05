@@ -1,0 +1,53 @@
+import { Container } from "@/components/Container";
+import { SingleProduct } from "@/components/projects/Product";
+import { products } from "@/constants/products";
+import { Product } from "@/types/products";
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { buildProjectMetadata } from "@/lib/seo";
+
+type Props = {
+  params: Promise<{ slug: string }>;
+};
+
+export function generateStaticParams(): Array<{ slug: string }> {
+  return products
+    .filter((p): p is Product & { slug: string } => typeof p.slug === 'string')
+    .map((p) => ({ slug: p.slug }))
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const product = products.find((p) => p.slug === slug) as Product | undefined;
+  if (product) {
+    return buildProjectMetadata(
+      {
+        title: product.title,
+        description: product.description,
+      },
+      `/projects/${slug}`,
+    );
+  } else {
+    return {
+      title: "Projects | Lorenzo Scaturchio",
+      description:
+        "Project case studies, experiments, and product builds across AI systems, automation, and web applications.",
+    };
+  }
+}
+
+export default async function SingleProjectPage({
+  params,
+}: Props) {
+  const { slug } = await params;
+  const product = products.find((p) => p.slug === slug);
+
+  if (!product) {
+    redirect("/projects");
+  }
+  return (
+    <Container>
+      <SingleProduct product={product} />
+    </Container>
+  );
+}
