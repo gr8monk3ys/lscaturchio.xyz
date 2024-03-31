@@ -81,7 +81,7 @@ export default function Diet() {
             <Tool title="Monday">
                 Breakfast: Breakfast tacos with scrambled tofu, black beans, avocado, and salsa.
                 Lunch: Roasted beet and citrus salad with a balsamic vinaigrette.
-                Dinner: Vegan shepherd's pie with lentils, peas, carrots, and a mashed potato topping.
+                Dinner: Vegan shepherd&apos;s pie with lentils, peas, carrots, and a mashed potato topping.
             </Tool>
             <Tool title="Tuesday">
                 Breakfast: Green smoothie with spinach, pineapple, mango, and plant-based protein powder.
