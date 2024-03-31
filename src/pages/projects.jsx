@@ -1,4 +1,4 @@
-import Image from 'next/future/image'
+import Image from 'next/image'
 import Head from 'next/head'
 
 import { Card } from '@/components/Card'
@@ -107,11 +107,11 @@ export default function Projects() {
         <title>Projects - Lorenzo Scaturchio</title>
         <meta
           name="description"
-          content="Things I’ve made to try and be lazier"
+          content="Things I’ve made to optimize my life"
         />
       </Head>
       <SimpleLayout
-        title="Things I’ve made to try and be lazier"
+        title="Things I’ve made to optimize my life"
         intro="There have been multiple projects that I have worked on throughout the years but here are the ones that I like the most, if you like them check them out and add some improvements!"
       >
         <ul
