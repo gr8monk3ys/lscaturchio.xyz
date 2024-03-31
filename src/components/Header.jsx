@@ -1,4 +1,4 @@
-import Image from 'next/future/image'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Popover, Transition } from '@headlessui/react'
@@ -126,6 +126,7 @@ function MobileNavigation(props) {
                 <MobileNavItem href="/projects">Projects</MobileNavItem>
                 {/* <MobileNavItem href="/speaking">Speaking</MobileNavItem> */}
                 <MobileNavItem href="/uses">Uses</MobileNavItem>
+                <MobileNavItem href="/diet">Diet</MobileNavItem>
               </ul>
             </nav>
           </Popover.Panel>
@@ -167,6 +168,7 @@ function DesktopNavigation(props) {
         <NavItem href="/projects">Projects</NavItem>
         {/* <NavItem href="/speaking">Speaking</NavItem> */}
         <NavItem href="/uses">Uses</NavItem>
+        <NavItem href="/diet">Diet</NavItem>
       </ul>
     </nav>
   )
