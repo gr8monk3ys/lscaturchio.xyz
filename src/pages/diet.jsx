@@ -36,7 +36,7 @@ export default function Diet() {
         />
       </Head>
       <SimpleLayout
-        title="My Current Plant-Based Diet"
+        title="My Current Plant Based Diet"
         intro="This bi-weekly plan provides a balanced and varied diet, focusing on whole grains, legumes, vegetables, fruits, nuts, and seeds to ensure a comprehensive nutrient intake. Feel free to swap meals according to personal preference or seasonal availability of ingredients."
       >
         <div className="space-y-20">
@@ -81,7 +81,7 @@ export default function Diet() {
             <Tool title="Monday">
                 Breakfast: Breakfast tacos with scrambled tofu, black beans, avocado, and salsa.
                 Lunch: Roasted beet and citrus salad with a balsamic vinaigrette.
-                Dinner: Vegan shepherd's pie with lentils, peas, carrots, and a mashed potato topping.
+                Dinner: Vegan shepherd&apos;s pie with lentils, peas, carrots, and a mashed potato topping.
             </Tool>
             <Tool title="Tuesday">
                 Breakfast: Green smoothie with spinach, pineapple, mango, and plant-based protein powder.
