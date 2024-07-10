@@ -1,0 +1,76 @@
+/**
+ * Sentry client-side configuration
+ * This file configures error tracking for the browser
+ * Renamed from sentry.client.config.ts for Turbopack compatibility
+ */
+
+import * as Sentry from "@sentry/nextjs";
+
+// Export navigation transition hook for Sentry to instrument page navigations
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+
+// Only initialize Sentry if DSN is configured
+const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
+const SENTRY_ENVIRONMENT =
+  process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT ||
+  process.env.NEXT_PUBLIC_VERCEL_ENV ||
+  process.env.VERCEL_ENV ||
+  process.env.NODE_ENV ||
+  "development";
+
+if (SENTRY_DSN) {
+  Sentry.init({
+    dsn: SENTRY_DSN,
+
+    // Performance Monitoring
+    tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
+
+    // Session Replay (captures 10% of sessions, 100% on error)
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+
+    // Debug mode in development
+    debug: process.env.NODE_ENV === "development",
+
+    // Environment tag
+    environment: SENTRY_ENVIRONMENT,
+
+    // Filter out common non-actionable errors
+    ignoreErrors: [
+      // Browser extensions
+      /^chrome-extension:\/\//,
+      /^moz-extension:\/\//,
+      // Network errors that happen during navigation
+      "Failed to fetch",
+      "Load failed",
+      "NetworkError",
+      // React hydration warnings (not actual errors)
+      "Hydration failed",
+      "Text content does not match",
+    ],
+
+    // Only send errors from our domain
+    allowUrls: [
+      /https?:\/\/(www\.)?lscaturchio\.xyz/,
+      /https?:\/\/localhost/,
+    ],
+
+    // Add user context before sending
+    beforeSend(event) {
+      // Remove PII from errors
+      if (event.user) {
+        delete event.user.ip_address;
+        delete event.user.email;
+      }
+      return event;
+    },
+
+    integrations: [
+      Sentry.replayIntegration({
+        // Mask all text to protect privacy
+        maskAllText: true,
+        blockAllMedia: true,
+      }),
+    ],
+  });
+}
