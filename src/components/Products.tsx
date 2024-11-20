@@ -33,9 +33,10 @@ export const Products = () => {
               <Image
                 src={product.thumbnail}
                 alt="thumbnail"
-                height="200"
-                width="200"
-                className="rounded-md"
+                height={200}
+                width={200}
+                className="rounded-md object-cover w-auto h-auto"
+                priority={idx < 2}
               />
               <div className="flex flex-col justify-between">
                 <div>

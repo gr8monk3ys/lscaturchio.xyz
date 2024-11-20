@@ -56,9 +56,10 @@ export function BlogLayout({
             <Image
               src={meta.image}
               alt="thumbnail"
-              height="800"
-              width="800"
-              className={`object-cover object-left-top w-full max-h-96`}
+              height={800}
+              width={800}
+              className="object-cover object-left-top w-full h-auto max-h-96"
+              priority={true}
             />
           </div>
         </header>
