@@ -86,9 +86,9 @@ export const SingleProduct = ({ product }: { product: Product }) => {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
+          strokeWidth="2"
           strokeLinecap="round"
-          stroke-linejoin="round"
+          strokeLinejoin="round"
           className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
         >
           <path d="M5 12l14 0"></path>
