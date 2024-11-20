@@ -9,7 +9,7 @@
 /coverage
 
 # next.js
-.next
+/.next/
 /out/
 
 # production
@@ -23,7 +23,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
 
 # local env files
 .env*.local
@@ -31,44 +30,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-# generated files
-/public/rss/
-
-# API keys
-/LLM/.env
-.next/trace
-.next/cache/next-server.js.nft.json
-.next/cache/webpack/client-development/0.pack
-.next/cache/webpack/client-development/1.pack
-.next/cache/webpack/client-development/4.pack
-.next/cache/webpack/client-development/index.pack
-.next/cache/webpack/client-development/index.pack.old
-.next/cache/webpack/client-production/0.pack
-.next/cache/webpack/client-production/index.pack
-.next/cache/webpack/server-development/0.pack
-.next/cache/webpack/server-development/1.pack
-.next/cache/webpack/server-development/3.pack
-.next/cache/webpack/server-development/5.pack
-.next/cache/webpack/server-development/index.pack
-.next/cache/webpack/server-development/index.pack.old
-.next/cache/webpack/server-production/0.pack
-.next/cache/webpack/server-production/index.pack
-.next/server/pages-manifest.json
-.next/trace
-.next/cache/next-server.js.nft.json
-.next/cache/webpack/client-development/0.pack
-.next/cache/webpack/client-development/1.pack
-.next/cache/webpack/client-development/4.pack
-.next/cache/webpack/client-development/index.pack
-.next/cache/webpack/client-development/index.pack.old
-.next/cache/webpack/client-production/0.pack
-.next/cache/webpack/client-production/index.pack
-.next/cache/webpack/server-development/0.pack
-.next/cache/webpack/server-development/1.pack
-.next/cache/webpack/server-development/3.pack
-.next/cache/webpack/server-development/5.pack
-.next/cache/webpack/server-development/index.pack
-.next/cache/webpack/server-development/index.pack.old
-.next/cache/webpack/server-production/0.pack
-.next/cache/webpack/server-production/index.pack
-.next/server/pages-manifest.json
+# typescript
+*.tsbuildinfo
+next-env.d.ts
