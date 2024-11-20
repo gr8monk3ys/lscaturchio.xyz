@@ -108,9 +108,9 @@ const SidebarHeader = () => {
       <Image
         src="/images/portrait.jpg"
         alt="Avatar"
-        height="40"
-        width="40"
-        className="object-cover object-top rounded-full flex-shrink-0"
+        height={40}
+        width={40}
+        className="object-cover object-top rounded-full flex-shrink-0 w-auto h-auto"
       />
       <div className="flex text-sm flex-col">
         <p className="font-bold text-primary">Lorenzo Scaturchio</p>

@@ -58,10 +58,10 @@ export const Blogs = ({ blogs }: { blogs: Blog[] }) => {
               <Image
                 src={blog.image}
                 alt="thumbnail"
-                height="200"
-                width="200"
-                objectFit="cover"
+                height={200}
+                width={200}
                 className="rounded-md object-cover h-40 w-60"
+                priority={index === 0}
               />
               <div className="flex flex-col col-span-3">
                 <Heading className="text-lg md:text-lg lg:text-lg">
@@ -73,7 +73,7 @@ export const Blogs = ({ blogs }: { blogs: Blog[] }) => {
                 <div className="flex space-x-2 flex-wrap mt-4">
                   {blog.tags?.map((tag, index) => (
                     <span
-                      key={`tag-${blog.slug}`}
+                      key={`tag-${blog.slug}-${index}`}
                       className="text-xs px-1 py-0.5 text-secondary border border-neutral-200 bg-white rounded-md"
                     >
                       {tag}
