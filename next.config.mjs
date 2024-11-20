@@ -1,19 +1,16 @@
-import nextMDX from '@next/mdx'
-import remarkGfm from 'remark-gfm'
-import rehypePrism from '@mapbox/rehype-prism'
-
 /** @type {import('next').NextConfig} */
+import nextMDX from "@next/mdx";
+import remarkGfm from "remark-gfm";
+import rehypePrism from "@mapbox/rehype-prism";
+
 const nextConfig = {
-  pageExtensions: ['jsx', 'mdx'],
-  reactStrictMode: true,
-  swcMinify: true,
-  assetPrefix: '/lscaturchio.xyz',
-  basePath: '/lscaturchio.xyz',
-  experimental: {
-    newNextLinkBehavior: true,
-    scrollRestoration: true,
+  images: {
+    domains: ["images.unsplash.com", "res.cloudinary.com"],
   },
-}
+  experimental: {
+    mdxRs: true,
+  },
+};
 
 const withMDX = nextMDX({
   extension: /\.mdx?$/,
@@ -21,6 +18,6 @@ const withMDX = nextMDX({
     remarkPlugins: [remarkGfm],
     rehypePlugins: [rehypePrism],
   },
-})
+});
 
-export default withMDX(nextConfig)
+export default withMDX(nextConfig);
