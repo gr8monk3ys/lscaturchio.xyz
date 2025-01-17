@@ -104,8 +104,8 @@ export default function Home() {
                   </motion.div>
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Button asChild size="lg" variant="outline" className="text-lg h-12">
-                      <Link href="/contact">
-                        Get in Touch
+                      <Link href="https://calendly.com/gr8monk3ys/30min">
+                          Let&apos;s Chat
                         <ArrowRight className="ml-2 h-5 w-5" />
                       </Link>
                     </Button>

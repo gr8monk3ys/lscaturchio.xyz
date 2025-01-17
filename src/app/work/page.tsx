@@ -9,7 +9,7 @@ import { DownloadButton } from "@/components/ui/download-button";
 import Image from "next/image";
 
 export const metadata = {
-  title: "Resume | Lorenzo Scaturchio",
+  title: "Work | Lorenzo Scaturchio",
   description:
     "Lorenzo Scaturchio is a developer, writer and speaker. He is a digital nomad and travels around the world while working remotely.",
 };
@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <Container size="large">
       <div className="space-y-8">
-        <Heading className="font-black">Resume</Heading>
+        <Heading className="font-black">Work</Heading>
 
         <WorkTimeline />
         <DownloadButton href="/Lorenzo_resume_DS.pdf" />

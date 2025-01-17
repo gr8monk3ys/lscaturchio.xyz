@@ -29,13 +29,13 @@ export const navlinks = [
     icon: IconArticle,
   },
   {
-    href: "/resume",
-    label: "Resume",
+    href: "/work",
+    label: "Work",
     icon: IconFileText,
   },
-  {
-    href: "/contact",
-    label: "Contact",
-    icon: IconMail,
-  },
+  // {
+  //   href: "/contact",
+  //   label: "Contact",
+  //   icon: IconMail,
+  // },
 ];
