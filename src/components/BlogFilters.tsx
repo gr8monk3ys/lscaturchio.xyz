@@ -46,7 +46,7 @@ export function BlogFilters({ allTags, onSearch, onTagsChange }: BlogFiltersProp
           placeholder="Search blogs..."
           value={searchQuery}
           onChange={(e) => handleSearch(e.target.value)}
-          className="w-full rounded-lg border border-zinc-200 bg-white py-2 pl-10 pr-4 text-sm text-zinc-900 placeholder:text-zinc-500 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 dark:border-zinc-700/40 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400 dark:focus:border-teal-400 dark:focus:ring-teal-400/20"
+          className="w-full rounded-lg border border-zinc-200 bg-white py-2.5 pl-10 pr-4 text-base text-zinc-900 placeholder:text-zinc-500 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 dark:border-zinc-700/40 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400 dark:focus:border-teal-400 dark:focus:ring-teal-400/20"
         />
       </motion.div>
 
@@ -57,7 +57,7 @@ export function BlogFilters({ allTags, onSearch, onTagsChange }: BlogFiltersProp
         transition={{ delay: 0.1 }}
         className="space-y-2"
       >
-        <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="flex items-center gap-2 text-base text-zinc-600 dark:text-zinc-400">
           <TagIcon className="h-4 w-4" />
           <span>Filter by tags</span>
         </div>
@@ -68,7 +68,7 @@ export function BlogFilters({ allTags, onSearch, onTagsChange }: BlogFiltersProp
               <button
                 key={tag}
                 onClick={() => handleTagToggle(tag)}
-                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium transition ${
+                className={`inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
                   isSelected
                     ? "bg-teal-500/10 text-teal-600 dark:bg-teal-400/10 dark:text-teal-400"
                     : "bg-zinc-100 text-zinc-800 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
