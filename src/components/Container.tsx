@@ -4,21 +4,28 @@ import { cn } from "@/lib/utils";
 interface ContainerProps {
   children: React.ReactNode;
   className?: string;
+  size?: "default" | "small" | "large";
 }
 
-export const Container = ({ children, className }: ContainerProps) => {
+export const Container = ({ children, className, size = "default" }: ContainerProps) => {
   return (
     <main 
       className={cn(
         "relative w-full mx-auto",
-        "px-4 sm:px-6 md:px-8 lg:px-12",
+        "px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24",
         "py-12 sm:py-16 md:py-20",
-        "max-w-[90rem]",
         "min-h-[calc(100vh-4rem)]",
         className
       )}
     >
-      <div className="max-w-4xl mx-auto">
+      <div 
+        className={cn(
+          "mx-auto w-full",
+          size === "small" && "max-w-4xl",
+          size === "default" && "max-w-7xl",
+          size === "large" && "max-w-[100rem]"
+        )}
+      >
         {children}
       </div>
       

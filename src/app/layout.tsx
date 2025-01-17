@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={twMerge("scroll-smooth", inter.variable)}>
+    <html lang="en" suppressHydrationWarning className={twMerge("scroll-smooth", inter.variable)}>
       <body className="min-h-screen antialiased">
         <CustomCursor />
         <MouseParticles />
