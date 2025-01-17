@@ -20,10 +20,8 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
-      {/* Hero Section with Full-Width Waves */}
-      <div className="relative w-full min-h-screen">
-        {/* Full-width waves container */}
-        <div className="absolute inset-0 w-full">
+      {/* <div className="relative w-full min-h-screen"> */}
+        {/* <div className="absolute inset-0 w-full">
           <Waves
             lineColor="rgba(163, 163, 128, 0.2)"
             backgroundColor="transparent"
@@ -37,7 +35,7 @@ export default function Home() {
             xGap={12}
             yGap={36}
           />
-        </div>
+        </div> */}
 
         {/* Content container */}
         <div className="relative z-10">
@@ -142,7 +140,7 @@ export default function Home() {
             </section>
           </Container>
         </div>
-      </div>
+      {/* </div> */}
 
       {/* Rest of your content */}
       <Container size="large">
