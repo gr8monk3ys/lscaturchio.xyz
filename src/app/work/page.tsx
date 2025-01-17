@@ -1,12 +1,7 @@
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
-import { Highlight } from "@/components/Highlight";
-import { Paragraph } from "@/components/Paragraph";
-import { Products } from "@/components/Products";
-import { WorkHistory } from "@/components/WorkHistory";
 import { WorkTimeline } from "@/components/ui/work-timeline";
 import { DownloadButton } from "@/components/ui/download-button";
-import Image from "next/image";
 
 export const metadata = {
   title: "Work | Lorenzo Scaturchio",
