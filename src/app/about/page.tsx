@@ -1,5 +1,4 @@
 import { Container } from "@/components/Container";
-import { Heading } from "@/components/Heading";
 import About from "@/components/About";
 import { Metadata } from "next";
 
