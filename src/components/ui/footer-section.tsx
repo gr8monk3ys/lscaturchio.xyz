@@ -14,7 +14,7 @@ import {
 import { Moon, Send, Sun } from "lucide-react"
 import { socials } from "@/constants/socials"
 
-function Footerdemo() {
+function Footer() {
   const [isDarkMode, setIsDarkMode] = React.useState(false)
 
   React.useEffect(() => {
@@ -135,4 +135,4 @@ function Footerdemo() {
   )
 }
 
-export { Footerdemo }
+export { Footer }
