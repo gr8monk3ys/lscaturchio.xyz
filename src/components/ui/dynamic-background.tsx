@@ -1,37 +1,62 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 
-export const DynamicBackground = () => {
-  const { scrollYProgress } = useScroll();
-  const backgroundColor = useTransform(
-    scrollYProgress,
-    [0, 0.5, 1],
-    [
-      "radial-gradient(circle at top left, hsl(142 76% 97%), transparent), linear-gradient(135deg, hsl(142 50% 96%), hsl(142 30% 99%))",
-      "radial-gradient(circle at center, hsl(142 76% 96%), transparent), linear-gradient(180deg, hsl(142 50% 97%), hsl(142 30% 98%))",
-      "radial-gradient(circle at bottom right, hsl(142 76% 97%), transparent), linear-gradient(225deg, hsl(142 50% 96%), hsl(142 30% 99%))",
-    ]
-  );
-
-  const meshGradient = useTransform(
-    scrollYProgress,
-    [0, 0.5, 1],
-    [
-      "url(\"data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
-      "url(\"data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
-      "url(\"data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")",
-    ]
-  );
-
+export function DynamicBackground() {
   return (
-    <motion.div
-      className="fixed inset-0 -z-50 transition-all duration-1000 ease-out"
-      style={{ 
-        background: backgroundColor,
-        backgroundBlendMode: "overlay",
-        backgroundImage: meshGradient
-      }}
-    />
+    <div className="fixed inset-0 -z-10 h-full w-full overflow-hidden">
+      <div className="relative h-full w-full bg-white dark:bg-zinc-900">
+        {/* Primary gradient orb - Blue/Purple */}
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.4, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute -left-1/4 -top-1/4 h-[800px] w-[800px] rounded-full bg-gradient-to-br from-blue-500/30 via-indigo-400/30 to-purple-500/30 blur-[120px]"
+        />
+
+        {/* Secondary gradient orb - Cyan/Blue */}
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.25, 0.35, 0.25],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+          className="absolute -bottom-1/4 -right-1/4 h-[600px] w-[600px] rounded-full bg-gradient-to-br from-cyan-400/30 via-sky-400/30 to-blue-500/30 blur-[120px]"
+        />
+
+        {/* Accent gradient orb - Purple/Pink */}
+        <motion.div
+          animate={{
+            scale: [1, 1.15, 1],
+            opacity: [0.2, 0.3, 0.2],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+          className="absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-violet-400/30 via-purple-400/30 to-fuchsia-500/30 blur-[120px]"
+        />
+
+        {/* Noise texture overlay */}
+        <div className="absolute inset-0 bg-noise opacity-[0.15] mix-blend-soft-light" />
+
+        {/* Gradient overlay for better content contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background" />
+      </div>
+    </div>
   );
-};
+}
