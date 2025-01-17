@@ -3,7 +3,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { twMerge } from "tailwind-merge";
 import { Footer } from "@/components/ui/footer-section";
+
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react"
+
 import { Navbar } from "@/components/ui/navbar";
 import { CustomCursor } from "@/components/ui/custom-cursor";
 import { DynamicBackground } from "@/components/ui/dynamic-background";
@@ -37,6 +40,7 @@ export default function RootLayout({
             <main className="relative">
               {children}
               <SpeedInsights />
+              <Analytics />
             </main>
             <Footer />
           </div>
