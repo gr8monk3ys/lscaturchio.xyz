@@ -68,7 +68,7 @@ export function BlogLayout({
             >
               <Heading className="max-w-3xl">{meta.title}</Heading>
               
-              <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
+              <div className="flex flex-wrap items-center gap-4 text-base text-zinc-600 dark:text-zinc-400">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
                   <time dateTime={meta.date}>{formatDate(meta.date)}</time>
@@ -84,7 +84,7 @@ export function BlogLayout({
                       {meta.tags.map((tag: string) => (
                         <span
                           key={tag}
-                          className="rounded-full bg-zinc-100 px-3 py-1 text-xs dark:bg-zinc-800"
+                          className="rounded-full bg-zinc-100 px-3.5 py-1.5 text-sm font-medium dark:bg-zinc-800"
                         >
                           {tag}
                         </span>
@@ -130,7 +130,7 @@ export function BlogLayout({
                       text: meta.description,
                       url: window.location.href
                     })}
-                    className="flex items-center justify-center gap-2 rounded-lg border border-zinc-100 px-3 py-1 text-sm text-zinc-600 transition hover:bg-zinc-50 dark:border-zinc-700/40 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                    className="flex items-center justify-center gap-2 rounded-lg border border-zinc-100 px-4 py-2 text-base text-zinc-600 transition hover:bg-zinc-50 dark:border-zinc-700/40 dark:text-zinc-400 dark:hover:bg-zinc-800"
                   >
                     Share this article
                   </button>
@@ -138,7 +138,7 @@ export function BlogLayout({
                     onClick={() => {
                       navigator.clipboard.writeText(window.location.href);
                     }}
-                    className="flex items-center justify-center gap-2 rounded-lg border border-zinc-100 px-3 py-1 text-sm text-zinc-600 transition hover:bg-zinc-50 dark:border-zinc-700/40 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                    className="flex items-center justify-center gap-2 rounded-lg border border-zinc-100 px-4 py-2 text-base text-zinc-600 transition hover:bg-zinc-50 dark:border-zinc-700/40 dark:text-zinc-400 dark:hover:bg-zinc-800"
                   >
                     Copy link
                   </button>

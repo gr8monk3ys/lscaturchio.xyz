@@ -84,7 +84,7 @@ export function Blogs({ blogs }: { blogs: any[] }) {
 
               <div className="flex flex-1 flex-col justify-between p-6">
                 <div className="flex-1">
-                  <div className="flex items-center gap-4 text-xs text-zinc-600 dark:text-zinc-400">
+                  <div className="flex items-center gap-4 text-base text-zinc-600 dark:text-zinc-400">
                     <div className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       <time dateTime={blog.date}>{formatDate(blog.date)}</time>
@@ -99,7 +99,7 @@ export function Blogs({ blogs }: { blogs: any[] }) {
                     <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
                       {blog.title}
                     </h3>
-                    <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                    <p className="mt-3 text-base text-zinc-600 dark:text-zinc-400 line-clamp-2">
                       {blog.description}
                     </p>
                   </div>
@@ -109,7 +109,7 @@ export function Blogs({ blogs }: { blogs: any[] }) {
                       {blog.tags.map((tag: string) => (
                         <span
                           key={tag}
-                          className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100"
+                          className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-base font-medium text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100"
                         >
                           {tag}
                         </span>
@@ -118,7 +118,7 @@ export function Blogs({ blogs }: { blogs: any[] }) {
                   )}
                 </div>
 
-                <div className="mt-6 flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                <div className="mt-6 flex items-center gap-2 text-base font-medium text-zinc-900 dark:text-zinc-100">
                   Read article
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </div>

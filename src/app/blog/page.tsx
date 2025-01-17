@@ -18,7 +18,7 @@ export default async function Blog() {
   const data = blogs.map(({ component, ...meta }) => meta);
 
   return (
-    <Container>
+    <Container size="large">
       <Heading className="font-black pb-4">Blogs</Heading>
       <Blogs blogs={data} />
     </Container>
