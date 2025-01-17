@@ -11,7 +11,7 @@ import findMyDoggo from "../../public/images/logos/find-my-doggo.webp";
 import tradingBot from "../../public/images/logos/trading-bot.webp";
 import eyebookReader from "../../public/images/logos/eyebook-reader.webp";
 import linkFlame from "../../public/images/logos/linkflame.webp";
-import TAlker from "../../public/images/logos/TAlker.webp";
+import TAlker from "../../public/images/logos/talker.webp";
 
 export const products = [
   {
