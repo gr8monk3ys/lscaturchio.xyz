@@ -12,6 +12,7 @@ import tradingBot from "../../public/images/logos/trading-bot.webp";
 import eyebookReader from "../../public/images/logos/eyebook-reader.webp";
 import linkFlame from "../../public/images/logos/linkflame.webp";
 import TAlker from "../../public/images/logos/talker.webp";
+import blogAI from "../../public/images/logos/blog-ai.webp";
 
 export const products = [
   {
@@ -124,8 +125,8 @@ export const products = [
     title: "Blog-AI",
     description:
       "A powerful AI content generation tool that leverages GPT-4 and LangChain to automatically create SEO-optimized blog posts and structured books. Generate professional-quality content with clean output in MDX format for blogs and DOCX for books, perfect for content creators and writers looking to streamline their workflow.",
-    thumbnail: sidefolioAlgochurn,
-    images: [sidefolioAlgochurn, sidefolioAlgochurn2],
+    thumbnail: blogAI,
+    images: [blogAI],
     stack: ["Python", "OpenAI GPT-4", "Langchain"],
     slug: "blog-ai",
     content: (
