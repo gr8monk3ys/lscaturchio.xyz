@@ -1,7 +1,6 @@
 "use client";
 
 import { Container } from "@/components/Container";
-import { Waves } from "@/components/ui/waves-background";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Code, Music, Mountain } from "lucide-react";
 import Link from "next/link";
@@ -11,7 +10,6 @@ import { RecentBlogs } from "@/components/ui/recent-blogs";
 import { SkillsShowcase } from "@/components/ui/skills-showcase";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ContactCTA } from "@/components/ui/contact-cta";
-import { Testimonials } from "@/components/ui/testimonials";
 
 export default function Home() {
   const { scrollY } = useScroll();
@@ -20,24 +18,6 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
-      {/* <div className="relative w-full min-h-screen"> */}
-        {/* <div className="absolute inset-0 w-full">
-          <Waves
-            lineColor="rgba(163, 163, 128, 0.2)"
-            backgroundColor="transparent"
-            waveSpeedX={0.02}
-            waveSpeedY={0.01}
-            waveAmpX={40}
-            waveAmpY={20}
-            friction={0.9}
-            tension={0.01}
-            maxCursorMove={120}
-            xGap={12}
-            yGap={36}
-          />
-        </div> */}
-
-        {/* Content container */}
         <div className="relative z-10">
           <Container>
             <section className="min-h-[calc(100vh-4rem)] w-full px-4 md:px-6 py-12 flex items-center justify-center">
@@ -140,9 +120,6 @@ export default function Home() {
             </section>
           </Container>
         </div>
-      {/* </div> */}
-
-      {/* Rest of your content */}
       <Container size="large">
         <Feature />
         <SkillsShowcase />

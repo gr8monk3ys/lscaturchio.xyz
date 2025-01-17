@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { SectionHeading } from "./ui/section-heading";
-import { TechStack } from "./ui/tech-stack";
 import { Interests } from "./ui/interests";
 
 export default function About() {
