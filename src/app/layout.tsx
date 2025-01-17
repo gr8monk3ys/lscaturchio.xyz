@@ -1,20 +1,23 @@
-import { Sidebar } from "@/components/Sidebar";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { twMerge } from "tailwind-merge";
-import { Footerdemo } from "@/components/ui/footer-section";
+import { Footer } from "@/components/ui/footer-section";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Navbar } from "@/components/ui/navbar";
+import { CustomCursor } from "@/components/ui/custom-cursor";
+import { DynamicBackground } from "@/components/ui/dynamic-background";
+import { MouseParticles } from "@/components/ui/mouse-particles";
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "Lorenzo Scaturchio - Developer",
-  description:
-    "Lorenzo Scaturchio is a developer, writer and speaker. He is a digital nomad and travels around the world while working remotely.",
+  title: "Lorenzo Scaturchio",
+  description: "Data Scientist, Musician, and Outdoor Enthusiast",
 };
 
 export default function RootLayout({
@@ -23,20 +26,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body
-        className={twMerge(
-          inter.className,
-          "flex antialiased h-screen overflow-hidden bg-gray-100"
-        )}
-      >
-        <Sidebar />
-        <div className="lg:pl-2 lg:pt-2 bg-gray-100 flex-1 overflow-y-auto">
-          <div className="flex-1 bg-white min-h-screen lg:rounded-tl-xl border border-transparent lg:border-neutral-200 overflow-y-auto">
-            {children}
-            <Footerdemo />
+    <html lang="en" className={twMerge("scroll-smooth", inter.variable)}>
+      <body className="min-h-screen antialiased">
+        <CustomCursor />
+        <MouseParticles />
+        <DynamicBackground />
+        <Navbar />
+        <div className="flex-1 relative">
+          <div className="container mx-auto px-4 py-6 md:px-6 lg:px-8">
+            <main className="relative">
+              {children}
+            </main>
+            <Footer />
           </div>
         </div>
+        <SpeedInsights />
       </body>
     </html>
   );
