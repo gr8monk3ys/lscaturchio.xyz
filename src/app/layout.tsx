@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={twMerge("scroll-smooth", inter.variable)}>
       <body className="min-h-screen antialiased">
         <CustomCursor />
-        <MouseParticles />
+        {/* <MouseParticles /> */}
         {/* <DynamicBackground /> */}
         <Navbar />
         <div className="flex-1 relative">

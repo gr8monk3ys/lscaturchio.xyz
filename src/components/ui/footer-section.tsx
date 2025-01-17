@@ -15,7 +15,7 @@ import { Moon, Send, Sun } from "lucide-react"
 import { socials } from "@/constants/socials"
 
 function Footer() {
-  const [isDarkMode, setIsDarkMode] = React.useState(false)
+  const [isDarkMode, setIsDarkMode] = React.useState(true)
 
   React.useEffect(() => {
     if (isDarkMode) {
@@ -66,8 +66,8 @@ function Footer() {
               <a href="/projects" className="block transition-colors hover:text-primary">
                 Projects
               </a>
-              <a href="/resume" className="block transition-colors hover:text-primary">
-                Resume
+              <a href="/work" className="block transition-colors hover:text-primary">
+                Work
               </a>
             </nav>
           </div>
@@ -122,10 +122,10 @@ function Footer() {
             {new Date().getFullYear()} Lorenzo Scaturchio. All rights reserved.
           </p>
           <nav className="flex gap-4 text-sm">
-            <a href="/privacy" className="transition-colors hover:text-primary">
+            <a href="/privacy-policy" className="transition-colors hover:text-primary">
               Privacy Policy
             </a>
-            <a href="/terms" className="transition-colors hover:text-primary">
+            <a href="/terms-of-service" className="transition-colors hover:text-primary">
               Terms of Service
             </a>
           </nav>

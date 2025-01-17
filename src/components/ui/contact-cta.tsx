@@ -27,9 +27,9 @@ export function ContactCTA() {
           <div className="flex flex-wrap justify-center gap-4">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button asChild size="lg" className="text-lg h-12">
-                <Link href="mailto:your.email@example.com">
+                <Link href="https://calendly.com/gr8monk3ys/30min">
                   <Mail className="mr-2 h-5 w-5" />
-                  Get in Touch
+                  Let&apos;s Chat
                 </Link>
               </Button>
             </motion.div>
