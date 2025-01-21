@@ -1,5 +1,3 @@
-"use client";
-
 import { FaqSection } from "@/components/ui/faq-section";
 import { Container } from "@/components/Container";
 import { Metadata } from "next";
