@@ -17,7 +17,7 @@ interface ContactInfo {
   title: string;
   description: string;
   buttonText: string;
-  onContact: () => void;
+  contactUrl: string;
 }
 
 interface FaqSectionProps {
@@ -55,8 +55,10 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
             <p className="text-center text-sm leading-7 text-muted-foreground">
               {contactInfo.description}
             </p>
-            <Button onClick={contactInfo.onContact}>
-              {contactInfo.buttonText}
+            <Button asChild>
+              <a href={contactInfo.contactUrl} target="_blank" rel="noopener noreferrer">
+                {contactInfo.buttonText}
+              </a>
             </Button>
           </div>
         </div>
