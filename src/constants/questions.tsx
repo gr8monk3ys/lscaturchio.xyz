@@ -5,23 +5,31 @@ interface FaqItem {
 
 export const questions: FaqItem[] = [
   {
-    question: "What services do you offer?",
-    answer: "I specialize in data science, machine learning, and full-stack development. This includes data analysis, model development, API design, and web application development.",
+    question: "What is your approach to problem-solving in software development?",
+    answer: "I follow a systematic approach that begins with thoroughly understanding the problem, breaking it down into manageable components, and designing scalable solutions. I emphasize clean code practices, test-driven development, and continuous integration to ensure high-quality deliverables.",
   },
   {
-    question: "How do you handle project collaboration?",
-    answer: "I use modern collaboration tools and maintain clear communication throughout the project. We'll have regular check-ins, and I provide detailed documentation of all work completed.",
+    question: "How do you stay current with rapidly evolving technologies?",
+    answer: "I maintain an active learning routine through a combination of hands-on projects, following industry leaders, participating in tech communities, and contributing to open-source projects. I regularly experiment with new technologies while ensuring a strong foundation in fundamental principles.",
   },
   {
-    question: "What is your typical project timeline?",
-    answer: "Project timelines vary based on scope and complexity. I'll provide a detailed timeline estimate after our initial consultation and breakdown of requirements.",
+    question: "What's your experience with machine learning and AI?",
+    answer: "I have extensive experience in both traditional machine learning and modern AI techniques. This includes developing predictive models, implementing natural language processing solutions, and working with large language models. I focus on creating practical, production-ready AI solutions that solve real business problems.",
   },
   {
-    question: "Do you offer ongoing support?",
-    answer: "Yes, I offer ongoing support and maintenance for all projects. We can discuss specific support requirements and set up a maintenance plan that works for your needs.",
+    question: "How do you approach project management and client communication?",
+    answer: "I believe in transparent, proactive communication and agile methodologies. I provide regular updates, maintain detailed documentation, and ensure all stakeholders are aligned throughout the project lifecycle. I use project management tools to track progress and maintain clear timelines.",
   },
   {
-    question: "What technologies do you work with?",
-    answer: "I work with a wide range of technologies including Python, TypeScript, React, Next.js, and various ML frameworks. I'm always learning and adapting to new technologies as needed.",
+    question: "What makes your development approach unique?",
+    answer: "I combine technical expertise with a strong focus on business value. Every solution I develop considers scalability, maintainability, and user experience. I also emphasize knowledge transfer and documentation, ensuring clients understand and can maintain the solutions I deliver.",
   },
+  {
+    question: "How do you handle security in your projects?",
+    answer: "Security is a top priority in all my projects. I follow security best practices including secure coding standards, regular security audits, and implementing proper authentication and authorization mechanisms. I stay updated with the latest security threats and mitigation strategies.",
+  },
+  {
+    question: "What's your experience with cloud platforms?",
+    answer: "I have extensive experience with major cloud platforms including AWS, Azure, and Google Cloud. I can architect cloud-native solutions, implement serverless architectures, and optimize cloud resources for cost and performance.",
+  }
 ];
