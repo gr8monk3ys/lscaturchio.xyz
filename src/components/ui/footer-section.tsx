@@ -69,6 +69,9 @@ function Footer() {
               <a href="/work" className="block transition-colors hover:text-primary">
                 Work
               </a>
+              <a href="/faq" className="block transition-colors hover:text-primary">
+                FAQ
+              </a>
             </nav>
           </div>
           <div>
