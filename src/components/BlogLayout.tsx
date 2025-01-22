@@ -11,6 +11,8 @@ import { Heading } from "./Heading";
 import { Paragraph } from "./Paragraph";
 import { Prose } from "@/components/Prose";
 import { ArrowLeft, Share2, Clock, Calendar, Tag } from "lucide-react";
+import { Button } from "./ui/button";
+import { CommentSection } from "./ui/comment-section";
 
 export function BlogLayout({
   children,
@@ -34,12 +36,21 @@ export function BlogLayout({
         transition={{ duration: 0.5 }}
         className="relative mx-auto max-w-6xl"
       >
-        <Link
-          href="/blog"
-          className="group absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition hover:ring-zinc-900/15 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:hover:border-zinc-700"
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          className="mb-8"
         >
-          <ArrowLeft className="h-4 w-4 stroke-zinc-500 transition group-hover:stroke-zinc-700 dark:stroke-zinc-400 dark:group-hover:stroke-zinc-300" />
-        </Link>
+          <Button
+            variant="outline"
+            className="group flex items-center gap-2"
+            onClick={() => router.push('/blog')}
+          >
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+            Back to Blog
+          </Button>
+        </motion.div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,_1fr)_300px]">
           <div className="flex flex-col space-y-8">
@@ -101,13 +112,15 @@ export function BlogLayout({
               )}
             </motion.div>
 
+            <Prose>{children}</Prose>
+            
+            {/* Comment Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="prose dark:prose-invert max-w-2xl"
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              {children}
+              <CommentSection postId={meta.title} />
             </motion.div>
           </div>
 
