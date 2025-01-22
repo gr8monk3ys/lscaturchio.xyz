@@ -72,6 +72,15 @@ function Footer() {
               <a href="/faq" className="block transition-colors hover:text-primary">
                 FAQ
               </a>
+              <button
+                onClick={() => {
+                  const event = new CustomEvent('openChat');
+                  window.dispatchEvent(event);
+                }}
+                className="block transition-colors hover:text-primary cursor-pointer"
+              >
+                Chat with AI
+              </button>
             </nav>
           </div>
           <div>
