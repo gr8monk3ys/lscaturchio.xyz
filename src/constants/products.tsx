@@ -1,11 +1,4 @@
-import sidefolioAceternity from "../../public/images/sidefolio-aceternity.png";
-import sidefolioAceternity2 from "../../public/images/sidefolio-aceternity-2.png";
-import sidefolioAlgochurn from "../../public/images/sidefolio-algochurn.png";
-import sidefolioAlgochurn2 from "../../public/images/sidefolio-algochurn.png";
-import sidefolioMoonbeam from "../../public/images/sidefolio-moonbeam.png";
-import sidefolioMoonbeam2 from "../../public/images/sidefolio-moonbeam-2.png";
-import sidefolioTailwindMasterKit from "../../public/images/sidefolio-tailwindmasterkit.png";
-import sidefolioTailwindMasterKit2 from "../../public/images/sidefolio-tailwindmasterkit-2.png";
+
 import leetcodeSolver from "../../public/images/logos/leetcode-solver.webp";
 import findMyDoggo from "../../public/images/logos/find-my-doggo.webp";
 import tradingBot from "../../public/images/logos/trading-bot.webp";
@@ -182,8 +175,8 @@ export const products = [
     title: "Paper Summarizer",
     description:
       "A tool for summarizing academic papers using advanced NLP techniques.",
-    thumbnail: sidefolioTailwindMasterKit,
-    images: [sidefolioTailwindMasterKit, sidefolioTailwindMasterKit2],
+    thumbnail: linkFlame,
+    images: [linkFlame],
     stack: ["Python", "NLP", "Transformers"],
     slug: "paper-summarizer",
     content: (
