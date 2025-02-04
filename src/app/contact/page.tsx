@@ -1,7 +1,6 @@
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
-import { ContactCTA } from "@/components/ui/contact-cta";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -17,7 +16,6 @@ export default function Contact() {
       <Paragraph className="mb-10 max-w-xl">
         I&apos;m always open to discussing new projects, creative ideas, or opportunities to be part of your visions.
       </Paragraph>
-      <ContactCTA />
     </Container>
   );
 }
