@@ -2,58 +2,102 @@ import { Container } from "@/components/Container";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Lorenzo Scaturchio",
-  description: "Privacy policy and data handling practices for Lorenzo Scaturchio's services.",
+  title: "Privacy Policy & Transparency | Lorenzo Scaturchio",
+  description: "Transparency about data handling, analytics, and business practices for Lorenzo Scaturchio's services.",
 };
 
 export default function PrivacyPolicyPage() {
   return (
     <Container>
       <div className="prose prose-neutral dark:prose-invert max-w-none">
-        <h1>Privacy Policy</h1>
+        <h1>Privacy Policy & Transparency</h1>
         <p className="lead">
-          Last updated: January 17, 2025
+          Last updated: February 4, 2025
         </p>
         
-        <h2>Introduction</h2>
+        <h2>Transparency Statement</h2>
         <p>
-          This privacy policy outlines how I collect, use, and protect your personal information when you use my services.
+          I believe in being transparent about how I operate and handle data. This page outlines my practices
+          and gives you insight into how I maintain sustainability while providing value to the community.
+        </p>
+
+        <h2>Analytics & Tracking</h2>
+        <p>
+          I use Vercel Analytics and Speed Insights to understand website performance and user experience.
+          These tools are privacy-focused and do not collect personally identifiable information. The analytics
+          help me improve the website&apos;s performance and content quality.
         </p>
 
         <h2>Information Collection</h2>
         <p>
-          I collect information that you voluntarily provide when you:
+          I collect minimal information, only what&apos;s necessary to provide my services:
         </p>
         <ul>
-          <li>Contact me through the website</li>
-          <li>Schedule a consultation</li>
-          <li>Sign up for my services</li>
+          <li>Contact form submissions (name, email, message)</li>
+          <li>Consultation bookings through Calendly</li>
+          <li>Project-related communications</li>
         </ul>
 
-        <h2>Use of Information</h2>
+        <h2>Data Storage & Security</h2>
         <p>
-          The information collected is used to:
+          All data is stored securely using modern encryption standards. I use:
         </p>
         <ul>
-          <li>Provide and improve my services</li>
-          <li>Communicate with you about your projects</li>
-          <li>Send relevant updates and information</li>
+          <li>Vercel for website hosting and deployment</li>
+          <li>Secure email servers for communications</li>
+          <li>Industry-standard security practices for all stored data</li>
         </ul>
-
-        <h2>Data Protection</h2>
-        <p>
-          I implement appropriate security measures to protect your personal information and ensure it is not accessed, disclosed, altered, or destroyed without authorization.
-        </p>
 
         <h2>Third-Party Services</h2>
         <p>
-          I may use third-party services that collect, monitor, and analyze data to improve my services. These services have their own privacy policies regarding how they handle user data.
+          I use several third-party services to enhance functionality:
         </p>
+        <ul>
+          <li>Vercel - Website hosting and analytics</li>
+          <li>Calendly - Consultation scheduling</li>
+          <li>GitHub - Code repository and version control</li>
+        </ul>
+        <p>
+          Each service has its own privacy policy, and I encourage you to review them.
+        </p>
+
+        <h2>Open Source</h2>
+        <p>
+          This website is open source, and you can verify how your data is handled by reviewing the code on
+          my GitHub repository. I believe in transparency through code.
+        </p>
+
+        <h2>Sustainability Practices</h2>
+        <p>
+          I strive to make my digital services environmentally conscious by:
+        </p>
+        <ul>
+          <li>Optimizing website performance to reduce server load</li>
+          <li>Using efficient code practices</li>
+          <li>Choosing eco-friendly hosting providers</li>
+        </ul>
+
+        <h2>Your Rights</h2>
+        <p>
+          You have the right to:
+        </p>
+        <ul>
+          <li>Request access to your personal data</li>
+          <li>Request correction or deletion of your data</li>
+          <li>Opt-out of communications</li>
+          <li>Know how your data is being used</li>
+        </ul>
 
         <h2>Contact Information</h2>
         <p>
-          If you have any questions about this privacy policy, please contact me at{" "}
-          <a href="mailto:contact@lscaturchio.xyz">contact@lscaturchio.xyz</a>.
+          For any questions about this privacy policy or data handling practices, please contact me at{" "}
+          <a href="mailto:lorenzosca7@gmail.com">lorenzosca7@gmail.com</a>.
+        </p>
+
+        <h2>Updates to This Policy</h2>
+        <p>
+          This privacy policy may be updated periodically to reflect changes in practices or regulations.
+          Significant changes will be communicated through the website or email if necessary.
         </p>
       </div>
     </Container>

@@ -1,5 +1,5 @@
 import { Container } from "@/components/Container";
-import { SingleProduct } from "@/components/Product";
+import { SingleProduct } from "@/components/projects/Product";
 import { products } from "@/constants/products";
 import { Product } from "@/types/products";
 import { Metadata } from "next";

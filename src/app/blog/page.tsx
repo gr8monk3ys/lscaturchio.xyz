@@ -1,7 +1,7 @@
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { getAllBlogs } from "../../../lib/getAllBlogs";
-import { Blogs } from "@/components/Blogs";
+import { Blogs } from "@/components/blog/Blogs";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
