@@ -1,5 +1,7 @@
 import { Container } from "@/components/Container";
-import About from "@/components/About";
+import { AboutHero } from "@/components/about/Hero";
+import { AboutJourney } from "@/components/about/Journey";
+import { Interests } from "@/components/about/Interests";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,7 +14,9 @@ export default function AboutPage() {
   return (
     <Container size="large">
       <div className="space-y-8">
-        <About />
+        <AboutHero />
+        <AboutJourney />
+        <Interests />
       </div>
     </Container>
   );

@@ -1,43 +1,46 @@
-import "./globals.css";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { twMerge } from "tailwind-merge";
+import { Inter } from "next/font/google"
+import "./globals.css"
+import defaultMetadata from './metadata'
 import { Footer } from "@/components/ui/footer-section";
 import { Navbar } from "@/components/ui/navbar";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import { ContactCTA } from "@/components/ui/contact-cta"
 
-const inter = Inter({
+const inter = Inter({ 
   subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
+  display: 'swap',
+  preload: true,
+})
 
-export const metadata: Metadata = {
-  title: "Lorenzo Scaturchio",
-  description: "Data Scientist, Musician, and Outdoor Enthusiast",
-};
+export const metadata = defaultMetadata
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={twMerge("scroll-smooth", inter.variable)}>
-      <body className="min-h-screen bg-background font-sans antialiased">
-        <div className="relative flex min-h-screen flex-col">
-          <Navbar />
-          <main className="flex-1">
-            <div className="container mx-auto px-4 py-6 md:px-6 lg:px-8">
-              {children}
-              <SpeedInsights />
-              <Analytics />
-            </div>
-          </main>
-          <Footer />
-        </div>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link
+          rel="preload"
+          href="/fonts/inter-var.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+      </head>
+      <body className={inter.className}>
+        <Navbar />
+        {children}
+        <ContactCTA />
+        <Footer />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
-  );
+  )
 }
