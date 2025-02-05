@@ -22,7 +22,7 @@ export const Products = () => {
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: "-100px" }}
-      className="grid grid-cols-1 gap-8"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4"
     >
       {products.map((product: Product) => (
         <ExpandableCard key={product.href} product={product} />

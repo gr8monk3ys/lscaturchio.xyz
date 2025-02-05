@@ -94,6 +94,7 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
       <Button
         variant={isHighlighted ? "secondary" : "default"}
         className="w-full"
+        onClick={() => window.open("https://calendly.com/gr8monk3ys/30min", "_blank")}
       >
         {tier.cta}
         <ArrowRight className="ml-2 h-4 w-4" />

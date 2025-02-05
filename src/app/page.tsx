@@ -1,9 +1,10 @@
 "use client";
 
 import { Container } from "@/components/Container";
-import { RecentBlogs } from "@/components/ui/recent-blogs";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Hero } from "@/components/home/Hero"
+import { Hero } from "@/components/home/Hero";
+import { RecentBlogs } from "@/components/home/recent-blogs";
+import { RecentProjects } from "@/components/home/recent-projects";
 
 const fadeInUp = {
   initial: {
@@ -27,6 +28,7 @@ export default function Home() {
         <Hero />
         {/* <SkillsShowcase /> */}
         <RecentBlogs />
+        <RecentProjects />
       </Container>
     </main>
   );

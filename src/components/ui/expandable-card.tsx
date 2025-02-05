@@ -14,7 +14,7 @@ export const ExpandableCard = ({ product }: { product: Product }) => {
   return (
     <motion.div
       layout
-      className="group relative w-full bg-secondary/50 rounded-xl overflow-hidden"
+      className="group relative w-full bg-secondary/50 rounded-xl overflow-hidden flex flex-col h-full"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
@@ -22,25 +22,25 @@ export const ExpandableCard = ({ product }: { product: Product }) => {
     >
       <motion.div
         layout
-        className="relative aspect-[2/1] md:aspect-[3/1] w-full overflow-hidden"
+        className="relative aspect-square w-full overflow-hidden"
       >
         <Image
           src={product.thumbnail}
           alt={product.title}
-          className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-300"
+          fill
+          className="object-contain p-2 transform group-hover:scale-105 transition-transform duration-300"
           placeholder="blur"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/0" />
       </motion.div>
 
-      <motion.div layout className="p-6">
-        <motion.div layout className="flex flex-col gap-4">
-          <div className="flex items-start justify-between gap-4">
+      <motion.div layout className="p-4 flex flex-col flex-grow">
+        <motion.div layout className="flex flex-col gap-3 h-full">
+          <div className="flex items-start justify-between gap-3">
             <div className="space-y-1">
-              <h3 className="text-xl font-semibold tracking-tight">
+              <h3 className="text-lg font-semibold tracking-tight">
                 {product.title}
               </h3>
-              <p className="text-muted-foreground line-clamp-2">
+              <p className="text-muted-foreground text-sm line-clamp-2">
                 {product.description}
               </p>
             </div>
@@ -48,43 +48,47 @@ export const ExpandableCard = ({ product }: { product: Product }) => {
               href={product.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 size-10 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+              className="shrink-0 size-8 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
             >
-              <ArrowUpRight className="size-5" />
+              <ArrowUpRight className="size-4" />
             </Link>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 mt-auto pt-3">
             {product.stack?.map((tech) => (
-              <Badge key={tech} variant="secondary">
+              <Badge
+                key={tech}
+                variant="secondary"
+                className="px-2 py-0.5 text-xs font-medium"
+              >
                 {tech}
               </Badge>
             ))}
           </div>
 
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mt-2"
+          >
+            <span>{isExpanded ? "Show less" : "Learn more"}</span>
+            <ChevronDown
+              className={`size-4 transition-transform ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
           <AnimatePresence>
             {isExpanded && (
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="grid grid-cols-2 gap-4 pt-4">
-                  {product.images.slice(1).map((image, index) => (
-                    <div
-                      key={index}
-                      className="relative aspect-video overflow-hidden rounded-lg"
-                    >
-                      <Image
-                        src={image}
-                        alt={`${product.title} screenshot ${index + 2}`}
-                        className="object-cover"
-                        fill
-                      />
-                    </div>
-                  ))}
+                <div className="prose prose-sm prose-neutral dark:prose-invert pt-2">
+                  {product.content}
                 </div>
               </motion.div>
             )}

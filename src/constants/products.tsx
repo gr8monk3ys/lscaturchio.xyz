@@ -6,6 +6,7 @@ import eyebookReader from "../../public/images/logos/eyebook-reader.webp";
 import linkFlame from "../../public/images/logos/linkflame.webp";
 import TAlker from "../../public/images/logos/talker.webp";
 import blogAI from "../../public/images/logos/blog-ai.webp";
+import paperSummarizer from "../../public/images/logos/paper-summarizer.webp";
 
 export const products = [
   {
@@ -175,8 +176,8 @@ export const products = [
     title: "Paper Summarizer",
     description:
       "A tool for summarizing academic papers using advanced NLP techniques.",
-    thumbnail: linkFlame,
-    images: [linkFlame],
+    thumbnail: paperSummarizer,
+    images: [paperSummarizer],
     stack: ["Python", "NLP", "Transformers"],
     slug: "paper-summarizer",
     content: (

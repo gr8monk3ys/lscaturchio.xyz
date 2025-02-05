@@ -7,9 +7,9 @@ import {
   ChatBubble,
   ChatBubbleAvatar,
   ChatBubbleMessage,
-} from "@/components/ui/chat-bubble";
-import { ChatMessageList } from "@/components/ui/chat-message-list";
-import { ChatInput } from "@/components/ui/chat-input";
+} from "@/components/chat/chat-bubble";
+import { ChatMessageList } from "@/components/chat/chat-message-list";
+import { ChatInput } from "@/components/chat/chat-input";
 
 interface ChatModalProps {
   isOpen: boolean;
