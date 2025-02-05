@@ -51,7 +51,7 @@ export function ContactCTA() {
           <div className="flex gap-4 mt-4">
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
               <Link
-                href="https://github.com/yourusername"
+                href="https://github.com/gr8monk3ys"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-secondary/50 hover:bg-secondary/80 transition-colors"
@@ -61,7 +61,7 @@ export function ContactCTA() {
             </motion.div>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
               <Link
-                href="https://linkedin.com/in/yourusername"
+                href="https://linkedin.com/in/lorenzo-scaturchio"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-secondary/50 hover:bg-secondary/80 transition-colors"
