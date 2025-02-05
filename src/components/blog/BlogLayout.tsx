@@ -8,9 +8,10 @@ import { Container } from "../Container";
 import { Heading } from "../Heading";
 import { Paragraph } from "../Paragraph";
 import { Prose } from "@/components/blog/Prose";
-import { ArrowLeft, Share2, Clock, Calendar, Tag } from "lucide-react";
+import { ArrowLeft, Share2, Clock, Calendar, Tag, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/ui/comment-section";
+import { useState, useEffect, useRef } from "react";
 
 export function BlogLayout({
   children,
@@ -19,6 +20,69 @@ export function BlogLayout({
   previousPathname,
 }: any) {
   let router = useRouter();
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
+  const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
+  const articleRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSpeechSynthesis(window.speechSynthesis);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!speechSynthesis) return;
+
+    // Clean up on component unmount
+    return () => {
+      if (speechSynthesis) {
+        speechSynthesis.cancel();
+      }
+    };
+  }, [speechSynthesis]);
+
+  const handleTTS = () => {
+    if (!speechSynthesis || !articleRef.current) return;
+
+    if (isPlaying) {
+      speechSynthesis.cancel();
+      setIsPlaying(false);
+      return;
+    }
+
+    // Get the article content by extracting text from the article element
+    const articleElement = articleRef.current;
+    const textContent = Array.from(articleElement.querySelectorAll('p, h1, h2, h3, h4, h5, h6'))
+      .map(element => element.textContent)
+      .filter(text => text) // Remove null or empty strings
+      .join('. '); // Add a pause between elements
+
+    if (!textContent) {
+      console.error('No readable content found');
+      return;
+    }
+
+    // Cancel any existing speech
+    speechSynthesis.cancel();
+    
+    // Create new utterance
+    const newUtterance = new SpeechSynthesisUtterance(textContent);
+    newUtterance.onend = () => setIsPlaying(false);
+    newUtterance.onerror = (event) => {
+      console.error('Speech synthesis error:', event);
+      setIsPlaying(false);
+    };
+    
+    // Set speech properties
+    newUtterance.rate = 1.0; // Normal speed
+    newUtterance.pitch = 1.0; // Normal pitch
+    newUtterance.volume = 1.0; // Full volume
+    
+    setUtterance(newUtterance);
+    speechSynthesis.speak(newUtterance);
+    setIsPlaying(true);
+  };
 
   if (isRssFeed) {
     return children;
@@ -110,14 +174,13 @@ export function BlogLayout({
               )}
             </motion.div>
 
-            <Prose>{children}</Prose>
-            
-            {/* Comment Section */}
             <motion.div
+              ref={articleRef}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
+              <Prose>{children}</Prose>
               <CommentSection postId={meta.title} />
             </motion.div>
           </div>
@@ -152,6 +215,22 @@ export function BlogLayout({
                     className="flex items-center justify-center gap-2 rounded-lg border border-zinc-100 px-4 py-2 text-base text-zinc-600 transition hover:bg-zinc-50 dark:border-zinc-700/40 dark:text-zinc-400 dark:hover:bg-zinc-800"
                   >
                     Copy link
+                  </button>
+                  <button
+                    onClick={handleTTS}
+                    className="flex items-center justify-center gap-2 rounded-lg border border-zinc-100 px-4 py-2 text-base text-zinc-600 transition hover:bg-zinc-50 dark:border-zinc-700/40 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                  >
+                    {isPlaying ? (
+                      <>
+                        <Pause className="h-4 w-4" />
+                        Stop Reading
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-4 w-4" />
+                        Listen to Article
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
