@@ -40,7 +40,7 @@ export function ContactCTA() {
                 variant="outline"
                 className="text-lg h-12"
               >
-                <Link href="/contact">
+                <Link href="/services">
                   Learn More
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>

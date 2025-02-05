@@ -20,14 +20,14 @@ const interests = [
   },
   {
     icon: Mountain,
-    title: "Rock Climbing",
+    title: "Running",
     description: "Pushing physical and mental boundaries",
-    tags: ["Sport", "Bouldering"]
+    tags: ["Sport", "10k"]
   },
   {
     icon: Music,
     title: "Music Production",
-    description: "Creating and mixing electronic music",
+    description: "Creating and mixing indie & electronic music",
     tags: ["Electronic", "Production"]
   },
   {
@@ -115,7 +115,7 @@ export function Interests() {
           <motion.div variants={itemVariants} className="flex gap-4 flex-col items-start">
             <Badge variant="secondary">What I Love</Badge>
             <div className="flex gap-2 flex-col">
-              <h2 className="text-3xl md:text-5xl tracking-tighter font-bold text-emerald-600">
+              <h2 className="text-3xl md:text-5xl tracking-tighter font-bold text-stone-600">
                 Interests & Hobbies
               </h2>
               <p className="text-lg max-w-prose">
