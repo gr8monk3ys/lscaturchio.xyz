@@ -82,29 +82,6 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
               ))}
             </Accordion>
           </dl>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="mt-16 flex flex-col items-center gap-6 rounded-2xl bg-muted p-8"
-          >
-            <h3 className="text-lg font-semibold leading-7">
-              {contactInfo.title}
-            </h3>
-            <p className="text-center text-sm leading-7 text-muted-foreground">
-              {contactInfo.description}
-            </p>
-            <Button asChild>
-              <a 
-                href={contactInfo.contactUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="transition-transform hover:scale-105"
-              >
-                {contactInfo.buttonText}
-              </a>
-            </Button>
-          </motion.div>
         </div>
       </div>
     </motion.div>

@@ -1,42 +1,29 @@
-import { Inter } from "next/font/google"
+"use client"
+
 import "./globals.css"
-import defaultMetadata from './metadata'
 import { Footer } from "@/components/ui/footer-section";
 import { Navbar } from "@/components/ui/navbar";
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ContactCTA } from "@/components/ui/contact-cta"
-
-const inter = Inter({ 
-  subsets: ["latin"],
-  display: 'swap',
-  preload: true,
-})
-
-export const metadata = defaultMetadata
+import { MobileNavbar } from "@/components/ui/mobile-navbar"
+import { usePathname } from 'next/navigation'
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname()
+  const isBlogPage = pathname?.startsWith('/blog')
+
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link
-          rel="preload"
-          href="/fonts/inter-var.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-      </head>
-      <body className={inter.className}>
+      <body>
         <Navbar />
+        <MobileNavbar />
         {children}
-        <ContactCTA />
+        {!isBlogPage && <ContactCTA />}
         <Footer />
         <Analytics />
         <SpeedInsights />

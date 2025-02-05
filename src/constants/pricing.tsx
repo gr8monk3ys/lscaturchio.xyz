@@ -1,15 +1,4 @@
-import { PricingSection } from "@/components/ui/pricing-section";
-import { Container } from "@/components/Container";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Consultation | Lorenzo Scaturchio",
-  description: "Expert data science and AI consulting services. Choose the right plan for your project needs.",
-};
-
-const PAYMENT_FREQUENCIES = ["monthly", "yearly"];
-
-const PRICING_TIERS = [
+export const pricingTiers = [
   {
     id: "starter",
     name: "Starter",
@@ -64,16 +53,3 @@ const PRICING_TIERS = [
     highlighted: true,
   },
 ];
-
-export default function ConsultationPage() {
-  return (
-    <Container>
-      <PricingSection
-        title="AI Consulting Services"
-        subtitle="Choose the perfect plan for your data science and AI needs"
-        frequencies={PAYMENT_FREQUENCIES}
-        tiers={PRICING_TIERS}
-      />
-    </Container>
-  );
-}
