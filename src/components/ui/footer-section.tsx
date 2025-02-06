@@ -9,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Moon, Send, Sun, Rss } from "lucide-react"
+import { Moon, Send, Sun, Rss, Pizza } from "lucide-react"
 import { socials } from "@/constants/socials"
 
 function Footer() {
@@ -50,10 +50,15 @@ function Footer() {
                 <Rss className="h-4 w-4" />
                 RSS Feed
               </Button>
+              <Button
+                onClick={() => window.open('https://www.buymeacoffee.com/lorenzoscak', '_blank')}
+                variant="outline"
+                className="inline-flex items-center gap-2"
+              >
+                <Pizza className="h-4 w-4" />
+                Buy me a pizza
+              </Button>
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Powered by Substack
-            </p>
           </div>
           <div>
             <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
