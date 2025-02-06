@@ -9,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Moon, Send, Sun } from "lucide-react"
+import { Moon, Send, Sun, Rss } from "lucide-react"
 import { socials } from "@/constants/socials"
 
 function Footer() {
@@ -34,13 +34,23 @@ function Footer() {
             <p className="mb-6 text-muted-foreground">
               Subscribe to my AI News newsletter for the latest updates in artificial intelligence, machine learning, and tech innovations.
             </p>
-            <Button
-              onClick={() => window.open(substackUrl, '_blank')}
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              <Send className="h-4 w-4" />
-              Subscribe to Newsletter
-            </Button>
+            <div className="flex flex-col gap-3">
+              <Button
+                onClick={() => window.open(substackUrl, '_blank')}
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                <Send className="h-4 w-4" />
+                Subscribe to Newsletter
+              </Button>
+              <Button
+                onClick={() => window.open('/api/rss', '_blank')}
+                variant="outline"
+                className="inline-flex items-center gap-2"
+              >
+                <Rss className="h-4 w-4" />
+                RSS Feed
+              </Button>
+            </div>
             <p className="mt-2 text-sm text-muted-foreground">
               Powered by Substack
             </p>
@@ -65,7 +75,6 @@ function Footer() {
               <p>Los Angeles, California</p>
               <p>United States</p>
               <p>Email: lorenzosca7@gmail.com</p>
-              <p>Phone: +1 (909) 993-3077</p>
             </address>
           </div>
           <div className="relative">
