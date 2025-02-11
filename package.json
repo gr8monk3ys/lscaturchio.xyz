@@ -41,7 +41,7 @@
     "framer-motion": "^10.18.0",
     "lucide-react": "^0.473.0",
     "nanoid": "^5.0.9",
-    "next": "^13.5.8",
+    "next": "^14.2.21",
     "openai": "^4.80.0",
     "postcss": "^8.5.1",
     "react": "18.2.0",
