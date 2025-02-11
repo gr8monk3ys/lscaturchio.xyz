@@ -43,7 +43,7 @@
     "nanoid": "^5.0.9",
     "next": "^14.2.21",
     "openai": "^4.80.0",
-    "postcss": "^8.5.1",
+    "postcss": "^8.5.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "remark-gfm": "^3.0.1",
