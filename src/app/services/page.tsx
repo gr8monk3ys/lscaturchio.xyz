@@ -17,12 +17,12 @@ export default function ServicesPage() {
   return (
     <Container>
       <ServicesSection />
-      <PricingSection
+      {/* <PricingSection
         title="AI Consulting Services"
         subtitle="Choose the perfect plan for your data science and AI needs"
         frequencies={PAYMENT_FREQUENCIES}
         tiers={pricingTiers}
-      />
+      /> */}
       <FaqSection
         title="Frequently Asked Questions"
         description="Find answers to common questions about my services and work process"
