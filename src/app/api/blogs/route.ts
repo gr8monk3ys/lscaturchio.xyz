@@ -6,12 +6,20 @@ export async function GET() {
     const blogs = await getAllBlogs();
     const recentBlogs = blogs
       .slice(0, 3)
-      .map(({ component, ...meta }) => meta);
+      .map((blog) => ({
+        slug: blog.slug,
+        title: blog.title,
+        description: blog.description,
+        date: blog.date,
+        image: blog.image,
+        tags: blog.tags,
+      }));
     
     return NextResponse.json(recentBlogs);
-  } catch (error) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: "Failed to fetch blogs" },
+      { error: `Failed to fetch blogs: ${errorMessage}` },
       { status: 500 }
     );
   }

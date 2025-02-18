@@ -11,117 +11,119 @@ import { Prose } from "@/components/blog/Prose";
 import { ArrowLeft, Share2, Clock, Calendar, Tag, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/ui/comment-section";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ReactNode } from "react";
+
+interface BlogMeta {
+  title: string;
+  description: string;
+  date: string;
+  image: string;
+  tags: string[];
+}
+
+interface BlogLayoutProps {
+  children: ReactNode;
+  meta: BlogMeta;
+  isRssFeed?: boolean;
+  previousPathname?: string;
+}
 
 export function BlogLayout({
   children,
   meta,
   isRssFeed = false,
   previousPathname,
-}: any) {
-  let router = useRouter();
+}: BlogLayoutProps) {
+  const router = useRouter();
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
   const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
-  const articleRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setSpeechSynthesis(window.speechSynthesis);
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      const newUtterance = new SpeechSynthesisUtterance();
+      newUtterance.rate = 0.9;
+      setUtterance(newUtterance);
+
+      return () => {
+        if (isPlaying) {
+          window.speechSynthesis.cancel();
+          setIsPlaying(false);
+        }
+      };
     }
-  }, []);
+  }, [isPlaying]);
 
-  useEffect(() => {
-    if (!speechSynthesis) return;
+  const handlePlay = () => {
+    if (!contentRef.current || !utterance) return;
 
-    // Clean up on component unmount
-    return () => {
-      if (speechSynthesis) {
-        speechSynthesis.cancel();
-      }
-    };
-  }, [speechSynthesis]);
-
-  const handleTTS = () => {
-    if (!speechSynthesis || !articleRef.current) return;
-
-    if (isPlaying) {
-      speechSynthesis.cancel();
+    if (!isPlaying) {
+      utterance.text = contentRef.current.textContent || "";
+      window.speechSynthesis.speak(utterance);
+      setIsPlaying(true);
+    } else {
+      window.speechSynthesis.cancel();
       setIsPlaying(false);
-      return;
     }
-
-    // Get the article content by extracting text from the article element
-    const articleElement = articleRef.current;
-    const textContent = Array.from(articleElement.querySelectorAll('p, h1, h2, h3, h4, h5, h6'))
-      .map(element => element.textContent)
-      .filter(text => text) // Remove null or empty strings
-      .join('. '); // Add a pause between elements
-
-    if (!textContent) {
-      console.error('No readable content found');
-      return;
-    }
-
-    // Cancel any existing speech
-    speechSynthesis.cancel();
-    
-    // Create new utterance
-    const newUtterance = new SpeechSynthesisUtterance(textContent);
-    newUtterance.onend = () => setIsPlaying(false);
-    newUtterance.onerror = (event) => {
-      console.error('Speech synthesis error:', event);
-      setIsPlaying(false);
-    };
-    
-    // Set speech properties
-    newUtterance.rate = 1.0; // Normal speed
-    newUtterance.pitch = 1.0; // Normal pitch
-    newUtterance.volume = 1.0; // Full volume
-    
-    setUtterance(newUtterance);
-    speechSynthesis.speak(newUtterance);
-    setIsPlaying(true);
   };
 
   if (isRssFeed) {
     return children;
   }
 
-  const readingTime = Math.ceil(meta.content?.split(/\s+/).length / 200) || 5;
-
   return (
     <Container className="mt-16 lg:mt-32">
-      <motion.article
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative mx-auto max-w-6xl"
-      >
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3 }}
-          className="mb-8"
-        >
-          <Button
-            variant="outline"
-            className="group flex items-center gap-2"
-            onClick={() => router.push('/blog')}
-          >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Back to Blog
-          </Button>
-        </motion.div>
-
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,_1fr)_300px]">
-          <div className="flex flex-col space-y-8">
-            {meta.image && (
+      <div className="xl:relative">
+        <div className="mx-auto max-w-2xl">
+          {previousPathname && (
+            <motion.button
+              type="button"
+              onClick={() => router.back()}
+              aria-label="Go back to blogs"
+              className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ArrowLeft className="h-4 w-4 stroke-zinc-500 transition group-hover:stroke-zinc-700 dark:stroke-zinc-500 dark:group-hover:stroke-zinc-400" />
+            </motion.button>
+          )}
+          <article>
+            <header className="flex flex-col">
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="relative aspect-[2/1] w-full overflow-hidden rounded-2xl"
+              >
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    <time dateTime={meta.date} className="text-stone-600">
+                      {formatDate(meta.date)}
+                    </time>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Tag className="h-4 w-4" />
+                    <div className="flex gap-2">
+                      {meta.tags.map((tag) => (
+                        <span key={tag} className="text-stone-600">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <Heading className="mt-6 text-4xl font-bold tracking-tight text-stone-800 sm:text-5xl">
+                  {meta.title}
+                </Heading>
+                <Paragraph className="mt-4 text-sm leading-8 text-stone-600">
+                  {meta.description}
+                </Paragraph>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="mt-8 aspect-video relative overflow-hidden rounded-2xl bg-stone-100"
               >
                 <Image
                   src={meta.image}
@@ -131,113 +133,58 @@ export function BlogLayout({
                   priority
                 />
               </motion.div>
-            )}
-
+            </header>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-col space-y-4"
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="mt-8"
             >
-              <Heading className="max-w-3xl">{meta.title}</Heading>
-              
-              <div className="flex flex-wrap items-center gap-4 text-base text-zinc-600 dark:text-zinc-400">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  <time dateTime={meta.date}>{formatDate(meta.date)}</time>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  <span>{readingTime} min read</span>
-                </div>
-                {meta.tags && (
-                  <div className="flex items-center gap-2">
-                    <Tag className="w-4 h-4" />
-                    <div className="flex flex-wrap gap-2">
-                      {meta.tags.map((tag: string) => (
-                        <span
-                          key={tag}
-                          className="rounded-full bg-zinc-100 px-3.5 py-1.5 text-sm font-medium dark:bg-zinc-800"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {meta.description && (
-                <Paragraph className="max-w-2xl text-zinc-600 dark:text-zinc-400">
-                  {meta.description}
-                </Paragraph>
-              )}
-            </motion.div>
-
-            <motion.div
-              ref={articleRef}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <Prose>{children}</Prose>
-              <CommentSection postId={meta.title} />
-            </motion.div>
-          </div>
-
-          <motion.aside
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-            className="hidden lg:block"
-          >
-            <div className="sticky top-8 space-y-6">
-              <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
-                <h2 className="flex items-center text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  Share
-                </h2>
-                <div className="mt-4 flex flex-col space-y-2">
-                  <button
-                    onClick={() => navigator.share({ 
+              <div className="flex justify-between items-center mb-8">
+                <Button
+                  onClick={handlePlay}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  {isPlaying ? (
+                    <>
+                      <Pause className="h-4 w-4" /> Pause
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4" /> Listen
+                    </>
+                  )}
+                </Button>
+                <Button
+                  onClick={() => {
+                    navigator.share({
                       title: meta.title,
                       text: meta.description,
-                      url: window.location.href
-                    })}
-                    className="flex items-center justify-center gap-2 rounded-lg border border-zinc-100 px-4 py-2 text-base text-zinc-600 transition hover:bg-zinc-50 dark:border-zinc-700/40 dark:text-zinc-400 dark:hover:bg-zinc-800"
-                  >
-                    Share this article
-                  </button>
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(window.location.href);
-                    }}
-                    className="flex items-center justify-center gap-2 rounded-lg border border-zinc-100 px-4 py-2 text-base text-zinc-600 transition hover:bg-zinc-50 dark:border-zinc-700/40 dark:text-zinc-400 dark:hover:bg-zinc-800"
-                  >
-                    Copy link
-                  </button>
-                  <button
-                    onClick={handleTTS}
-                    className="flex items-center justify-center gap-2 rounded-lg border border-zinc-100 px-4 py-2 text-base text-zinc-600 transition hover:bg-zinc-50 dark:border-zinc-700/40 dark:text-zinc-400 dark:hover:bg-zinc-800"
-                  >
-                    {isPlaying ? (
-                      <>
-                        <Pause className="h-4 w-4" />
-                        Stop Reading
-                      </>
-                    ) : (
-                      <>
-                        <Play className="h-4 w-4" />
-                        Listen to Article
-                      </>
-                    )}
-                  </button>
-                </div>
+                      url: window.location.href,
+                    });
+                  }}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Share2 className="h-4 w-4" /> Share
+                </Button>
               </div>
-            </div>
-          </motion.aside>
+              <Prose>
+                <div ref={contentRef}>{children}</div>
+              </Prose>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="mt-8"
+            >
+              <CommentSection />
+            </motion.div>
+          </article>
         </div>
-      </motion.article>
+      </div>
     </Container>
   );
 }
