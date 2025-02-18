@@ -26,29 +26,33 @@ const itemVariants = {
 
 export function AboutJourney() {
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
-      <SectionHeading>My Journey</SectionHeading>
-      <motion.div
-        variants={itemVariants}
-        className="space-y-4 text-lg max-w-3xl"
-      >
-        <motion.p variants={itemVariants}>
-          My journey in tech began with a fascination for problem-solving and a desire 
-          to create meaningful impact. Through my work in software development and machine 
-          learning, I&apos;ve had the opportunity to work on diverse projects that challenge 
-          conventional thinking and push technological boundaries.
-        </motion.p>
-        <motion.p variants={itemVariants}>
-          I&apos;m particularly passionate about the intersection of artificial intelligence 
-          and human-centered design. My goal is to build technology that not only solves 
-          complex problems but also enhances human capabilities and creates positive change.
-        </motion.p>
-      </motion.div>
-    </motion.div>
+    <section className="w-full px-4 md:px-6 py-12 lg:py-24">
+      <div className="w-full max-w-7xl mx-auto">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-6"
+        >
+          <SectionHeading>My Journey</SectionHeading>
+          <motion.div
+            variants={itemVariants}
+            className="space-y-4 text-lg w-full"
+          >
+            <motion.p variants={itemVariants}>
+              My journey in tech began with a fascination for problem-solving and a desire 
+              to create meaningful impact. Through my work in software development and machine 
+              learning, I&apos;ve had the opportunity to work on diverse projects that challenge 
+              conventional thinking and push technological boundaries.
+            </motion.p>
+            <motion.p variants={itemVariants}>
+              I&apos;m particularly passionate about the intersection of artificial intelligence 
+              and human-centered design. My goal is to build technology that not only solves 
+              complex problems but also enhances human capabilities and creates positive change.
+            </motion.p>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
   );
 }
