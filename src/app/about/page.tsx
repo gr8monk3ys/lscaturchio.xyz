@@ -4,6 +4,9 @@ import { AboutJourney } from "@/components/about/Journey";
 import { Interests } from "@/components/about/Interests";
 import { WorkTimeline } from "@/components/ui/work-timeline";
 import { DownloadButton } from "@/components/ui/download-button";
+import { Movies } from "@/components/about/Movies";
+import { Music } from "@/components/about/Music";
+import { Books } from "@/components/about/Books";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,6 +22,9 @@ export default function AboutPage() {
         <AboutHero />
         <AboutJourney />
         <Interests />
+        <Movies />
+        <Music />
+        <Books />
         <WorkTimeline />
         <DownloadButton href="/Lorenzo_resume_DS.pdf" />
       </div>
