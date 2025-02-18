@@ -1,19 +1,16 @@
 /** @type {import('next').NextConfig} */
-import nextMDX from "@next/mdx";
-import remarkGfm from "remark-gfm";
-import rehypePrism from "@mapbox/rehype-prism";
+import createMDX from '@next/mdx';
+import remarkGfm from 'remark-gfm';
+import rehypePrism from '@mapbox/rehype-prism';
 
 const nextConfig = {
+  pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   images: {
-    domains: ["images.unsplash.com", "res.cloudinary.com"],
-  },
-  experimental: {
-    mdxRs: true,
+    domains: ['images.unsplash.com'],
   },
 };
 
-const withMDX = nextMDX({
-  extension: /\.mdx?$/,
+const withMDX = createMDX({
   options: {
     remarkPlugins: [remarkGfm],
     rehypePlugins: [rehypePrism],
