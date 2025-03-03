@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Hero } from "@/components/home/Hero";
 import { RecentBlogs } from "@/components/home/recent-blogs";
 import { RecentProjects } from "@/components/home/recent-projects";
+import { WebsiteStructuredData, PersonStructuredData } from "@/components/ui/structured-data";
 
 const fadeInUp = {
   initial: {
@@ -24,6 +25,23 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
+      <WebsiteStructuredData 
+        url="https://lscaturchio.xyz"
+        name="Lorenzo Scaturchio | Developer & Designer"
+        description="Personal website and portfolio of Lorenzo Scaturchio, showcasing projects, blog posts, and services."
+        siteType="Portfolio"
+      />
+      <PersonStructuredData
+        name="Lorenzo Scaturchio"
+        description="Developer and Designer"
+        image="https://lscaturchio.xyz/images/portrait.jpg"
+        jobTitle="Developer & Designer"
+        url="https://lscaturchio.xyz"
+        sameAs={[
+          "https://github.com/lscaturchio",
+          "https://linkedin.com/in/lscaturchio"
+        ]}
+      />
       <Container size="large">
         <Hero />
         {/* <SkillsShowcase /> */}

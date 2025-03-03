@@ -2,9 +2,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { FallbackImage } from "@/components/ui/fallback-image";
 
 interface BlogCardProps {
   slug: string;
@@ -48,7 +48,7 @@ export function BlogCard({ slug, title, description, date, image, tags }: BlogCa
       >
         <Card className="flex flex-col h-full overflow-hidden group cursor-pointer">
           <div className="relative w-full h-48">
-            <Image
+            <FallbackImage
               src={image}
               alt={title}
               fill

@@ -1,17 +1,21 @@
 "use client";
 
+import React, { useState, useEffect, useRef, ReactNode } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { formatDate } from "../../../lib/formatDate";
 import { Container } from "../Container";
 import { Heading } from "../Heading";
 import { Paragraph } from "../Paragraph";
 import { Prose } from "@/components/blog/Prose";
-import { ArrowLeft, Share2, Clock, Calendar, Tag, Play, Pause } from "lucide-react";
+import { ArrowLeft, Share2, Calendar, Tag, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/ui/comment-section";
-import { useState, useEffect, useRef, ReactNode } from "react";
+import Script from "next/script";
+import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
+import { AdBanner } from "@/components/ads/AdBanner";
+import { InArticleAd } from "@/components/ads/InArticleAd";
+import { FallbackImage } from "@/components/ui/fallback-image";
 
 interface BlogMeta {
   title: string;
@@ -71,10 +75,42 @@ export function BlogLayout({
     return children;
   }
 
+  // Create JSON-LD structured data for the blog post
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": meta.title,
+    "description": meta.description,
+    "image": `https://lscaturchio.xyz${meta.image}`,
+    "datePublished": meta.date,
+    "author": {
+      "@type": "Person",
+      "name": "Lorenzo Scaturchio"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Lorenzo Scaturchio",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://lscaturchio.xyz/signature.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": typeof window !== 'undefined' ? window.location.href : ""
+    },
+    "keywords": meta.tags.join(", ")
+  };
+
   return (
     <Container className="mt-16 lg:mt-32">
+      <Script id="blog-schema" type="application/ld+json">
+        {JSON.stringify(jsonLd)}
+      </Script>
       <div className="xl:relative">
         <div className="mx-auto max-w-2xl">
+          <BreadcrumbNav customSegments={{ blog: "Blog" }} />
+          
           {previousPathname && (
             <motion.button
               type="button"
@@ -125,7 +161,7 @@ export function BlogLayout({
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="mt-8 aspect-video relative overflow-hidden rounded-2xl bg-stone-100"
               >
-                <Image
+                <FallbackImage
                   src={meta.image}
                   alt={meta.title}
                   fill
@@ -170,9 +206,35 @@ export function BlogLayout({
                   <Share2 className="h-4 w-4" /> Share
                 </Button>
               </div>
+              
+              {/* Top of article ad */}
+              <AdBanner slot="1234567890" format="horizontal" />
               <Prose>
-                <div ref={contentRef}>{children}</div>
+                <div ref={contentRef}>
+                  {/* Inject in-article ad after the first few paragraphs */}
+                  {React.Children.map(children, (child, index) => {
+                    if (index === 3) { // After approximately 3 paragraphs
+                      return (
+                        <>
+                          {child}
+                          <InArticleAd slot="2345678901" />
+                        </>
+                      );
+                    } else if (index === 8) { // After approximately 8 paragraphs
+                      return (
+                        <>
+                          {child}
+                          <InArticleAd slot="3456789012" />
+                        </>
+                      );
+                    }
+                    return child;
+                  })}
+                </div>
               </Prose>
+              
+              {/* Bottom of article ad */}
+              <AdBanner slot="4567890123" format="horizontal" className="mt-8" />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -180,7 +242,7 @@ export function BlogLayout({
               transition={{ duration: 0.5, delay: 0.6 }}
               className="mt-8"
             >
-              <CommentSection />
+              {/* <CommentSection /> */}
             </motion.div>
           </article>
         </div>
