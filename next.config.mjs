@@ -8,6 +8,9 @@ const nextConfig = {
   images: {
     domains: ['images.unsplash.com'],
   },
+  poweredByHeader: false,
+  compress: true,
+  swcMinify: true,
 };
 
 const withMDX = createMDX({

@@ -8,6 +8,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ContactCTA } from "@/components/ui/contact-cta"
 import { MobileNavbar } from "@/components/ui/mobile-navbar"
 import { usePathname } from 'next/navigation'
+import Script from 'next/script'
 
 export default function RootLayout({
   children,
@@ -19,6 +20,15 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Google AdSense Script */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4505962980988232"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body>
         <Navbar />
         <MobileNavbar />

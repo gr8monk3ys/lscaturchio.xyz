@@ -8,6 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { motion, AnimatePresence } from "framer-motion";
+import { FAQStructuredData } from "@/components/ui/structured-data";
 
 interface FaqItem {
   question: string;
@@ -36,6 +37,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
       transition={{ duration: 0.5 }}
       className="mx-auto max-w-5xl py-16 sm:py-24"
     >
+      <FAQStructuredData questions={items} />
       <div className="px-6 lg:px-8">
         <div className="mx-auto max-w-4xl divide-y divide-border">
           <motion.h2 
