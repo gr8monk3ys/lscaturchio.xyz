@@ -1,5 +1,5 @@
 {
-  "name": "sidefolio",
+  "name": "lscaturchio",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-embeddings": "bun run lib/generateEmbeddings.ts"
+    "generate-embeddings": "bun run lib/generateEmbeddings.ts",
+    "generate-sitemap": "node scripts/generate-sitemap.js",
+    "postbuild": "npm run generate-sitemap"
   },
   "dependencies": {
     "@mapbox/rehype-prism": "^0.9.0",
@@ -41,6 +43,7 @@
     "eslint-config-next": "13.4.19",
     "feed": "^4.2.2",
     "framer-motion": "^10.18.0",
+    "glob": "^10.4.5",
     "lucide-react": "^0.473.0",
     "nanoid": "^5.0.9",
     "next": "^14.2.21",
