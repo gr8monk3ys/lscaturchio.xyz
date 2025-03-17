@@ -4,34 +4,35 @@ import { Metadata } from 'next'
 export const metadata: Metadata = {
   metadataBase: new URL('https://lscaturchio.xyz'),
   title: {
-    default: 'Lorenzo Scaturchio | Developer & Designer',
-    template: '%s | Lorenzo Scaturchio'
+    default: 'Lorenzo Scaturchio | Data Scientist, Developer & Digital Craftsman',
+    template: '%s | Lorenzo Scaturchio - Data Scientist & Developer'
   },
-  description: 'Personal website and portfolio of Lorenzo Scaturchio, showcasing projects, blog posts, and services.',
-  keywords: ['developer', 'designer', 'portfolio', 'blog', 'projects', 'services'],
+  description: 'Explore Lorenzo Scaturchio\'s portfolio showcasing innovative data science projects, web applications, and digital solutions. Specializing in data analysis, machine learning, and creative development for impactful digital experiences.',
+  keywords: ['data scientist', 'developer', 'machine learning', 'portfolio', 'data analysis', 'web development', 'digital solutions', 'AI', 'programmer', 'creative technologist'],
   authors: [{ name: 'Lorenzo Scaturchio' }],
   creator: 'Lorenzo Scaturchio',
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://lscaturchio.xyz',
-    title: 'Lorenzo Scaturchio | Developer & Designer',
-    description: 'Personal website and portfolio of Lorenzo Scaturchio, showcasing projects, blog posts, and services.',
-    siteName: 'Lorenzo Scaturchio',
+    title: 'Lorenzo Scaturchio | Data Scientist, Developer & Digital Craftsman',
+    description: 'Explore Lorenzo Scaturchio\'s portfolio showcasing innovative data science projects, web applications, and digital solutions. Specializing in data analysis, machine learning, and creative development.',
+    siteName: 'Lorenzo Scaturchio Portfolio',
     images: [
       {
         url: 'https://lscaturchio.xyz/images/portrait.jpg',
         width: 1200,
         height: 630,
-        alt: 'Lorenzo Scaturchio'
+        alt: 'Lorenzo Scaturchio - Data Scientist and Developer'
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Lorenzo Scaturchio | Developer & Designer',
-    description: 'Personal website and portfolio of Lorenzo Scaturchio, showcasing projects, blog posts, and services.',
-    images: ['https://lscaturchio.xyz/images/portrait.jpg']
+    title: 'Lorenzo Scaturchio | Data Scientist & Developer',
+    description: 'Explore Lorenzo Scaturchio\'s portfolio showcasing innovative data science projects, web applications, and digital solutions. Specializing in data analysis, machine learning, and creative development.',
+    images: ['https://lscaturchio.xyz/images/portrait.jpg'],
+    creator: '@lscaturchio'
   },
   robots: {
     index: true,
@@ -52,5 +53,14 @@ export const metadata: Metadata = {
     languages: {
       'en-US': 'https://lscaturchio.xyz',
     },
+  },
+  category: 'technology',
+  applicationName: 'Lorenzo Scaturchio Portfolio',
+  other: {
+    "og:site_name": "Lorenzo Scaturchio Portfolio",
+    "og:image:alt": "Lorenzo Scaturchio - Data Scientist and Developer",
+    "twitter:site": "@lscaturchio",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent"
   },
 }
