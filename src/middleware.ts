@@ -1,46 +1,72 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-// List of supported locales
-const locales = ['en'];
-const defaultLocale = 'en';
+// Define assets that should be cached
+const CACHE_ASSET_PATTERNS = [
+  /\.(jpg|jpeg|png|webp|avif|gif|svg)$/,
+  /\.(css)$/,
+  /\.(js)$/,
+  /\.(woff|woff2|ttf|otf|eot)$/,
+];
 
-// Get the preferred locale from the request
-function getLocale(request: NextRequest) {
-  // Check if there is a cookie with a preferred locale
-  const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
-  if (cookieLocale && locales.includes(cookieLocale)) {
-    return cookieLocale;
+// Cache configuration by content type
+const CACHE_CONTROL_SETTINGS = {
+  // Static assets - long cache, with revalidation
+  assets: 'public, max-age=31536000, must-revalidate',
+  // HTML pages - short cache with frequent revalidation
+  html: 'public, max-age=300, must-revalidate, stale-while-revalidate=60',
+  // API responses - no client cache
+  api: 'no-cache, no-store, must-revalidate',
+  // Default for other content types
+  default: 'public, max-age=60, stale-while-revalidate=30',
+};
+
+export async function middleware(request: NextRequest) {
+  // Get the response
+  const response = NextResponse.next();
+  
+  // Get pathname from request
+  const { pathname } = request.nextUrl;
+  
+  // Add security headers to all responses
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('X-Frame-Options', 'DENY');
+  
+  // Optimize www/non-www redirection
+  const host = request.headers.get('host') || '';
+  if (host.startsWith('www.')) {
+    // Redirect www to non-www
+    const newUrl = request.nextUrl.clone();
+    newUrl.host = host.replace(/^www\./, '');
+    return NextResponse.redirect(newUrl);
   }
-
-  // Check the Accept-Language header
-  const acceptLanguage = request.headers.get('accept-language');
-  if (acceptLanguage) {
-    const parsedLocales = acceptLanguage.split(',').map(l => l.split(';')[0].trim());
-    const matchedLocale = parsedLocales.find(l => locales.includes(l));
-    if (matchedLocale) {
-      return matchedLocale;
-    }
+  
+  // Set appropriate cache headers based on content type
+  if (pathname.startsWith('/api/')) {
+    // API routes - no caching
+    response.headers.set('Cache-Control', CACHE_CONTROL_SETTINGS.api);
+  } else if (CACHE_ASSET_PATTERNS.some(pattern => pattern.test(pathname))) {
+    // Static assets - long cache
+    response.headers.set('Cache-Control', CACHE_CONTROL_SETTINGS.assets);
+  } else if (pathname.endsWith('.html') || pathname === '/' || pathname === '') {
+    // HTML content - short cache
+    response.headers.set('Cache-Control', CACHE_CONTROL_SETTINGS.html);
+  } else {
+    // Default for other routes
+    response.headers.set('Cache-Control', CACHE_CONTROL_SETTINGS.default);
   }
-
-  // Default to the default locale
-  return defaultLocale;
+  
+  // Add timing allowed origin header for performance metrics
+  response.headers.set('Timing-Allow-Origin', '*');
+  
+  return response;
 }
 
-export function middleware(request: NextRequest) {
-  // Get the locale from the request
-  const locale = getLocale(request);
-
-  // Skip if the locale is already set in the pathname
-  if (request.nextUrl.pathname.startsWith(`/${locale}/`)) {
-    return NextResponse.next();
-  }
-
-  // For now, we're not redirecting to localized paths since we only support English
-  // This middleware is in place for future internationalization support
-  return NextResponse.next();
-}
-
+// Only run middleware on specific paths
 export const config = {
-  // Skip static files and API routes
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)'],
+  matcher: [
+    // Apply to all paths except API routes and static assets managed differently
+    '/((?!_next/static|_next/image|favicon.ico).*)',
+  ],
 };
