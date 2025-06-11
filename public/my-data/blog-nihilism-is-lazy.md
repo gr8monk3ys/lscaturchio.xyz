@@ -1,0 +1,79 @@
+# Nihilism Is Lazy Philosophy
+
+## "Nothing Matters" Is Not a Conclusion. It's a Stopping Point.
+
+You've met this person at a party, or in a comments section, or maybe in the mirror. Everything is meaningless. Morality is a construct. The universe is indifferent. We're specks on a rock hurtling through void. Therefore (and here's the move) nothing I do matters, nothing you do matters, and caring about anything is a sign of naivety.
+
+It sounds deep. It feels sophisticated. It has the aesthetic of having thought really hard about something. But it hasn't. It's where thinking stops, not where it ends.
+
+Nihilism, as popularly practiced, is the intellectual equivalent of sitting out the game and calling yourself a strategist.
+
+## Nietzsche's Two Nihilisms
+
+Friedrich Nietzsche gets blamed for nihilism roughly as often as Darwin gets blamed for Social Darwinism, which is to say: constantly, and incorrectly.
+
+Nietzsche didn't celebrate nihilism. He diagnosed it. He saw it coming ("God is dead" was not a victory cry but a warning) and he was terrified of what it would produce. In *The Will to Power* (assembled posthumously from his notebooks, which matters for interpretation), he drew a distinction that most casual nihilists never encounter: *passive* nihilism versus *active* nihilism.
+
+Passive nihilism is the exhausted retreat. The world has no inherent meaning, so I'll withdraw. I won't invest in anything. I'll watch from the sidelines with ironic detachment. Nietzsche called this the attitude of the *last man*, the figure in *Thus Spoke Zarathustra* who has abandoned all striving, all risk, all greatness in favor of comfort and safety. "We have invented happiness," the last man says, blinking.
+
+That's the nihilism you see everywhere now. The memes about how nothing matters. The performative not-caring. The retreat into irony as a hedge against sincerity. It's not brave. It's comfortable. It requires exactly nothing of you.
+
+Active nihilism is something else entirely. It's the recognition that inherited values have collapsed, followed not by withdrawal but by the project of creating new ones. This is the *Ubermensch* in Nietzsche's framework, not a strongman or a superhero, but someone who takes the absence of given meaning as a starting point rather than a final word. The passive nihilist says "nothing matters" and sits down. The active nihilist says "nothing is given" and starts building.
+
+Most people who call themselves nihilists are passive nihilists claiming the credentials of the active ones. They've done the easy part (the demolition) and skipped the hard part (the construction).
+
+## The Camus Problem
+
+Albert Camus opens *The Myth of Sisyphus* with what he calls "the only truly serious philosophical problem": suicide. If life is absurd, if there is no cosmic purpose, no inherent meaning, no divine plan, why not just end it?
+
+This is the honest version of the question that lazy nihilism avoids. If nothing matters, why are you still here? Why do you eat? Why do you argue on the internet? Why do you get annoyed when someone cuts you off in traffic? Your behavior betrays you. You act as though things matter while professing that they don't. That's not philosophy. That's performance.
+
+Camus takes the question seriously and arrives at a specific answer: *we must imagine Sisyphus happy*. Not because pushing the boulder has a purpose. It doesn't. The gods condemned him to futile labor precisely to punish him. But Sisyphus, in Camus' reading, achieves something the passive nihilist never does. He confronts the absurdity head-on, refuses to pretend it away, and chooses engagement anyway.
+
+The boulder will roll back down. Always. And Sisyphus will walk back down the hill, and that walk, the lucid awareness of his condition, is the moment of revolt, of freedom. He knows the situation. He chooses it anyway. This is not optimism. It's defiance.
+
+The distinction between Camus' absurdism and lazy nihilism is the distinction between a person who sees the void and keeps going and a person who sees the void and declares that going is pointless. One requires courage. The other requires nothing at all.
+
+## Kierkegaard's Leap
+
+Before Nietzsche, before Camus, Soren Kierkegaard was grappling with the same terrain from a different angle. His *leap of faith* is often misread as blind religious commitment, but the structure of the argument is subtler than that.
+
+Kierkegaard recognized that reason alone cannot generate meaning. You can't logic your way to a purpose for living. Rational analysis takes you to the edge and then stops. What comes next (the commitment to live as though life has value, to love as though love matters, to act as though action counts) is a leap. Not a conclusion. Not a proof. A choice made without sufficient evidence, in full awareness that the evidence is insufficient.
+
+This is terrifying. It's supposed to be.
+
+The nihilist refuses the leap. And in refusing it, they mistake inaction for rigor. They think they're being more honest by not committing. But Kierkegaard understood (and Camus understood, and Nietzsche understood) that the refusal to choose is itself a choice. You don't escape the game by refusing to play. You just play badly.
+
+## Why Nihilism Feels Good
+
+Let's be honest about the appeal. Nihilism is comfortable. If nothing matters, nothing can hurt you. If you don't invest in anything, you can't be disappointed. If you don't try, you can't fail. The emotional logic is the same as the child who says "I didn't want that anyway" after being denied something they clearly wanted.
+
+It's a defense mechanism. And it works, in the narrow sense that defense mechanisms work: it protects you from vulnerability by preemptively surrendering the things vulnerability makes possible. Meaning, connection, purpose, passion: these all require risk. They require the possibility of loss. The nihilist, by declaring these things illusory, eliminates the risk by eliminating the reward.
+
+Viktor Frankl, who survived Auschwitz and wrote *Man's Search for Meaning*, observed that the prisoners most likely to survive the camps were those who maintained a sense of purpose, a reason to endure. Those who gave up on meaning gave up on living, sometimes within days. This isn't a motivational anecdote. It's clinical observation from inside the worst conditions humans have ever created.
+
+If meaning can persist in a concentration camp, the claim that comfortable Western nihilists have seen through some deeper truth is, frankly, embarrassing.
+
+## The Incomplete Argument
+
+Here's the philosophical case against nihilism in its simplest form: it's incomplete.
+
+"The universe has no inherent meaning." Fine. Granted. Show me the philosopher who disagrees and I'll show you a theologian. The universe doesn't care about you. Stars don't have opinions. Physics is indifferent.
+
+But the conclusion "therefore nothing matters" doesn't follow. It's a non sequitur. The premise eliminates *cosmic* meaning. It says nothing about *human* meaning, the meanings we construct, inhabit, and defend with our lives. The fact that these meanings aren't written into the fabric of reality doesn't make them unreal. Language isn't written into the fabric of reality either, and you're using it right now.
+
+Constructed meaning is still meaning. Chosen purpose is still purpose. The fact that you built it rather than discovered it doesn't diminish it. If anything, it makes it more yours.
+
+The nihilist's error is categorical. They notice that objective meaning doesn't exist and conclude that subjective meaning doesn't count. But you don't live in the objective universe. You live in your experience. And your experience is saturated with things that matter to you whether you admit it or not.
+
+## The Harder Position
+
+The genuinely difficult philosophical position is not nihilism. Nihilism is easy. The genuinely difficult position is this: nothing is guaranteed, nothing is given, the universe is exactly as indifferent as the nihilists say it is, and you choose to give a shit anyway.
+
+You choose to love people who will die. You choose to build things that will decay. You choose to fight for things that may not work. You do this not because you've been tricked into thinking it matters cosmically, but because you've decided it matters to you, and you're willing to live with the weight of that decision.
+
+That takes more than the nihilist is offering. That takes something closer to what Camus was describing when he told us to imagine Sisyphus happy: the conscious, lucid, unsentimental choice to engage with a world that owes you nothing.
+
+Nothing matters? Maybe. But you're still here. You're still reading. Something in you still wants to know, still wants to argue, still wants to care.
+
+Trust that impulse. It's smarter than your nihilism.

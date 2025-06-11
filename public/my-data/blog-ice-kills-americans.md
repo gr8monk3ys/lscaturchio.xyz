@@ -1,0 +1,89 @@
+# ICE Kills Americans
+
+## The Machine Eats Its Own
+
+There's a comfortable fiction Americans like to tell themselves: if you have the right papers, you're safe. If you're a citizen, ICE can't touch you. The system has safeguards. Due process exists.
+
+That fiction kills people.
+
+US citizens get detained by immigration enforcement all the time. They get deported. Some die in detention. Some get dumped in countries they've never lived in, where they don't speak the language, with nothing but the clothes they're wearing. And the most terrifying part? The system works exactly as designed.
+
+Not designed to protect citizens. Designed to process as many bodies as possible, as quickly as possible, with minimal friction. Citizens are just noise in the data.
+
+## How It Happens
+
+The mechanics are brutally simple. Immigration enforcement operates on suspicion, not proof. An accent. A skin tone. A name that sounds "foreign." Being in the wrong neighborhood at the wrong time. That's enough to start the machine.
+
+Once you're in custody, the burden of proof flips. You have to prove you're a citizen. And here's the thing: proving citizenship from inside a detention center is hard. Really hard.
+
+Your birth certificate? It's at home. Your passport? Same. Social Security card? Also at home. The facility doesn't give you access to your belongings. They don't give you time. Phone calls are limited, expensive, and often cut off mid-conversation. Your family might not even know where you are.
+
+The system moves fast. Hearings happen within days, sometimes hours. Deportations happen before families can hire lawyers or locate documents. And immigration courts aren't like criminal courts; you don't get a public defender. You don't get Miranda rights. The constitutional protections Americans assume they have? They don't apply here.
+
+This isn't a bug. It's the entire point.
+
+## The Bureaucratic Grinder
+
+Immigration enforcement is built for speed and volume. Agents have quotas to meet (officially they don't, but they do). Detention facilities get paid per bed filled. Private contractors profit from every day you're locked up. Everyone in the chain has an incentive to keep the machine running, and zero incentive to slow down and verify your status.
+
+Your agent probably has 30 cases to process today. Your hearing officer has 50. Nobody has time to check if you're actually deportable; they just need to check boxes and move to the next case. If you can't produce documentation immediately, you're presumed deportable. That's the default.
+
+And here's where it gets really dark: even when proof of citizenship exists, it gets ignored. Documents get "lost." Translations get delayed. Hearings happen before evidence arrives. The machine has momentum, and momentum doesn't stop just because you found your passport.
+
+Courts have reviewed cases where citizens presented birth certificates, passports, military service records, definitive proof, and still got deported. The paperwork was in the file. It didn't matter. The deportation order had already been signed.
+
+## You Can't Lawyer Your Way Out
+
+The assumption is that a good lawyer fixes this. Get representation, show the papers, walk free. But that's not how it works.
+
+First, most people in immigration detention can't afford lawyers. Immigration cases aren't criminal proceedings, so there's no right to counsel. You either hire someone or you represent yourself. From a detention center. Where you can't make phone calls, access the internet, or review documents. Good luck with that.
+
+Second, even with a lawyer, the timeline is insane. Deportations happen fast. By the time a lawyer gets the case, reviews the evidence, and files motions, their client is already on a plane. Once you're deported, fighting the case becomes exponentially harder. You're in another country, can't access US courts easily, and the government has zero incentive to bring you back. You won. Congratulations. You're still in Honduras.
+
+Third, and this is the part that should terrify everyone, the legal standard for detention is incredibly low. An agent's sworn statement that you admitted to being undocumented is enough. Doesn't matter if you didn't say that. Doesn't matter if you said the opposite. Their word against yours, and their word wins. Every time.
+
+## The Statistical Reality
+
+How often does this happen? Nobody knows. ICE doesn't track it. Courts don't track it. There's no centralized database of citizens detained or deported by immigration enforcement.
+
+What we know comes from lawsuits, journalistic investigations, and advocacy groups piecing together fragments. And even those fragments are horrifying. Hundreds of documented cases. Probably thousands of undocumented ones (the irony is not lost here). Some people spend weeks in detention. Some spend months. A few spend years.
+
+Some never make it back.
+
+There are citizens who died in immigration detention. Medical care in these facilities is notoriously bad: delayed treatment, ignored symptoms, preventable deaths. When you're detained as a deportable alien, your health doesn't matter much. You're going to be someone else's problem soon.
+
+There are citizens who got deported and died in countries they had no connection to. Dumped without money, without contacts, without any support system. Vulnerable and alone in hostile environments.
+
+The machine doesn't apologize. It rarely even acknowledges the mistake.
+
+## Why This Keeps Happening
+
+The system isn't broken. It's working exactly as intended. Immigration enforcement is designed to process people, not protect rights. Speed and volume are features, not bugs.
+
+Accuracy would slow things down. Verification would require resources. Constitutional protections would create friction. None of these serve the system's purpose. The purpose is deportation. Everything else is secondary.
+
+And here's the really insidious part: the system is designed to be opaque. Detention centers are in remote locations. Hearings aren't public. Records aren't easily accessible. Families don't know where their loved ones are. Lawyers can't find clients. Journalists can't investigate.
+
+This opacity is structural. It's not incompetence; it's policy. Because if people could see what was happening inside, they'd be horrified. So the system hides it.
+
+## The Expansion Problem
+
+Right now, this mostly happens to people who "look" undocumented. Brown people. People with accents. People in immigrant communities. But the machinery doesn't care about your actual status; it cares about processing volume.
+
+As enforcement expands, as quotas increase, as the dragnet widens, more citizens will get caught. The pool of "suspicious" people will grow. The agent who used to only question Spanish speakers will start questioning anyone without ID. The system that used to target border regions will start working nationwide.
+
+And the same bureaucratic indifference that deports citizens now will deport more citizens then. Because the incentive structure doesn't change. The lack of oversight doesn't change. The speed and volume requirements don't change.
+
+What changes is scale.
+
+## There Is No Safety
+
+The fundamental lie is that citizenship protects you. It doesn't. Citizenship is a piece of paper, and papers can be ignored, lost, or deemed insufficient by an agent having a bad day.
+
+The only thing that protects you is not entering the system in the first place. Don't get detained. Don't get questioned. Don't be in the wrong place at the wrong time. Don't have the wrong face or the wrong name or the wrong accent.
+
+But that's not really protection. That's just luck.
+
+The machine is indiscriminate. It eats whoever falls into its gears. Citizens are supposed to be exempt, but exemptions require someone to care about checking, and nobody in the chain has time to care. They have quotas to meet.
+
+Your papers won't save you. The machine doesn't read them carefully enough to know the difference.

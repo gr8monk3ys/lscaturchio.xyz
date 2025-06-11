@@ -1,0 +1,79 @@
+# Why We Stopped Repairing Things
+
+## The Toaster That Lasted Thirty Years
+
+My grandmother had a toaster from 1971. Chrome body, mechanical lever, nothing digital. It made toast every morning for three decades. When the heating element burned out in the early '90s, my grandfather replaced it. Cost a few dollars and twenty minutes. The toaster kept going.
+
+I bought a toaster in 2023. It died fourteen months later. I looked into repairing it. The heating element was soldered directly to a proprietary circuit board. Replacement parts didn't exist. The manufacturer's website suggested I recycle it (their word) and buy the new model.
+
+We talk about throwaway culture like it's a moral failing. Like previous generations were simply more virtuous, more patient, more connected to their possessions. This is nostalgia dressed up as ethics. The reality is economic: we built an industrial system where disposal is cheaper than care, and then we acted surprised when people started throwing things away.
+
+## The Cartel That Started It
+
+Planned obsolescence has a birthday. January 15, 1925. That's when representatives from Osram, Philips, General Electric, and other major lightbulb manufacturers met in Geneva to form the Phoebus cartel. Their goal: limit the lifespan of lightbulbs to 1,000 hours.
+
+This wasn't a rumor or a conspiracy theory. It was a documented business agreement with enforcement mechanisms. Members who produced bulbs lasting longer than 1,000 hours were fined. Before the cartel, commercially available bulbs regularly lasted 2,500 hours or more. The cartel deliberately degraded a product to generate repeat purchases.
+
+The Phoebus cartel collapsed in the 1940s, but the principle it established never went away. It metastasized. Every industry internalized the lesson: products that last too long are bad for business. You don't need a formal conspiracy when the economic incentive does the work on its own.
+
+Printers with firmware updates that reject third-party ink cartridges. Phones with batteries sealed behind glued glass. Appliances with plastic gears where metal ones used to be. Software updates that slow down older hardware until it becomes unusable. These aren't accidents. They're design choices. Every one of them trades product longevity for revenue.
+
+## The Labor-Manufacturing Flip
+
+But planned obsolescence alone doesn't explain why we stopped repairing. There's a deeper structural shift.
+
+In 1960, a TV repair cost roughly a quarter of what a new TV cost. The math made sense: fix it. In 2024, a TV repair, if you can even find someone to do it, costs roughly two-thirds of a new TV. The math flips: replace it.
+
+What happened? Manufacturing got cheap. Labor stayed expensive. Between offshoring, automation, and economies of scale, the cost of producing consumer goods dropped dramatically. But the cost of having a skilled human being diagnose a problem, source parts, and perform a repair kept rising with wages.
+
+This created a scissors effect. Every year, new products got cheaper relative to the cost of fixing old ones. At some point (different for every product category, but usually sometime between the 1980s and 2000s), repair crossed the break-even line. It became economically irrational.
+
+And that's before accounting for the parts problem. Manufacturers increasingly refuse to sell replacement components. They use proprietary fasteners, glued assemblies, and integrated circuits that make disassembly destructive. Even if you wanted to fix your washing machine, you literally can't get the part. It's not stocked. It was never intended to be replaced.
+
+Apple's approach to the MacBook battery is the canonical example. For years, they glued the battery to the top case, meaning a battery replacement required replacing the entire upper assembly: keyboard, trackpad, and all. A $50 battery problem became a $500 repair. By design.
+
+## The Knowledge We Lost
+
+Here's what doesn't get enough attention: repair was a culture, not just an economic activity.
+
+Your grandparents didn't repair things because they were morally superior. They repaired things because they knew how, because everyone around them knew how, because the knowledge was ambient and socially transmitted. Fathers taught sons how to fix a leaky faucet. Neighbors borrowed tools. The local appliance repair shop was a community institution. Understanding how things worked was considered a basic life competency.
+
+That knowledge infrastructure is mostly gone. Shop class, where millions of Americans learned basic mechanical skills, has been cut from most school curricula since the 1990s. The number of independent repair shops has declined precipitously. The guy who fixed your TV for thirty years retired and nobody replaced him because the economics don't support it anymore.
+
+What replaced embodied repair knowledge? YouTube tutorials. Which are genuinely useful, but represent a shift from social knowledge to individual knowledge, from embedded skill to looked-up procedure. You can watch a video on how to replace an iPhone screen, but without the muscle memory and contextual understanding that come from years of practice, you're probably going to crack the ribbon cable.
+
+## 6.9 Million Tons
+
+The EPA estimated that the United States generated 6.9 million tons of e-waste in 2021. Phones, laptops, TVs, appliances, cables, chargers, all the detritus of a disposable electronics culture. Only about 17% of it was recycled. The rest went to landfills, where heavy metals leached into groundwater, or got shipped to developing countries where workers dismantled it by hand in conditions that would be illegal here.
+
+This number is growing every year. And it will continue growing as long as the economic logic favors replacement over repair. Every glued battery, every proprietary screw, every firmware lockout, every refusal to sell parts: they all push material toward the waste stream. The environmental cost is externalized. The manufacturer doesn't pay for disposal. You do, through taxes that fund waste management. Or nobody does, and the lead and cadmium enter the water table.
+
+## Kintsugi and the Alternative
+
+The Japanese practice of *kintsugi* repairs broken pottery with lacquer mixed with gold. The repair becomes visible, highlighted rather than hidden. A bowl with golden seams is considered more beautiful than an unbroken one because it carries its history on its surface. The damage is acknowledged. The object gains value through being fixed.
+
+This is a fundamentally different relationship with material objects than the one our economy produces. *Kintsugi* treats a thing as worth caring for. Our economy treats things as worth cycling through.
+
+The contrast isn't just aesthetic. It reflects competing assumptions about what objects are. In a repair culture, a thing is a relationship: you invest time and skill in maintaining it, and it rewards you with continued function and accumulated meaning. In a disposal culture, a thing is a transaction: you buy it, use it until it degrades, discard it, buy another.
+
+Neither is inherently right. But one of them generates 6.9 million tons of e-waste per year and the other doesn't.
+
+## The Right to Repair
+
+The EU has been moving on this. The European Parliament passed right-to-repair legislation requiring manufacturers to make spare parts available, provide repair manuals, and design products that can be disassembled without destruction. Several US states have passed or are considering similar laws, though the American versions tend to be weaker and more riddled with industry-friendly exemptions.
+
+The resistance from manufacturers is fierce and telling. Apple, John Deere, Samsung, and others have lobbied extensively against right-to-repair laws, arguing variously that they threaten intellectual property, compromise safety, or undermine product quality. These arguments are bullshit. What they threaten is the business model that depends on you buying a new one every two years.
+
+John Deere's case is particularly stark. Modern tractors are locked down with software that prevents farmers from performing their own repairs. A farmer whose tractor breaks down during harvest, a time-critical situation where a day of delay can cost tens of thousands of dollars, has to wait for an authorized dealer to come plug in a laptop and reset the firmware. The tractor the farmer bought and paid for won't run without the manufacturer's permission.
+
+This is what happens when repair becomes a revenue stream rather than a user right.
+
+## What It Tells Us
+
+We built an economy where disposal is cheaper than care. Where products are designed to fail. Where the knowledge to fix things has been systematically defunded. Where manufacturers fight legal battles to prevent you from repairing objects you own.
+
+And then we run thinkpieces about how millennials are wasteful.
+
+The question isn't why people stopped repairing things. The question is why we built an economy that punishes them for trying. An economy that values throughput over durability, transactions over relationships, new over maintained.
+
+A toaster that lasts thirty years is a threat to a toaster company. That tells you everything about what the economy optimizes for. And it isn't you.

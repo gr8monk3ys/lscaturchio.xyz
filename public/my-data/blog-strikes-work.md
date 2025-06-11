@@ -1,0 +1,91 @@
+# Strikes Work
+
+## The Inconvenient Truth About Labor Power
+
+There's a question that gets asked, usually by people who've never had to ask it seriously, about whether strikes still work. Whether they're "outdated." Whether there are "better ways" to negotiate.
+
+The answer is simple. Strikes work. They've always worked. That's precisely why so much effort goes into making them illegal, impractical, or unthinkable.
+
+## The Basic Math
+
+Here's something that should be obvious but apparently isn't: all economic value comes from labor. Capital doesn't produce anything. Machines don't operate themselves. Software doesn't write itself (not yet, anyway). Every dollar of profit, every quarterly earnings report, every executive bonus: all of it traces back to workers doing things.
+
+When workers stop doing things, money stops flowing. Immediately. Not in some abstract, theoretical sense. In the very literal sense that trucks stop moving, code stops shipping, customers stop getting served.
+
+This is leverage. Real leverage. Not the kind you get from a sternly-worded email or an anonymous Glassdoor review. The kind that shows up on balance sheets.
+
+And employers know this. They've always known this. That's why the entire history of labor relations is the history of trying to make strikes impossible: through laws, through scabs, through police, through propaganda, through the slow erosion of the very idea that workers have collective power.
+
+## Why You Think Strikes Don't Work
+
+If strikes are so effective, why does everyone act like they're some relic of the industrial age?
+
+Because you've been told they are. Relentlessly. For decades.
+
+The decline of strikes in most Western countries isn't evidence that they stopped working. It's evidence that the campaign to suppress them worked. Union membership dropped. Right-to-work laws spread. The NLRA got interpreted into irrelevance. Striker replacement became standard practice. And perhaps most importantly, the culture shifted.
+
+Workers got convinced that collective action was somehow unprofessional. That it was adversarial in a bad way. That good employees handle things individually. That unions are for factories, not offices. That knowledge workers are too sophisticated for that sort of thing.
+
+But here's the thing. The laws didn't change because strikes stopped being effective. The laws changed specifically because strikes were too effective. You don't spend billions of dollars lobbying for anti-union legislation to stop something that doesn't work.
+
+## The Mechanics of a Strike
+
+A strike is simple. Workers agree not to work until demands are met. That's it.
+
+But simple doesn't mean easy. The hard part isn't the concept; it's the coordination. Getting enough workers to agree. Getting them to hold the line when the bills pile up. Getting them to trust each other when management starts making individual offers, spreading rumors, threatening consequences.
+
+The power of a strike comes from solidarity. One person refusing to work is insubordination. A hundred people refusing to work is a labor action. A thousand is a crisis for management.
+
+And management knows exactly which number they're dealing with. They can survive losing a few people. They cannot survive losing everyone. So their entire strategy, always and without exception, is to prevent that second scenario from ever occurring.
+
+They'll offer bonuses to people who don't strike. They'll hire replacements. They'll threaten to offshore, automate, downsize. They'll drag out negotiations until the strike fund runs dry. They'll get injunctions. They'll do anything except the one thing they absolutely do not want to do: meet the demands.
+
+Because meeting the demands sets a precedent. It proves the model works. It shows other workers what's possible.
+
+## Historical Clarity
+
+Look at any major improvement in working conditions over the past 150 years. The eight-hour day. The weekend. Child labor laws. Workplace safety regulations. Minimum wage. Health insurance. Paid leave.
+
+None of these were gifts. None of them came from enlightened management deciding to do the right thing. None of them emerged naturally from "market forces."
+
+They came from strikes. From workers refusing to work under intolerable conditions until those conditions changed.
+
+The forty-hour workweek? That came from decades of strikes, many of them violent, with violence initiated by employers and police against workers, not the other way around. Workers died for the eight-hour day. They were shot, beaten, imprisoned. And eventually, they won.
+
+This history gets sanitized. It gets turned into something vague and distant, something that happened before the modern economy, before we all became too civilized for that sort of thing. But the mechanism hasn't changed. The only thing that's changed is our willingness to use it.
+
+## The Modern Resurgence
+
+Something shifted recently. Teachers walked out in state after state, in states where strikes were technically illegal, and won. Warehouse workers organized walkouts. Service workers struck for higher wages. Tech workers, supposedly the pampered elite of the modern economy, started talking seriously about collective action.
+
+And guess what happened? Wages went up. Working conditions improved. Management suddenly discovered they could afford things they'd previously insisted were impossible.
+
+Strange how that works.
+
+The pandemic clarified something that had been obscured for decades. "Essential workers" is just another phrase for "workers whose labor we absolutely cannot do without." And it turns out that describes... most workers. The entire economy depends on people showing up and doing their jobs.
+
+When people stop showing up, whether because of a virus or a picket line, the system grinds to a halt. That's not a bug. That's the leverage.
+
+## The Counterargument That Isn't
+
+You'll hear objections. What about automation? What about globalization? What about the gig economy? What about AI?
+
+These are presented as reasons why strikes can't work anymore. They're actually reasons why strikes are harder to organize, which is a completely different thing.
+
+Yes, capital is mobile. Yes, companies can (sometimes) move operations overseas. Yes, technology can (sometimes) replace workers. But "sometimes" isn't "always," and the threat of these things is often more powerful than the reality.
+
+Companies can't offshore everything. They can't automate everything. And even when they can, it takes time, time they don't have when the trucks stop moving and the servers go unattended.
+
+The real question isn't whether strikes work. The real question is whether workers believe they can organize them. And that belief is a self-fulfilling prophecy. If workers think collective action is impossible, it is, because they won't try. If they think it's possible, it becomes possible, because they do.
+
+## The Path Forward
+
+None of this is to say organizing is easy. It isn't. The legal framework is hostile. The cultural headwinds are real. The risks are significant.
+
+But the mechanism works. It's always worked. The only variable is whether enough workers, in enough places, decide to use it.
+
+And that's starting to happen.
+
+The strike isn't a relic. It's a tool, probably the most powerful tool workers have ever had. It got buried under decades of propaganda, legislation, and cultural conditioning. But it never stopped working.
+
+It just stopped being used.
