@@ -44,7 +44,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-2xl font-bold leading-10 tracking-tight"
+            className="text-2xl font-bold leading-10 tracking-tight font-['Space_Mono',monospace] text-stone-800 dark:text-stone-100"
           >
             {title}
           </motion.h2>
@@ -52,7 +52,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-4 text-base leading-7 text-muted-foreground"
+            className="mt-4 text-base leading-7 text-stone-600 dark:text-stone-400"
           >
             {description}
           </motion.p>
@@ -65,7 +65,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: index * 0.1 + 0.4 }}
-                      className="group-hover:text-primary transition-colors"
+                      className="group-hover:text-stone-800 dark:group-hover:text-stone-100 transition-colors font-['Space_Mono',monospace]"
                     >
                       {faq.question}
                     </motion.span>
@@ -75,7 +75,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="text-muted-foreground"
+                      className="text-stone-600 dark:text-stone-400"
                     >
                       {faq.answer}
                     </motion.div>

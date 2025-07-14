@@ -183,15 +183,15 @@ export default function ServicesSection() {
                 setSelectedTab(0);
               }}
               className={cn(
-                "group cursor-pointer rounded-lg p-8 transition-all border",
+                "group cursor-pointer rounded-lg p-8 transition-all border-0",
                 selectedService === index
-                  ? "bg-primary border-primary text-primary-foreground"
-                  : "bg-background hover:bg-accent border-border"
+                  ? "bg-stone-100 dark:bg-stone-700 text-stone-800 dark:text-stone-100 shadow-[inset_2px_2px_5px_rgba(0,0,0,0.05),inset_-2px_-2px_5px_rgba(255,255,255,0.7)] dark:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.2),inset_-1px_-1px_3px_rgba(255,255,255,0.04)]"
+                  : "bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 shadow-[3px_3px_6px_rgba(0,0,0,0.05),-3px_-3px_6px_rgba(255,255,255,0.8)] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.25),-2px_-2px_5px_rgba(255,255,255,0.03)] hover:shadow-[2px_2px_4px_rgba(0,0,0,0.06),-2px_-2px_4px_rgba(255,255,255,0.9)] dark:hover:shadow-[2px_2px_4px_rgba(0,0,0,0.3),-1px_-1px_3px_rgba(255,255,255,0.05)] hover:translate-y-[-2px]"
               )}
             >
               <div className="flex flex-col h-full">
-                <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
-                <p className="text-sm opacity-90 mb-4">{service.subtitle}</p>
+                <h3 className="text-xl font-semibold mb-3 font-['Space_Mono',monospace] text-stone-800 dark:text-stone-100">{service.title}</h3>
+                <p className="text-sm mb-4 text-stone-600 dark:text-stone-400">{service.subtitle}</p>
                 <div className="mt-auto flex items-center">
                   <ArrowUpRight className={cn(
                     "w-5 h-5 transition-transform",
@@ -217,10 +217,10 @@ export default function ServicesSection() {
                 key={tab.name}
                 onClick={() => setSelectedTab(index)}
                 className={cn(
-                  "px-4 py-2 rounded-md transition-all text-sm font-medium",
+                  "px-4 py-2 rounded-lg transition-all text-sm font-medium border-0 font-['Space_Mono',monospace]",
                   selectedTab === index
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary hover:bg-secondary/80"
+                    ? "bg-stone-100 dark:bg-stone-700 text-stone-800 dark:text-stone-100 shadow-[inset_2px_2px_4px_rgba(0,0,0,0.05),inset_-2px_-2px_4px_rgba(255,255,255,0.7)] dark:shadow-[inset_2px_2px_4px_rgba(0,0,0,0.2),inset_-1px_-1px_2px_rgba(255,255,255,0.04)]"
+                    : "bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 shadow-[2px_2px_4px_rgba(0,0,0,0.05),-2px_-2px_4px_rgba(255,255,255,0.7)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.25),-1px_-1px_2px_rgba(255,255,255,0.03)] hover:translate-y-[-1px] hover:shadow-[1px_1px_2px_rgba(0,0,0,0.06),-1px_-1px_2px_rgba(255,255,255,0.8)] dark:hover:shadow-[1px_1px_2px_rgba(0,0,0,0.3),-0.5px_-0.5px_1px_rgba(255,255,255,0.05)]"
                 )}
               >
                 {tab.name}
@@ -234,7 +234,7 @@ export default function ServicesSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="bg-card rounded-lg p-8 border"
+            className="bg-stone-50 dark:bg-stone-800 rounded-lg p-8 border-0 shadow-[3px_3px_6px_rgba(0,0,0,0.05),-3px_-3px_6px_rgba(255,255,255,0.8)] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.25),-2px_-2px_5px_rgba(255,255,255,0.03)]"
           >
             <div className="max-w-3xl">
               <p className="text-lg text-card-foreground leading-relaxed mb-6">

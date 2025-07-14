@@ -13,10 +13,10 @@ const fs = require('fs');
 const path = require('path');
 
 // Identify critical resources to preload
-const criticalResources = [
-  { path: '/images/portrait.jpg', as: 'image' },
-  { path: '/fonts/CalSans-SemiBold.woff2', as: 'font', crossorigin: 'anonymous' }
-];
+// const criticalResources = [
+//   { path: '/images/portrait.jpg', as: 'image' },
+//   { path: '/fonts/CalSans-SemiBold.woff2', as: 'font', crossorigin: 'anonymous' }
+// ];
 
 // External domains to preconnect
 const preconnectDomains = [

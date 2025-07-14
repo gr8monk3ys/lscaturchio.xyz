@@ -1,3 +1,4 @@
+// Rule: TypeScript Usage - Use TypeScript for all code
 import glob from "fast-glob";
 import * as path from "path";
 import fs from "fs/promises";
@@ -12,6 +13,7 @@ interface BlogMeta {
 
 interface Blog extends BlogMeta {
   slug: string;
+  content?: string; // Optional content field
 }
 
 function extractMetaFromContent(content: string, fileName: string): BlogMeta {
@@ -42,10 +44,16 @@ async function importBlog(blogFileName: string): Promise<Blog> {
   try {
     const fileContents = await fs.readFile(fullPath, "utf8");
     const meta = extractMetaFromContent(fileContents, blogFileName);
+    
+    // Extract content for RSS without React components
+    // This regex looks for markdown content after the meta export and initial blank lines
+    const contentMatch = fileContents.match(/export const meta = \{[\s\S]*?\};\s*([\s\S]*)/); 
+    const content = contentMatch ? contentMatch[1].trim() : "";
 
     return {
       slug: blogFileName.replace(/\/content\.mdx$/, ""),
       ...meta,
+      content: content, // Add content to the blog object
     };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error);

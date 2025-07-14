@@ -25,7 +25,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
           alt="thumbnail"
           layout="fill"
           objectFit="contain"
-          className="rounded-md"
+          className="rounded-lg shadow-[2px_2px_4px_rgba(0,0,0,0.1),-2px_-2px_4px_rgba(255,255,255,0.7)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.3),-1px_-1px_3px_rgba(255,255,255,0.05)]"
         />
       </motion.div>
       <div className="flex flex-row justify-center my-4 flex-wrap">
@@ -40,25 +40,27 @@ export const SingleProduct = ({ product }: { product: Product }) => {
               alt="product thumbnail"
               width={60}
               height={60}
-              className="object-cover rounded-md border border-neutral-200 hover:border-neutral-400 transition-colors"
+              className="object-cover rounded-lg shadow-[1px_1px_2px_rgba(0,0,0,0.05),-1px_-1px_2px_rgba(255,255,255,0.6)] dark:shadow-[1px_1px_2px_rgba(0,0,0,0.2),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] hover:shadow-[2px_2px_4px_rgba(0,0,0,0.1),-2px_-2px_4px_rgba(255,255,255,0.7)] dark:hover:shadow-[2px_2px_4px_rgba(0,0,0,0.3),-1px_-1px_3px_rgba(255,255,255,0.05)] transition-all"
             />
           </button>
         ))}
       </div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-8">
-        <Heading className="font-bold text-2xl mb-2">{product.title}</Heading>
+        <Heading className="font-bold text-2xl mb-2 font-space-mono">{product.title}</Heading>
         <div className="flex flex-wrap gap-2 mt-2 md:mt-0">
           {product.stack?.map((stack: string) => (
-            <span
-              key={stack}
-              className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-700"
+            <div
+              key={`chip-${stack}`}
+              className="bg-stone-100 dark:bg-stone-700 px-3 py-2 text-xs font-space-mono text-stone-700 dark:text-stone-300 rounded-lg shadow-[1px_1px_2px_rgba(0,0,0,0.05),-1px_-1px_2px_rgba(255,255,255,0.6)] dark:shadow-[1px_1px_2px_rgba(0,0,0,0.2),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)]"
             >
               {stack}
-            </span>
+            </div>
           ))}
         </div>
       </div>
-      <Paragraph className="mt-4">{product.description}</Paragraph>
+      <Paragraph className="text-stone-600 dark:text-stone-300 font-space-mono leading-relaxed">
+        {product.description}
+      </Paragraph>
       <div className="prose prose-sm md:prose-base max-w-none text-neutral-600 mt-6">
         {product?.content}
       </div>
@@ -66,7 +68,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
         href={product.href}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full mt-6 hover:bg-blue-700 transition-colors"
+        className="inline-flex items-center gap-2 font-space-mono bg-stone-50 dark:bg-stone-800 text-stone-800 dark:text-stone-200 px-4 py-2 rounded-lg mt-6 shadow-[2px_2px_4px_rgba(0,0,0,0.1),-2px_-2px_4px_rgba(255,255,255,0.7)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.3),-1px_-1px_3px_rgba(255,255,255,0.05)] hover:shadow-[1px_1px_2px_rgba(0,0,0,0.05),-1px_-1px_2px_rgba(255,255,255,0.6)] dark:hover:shadow-[1px_1px_2px_rgba(0,0,0,0.2),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] transform transition-all"
       >
         Live Preview
         <svg

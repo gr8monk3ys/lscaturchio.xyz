@@ -34,7 +34,7 @@ export function OptimizedImage({
   className = '',
   fill = false,
   quality = 85,
-  loading = 'lazy',
+  loading = 'eager',
   placeholder = 'empty',
   sizes = fill 
     ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" 
@@ -114,7 +114,7 @@ export function OptimizedImage({
               ? 'scale-105 blur-md grayscale'
               : 'scale-100 blur-0 grayscale-0'
           } transition-all duration-300 ease-in-out object-cover`}
-          onLoadingComplete={() => setIsLoading(false)}
+          onLoad={() => setIsLoading(false)}
           sizes={sizes}
           fetchPriority={fetchPriority}
           style={{

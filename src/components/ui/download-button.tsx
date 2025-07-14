@@ -19,7 +19,7 @@ export function DownloadButton({ href, text = "Download Resume" }: DownloadButto
       <motion.a
         href={href}
         download
-        className="group relative inline-flex items-center justify-center gap-3 rounded-lg border border-zinc-200 bg-white/50 px-6 py-3 text-base font-medium text-zinc-900 backdrop-blur-sm transition-all hover:border-zinc-300 hover:bg-white/80 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100 dark:hover:border-zinc-700 dark:hover:bg-zinc-900/80"
+        className="group relative inline-flex items-center justify-center gap-3 rounded-lg bg-stone-50 dark:bg-stone-800 px-6 py-3 text-base font-medium text-stone-700 dark:text-stone-300 backdrop-blur-sm transition-all shadow-[3px_3px_5px_rgba(0,0,0,0.05),-3px_-3px_5px_rgba(255,255,255,0.8)] dark:shadow-[3px_3px_5px_rgba(0,0,0,0.25),-2px_-2px_5px_rgba(255,255,255,0.03)] hover:shadow-[2px_2px_3px_rgba(0,0,0,0.06),-2px_-2px_3px_rgba(255,255,255,0.9)] dark:hover:shadow-[2px_2px_3px_rgba(0,0,0,0.3),-1px_-1px_2px_rgba(255,255,255,0.05)] hover:translate-y-[-2px] border-0 font-['Space_Mono',monospace]"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >

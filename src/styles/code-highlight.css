@@ -1,0 +1,123 @@
+/* Rule: UI and Styling - Implement Tailwind CSS for styling */
+
+/* Code block container */
+pre {
+  @apply relative overflow-x-auto p-4 rounded-lg my-6 text-sm;
+  @apply bg-stone-100 dark:bg-stone-800;
+  @apply border border-stone-200 dark:border-stone-700;
+}
+
+/* Code element inside pre */
+pre > code {
+  @apply grid;
+  counter-reset: line;
+}
+
+/* Inline code */
+:not(pre) > code {
+  @apply bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded-md text-sm;
+  @apply border border-stone-200 dark:border-stone-700;
+  @apply font-mono font-medium;
+}
+
+/* Line numbers */
+.line {
+  @apply py-0.5 px-4 border-l-2 border-l-transparent;
+}
+
+.line::before {
+  counter-increment: line;
+  content: counter(line);
+  @apply text-stone-400 dark:text-stone-500 mr-4 inline-block w-4 text-right;
+}
+
+/* Highlighted line */
+.line--highlighted {
+  @apply bg-amber-100 dark:bg-amber-900/30 border-l-2 border-l-amber-500;
+}
+
+/* Highlighted word */
+.word--highlighted {
+  @apply bg-amber-300/50 dark:bg-amber-800/50 px-1 py-0.5 rounded;
+}
+
+/* Code title */
+.code-title {
+  @apply bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200;
+  @apply px-4 py-2 text-xs font-mono rounded-t-lg;
+  @apply border-b border-stone-300 dark:border-stone-600;
+}
+
+/* Different tokens */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  @apply text-stone-500 dark:text-stone-400 italic;
+}
+
+.token.punctuation {
+  @apply text-stone-500 dark:text-stone-400;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  @apply text-emerald-600 dark:text-emerald-400;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  @apply text-blue-600 dark:text-blue-400;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  @apply text-amber-600 dark:text-amber-400;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  @apply text-purple-600 dark:text-purple-400;
+}
+
+.token.function,
+.token.class-name {
+  @apply text-rose-600 dark:text-rose-400;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  @apply text-orange-600 dark:text-orange-400;
+}
+
+/* Bash terminal colors */
+.terminal-command {
+  @apply text-green-500 dark:text-green-400 font-bold;
+}
+
+.terminal-output {
+  @apply text-stone-600 dark:text-stone-300;
+}
+
+.terminal-error {
+  @apply text-red-500 dark:text-red-400;
+}
+
+/* Filename comment above code blocks */
+.filename {
+  @apply text-xs text-stone-500 dark:text-stone-400 -mb-2 mt-6 block;
+}

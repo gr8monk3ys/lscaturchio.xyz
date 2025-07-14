@@ -1,8 +1,9 @@
-import { getAllBlogs } from '@/lib/getAllBlogs';
+// Rule: TypeScript Usage - Use TypeScript for all code
+import { getRssBlogs, RssBlog } from '@/lib/getRssBlogs';
 import { Feed } from 'feed';
 
 export async function GET() {
-  const blogs = await getAllBlogs();
+  const blogs = await getRssBlogs();
   const siteURL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lscaturchio.xyz';
   const date = new Date();
 
@@ -29,14 +30,14 @@ export async function GET() {
     },
   });
 
-  blogs.forEach((post) => {
+  blogs.forEach((post: RssBlog) => {
     const url = `${siteURL}/blog/${post.slug}`;
     feed.addItem({
       title: post.title,
       id: url,
       link: url,
       description: post.description,
-      content: post.content,
+      content: post.content || post.description, // Use extracted content or fallback to description
       author: [
         {
           name: "Lorenzo Scaturchio",

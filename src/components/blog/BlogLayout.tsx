@@ -1,21 +1,37 @@
 "use client";
 
+// Rule: TypeScript Usage - Use TypeScript for all code
 import React, { useState, useEffect, useRef, ReactNode } from "react";
+import { MDXProvider } from "@/components/mdx/MDXProvider";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { formatDate } from "../../../lib/formatDate";
+import { calculateReadingTime } from "@/lib/readingTime";
 import { Container } from "../Container";
 import { Heading } from "../Heading";
 import { Paragraph } from "../Paragraph";
 import { Prose } from "@/components/blog/Prose";
-import { ArrowLeft, Share2, Calendar, Tag, Play, Pause } from "lucide-react";
+import { ArrowLeft, Share2, Calendar, Tag, Play, Pause, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CommentSection } from "@/components/ui/comment-section";
+// CommentSection import removed - unused
 import Script from "next/script";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
-import { AdBanner } from "@/components/ads/AdBanner";
-import { InArticleAd } from "@/components/ads/InArticleAd";
+// Ad components removed to improve performance
 import { FallbackImage } from "@/components/ui/fallback-image";
+import { RelatedPosts } from "@/components/blog/RelatedPosts";
+import { RelatedPost } from "@/lib/getRelatedPosts";
+import { BlogJsonLd } from "@/components/seo/BlogJsonLd";
+import { ReadingProgressBar } from "@/components/blog/ReadingProgressBar";
+import { SocialShare } from "@/components/blog/SocialShare";
+import { NewsletterForm } from "@/components/ui/newsletter-form";
+import { TextToSpeech } from "@/components/blog/TextToSpeech";
+import { TableOfContents } from "@/components/blog/TableOfContents";
+import { ReadingTimeBadge } from "@/components/blog/ReadingTimeBadge";
+import { MobileTableOfContents } from "@/components/blog/MobileTableOfContents";
+// Removed duplicate progress indicator import
+import { PrintFriendly } from "@/components/blog/PrintFriendly";
+import { ShareMenu } from "@/components/blog/ShareMenu";
+import { WithMDXErrorBoundary } from "@/components/blog/MDXErrorBoundary";
 
 interface BlogMeta {
   title: string;
@@ -30,6 +46,9 @@ interface BlogLayoutProps {
   meta: BlogMeta;
   isRssFeed?: boolean;
   previousPathname?: string;
+  content?: string;
+  relatedPosts?: RelatedPost[];
+  slug?: string;
 }
 
 export function BlogLayout({
@@ -37,11 +56,15 @@ export function BlogLayout({
   meta,
   isRssFeed = false,
   previousPathname,
-}: BlogLayoutProps) {
+  content,
+  relatedPosts = [],
+  slug = "",
+}: BlogLayoutProps): JSX.Element {
   const router = useRouter();
   const [isPlaying, setIsPlaying] = useState(false);
   const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [readingTime, setReadingTime] = useState({ text: "" });
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.speechSynthesis) {
@@ -50,13 +73,18 @@ export function BlogLayout({
       setUtterance(newUtterance);
 
       return () => {
-        if (isPlaying) {
-          window.speechSynthesis.cancel();
-          setIsPlaying(false);
-        }
+        window.speechSynthesis.cancel();
       };
     }
-  }, [isPlaying]);
+  }, []);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      const textContent = content || contentRef.current.textContent || '';
+      const calculatedReadingTime = calculateReadingTime(textContent);
+      setReadingTime(calculatedReadingTime);
+    }
+  }, [content]);
 
   const handlePlay = () => {
     if (!contentRef.current || !utterance) return;
@@ -72,51 +100,43 @@ export function BlogLayout({
   };
 
   if (isRssFeed) {
-    return children;
+    return <>{children}</>;
   }
 
-  // Create JSON-LD structured data for the blog post
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": meta.title,
-    "description": meta.description,
-    "image": `https://lscaturchio.xyz${meta.image}`,
-    "datePublished": meta.date,
-    "author": {
-      "@type": "Person",
-      "name": "Lorenzo Scaturchio"
-    },
-    "publisher": {
-      "@type": "Person",
-      "name": "Lorenzo Scaturchio",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://lscaturchio.xyz/signature.png"
-      }
-    },
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": typeof window !== 'undefined' ? window.location.href : ""
-    },
-    "keywords": meta.tags.join(", ")
-  };
+  // Get the current URL for structured data
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : "";
 
   return (
-    <Container className="mt-16 lg:mt-32">
-      <Script id="blog-schema" type="application/ld+json">
-        {JSON.stringify(jsonLd)}
-      </Script>
-      <div className="xl:relative">
-        <div className="mx-auto max-w-2xl">
-          <BreadcrumbNav customSegments={{ blog: "Blog" }} />
+    <>
+      {/* Top reading progress bar - using a single consistent indicator */}
+      <ReadingProgressBar targetSelector="article" color="#3e4c59" height={3} />
+      <Container className="mt-16 lg:mt-32">
+            <BlogJsonLd 
+        title={meta.title}
+        description={meta.description}
+        datePublished={meta.date}
+        images={[`https://lscaturchio.xyz${meta.image}`]}
+        url={currentUrl}
+        tags={meta.tags}
+        readingTime={readingTime.text}
+      />
+        <div className="xl:relative">
+          <div className="mx-auto max-w-2xl lg:max-w-5xl lg:grid lg:grid-cols-4 lg:gap-8">
+            {/* Table of Contents sidebar - only shown on larger screens */}
+            <div className="hidden lg:block lg:col-span-1 lg:sticky lg:top-24 lg:self-start h-fit">
+              <TableOfContents contentSelector="#blog-content" maxDepth={3} minItems={2} />
+            </div>
+            
+            {/* Main content */}
+            <div className="lg:col-span-3">
+              <BreadcrumbNav customSegments={{ blog: "Blog" }} />
           
           {previousPathname && (
             <motion.button
               type="button"
               onClick={() => router.back()}
               aria-label="Go back to blogs"
-              className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
+              className="group mb-8 flex h-10 w-10 items-center justify-center rounded-lg bg-stone-50 dark:bg-stone-800 shadow-[2px_2px_5px_rgba(0,0,0,0.05),-2px_-2px_5px_rgba(255,255,255,0.8)] dark:shadow-[2px_2px_5px_rgba(0,0,0,0.2),-1px_-1px_3px_rgba(255,255,255,0.05)] hover:shadow-[1px_1px_3px_rgba(0,0,0,0.1),-1px_-1px_3px_rgba(255,255,255,0.9)] dark:hover:shadow-[1px_1px_3px_rgba(0,0,0,0.3),-0.5px_-0.5px_2px_rgba(255,255,255,0.06)] transition-all transform active:scale-95"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -130,28 +150,27 @@ export function BlogLayout({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    <time dateTime={meta.date} className="text-stone-600">
-                      {formatDate(meta.date)}
-                    </time>
+                <div className="flex items-center text-sm font-space-mono text-stone-600 dark:text-stone-400 mb-6 gap-3 flex-wrap">
+                  <div className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-1.5" />
+                    <span>{formatDate(meta.date)}</span>
                   </div>
+                  <ReadingTimeBadge readingTime={readingTime.text} size="sm" />
                   <div className="flex items-center gap-2">
                     <Tag className="h-4 w-4" />
                     <div className="flex gap-2">
                       {meta.tags.map((tag) => (
-                        <span key={tag} className="text-stone-600">
+                        <span key={tag} className="text-stone-600 dark:text-stone-400 font-space-mono">
                           {tag}
                         </span>
                       ))}
                     </div>
                   </div>
                 </div>
-                <Heading className="mt-6 text-4xl font-bold tracking-tight text-stone-800 sm:text-5xl">
+                <Heading className="mt-6 text-4xl font-space-mono font-bold tracking-tight text-stone-800 dark:text-stone-100 sm:text-5xl">
                   {meta.title}
                 </Heading>
-                <Paragraph className="mt-4 text-sm leading-8 text-stone-600">
+                <Paragraph className="mt-4 text-sm font-space-mono leading-8 text-stone-600 dark:text-stone-400">
                   {meta.description}
                 </Paragraph>
               </motion.div>
@@ -159,7 +178,7 @@ export function BlogLayout({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="mt-8 aspect-video relative overflow-hidden rounded-2xl bg-stone-100"
+                className="mt-8 aspect-video relative overflow-hidden rounded-lg bg-stone-50 dark:bg-stone-800 shadow-[5px_5px_15px_rgba(0,0,0,0.08),-5px_-5px_15px_rgba(255,255,255,0.9)] dark:shadow-[5px_5px_15px_rgba(0,0,0,0.4),-5px_-5px_15px_rgba(255,255,255,0.03)]"
               >
                 <FallbackImage
                   src={meta.image}
@@ -176,65 +195,45 @@ export function BlogLayout({
               transition={{ duration: 0.5, delay: 0.4 }}
               className="mt-8"
             >
-              <div className="flex justify-between items-center mb-8">
-                <Button
-                  onClick={handlePlay}
-                  variant="outline"
-                  className="flex items-center gap-2"
-                >
-                  {isPlaying ? (
-                    <>
-                      <Pause className="h-4 w-4" /> Pause
-                    </>
-                  ) : (
-                    <>
-                      <Play className="h-4 w-4" /> Listen
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={() => {
-                    navigator.share({
-                      title: meta.title,
-                      text: meta.description,
-                      url: window.location.href,
-                    });
-                  }}
-                  variant="outline"
-                  className="flex items-center gap-2"
-                >
-                  <Share2 className="h-4 w-4" /> Share
-                </Button>
+              <div className="mb-8">
+                <WithMDXErrorBoundary fallback={<div className="p-4 rounded-md bg-stone-100 dark:bg-stone-800 text-sm font-space-mono">Audio player unavailable</div>}>
+                  <TextToSpeech 
+                    content={content || contentRef.current?.textContent || ''} 
+                    title={meta.title} 
+                  />
+                </WithMDXErrorBoundary>
               </div>
               
               {/* Top of article ad */}
-              <AdBanner slot="1234567890" format="horizontal" />
+              {/* Ad banner removed for performance */}
               <Prose>
                 <div ref={contentRef}>
-                  {/* Inject in-article ad after the first few paragraphs */}
-                  {React.Children.map(children, (child, index) => {
-                    if (index === 3) { // After approximately 3 paragraphs
-                      return (
-                        <>
-                          {child}
-                          <InArticleAd slot="2345678901" />
-                        </>
-                      );
-                    } else if (index === 8) { // After approximately 8 paragraphs
-                      return (
-                        <>
-                          {child}
-                          <InArticleAd slot="3456789012" />
-                        </>
-                      );
-                    }
-                    return child;
-                  })}
+                  <MDXProvider>
+                    {/* Inject in-article ad after the first few paragraphs */}
+                    {React.Children.map(children, (child, index) => {
+                      if (index === 3) { // After approximately 3 paragraphs
+                        return (
+                          <>
+                            {child}
+                            {/* In-article ad removed for performance */}
+                          </>
+                        );
+                      } else if (index === 8) { // After approximately 8 paragraphs
+                        return (
+                          <>
+                            {child}
+                            {/* In-article ad removed for performance */}
+                          </>
+                        );
+                      }
+                      return child;
+                    })}
+                  </MDXProvider>
                 </div>
               </Prose>
               
               {/* Bottom of article ad */}
-              <AdBanner slot="4567890123" format="horizontal" className="mt-8" />
+              {/* Bottom ad banner removed for performance */}
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -244,9 +243,89 @@ export function BlogLayout({
             >
               {/* <CommentSection /> */}
             </motion.div>
+            
+            {/* Related Posts Section */}
+            {relatedPosts && relatedPosts.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+              >
+                <RelatedPosts posts={relatedPosts || []} currentSlug={slug} />
+              </motion.div>
+            )}
+            
+            {/* Social sharing and newsletter */}
+            <div className="mt-16 space-y-8">
+              <SocialShare 
+                title={meta.title}
+                url={currentUrl}
+                description={meta.description}
+              />
+              
+              <NewsletterForm />
+            </div>
           </article>
         </div>
-      </div>
-    </Container>
-  );
-}
+            
+            {/* Sidebar content */}
+            <div className="hidden lg:block">
+              <div className="sticky top-8 space-y-6">
+                <TableOfContents 
+                  contentSelector=".prose" 
+                  maxDepth={3} 
+                  className="mb-6" 
+                />
+                
+                <div className="rounded-lg neu-card bg-stone-50 dark:bg-stone-800 p-4 border-none">
+                  <h3 className="font-medium text-stone-800 dark:text-stone-200 mb-3">Published</h3>
+                  <div className="text-sm text-stone-600 dark:text-stone-400">
+                    {formatDate(meta.date)}
+                  </div>
+                </div>
+                
+                {meta.tags.length > 0 && (
+                  <div className="rounded-lg neu-card bg-stone-50 dark:bg-stone-800 p-4 border-none">
+                    <h3 className="font-medium text-stone-800 dark:text-stone-200 mb-3">Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {meta.tags.map(tag => (
+                        <a
+                          key={tag}
+                          href={`/blog/tag/${encodeURIComponent(tag.toLowerCase())}`}
+                          className="inline-flex items-center rounded-lg bg-stone-100 dark:bg-stone-700 px-2.5 py-1 text-xs text-stone-700 dark:text-stone-300 shadow-[1px_1px_2px_rgba(0,0,0,0.05),-1px_-1px_2px_rgba(255,255,255,0.6)] dark:shadow-[1px_1px_2px_rgba(0,0,0,0.2),-1px_-1px_2px_rgba(255,255,255,0.04)] hover:shadow-[2px_2px_3px_rgba(0,0,0,0.1),-2px_-2px_3px_rgba(255,255,255,0.7)] dark:hover:shadow-[2px_2px_3px_rgba(0,0,0,0.3),-2px_-2px_3px_rgba(255,255,255,0.05)] transition-all"
+                        >
+                          {tag}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="mt-6 rounded-lg neu-card bg-stone-50 dark:bg-stone-800 p-4 border-none">
+                  <h3 className="font-medium text-stone-800 dark:text-stone-200 mb-3">Share & Print</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <PrintFriendly 
+                      title={meta.title}
+                      date={meta.date}
+                      url={currentUrl}
+                      contentSelector="#blog-content"
+                    />
+                    <ShareMenu 
+                      title={meta.title}
+                      description={meta.description}
+                      url={currentUrl}
+                      size="sm"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Container>
+      
+      {/* Article progress indicator */}
+      {/* Removed duplicate progress indicator */}
+    </>);
+  }
+

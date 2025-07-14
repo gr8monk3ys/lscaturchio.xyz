@@ -4,16 +4,9 @@ import { motion, useInView } from "framer-motion";
 import { ArrowUpRight, Calendar } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
-import { useRef, useEffect, useState } from "react";
-
-interface BlogPost {
-  title: string;
-  description: string;
-  date: string;
-  slug: string;
-  tags: string[];
-  image?: string;
-}
+import { useRef, useEffect } from "react";
+// Import the hook for centralized blog metadata
+import { useAllBlogs, BlogData } from "@/lib/useBlogData";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -31,28 +24,18 @@ const itemVariants = {
   show: { opacity: 1, y: 0 }
 };
 
-export function RecentBlogs() {
+export function RecentBlogs(): JSX.Element {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
-  const [blogs, setBlogs] = useState<BlogPost[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  
+  // Use the centralized blog hook instead of direct API call
+  const { blogs, isLoading } = useAllBlogs();
+  
+  // Get only the most recent 3 blogs
+  const recentBlogs = blogs
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3);
 
-  useEffect(() => {
-    async function fetchBlogs() {
-      try {
-        const response = await fetch('/api/blogs');
-        if (!response.ok) throw new Error('Failed to fetch blogs');
-        const data = await response.json();
-        setBlogs(data);
-      } catch (error) {
-        console.error('Error fetching blogs:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchBlogs();
-  }, []);
 
   if (isLoading) {
     return (
@@ -65,7 +48,7 @@ export function RecentBlogs() {
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="animate-pulse rounded-xl bg-secondary/50 h-[300px]"
+                className="animate-pulse rounded-lg neu-card bg-stone-50 dark:bg-stone-800 h-[300px]"
               />
             ))}
           </div>
@@ -81,7 +64,7 @@ export function RecentBlogs() {
           <h2 className="text-3xl font-bold">Recent Blogs</h2>
           <Link 
             href="/blog"
-            className="group inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="group inline-flex items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-lg bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 shadow-[1px_1px_2px_rgba(0,0,0,0.05),-1px_-1px_2px_rgba(255,255,255,0.6)] dark:shadow-[1px_1px_2px_rgba(0,0,0,0.2),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] hover:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.05),-0.5px_-0.5px_1px_rgba(255,255,255,0.7)] dark:hover:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.2),-0.25px_-0.25px_0.5px_rgba(255,255,255,0.04)] transition-all hover:translate-y-[-1px]"
           >
             View all blogs
             <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -94,11 +77,11 @@ export function RecentBlogs() {
           animate={isInView ? "show" : "hidden"}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {blogs.map((post) => (
+          {recentBlogs.map((post) => (
             <motion.div
               key={post.slug}
               variants={itemVariants}
-              className="group relative flex flex-col overflow-hidden rounded-xl bg-secondary/50 transition-all hover:bg-secondary/70"
+              className="group relative flex flex-col overflow-hidden rounded-lg neu-card bg-stone-50 dark:bg-stone-800 hover:shadow-[2px_2px_5px_rgba(0,0,0,0.08),-2px_-2px_5px_rgba(255,255,255,0.8)] dark:hover:shadow-[2px_2px_5px_rgba(0,0,0,0.3),-2px_-2px_5px_rgba(255,255,255,0.05)] transition-all"
             >
               <Link href={`/blog/${post.slug}`} className="flex flex-col flex-1 p-6">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
@@ -119,7 +102,7 @@ export function RecentBlogs() {
                     <Badge
                       key={tag}
                       variant="secondary"
-                      className="px-2 py-0.5 text-xs font-medium"
+                      className="px-2 py-0.5 text-xs font-medium bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 shadow-[1px_1px_2px_rgba(0,0,0,0.05),-1px_-1px_2px_rgba(255,255,255,0.6)] dark:shadow-[1px_1px_2px_rgba(0,0,0,0.2),-1px_-1px_2px_rgba(255,255,255,0.04)]"
                     >
                       {tag}
                     </Badge>

@@ -67,6 +67,7 @@ export function AboutHero() {
             src="/images/coachella.png"
             alt="Lorenzo Scaturchio at Coachella"
             fill
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover transition-all hover:scale-105 duration-500"
             priority
           />

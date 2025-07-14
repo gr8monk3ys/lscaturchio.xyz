@@ -7,7 +7,8 @@ import { motion } from 'framer-motion';
 import Image from "next/image";
 import { navigation } from '@/constants/navlinks';
 
-export function Navbar() {
+// Rule: TypeScript Usage - Use TypeScript for all code
+export function Navbar({ children }: { children?: React.ReactNode }): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
 
@@ -24,7 +25,7 @@ export function Navbar() {
     <>
       <header
         className={`fixed inset-x-0 top-0 z-[50] backdrop-blur-sm transition-all ${
-          isScrolled ? 'border-b bg-background/80' : 'bg-background/0'
+          isScrolled ? 'shadow-[0_3px_6px_rgba(0,0,0,0.05),0_2px_4px_rgba(255,255,255,0.1)] dark:shadow-[0_3px_6px_rgba(0,0,0,0.2),0_1px_3px_rgba(255,255,255,0.02)] bg-stone-50/95 dark:bg-stone-900/95' : 'bg-stone-50/0 dark:bg-stone-900/0'
         }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -38,7 +39,8 @@ export function Navbar() {
                   width={200}
                   height={40}
                   priority
-                  className="w-auto h-16"
+                  className="h-16" 
+                  style={{ width: 'auto' }}
                 />
               </Link>
             </div>
@@ -51,16 +53,16 @@ export function Navbar() {
                     <li key={item.name}>
                       <Link
                         href={item.href}
-                        className={`relative px-3 py-2 text-sm font-medium transition-colors ${
+                        className={`relative px-3 py-2 text-sm font-medium transition-all ${
                           pathname === item.href
-                            ? 'text-foreground'
-                            : 'text-foreground/60 hover:text-foreground/80'
+                            ? 'text-stone-800 dark:text-stone-100'
+                            : 'text-stone-600 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 hover:translate-y-[-1px]'
                         }`}
                       >
                         {item.name}
                         {pathname === item.href && (
                           <motion.div
-                            className="absolute bottom-0 left-0 h-0.5 w-full bg-primary"
+                            className="absolute bottom-0 left-0 h-0.5 w-full bg-primary shadow-[0_0_2px_rgba(0,0,0,0.1)]"
                             layoutId="navbar-underline"
                             transition={{ type: "spring", bounce: 0.25 }}
                           />
@@ -72,8 +74,10 @@ export function Navbar() {
               </nav>
             </div>
 
-            {/* Empty div for layout balance */}
-            <div className="w-[200px]" />
+            {/* Right section - theme toggle and other controls */}
+            <div className="w-[200px] flex justify-end items-center">
+              {children}
+            </div>
           </div>
         </div>
       </header>

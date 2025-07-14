@@ -90,7 +90,7 @@ export function RecentProjects() {
           <h2 className="text-3xl font-bold">Recent Updates</h2>
           <Link 
             href="/projects"
-            className="group inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="group inline-flex items-center gap-1 text-sm font-medium px-3 py-1.5 rounded-lg bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 shadow-[1px_1px_2px_rgba(0,0,0,0.05),-1px_-1px_2px_rgba(255,255,255,0.6)] dark:shadow-[1px_1px_2px_rgba(0,0,0,0.2),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] hover:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.05),-0.5px_-0.5px_1px_rgba(255,255,255,0.7)] dark:hover:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.2),-0.25px_-0.25px_0.5px_rgba(255,255,255,0.04)] transition-all hover:translate-y-[-1px]"
           >
             View all projects
             <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -109,7 +109,7 @@ export function RecentProjects() {
               <motion.div
                 key={i}
                 variants={itemVariants}
-                className="bg-secondary/50 rounded-xl p-4 h-[200px] animate-pulse"
+                className="neu-card bg-stone-50 dark:bg-stone-800 rounded-lg p-4 h-[200px] animate-pulse"
               />
             ))
           ) : (
@@ -117,7 +117,7 @@ export function RecentProjects() {
               <motion.div
                 key={repo.href}
                 variants={itemVariants}
-                className="group relative bg-secondary/50 hover:bg-secondary/70 rounded-xl p-4 transition-colors"
+                className="group relative neu-card bg-stone-50 dark:bg-stone-800 hover:shadow-[2px_2px_5px_rgba(0,0,0,0.08),-2px_-2px_5px_rgba(255,255,255,0.8)] dark:hover:shadow-[2px_2px_5px_rgba(0,0,0,0.3),-2px_-2px_5px_rgba(255,255,255,0.05)] rounded-lg p-5 transition-all"
               >
                 <div className="space-y-2">
                   <div className="flex items-start justify-between gap-2">
@@ -126,7 +126,7 @@ export function RecentProjects() {
                       href={repo.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="shrink-0 size-8 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                      className="shrink-0 size-8 flex items-center justify-center rounded-full bg-stone-100 dark:bg-stone-700 text-stone-800 dark:text-stone-200 shadow-[2px_2px_4px_rgba(0,0,0,0.05),-2px_-2px_4px_rgba(255,255,255,0.6)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.2),-2px_-2px_4px_rgba(255,255,255,0.04)] hover:shadow-[1px_1px_2px_rgba(0,0,0,0.05),-1px_-1px_2px_rgba(255,255,255,0.6)] dark:hover:shadow-[1px_1px_2px_rgba(0,0,0,0.2),-1px_-1px_2px_rgba(255,255,255,0.04)] hover:bg-stone-200 dark:hover:bg-stone-600 transition-all"
                     >
                       <ArrowUpRight className="size-4" />
                     </Link>
@@ -140,7 +140,7 @@ export function RecentProjects() {
                         <Badge 
                           key={tech} 
                           variant="secondary"
-                          className="transition-colors group-hover:bg-primary/10 group-hover:text-primary"
+                          className="transition-all bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 shadow-[1px_1px_2px_rgba(0,0,0,0.05),-1px_-1px_2px_rgba(255,255,255,0.6)] dark:shadow-[1px_1px_2px_rgba(0,0,0,0.2),-1px_-1px_2px_rgba(255,255,255,0.04)] group-hover:shadow-[0px_0px_1px_rgba(0,0,0,0.05),0px_0px_1px_rgba(255,255,255,0.6)] group-hover:bg-stone-200 dark:group-hover:bg-stone-600 group-hover:text-stone-900 dark:group-hover:text-stone-100"
                         >
                           {tech}
                         </Badge>

@@ -1,51 +1,31 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
-
 import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
 
 interface TabProps {
   text: string
   selected: boolean
-  setSelected: (text: string) => void
+  setSelected: (value: string) => void
   discount?: boolean
 }
 
-export function Tab({
-  text,
-  selected,
-  setSelected,
-  discount = false,
-}: TabProps) {
+export function Tab({ text, selected, setSelected, discount = false }: TabProps) {
   return (
     <button
       onClick={() => setSelected(text)}
       className={cn(
-        "relative w-fit px-4 py-2 text-sm font-semibold capitalize",
-        "text-foreground transition-colors",
-        discount && "flex items-center justify-center gap-2.5"
+        "relative flex h-9 items-center justify-center rounded-full px-4 text-sm font-space-mono transition duration-200 ease-in-out focus:outline-none",
+        selected
+          ? "bg-stone-100 text-stone-800 dark:bg-stone-800 dark:text-stone-100 shadow-neu-inset"
+          : "hover:text-stone-700 dark:hover:text-stone-300"
       )}
     >
-      <span className="relative z-10">{text}</span>
-      {selected && (
-        <motion.span
-          layoutId="tab"
-          transition={{ type: "spring", duration: 0.4 }}
-          className="absolute inset-0 z-0 rounded-full bg-background shadow-sm"
-        />
-      )}
+      {text}
       {discount && (
-        <Badge
-          variant="secondary"
-          className={cn(
-            "relative z-10 whitespace-nowrap shadow-none",
-            selected && "bg-muted"
-          )}
-        >
-          Save 20%
-        </Badge>
+        <span className="absolute -right-2 -top-1 flex h-5 w-12 items-center justify-center rounded-full bg-emerald-600 text-xs text-white font-space-mono">
+          -25%
+        </span>
       )}
     </button>
   )

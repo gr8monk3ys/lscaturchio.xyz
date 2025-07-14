@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 import createMDX from '@next/mdx';
 import remarkGfm from 'remark-gfm';
-import rehypePrism from '@mapbox/rehype-prism';
+import rehypePrettyCode from 'rehype-pretty-code';
 
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
@@ -14,17 +14,15 @@ const nextConfig = {
   },
   poweredByHeader: false,
   compress: true,
-  swcMinify: true,
   reactStrictMode: true,
   experimental: {
     optimizeCss: true,
-    legacyBrowsers: false,
     scrollRestoration: true,
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Performance optimizations
+  // Performance optimizations and Node.js polyfills
   webpack: (config, { dev, isServer }) => {
     // Only run in production client-side builds
     if (!dev && !isServer) {
@@ -39,14 +37,70 @@ const nextConfig = {
       };
     }
     
+    // Handle Node.js modules in client components
+    if (!isServer) {
+      // For Node.js native modules that can't be used in the browser
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false, 
+        'fs/promises': false,
+        path: false,
+        os: false,
+        crypto: false,
+        stream: false,
+        util: false,
+        assert: false,
+        process: false,
+        buffer: false,
+        querystring: false,
+      };
+    }
+    
     return config;
+  },
+};
+
+// Syntax highlighting configuration
+const prettyCodeOptions = {
+  // Use Shiki theme
+  theme: {
+    light: 'github-light',
+    dark: 'github-dark',
+  },
+  keepBackground: false, // Remove background to support dark mode
+  tokensMap: {
+    // Map tokens to specific html attributes
+    // to provide more metadata for styling
+    fn: 'function',
+    objKey: 'property',
+  },
+  filterMetaString: (string) => string,
+  onVisitLine(node) {
+    // Prevent lines from collapsing in `display: grid` mode
+    if (node.children.length === 0) {
+      node.children = [{ type: 'text', value: ' ' }];
+    }
+  },
+  onVisitHighlightedLine(node) {
+    // Add line highlighting class
+    node.properties.className.push('line--highlighted');
+  },
+  onVisitHighlightedWord(node) {
+    // Add word highlighting class
+    node.properties.className = ['word--highlighted'];
   },
 };
 
 const withMDX = createMDX({
   options: {
     remarkPlugins: [remarkGfm],
-    rehypePlugins: [rehypePrism],
+    rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
+    providerImportSource: "@mdx-js/react",
+    mdxOptions: {
+      development: process.env.NODE_ENV === 'development',
+      jsx: true,
+      jsxImportSource: 'react',
+    },
   },
 });
 

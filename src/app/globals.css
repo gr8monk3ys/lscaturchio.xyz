@@ -2,49 +2,134 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import custom code syntax highlighting styles */
+@import '../styles/code-highlight.css';
+
 @layer base {
   :root {
+    /* Rule: UI and Styling - Use a minimal modern design */
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 82 32% 16%;
+    --primary: hsl(220, 14%, 36%); /* More subdued blue-gray instead of bright green */
     --primary-foreground: 0 0% 100%;
-    --secondary: 82 31% 32%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
+    --secondary: 220 13% 91%; /* Lighter, more subtle secondary */
+    --secondary-foreground: hsl(220, 14%, 36%);
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 8% 46%;
+    --accent: 220 14% 96%;
+    --accent-foreground: hsl(220, 14%, 36%);
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 82 32% 16%;
-    --radius: 0.5rem;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: hsl(220, 14%, 36%);
+    --radius: 0.375rem; /* Consistent rounded-md for modern look */
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 82 32% 16%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 82 31% 32%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    /* Rule: UI and Styling - Use a minimal modern design */
+    --background: 220 14% 10%; /* Dark blue-gray instead of black */
+    --foreground: 0 0% 95%;
+    --card: 220 14% 13%;
+    --card-foreground: 0 0% 95%;
+    --popover: 220 14% 10%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 220 14% 60%; /* Lighter blue-gray */
+    --primary-foreground: 220 14% 10%;
+    --secondary: 220 14% 17%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 220 14% 17%;
+    --muted-foreground: 220 14% 65%;
+    --accent: 220 14% 17%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 82 32% 16%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --border: 220 14% 17%;
+    --input: 220 14% 17%;
+    --ring: 220 14% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Modern UI styles */
+.glass-effect {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 dark:bg-black/30 dark:border-white/10;
+}
+
+.frosted-glass {
+  @apply glass-effect shadow-glass;
+}
+
+/* Typography utility classes */
+.font-brutalist {
+  @apply font-space-mono tracking-tight;
+}
+
+.font-brutalist-heading {
+  @apply font-space-mono font-bold tracking-tight;
+}
+
+.font-brutalist-body {
+  @apply font-space-mono text-base tracking-tight;
+}
+
+/* Neumorphic design system */
+.neu-element {
+  @apply bg-stone-50 dark:bg-stone-800 rounded-md shadow-[5px_5px_10px_rgba(0,0,0,0.06),-5px_-5px_10px_rgba(255,255,255,0.8)] dark:shadow-[5px_5px_10px_rgba(0,0,0,0.3),-5px_-5px_10px_rgba(255,255,255,0.05)];
+}
+
+.neu-element-pressed {
+  @apply bg-stone-50 dark:bg-stone-800 rounded-md shadow-[inset_5px_5px_10px_rgba(0,0,0,0.06),inset_-5px_-5px_10px_rgba(255,255,255,0.8)] dark:shadow-[inset_5px_5px_10px_rgba(0,0,0,0.3),inset_-5px_-5px_10px_rgba(255,255,255,0.05)];
+}
+
+.neu-card {
+  @apply bg-stone-50 dark:bg-stone-800 rounded-md p-4 shadow-[5px_5px_15px_rgba(0,0,0,0.08),-5px_-5px_15px_rgba(255,255,255,0.9)] dark:shadow-[5px_5px_15px_rgba(0,0,0,0.4),-5px_-5px_15px_rgba(255,255,255,0.03)];
+}
+
+.neu-button {
+  @apply px-4 py-2 rounded-md bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-100 font-medium transition-all duration-200 shadow-[3px_3px_6px_rgba(0,0,0,0.1),-3px_-3px_6px_rgba(255,255,255,0.7)] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,0.04)] hover:shadow-[1px_1px_2px_rgba(0,0,0,0.1),-1px_-1px_2px_rgba(255,255,255,0.7)] dark:hover:shadow-[1px_1px_2px_rgba(0,0,0,0.3),-1px_-1px_2px_rgba(255,255,255,0.04)] active:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.1),inset_-3px_-3px_6px_rgba(255,255,255,0.7)] dark:active:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.3),inset_-3px_-3px_6px_rgba(255,255,255,0.04)];
+}
+
+.content-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+.section-padding {
+  @apply py-12 md:py-16 lg:py-24;
+}
+
+.subtle-shadow {
+  @apply shadow-sm shadow-black/5 dark:shadow-white/5;
+}
+
+.hover-lift {
+  @apply transition-transform duration-300 hover:-translate-y-1 hover:shadow-md;
+}
+
+.animate-in {
+  animation: animateIn 0.3s ease forwards;
+}
+
+@keyframes animateIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

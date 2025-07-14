@@ -31,8 +31,8 @@ export function Paragraph({ children, className }: ParagraphProps) {
       whileInView="animate"
       viewport={{ once: true, margin: "-20px" }}
       className={cn(
-        "text-base md:text-lg lg:text-xl leading-relaxed text-muted-foreground",
-        "selection:bg-primary/20 selection:text-primary",
+        "text-base md:text-lg lg:text-xl leading-relaxed font-space-mono text-stone-600 dark:text-stone-400",
+        "selection:bg-stone-200 dark:selection:bg-stone-700 selection:text-stone-800 dark:selection:text-stone-200",
         className
       )}
     >

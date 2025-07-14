@@ -104,22 +104,6 @@ export default function Home() {
         
         <RecentBlogs />
         <RecentProjects />
-        
-        <section className="my-16 px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to collaborate?</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-            I&apos;m always interested in new projects and opportunities. Whether you need data analysis, a web application, 
-            or want to discuss potential collaborations, I&apos;d love to hear from you.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/contact" className="bg-primary text-primary-foreground px-6 py-3 rounded-md hover:opacity-90 transition-opacity">
-              Get in touch
-            </Link>
-            <Link href="/about" className="bg-secondary text-secondary-foreground px-6 py-3 rounded-md hover:opacity-90 transition-opacity">
-              Learn more about me
-            </Link>
-          </div>
-        </section>
       </Container>
     </main>
   );

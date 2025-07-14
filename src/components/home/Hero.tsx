@@ -67,7 +67,7 @@ export function Hero() {
         >
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">
             <motion.div 
-              className="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden"
+              className="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden shadow-[6px_6px_12px_rgba(0,0,0,0.1),-6px_-6px_12px_rgba(255,255,255,0.8)] dark:shadow-[6px_6px_12px_rgba(0,0,0,0.3),-6px_-6px_12px_rgba(255,255,255,0.05)] p-1 bg-stone-50 dark:bg-stone-800"
               variants={photoVariants}
               whileHover={{ 
                 scale: 1.05,
@@ -109,7 +109,7 @@ export function Hero() {
               whileTap={{ scale: 0.95 }}
               className="origin-center"
             >
-              <Button asChild size="lg" className="text-lg h-12">
+              <Button asChild size="lg" className="neu-button text-lg h-12 shadow-[3px_3px_6px_rgba(0,0,0,0.05),-3px_-3px_6px_rgba(255,255,255,0.6)] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.2),-3px_-3px_6px_rgba(255,255,255,0.04)]" variant="default">
                 <Link href="/projects">
                   View My Work
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -121,7 +121,7 @@ export function Hero() {
               whileTap={{ scale: 0.95 }}
               className="origin-center"
             >
-              <Button asChild size="lg" variant="outline" className="text-lg h-12">
+              <Button asChild size="lg" variant="outline" className="neu-button text-lg h-12 shadow-[3px_3px_6px_rgba(0,0,0,0.05),-3px_-3px_6px_rgba(255,255,255,0.6)] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.2),-3px_-3px_6px_rgba(255,255,255,0.04)]">
                 <Link href="https://calendly.com/gr8monk3ys/30min">
                   Let&apos;s Chat
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -141,12 +141,13 @@ export function Hero() {
             ].map((item, index) => (
               <motion.div
                 key={item.text}
-                className="flex items-center gap-2 text-muted-foreground"
+                className="flex items-center gap-2 text-muted-foreground px-4 py-2 rounded-md bg-stone-100 dark:bg-stone-800 shadow-[3px_3px_6px_rgba(0,0,0,0.05),-3px_-3px_6px_rgba(255,255,255,0.6)] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.2),-3px_-3px_6px_rgba(255,255,255,0.04)]"
                 custom={index}
                 variants={iconVariants}
                 whileHover={{ 
-                  scale: 1.1,
+                  scale: 1.05,
                   color: "var(--primary)",
+                  shadow: "[2px_2px_4px_rgba(0,0,0,0.05),-2px_-2px_4px_rgba(255,255,255,0.6)]",
                   transition: { type: "spring", stiffness: 400 }
                 }}
               >

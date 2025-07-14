@@ -30,7 +30,7 @@ export function MobileNavbar() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="flex h-9 w-9 items-center justify-center rounded-md bg-white hover:bg-accent hover:text-accent-foreground dark:bg-black"
+          className="flex h-9 w-9 items-center justify-center rounded-lg bg-stone-50 dark:bg-stone-800 shadow-[2px_2px_4px_rgba(0,0,0,0.1),-2px_-2px_4px_rgba(255,255,255,0.7)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.3),-1px_-1px_3px_rgba(255,255,255,0.05)] hover:shadow-[1px_1px_2px_rgba(0,0,0,0.05),-1px_-1px_2px_rgba(255,255,255,0.6)] dark:hover:shadow-[1px_1px_2px_rgba(0,0,0,0.2),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] transform transition-all"
           aria-label="Toggle menu"
         >
           {isMenuOpen ? (
@@ -49,7 +49,7 @@ export function MobileNavbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[150] flex flex-col bg-white dark:bg-black md:hidden"
+            className="fixed inset-0 z-[150] flex flex-col bg-stone-50 dark:bg-stone-900 md:hidden backdrop-blur-sm"
           >
             <div className="flex h-full w-full flex-col items-center justify-center space-y-8 p-6">
               {navigation.map((item, i) => (
@@ -64,10 +64,10 @@ export function MobileNavbar() {
                   <Link
                     href={item.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`block w-full rounded-lg px-4 py-3 text-center text-xl font-medium transition-colors ${
+                    className={`block w-full rounded-lg px-4 py-3 text-center text-xl font-medium transition-all ${
                       pathname === item.href
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-foreground/60 hover:bg-accent hover:text-accent-foreground'
+                        ? 'bg-stone-100 dark:bg-stone-800 text-foreground shadow-[2px_2px_4px_rgba(0,0,0,0.05),-2px_-2px_4px_rgba(255,255,255,0.7)] dark:shadow-[2px_2px_4px_rgba(0,0,0,0.2),-1px_-1px_3px_rgba(255,255,255,0.05)]'
+                        : 'text-foreground/60 hover:bg-stone-100 dark:hover:bg-stone-800 hover:shadow-[1px_1px_2px_rgba(0,0,0,0.05),-1px_-1px_2px_rgba(255,255,255,0.6)] dark:hover:shadow-[1px_1px_2px_rgba(0,0,0,0.2),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] hover:text-foreground transform hover:scale-105'
                     }`}
                   >
                     {item.name}

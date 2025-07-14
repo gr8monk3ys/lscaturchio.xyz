@@ -8,39 +8,39 @@ import { useRef } from "react";
 const interests = [
   {
     icon: Code,
-    title: "Software Development",
-    description: "Building elegant solutions to complex problems",
-    tags: ["Full Stack", "Web Dev"]
+    title: "Systems Architecture",
+    description: "Designing resilient distributed systems with an emphasis on functional paradigms",
+    tags: ["Distributed Systems", "Functional Programming"]
   },
   {
     icon: Brain,
-    title: "Machine Learning",
-    description: "Exploring the frontiers of AI and neural networks",
-    tags: ["AI", "Neural Networks"]
+    title: "Computational Linguistics",
+    description: "Exploring the intersection of language processing and cognitive modeling",
+    tags: ["NLP", "Semantic Analysis"]
   },
   {
     icon: Mountain,
-    title: "Running",
-    description: "Pushing physical and mental boundaries",
-    tags: ["Sport", "10k"]
+    title: "Ultra Endurance",
+    description: "Embracing the meditative flow state of sustained physical exertion",
+    tags: ["Trail Running", "Mental Fortitude"]
   },
   {
     icon: Music,
-    title: "Music Production",
-    description: "Creating and mixing indie & electronic music",
-    tags: ["Electronic", "Production"]
+    title: "Ambient Composition",
+    description: "Creating textural soundscapes that blend analog warmth with digital precision",
+    tags: ["Modular Synthesis", "Field Recording"]
   },
   {
     icon: Plane,
-    title: "Travel",
-    description: "Exploring new cultures and perspectives",
-    tags: ["Adventure", "Culture"]
+    title: "Cultural Immersion",
+    description: "Engaging with communities to understand nuanced social contexts and perspectives",
+    tags: ["Anthropology", "Local Cuisine"]
   },
   {
     icon: Coffee,
-    title: "Coffee",
-    description: "Discovering unique roasts and brewing methods",
-    tags: ["Brewing", "Roasting"]
+    title: "Coffee Cultivation",
+    description: "Exploring the relationship between terroir, processing methods, and flavor profiles",
+    tags: ["Single Origin", "Fermentation"]
   },
 ];
 
@@ -135,12 +135,12 @@ export function Interests() {
                 }}
                 className="group relative flex flex-col gap-4"
               >
-                <div className="block bg-secondary/50 hover:bg-secondary/80 transition-colors rounded-xl p-6 group-hover:shadow-lg">
+                <div className="block bg-stone-50 dark:bg-stone-800 rounded-xl p-6 shadow-[3px_3px_6px_rgba(0,0,0,0.05),-3px_-3px_6px_rgba(255,255,255,0.8)] dark:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-2px_-2px_5px_rgba(255,255,255,0.04)] group-hover:shadow-[2px_2px_4px_rgba(0,0,0,0.06),-2px_-2px_4px_rgba(255,255,255,0.9)] dark:group-hover:shadow-[2px_2px_4px_rgba(0,0,0,0.4),-1px_-1px_3px_rgba(255,255,255,0.05)] hover:translate-y-[-3px] transition-all">
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-4">
                       <motion.div 
                         variants={iconVariants}
-                        className="shrink-0 size-12 flex items-center justify-center rounded-full bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors"
+                        className="shrink-0 size-12 flex items-center justify-center rounded-full bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 shadow-[2px_2px_3px_rgba(0,0,0,0.05),-2px_-2px_3px_rgba(255,255,255,0.7)] dark:shadow-[2px_2px_3px_rgba(0,0,0,0.2),-1px_-1px_2px_rgba(255,255,255,0.03)] transition-all group-hover:shadow-[1px_1px_2px_rgba(0,0,0,0.08),-1px_-1px_2px_rgba(255,255,255,0.8)] dark:group-hover:shadow-[1px_1px_2px_rgba(0,0,0,0.3),-0.5px_-0.5px_1px_rgba(255,255,255,0.05)]"
                       >
                         <interest.icon className="size-6" />
                       </motion.div>
