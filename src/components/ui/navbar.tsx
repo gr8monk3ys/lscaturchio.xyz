@@ -33,7 +33,7 @@ export function Navbar() {
             <div className="w-[200px]">
               <Link href="/" className="flex items-center">
                 <Image
-                  src="/signature.svg"
+                  src="/cursive.svg"
                   alt="Lorenzo Scaturchio"
                   width={200}
                   height={40}
