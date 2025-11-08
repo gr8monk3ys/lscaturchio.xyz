@@ -1,17 +1,34 @@
 import OpenAI from 'openai';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// Initialize OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-});
+// Lazy initialization to avoid build-time errors with missing env vars
+let openai: OpenAI | null = null;
+let supabase: SupabaseClient | null = null;
 
-// Initialize Supabase
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey, {
-  auth: { persistSession: false }
-});
+function getOpenAI() {
+  if (!openai) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY!,
+    });
+  }
+  return openai;
+}
+
+function getSupabase() {
+  if (!supabase) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase credentials not configured');
+    }
+
+    supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false }
+    });
+  }
+  return supabase;
+}
 
 // Function to split text into chunks
 export function splitIntoChunks(text: string, maxChunkLength: number = 1500): string[] {
@@ -39,7 +56,8 @@ export function splitIntoChunks(text: string, maxChunkLength: number = 1500): st
 
 // Function to create embeddings
 export async function createEmbedding(text: string) {
-  const response = await openai.embeddings.create({
+  const client = getOpenAI();
+  const response = await client.embeddings.create({
     model: "text-embedding-ada-002",
     input: text,
   });
@@ -53,7 +71,8 @@ export async function storeEmbedding(
   embedding: number[],
   metadata: any = {}
 ) {
-  const { error } = await supabase.from('embeddings').insert({
+  const client = getSupabase();
+  const { error } = await client.from('embeddings').insert({
     content: text,
     embedding,
     metadata,
@@ -65,8 +84,9 @@ export async function storeEmbedding(
 // Function to search for similar content
 export async function searchSimilarContent(query: string, limit: number = 5) {
   const embedding = await createEmbedding(query);
+  const client = getSupabase();
 
-  const { data, error } = await supabase.rpc('match_embeddings', {
+  const { data, error } = await client.rpc('match_embeddings', {
     query_embedding: embedding,
     match_threshold: 0.5,
     match_count: limit,

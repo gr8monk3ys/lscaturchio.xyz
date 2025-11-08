@@ -1,158 +1,158 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://lscaturchio.xyz/src\app\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/page.tsx</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\terms-of-service\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/terms-of-service</loc>
+    <lastmod>2025-11-08</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://lscaturchio.xyz/services</loc>
+    <lastmod>2025-11-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://lscaturchio.xyz/projects</loc>
+    <lastmod>2025-11-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://lscaturchio.xyz/privacy-policy</loc>
+    <lastmod>2025-11-08</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://lscaturchio.xyz/contact</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\services\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog</loc>
+    <lastmod>2025-11-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://lscaturchio.xyz/blog/understanding-ego</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\projects\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/simulation-hypothesis</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\privacy-policy\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/metaverse</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\contact\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/investing-in-monero</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\blog\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/future-of-work</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\blog\understanding-ego\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/fanged-noumena</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\blog\simulation-hypothesis\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/art-technology</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\blog\metaverse\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/ai-puzzle</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\blog\investing-in-monero\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/ai-ethics</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\blog\future-of-work\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/about</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/src\app\blog\fanged-noumena\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://lscaturchio.xyz/src\app\blog\art-technology\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://lscaturchio.xyz/src\app\blog\ai-puzzle\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://lscaturchio.xyz/src\app\blog\ai-ethics\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://lscaturchio.xyz/src\app\about\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://lscaturchio.xyz/blog/src\app\blog\understanding-ego\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/understanding-ego</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/blog/src\app\blog\simulation-hypothesis\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/simulation-hypothesis</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/blog/src\app\blog\metaverse\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/metaverse</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/blog/src\app\blog\investing-in-monero\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/investing-in-monero</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/blog/src\app\blog\future-of-work\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/future-of-work</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/blog/src\app\blog\fanged-noumena\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/fanged-noumena</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/blog/src\app\blog\art-technology\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/art-technology</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/blog/src\app\blog\ai-puzzle\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/ai-puzzle</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/blog/src\app\blog\ai-ethics\page.tsx</loc>
-    <lastmod>2025-03-17</lastmod>
+    <loc>https://lscaturchio.xyz/blog/ai-ethics</loc>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
