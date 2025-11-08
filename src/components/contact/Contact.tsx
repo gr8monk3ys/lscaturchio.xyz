@@ -43,8 +43,8 @@ export default function Contact() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Write your submit logic here
-    console.log(formData);
+    // TODO: Implement form submission logic
+    // For now, just prevent default form submission
   };
 
   return (
