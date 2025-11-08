@@ -31,22 +31,19 @@
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "@vercel/analytics": "^1.4.1",
-    "@vercel/kv": "^3.0.0",
     "@vercel/speed-insights": "^1.1.0",
     "autoprefixer": "^10.4.20",
-    "bufferutil": "^4.0.9",
     "caniuse-lite": "^1.0.30001754",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.0.0",
     "critters": "^0.0.25",
-    "encoding": "^0.1.13",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.19",
+    "fast-glob": "^3.3.3",
     "feed": "^4.2.2",
     "framer-motion": "^10.18.0",
     "glob": "^10.4.5",
     "lucide-react": "^0.473.0",
-    "nanoid": "^5.1.6",
     "next": "^14.2.21",
     "openai": "^4.80.0",
     "postcss": "^8.5.1",
@@ -57,8 +54,7 @@
     "sharp": "^0.33.5",
     "tailwind-merge": "^1.14.0",
     "tailwindcss": "3.3.3",
-    "typescript": "5.1.6",
-    "utf-8-validate": "^6.0.5"
+    "typescript": "5.1.6"
   },
   "devDependencies": {
     "depcheck": "^1.4.7"
