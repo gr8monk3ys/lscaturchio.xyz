@@ -69,7 +69,7 @@ export async function createEmbedding(text: string) {
 export async function storeEmbedding(
   text: string,
   embedding: number[],
-  metadata: any = {}
+  metadata: Record<string, unknown> = {}
 ) {
   const client = getSupabase();
   const { error } = await client.from('embeddings').insert({
@@ -95,3 +95,6 @@ export async function searchSimilarContent(query: string, limit: number = 5) {
   if (error) throw error;
   return data;
 }
+
+// Alias for searchSimilarContent (used by new API routes)
+export const searchEmbeddings = searchSimilarContent;

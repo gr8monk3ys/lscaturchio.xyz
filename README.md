@@ -1,6 +1,6 @@
 # lscaturchio.xyz – Personal Portfolio and Blog
 
-![Dashboard Preview](public/images/dashboard.png)
+![Dashboard Preview](public/images/dashboard.webp)
 
 Welcome to the repository for my personal website, **lscaturchio.xyz**! This project serves as a dynamic platform where I showcase my professional work, share technical insights through blog posts, and engage with the broader tech community.
 

@@ -1,6 +1,7 @@
 import { Container } from "@/components/Container";
 import { AboutHero } from "@/components/about/Hero";
 import { AboutJourney } from "@/components/about/Journey";
+import { PersonalFavorites } from "@/components/about/PersonalFavorites";
 import { Interests } from "@/components/about/Interests";
 import { WorkTimeline } from "@/components/ui/work-timeline";
 import { DownloadButton } from "@/components/ui/download-button";
@@ -12,7 +13,7 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About | Lorenzo Scaturchio",
   description:
-    "Learn more about Lorenzo Scaturchio, a software engineer and machine learning enthusiast based in California.",
+    "Data Scientist from Southern California who loves Arctic Monkeys, plays Scottish bagpipes, produces music, and explores the intersection of technology and human consciousness.",
 };
 
 export default function AboutPage() {
@@ -20,6 +21,7 @@ export default function AboutPage() {
     <Container size="large">
       <div className="space-y-8">
         <AboutHero />
+        <PersonalFavorites />
         <AboutJourney />
         <Interests />
         <Movies />

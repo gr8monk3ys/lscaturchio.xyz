@@ -5,6 +5,7 @@ import { ArrowUpRight, Star, GitFork, Clock } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { useRef, useEffect, useState } from "react";
+import { logError } from "@/lib/logger";
 
 interface Repository {
   title: string;
@@ -73,8 +74,8 @@ export function RecentProjects() {
           new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
         );
         setRepositories(sortedRepos.slice(0, 3)); // Get only the 3 most recently updated repos
-      } catch (err) {
-        console.error('Failed to fetch repositories:', err);
+      } catch (error) {
+        logError('Failed to fetch GitHub repositories', error, { component: 'RecentProjects', action: 'fetchRepositories' });
       } finally {
         setLoading(false);
       }

@@ -19,28 +19,28 @@ const favoriteBooks: Book[] = [
     author: "Carl Gustav Jung",
     year: 2009,
     description: "A profound journey into the depths of Jung's psyche, this illuminated manuscript blends psychology, mythology, and personal revelation. Its publication after nearly a century reveals the foundation of analytical psychology through Jung's own confrontation with the unconscious.",
-    imageUrl: "/images/books/red-book.jpg"
+    imageUrl: "/images/books/red-book.webp"
   },
   {
     title: "Man's Search for Meaning",
     author: "Viktor E. Frankl",
     year: 1946,
     description: "Through the lens of his experiences in Nazi concentration camps, Frankl explores humanity's quest for purpose. His logotherapy approach suggests that our primary drive is not pleasure, but the discovery and pursuit of what we find meaningful.",
-    imageUrl: "/images/books/mans-search-for-meaning.jpg"
+    imageUrl: "/images/books/mans-search-for-meaning.webp"
   },
   {
     title: "Thus Spoke Zarathustra",
     author: "Friedrich Nietzsche",
     year: 1883,
     description: "A philosophical novel that challenges conventional morality and introduces concepts like the Übermensch and eternal recurrence. Through Zarathustra's speeches, Nietzsche presents a radical vision of self-overcoming and life-affirmation.",
-    imageUrl: "/images/books/thus-spoke-zarathustra.jpg"
+    imageUrl: "/images/books/thus-spoke-zarathustra.webp"
   },
   {
     title: "The Stranger",
     author: "Albert Camus",
     year: 1942,
     description: "A masterpiece of absurdist fiction that explores the philosophical concept of the absurd. Through Meursault's detached narrative, Camus examines the tension between individual authenticity and society's demands for conformity.",
-    imageUrl: "/images/books/the-stranger.jpg"
+    imageUrl: "/images/books/the-stranger.webp"
   }
 ];
 

@@ -11,7 +11,7 @@ interface FallbackImageProps extends Omit<ImageProps, "src" | "onError"> {
 
 export function FallbackImage({
   src,
-  fallbackSrc = "/images/blog/default.jpg",
+  fallbackSrc = "/images/blog/default.webp",
   alt,
   onError,
   ...props

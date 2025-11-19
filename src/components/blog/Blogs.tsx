@@ -23,7 +23,9 @@ const item = {
   show: { opacity: 1, y: 0 }
 };
 
-export function Blogs({ blogs }: { blogs: any[] }) {
+import type { Blog } from '@/types/blog';
+
+export function Blogs({ blogs }: { blogs: Blog[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -90,7 +92,7 @@ export function Blogs({ blogs }: { blogs: any[] }) {
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock className="size-3" />
-                      <span>{Math.ceil(blog.content?.split(/\s+/).length / 200) || 5} min read</span>
+                      <span>{Math.ceil((blog.content?.split(/\s+/).length ?? 1000) / 200)} min read</span>
                     </div>
                   </div>
 

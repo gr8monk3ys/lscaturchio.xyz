@@ -12,7 +12,7 @@ export async function GET() {
     id: siteURL,
     link: siteURL,
     language: "en",
-    image: `${siteURL}/og-image.png`,
+    image: `${siteURL}/og-image.webp`,
     favicon: `${siteURL}/favicon.ico`,
     copyright: `All rights reserved ${date.getFullYear()}, Lorenzo Scaturchio`,
     updated: date,
@@ -48,8 +48,8 @@ export async function GET() {
       image: post.image && {
         url: `${siteURL}${post.image}`,
         type: post.image.endsWith('.webp') ? 'image/webp' : 
-              post.image.endsWith('.png') ? 'image/png' : 
-              post.image.endsWith('.jpg') ? 'image/jpg' : 'image/jpeg'
+              post.image.endsWith('.webp') ? 'image/png' : 
+              post.image.endsWith('.webp') ? 'image/jpg' : 'image/jpeg'
       }
     });
   });

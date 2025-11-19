@@ -39,23 +39,25 @@ export function AboutHero() {
         className="space-y-6"
       >
         <SectionHeading>
-          Hi, I&apos;m Lorenzo. I build things for the web and beyond.
+          I&apos;m Lorenzo Scaturchio, just another person with too many things to say and too little time to say it.
         </SectionHeading>
         <motion.p
           variants={itemVariants}
           className="text-lg"
         >
-          I&apos;m a software engineer and machine learning enthusiast based in California. 
-          With a passion for building innovative solutions, I specialize in full-stack 
-          development and artificial intelligence applications.
+          Growing up in Southern California, I&apos;ve always been completely drawn into computers.
+          My dad had Age of Empires II running in the background, and even at a really young age,
+          I would try to play it. My story is one of many blessings - two loving parents still together,
+          a balanced lifestyle where we truly prioritize time spent together as a family unit.
         </motion.p>
         <motion.p
           variants={itemVariants}
           className="text-lg"
         >
-          When I&apos;m not coding, you&apos;ll find me rock climbing, producing electronic music, 
-          or exploring new coffee shops around the world. I believe in continuous learning 
-          and pushing the boundaries of what&apos;s possible with technology.
+          The usual exploration of self began in high school, delving into corners of the internet
+          to learn outside of traditional education. Was most of it useless? Absolutely. But there
+          are hidden gems that shaped my philosophy towards life. When I&apos;m not coding, you&apos;ll
+          find me rock climbing, running, surfing, or producing indie/folk music with industrial textures.
         </motion.p>
       </motion.div>
       <motion.div
@@ -64,7 +66,7 @@ export function AboutHero() {
       >
         <div className="relative h-full w-full overflow-hidden rounded-3xl bg-zinc-100 dark:bg-zinc-800 ring-1 ring-zinc-900/10 dark:ring-white/10">
           <Image
-            src="/images/coachella.png"
+            src="/images/coachella.webp"
             alt="Lorenzo Scaturchio at Coachella"
             fill
             className="object-cover transition-all hover:scale-105 duration-500"
