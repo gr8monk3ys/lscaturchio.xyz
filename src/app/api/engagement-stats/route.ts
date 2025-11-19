@@ -1,35 +1,66 @@
 import { NextResponse } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
-
-// This would ideally fetch from a database, but for now we'll read from
-// the in-memory store in the reactions API
-// In production, this should be migrated to a persistent store
+import { getSupabase } from "@/lib/supabase";
 
 /**
  * API route to fetch engagement statistics
  * GET /api/engagement-stats
- * Returns total likes, bookmarks, and top posts
+ * Returns total likes, bookmarks, and top posts from Supabase
  */
 export async function GET() {
   try {
-    // Note: In a real implementation, we'd fetch this from a database
-    // For now, we're importing the in-memory store directly
-    // This is a placeholder that returns calculated stats
+    const supabase = getSupabase();
 
-    const blogs = await getAllBlogs();
+    // Fetch all reactions from database
+    const { data: reactionsData, error } = await supabase
+      .from("reactions")
+      .select("slug, likes, bookmarks")
+      .order("likes", { ascending: false });
 
-    // For demo purposes, we'll return structured data
-    // In production, replace this with actual database queries
-    const response = {
-      totalLikes: 0,
-      totalBookmarks: 0,
-      topLiked: [] as { slug: string; title: string; likes: number }[],
-      topBookmarked: [] as { slug: string; title: string; bookmarks: number }[],
-    };
+    if (error) {
+      console.error("[Engagement Stats] Database error:", error);
+      return NextResponse.json(
+        { error: "Failed to fetch engagement stats" },
+        { status: 500 }
+      );
+    }
 
-    // TODO: In production, fetch real data from database
-    // For now, return placeholder structure
-    return NextResponse.json(response);
+    // Calculate totals
+    const totalLikes = (reactionsData || []).reduce((sum, r) => sum + r.likes, 0);
+    const totalBookmarks = (reactionsData || []).reduce((sum, r) => sum + r.bookmarks, 0);
+
+    // Get blog metadata for titles
+    const allBlogs = await getAllBlogs();
+    const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
+
+    // Get top liked posts (limit to 5)
+    const topLiked = (reactionsData || [])
+      .filter(r => r.likes > 0)
+      .sort((a, b) => b.likes - a.likes)
+      .slice(0, 5)
+      .map(r => ({
+        slug: r.slug,
+        title: blogMap.get(r.slug) || r.slug,
+        likes: r.likes,
+      }));
+
+    // Get top bookmarked posts (limit to 5)
+    const topBookmarked = (reactionsData || [])
+      .filter(r => r.bookmarks > 0)
+      .sort((a, b) => b.bookmarks - a.bookmarks)
+      .slice(0, 5)
+      .map(r => ({
+        slug: r.slug,
+        title: blogMap.get(r.slug) || r.slug,
+        bookmarks: r.bookmarks,
+      }));
+
+    return NextResponse.json({
+      totalLikes,
+      totalBookmarks,
+      topLiked,
+      topBookmarked,
+    });
   } catch (error) {
     console.error("[Engagement Stats] Error:", error);
     return NextResponse.json(
