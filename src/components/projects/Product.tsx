@@ -25,7 +25,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
           alt={`${product.title} project screenshot`}
           layout="fill"
           objectFit="contain"
-          className="rounded-md"
+          className="rounded-lg"
         />
       </motion.div>
       <div className="flex flex-row justify-center my-4 flex-wrap">
@@ -40,7 +40,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
               alt={`${product.title} thumbnail ${idx + 1}`}
               width={60}
               height={60}
-              className="object-cover rounded-md border border-neutral-200 hover:border-neutral-400 transition-colors"
+              className="object-cover rounded-lg border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-colors"
             />
           </button>
         ))}
@@ -51,7 +51,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
           {product.stack?.map((stack: string) => (
             <span
               key={stack}
-              className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-700"
+              className="text-xs bg-muted px-2 py-1 rounded-full text-muted-foreground"
             >
               {stack}
             </span>
@@ -66,7 +66,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
         href={product.href}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full mt-6 hover:bg-blue-700 transition-colors"
+        className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full mt-6 hover:bg-primary/90 transition-colors"
       >
         Live Preview
         <svg
