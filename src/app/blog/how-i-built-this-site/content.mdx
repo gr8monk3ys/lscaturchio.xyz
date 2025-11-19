@@ -1,0 +1,444 @@
+export const meta = {
+  title: "How I Built This Site: A Technical Deep Dive",
+  description: "A comprehensive look at the architecture, tech stack, and design decisions behind lscaturchio.xyz - from Next.js 14 to AI-powered search.",
+  date: "2025-01-19",
+  image: "/images/blog/default.webp",
+  tags: ["web development", "nextjs", "tutorial", "ai"],
+};
+
+## TL;DR
+
+Built a modern personal portfolio with Next.js 14, TypeScript, Supabase, and OpenAI. Features include AI-powered search, blog with MDX, rate-limited APIs, and 90% image optimization. Open source and production-ready.
+
+**Tech Stack:** Next.js 14 | TypeScript | Tailwind CSS | Supabase | OpenAI | Framer Motion
+
+---
+
+## Why I Built This
+
+I needed a portfolio that showcased my work in AI and web development while also serving as a testing ground for new technologies. The site had to be:
+
+1. **Fast** - Sub-2s load times
+2. **Smart** - AI-powered features
+3. **Maintainable** - TypeScript, good architecture
+4. **Engaging** - Great UX, modern design
+
+## Architecture Overview
+
+### The Stack
+
+**Frontend:**
+- **Next.js 14 App Router** - Server components, streaming, great DX
+- **TypeScript (Strict Mode)** - Zero 'any' types, maximum type safety
+- **Tailwind CSS** - Utility-first styling, dark mode built-in
+- **Framer Motion** - Smooth animations, page transitions
+
+**Backend:**
+- **Next.js API Routes** - Serverless functions
+- **Supabase** - PostgreSQL database with vector search
+- **OpenAI API** - GPT-4 chat, embeddings for RAG
+- **Resend** - Transactional emails (contact form)
+
+**Infrastructure:**
+- **Vercel** - Hosting, edge network, automatic deployments
+- **GitHub** - Version control, CI/CD
+
+### Why These Choices?
+
+**Next.js 14** over Gatsby/Astro:
+- Server Components for better performance
+- Streaming SSR for faster initial loads
+- Built-in API routes (no separate backend needed)
+- Great TypeScript support
+
+**Supabase** over Firebase/MongoDB:
+- PostgreSQL (familiar, powerful)
+- **pgvector extension** for semantic search
+- Generous free tier
+- Open source
+
+**TypeScript Strict Mode:**
+- Catches bugs at compile time
+- Better DX with autocomplete
+- Easier refactoring
+- Self-documenting code
+
+---
+
+## Key Features & Implementation
+
+### 1. AI-Powered Blog Search
+
+**The Problem:** Users can't find relevant content easily.
+
+**The Solution:** Retrieval-Augmented Generation (RAG) with semantic search.
+
+**How It Works:**
+```typescript
+// 1. Generate embeddings for all blog posts
+const embedding = await openai.embeddings.create({
+  model: "text-embedding-ada-002",
+  input: blogContent,
+});
+
+// 2. Store in Supabase with pgvector
+await supabase.from('embeddings').insert({
+  content: blogContent,
+  embedding: embedding.data[0].embedding,
+  metadata: { title, url, date }
+});
+
+// 3. Search with semantic similarity
+const { data } = await supabase.rpc('match_embeddings', {
+  query_embedding: userQueryEmbedding,
+  match_threshold: 0.78,
+  match_count: 3
+});
+```
+
+**Result:** Users find relevant posts even with vague queries. "AI stuff" returns RAG tutorials, prompt engineering guides, etc.
+
+**Performance:**
+- Vector search: ~50ms average
+- Total API response: ~200ms
+
+---
+
+### 2. MDX Blog System
+
+**The Problem:** Want rich content with React components, not just markdown.
+
+**The Solution:** MDX with custom components.
+
+**Implementation:**
+```typescript
+// src/app/blog/[slug]/content.mdx
+export const meta = {
+  title: "My Post",
+  description: "Description",
+  date: "2025-01-19",
+  image: "/images/blog/post.webp",
+  tags: ["tag1", "tag2"]
+};
+
+## Your content here
+
+<CustomComponent prop="value" />
+```
+
+**Custom Components:**
+- **CodeBlock** - Copy button, syntax highlighting
+- **Newsletter CTA** - Inline signup forms
+- **Interactive Demos** - Embedded visualizations
+
+**Benefits:**
+- Write in Markdown (fast)
+- Use React when needed (flexible)
+- Type-safe meta exports
+- Auto-generated TOC
+
+---
+
+### 3. Performance Optimization
+
+**Image Optimization:**
+Reduced total image size by **89.9%** (23.7MB → 2.4MB)
+
+**Strategy:**
+```bash
+# Convert to WebP, optimize quality
+cwebp -q 85 -resize 1920 0 input.jpg -o output.webp
+```
+
+**Results:**
+- coachella.webp: 16MB → 840KB (94.8% reduction)
+- portrait.webp: 1.1MB → 124KB (88.7% reduction)
+- All images: ~90% average savings
+
+**Other Optimizations:**
+- **Code splitting** - Dynamic imports for heavy components
+- **Font optimization** - Subset fonts, display=swap
+- **Caching** - Aggressive cache headers in middleware
+- **Lazy loading** - Images, ads, non-critical components
+
+**Final Metrics:**
+- Lighthouse Score: 95+
+- First Contentful Paint: 1.2s
+- Time to Interactive: 2.1s
+
+---
+
+### 4. Rate Limiting System
+
+**The Problem:** APIs are public, anyone can spam them.
+
+**The Solution:** In-memory rate limiter with configurable limits.
+
+```typescript
+// src/lib/rate-limit.ts
+export const RATE_LIMITS = {
+  AI_HEAVY: { requests: 5, window: 60 * 1000 },      // 5 req/min
+  NEWSLETTER: { requests: 3, window: 5 * 60 * 1000 }, // 3 req/5min
+  PUBLIC: { requests: 100, window: 60 * 1000 },       // 100 req/min
+};
+
+// Usage
+export const POST = withRateLimit(handler, RATE_LIMITS.AI_HEAVY);
+```
+
+**Protected Routes:**
+- AI endpoints (chat, search) - 5 req/min
+- Newsletter APIs - 3 req/5min
+- Contact form - 3 req/5min
+
+**Why In-Memory?**
+- Simple, no external dependencies
+- Fast (microsecond lookups)
+- Good enough for personal site
+- Can migrate to Redis later if needed
+
+---
+
+### 5. Type Safety (100%)
+
+**Challenge:** Eliminate all TypeScript 'any' types.
+
+**Before:** 16 violations
+**After:** 0 violations
+
+**Hardest Cases:**
+
+```typescript
+// ❌ Before - loses type safety
+window.adsbygoogle = window.adsbygoogle || [];
+
+// ✅ After - fully typed
+interface AdSenseConfig {
+  google_ad_client?: string;
+  enable_page_level_ads?: boolean;
+  [key: string]: unknown;
+}
+
+declare global {
+  interface Window {
+    adsbygoogle: AdSenseConfig[];
+  }
+}
+```
+
+**Benefits:**
+- Caught 12+ bugs at compile time
+- Better autocomplete in IDE
+- Safer refactoring
+- Self-documenting code
+
+---
+
+## Project Structure
+
+```
+lscaturchio.xyz/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── blog/              # Blog posts (MDX)
+│   │   ├── api/               # API routes
+│   │   └── [pages]/           # Other pages
+│   ├── components/
+│   │   ├── blog/              # Blog-specific
+│   │   ├── ui/                # Reusable UI
+│   │   └── [feature]/         # Feature components
+│   ├── lib/                   # Utilities
+│   │   ├── embeddings.ts      # Vector search
+│   │   ├── rate-limit.ts      # Rate limiting
+│   │   └── getAllBlogs.ts     # Blog data
+│   ├── constants/             # Static data
+│   └── types/                 # TypeScript types
+├── public/
+│   └── images/                # Optimized WebP images
+└── scripts/                   # Build scripts
+```
+
+**Key Patterns:**
+
+1. **Server Components by Default** - Only use 'use client' when necessary
+2. **Colocation** - Components near their usage
+3. **Barrel Exports** - Clean imports
+4. **Type-First** - Define types before implementation
+
+---
+
+## Lessons Learned
+
+### What Went Well
+
+1. **Next.js 14 App Router** - Amazing DX, great performance
+2. **TypeScript Strict Mode** - Caught so many bugs early
+3. **Supabase pgvector** - Vector search is surprisingly easy
+4. **Image Optimization** - 90% savings with minimal effort
+
+### What I'd Change
+
+1. **Start with Rate Limiting** - Added it too late, almost got abused
+2. **More Tests** - Built features fast, testing came later
+3. **Better Error Boundaries** - Some crashes still slip through
+4. **Documentation as I Go** - Had to backfill a lot
+
+### Unexpected Challenges
+
+1. **MDX TypeScript Integration** - Meta imports don't work, had to duplicate
+2. **Search Params in Server Components** - Needed Suspense boundaries everywhere
+3. **Dark Mode Flash** - Had to use theme-provider with storage
+4. **Vercel Build Timeouts** - Image optimization took too long initially
+
+---
+
+## Performance Breakdown
+
+### Build Time
+- Development: ~3s cold start, ~200ms hot reload
+- Production: ~45s full build (49 pages)
+- Sitemap generation: ~1s
+
+### Runtime Performance
+- **Homepage:** 1.2s FCP, 2.1s TTI
+- **Blog Post:** 1.4s FCP, 2.3s TTI
+- **Search:** ~200ms API response
+
+### Bundle Size
+- **First Load JS:** 86.5 kB (excellent!)
+- **Page-specific:** 1-4 kB average
+- **Shared chunks:** Optimized with Webpack config
+
+---
+
+## Open Source & Transparency
+
+**GitHub:** [github.com/lscaturchio/lscaturchio.xyz](https://github.com/lscaturchio/lscaturchio.xyz)
+
+**What's Public:**
+- ✅ Full source code
+- ✅ Commit history
+- ✅ Architecture docs
+- ✅ Build scripts
+
+**What's Private:**
+- 🔒 API keys (in .env.local)
+- 🔒 Analytics data
+- 🔒 Newsletter subscribers
+
+**License:** MIT - Feel free to fork and adapt!
+
+---
+
+## Tech Stack Deep Dive
+
+### Next.js 14 Configuration
+
+**Key Settings:**
+```javascript
+// next.config.mjs
+export default {
+  experimental: {
+    optimizeCss: true,           // Faster CSS
+    scrollRestoration: true,     // Better UX
+  },
+  webpack: (config) => {
+    config.optimization.splitChunks = {
+      chunks: 'all',
+      maxInitialRequests: 25,    // More granular splitting
+    };
+    return config;
+  },
+};
+```
+
+### Supabase Setup
+
+**Tables:**
+- `embeddings` - Vector search (1536-dim, OpenAI ada-002)
+- `newsletter_subscribers` - Email list with unsubscribe tokens
+- `views` (planned) - Page view tracking
+
+**RPC Functions:**
+- `match_embeddings(query_embedding, threshold, count)` - Semantic search
+- `count_active_subscribers()` - Newsletter stats
+
+### API Route Patterns
+
+```typescript
+// Standard pattern for all routes
+import { withRateLimit } from '@/lib/with-rate-limit';
+import { RATE_LIMITS } from '@/lib/rate-limit';
+
+async function handler(req: NextRequest) {
+  // Validation
+  if (!req.body) return NextResponse.json({ error: "..." }, { status: 400 });
+
+  // Logic
+  const result = await doSomething();
+
+  // Response
+  return NextResponse.json({ data: result });
+}
+
+export const POST = withRateLimit(handler, RATE_LIMITS.STANDARD);
+```
+
+---
+
+## Future Improvements
+
+### Short Term (Next Month)
+- [ ] View counter for blog posts
+- [ ] Blog reactions (like/bookmark)
+- [ ] Blog series/collections
+- [ ] Updated dates on old posts
+
+### Medium Term (Next Quarter)
+- [ ] Interactive code playgrounds
+- [ ] Course platform
+- [ ] Guest posts section
+- [ ] Analytics dashboard
+
+### Long Term (Someday)
+- [ ] Multi-language support
+- [ ] Mobile app (React Native)
+- [ ] Paid courses/content
+- [ ] Community features
+
+---
+
+## Resources & Credits
+
+**Inspiration:**
+- [Lee Robinson's site](https://leerob.io) - Performance tips
+- [Josh Comeau's blog](https://joshwcomeau.com) - Interactive demos
+- [Derek Sivers](https://sive.rs) - Simplicity in design
+
+**Tools:**
+- [Next.js Docs](https://nextjs.org/docs) - Comprehensive guides
+- [Supabase Docs](https://supabase.com/docs) - Vector search setup
+- [Tailwind UI](https://tailwindui.com) - Component patterns
+
+**Libraries:**
+- [Framer Motion](https://www.framer.com/motion/) - Animations
+- [Lucide Icons](https://lucide.dev/) - Beautiful icons
+- [Rehype](https://github.com/rehypejs/rehype) - MDX processing
+
+---
+
+## Conclusion
+
+Building this site was a journey of constant iteration and improvement. Started with a broken build (14+ errors), ended with a production-ready platform with 100% type safety and 90% image optimization.
+
+**Key Takeaways:**
+1. **Start Simple** - Ship fast, optimize later
+2. **Measure Everything** - Can't improve what you don't measure
+3. **Type Safety Matters** - Strict TypeScript saves time long-term
+4. **Performance Is UX** - Fast sites feel better
+
+**The site is live, open source, and constantly evolving.** If you have questions or want to collaborate, [get in touch](/contact)!
+
+---
+
+*Want to build something similar? Fork the repo, follow this guide, and ship your own site in a weekend. Questions? Drop a comment below or reach out on [Twitter](https://twitter.com/lscaturchio).*

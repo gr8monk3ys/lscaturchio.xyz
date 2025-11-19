@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import Image from "next/image";
 import { navigation } from '@/constants/navlinks';
 import { ThemeToggle } from './theme-toggle';
-import { SearchButton } from '../search/search-button';
+import { SearchModal } from './search-modal';
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -76,7 +76,7 @@ export function Navbar() {
 
             {/* Search and theme toggle */}
             <div className="w-[200px] flex justify-end items-center gap-2">
-              <SearchButton />
+              <SearchModal />
               <ThemeToggle />
             </div>
           </div>
