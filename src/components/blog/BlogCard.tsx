@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { FallbackImage } from "@/components/ui/fallback-image";
+import { BlogViewCount } from "./blog-view-count";
 
 interface BlogCardProps {
   slug: string;
@@ -65,7 +66,10 @@ export function BlogCard({ slug, title, description, date, image, tags }: BlogCa
               ))}
             </div>
             <CardTitle className="line-clamp-2">{title}</CardTitle>
-            <CardDescription>{new Date(date).toLocaleDateString()}</CardDescription>
+            <CardDescription className="flex items-center gap-3">
+              <span>{new Date(date).toLocaleDateString()}</span>
+              <BlogViewCount slug={slug} />
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex-grow">
             <p className="text-muted-foreground line-clamp-3">{description}</p>
