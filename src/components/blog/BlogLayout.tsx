@@ -25,6 +25,7 @@ import { NewsletterCTA } from "./newsletter-cta";
 import { ViewCounter } from "./view-counter";
 import { BlogReactions } from "./blog-reactions";
 import { SocialShare } from "./social-share";
+import { SeriesNavigation } from "./series-navigation";
 
 // Ad placement configuration - positions where in-article ads are injected
 const AD_PLACEMENT = {
@@ -39,6 +40,8 @@ interface BlogMeta {
   updated?: string; // Optional last updated date
   image: string;
   tags: string[];
+  series?: string; // Optional series name
+  seriesOrder?: number; // Order within the series
 }
 
 interface BlogLayoutProps {
@@ -261,6 +264,15 @@ export function BlogLayout({
               {/* Bottom of article ad */}
               <AdBanner slot="4567890123" format="horizontal" className="mt-8" />
             </motion.div>
+
+            {/* Series Navigation (if part of a series) */}
+            {meta.series && meta.seriesOrder && (
+              <SeriesNavigation
+                seriesName={meta.series}
+                currentSlug={slug}
+                currentOrder={meta.seriesOrder}
+              />
+            )}
 
             {/* Newsletter CTA */}
             <NewsletterCTA />

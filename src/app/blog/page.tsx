@@ -3,6 +3,7 @@ import { Container } from "@/components/Container";
 import { getAllBlogs } from "../../../lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
 import { AdBanner } from "@/components/ads/AdBanner";
+import { BlogStats } from "@/components/blog/blog-stats";
 import Link from "next/link";
 import { Tag } from "lucide-react";
 
@@ -52,6 +53,9 @@ export default async function Blog() {
             <span className="text-sm font-medium">Browse by tag</span>
           </Link>
         </div>
+
+        {/* Blog Statistics */}
+        <BlogStats />
 
         {/* Top ad banner */}
         <div className="my-6">
