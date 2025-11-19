@@ -1,13 +1,16 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { searchSimilarContent } from '@/lib/embeddings';
+import { logError } from '@/lib/logger';
+import { withRateLimit } from '@/lib/with-rate-limit';
+import { RATE_LIMITS } from '@/lib/rate-limit';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
-export async function POST(req: Request) {
+const handlePost = async (req: NextRequest) => {
   try {
     const { query } = await req.json();
 
@@ -20,7 +23,7 @@ export async function POST(req: Request) {
 
     // Get relevant context from our embeddings
     const similarContent = await searchSimilarContent(query);
-    const context = similarContent.map((item: any) => item.content).join('\n\n');
+    const context = (similarContent as Array<{ content: string }>).map((item) => item.content).join('\n\n');
 
     // Prepare the prompt
     const systemPrompt = `You are me - Lorenzo Scaturchio, a software engineer and data scientist based in Los Angeles. Respond in first person as if you were me, drawing from the following context about my background, work, and expertise.
@@ -52,11 +55,14 @@ ${context}`;
     const answer = completion.choices[0].message?.content || "Sorry, I couldn't generate a response.";
 
     return NextResponse.json({ answer });
-  } catch (error: any) {
-    console.error('Chat API Error:', error);
+  } catch (error: unknown) {
+    logError('Chat API request failed', error, { endpoint: '/api/chat' });
     return NextResponse.json(
       { error: 'Failed to process chat request' },
       { status: 500 }
     );
   }
-}
+};
+
+// Export with rate limiting (5 requests per minute)
+export const POST = withRateLimit(handlePost, RATE_LIMITS.AI_HEAVY);

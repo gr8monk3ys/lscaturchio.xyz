@@ -1,26 +1,24 @@
 "use client";
 
-import React, { useEffect, Children, useState, useRef } from "react";
-
-// import "prism-theme-night-owl";
+import React, { useEffect, Children, useState, useRef, ReactNode } from "react";
 import clsx from "clsx";
+import { logError } from "@/lib/logger";
 
-export const CodeWindow = ({ title, children }: any) => {
+interface CodeWindowProps {
+  title: string;
+  children: ReactNode;
+}
+
+export const CodeWindow = ({ title, children }: CodeWindowProps) => {
   const [isClient, setIsClient] = useState(false);
+  const [buttonText, setButtonText] = useState("Copy");
+  const childRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
-  useEffect(() => {
-    // Prism.highlightAll();
-  }, []);
 
-  let child = Children.only(children);
-
-  const [buttonText, setButtonText] = useState("Copy");
-  const childRef = useRef<any>(null);
-
-  const handleClick = (e: any) => {
+  const handleClick = () => {
     if (childRef.current) {
       const textToCopy = childRef.current.innerText;
 
@@ -32,11 +30,17 @@ export const CodeWindow = ({ title, children }: any) => {
             setButtonText("Copy");
           }, 1000);
         })
-        .catch((err) => {
-          console.error("Error copying text to clipboard:", err);
+        .catch((error) => {
+          logError("Failed to copy code to clipboard", error, { component: "CodeWindow" });
+          setButtonText("Failed");
+          setTimeout(() => {
+            setButtonText("Copy");
+          }, 2000);
         });
     }
   };
+
+  let child = Children.only(children);
 
   return (
     isClient && (

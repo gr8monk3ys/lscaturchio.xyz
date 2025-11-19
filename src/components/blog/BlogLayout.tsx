@@ -16,6 +16,16 @@ import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { AdBanner } from "@/components/ads/AdBanner";
 import { InArticleAd } from "@/components/ads/InArticleAd";
 import { FallbackImage } from "@/components/ui/fallback-image";
+import { ReadingProgress } from "./reading-progress";
+import { ReadingTimeBadge } from "./reading-time-badge";
+import { RelatedPosts } from "./related-posts";
+import { GiscusComments } from "./giscus-comments";
+
+// Ad placement configuration - positions where in-article ads are injected
+const AD_PLACEMENT = {
+  FIRST_IN_ARTICLE_AFTER_PARAGRAPH: 3,
+  SECOND_IN_ARTICLE_AFTER_PARAGRAPH: 8,
+} as const;
 
 interface BlogMeta {
   title: string;
@@ -30,6 +40,7 @@ interface BlogLayoutProps {
   meta: BlogMeta;
   isRssFeed?: boolean;
   previousPathname?: string;
+  readingTime?: number;
 }
 
 export function BlogLayout({
@@ -37,6 +48,7 @@ export function BlogLayout({
   meta,
   isRssFeed = false,
   previousPathname,
+  readingTime = 5,
 }: BlogLayoutProps) {
   const router = useRouter();
   const [isPlaying, setIsPlaying] = useState(false);
@@ -92,7 +104,7 @@ export function BlogLayout({
       "name": "Lorenzo Scaturchio",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://lscaturchio.xyz/signature.png"
+        "url": "https://lscaturchio.xyz/signature.webp"
       }
     },
     "mainEntityOfPage": {
@@ -103,10 +115,12 @@ export function BlogLayout({
   };
 
   return (
-    <Container className="mt-16 lg:mt-32">
-      <Script id="blog-schema" type="application/ld+json">
-        {JSON.stringify(jsonLd)}
-      </Script>
+    <>
+      <ReadingProgress />
+      <Container className="mt-16 lg:mt-32">
+        <Script id="blog-schema" type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </Script>
       <div className="xl:relative">
         <div className="mx-auto max-w-2xl">
           <BreadcrumbNav customSegments={{ blog: "Blog" }} />
@@ -130,13 +144,14 @@ export function BlogLayout({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="flex items-center gap-4 text-sm">
+                <div className="flex flex-wrap items-center gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     <time dateTime={meta.date} className="text-stone-600">
                       {formatDate(meta.date)}
                     </time>
                   </div>
+                  <ReadingTimeBadge minutes={readingTime} />
                   <div className="flex items-center gap-2">
                     <Tag className="h-4 w-4" />
                     <div className="flex gap-2">
@@ -211,16 +226,16 @@ export function BlogLayout({
               <AdBanner slot="1234567890" format="horizontal" />
               <Prose>
                 <div ref={contentRef}>
-                  {/* Inject in-article ad after the first few paragraphs */}
+                  {/* Inject in-article ads at strategic positions */}
                   {React.Children.map(children, (child, index) => {
-                    if (index === 3) { // After approximately 3 paragraphs
+                    if (index === AD_PLACEMENT.FIRST_IN_ARTICLE_AFTER_PARAGRAPH) {
                       return (
                         <>
                           {child}
                           <InArticleAd slot="2345678901" />
                         </>
                       );
-                    } else if (index === 8) { // After approximately 8 paragraphs
+                    } else if (index === AD_PLACEMENT.SECOND_IN_ARTICLE_AFTER_PARAGRAPH) {
                       return (
                         <>
                           {child}
@@ -236,17 +251,23 @@ export function BlogLayout({
               {/* Bottom of article ad */}
               <AdBanner slot="4567890123" format="horizontal" className="mt-8" />
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="mt-8"
-            >
-              {/* <CommentSection /> */}
-            </motion.div>
+            {/* Comments Section */}
+            <GiscusComments
+              repo="lscaturchio/lscaturchio.xyz"
+              repoId="YOUR_REPO_ID"
+              category="Blog Comments"
+              categoryId="YOUR_CATEGORY_ID"
+            />
+
+            {/* Related Posts */}
+            <RelatedPosts
+              currentTitle={meta.title}
+              currentUrl={typeof window !== 'undefined' ? window.location.pathname : ''}
+            />
           </article>
         </div>
       </div>
     </Container>
+    </>
   );
 }

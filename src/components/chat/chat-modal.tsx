@@ -3,6 +3,7 @@
 import { useState, FormEvent, KeyboardEvent } from "react";
 import { Paperclip, Mic, CornerDownLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { logError } from "@/lib/logger";
 import {
   ChatBubble,
   ChatBubbleAvatar,
@@ -66,7 +67,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         },
       ]);
     } catch (error) {
-      console.error("Chat error:", error);
+      logError("Chat request failed", error, { component: "ChatModal", action: "handleSubmit" });
       setMessages((prev) => [
         ...prev,
         {
@@ -111,7 +112,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                   src={
                     message.sender === "user"
                       ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64&h=64&q=80&crop=faces&fit=crop"
-                      : "/images/portrait.jpg"
+                      : "/images/portrait.webp"
                   }
                   fallback={message.sender === "user" ? "You" : "LS"}
                 />
@@ -127,7 +128,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
               <ChatBubble variant="received">
                 <ChatBubbleAvatar
                   className="h-8 w-8 shrink-0"
-                  src="/images/portrait.jpg"
+                  src="/images/portrait.webp"
                   fallback="LS"
                 />
                 <ChatBubbleMessage isLoading />

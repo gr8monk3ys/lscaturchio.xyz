@@ -19,28 +19,28 @@ const favoriteAlbums: Album[] = [
     artist: "Björk",
     year: 2001,
     description: "A masterpiece of intimate electronic music that creates a winter wonderland of microscopic sounds. The album's delicate production and Björk's ethereal vocals craft a deeply personal and immersive sonic experience.",
-    imageUrl: "/images/music/vespertine.jpg"
+    imageUrl: "/images/music/vespertine.webp"
   },
   {
     title: "Cosmogramma",
     artist: "Flying Lotus",
     year: 2010,
     description: "An otherworldly fusion of electronic, jazz, and experimental music that pushes the boundaries of production. The album's complex layering and cosmic soundscapes create a unique journey through sound and space.",
-    imageUrl: "/images/music/cosmogramma.jpg"
+    imageUrl: "/images/music/cosmogramma.webp"
   },
   {
     title: "Hunky Dory",
     artist: "David Bowie",
     year: 1971,
     description: "A brilliant showcase of Bowie's songwriting prowess, combining folk rock with theatrical flair. From 'Changes' to 'Life on Mars?', each track demonstrates his unparalleled ability to blend profound lyrics with innovative arrangements.",
-    imageUrl: "/images/music/hunky-dory.jpg"
+    imageUrl: "/images/music/hunky-dory.webp"
   },
   {
     title: "Titanic Rising",
     artist: "Weyes Blood",
     year: 2019,
     description: "A modern classic that channels 70s soft rock through a contemporary lens. Natalie Mering's stunning vocals and rich orchestration create a cinematic album that addresses both personal and universal themes with remarkable depth.",
-    imageUrl: "/images/music/titanic-rising.jpg"
+    imageUrl: "/images/music/titanic-rising.webp"
   }
 ];
 

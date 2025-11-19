@@ -5,31 +5,35 @@ interface FaqItem {
 
 export const questions: FaqItem[] = [
   {
-    question: "What is your approach to problem-solving in software development?",
-    answer: "I follow a systematic approach that begins with thoroughly understanding the problem, breaking it down into manageable components, and designing scalable solutions. I emphasize clean code practices, test-driven development, and continuous integration to ensure high-quality deliverables.",
+    question: "Why do you care so much about privacy and open source?",
+    answer: "I believe the internet should remain open, free, and neutral - the way it was meant to be. Using FOSS (Free and Open Source Software) isn't just about avoiding bloat; it's about maintaining control over your own digital life. I use Firefox, Bitwarden, ProtonMail, and Arch Linux (btw) because I want to know what's running on my machine and who has access to my data.",
   },
   {
-    question: "How do you stay current with rapidly evolving technologies?",
-    answer: "I maintain an active learning routine through a combination of hands-on projects, following industry leaders, participating in tech communities, and contributing to open-source projects. I regularly experiment with new technologies while ensuring a strong foundation in fundamental principles.",
+    question: "What got you into music production?",
+    answer: "I've always been drawn to creating things, whether it's code or sound. I produce indie/folk music with industrial textures - it's my way of exploring the intersection of organic and synthetic, nature and technology. Arctic Monkeys heavily influenced my taste, and producing music gives me a creative outlet that's completely different from coding but equally satisfying.",
   },
   {
-    question: "What's your experience with machine learning and AI?",
-    answer: "I have extensive experience in both traditional machine learning and modern AI techniques. This includes developing predictive models, implementing natural language processing solutions, and working with large language models. I focus on creating practical, production-ready AI solutions that solve real business problems.",
+    question: "Can you really play the Scottish Border Bagpipes?",
+    answer: "Yes! It's my weird skill. I picked them up because I wanted to learn something completely outside my comfort zone. There's something meditative about the practice, and it's a great conversation starter. Plus, it's way more memorable than saying I'm a 'machine learning enthusiast.'",
   },
   {
-    question: "How do you approach project management and client communication?",
-    answer: "I believe in transparent, proactive communication and agile methodologies. I provide regular updates, maintain detailed documentation, and ensure all stakeholders are aligned throughout the project lifecycle. I use project management tools to track progress and maintain clear timelines.",
+    question: "What's the best coffee shop in Pasadena?",
+    answer: "Rose City Coffee Co., hands down. It's my favorite spot to work remotely or just think. Great atmosphere, solid coffee, and the kind of place where you can lose track of time. If you're ever in Pasadena, it's worth the visit.",
   },
   {
-    question: "What makes your development approach unique?",
-    answer: "I combine technical expertise with a strong focus on business value. Every solution I develop considers scalability, maintainability, and user experience. I also emphasize knowledge transfer and documentation, ensuring clients understand and can maintain the solutions I deliver.",
+    question: "Why do you write about philosophy on a tech blog?",
+    answer: "Because technology doesn't exist in a vacuum. I fall under the camp of absurdism - influenced by Camus, Nietzsche, and Jung. Understanding the human condition, morality, and consciousness shapes how I think about building AI systems and data tools. The Red Book by Jung completely reshaped how I think about self-exploration. These aren't separate interests; they're all connected.",
   },
   {
-    question: "How do you handle security in your projects?",
-    answer: "Security is a top priority in all my projects. I follow security best practices including secure coding standards, regular security audits, and implementing proper authentication and authorization mechanisms. I stay updated with the latest security threats and mitigation strategies.",
+    question: "What's with all the movie references?",
+    answer: "Between 2023 and now, I've become obsessed with cinema - the plots, cinematography, method acting. Movies have become my primary catalyst for introspection and philosophical growth. I'm a big believer in Richard Feynman's style of explaining complex topics simply, and movies do that visually in ways that text sometimes can't.",
   },
   {
-    question: "What's your experience with cloud platforms?",
-    answer: "I have extensive experience with major cloud platforms including AWS, Azure, and Google Cloud. I can architect cloud-native solutions, implement serverless architectures, and optimize cloud resources for cost and performance.",
+    question: "Are you actually trying to make data science 'user-friendly'?",
+    answer: "Yes, that's the goal. I want to create open-source solutions that make data science problems accessible to people who aren't data scientists. Too much of this field is locked behind academic papers and complex tooling. If I can build something that makes someone's life easier, that's a win. Basically trying to get paid for doing cool stuff that actually helps people.",
+  },
+  {
+    question: "Why Rust over Python for some projects?",
+    answer: "Rust is my favorite programming language because it forces you to think clearly about memory, concurrency, and safety. Yes, Python is great for rapid prototyping and data science, but Rust makes you a better programmer. The compiler is your friend, even when it feels like your enemy. Plus, the performance benefits are undeniable.",
   }
 ];

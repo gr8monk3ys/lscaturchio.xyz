@@ -1,33 +1,34 @@
 import { NextResponse } from 'next/server';
+import type { GitHubRepo, GitHubTopicsResponse } from '@/types/github';
 
-async function getGithubRepos() {
+async function getGithubRepos(): Promise<GitHubRepo[]> {
   const response = await fetch('https://api.github.com/users/gr8monk3ys/repos', {
     headers: {
       'Accept': 'application/vnd.github.v3+json',
     },
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to fetch repositories');
   }
-  
-  const repos = await response.json();
+
+  const repos: GitHubRepo[] = await response.json();
   // Filter out forked repositories
-  return repos.filter((repo: any) => !repo.fork);
+  return repos.filter((repo) => !repo.fork);
 }
 
-async function getRepoTopics(repoName: string) {
+async function getRepoTopics(repoName: string): Promise<string[]> {
   const response = await fetch(`https://api.github.com/repos/gr8monk3ys/${repoName}/topics`, {
     headers: {
       'Accept': 'application/vnd.github.mercy-preview+json',
     },
   });
-  
+
   if (!response.ok) {
     return []; // Return empty array if topics can't be fetched
   }
-  
-  const data = await response.json();
+
+  const data: GitHubTopicsResponse = await response.json();
   return data.names || [];
 }
 
@@ -37,7 +38,7 @@ export async function GET() {
     
     // Fetch topics for all repositories in parallel
     const reposWithTopics = await Promise.all(
-      repos.map(async (repo: any) => {
+      repos.map(async (repo) => {
         const topics = await getRepoTopics(repo.name);
         return {
           title: repo.name,

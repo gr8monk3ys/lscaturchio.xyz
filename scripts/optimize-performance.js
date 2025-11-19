@@ -14,7 +14,7 @@ const path = require('path');
 
 // Identify critical resources to preload
 const criticalResources = [
-  { path: '/images/portrait.jpg', as: 'image' },
+  { path: '/images/portrait.webp', as: 'image' },
   { path: '/fonts/CalSans-SemiBold.woff2', as: 'font', crossorigin: 'anonymous' }
 ];
 

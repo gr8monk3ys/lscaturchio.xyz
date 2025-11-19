@@ -19,28 +19,28 @@ const favoriteMovies: Movie[] = [
     director: "Giuseppe Tornatore",
     year: 1988,
     description: "A beautiful tale of love, nostalgia, and the magic of cinema. This film resonates with me deeply as it captures the transformative power of movies and how they shape our lives, memories, and relationships.",
-    imageUrl: "/images/movies/cinema-paradiso.jpg"
+    imageUrl: "/images/movies/cinema-paradiso.webp"
   },
   {
     title: "Dancer in the Dark",
     director: "Lars von Trier",
     year: 2000,
     description: "A heart-wrenching musical drama that showcases Björk's incredible performance. The film's unique approach to the musical genre and its exploration of sacrifice and motherhood creates an unforgettable emotional experience.",
-    imageUrl: "/images/movies/dancer-in-the-dark.jpg"
+    imageUrl: "/images/movies/dancer-in-the-dark.webp"
   },
   {
     title: "Ikiru",
     director: "Akira Kurosawa",
     year: 1952,
     description: "Kurosawa's masterpiece about finding meaning in life. The story of a bureaucrat discovering purpose in his final days speaks to the universal human experience and reminds us of the importance of making our lives meaningful.",
-    imageUrl: "/images/movies/ikiru.jpg"
+    imageUrl: "/images/movies/ikiru.webp"
   },
   {
     title: "Before Sunrise",
     director: "Richard Linklater",
     year: 1995,
     description: "A perfect capture of youth, romance, and meaningful connection. The naturalistic dialogue and chemistry between the leads creates an intimate portrait of two strangers sharing a brief but profound connection.",
-    imageUrl: "/images/movies/before-sunrise.jpg"
+    imageUrl: "/images/movies/before-sunrise.webp"
   }
 ];
 

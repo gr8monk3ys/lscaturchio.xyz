@@ -5,6 +5,7 @@ export type Blog = {
   slug: string;
   image: string;
   tags?: string[];
-  // rest
-  [key: string]: any;
+  content?: string;
+  // Allow additional properties with unknown type
+  [key: string]: unknown;
 };

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     siteName: "Lorenzo Scaturchio Portfolio",
     images: [
       {
-        url: '/images/portrait.jpg',
+        url: '/images/portrait.webp',
         width: 1200,
         height: 630,
         alt: "Lorenzo Scaturchio - Data Scientist and Developer"
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Lorenzo Scaturchio | Data Scientist & Developer",
     description: "Explore Lorenzo Scaturchio's portfolio featuring innovative data science projects, web development solutions, and creative digital experiences.",
-    images: ['/images/portrait.jpg'],
+    images: ['/images/portrait.webp'],
     creator: "@lscaturchio"
   },
   keywords: ["data scientist", "developer", "portfolio", "machine learning", "data analysis", "web development", "digital solutions", "AI", "programmer", "creative technologist"],

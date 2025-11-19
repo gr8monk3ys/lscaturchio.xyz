@@ -39,7 +39,7 @@ function processDirectory(directory) {
 // Check if file is an image based on extension
 function isImage(filename) {
   const ext = path.extname(filename).toLowerCase();
-  return ['.jpg', '.jpeg', '.png', '.webp'].includes(ext);
+  return ['.webp', '.jpeg', '.webp', '.webp'].includes(ext);
 }
 
 // Simulate image optimization (in a real implementation, use sharp to resize and optimize)

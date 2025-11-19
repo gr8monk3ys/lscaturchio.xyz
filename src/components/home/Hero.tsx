@@ -75,7 +75,7 @@ export function Hero() {
               }}
             >
               <OptimizedImage
-                src="/images/portrait.jpg"
+                src="/images/portrait.webp"
                 alt="Lorenzo Scaturchio"
                 fill
                 priority
@@ -90,12 +90,12 @@ export function Hero() {
                 Hey, I&apos;m{" "}
                 <span className="text-primary">Lorenzo Scaturchio</span>
               </motion.h1>
-              <motion.p 
+              <motion.p
                 className="text-xl md:text-2xl text-muted-foreground"
                 variants={itemVariants}
               >
-                Data Scientist, Musician, and Outdoor Enthusiast crafting digital experiences
-                that make a difference.
+                Data Scientist from Southern California. Building RAG systems, contributing to open source,
+                and making data science more accessible. Also: bagpipes, Arctic Monkeys, and Rust.
               </motion.p>
             </div>
           </div>
