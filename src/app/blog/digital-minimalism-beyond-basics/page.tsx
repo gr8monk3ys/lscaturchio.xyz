@@ -7,6 +7,8 @@ const meta = {
   date: "2024-01-23",
   image: "/images/blog/default.webp",
   tags: ["minimalism", "technology", "philosophy", "productivity"],
+  series: "Digital Minimalism",
+  seriesOrder: 1,
 };
 
 export default function Page() {
