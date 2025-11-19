@@ -20,6 +20,7 @@ import { ReadingProgress } from "./reading-progress";
 import { ReadingTimeBadge } from "./reading-time-badge";
 import { RelatedPosts } from "./related-posts";
 import { GiscusComments } from "./giscus-comments";
+import { TableOfContents } from "./table-of-contents";
 
 // Ad placement configuration - positions where in-article ads are injected
 const AD_PLACEMENT = {
@@ -121,8 +122,8 @@ export function BlogLayout({
         <Script id="blog-schema" type="application/ld+json">
           {JSON.stringify(jsonLd)}
         </Script>
-      <div className="xl:relative">
-        <div className="mx-auto max-w-2xl">
+      <div className="xl:relative xl:grid xl:grid-cols-[1fr_300px] xl:gap-8 xl:items-start">
+        <div className="mx-auto max-w-2xl xl:mx-0">
           <BreadcrumbNav customSegments={{ blog: "Blog" }} />
           
           {previousPathname && (
@@ -266,6 +267,9 @@ export function BlogLayout({
             />
           </article>
         </div>
+
+        {/* Table of Contents - only visible on xl screens */}
+        <TableOfContents />
       </div>
     </Container>
     </>
