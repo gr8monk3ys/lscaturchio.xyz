@@ -4,10 +4,17 @@ import { useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { logError, logWarn } from "@/lib/logger";
 
+// Type definition for Google AdSense
+interface AdSenseConfig {
+  google_ad_client?: string;
+  enable_page_level_ads?: boolean;
+  [key: string]: unknown;
+}
+
 // Add type definition for window.adsbygoogle
 declare global {
   interface Window {
-    adsbygoogle: any[];
+    adsbygoogle: AdSenseConfig[];
   }
 }
 
