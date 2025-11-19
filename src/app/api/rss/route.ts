@@ -31,12 +31,27 @@ export async function GET() {
 
   blogs.forEach((post) => {
     const url = `${siteURL}/blog/${post.slug}`;
+
+    // Build enhanced description with series info
+    let enhancedDescription = post.description;
+    if (post.series && post.seriesOrder) {
+      enhancedDescription = `📚 Part ${post.seriesOrder} of the "${post.series}" series\n\n${post.description}`;
+    }
+
+    // Build enhanced content with series info and metadata
+    let enhancedContent = post.content;
+    if (post.series && post.seriesOrder) {
+      enhancedContent = `<p><strong>📚 This is Part ${post.seriesOrder} of the "${post.series}" series</strong></p>\n\n${post.content}`;
+    }
+
     feed.addItem({
-      title: post.title,
+      title: post.series && post.seriesOrder
+        ? `${post.title} (${post.series} #${post.seriesOrder})`
+        : post.title,
       id: url,
       link: url,
-      description: post.description,
-      content: post.content,
+      description: enhancedDescription,
+      content: enhancedContent,
       author: [
         {
           name: "Lorenzo Scaturchio",
@@ -44,13 +59,15 @@ export async function GET() {
           link: siteURL,
         },
       ],
-      date: new Date(post.date),
+      date: new Date(post.updated || post.date),
+      published: new Date(post.date),
       image: post.image && {
         url: `${siteURL}${post.image}`,
-        type: post.image.endsWith('.webp') ? 'image/webp' : 
-              post.image.endsWith('.webp') ? 'image/png' : 
-              post.image.endsWith('.webp') ? 'image/jpg' : 'image/jpeg'
-      }
+        type: post.image.endsWith('.webp') ? 'image/webp' :
+              post.image.endsWith('.png') ? 'image/png' :
+              post.image.endsWith('.jpg') ? 'image/jpg' : 'image/jpeg'
+      },
+      category: post.tags.map(tag => ({ name: tag })),
     });
   });
 
