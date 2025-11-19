@@ -9,6 +9,8 @@ interface BlogMeta {
   updated?: string; // Optional last updated date
   image: string;
   tags: string[];
+  series?: string; // Optional series name
+  seriesOrder?: number; // Order within the series (1, 2, 3...)
 }
 
 interface BlogPost extends BlogMeta {
@@ -42,4 +44,21 @@ export async function getAllBlogs(): Promise<BlogPost[]> {
   let blogs = await Promise.all(blogFileNames.map(importBlog));
 
   return blogs.sort((a, b) => b.date.localeCompare(a.date));
+}
+
+/**
+ * Get all posts from the same series
+ * @param seriesName - The name of the series
+ * @returns Array of blog posts sorted by seriesOrder
+ */
+export async function getSeriesPosts(seriesName: string): Promise<BlogPost[]> {
+  const allBlogs = await getAllBlogs();
+  const seriesPosts = allBlogs.filter(
+    (blog) => blog.series === seriesName
+  );
+  return seriesPosts.sort((a, b) => {
+    const orderA = a.seriesOrder ?? 0;
+    const orderB = b.seriesOrder ?? 0;
+    return orderA - orderB;
+  });
 }
