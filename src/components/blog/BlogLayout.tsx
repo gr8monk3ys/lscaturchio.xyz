@@ -22,6 +22,8 @@ import { RelatedPosts } from "./related-posts";
 import { GiscusComments } from "./giscus-comments";
 import { TableOfContents } from "./table-of-contents";
 import { NewsletterCTA } from "./newsletter-cta";
+import { ViewCounter } from "./view-counter";
+import { BlogReactions } from "./blog-reactions";
 
 // Ad placement configuration - positions where in-article ads are injected
 const AD_PLACEMENT = {
@@ -56,6 +58,10 @@ export function BlogLayout({
   const [isPlaying, setIsPlaying] = useState(false);
   const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  // Get slug from pathname
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  const slug = pathname.split('/').pop() || '';
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.speechSynthesis) {
@@ -154,6 +160,7 @@ export function BlogLayout({
                     </time>
                   </div>
                   <ReadingTimeBadge minutes={readingTime} />
+                  <ViewCounter slug={slug} />
                   <div className="flex items-center gap-2">
                     <Tag className="h-4 w-4" />
                     <div className="flex gap-2">
@@ -256,6 +263,11 @@ export function BlogLayout({
 
             {/* Newsletter CTA */}
             <NewsletterCTA />
+
+            {/* Blog Reactions */}
+            <div className="my-8 flex justify-center">
+              <BlogReactions slug={slug} />
+            </div>
 
             {/* Comments Section */}
             <GiscusComments
