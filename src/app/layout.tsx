@@ -11,6 +11,8 @@ import { usePathname } from 'next/navigation'
 import Script from 'next/script'
 import Head from 'next/head'
 import { Suspense } from 'react'
+import { ThemeProvider } from '@/components/theme-provider'
+import { PWARegister } from '@/components/pwa-register'
 
 export default function RootLayout({
   children,
@@ -29,7 +31,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
         
         {/* Preload Critical Resources */}
-        <link rel="preload" href="/images/portrait.jpg" as="image" />
+        <link rel="preload" href="/images/portrait.webp" as="image" />
         <link rel="preload" href="/fonts/CalSans-SemiBold.woff2" as="font" crossOrigin="anonymous" />
         
         {/* Canonical Link */}
@@ -38,7 +40,15 @@ export default function RootLayout({
         {/* Core Meta Tags */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#2c5530" />
+
+        {/* PWA Meta Tags */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Lorenzo S." />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         
         {/* Performance Hints */}
         <link rel="preconnect" href="https://vitals.vercel-insights.com" />
@@ -95,9 +105,15 @@ export default function RootLayout({
         `}</style>
       </head>
       <body>
-        <Suspense fallback={<div className="min-h-[64px]"></div>}>
-          <Navbar />
-        </Suspense>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Suspense fallback={<div className="min-h-[64px]"></div>}>
+            <Navbar />
+          </Suspense>
         <Suspense fallback={<div className="min-h-[64px] md:hidden"></div>}>
           <MobileNavbar />
         </Suspense>
@@ -119,6 +135,8 @@ export default function RootLayout({
         {/* Load analytics with low priority */}
         <Analytics />
         <SpeedInsights />
+        <PWARegister />
+        </ThemeProvider>
       </body>
     </html>
   )

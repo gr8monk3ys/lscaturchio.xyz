@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { navigation } from '@/constants/navlinks';
+import { ThemeToggle } from './theme-toggle';
+import { SearchButton } from '../search/search-button';
 
 const navItemVariants = {
   closed: { opacity: 0, y: 20 },
@@ -74,6 +76,18 @@ export function MobileNavbar() {
                   </Link>
                 </motion.div>
               ))}
+
+              {/* Search and Theme Toggle */}
+              <motion.div
+                custom={navigation.length}
+                initial="closed"
+                animate="open"
+                variants={navItemVariants}
+                className="pt-4 flex items-center justify-center gap-3"
+              >
+                <SearchButton />
+                <ThemeToggle />
+              </motion.div>
             </div>
           </motion.div>
         )}

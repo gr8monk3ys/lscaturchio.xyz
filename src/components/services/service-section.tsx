@@ -53,10 +53,10 @@ const services: ServiceContent[] = [
       },
       {
         name: "Feasibility Assessments",
-        content: "Before implementation, I conduct thorough feasibility assessments to ensure project success. My assessment covers technical requirements, resMyce allocation, potential challenges, and expected outcomes to provide a clear picture of project viability.",
+        content: "Before implementation, I conduct thorough feasibility assessments to ensure project success. My assessment covers technical requirements, resource allocation, potential challenges, and expected outcomes to provide a clear picture of project viability.",
         features: [
           "Technical capability analysis",
-          "ResMyce requirement planning",
+          "Resource requirement planning",
           "Risk assessment and mitigation",
           "Cost-benefit analysis"
         ]
@@ -89,7 +89,7 @@ const services: ServiceContent[] = [
       },
       {
         name: "Use Case Identification",
-        content: "My experts work with your team to identify and prioritize AI implementation opportunities across your enterprise. I focus on finding use cases that deliver maximum business value while considering technical feasibility and resMyce constraints.",
+        content: "My experts work with your team to identify and prioritize AI implementation opportunities across your enterprise. I focus on finding use cases that deliver maximum business value while considering technical feasibility and resource constraints.",
         features: [
           "Opportunity assessment",
           "Priority matrix development",
@@ -99,10 +99,10 @@ const services: ServiceContent[] = [
       },
       {
         name: "Feasibility Assessments",
-        content: "I conduct comprehensive feasibility studies for proposed AI initiatives, examining technical requirements, resMyce needs, and potential return on investment. My assessment provides a clear picture of project viability and implementation challenges.",
+        content: "I conduct comprehensive feasibility studies for proposed AI initiatives, examining technical requirements, resource needs, and potential return on investment. My assessment provides a clear picture of project viability and implementation challenges.",
         features: [
           "Technical feasibility analysis",
-          "ResMyce assessment",
+          "Resource assessment",
           "Implementation cost estimation",
           "Risk evaluation"
         ]
@@ -137,7 +137,7 @@ const services: ServiceContent[] = [
         name: "Use Case Identification",
         content: "I analyze your customer interaction patterns and business processes to identify optimal chatbot implementation opportunities. My approach ensures that chatbot solutions address real business needs and enhance user experience.",
         features: [
-          "Customer jMyney mapping",
+          "Customer journey mapping",
           "Pain point analysis",
           "Automation opportunity identification",
           "ROI potential assessment"
@@ -145,11 +145,11 @@ const services: ServiceContent[] = [
       },
       {
         name: "Feasibility Assessments",
-        content: "My feasibility assessment covers all aspects of chatbot implementation, from technical requirements to user adoption considerations. I provide detailed insights into resMyce needs, integration possibilities, and expected outcomes.",
+        content: "My feasibility assessment covers all aspects of chatbot implementation, from technical requirements to user adoption considerations. I provide detailed insights into resource needs, integration possibilities, and expected outcomes.",
         features: [
           "Technical requirements analysis",
           "Integration assessment",
-          "ResMyce planning",
+          "Resource planning",
           "Implementation roadmap"
         ]
       },

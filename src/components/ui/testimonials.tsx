@@ -10,19 +10,19 @@ const testimonials = [
     quote: "Lorenzo&apos;s expertise in data science and machine learning helped us develop innovative solutions that significantly improved our business outcomes.",
     author: "Sarah Chen",
     title: "CTO, TechVision AI",
-    image: "/images/testimonial-1.jpg"
+    image: "/images/testimonial-1.webp"
   },
   {
     quote: "Working with Lorenzo was a game-changer for our team. His ability to bridge the gap between complex data problems and practical solutions is remarkable.",
     author: "Michael Rodriguez",
     title: "Lead Data Scientist, DataCorp",
-    image: "/images/testimonial-2.jpg"
+    image: "/images/testimonial-2.webp"
   },
   {
     quote: "Not only is Lorenzo technically proficient, but his creative approach to problem-solving brings a unique perspective to every project.",
     author: "Emily Thompson",
     title: "Product Manager, InnovateLabs",
-    image: "/images/testimonial-3.jpg"
+    image: "/images/testimonial-3.webp"
   }
 ];
 

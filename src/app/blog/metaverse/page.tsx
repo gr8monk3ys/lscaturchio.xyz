@@ -5,7 +5,7 @@ const meta = {
   title: "Exploring the Metaverse: Opportunities and Challenges",
   description: "Examining the potential of the metaverse, its challenges, and its impact on society.",
   date: "2025-02-25",
-  image: "/images/blog/metaverse.webp",
+  image: "/images/blog/default.webp",
   tags: ["technology", "metaverse", "virtual reality", "augmented reality"],
 };
 

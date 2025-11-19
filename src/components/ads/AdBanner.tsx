@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
+import { logError, logWarn } from "@/lib/logger";
 
 // Add type definition for window.adsbygoogle
 declare global {
@@ -38,10 +39,10 @@ export function AdBanner({
         // Push the ad to AdSense
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       } catch (error) {
-        console.error("AdSense error:", error);
+        logError("AdSense initialization failed", error, { component: "AdBanner", slot });
       }
     } else {
-      console.warn("AdSense not loaded");
+      logWarn("AdSense script not loaded", { component: "AdBanner", slot });
     }
     
     return () => {

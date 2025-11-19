@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Image from "next/image";
 import { navigation } from '@/constants/navlinks';
+import { ThemeToggle } from './theme-toggle';
+import { SearchButton } from '../search/search-button';
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -72,8 +74,11 @@ export function Navbar() {
               </nav>
             </div>
 
-            {/* Empty div for layout balance */}
-            <div className="w-[200px]" />
+            {/* Search and theme toggle */}
+            <div className="w-[200px] flex justify-end items-center gap-2">
+              <SearchButton />
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </header>

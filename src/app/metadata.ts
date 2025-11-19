@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     siteName: 'Lorenzo Scaturchio Portfolio',
     images: [
       {
-        url: 'https://lscaturchio.xyz/images/portrait.jpg',
+        url: 'https://lscaturchio.xyz/images/portrait.webp',
         width: 1200,
         height: 630,
         alt: 'Lorenzo Scaturchio - Data Scientist and Developer'
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Lorenzo Scaturchio | Data Scientist & Developer',
     description: 'Explore Lorenzo Scaturchio\'s portfolio showcasing innovative data science projects, web applications, and digital solutions. Specializing in data analysis, machine learning, and creative development.',
-    images: ['https://lscaturchio.xyz/images/portrait.jpg'],
+    images: ['https://lscaturchio.xyz/images/portrait.webp'],
     creator: '@lscaturchio'
   },
   robots: {

@@ -34,21 +34,29 @@ export function AboutJourney() {
           animate="visible"
           className="space-y-6"
         >
-          <SectionHeading>My Journey</SectionHeading>
+          <SectionHeading>Philosophy & Learning</SectionHeading>
           <motion.div
             variants={itemVariants}
             className="space-y-4 text-lg w-full"
           >
             <motion.p variants={itemVariants}>
-              My journey in tech began with a fascination for problem-solving and a desire 
-              to create meaningful impact. Through my work in software development and machine 
-              learning, I&apos;ve had the opportunity to work on diverse projects that challenge 
-              conventional thinking and push technological boundaries.
+              I would like to say that I fall under the camp of absurdism. Authors like Camus, Nietzsche,
+              and Carl Jung have profoundly influenced my worldview. The Red Book, in particular, reshaped
+              how I think about the human psyche and self-exploration. I believe in the importance of
+              understanding the human condition, particularly our ability to understand morality and
+              objective reality.
             </motion.p>
             <motion.p variants={itemVariants}>
-              I&apos;m particularly passionate about the intersection of artificial intelligence 
-              and human-centered design. My goal is to build technology that not only solves 
-              complex problems but also enhances human capabilities and creates positive change.
+              Between 2023 and present day, I&apos;ve found myself obsessively watching movies and falling
+              in love with various plots, cinematography, and method acting. This, along with reading, has
+              become my primary catalyst for introspection and philosophical growth. I&apos;m a big fan of
+              Richard Feynman&apos;s style of explaining complex topics in the simplest form - it&apos;s the
+              best way to truly understand something.
+            </motion.p>
+            <motion.p variants={itemVariants}>
+              My goal with technology is to create solutions that make data science problems into open-source,
+              user-friendly applications. I particularly enjoy the intersection of nature and technology -
+              the idea that both are inverse relationships of each other, yet they can work synonymously.
             </motion.p>
           </motion.div>
         </motion.div>

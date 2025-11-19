@@ -5,6 +5,7 @@ import { ArrowUpRight, Calendar } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { useRef, useEffect, useState } from "react";
+import { logError } from "@/lib/logger";
 
 interface BlogPost {
   title: string;
@@ -45,7 +46,7 @@ export function RecentBlogs() {
         const data = await response.json();
         setBlogs(data);
       } catch (error) {
-        console.error('Error fetching blogs:', error);
+        logError('Failed to fetch recent blogs', error, { component: 'RecentBlogs', action: 'fetchBlogs' });
       } finally {
         setIsLoading(false);
       }

@@ -1,0 +1,308 @@
+export const meta = {
+  date: "2024-01-23",
+  title: "Building RAG Systems: A Practical Guide",
+  description:
+    "A comprehensive guide to building Retrieval-Augmented Generation systems from scratch, covering vector databases, embeddings, and practical implementation strategies.",
+  image: "/images/blog/default.webp",
+  tags: ["ai", "machine-learning", "rag", "python"],
+};
+
+## TL;DR
+
+RAG (Retrieval-Augmented Generation) systems augment LLMs with external knowledge retrieved on-demand. This guide covers: vector embeddings, choosing databases (Chroma, FAISS, Pinecone), chunking strategies, building a basic system in Python, and production considerations. Start simple, measure constantly, and iterate based on real-world performance.
+
+## Introduction
+
+Retrieval-Augmented Generation (RAG) has become one of the most practical approaches to building AI applications that need to work with specific knowledge domains. Unlike fine-tuning, which requires expensive retraining, RAG systems augment large language models with external knowledge retrieved on-demand. This makes them ideal for applications like documentation assistants, customer support bots, and research tools.
+
+In this guide, I'll walk through building a RAG system from the ground up, sharing lessons from my own implementations and explaining the key decisions you'll need to make along the way.
+
+## What is RAG?
+
+At its core, RAG combines two powerful concepts:
+
+1. **Retrieval**: Finding relevant information from a knowledge base using semantic search
+2. **Generation**: Using an LLM to generate responses based on that retrieved context
+
+The process follows these steps:
+1. User asks a question
+2. System converts question to vector embedding
+3. Similar documents are retrieved from vector database
+4. Retrieved context + original question are sent to LLM
+5. LLM generates informed response
+
+This architecture offers several advantages over pure LLM approaches:
+- **Factual grounding**: Responses are based on actual documents
+- **Source attribution**: You can show users where information came from
+- **Easy updates**: Change knowledge base without retraining
+- **Cost efficiency**: Smaller models work well with good context
+
+## Core Components
+
+### Vector Embeddings
+
+Embeddings are the foundation of semantic search. They convert text into high-dimensional vectors where similar meanings cluster together in space.
+
+**Popular embedding models:**
+- **OpenAI's text-embedding-ada-002**: High quality, API-based
+- **sentence-transformers**: Open-source, locally runnable
+- **Cohere embeddings**: Good multilingual support
+- **instructor-xl**: Fine-tuned for instructions
+
+My recommendation: Start with sentence-transformers for experimentation, then evaluate if you need the extra quality from paid APIs.
+
+```python
+from sentence_transformers import SentenceTransformer
+
+# Load model
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
+# Generate embeddings
+texts = [
+    "The cat sat on the mat",
+    "A feline rested on the rug"
+]
+embeddings = model.encode(texts)
+```
+
+### Vector Databases
+
+Vector databases are optimized for similarity search on high-dimensional vectors. Your choice depends on scale and infrastructure.
+
+**Options:**
+- **FAISS**: Facebook's library, great for local development
+- **Pinecone**: Managed cloud service, easy to scale
+- **Weaviate**: Open-source, self-hostable
+- **Chroma**: Embedded database, perfect for prototypes
+- **Qdrant**: Fast, written in Rust
+
+For most projects, I start with Chroma for local development and FAISS for production deployments that don't need managed infrastructure.
+
+```python
+import chromadb
+
+# Initialize Chroma client
+client = chromadb.Client()
+collection = client.create_collection("my_documents")
+
+# Add documents with embeddings
+collection.add(
+    embeddings=embeddings.tolist(),
+    documents=texts,
+    ids=["doc1", "doc2"]
+)
+
+# Query for similar documents
+results = collection.query(
+    query_embeddings=[query_embedding],
+    n_results=5
+)
+```
+
+### Document Processing
+
+How you chunk your documents significantly impacts retrieval quality.
+
+**Chunking strategies:**
+
+1. **Fixed-size chunks**: Simple but can split context awkwardly
+2. **Sentence-based**: Respects natural boundaries
+3. **Paragraph-based**: Maintains logical units
+4. **Semantic chunks**: Uses NLP to identify topic boundaries
+5. **Sliding windows**: Overlapping chunks preserve context
+
+I typically use paragraph-based chunking with 100-200 token overlap between chunks. This balances context preservation with retrieval precision.
+
+```python
+def chunk_text(text, chunk_size=500, overlap=100):
+    """Simple chunking with overlap"""
+    chunks = []
+    start = 0
+
+    while start < len(text):
+        end = start + chunk_size
+        chunk = text[start:end]
+        chunks.append(chunk)
+        start = end - overlap
+
+    return chunks
+```
+
+## Building a Basic RAG System
+
+Let's build a minimal but functional RAG system step by step.
+
+### Step 1: Setup and Dependencies
+
+```python
+# requirements.txt
+sentence-transformers==2.2.2
+chromadb==0.4.18
+openai==1.3.7
+langchain==0.0.350
+python-dotenv==1.0.0
+```
+
+### Step 2: Document Ingestion
+
+```python
+from sentence_transformers import SentenceTransformer
+import chromadb
+from typing import List
+
+class DocumentStore:
+    def __init__(self, collection_name: str):
+        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        self.client = chromadb.Client()
+        self.collection = self.client.create_collection(collection_name)
+
+    def add_documents(self, documents: List[str]):
+        """Add documents to the vector store"""
+        embeddings = self.model.encode(documents)
+
+        self.collection.add(
+            embeddings=embeddings.tolist(),
+            documents=documents,
+            ids=[f"doc_{i}" for i in range(len(documents))]
+        )
+
+    def search(self, query: str, k: int = 5):
+        """Search for relevant documents"""
+        query_embedding = self.model.encode([query])
+
+        results = self.collection.query(
+            query_embeddings=query_embedding.tolist(),
+            n_results=k
+        )
+
+        return results['documents'][0]
+```
+
+### Step 3: LLM Integration
+
+```python
+from openai import OpenAI
+import os
+
+class RAGSystem:
+    def __init__(self, collection_name: str):
+        self.doc_store = DocumentStore(collection_name)
+        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
+    def add_documents(self, documents: List[str]):
+        """Add knowledge base documents"""
+        self.doc_store.add_documents(documents)
+
+    def query(self, question: str, k: int = 3) -> str:
+        """Query the RAG system"""
+        # Retrieve relevant context
+        context_docs = self.doc_store.search(question, k=k)
+        context = "\n\n".join(context_docs)
+
+        # Build prompt
+        prompt = f"""Answer the question based on the following context:
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:"""
+
+        # Generate response
+        response = self.client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that answers questions based on provided context."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7
+        )
+
+        return response.choices[0].message.content
+```
+
+### Step 4: Usage Example
+
+```python
+# Initialize system
+rag = RAGSystem("my_knowledge_base")
+
+# Add documents
+documents = [
+    "RAG systems combine retrieval with generation for better AI responses.",
+    "Vector databases store embeddings for fast similarity search.",
+    "Chunking strategies affect the quality of retrieved context.",
+    "The choice of embedding model impacts semantic understanding."
+]
+rag.add_documents(documents)
+
+# Query the system
+response = rag.query("How do vector databases help RAG systems?")
+print(response)
+```
+
+## Advanced Techniques
+
+### Hybrid Search
+
+Combining semantic search with traditional keyword search often yields better results:
+
+```python
+def hybrid_search(query, k=5, alpha=0.5):
+    """Combine semantic and keyword search"""
+    # Semantic search
+    semantic_results = vector_search(query, k=k)
+
+    # Keyword search (BM25)
+    keyword_results = bm25_search(query, k=k)
+
+    # Weighted combination
+    combined_scores = {}
+    for doc_id, score in semantic_results.items():
+        combined_scores[doc_id] = alpha * score
+
+    for doc_id, score in keyword_results.items():
+        combined_scores[doc_id] = combined_scores.get(doc_id, 0) + (1 - alpha) * score
+
+    return sorted(combined_scores.items(), key=lambda x: x[1], reverse=True)[:k]
+```
+
+### Reranking
+
+After initial retrieval, rerank results for better precision:
+
+```python
+from sentence_transformers import CrossEncoder
+
+def rerank_results(query, documents, top_k=3):
+    """Rerank retrieved documents using cross-encoder"""
+    model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+
+    # Score query-document pairs
+    pairs = [[query, doc] for doc in documents]
+    scores = model.predict(pairs)
+
+    # Sort and return top results
+    ranked_indices = sorted(range(len(scores)),
+                          key=lambda i: scores[i],
+                          reverse=True)[:top_k]
+
+    return [documents[i] for i in ranked_indices]
+```
+
+## Conclusion
+
+Building effective RAG systems requires balancing multiple concerns: retrieval quality, generation accuracy, performance, and cost. The basic architecture is straightforward, but production systems need careful attention to document processing, evaluation, and scalability.
+
+Key takeaways:
+
+1. Start simple: Get a basic system working before adding complexity
+2. Chunk thoughtfully: Document segmentation significantly impacts quality
+3. Evaluate constantly: Measure retrieval and generation separately
+4. Iterate on prompts: Small prompt changes can dramatically improve results
+5. Monitor in production: Track metrics and user feedback continuously
+
+RAG represents a practical middle ground between pure LLM generation and fine-tuning. By grounding responses in retrievable knowledge, we build AI systems that are more accurate, transparent, and maintainable.
+
+Whether you're building a documentation assistant, research tool, or customer support system, RAG provides a solid foundation for AI applications that need to work with specific knowledge domains. The key is starting with solid fundamentals and iterating based on real-world performance.

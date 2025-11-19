@@ -22,7 +22,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
       >
         <Image
           src={activeImage}
-          alt="thumbnail"
+          alt={`${product.title} project screenshot`}
           layout="fill"
           objectFit="contain"
           className="rounded-md"
@@ -37,7 +37,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
           >
             <Image
               src={image}
-              alt="product thumbnail"
+              alt={`${product.title} thumbnail ${idx + 1}`}
               width={60}
               height={60}
               className="object-cover rounded-md border border-neutral-200 hover:border-neutral-400 transition-colors"

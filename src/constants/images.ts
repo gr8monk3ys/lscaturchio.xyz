@@ -1,3 +1,3 @@
-import dashboardImage from '../../public/images/dashboard.png';
+import dashboardImage from '../../public/images/dashboard.webp';
 
 export { dashboardImage };
