@@ -8,7 +8,7 @@ import { Container } from "../Container";
 import { Heading } from "../Heading";
 import { Paragraph } from "../Paragraph";
 import { Prose } from "@/components/blog/Prose";
-import { ArrowLeft, Share2, Calendar, Tag, Play, Pause } from "lucide-react";
+import { ArrowLeft, Calendar, Tag, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/ui/comment-section";
 import Script from "next/script";
@@ -24,6 +24,7 @@ import { TableOfContents } from "./table-of-contents";
 import { NewsletterCTA } from "./newsletter-cta";
 import { ViewCounter } from "./view-counter";
 import { BlogReactions } from "./blog-reactions";
+import { SocialShare } from "./social-share";
 
 // Ad placement configuration - positions where in-article ads are injected
 const AD_PLACEMENT = {
@@ -35,6 +36,7 @@ interface BlogMeta {
   title: string;
   description: string;
   date: string;
+  updated?: string; // Optional last updated date
   image: string;
   tags: string[];
 }
@@ -103,6 +105,7 @@ export function BlogLayout({
     "description": meta.description,
     "image": `https://lscaturchio.xyz${meta.image}`,
     "datePublished": meta.date,
+    ...(meta.updated && { "dateModified": meta.updated }),
     "author": {
       "@type": "Person",
       "name": "Lorenzo Scaturchio"
@@ -155,9 +158,16 @@ export function BlogLayout({
                 <div className="flex flex-wrap items-center gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    <time dateTime={meta.date} className="text-stone-600">
-                      {formatDate(meta.date)}
-                    </time>
+                    <div className="flex flex-col">
+                      <time dateTime={meta.date} className="text-stone-600">
+                        {formatDate(meta.date)}
+                      </time>
+                      {meta.updated && (
+                        <span className="text-xs text-stone-500">
+                          Updated: {formatDate(meta.updated)}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <ReadingTimeBadge minutes={readingTime} />
                   <ViewCounter slug={slug} />
@@ -200,7 +210,7 @@ export function BlogLayout({
               transition={{ duration: 0.5, delay: 0.4 }}
               className="mt-8"
             >
-              <div className="flex justify-between items-center mb-8">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                 <Button
                   onClick={handlePlay}
                   variant="outline"
@@ -216,19 +226,10 @@ export function BlogLayout({
                     </>
                   )}
                 </Button>
-                <Button
-                  onClick={() => {
-                    navigator.share({
-                      title: meta.title,
-                      text: meta.description,
-                      url: window.location.href,
-                    });
-                  }}
-                  variant="outline"
-                  className="flex items-center gap-2"
-                >
-                  <Share2 className="h-4 w-4" /> Share
-                </Button>
+                <SocialShare
+                  title={meta.title}
+                  description={meta.description}
+                />
               </div>
               
               {/* Top of article ad */}

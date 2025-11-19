@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { useRef, useEffect, useState } from "react";
 import { logError } from "@/lib/logger";
+import { BlogViewCount } from "../blog/blog-view-count";
 
 interface BlogPost {
   title: string;
@@ -102,9 +103,12 @@ export function RecentBlogs() {
               className="group relative flex flex-col overflow-hidden rounded-xl bg-secondary/50 transition-all hover:bg-secondary/70"
             >
               <Link href={`/blog/${post.slug}`} className="flex flex-col flex-1 p-6">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                  <Calendar className="size-4" />
-                  <time dateTime={post.date}>{post.date}</time>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="size-4" />
+                    <time dateTime={post.date}>{post.date}</time>
+                  </div>
+                  <BlogViewCount slug={post.slug} />
                 </div>
 
                 <h3 className="text-lg font-semibold tracking-tight mb-2">

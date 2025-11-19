@@ -6,6 +6,7 @@ interface BlogMeta {
   title: string;
   description: string;
   date: string;
+  updated?: string; // Optional last updated date
   image: string;
   tags: string[];
 }
