@@ -7,6 +7,8 @@ const meta = {
   date: "2024-01-23",
   image: "/images/blog/default.webp",
   tags: ["privacy", "ai", "technology", "digital-sovereignty"],
+  series: "AI and Society",
+  seriesOrder: 2,
 };
 
 export default function Page() {

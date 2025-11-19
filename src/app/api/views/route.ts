@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAllBlogs } from "@/lib/getAllBlogs";
 
 // In-memory view storage (resets on server restart)
 // For production, migrate to Supabase or Redis
@@ -43,12 +44,29 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Get all views (for stats)
+// Get all views (for stats) with real blog titles
 export async function OPTIONS() {
-  const allViews = Array.from(viewsStore.entries()).map(([slug, views]) => ({
-    slug,
-    views,
-  }));
+  try {
+    // Fetch all blog metadata to get real titles
+    const allBlogs = await getAllBlogs();
+    const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
 
-  return NextResponse.json({ views: allViews, total: allViews.length });
+    // Map views to include real titles
+    const allViews = Array.from(viewsStore.entries()).map(([slug, views]) => ({
+      slug,
+      title: blogMap.get(slug) || slug, // Fallback to slug if title not found
+      views,
+    }));
+
+    return NextResponse.json({ views: allViews, total: allViews.length });
+  } catch (error) {
+    console.error("[View Counter] Error fetching blog titles:", error);
+    // Fallback to just slug if getAllBlogs fails
+    const allViews = Array.from(viewsStore.entries()).map(([slug, views]) => ({
+      slug,
+      title: slug,
+      views,
+    }));
+    return NextResponse.json({ views: allViews, total: allViews.length });
+  }
 }

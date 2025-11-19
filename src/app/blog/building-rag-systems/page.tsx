@@ -7,6 +7,8 @@ const meta = {
   date: "2024-01-23",
   image: "/images/blog/default.webp",
   tags: ["ai", "machine-learning", "rag", "python"],
+  series: "AI and Society",
+  seriesOrder: 3,
 };
 
 export default function Page() {

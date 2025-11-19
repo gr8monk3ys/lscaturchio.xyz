@@ -119,7 +119,7 @@ const handlePost = async (request: NextRequest) => {
             url: blogUrl,
             description: result.metadata?.description || '',
             date: result.metadata?.date || '',
-            tags: (result.metadata?.tags as string[]) || [],
+            tags: result.metadata?.tags || [],
             similarity: result.similarity,
             snippets: [],
           };
