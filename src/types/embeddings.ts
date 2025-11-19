@@ -8,6 +8,7 @@ export interface EmbeddingMetadata {
   description?: string;
   date?: string;
   image?: string;
+  tags?: string[];
   [key: string]: unknown;
 }
 

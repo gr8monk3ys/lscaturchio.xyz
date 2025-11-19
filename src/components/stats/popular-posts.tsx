@@ -26,19 +26,11 @@ export function PopularPosts() {
           const sortedPosts = data.views
             .sort((a: { views: number }, b: { views: number }) => b.views - a.views)
             .slice(0, 5)
-            .map((post: { slug: string; views: number }) => {
-              // Convert slug to title (capitalize and remove hyphens)
-              const title = post.slug
-                .split('-')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ');
-
-              return {
-                title,
-                url: `/blog/${post.slug}`,
-                views: post.views,
-              };
-            });
+            .map((post: { slug: string; title: string; views: number }) => ({
+              title: post.title, // Use real title from API
+              url: `/blog/${post.slug}`,
+              views: post.views,
+            }));
 
           setPosts(sortedPosts);
         }

@@ -7,6 +7,8 @@ const meta = {
   date: "2025-02-23",
   image: "/images/blog/default.webp",
   tags: ["ethics", "technology", "artificial intelligence"],
+  series: "AI and Society",
+  seriesOrder: 1,
 };
 
 export default function Page() {
