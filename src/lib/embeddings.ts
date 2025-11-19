@@ -1,9 +1,8 @@
 import OpenAI from 'openai';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { getSupabase } from './supabase';
 
 // Lazy initialization to avoid build-time errors with missing env vars
 let openai: OpenAI | null = null;
-let supabase: SupabaseClient | null = null;
 
 function getOpenAI() {
   if (!openai) {
@@ -12,22 +11,6 @@ function getOpenAI() {
     });
   }
   return openai;
-}
-
-function getSupabase() {
-  if (!supabase) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Supabase credentials not configured');
-    }
-
-    supabase = createClient(supabaseUrl, supabaseKey, {
-      auth: { persistSession: false }
-    });
-  }
-  return supabase;
 }
 
 // Function to split text into chunks
