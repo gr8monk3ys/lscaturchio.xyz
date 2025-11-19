@@ -31,6 +31,12 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://lscaturchio.xyz/tags</loc>
+    <lastmod>2025-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://lscaturchio.xyz/stats</loc>
     <lastmod>2025-11-19</lastmod>
     <changefreq>monthly</changefreq>
@@ -68,6 +74,12 @@
   </url>
   <url>
     <loc>https://lscaturchio.xyz/offline</loc>
+    <lastmod>2025-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://lscaturchio.xyz/now</loc>
     <lastmod>2025-11-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -128,6 +140,12 @@
   </url>
   <url>
     <loc>https://lscaturchio.xyz/blog/investing-in-monero</loc>
+    <lastmod>2025-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://lscaturchio.xyz/blog/how-i-built-this-site</loc>
     <lastmod>2025-11-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -224,6 +242,12 @@
   </url>
   <url>
     <loc>https://lscaturchio.xyz/blog/investing-in-monero</loc>
+    <lastmod>2025-11-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://lscaturchio.xyz/blog/how-i-built-this-site</loc>
     <lastmod>2025-11-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
