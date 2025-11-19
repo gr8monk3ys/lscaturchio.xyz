@@ -13,6 +13,7 @@ import Head from 'next/head'
 import { Suspense } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
 import { PWARegister } from '@/components/pwa-register'
+import { ScrollToTop } from '@/components/ui/scroll-to-top'
 
 export default function RootLayout({
   children,
@@ -136,6 +137,7 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
         <PWARegister />
+        <ScrollToTop />
         </ThemeProvider>
       </body>
     </html>
