@@ -3,6 +3,7 @@ import { Heading } from '@/components/Heading'
 import { Metadata } from 'next'
 import { StatsOverview } from '@/components/stats/stats-overview'
 import { PopularPosts } from '@/components/stats/popular-posts'
+import { EngagementStats } from '@/components/stats/engagement-stats'
 import { VisitorChart } from '@/components/stats/visitor-chart'
 import { TechStack } from '@/components/stats/tech-stack'
 import { ContributionGraph } from '@/components/github/contribution-graph'
@@ -38,8 +39,9 @@ export default function StatsPage() {
             <ContributionGraph />
             <div className="grid lg:grid-cols-2 gap-8">
               <PopularPosts />
-              <TechStack />
+              <EngagementStats />
             </div>
+            <TechStack />
           </div>
         </div>
       </Container>

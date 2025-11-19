@@ -16,21 +16,41 @@ export function PopularPosts() {
 
   useEffect(() => {
     const fetchPopular = async () => {
-      // Placeholder data - would fetch from analytics
-      await new Promise(resolve => setTimeout(resolve, 800))
+      try {
+        // Fetch real views data from our views API
+        const response = await fetch('/api/views', { method: 'OPTIONS' });
+        if (response.ok) {
+          const data = await response.json();
 
-      setPosts([
-        { title: 'Building RAG Systems with OpenAI', url: '/blog/building-rag-systems', views: 2341 },
-        { title: 'AI Ethics in Modern Development', url: '/blog/ai-ethics', views: 1876 },
-        { title: 'The Art of Technology Integration', url: '/blog/art-technology', views: 1543 },
-        { title: 'Understanding the Metaverse', url: '/blog/metaverse', views: 1234 },
-        { title: 'Investing in Privacy', url: '/blog/investing-in-monero', views: 987 },
-      ])
-      setIsLoading(false)
-    }
+          // Sort by views and take top 5
+          const sortedPosts = data.views
+            .sort((a: { views: number }, b: { views: number }) => b.views - a.views)
+            .slice(0, 5)
+            .map((post: { slug: string; views: number }) => {
+              // Convert slug to title (capitalize and remove hyphens)
+              const title = post.slug
+                .split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
 
-    fetchPopular()
-  }, [])
+              return {
+                title,
+                url: `/blog/${post.slug}`,
+                views: post.views,
+              };
+            });
+
+          setPosts(sortedPosts);
+        }
+      } catch (error) {
+        console.error('Failed to fetch popular posts:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPopular();
+  }, []);
 
   return (
     <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
