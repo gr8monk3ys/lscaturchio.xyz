@@ -21,6 +21,7 @@ import { ReadingTimeBadge } from "./reading-time-badge";
 import { RelatedPosts } from "./related-posts";
 import { GiscusComments } from "./giscus-comments";
 import { TableOfContents } from "./table-of-contents";
+import { NewsletterCTA } from "./newsletter-cta";
 
 // Ad placement configuration - positions where in-article ads are injected
 const AD_PLACEMENT = {
@@ -248,10 +249,14 @@ export function BlogLayout({
                   })}
                 </div>
               </Prose>
-              
+
               {/* Bottom of article ad */}
               <AdBanner slot="4567890123" format="horizontal" className="mt-8" />
             </motion.div>
+
+            {/* Newsletter CTA */}
+            <NewsletterCTA />
+
             {/* Comments Section */}
             <GiscusComments
               repo="lscaturchio/lscaturchio.xyz"
