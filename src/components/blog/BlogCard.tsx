@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { BlogViewCount } from "./blog-view-count";
+import { BlogProgressBadge } from "./blog-progress-badge";
 
 interface BlogCardProps {
   slug: string;
@@ -56,6 +57,7 @@ export function BlogCard({ slug, title, description, date, image, tags }: BlogCa
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
+            <BlogProgressBadge slug={slug} />
           </div>
           <CardHeader>
             <div className="flex gap-2 flex-wrap">

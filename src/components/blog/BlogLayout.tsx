@@ -26,6 +26,7 @@ import { ViewCounter } from "./view-counter";
 import { BlogReactions } from "./blog-reactions";
 import { SocialShare } from "./social-share";
 import { SeriesNavigation } from "./series-navigation";
+import { ReadingProgressTracker } from "./reading-progress-tracker";
 
 // Ad placement configuration - positions where in-article ads are injected
 const AD_PLACEMENT = {
@@ -131,6 +132,7 @@ export function BlogLayout({
   return (
     <>
       <ReadingProgress />
+      <ReadingProgressTracker slug={slug} />
       <Container className="mt-16 lg:mt-32">
         <Script id="blog-schema" type="application/ld+json">
           {JSON.stringify(jsonLd)}
