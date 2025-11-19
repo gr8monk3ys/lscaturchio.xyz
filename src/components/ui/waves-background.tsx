@@ -22,6 +22,13 @@ interface WavesProps {
   className?: string
 }
 
+interface Point {
+  x: number
+  y: number
+  wave: { x: number; y: number }
+  cursor: { x: number; y: number; vx: number; vy: number }
+}
+
 class Grad {
   constructor(x: number, y: number, z: number) {
     this.x = x
@@ -138,7 +145,7 @@ export function Waves({
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const boundingRef = useRef({ width: 0, height: 0, left: 0, top: 0 })
   const noiseRef = useRef(new Noise(Math.random()))
-  const linesRef = useRef<any[]>([])
+  const linesRef = useRef<Point[][]>([])
   const mouseRef = useRef({
     x: -10,
     y: 0,
@@ -193,7 +200,7 @@ export function Waves({
       const mouse = mouseRef.current
       const noise = noiseRef.current
       lines.forEach((pts) => {
-        pts.forEach((p: any) => {
+        pts.forEach((p: Point) => {
           const move =
             noise.perlin2(
               (p.x + time * waveSpeedX) * 0.002,
@@ -232,7 +239,7 @@ export function Waves({
       })
     }
 
-    function moved(point: any, withCursor = true) {
+    function moved(point: Point, withCursor = true) {
       const x = point.x + point.wave.x + (withCursor ? point.cursor.x : 0)
       const y = point.y + point.wave.y + (withCursor ? point.cursor.y : 0)
       return { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 }
@@ -248,7 +255,7 @@ export function Waves({
       linesRef.current.forEach((points) => {
         let p1 = moved(points[0], false)
         ctx.moveTo(p1.x, p1.y)
-        points.forEach((p: any, idx: number) => {
+        points.forEach((p: Point, idx: number) => {
           const isLast = idx === points.length - 1
           p1 = moved(p, !isLast)
           const p2 = moved(
