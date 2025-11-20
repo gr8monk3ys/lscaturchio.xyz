@@ -5,8 +5,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 **lscaturchio.xyz** is a modern personal portfolio and blog website built with Next.js 14 App Router, showcasing work in data science, web development, and AI integration. The site features:
-- MDX-based blog with syntax highlighting
+- MDX-based blog with syntax highlighting and series support
 - AI chat powered by OpenAI GPT-4o with RAG (retrieval-augmented generation)
+- Engagement tracking (views, likes, bookmarks) with Supabase persistence
 - Server-side rendering with React Server Components
 - Vector search using Supabase for semantic blog content retrieval
 - Comprehensive SEO with structured data and automated sitemap/RSS generation
@@ -30,7 +31,7 @@ npm run generate-sitemap       # Generate XML sitemap (auto-runs post-build)
 **Environment Variables Required:**
 - `OPENAI_API_KEY` - OpenAI API access for chat and embeddings
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase database URL
-- `SUPABASE_SERVICE_KEY` - Server-side Supabase access
+- `SUPABASE_SERVICE_KEY` - Server-side Supabase access (full permissions)
 - `NEXT_PUBLIC_SITE_URL` - Custom site URL (optional)
 - `ANALYTICS_API_KEY` - Analytics endpoint protection (optional)
 
@@ -45,7 +46,70 @@ See `.env.example` for details.
 - API Routes: `src/app/api/[route]/route.ts`
 - Global layout: `src/app/layout.tsx` (fonts, metadata, analytics)
 
+### Data Persistence & Engagement Architecture
+
+**CRITICAL:** All engagement data (views, reactions) is stored in Supabase PostgreSQL for persistence across deploys.
+
+**Database Tables:**
+```sql
+-- View counts per blog post
+views (
+  slug TEXT PRIMARY KEY,
+  count INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE
+)
+
+-- Likes and bookmarks per blog post
+reactions (
+  slug TEXT PRIMARY KEY,
+  likes INTEGER NOT NULL DEFAULT 0,
+  bookmarks INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE
+)
+
+-- Blog content embeddings for AI chat (existing)
+embeddings (
+  id TEXT PRIMARY KEY,
+  content TEXT,
+  embedding vector(1536),
+  metadata JSONB
+)
+```
+
+**Shared Supabase Client:**
+- Location: `src/lib/supabase.ts`
+- Exports: `getSupabase()` function
+- Pattern: Lazy initialization to avoid build-time errors
+- Used by: All API routes that need database access
+
+**Engagement API Routes:**
+1. **`/api/views`** - View tracking
+   - GET: Fetch view count for a slug
+   - POST: Increment view count (upsert pattern)
+   - OPTIONS: Get all views with real blog titles
+
+2. **`/api/reactions`** - Like/bookmark tracking
+   - GET: Fetch reactions for a slug
+   - POST: Increment reaction (like or bookmark)
+   - DELETE: Decrement reaction (toggle off)
+
+3. **`/api/engagement-stats`** - Aggregated metrics
+   - Returns: totalLikes, totalBookmarks, topLiked[], topBookmarked[]
+   - Used by: Analytics dashboard and stats page
+
+**First-Time Setup:**
+After cloning the repository, you MUST run the Supabase migration to create the views and reactions tables:
+1. Open Supabase Dashboard → SQL Editor
+2. Copy contents of `supabase/migrations/20250119_create_views_and_reactions_tables.sql`
+3. Execute the SQL migration
+4. Verify tables exist: `SELECT * FROM views; SELECT * FROM reactions;`
+
+See `supabase/migrations/README.md` for detailed instructions.
+
 ### Content Management (MDX)
+
 **Blog Post Structure** - Each blog post requires two files:
 
 1. **`src/app/blog/[slug]/content.mdx`** - The blog content with metadata export:
@@ -55,7 +119,9 @@ export const meta = {
   description: "Brief description",
   date: "2024-01-15",
   image: "/images/blog/image.webp",
-  tags: ["tag1", "tag2"]
+  tags: ["tag1", "tag2"],
+  series: "Series Name",      // Optional: Group posts into series
+  seriesOrder: 1,              // Optional: Order within series
 }
 
 ## Your Blog Content Here
@@ -73,6 +139,8 @@ const meta = {
   date: "2024-01-15",
   image: "/images/blog/image.webp",
   tags: ["tag1", "tag2"],
+  series: "Series Name",       // Must match content.mdx
+  seriesOrder: 1,              // Must match content.mdx
 };
 
 export default function Page() {
@@ -85,6 +153,13 @@ export default function Page() {
 ```
 
 **Important:** Due to TypeScript module resolution, meta must be defined locally in `page.tsx` - you cannot import it from the MDX file. Always duplicate the meta object in both files.
+
+**Blog Series System:**
+- Group related posts using `series` and `seriesOrder` fields
+- Series navigation automatically appears on posts with series metadata
+- `/series` page displays all series with their posts
+- Related posts component prioritizes same-series posts
+- RSS feed includes series information
 
 The `getAllBlogs()` function in `src/lib/getAllBlogs.ts` reads all blog directories (both `*.mdx` and `*/content.mdx` patterns) and extracts metadata at build time for static generation.
 
@@ -100,19 +175,10 @@ Located in `src/app/api/chat/route.ts`:
 7. Return JSON response with answer (non-streaming)
 
 **Key files:**
+- `src/lib/supabase.ts` - Shared Supabase client
 - `src/lib/embeddings.ts` - Embedding generation and search
 - `src/lib/generateEmbeddings.ts` - CLI tool to pre-process blog content
 - `src/app/api/chat/route.ts` - Chat endpoint (model: gpt-4o-2024-08-06, temp: 0.4, max_tokens: 1000)
-
-**Supabase Schema:**
-```sql
-embeddings (
-  id: text (primary key)
-  content: text (blog chunk)
-  embedding: vector(1536)
-  metadata: jsonb (blog title, url, etc.)
-)
-```
 
 ### Middleware Patterns (`src/middleware.ts`)
 Handles request/response optimization:
@@ -129,6 +195,7 @@ src/components/
 ├── ui/              # Base UI components (navbar, footer, cards, etc.)
 ├── ads/             # Google AdSense integration components
 ├── blog/            # Blog-specific components (BlogLayout, Prose, etc.)
+├── stats/           # Engagement stats components (popular-posts, etc.)
 ├── [page]/          # Page-specific components (home/, blog/, about/, etc.)
 ├── hooks/           # Custom React hooks
 └── [shared]         # Shared components (Badge, Container, Heading, etc.)
@@ -144,13 +211,22 @@ src/components/
 
 **BlogLayout** (`src/components/blog/BlogLayout.tsx`)
 Wraps all blog posts with consistent features:
+- **View Counter**: Automatically tracks and displays view count
+- **Reading Progress**: Visual progress bar and localStorage tracking
+- **Blog Reactions**: Like and bookmark buttons
+- **Series Navigation**: Previous/next navigation for series posts
 - **Text-to-Speech**: Browser-native speech synthesis (Play/Pause controls)
-- **Share Button**: Uses Web Share API for native sharing
+- **Social Share**: Twitter, LinkedIn, Reddit, Email sharing
 - **JSON-LD Structured Data**: Automatic BlogPosting schema generation
 - **AdBanner Integration**: 4 ad units per post (top banner, 2 in-article ads, bottom banner)
 - **Breadcrumb Navigation**: Auto-generated from URL path
 - **FallbackImage**: Hero image with automatic fallback to default.webp
-- **Back Button**: Router-based navigation with animation
+
+**BlogCard** (`src/components/blog/BlogCard.tsx`)
+Used on blog listing pages:
+- Shows blog progress badge (read/unread status from localStorage)
+- Displays view count
+- Animated hover effects with Framer Motion
 
 **FallbackImage** (`src/components/ui/fallback-image.tsx`)
 Image component with graceful error handling:
@@ -177,22 +253,6 @@ App data stored in `src/constants/`:
 - `questions.tsx` - FAQ questions for services page
 
 This pattern separates content from components for easier updates.
-
-### Services Page Architecture
-The Services page (`src/app/services/page.tsx`) features an interactive component:
-
-**ServicesSection** (`src/components/services/service-section.tsx`)
-- **Three service offerings**: Autonomous Agent Development, Enterprise Consulting, Chatbot Development
-- **Interactive tabs**: Each service has 4 tabs (Strategy, Performance, Use Cases, Feasibility)
-- **State management**: Selected service and tab state with Framer Motion animations
-- **Content structure**: Each tab has description text + feature badges
-- **Hover effects**: Cards scale on hover, arrow icon rotates
-- **Responsive grid**: 3 columns desktop, single column mobile
-
-**FaqSection** (`src/components/services/faq-section.tsx`)
-- Questions loaded from `src/constants/questions.tsx`
-- Accordion-style collapsible answers
-- Contact CTA at bottom with Calendly link
 
 ## Key Technical Patterns
 
@@ -243,6 +303,7 @@ The Services page (`src/app/services/page.tsx`) features an interactive componen
 - Supabase service key restricted to API routes
 - Security headers in middleware
 - Type validation on API endpoints
+- Row Level Security (RLS) on Supabase tables
 
 ### Google AdSense Integration
 **Setup:**
@@ -268,11 +329,15 @@ The Services page (`src/app/services/page.tsx`) features an interactive componen
 
 | File | Purpose |
 |------|---------|
+| `src/lib/supabase.ts` | Shared Supabase client for data persistence |
+| `src/app/api/views/route.ts` | View tracking API (Supabase backed) |
+| `src/app/api/reactions/route.ts` | Like/bookmark API (Supabase backed) |
+| `src/app/api/engagement-stats/route.ts` | Aggregated engagement metrics |
 | `src/app/layout.tsx` | Root layout: fonts, analytics, AdSense, global Suspense boundaries |
 | `src/lib/getAllBlogs.ts` | Scans blog directories, extracts MDX metadata (both `*.mdx` and `*/content.mdx`) |
 | `src/lib/embeddings.ts` | OpenAI embedding generation and Supabase vector search |
 | `src/app/api/chat/route.ts` | AI chat endpoint with RAG pattern (GPT-4o-2024-08-06) |
-| `src/components/blog/BlogLayout.tsx` | Blog wrapper: text-to-speech, share, ads, structured data |
+| `src/components/blog/BlogLayout.tsx` | Blog wrapper: view counter, reactions, series nav, text-to-speech, share, ads |
 | `src/components/ui/fallback-image.tsx` | Image with automatic fallback to default.webp |
 | `src/components/ads/AdBanner.tsx` | Google AdSense integration component |
 | `src/middleware.ts` | Request handling, caching, security headers, www redirect |
@@ -280,6 +345,7 @@ The Services page (`src/app/services/page.tsx`) features an interactive componen
 | `tailwind.config.ts` | Design system: colors, typography, dark mode |
 | `src/constants/` | All app content data (projects, nav, pricing, etc.) |
 | `src/app/metadata.ts` | Default site metadata (OG, Twitter, robots) |
+| `supabase/migrations/` | Database schema migrations (views, reactions tables) |
 
 ## Common Development Tasks
 
@@ -292,7 +358,9 @@ The Services page (`src/app/services/page.tsx`) features an interactive componen
      description: "Your description",
      date: "2024-01-15",
      image: "/images/blog/your-image.webp",
-     tags: ["tag1", "tag2"]
+     tags: ["tag1", "tag2"],
+     series: "Optional Series Name",  // Optional
+     seriesOrder: 1,                  // Optional
    }
 
    ## Your content here...
@@ -308,6 +376,8 @@ The Services page (`src/app/services/page.tsx`) features an interactive componen
      date: "2024-01-15",
      image: "/images/blog/your-image.webp",
      tags: ["tag1", "tag2"],
+     series: "Optional Series Name",  // Must match content.mdx
+     seriesOrder: 1,                  // Must match content.mdx
    };
 
    export default function Page() {
@@ -322,6 +392,14 @@ The Services page (`src/app/services/page.tsx`) features an interactive componen
 5. Add blog image to `public/images/blog/` (use WebP format, optimize with cwebp)
 6. Run `npm run generate-embeddings` to index for AI chat
 7. Build to regenerate sitemap: `npm run build`
+
+### Creating a Blog Series
+To group related blog posts into a series:
+1. Add `series` and `seriesOrder` fields to blog post metadata
+2. Use the same series name across all related posts
+3. Assign sequential `seriesOrder` values (1, 2, 3, ...)
+4. Series navigation will automatically appear on posts
+5. The `/series` page will list all series
 
 ### Adding a Portfolio Project
 1. Edit `src/constants/products.tsx`
@@ -382,6 +460,13 @@ cwebp -q 85 -resize 1200 0 input.jpg -o output.webp
 2. Post-build hook: `npm run generate-sitemap`
 3. Vercel deploys to global edge network
 
+**First Deploy Checklist:**
+1. Configure environment variables in Vercel
+2. Run Supabase migration (views and reactions tables)
+3. Generate embeddings: `npm run generate-embeddings`
+4. Verify build passes locally: `npm run build`
+5. Push to main branch
+
 ## MCP Configuration
 
 Model Context Protocol servers configured in `.mcp.json`:
@@ -392,12 +477,21 @@ Model Context Protocol servers configured in `.mcp.json`:
 
 ## Important Notes
 
+### Data Persistence
+- **CRITICAL:** Views and reactions are stored in Supabase PostgreSQL
+- **First-time setup:** Must run SQL migration from `supabase/migrations/`
+- **Migration location:** `supabase/migrations/20250119_create_views_and_reactions_tables.sql`
+- **Migration guide:** See `supabase/migrations/README.md` for detailed instructions
+- **Verification:** After migration, test API endpoints to ensure data persists
+
 ### Blog Posts
 - **Meta object must be duplicated** - Define meta in both `content.mdx` AND `page.tsx` (TypeScript limitation prevents importing from MDX)
 - **Date format**: Use "YYYY-MM-DD" format in meta.date field
+- **Series metadata**: Optional but recommended for tutorial content
 - **Embeddings must be regenerated** after blog content changes for AI chat to reflect updates: `npm run generate-embeddings`
 - **All blog posts get 4 ads** automatically via BlogLayout (top, 2 in-article, bottom)
 - **Text-to-speech is built-in** - BlogLayout provides Play/Pause controls
+- **Engagement tracking**: Views auto-tracked on page load, reactions require user interaction
 
 ### Images
 - **WebP format required** for all images (use `cwebp -q 85` for optimization)
@@ -407,7 +501,6 @@ Model Context Protocol servers configured in `.mcp.json`:
 
 ### Build & Deploy
 - **Sitemap auto-generates on build** via postbuild hook
-- **14 blog posts** currently live (as of Jan 2025)
 - **Middleware caching is aggressive** - test in production-like environment
 - **Git hooks via Husky** - Pre-commit linting (configured in `.husky/`)
 
