@@ -3,24 +3,23 @@
 ## Current Status
 
 **Build:** ✅ Passing
+**Tests:** ✅ 41 passing
 **TypeScript:** ✅ No errors
-**Last Updated:** 2025-01-29
+**Last Updated:** 2025-11-29
 
 ---
 
-## Immediate: Run SQL Migration
+## Immediate: Database Setup
 
-**Required before production deployment:**
+**Create a new Supabase project (previous was paused):**
 
-1. Open [Supabase Dashboard](https://supabase.com/dashboard) → SQL Editor
-2. Run migration: `supabase/migrations/20250119_create_views_and_reactions_tables.sql`
-3. Verify tables:
-   ```sql
-   SELECT * FROM views;
-   SELECT * FROM reactions;
-   ```
-
-See `supabase/migrations/README.md` for full instructions.
+1. Go to https://supabase.com/dashboard → New Project
+2. Run migrations in SQL Editor:
+   - `supabase/migrations/20240122_init.sql` (embeddings)
+   - `supabase/migrations/001_create_newsletter.sql` (newsletter)
+   - `supabase/migrations/20250119_create_views_and_reactions_tables.sql` (engagement)
+3. Update Vercel env vars with new credentials
+4. Run `npm run generate-embeddings` for AI chat
 
 ---
 
@@ -28,31 +27,47 @@ See `supabase/migrations/README.md` for full instructions.
 
 - [x] Build passes
 - [x] TypeScript compiles
-- [x] API routes use Supabase persistence
-- [ ] SQL migration run in Supabase
+- [x] Tests passing (41 tests)
+- [x] CI/CD pipeline configured
+- [ ] Supabase project created
+- [ ] SQL migrations run
+- [ ] Vercel env vars updated
 - [ ] Deploy to Vercel
-- [ ] Verify engagement data persists
 
 ---
 
-## Optional Testing
+## Recently Completed
 
-Manual browser testing (can be done post-deploy):
-
-- [ ] Search filters and sort options
-- [ ] Series navigation on blog posts
-- [ ] Reading progress badges
-- [ ] Social share buttons
-- [ ] View counters on blog cards
-- [ ] Like/bookmark reactions
-- [ ] Popular posts component
-- [ ] Mobile responsive
+- [x] **Vitest testing framework** - 41 tests for lib utilities
+- [x] **GitHub Actions CI/CD** - Lint, test, and build on push/PR
+- [x] **Upstash Redis rate limiting** - Optional Redis-based rate limiting
+- [x] **Giscus comments** - Environment-based configuration
+- [x] **Security fixes** - Fixed high/critical npm vulnerabilities
 
 ---
 
-## Future Improvements
+## Optional Configuration
 
-- [ ] Add automated tests (Jest/Vitest)
-- [ ] Set up CI/CD pipeline with test coverage
-- [ ] Add rate limiting with Redis for scale
-- [ ] Implement Giscus comments on blog posts
+### Giscus Comments
+1. Enable GitHub Discussions on your repo
+2. Install Giscus app: https://github.com/apps/giscus
+3. Get config from: https://giscus.app
+4. Add to Vercel env vars:
+   - `NEXT_PUBLIC_GISCUS_REPO_ID`
+   - `NEXT_PUBLIC_GISCUS_CATEGORY_ID`
+
+### Upstash Redis (for scale)
+1. Create account at https://upstash.com
+2. Create Redis database
+3. Add to Vercel env vars:
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
+
+---
+
+## Future Ideas
+
+- [ ] E2E tests with Playwright
+- [ ] Performance monitoring (Web Vitals)
+- [ ] A/B testing for blog layouts
+- [ ] Newsletter analytics dashboard
