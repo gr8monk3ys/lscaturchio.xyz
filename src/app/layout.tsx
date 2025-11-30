@@ -106,6 +106,13 @@ export default function RootLayout({
         `}</style>
       </head>
       <body>
+        {/* Skip to content link for accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none"
+        >
+          Skip to content
+        </a>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -119,7 +126,7 @@ export default function RootLayout({
           <MobileNavbar />
         </Suspense>
         
-        <main>
+        <main id="main-content">
           {children}
         </main>
         
