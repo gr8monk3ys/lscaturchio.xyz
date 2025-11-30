@@ -6,6 +6,7 @@ import { ArrowRight, Code, Music, Mountain } from "lucide-react";
 import Link from "next/link";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { motion } from "framer-motion";
+import { ThreeBackground } from "@/components/three";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -58,7 +59,9 @@ const iconVariants = {
 export function Hero() {
   return (
     <Container>
-      <section className="min-h-[80vh] w-full px-4 md:px-6 py-8 flex items-center justify-center">
+      <section className="relative min-h-[80vh] w-full px-4 md:px-6 py-8 flex items-center justify-center overflow-hidden">
+        {/* 3D Background */}
+        <ThreeBackground type="particles" />
         <motion.div 
           className="w-full max-w-7xl mx-auto space-y-6"
           variants={containerVariants}

@@ -3,7 +3,8 @@
 ## Current Status
 
 **Build:** ✅ Passing
-**Tests:** ✅ 41 passing
+**Unit Tests:** ✅ 41 passing
+**E2E Tests:** ✅ Playwright configured
 **TypeScript:** ✅ No errors
 **Last Updated:** 2025-11-29
 
@@ -23,12 +24,24 @@
 
 ---
 
+## Test Commands
+
+```bash
+npm test              # Unit tests (Vitest)
+npm run test:watch    # Unit tests in watch mode
+npm run test:e2e      # E2E tests (Playwright)
+npm run test:e2e:ui   # E2E tests with UI
+```
+
+---
+
 ## Deployment Checklist
 
 - [x] Build passes
 - [x] TypeScript compiles
-- [x] Tests passing (41 tests)
-- [x] CI/CD pipeline configured
+- [x] Unit tests passing (41 tests)
+- [x] E2E tests configured
+- [x] CI/CD pipeline with E2E
 - [ ] Supabase project created
 - [ ] SQL migrations run
 - [ ] Vercel env vars updated
@@ -38,36 +51,54 @@
 
 ## Recently Completed
 
-- [x] **Vitest testing framework** - 41 tests for lib utilities
-- [x] **GitHub Actions CI/CD** - Lint, test, and build on push/PR
-- [x] **Upstash Redis rate limiting** - Optional Redis-based rate limiting
+### Testing & CI/CD
+- [x] **Vitest testing framework** - 41 unit tests
+- [x] **Playwright E2E tests** - Navigation, blog, search tests
+- [x] **GitHub Actions CI/CD** - Lint → Test → Build → E2E pipeline
+
+### Visual Enhancements
+- [x] **Three.js particle background** - Interactive 3D hero section
+- [x] **Gradient orb effect** - Alternative 3D background
+- [x] **Performance-aware rendering** - Reduces particles on low-end devices
+- [x] **Respects prefers-reduced-motion** - Accessibility
+
+### Performance
+- [x] **Web Vitals monitoring** - CLS, LCP, FID, TTFB tracking
+- [x] **Performance observer** - Long task detection
+
+### Infrastructure
+- [x] **Upstash Redis rate limiting** - Optional distributed rate limiting
 - [x] **Giscus comments** - Environment-based configuration
-- [x] **Security fixes** - Fixed high/critical npm vulnerabilities
+- [x] **Dynamic OG images** - `/api/og` endpoint
+- [x] **Custom 404 page** - Professional error page
+- [x] **Skip to content** - Accessibility improvement
 
 ---
 
 ## Optional Configuration
 
 ### Giscus Comments
-1. Enable GitHub Discussions on your repo
-2. Install Giscus app: https://github.com/apps/giscus
-3. Get config from: https://giscus.app
-4. Add to Vercel env vars:
-   - `NEXT_PUBLIC_GISCUS_REPO_ID`
-   - `NEXT_PUBLIC_GISCUS_CATEGORY_ID`
+```env
+NEXT_PUBLIC_GISCUS_REPO_ID=your-repo-id
+NEXT_PUBLIC_GISCUS_CATEGORY_ID=your-category-id
+```
 
-### Upstash Redis (for scale)
-1. Create account at https://upstash.com
-2. Create Redis database
-3. Add to Vercel env vars:
-   - `UPSTASH_REDIS_REST_URL`
-   - `UPSTASH_REDIS_REST_TOKEN`
+### Upstash Redis
+```env
+UPSTASH_REDIS_REST_URL=your-redis-url
+UPSTASH_REDIS_REST_TOKEN=your-redis-token
+```
+
+### Performance Analytics
+```env
+NEXT_PUBLIC_ANALYTICS_ENDPOINT=your-analytics-endpoint
+```
 
 ---
 
 ## Future Ideas
 
-- [ ] E2E tests with Playwright
-- [ ] Performance monitoring (Web Vitals)
 - [ ] A/B testing for blog layouts
 - [ ] Newsletter analytics dashboard
+- [ ] Interactive project showcases with Three.js
+- [ ] Blog post reactions with animations
