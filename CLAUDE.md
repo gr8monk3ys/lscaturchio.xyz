@@ -32,8 +32,12 @@ npm run generate-sitemap       # Generate XML sitemap (auto-runs post-build)
 - `OPENAI_API_KEY` - OpenAI API access for chat and embeddings
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase database URL
 - `SUPABASE_SERVICE_KEY` - Server-side Supabase access (full permissions)
-- `NEXT_PUBLIC_SITE_URL` - Custom site URL (optional)
-- `ANALYTICS_API_KEY` - Analytics endpoint protection (optional)
+
+**Optional Environment Variables:**
+- `GITHUB_TOKEN` - GitHub contributions graph (falls back to mock data if not set)
+- `RESEND_API_KEY` - Contact form email sending (logs to console if not set)
+- `NEXT_PUBLIC_SITE_URL` - Custom site URL (defaults to localhost in dev)
+- `ANALYTICS_API_KEY` - Analytics endpoint protection
 
 See `.env.example` for details.
 
@@ -69,12 +73,20 @@ reactions (
   updated_at TIMESTAMP WITH TIME ZONE
 )
 
--- Blog content embeddings for AI chat (existing)
+-- Blog content embeddings for AI chat
 embeddings (
   id TEXT PRIMARY KEY,
   content TEXT,
   embedding vector(1536),
   metadata JSONB
+)
+
+-- Newsletter subscribers
+newsletter_subscribers (
+  id UUID PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE,
+  unsubscribed_at TIMESTAMP WITH TIME ZONE
 )
 ```
 
@@ -98,6 +110,12 @@ embeddings (
 3. **`/api/engagement-stats`** - Aggregated metrics
    - Returns: totalLikes, totalBookmarks, topLiked[], topBookmarked[]
    - Used by: Analytics dashboard and stats page
+
+4. **`/api/github/contributions`** - GitHub activity graph
+   - GET: Fetch contribution data (requires GITHUB_TOKEN or returns mock)
+
+5. **`/api/contact`** - Contact form
+   - POST: Send email via Resend API (or logs to console if RESEND_API_KEY not set)
 
 **First-Time Setup:**
 After cloning the repository, you MUST run the Supabase migration to create the views and reactions tables:
@@ -183,9 +201,9 @@ Located in `src/app/api/chat/route.ts`:
 ### Middleware Patterns (`src/middleware.ts`)
 Handles request/response optimization:
 - **Cache Control by Content Type:**
-  - Static assets (JS, CSS, images): 1 year cache
-  - HTML pages: 5 min cache with `stale-while-revalidate`
-  - API responses: no client cache
+  - Static assets (JS, CSS, images): 1 year cache with `must-revalidate`
+  - HTML pages: 5 min cache with 60s `stale-while-revalidate`
+  - API responses: no client cache (`no-cache, no-store`)
 - **Security Headers:** XSS protection, clickjacking prevention, nosniff
 - **www Redirect:** Normalizes `www.lscaturchio.xyz` → `lscaturchio.xyz`
 
