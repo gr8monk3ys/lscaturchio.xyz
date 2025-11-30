@@ -16,15 +16,12 @@ export function GiscusComments({
   category = process.env.NEXT_PUBLIC_GISCUS_CATEGORY || "Blog Comments",
   categoryId = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID || "",
 }: GiscusCommentsProps) {
-  // Don't render if Giscus is not configured
-  if (!repoId || !categoryId) {
-    return null
-  }
   const ref = useRef<HTMLDivElement>(null)
   const { resolvedTheme } = useTheme()
+  const isConfigured = Boolean(repoId && categoryId)
 
   useEffect(() => {
-    if (!ref.current || ref.current.hasChildNodes()) return
+    if (!isConfigured || !ref.current || ref.current.hasChildNodes()) return
 
     const script = document.createElement('script')
 
@@ -55,10 +52,12 @@ export function GiscusComments({
     })
 
     ref.current.appendChild(script)
-  }, [repo, repoId, category, categoryId, resolvedTheme])
+  }, [isConfigured, repo, repoId, category, categoryId, resolvedTheme])
 
   // Update theme when it changes
   useEffect(() => {
+    if (!isConfigured) return
+
     const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame')
     if (!iframe) return
 
@@ -72,7 +71,12 @@ export function GiscusComments({
       },
       'https://giscus.app'
     )
-  }, [resolvedTheme])
+  }, [isConfigured, resolvedTheme])
+
+  // Don't render if Giscus is not configured
+  if (!isConfigured) {
+    return null
+  }
 
   return (
     <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
