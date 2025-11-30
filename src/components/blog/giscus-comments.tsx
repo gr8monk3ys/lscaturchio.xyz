@@ -4,18 +4,22 @@ import { useEffect, useRef } from 'react'
 import { useTheme } from 'next-themes'
 
 interface GiscusCommentsProps {
-  repo: string
-  repoId: string
-  category: string
-  categoryId: string
+  repo?: string
+  repoId?: string
+  category?: string
+  categoryId?: string
 }
 
 export function GiscusComments({
-  repo = "lscaturchio/lscaturchio.xyz",
-  repoId = "YOUR_REPO_ID", // TODO: Replace with actual repo ID
-  category = "Blog Comments",
-  categoryId = "YOUR_CATEGORY_ID", // TODO: Replace with actual category ID
+  repo = process.env.NEXT_PUBLIC_GISCUS_REPO || "gr8monk3ys/lscaturchio.xyz",
+  repoId = process.env.NEXT_PUBLIC_GISCUS_REPO_ID || "",
+  category = process.env.NEXT_PUBLIC_GISCUS_CATEGORY || "Blog Comments",
+  categoryId = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID || "",
 }: GiscusCommentsProps) {
+  // Don't render if Giscus is not configured
+  if (!repoId || !categoryId) {
+    return null
+  }
   const ref = useRef<HTMLDivElement>(null)
   const { resolvedTheme } = useTheme()
 

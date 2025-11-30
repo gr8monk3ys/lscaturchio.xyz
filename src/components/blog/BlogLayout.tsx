@@ -285,12 +285,7 @@ export function BlogLayout({
             </div>
 
             {/* Comments Section */}
-            <GiscusComments
-              repo="lscaturchio/lscaturchio.xyz"
-              repoId="YOUR_REPO_ID"
-              category="Blog Comments"
-              categoryId="YOUR_CATEGORY_ID"
-            />
+            <GiscusComments />
 
             {/* Related Posts */}
             <RelatedPosts
