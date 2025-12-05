@@ -7,7 +7,7 @@ import type { EmbeddingResult, SearchResult } from '@/types/embeddings';
 
 // Fallback basic text search when embeddings aren't available
 async function fallbackSearch(query: string, limit: number): Promise<SearchResult[]> {
-  const blogs = getAllBlogs();
+  const blogs = await getAllBlogs();
   const queryLower = query.toLowerCase();
   const queryTerms = queryLower.split(/\s+/).filter(term => term.length > 2);
 
