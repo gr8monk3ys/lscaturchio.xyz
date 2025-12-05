@@ -5,10 +5,17 @@ import { logError } from '@/lib/logger';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-});
+// Lazy initialization to avoid build-time errors when OPENAI_API_KEY is not set
+let openaiClient: OpenAI | null = null;
+
+function getOpenAI(): OpenAI {
+  if (!openaiClient) {
+    openaiClient = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY!,
+    });
+  }
+  return openaiClient;
+}
 
 const handlePost = async (req: NextRequest) => {
   try {
@@ -36,7 +43,7 @@ Context:
 ${context}`;
 
     // Get completion from OpenAI
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4o-2024-08-06",
       messages: [
         {

@@ -51,7 +51,7 @@ test.describe('Navigation', () => {
 
     // Check for 404 content
     await expect(page.locator('text=404')).toBeVisible();
-    await expect(page.locator('text=/page not found/i')).toBeVisible();
+    await expect(page.getByText('Page not found')).toBeVisible();
   });
 
   test('skip to content link works', async ({ page }) => {

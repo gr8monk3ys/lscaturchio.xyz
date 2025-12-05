@@ -85,10 +85,10 @@ export function RecentProjects() {
   }, []);
 
   return (
-    <section ref={containerRef} className="py-16">
+    <section ref={containerRef} className="py-8">
       <div className="container px-4 md:px-6">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold">Recent Updates</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">Recent Updates</h2>
           <Link 
             href="/projects"
             className="group inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
