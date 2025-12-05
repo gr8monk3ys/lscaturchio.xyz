@@ -54,7 +54,7 @@ const socialLinks = [
 export function Hero() {
   return (
     <Container>
-      <section className="relative min-h-[85vh] w-full px-4 md:px-6 py-12 flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[70vh] w-full px-4 md:px-6 py-8 flex items-center justify-center overflow-hidden">
         {/* 3D Background */}
         <ThreeBackground type="particles" />
 
@@ -71,7 +71,7 @@ export function Hero() {
               className="relative"
               variants={photoVariants}
             >
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-purple-500 to-pink-500 blur-xl opacity-50 animate-pulse" />
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-primary/50 blur-xl opacity-50 animate-pulse" />
               <motion.div
                 className="relative w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden ring-4 ring-primary/20"
                 whileHover={{
@@ -101,7 +101,7 @@ export function Hero() {
             <motion.div variants={itemVariants} className="space-y-4">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
                 Hi, I&apos;m{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-500 to-pink-500">
+                <span className="text-primary">
                   Lorenzo Scaturchio
                 </span>
               </h1>

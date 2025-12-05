@@ -106,7 +106,7 @@ export function OptimizedImage({
           priority={shouldPrioritize}
           fill={fill}
           quality={quality}
-          loading={loading}
+          loading={shouldPrioritize ? undefined : loading}
           placeholder={placeholder}
           blurDataURL={blurDataURL}
           className={`${

@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 
 export function NewsletterSection() {
   return (
-    <section className="py-20 bg-gradient-to-b from-background to-muted/20">
+    <section className="py-12 bg-gradient-to-b from-background to-muted/20">
       <Container>
         <div className="max-w-2xl mx-auto text-center">
           <motion.div

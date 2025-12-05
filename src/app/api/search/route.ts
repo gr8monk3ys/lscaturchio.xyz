@@ -2,7 +2,47 @@ import { NextRequest, NextResponse } from 'next/server';
 import { searchEmbeddings } from '@/lib/embeddings';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
+import { getAllBlogs } from '@/lib/getAllBlogs';
 import type { EmbeddingResult, SearchResult } from '@/types/embeddings';
+
+// Fallback basic text search when embeddings aren't available
+async function fallbackSearch(query: string, limit: number): Promise<SearchResult[]> {
+  const blogs = getAllBlogs();
+  const queryLower = query.toLowerCase();
+  const queryTerms = queryLower.split(/\s+/).filter(term => term.length > 2);
+
+  const scored = blogs.map(blog => {
+    let score = 0;
+    const titleLower = blog.title.toLowerCase();
+    const descLower = (blog.description || '').toLowerCase();
+    const tagsLower = (blog.tags || []).map((t: string) => t.toLowerCase());
+
+    // Title match is highest priority
+    if (titleLower.includes(queryLower)) {
+      score += 10;
+    }
+    // Individual term matches
+    for (const term of queryTerms) {
+      if (titleLower.includes(term)) score += 5;
+      if (descLower.includes(term)) score += 2;
+      if (tagsLower.some((tag: string) => tag.includes(term))) score += 3;
+    }
+
+    return { blog, score };
+  })
+  .filter(item => item.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, limit);
+
+  return scored.map(item => ({
+    title: item.blog.title,
+    url: `/blog/${item.blog.slug}`,
+    description: item.blog.description || '',
+    date: item.blog.date,
+    similarity: item.score / 15, // Normalize to 0-1 range
+    snippets: [item.blog.description || ''].filter(Boolean),
+  }));
+}
 
 const handleGet = async (request: NextRequest) => {
   try {
@@ -24,8 +64,32 @@ const handleGet = async (request: NextRequest) => {
       );
     }
 
-    // Use the existing searchEmbeddings function from embeddings.ts
-    const results = await searchEmbeddings(query, Math.min(limit, 50));
+    // Try semantic search first, fallback to text search
+    let results: EmbeddingResult[];
+    let usedFallback = false;
+    try {
+      results = await searchEmbeddings(query, Math.min(limit, 50));
+      // If no results from semantic search, try fallback
+      if (!results || results.length === 0) {
+        const fallbackResults = await fallbackSearch(query, limit);
+        return NextResponse.json({
+          query,
+          results: fallbackResults,
+          count: fallbackResults.length,
+          source: 'text',
+        });
+      }
+    } catch (embeddingError) {
+      // Semantic search failed, use fallback
+      console.error('Semantic search failed, using fallback:', embeddingError);
+      const fallbackResults = await fallbackSearch(query, limit);
+      return NextResponse.json({
+        query,
+        results: fallbackResults,
+        count: fallbackResults.length,
+        source: 'text',
+      });
+    }
 
     // Group results by blog post
     const groupedResults: Record<string, SearchResult> = (results as EmbeddingResult[]).reduce(
@@ -102,8 +166,45 @@ const handlePost = async (request: NextRequest) => {
       );
     }
 
-    // Use the existing searchEmbeddings function
-    const results = await searchEmbeddings(query, Math.min(limit, 50));
+    // Try semantic search first, fallback to text search
+    let results: EmbeddingResult[];
+    try {
+      results = await searchEmbeddings(query, Math.min(limit, 50));
+      // If no results from semantic search, try fallback
+      if (!results || results.length === 0) {
+        const fallbackResults = await fallbackSearch(query, limit);
+        return NextResponse.json({
+          query,
+          results: fallbackResults.map(r => ({
+            slug: r.url.split('/').pop() || '',
+            title: r.title,
+            description: r.description,
+            date: r.date,
+            tags: [],
+            relevance: r.similarity,
+          })),
+          count: fallbackResults.length,
+          source: 'text',
+        });
+      }
+    } catch (embeddingError) {
+      // Semantic search failed, use fallback
+      console.error('Semantic search failed, using fallback:', embeddingError);
+      const fallbackResults = await fallbackSearch(query, limit);
+      return NextResponse.json({
+        query,
+        results: fallbackResults.map(r => ({
+          slug: r.url.split('/').pop() || '',
+          title: r.title,
+          description: r.description,
+          date: r.date,
+          tags: [],
+          relevance: r.similarity,
+        })),
+        count: fallbackResults.length,
+        source: 'text',
+      });
+    }
 
     // Group results by blog post
     const groupedResults: Record<string, SearchResult & { tags?: string[] }> = (

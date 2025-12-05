@@ -15,7 +15,7 @@ import {
   BreadcrumbStructuredData,
 } from "@/components/ui/structured-data";
 import Link from "next/link";
-import { ArrowRight, Rocket, BookOpen, Users } from "lucide-react";
+import { Rocket, BookOpen, Users, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 const currentFocusItems = [
@@ -103,7 +103,7 @@ export default function Home() {
 
       {/* Current Focus Section */}
       <Container size="large">
-        <section className="py-20 px-4">
+        <section className="py-12 px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -172,52 +172,6 @@ export default function Home() {
 
       {/* Newsletter */}
       <NewsletterSection />
-
-      {/* Final CTA */}
-      <Container size="large">
-        <section className="py-20 px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-purple-500/10 to-pink-500/10 p-12 text-center"
-          >
-            {/* Background decoration */}
-            <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
-
-            <div className="relative">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Build Something Amazing?
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-                Whether you have a specific project in mind or just want to explore possibilities,
-                I&apos;d love to hear from you. Let&apos;s turn your ideas into reality.
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-opacity"
-                  >
-                    Get in Touch
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Link
-                    href="https://calendly.com/gr8monk3ys/30min"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-8 py-4 bg-secondary text-secondary-foreground rounded-full font-medium hover:bg-secondary/80 transition-colors"
-                  >
-                    Schedule a Call
-                  </Link>
-                </motion.div>
-              </div>
-            </div>
-          </motion.div>
-        </section>
-      </Container>
     </main>
   );
 }

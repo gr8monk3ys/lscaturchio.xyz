@@ -108,7 +108,7 @@ export function SocialProofSection() {
   ];
 
   return (
-    <section ref={ref} className="py-20 px-4">
+    <section ref={ref} className="py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* GitHub Stats */}
         <motion.div

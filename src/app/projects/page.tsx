@@ -85,7 +85,7 @@ export default function Projects() {
               href={project.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative bg-gradient-to-br from-primary/5 to-purple-500/5 rounded-2xl p-6 border border-primary/10 hover:border-primary/30 transition-all duration-300"
+              className="group relative bg-secondary/30 rounded-2xl p-6 border border-primary/10 hover:border-primary/30 transition-all duration-300"
             >
               <div className="flex items-start justify-between mb-4">
                 <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">
@@ -114,7 +114,7 @@ export default function Projects() {
       </section>
 
       {/* All Projects */}
-      <section className="py-12 px-4">
+      <section className="py-12 px-4 mb-12">
         <div className="flex items-center justify-between mb-8">
           <div>
             <span className="text-primary text-sm font-medium uppercase tracking-wider">
@@ -147,35 +147,6 @@ export default function Projects() {
         >
           <Products />
         </Suspense>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-12 px-4 mb-12">
-        <div className="bg-secondary/30 rounded-2xl p-8 text-center">
-          <h2 className="text-2xl font-bold mb-4">
-            Have a project idea?
-          </h2>
-          <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-            I&apos;m always open to collaborating on interesting projects or discussing
-            new opportunities. Let&apos;s build something together.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-opacity"
-            >
-              Get in Touch
-            </Link>
-            <Link
-              href="https://github.com/gr8monk3ys"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-secondary text-secondary-foreground rounded-full font-medium hover:bg-secondary/80 transition-colors"
-            >
-              Follow on GitHub
-            </Link>
-          </div>
-        </div>
       </section>
     </Container>
   );
