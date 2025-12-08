@@ -12,7 +12,7 @@
  *    UPSTASH_REDIS_REST_TOKEN=your-redis-token
  */
 
-import { Ratelimit } from '@upstash/ratelimit';
+import { Ratelimit, type Duration } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import { rateLimiter, RATE_LIMITS, getClientIp } from './rate-limit';
 
@@ -29,7 +29,7 @@ const redis = isUpstashConfigured
   : null;
 
 // Create rate limiters for different use cases
-const createUpstashLimiter = (limit: number, window: string) => {
+const createUpstashLimiter = (limit: number, window: Duration) => {
   if (!redis) return null;
 
   return new Ratelimit({

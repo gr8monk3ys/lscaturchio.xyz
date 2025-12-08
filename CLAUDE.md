@@ -11,8 +11,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Server-side rendering with React Server Components
 - Vector search using Supabase for semantic blog content retrieval
 - Comprehensive SEO with structured data and automated sitemap/RSS generation
+- Public REST API with documentation
+- Three.js animated backgrounds with accessibility awareness
+- Performance monitoring with Web Vitals tracking
+- E2E testing with Playwright and unit testing with Vitest
+- CI/CD pipeline with GitHub Actions
 
-**Tech Stack:** Next.js 14, React 18, TypeScript, Tailwind CSS, Supabase, OpenAI API, Framer Motion
+**Tech Stack:** Next.js 14, React 18, TypeScript, Tailwind CSS, Supabase, OpenAI API, Framer Motion, Three.js/React Three Fiber, Vitest, Playwright
 
 ## Development Commands
 
@@ -22,6 +27,13 @@ npm run dev                    # Start dev server at localhost:3000
 npm run lint                   # Run ESLint checks
 npm run build                  # Production build (auto-generates sitemap)
 npm run start                  # Run production server locally
+
+# Testing
+npm run test                   # Run unit tests with Vitest
+npm run test:watch             # Run tests in watch mode
+npm run test:coverage          # Run tests with coverage report
+npm run test:e2e               # Run Playwright E2E tests
+npm run test:e2e:ui            # Run E2E tests with Playwright UI
 
 # AI/Content
 npm run generate-embeddings    # Generate OpenAI embeddings for blog content
@@ -117,6 +129,14 @@ newsletter_subscribers (
 5. **`/api/contact`** - Contact form
    - POST: Send email via Resend API (or logs to console if RESEND_API_KEY not set)
 
+6. **`/api/search`** - Semantic search (rate limited: 5/min)
+   - GET/POST: Search blog posts using vector embeddings
+   - Returns: Grouped results with similarity scores and snippets
+
+7. **`/api/summarize`** - AI summarization (rate limited: 5/min)
+   - POST: Generate summary or key takeaways from content
+   - Uses GPT-4o-mini for efficiency
+
 **First-Time Setup:**
 After cloning the repository, you MUST run the Supabase migration to create the views and reactions tables:
 1. Open Supabase Dashboard → SQL Editor
@@ -198,6 +218,87 @@ Located in `src/app/api/chat/route.ts`:
 - `src/lib/generateEmbeddings.ts` - CLI tool to pre-process blog content
 - `src/app/api/chat/route.ts` - Chat endpoint (model: gpt-4o-2024-08-06, temp: 0.4, max_tokens: 1000)
 
+### Public REST API
+The site exposes a public API for programmatic access to blog content. Documentation available at `/api-docs`.
+
+**Versioned Endpoints (v1):**
+- **`GET /api/v1/blogs`** - List all blogs with pagination
+  - Query params: `limit`, `offset`, `tag`
+  - Returns: `{ data: [...], meta: { total, limit, offset, hasMore } }`
+- **`GET /api/v1/blogs/:slug`** - Get single blog post
+- **`GET /api/v1/stats`** - Site statistics (post count, popular tags)
+
+**Rate Limiting:**
+All API endpoints use in-memory rate limiting (`src/lib/rate-limit.ts`):
+- `AI_HEAVY`: 5 requests/minute (chat, search, summarize)
+- `STANDARD`: 30 requests/minute
+- `PUBLIC`: 100 requests/minute (blog listing)
+- `NEWSLETTER`: 3 requests/5 minutes
+
+**Key files:**
+- `src/lib/rate-limit.ts` - Rate limiter implementation
+- `src/lib/with-rate-limit.ts` - HOF wrapper for API routes
+- `src/app/api/v1/` - Versioned public API endpoints
+- `src/components/api/api-documentation.tsx` - API docs UI
+
+### Testing Architecture
+
+**Unit Tests (Vitest):**
+- Location: `src/__tests__/`
+- Config: `vitest.config.ts`
+- Setup: `src/__tests__/setup.tsx` (mocks for Next.js, matchMedia, observers)
+- Coverage: V8 provider with HTML/JSON/text reports
+
+**E2E Tests (Playwright):**
+- Location: `e2e/`
+- Config: `playwright.config.ts`
+- Browsers: Chromium (desktop) + Mobile Safari (iPhone 13)
+- Tests: Navigation, blog listing, search, dark mode, accessibility
+
+**CI/CD Pipeline (GitHub Actions):**
+- Location: `.github/workflows/ci.yml`
+- Jobs: lint → test → build → e2e (sequential with dependencies)
+- Runs on: push/PR to main branch
+- Artifacts: Playwright report on failure (7-day retention)
+
+**Running Tests:**
+```bash
+npm test                    # Unit tests (single run)
+npm run test:watch          # Unit tests (watch mode)
+npm run test:coverage       # Unit tests with coverage
+npm run test:e2e            # E2E tests (headless)
+npm run test:e2e:ui         # E2E tests (interactive UI)
+```
+
+### Three.js Visual Effects
+Located in `src/components/three/`:
+
+**Components:**
+- `ThreeBackground` - Main wrapper with type selection (particles/orb/none)
+- `ParticleField` - Full particle animation
+- `ParticleFieldLite` - Reduced particles for low-end devices
+- `GradientOrb` - Animated gradient sphere
+
+**Accessibility Features:**
+- Respects `prefers-reduced-motion` media query
+- Auto-detects low-end devices (< 4 CPU cores, mobile)
+- Falls back to static background when motion disabled
+- Dynamically imported to avoid SSR issues
+
+### Performance Monitoring
+Located in `src/components/analytics/web-vitals.tsx`:
+
+**WebVitalsReporter:**
+- Tracks Core Web Vitals: CLS, FID, FCP, LCP, TTFB, INP
+- Rates metrics against Google thresholds (good/needs-improvement/poor)
+- Logs to console in development
+- Sends to analytics endpoint if `NEXT_PUBLIC_ANALYTICS_ENDPOINT` set
+
+**PerformanceMonitor:**
+- Monitors long tasks (> 50ms)
+- Tracks memory usage in development
+- Uses PerformanceObserver API
+
 ### Middleware Patterns (`src/middleware.ts`)
 Handles request/response optimization:
 - **Cache Control by Content Type:**
@@ -212,10 +313,17 @@ Handles request/response optimization:
 src/components/
 ├── ui/              # Base UI components (navbar, footer, cards, etc.)
 ├── ads/             # Google AdSense integration components
+├── analytics/       # Web Vitals and performance monitoring
+├── api/             # API documentation components
 ├── blog/            # Blog-specific components (BlogLayout, Prose, etc.)
-├── stats/           # Engagement stats components (popular-posts, etc.)
-├── [page]/          # Page-specific components (home/, blog/, about/, etc.)
+├── chat/            # AI chat interface components
+├── github/          # GitHub contributions display
 ├── hooks/           # Custom React hooks
+├── newsletter/      # Newsletter subscription components
+├── search/          # Search interface components
+├── stats/           # Engagement stats components (popular-posts, etc.)
+├── three/           # Three.js visual effects (particles, orbs)
+├── [page]/          # Page-specific components (home/, about/, etc.)
 └── [shared]         # Shared components (Badge, Container, Heading, etc.)
 ```
 
@@ -351,11 +459,18 @@ This pattern separates content from components for easier updates.
 | `src/app/api/views/route.ts` | View tracking API (Supabase backed) |
 | `src/app/api/reactions/route.ts` | Like/bookmark API (Supabase backed) |
 | `src/app/api/engagement-stats/route.ts` | Aggregated engagement metrics |
+| `src/app/api/v1/blogs/route.ts` | Public API: blog listing with pagination |
+| `src/app/api/search/route.ts` | Semantic search using embeddings |
+| `src/app/api/summarize/route.ts` | AI-powered content summarization |
 | `src/app/layout.tsx` | Root layout: fonts, analytics, AdSense, global Suspense boundaries |
 | `src/lib/getAllBlogs.ts` | Scans blog directories, extracts MDX metadata (both `*.mdx` and `*/content.mdx`) |
 | `src/lib/embeddings.ts` | OpenAI embedding generation and Supabase vector search |
+| `src/lib/rate-limit.ts` | In-memory API rate limiter with presets |
+| `src/lib/summarize.ts` | GPT-4o-mini summarization utilities |
 | `src/app/api/chat/route.ts` | AI chat endpoint with RAG pattern (GPT-4o-2024-08-06) |
 | `src/components/blog/BlogLayout.tsx` | Blog wrapper: view counter, reactions, series nav, text-to-speech, share, ads |
+| `src/components/three/three-background.tsx` | Three.js animated backgrounds with accessibility |
+| `src/components/analytics/web-vitals.tsx` | Core Web Vitals monitoring |
 | `src/components/ui/fallback-image.tsx` | Image with automatic fallback to default.webp |
 | `src/components/ads/AdBanner.tsx` | Google AdSense integration component |
 | `src/middleware.ts` | Request handling, caching, security headers, www redirect |
@@ -364,6 +479,9 @@ This pattern separates content from components for easier updates.
 | `src/constants/` | All app content data (projects, nav, pricing, etc.) |
 | `src/app/metadata.ts` | Default site metadata (OG, Twitter, robots) |
 | `supabase/migrations/` | Database schema migrations (views, reactions tables) |
+| `vitest.config.ts` | Vitest unit test configuration |
+| `playwright.config.ts` | Playwright E2E test configuration |
+| `.github/workflows/ci.yml` | GitHub Actions CI/CD pipeline |
 
 ## Common Development Tasks
 
@@ -444,6 +562,42 @@ To group related blog posts into a series:
 3. Desktop nav: `src/components/ui/navbar.tsx`
 4. Mobile nav: `src/components/ui/mobile-navbar.tsx`
 
+### Writing Tests
+
+**Unit Tests (Vitest):**
+1. Create test file in `src/__tests__/` following pattern: `*.test.ts` or `*.spec.ts`
+2. Import from `vitest`: `import { describe, it, expect, vi } from 'vitest'`
+3. Use `@testing-library/react` for component tests
+4. Mock Next.js router, Image, etc. (see `src/__tests__/setup.tsx` for examples)
+
+Example:
+```typescript
+import { describe, it, expect } from 'vitest';
+import { formatDate } from '@/lib/formatDate';
+
+describe('formatDate', () => {
+  it('formats ISO date correctly', () => {
+    expect(formatDate('2024-01-15')).toBe('January 15, 2024');
+  });
+});
+```
+
+**E2E Tests (Playwright):**
+1. Create test file in `e2e/` with pattern: `*.spec.ts`
+2. Use Playwright's test runner: `import { test, expect } from '@playwright/test'`
+3. Tests run against `http://localhost:3000` (dev server starts automatically)
+
+Example:
+```typescript
+import { test, expect } from '@playwright/test';
+
+test('can navigate to blog', async ({ page }) => {
+  await page.goto('/');
+  await page.click('a[href="/blog"]');
+  await expect(page).toHaveURL('/blog');
+});
+```
+
 ### Optimizing Images
 When adding new images, always optimize them:
 ```bash
@@ -521,6 +675,8 @@ Model Context Protocol servers configured in `.mcp.json`:
 - **Sitemap auto-generates on build** via postbuild hook
 - **Middleware caching is aggressive** - test in production-like environment
 - **Git hooks via Husky** - Pre-commit linting (configured in `.husky/`)
+- **CI/CD runs on push to main** - lint → test → build → e2e (all must pass)
+- **E2E tests require secrets** - OPENAI_API_KEY, SUPABASE keys in GitHub Secrets
 
 ### Code Quality
 - **TypeScript strict mode enabled** - all code must be type-safe
@@ -532,3 +688,18 @@ Model Context Protocol servers configured in `.mcp.json`:
 - **API keys server-side only** - never expose in client code
 - **Supabase service key** restricted to API routes only
 - **Google AdSense Publisher ID**: ca-pub-4505962980988232
+- **Rate limiting applied** to all public API endpoints (see `RATE_LIMITS` presets)
+
+### Testing
+- **Unit tests must pass** before commit (run `npm test`)
+- **E2E tests run in CI** - ensure local tests pass before pushing
+- **Playwright browsers** - Only Chromium and Mobile Safari configured
+- **Test files location**: Unit in `src/__tests__/`, E2E in `e2e/`
+- **Coverage reports** generated with `npm run test:coverage`
+
+### Three.js & Performance
+- **Three.js components** dynamically imported (no SSR)
+- **Motion preferences respected** - animations disabled for `prefers-reduced-motion`
+- **Low-end device detection** - lighter animations for mobile/slow CPUs
+- **Web Vitals tracked** - monitor performance in development console
+- **Long task monitoring** - warns when tasks exceed 50ms

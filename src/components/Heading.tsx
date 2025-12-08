@@ -9,6 +9,8 @@ const CalSans = localFont({
   display: "swap",
 });
 
+type HeadingTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span" | "div";
+
 export const Heading = ({
   className,
   children,
@@ -16,7 +18,7 @@ export const Heading = ({
 }: {
   className?: string;
   children: React.ReactNode;
-  as?: keyof JSX.IntrinsicElements;
+  as?: HeadingTag;
 }) => {
   return (
     <Tag

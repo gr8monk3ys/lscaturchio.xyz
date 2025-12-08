@@ -119,6 +119,229 @@ module.exports = {
     tags: ['tailwind', 'css', 'responsive'],
     category: 'CSS',
   },
+  {
+    id: '5',
+    title: 'Cosine Similarity for Vectors',
+    description: 'Calculate similarity between embedding vectors for semantic search.',
+    code: `export function cosineSimilarity(a: number[], b: number[]): number {
+  if (a.length !== b.length) throw new Error('Vectors must be same length')
+
+  let dotProduct = 0
+  let normA = 0
+  let normB = 0
+
+  for (let i = 0; i < a.length; i++) {
+    dotProduct += a[i] * b[i]
+    normA += a[i] * a[i]
+    normB += b[i] * b[i]
+  }
+
+  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB))
+}
+
+// Usage: similarity > 0.8 usually means semantically similar`,
+    language: 'typescript',
+    tags: ['ai', 'embeddings', 'math'],
+    category: 'AI/ML',
+  },
+  {
+    id: '6',
+    title: 'useLocalStorage Hook',
+    description: 'Persist state to localStorage with SSR safety and type inference.',
+    code: `import { useState, useEffect } from 'react'
+
+export function useLocalStorage<T>(key: string, initialValue: T) {
+  const [storedValue, setStoredValue] = useState<T>(initialValue)
+
+  useEffect(() => {
+    try {
+      const item = window.localStorage.getItem(key)
+      if (item) setStoredValue(JSON.parse(item))
+    } catch (error) {
+      console.error(error)
+    }
+  }, [key])
+
+  const setValue = (value: T | ((val: T) => T)) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value
+      setStoredValue(valueToStore)
+      window.localStorage.setItem(key, JSON.stringify(valueToStore))
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  return [storedValue, setValue] as const
+}`,
+    language: 'typescript',
+    tags: ['react', 'hooks', 'storage'],
+    category: 'React',
+  },
+  {
+    id: '7',
+    title: 'Streaming Chat Response',
+    description: 'Handle streaming responses from OpenAI chat API with async iterators.',
+    code: `async function* streamChat(messages: Message[]) {
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages,
+    stream: true,
+  })
+
+  for await (const chunk of response) {
+    const content = chunk.choices[0]?.delta?.content
+    if (content) yield content
+  }
+}
+
+// Usage in React:
+const [text, setText] = useState('')
+for await (const chunk of streamChat(messages)) {
+  setText(prev => prev + chunk)
+}`,
+    language: 'typescript',
+    tags: ['openai', 'streaming', 'async'],
+    category: 'AI/ML',
+  },
+  {
+    id: '8',
+    title: 'Retry with Exponential Backoff',
+    description: 'Retry failed async operations with exponential backoff and jitter.',
+    code: `async function retry<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  let lastError: Error
+
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn()
+    } catch (error) {
+      lastError = error as Error
+      if (i < maxRetries - 1) {
+        const delay = baseDelay * Math.pow(2, i) + Math.random() * 1000
+        await new Promise(r => setTimeout(r, delay))
+      }
+    }
+  }
+
+  throw lastError!
+}
+
+// Usage: await retry(() => fetch(url), 3, 1000)`,
+    language: 'typescript',
+    tags: ['async', 'error-handling', 'utilities'],
+    category: 'JavaScript',
+  },
+  {
+    id: '9',
+    title: 'Zod Schema Validation',
+    description: 'Type-safe runtime validation with Zod for API responses.',
+    code: `import { z } from 'zod'
+
+const UserSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string().min(1),
+  role: z.enum(['admin', 'user']),
+  createdAt: z.string().datetime(),
+})
+
+type User = z.infer<typeof UserSchema>
+
+// Validate API response
+const response = await fetch('/api/user')
+const data = await response.json()
+const user = UserSchema.parse(data) // Throws if invalid
+
+// Safe parse (no throw)
+const result = UserSchema.safeParse(data)
+if (result.success) {
+  console.log(result.data)
+}`,
+    language: 'typescript',
+    tags: ['zod', 'validation', 'typescript'],
+    category: 'JavaScript',
+  },
+  {
+    id: '10',
+    title: 'Python Dataclass with Validation',
+    description: 'Use Pydantic for type-safe data models with automatic validation.',
+    code: `from pydantic import BaseModel, Field, validator
+from datetime import datetime
+from typing import Optional
+
+class User(BaseModel):
+    id: str
+    email: str
+    name: str = Field(..., min_length=1)
+    role: str = "user"
+    created_at: datetime = Field(default_factory=datetime.now)
+
+    @validator('email')
+    def email_must_be_valid(cls, v):
+        if '@' not in v:
+            raise ValueError('invalid email')
+        return v.lower()
+
+# Usage
+user = User(id="123", email="Test@Example.com", name="John")
+print(user.email)  # test@example.com
+print(user.model_dump_json())`,
+    language: 'python',
+    tags: ['pydantic', 'validation', 'python'],
+    category: 'Python',
+  },
+  {
+    id: '11',
+    title: 'Git Aliases for Speed',
+    description: 'Essential git aliases to speed up your workflow.',
+    code: `# Add to ~/.gitconfig
+[alias]
+    co = checkout
+    br = branch
+    ci = commit
+    st = status
+    lg = log --oneline --graph --decorate
+    last = log -1 HEAD --stat
+    undo = reset HEAD~1 --mixed
+    amend = commit --amend --no-edit
+    pushf = push --force-with-lease
+    sync = !git fetch origin && git rebase origin/main
+    cleanup = !git branch --merged | grep -v main | xargs git branch -d
+
+# Usage: git lg, git undo, git amend`,
+    language: 'bash',
+    tags: ['git', 'productivity', 'cli'],
+    category: 'CLI',
+  },
+  {
+    id: '12',
+    title: 'fzf Fuzzy Finder',
+    description: 'Quick file and command navigation with fuzzy finding.',
+    code: `# Find and open file in editor
+vim $(fzf)
+
+# Search git commits
+git log --oneline | fzf | cut -d' ' -f1 | xargs git show
+
+# Kill process interactively
+kill -9 $(ps aux | fzf | awk '{print $2}')
+
+# cd to any directory
+cd $(find ~ -type d | fzf)
+
+# Add to .bashrc for Ctrl+R replacement
+export FZF_DEFAULT_OPTS='--height 40% --reverse'
+
+# Better file preview
+fzf --preview 'bat --color=always {}'`,
+    language: 'bash',
+    tags: ['fzf', 'productivity', 'cli'],
+    category: 'CLI',
+  },
 ]
 
 export function SnippetsGrid() {
