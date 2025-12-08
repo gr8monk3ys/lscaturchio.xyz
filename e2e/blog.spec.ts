@@ -22,7 +22,7 @@ test.describe('Blog', () => {
     await expect(page).toHaveURL(new RegExp(href || '/blog/'));
 
     // Check blog content loaded
-    await expect(page.locator('article, main')).toBeVisible();
+    await expect(page.locator('article, main').first()).toBeVisible();
   });
 
   test('blog post has required elements', async ({ page }) => {
@@ -35,7 +35,7 @@ test.describe('Blog', () => {
     await expect(page.locator('h1').first()).toBeVisible();
 
     // Check for content
-    await expect(page.locator('article, .prose, main')).toBeVisible();
+    await expect(page.locator('article, .prose, main').first()).toBeVisible();
   });
 
   test('dark mode toggle works', async ({ page }) => {

@@ -4,6 +4,9 @@ test.describe('Navigation', () => {
   test('homepage loads correctly', async ({ page }) => {
     await page.goto('/');
 
+    // Wait for page to fully load
+    await page.waitForLoadState('domcontentloaded');
+
     // Check title
     await expect(page).toHaveTitle(/Lorenzo/i);
 
@@ -50,8 +53,8 @@ test.describe('Navigation', () => {
     await page.goto('/this-page-does-not-exist');
 
     // Check for 404 content
-    await expect(page.locator('text=404')).toBeVisible();
-    await expect(page.getByText('Page not found')).toBeVisible();
+    await expect(page.getByText('404')).toBeVisible();
+    await expect(page.getByText(/page not found/i)).toBeVisible();
   });
 
   test('skip to content link works', async ({ page }) => {
@@ -69,9 +72,10 @@ test.describe('Navigation', () => {
 test.describe('Search', () => {
   test('can open search with keyboard shortcut', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
 
-    // Press Cmd+K or Ctrl+K
-    await page.keyboard.press('Meta+k');
+    // Press Ctrl+K (works on both Linux CI and macOS)
+    await page.keyboard.press('Control+k');
 
     // Check search dialog is open
     await expect(page.locator('input[placeholder*="Search"]')).toBeVisible();
@@ -79,8 +83,9 @@ test.describe('Search', () => {
 
   test('can close search with Escape', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
 
-    await page.keyboard.press('Meta+k');
+    await page.keyboard.press('Control+k');
     await expect(page.locator('input[placeholder*="Search"]')).toBeVisible();
 
     await page.keyboard.press('Escape');
