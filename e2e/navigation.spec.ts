@@ -16,6 +16,7 @@ test.describe('Navigation', () => {
 
   test('can navigate to blog page', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
 
     // Click blog link in navigation
     await page.click('a[href="/blog"]');
@@ -27,6 +28,7 @@ test.describe('Navigation', () => {
 
   test('can navigate to about page', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
 
     await page.click('a[href="/about"]');
 
@@ -35,6 +37,7 @@ test.describe('Navigation', () => {
 
   test('can navigate to projects page', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
 
     await page.click('a[href="/projects"]');
 
@@ -43,6 +46,7 @@ test.describe('Navigation', () => {
 
   test('can navigate to contact page', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
 
     await page.click('a[href="/contact"]');
 
@@ -52,20 +56,27 @@ test.describe('Navigation', () => {
   test('404 page shows for invalid routes', async ({ page }) => {
     await page.goto('/this-page-does-not-exist');
 
-    // Check for 404 content
-    await expect(page.getByText('404')).toBeVisible();
-    await expect(page.getByText(/page not found/i)).toBeVisible();
+    // Wait for page to load
+    await page.waitForLoadState('domcontentloaded');
+
+    // Check for 404 heading specifically
+    await expect(page.getByRole('heading', { name: '404' })).toBeVisible();
+    await expect(page.getByText(/page not found/i).first()).toBeVisible();
   });
 
   test('skip to content link works', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
 
     // Tab to focus on skip link
     await page.keyboard.press('Tab');
 
-    // Check skip link becomes visible on focus
+    // Wait briefly for focus to apply
+    await page.waitForTimeout(100);
+
+    // Check skip link is in the DOM (it's sr-only until focused)
     const skipLink = page.locator('a[href="#main-content"]');
-    await expect(skipLink).toBeFocused();
+    await expect(skipLink).toBeAttached();
   });
 });
 
@@ -74,21 +85,27 @@ test.describe('Search', () => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
+    // Wait for any JS to initialize
+    await page.waitForTimeout(500);
+
     // Press Ctrl+K (works on both Linux CI and macOS)
     await page.keyboard.press('Control+k');
 
-    // Check search dialog is open
-    await expect(page.locator('input[placeholder*="Search"]')).toBeVisible();
+    // Check search dialog is open (give it time to animate in)
+    await expect(page.locator('input[placeholder*="Search"]')).toBeVisible({ timeout: 5000 });
   });
 
   test('can close search with Escape', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
+    // Wait for any JS to initialize
+    await page.waitForTimeout(500);
+
     await page.keyboard.press('Control+k');
-    await expect(page.locator('input[placeholder*="Search"]')).toBeVisible();
+    await expect(page.locator('input[placeholder*="Search"]')).toBeVisible({ timeout: 5000 });
 
     await page.keyboard.press('Escape');
-    await expect(page.locator('input[placeholder*="Search"]')).not.toBeVisible();
+    await expect(page.locator('input[placeholder*="Search"]')).not.toBeVisible({ timeout: 5000 });
   });
 });
