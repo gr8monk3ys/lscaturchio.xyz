@@ -41,14 +41,14 @@ const handleGet = async () => {
 
     const [
       { data: activeCount },
-      { data: totalCount },
-      { data: unsubCount },
-      { data: recentCount },
+      { count: totalCount },
+      { count: unsubCount },
+      { count: recentCount },
     ] = await Promise.all([
       supabase.rpc('count_active_subscribers'),
-      supabase.from('newsletter_subscribers').select('id', { count: 'exact', head: true }),
-      supabase.from('newsletter_subscribers').select('id', { count: 'exact', head: true }).not('unsubscribed_at', 'is', null),
-      supabase.from('newsletter_subscribers').select('id', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo.toISOString()).is('unsubscribed_at', null),
+      supabase.from('newsletter_subscribers').select('*', { count: 'exact', head: true }),
+      supabase.from('newsletter_subscribers').select('*', { count: 'exact', head: true }).not('unsubscribed_at', 'is', null),
+      supabase.from('newsletter_subscribers').select('*', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo.toISOString()).is('unsubscribed_at', null),
     ]);
 
     // Fetch views
