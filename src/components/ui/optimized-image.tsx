@@ -106,7 +106,7 @@ export function OptimizedImage({
           priority={shouldPrioritize}
           fill={fill}
           quality={quality}
-          loading={loading}
+          loading={shouldPrioritize ? undefined : loading}
           placeholder={placeholder}
           blurDataURL={blurDataURL}
           className={`${
@@ -114,7 +114,7 @@ export function OptimizedImage({
               ? 'scale-105 blur-md grayscale'
               : 'scale-100 blur-0 grayscale-0'
           } transition-all duration-300 ease-in-out object-cover`}
-          onLoadingComplete={() => setIsLoading(false)}
+          onLoad={() => setIsLoading(false)}
           sizes={sizes}
           fetchPriority={fetchPriority}
           style={{

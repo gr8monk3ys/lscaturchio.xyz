@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const SkillCategory = ({ icon: Icon, title, skills }: { icon: React.ElementType; title: string; skills: string[] }) => (
   <div className="space-y-4">
     <div className="flex items-center gap-3">
-      <div className="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+      <div className="size-10 rounded-lg neu-pressed-sm text-primary flex items-center justify-center">
         <Icon className="size-5" />
       </div>
       <h3 className="text-xl font-semibold">{title}</h3>
@@ -116,7 +116,7 @@ export default function ProfessionalPage() {
         </section>
 
         {/* Philosophy & Approach */}
-        <section className="bg-accent/30 border border-border rounded-lg p-8">
+        <section className="rounded-xl p-8 neu-pressed">
           <h2 className="text-2xl font-bold mb-4">My Approach</h2>
           <div className="space-y-4 text-muted-foreground">
             <p>
@@ -141,14 +141,14 @@ export default function ProfessionalPage() {
         <section>
           <h2 className="text-3xl font-bold mb-6">Current Focus</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-lg border border-border">
+            <div className="p-6 rounded-xl neu-card">
               <h3 className="text-xl font-semibold mb-2">RAG Systems</h3>
               <p className="text-muted-foreground">
                 Exploring different use cases for retrieval-augmented generation and making them more
                 marketable. Basically trying to get paid for doing cool stuff.
               </p>
             </div>
-            <div className="p-6 rounded-lg border border-border">
+            <div className="p-6 rounded-xl neu-card">
               <h3 className="text-xl font-semibold mb-2">Open Source</h3>
               <p className="text-muted-foreground">
                 Contributing to open-source projects and building tools that make data science more

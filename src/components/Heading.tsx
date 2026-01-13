@@ -9,17 +9,19 @@ const CalSans = localFont({
   display: "swap",
 });
 
+type HeadingTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span" | "div";
+
 export const Heading = ({
   className,
   children,
-  as: Tag = "h1",
+  as: Component = "h1",
 }: {
   className?: string;
   children: React.ReactNode;
-  as?: keyof JSX.IntrinsicElements;
+  as?: HeadingTag;
 }) => {
   return (
-    <Tag
+    <Component
       className={twMerge(
         CalSans.className,
         "text-base md:text-xl lg:text-4xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary",
@@ -27,6 +29,6 @@ export const Heading = ({
       )}
     >
       {children}
-    </Tag>
+    </Component>
   );
 };

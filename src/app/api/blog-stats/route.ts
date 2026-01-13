@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
+import { logError } from "@/lib/logger";
 
 /**
  * API route to fetch blog statistics
@@ -44,7 +45,7 @@ export async function GET() {
       topTags,
     });
   } catch (error) {
-    console.error("[Blog Stats] Error:", error);
+    logError("Blog Stats: Unexpected error", error, { component: 'blog-stats', action: 'GET' });
     return NextResponse.json(
       { error: "Failed to fetch blog stats" },
       { status: 500 }

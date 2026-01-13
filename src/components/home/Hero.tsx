@@ -144,12 +144,11 @@ export function Hero() {
             ].map((item, index) => (
               <motion.div
                 key={item.text}
-                className="flex items-center gap-2 text-muted-foreground"
+                className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
                 custom={index}
                 variants={iconVariants}
-                whileHover={{ 
+                whileHover={{
                   scale: 1.1,
-                  color: "var(--primary)",
                   transition: { type: "spring", stiffness: 400 }
                 }}
               >

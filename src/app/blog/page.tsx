@@ -2,7 +2,6 @@ import React, { Suspense } from "react";
 import { Container } from "@/components/Container";
 import { getAllBlogs } from "../../../lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
-import { AdBanner } from "@/components/ads/AdBanner";
 import { BlogStats } from "@/components/blog/blog-stats";
 import Link from "next/link";
 import { Tag } from "lucide-react";
@@ -35,19 +34,19 @@ export default async function Blog() {
 
   return (
     <Container size="large">
-      <div className="space-y-6">
-        <div className="flex items-start justify-between">
+      <div className="space-y-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-stone-600">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
               Blog
             </h1>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-muted-foreground">
               Thoughts on software development, technology, and life.
             </p>
           </div>
           <Link
             href="/tags"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl neu-button hover:text-primary transition-all"
           >
             <Tag className="h-4 w-4" />
             <span className="text-sm font-medium">Browse by tag</span>
@@ -56,11 +55,6 @@ export default async function Blog() {
 
         {/* Blog Statistics */}
         <BlogStats />
-
-        {/* Top ad banner */}
-        <div className="my-6">
-          <AdBanner slot="5678901234" format="horizontal" responsive={true} />
-        </div>
 
         <Suspense fallback={<div className="text-center py-12">Loading...</div>}>
           <BlogGrid blogs={data} />

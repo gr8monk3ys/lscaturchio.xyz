@@ -39,11 +39,12 @@ export function BlogStats() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8" aria-busy="true" aria-label="Loading blog statistics">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="animate-pulse rounded-xl bg-secondary/50 h-24"
+            className="animate-pulse rounded-2xl neu-flat h-24"
+            role="presentation"
           />
         ))}
       </div>
@@ -82,7 +83,7 @@ export function BlogStats() {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
       {statCards.map((stat, index) => {
         const Icon = stat.icon;
         return (
@@ -91,11 +92,11 @@ export function BlogStats() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="rounded-xl border bg-card p-4 shadow-sm hover:shadow-md transition-shadow"
+            className="rounded-2xl neu-card p-5"
           >
             <div className="flex items-center gap-3">
               <div
-                className={`rounded-full p-2 bg-secondary/50 ${stat.color}`}
+                className={`rounded-xl neu-flat-sm p-3 ${stat.color}`}
               >
                 <Icon className="h-5 w-5" />
               </div>

@@ -1,14 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "./button";
 import { ArrowRight, Mail, Github, Linkedin } from "lucide-react";
 import Link from "next/link";
 
 export function ContactCTA() {
   return (
-    <section className="w-full px-4 md:px-6 py-12 lg:py-24 bg-primary/5">
-      <div className="w-full max-w-7xl mx-auto">
+    <section className="w-full px-4 md:px-6 py-12 lg:py-24">
+      <div className="w-full max-w-4xl mx-auto neu-card p-10 lg:p-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -24,37 +23,34 @@ export function ContactCTA() {
             open to discussing new opportunities and ideas.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-4">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button asChild size="lg" className="text-lg h-12">
-                <Link href="https://calendly.com/gr8monk3ys/30min">
-                  <Mail className="mr-2 h-5 w-5" />
-                  Let&apos;s Chat
-                </Link>
-              </Button>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="text-lg h-12"
+          <div className="flex flex-wrap justify-center gap-6">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="https://calendly.com/gr8monk3ys/30min"
+                className="neu-button bg-primary text-primary-foreground px-8 py-4 rounded-xl font-medium text-lg inline-flex items-center gap-3 hover:bg-primary/90 transition-all"
               >
-                <Link href="/services">
-                  Learn More
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+                <Mail className="h-5 w-5" />
+                Let&apos;s Chat
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/services"
+                className="neu-button px-8 py-4 rounded-xl font-medium text-lg inline-flex items-center gap-3 text-foreground hover:text-primary transition-all"
+              >
+                Learn More
+                <ArrowRight className="h-5 w-5" />
+              </Link>
             </motion.div>
           </div>
 
-          <div className="flex gap-4 mt-4">
+          <div className="flex gap-6 mt-6">
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="https://github.com/gr8monk3ys"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-full bg-secondary/50 hover:bg-secondary/80 transition-colors"
+                className="p-4 rounded-xl neu-button hover:text-primary transition-all"
               >
                 <Github className="h-6 w-6" />
               </Link>
@@ -64,7 +60,7 @@ export function ContactCTA() {
                 href="https://linkedin.com/in/lorenzo-scaturchio"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-full bg-secondary/50 hover:bg-secondary/80 transition-colors"
+                className="p-4 rounded-xl neu-button hover:text-primary transition-all"
               >
                 <Linkedin className="h-6 w-6" />
               </Link>

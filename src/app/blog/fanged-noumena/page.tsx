@@ -1,13 +1,13 @@
 import { BlogLayout } from "@/components/blog/BlogLayout";
 import Content from "./content.mdx";
 
-// Import meta data from MDX file
 const meta = {
-  title: "Fanged Noumena",
-  description: "Exploring Nick Land's philosophical work and its implications for technology and consciousness.",
+  title: "Nick Land: The Philosopher Who Became Explicitly Racist",
+  description:
+    "From feminist revolutionary to 'hyper-racism' advocate: Land's trajectory shows how theoretical transgression can slide into genuine political extremism. His innovations don't excuse what he became.",
   date: "2025-01-15",
   image: "/images/blog/fanged-noumena.webp",
-  tags: ["philosophy", "technology", "consciousness"],
+  tags: ["philosophy", "technology", "accelerationism", "nick-land", "dark-enlightenment"],
 };
 
 export default function Page() {

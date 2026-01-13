@@ -32,11 +32,11 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
   return (
     <Card
       className={cn(
-        "relative flex flex-col gap-8 overflow-hidden p-6",
+        "relative flex flex-col gap-8 overflow-hidden p-8",
         isHighlighted
-          ? "bg-foreground text-background"
-          : "bg-background text-foreground",
-        isPopular && "ring-2 ring-primary"
+          ? "bg-foreground text-background shadow-[12px_12px_24px_rgba(0,0,0,0.3),-12px_-12px_24px_rgba(60,60,60,0.2)]"
+          : "",
+        isPopular && "neu-flat-lg"
       )}
     >
       {isHighlighted && <HighlightedBackground />}
@@ -45,7 +45,7 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
       <h2 className="flex items-center gap-3 text-xl font-medium capitalize">
         {tier.name}
         {isPopular && (
-          <Badge variant="secondary" className="mt-1 z-10">
+          <Badge variant="default" className="mt-1 z-10">
             🔥 Most Popular
           </Badge>
         )}
@@ -92,8 +92,9 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
       </div>
 
       <Button
-        variant={isHighlighted ? "secondary" : "default"}
+        variant={isHighlighted ? "secondary" : "primary"}
         className="w-full"
+        size="lg"
         onClick={() => window.open("https://calendly.com/gr8monk3ys/30min", "_blank")}
       >
         {tier.cta}

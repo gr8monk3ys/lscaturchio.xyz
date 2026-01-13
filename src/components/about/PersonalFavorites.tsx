@@ -90,7 +90,7 @@ export function PersonalFavorites() {
   };
 
   return (
-    <section className="w-full px-4 md:px-6 py-12 lg:py-24 bg-secondary/20">
+    <section className="w-full px-4 md:px-6 py-12 lg:py-24">
       <div className="w-full max-w-7xl mx-auto" ref={containerRef}>
         <motion.div
           variants={containerVariants}
@@ -101,7 +101,7 @@ export function PersonalFavorites() {
           <motion.div variants={itemVariants} className="flex gap-4 flex-col items-start">
             <Badge variant="secondary">The Essentials</Badge>
             <div className="flex gap-2 flex-col">
-              <h2 className="text-3xl md:text-5xl tracking-tighter font-bold text-stone-600">
+              <h2 className="text-3xl md:text-5xl tracking-tighter font-bold">
                 Personal Favorites
               </h2>
               <p className="text-lg max-w-prose text-muted-foreground">
@@ -119,16 +119,16 @@ export function PersonalFavorites() {
                   scale: 1.02,
                   transition: { type: "spring", stiffness: 300 }
                 }}
-                className="flex items-start gap-4 p-4 rounded-lg bg-card hover:bg-accent/5 transition-colors border border-border/50"
+                className="flex items-start gap-4 p-4 rounded-xl neu-card"
               >
-                <div className="shrink-0 size-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                <div className="shrink-0 size-10 flex items-center justify-center rounded-full neu-pressed-sm text-primary">
                   <favorite.icon className="size-5" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-muted-foreground mb-1">
                     {favorite.label}
                   </p>
-                  <p className="text-base font-semibold">
+                  <p className="text-base font-semibold text-foreground">
                     {favorite.value}
                   </p>
                 </div>

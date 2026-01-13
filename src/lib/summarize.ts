@@ -1,7 +1,10 @@
 import OpenAI from 'openai'
+import { logError } from './logger'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  timeout: 30000, // 30 second timeout
+  maxRetries: 1,
 })
 
 /**
@@ -33,7 +36,7 @@ export async function summarizeContent(
 
     return response.choices[0]?.message?.content || ''
   } catch (error) {
-    console.error('Summarization error:', error)
+    logError('Summarization error', error, { component: 'summarize', action: 'summarizeContent' })
     throw new Error('Failed to generate summary')
   }
 }
@@ -68,7 +71,7 @@ export async function generateKeyTakeaways(
     const result = JSON.parse(response.choices[0]?.message?.content || '{"takeaways":[]}')
     return result.takeaways || []
   } catch (error) {
-    console.error('Takeaways generation error:', error)
+    logError('Takeaways generation error', error, { component: 'summarize', action: 'generateKeyTakeaways' })
     throw new Error('Failed to generate takeaways')
   }
 }

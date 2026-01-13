@@ -181,7 +181,7 @@ describe('getClientIp', () => {
     expect(getClientIp(request)).toBe('192.168.1.2');
   });
 
-  it('prefers x-forwarded-for over x-real-ip', () => {
+  it('prefers x-real-ip over x-forwarded-for (Vercel priority)', () => {
     const request = new Request('http://localhost', {
       headers: {
         'x-forwarded-for': '192.168.1.1',
@@ -189,13 +189,28 @@ describe('getClientIp', () => {
       },
     });
 
-    expect(getClientIp(request)).toBe('192.168.1.1');
+    // x-real-ip has higher priority than x-forwarded-for
+    expect(getClientIp(request)).toBe('192.168.1.2');
   });
 
-  it('returns unknown when no IP headers', () => {
+  it('returns fingerprint when no IP headers (prevents shared rate limit)', () => {
     const request = new Request('http://localhost');
 
-    expect(getClientIp(request)).toBe('unknown');
+    // Now returns fingerprint-based identifier instead of 'unknown'
+    const result = getClientIp(request);
+    expect(result.startsWith('fingerprint:')).toBe(true);
+  });
+
+  it('prefers cf-connecting-ip over all other headers', () => {
+    const request = new Request('http://localhost', {
+      headers: {
+        'cf-connecting-ip': '10.0.0.1',
+        'x-forwarded-for': '192.168.1.1',
+        'x-real-ip': '192.168.1.2',
+      },
+    });
+
+    expect(getClientIp(request)).toBe('10.0.0.1');
   });
 
   it('trims whitespace from forwarded IPs', () => {

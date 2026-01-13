@@ -27,7 +27,6 @@ export default function AboutPage() {
         <Movies />
         <Music />
         <Books />
-        <WorkTimeline />
         <DownloadButton href="/Lorenzo_resume_DS.pdf" />
       </div>
     </Container>

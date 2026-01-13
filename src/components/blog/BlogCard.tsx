@@ -49,7 +49,7 @@ export function BlogCard({ slug, title, description, date, image, tags }: BlogCa
         whileHover="hover"
       >
         <Card className="flex flex-col h-full overflow-hidden group cursor-pointer">
-          <div className="relative w-full h-48">
+          <div className="relative w-full h-48 overflow-hidden rounded-t-2xl">
             <FallbackImage
               src={image}
               alt={title}

@@ -52,9 +52,9 @@ export function PopularPosts() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-4">
+        <div className="space-y-4" aria-busy="true" aria-label="Loading popular posts">
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="animate-pulse flex items-center justify-between">
+            <div key={i} className="animate-pulse flex items-center justify-between" role="presentation">
               <div className="h-4 bg-muted rounded w-3/4" />
               <div className="h-4 bg-muted rounded w-16" />
             </div>

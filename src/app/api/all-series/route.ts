@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
+import { logError } from "@/lib/logger";
 
 interface SeriesInfo {
   name: string;
@@ -73,7 +74,7 @@ export async function GET() {
       count: allSeries.length,
     });
   } catch (error) {
-    console.error("[All Series API] Error:", error);
+    logError("All Series API: Unexpected error", error, { component: 'all-series', action: 'GET' });
     return NextResponse.json(
       { error: "Failed to fetch series" },
       { status: 500 }

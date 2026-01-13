@@ -70,7 +70,7 @@ export function TableOfContents() {
       className="hidden xl:block xl:sticky xl:top-24 xl:max-h-[calc(100vh-6rem)] xl:overflow-y-auto xl:py-8"
       aria-label="Table of contents"
     >
-      <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm p-6">
+      <div className="rounded-2xl neu-flat p-6">
         <div className="flex items-center gap-2 mb-4">
           <List className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold">On this page</h2>

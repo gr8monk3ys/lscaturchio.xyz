@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { searchEmbeddings } from '@/lib/embeddings';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
+import { logError } from '@/lib/logger';
 import type { EmbeddingResult, RelatedPost } from '@/types/embeddings';
 import { getAllBlogs } from '@/lib/getAllBlogs';
 
@@ -113,7 +114,7 @@ const handleGet = async (request: NextRequest) => {
       count: relatedPosts.length,
     });
   } catch (error) {
-    console.error('Related posts error:', error);
+    logError('Related Posts: Unexpected error', error, { component: 'related-posts', action: 'GET' });
     return NextResponse.json(
       { error: 'Failed to fetch related posts' },
       { status: 500 }

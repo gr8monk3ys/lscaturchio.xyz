@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimiter, getClientIp, RATE_LIMITS } from './rate-limit';
+import { getRedisRateLimiter } from './rate-limit-redis';
 
 type RateLimitConfig = {
   limit: number;
@@ -8,6 +9,8 @@ type RateLimitConfig = {
 
 /**
  * Higher-order function to wrap API routes with rate limiting
+ *
+ * Uses Redis (Upstash) when configured, falls back to in-memory otherwise.
  *
  * Usage:
  * ```ts
@@ -27,11 +30,35 @@ export function withRateLimit<T extends any[]>(
     // Get client identifier
     const clientIp = getClientIp(request);
 
-    // Check rate limit
-    const result = rateLimiter.check(clientIp, config.limit, config.window);
+    // Try Redis first, fall back to in-memory
+    const redisLimiter = getRedisRateLimiter(config.limit, config.window);
 
-    // Add rate limit headers to all responses
-    const headers = rateLimiter.getHeaders(result);
+    let result: { success: boolean; limit: number; remaining: number; reset: number };
+    let headers: Record<string, string>;
+
+    if (redisLimiter) {
+      // Use Redis rate limiting (persistent across deploys)
+      const redisResult = await redisLimiter.limit(clientIp);
+      result = {
+        success: redisResult.success,
+        limit: redisResult.limit,
+        remaining: redisResult.remaining,
+        reset: redisResult.reset,
+      };
+      headers = {
+        'X-RateLimit-Limit': result.limit.toString(),
+        'X-RateLimit-Remaining': result.remaining.toString(),
+        'X-RateLimit-Reset': new Date(result.reset).toISOString(),
+        'X-RateLimit-Backend': 'redis',
+      };
+    } else {
+      // Fall back to in-memory rate limiting
+      result = rateLimiter.check(clientIp, config.limit, config.window);
+      headers = {
+        ...rateLimiter.getHeaders(result),
+        'X-RateLimit-Backend': 'memory',
+      };
+    }
 
     // If rate limited, return 429
     if (!result.success) {

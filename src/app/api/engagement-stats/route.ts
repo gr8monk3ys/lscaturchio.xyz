@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { getSupabase } from "@/lib/supabase";
+import { logError } from "@/lib/logger";
 
 /**
  * API route to fetch engagement statistics
@@ -18,7 +19,7 @@ export async function GET() {
       .order("likes", { ascending: false });
 
     if (error) {
-      console.error("[Engagement Stats] Database error:", error);
+      logError("Engagement Stats: Database error", error, { component: 'engagement-stats', action: 'GET' });
       return NextResponse.json(
         { error: "Failed to fetch engagement stats" },
         { status: 500 }
@@ -62,7 +63,7 @@ export async function GET() {
       topBookmarked,
     });
   } catch (error) {
-    console.error("[Engagement Stats] Error:", error);
+    logError("Engagement Stats: Unexpected error", error, { component: 'engagement-stats', action: 'GET' });
     return NextResponse.json(
       { error: "Failed to fetch engagement stats" },
       { status: 500 }
