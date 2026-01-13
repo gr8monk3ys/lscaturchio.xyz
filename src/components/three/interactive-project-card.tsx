@@ -18,8 +18,8 @@ interface FloatingCardProps {
 }
 
 function FloatingCard({ project, mousePosition }: FloatingCardProps) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const { viewport } = useThree();
+  const meshRef = useRef<THREE.Group>(null);
+  useThree(); // Keep viewport available if needed
 
   // Smooth mouse following
   const targetRotation = useRef({ x: 0, y: 0 });
