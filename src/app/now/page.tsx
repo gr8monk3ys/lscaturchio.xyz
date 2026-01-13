@@ -16,9 +16,11 @@ export default function NowPage() {
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
-        <div className="mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <Clock className="h-8 w-8 text-primary" />
+        <div className="mb-12 neu-card p-8">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="neu-flat-sm rounded-xl p-3">
+              <Clock className="h-8 w-8 text-primary" />
+            </div>
             <Heading className="text-4xl font-bold">What I&apos;m Doing Now</Heading>
           </div>
           <Paragraph className="text-lg text-muted-foreground">
@@ -36,13 +38,15 @@ export default function NowPage() {
         </div>
 
         {/* Current Location */}
-        <section className="mb-12 p-6 rounded-2xl bg-gradient-to-br from-primary/5 via-background to-background border border-primary/20">
+        <section className="mb-12 neu-card p-6">
           <div className="flex items-center gap-3 mb-4">
-            <MapPin className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold">📍 Location</h2>
+            <div className="neu-flat-sm rounded-xl p-2">
+              <MapPin className="h-6 w-6 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold">Location</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
-            Currently based in <span className="font-medium text-foreground">[Your Location]</span>,
+            Currently based in <span className="font-medium text-foreground">Southern California</span>,
             working remotely as a freelance AI consultant and developer.
           </p>
         </section>
@@ -50,11 +54,13 @@ export default function NowPage() {
         {/* Working On */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <Code className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold">💼 Working On</h2>
+            <div className="neu-flat-sm rounded-xl p-2">
+              <Code className="h-6 w-6 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold">Working On</h2>
           </div>
           <div className="space-y-4">
-            <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-colors">
+            <div className="neu-card p-5">
               <h3 className="font-semibold text-lg mb-2">Client Projects</h3>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                 <li>Building production RAG systems with LangChain and Supabase</li>
@@ -63,7 +69,7 @@ export default function NowPage() {
               </ul>
             </div>
 
-            <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-colors">
+            <div className="neu-card p-5">
               <h3 className="font-semibold text-lg mb-2">Personal Projects</h3>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                 <li>Rebuilding this website with Next.js 14 App Router</li>
@@ -77,11 +83,13 @@ export default function NowPage() {
         {/* Learning */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <BookOpen className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold">📚 Learning</h2>
+            <div className="neu-flat-sm rounded-xl p-2">
+              <BookOpen className="h-6 w-6 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold">Learning</h2>
           </div>
           <div className="space-y-4">
-            <div className="p-5 rounded-xl bg-muted/50">
+            <div className="neu-pressed rounded-xl p-5">
               <h3 className="font-semibold mb-2">Technical Skills</h3>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground text-sm">
                 <li>Advanced prompt engineering techniques</li>
@@ -91,7 +99,7 @@ export default function NowPage() {
               </ul>
             </div>
 
-            <div className="p-5 rounded-xl bg-muted/50">
+            <div className="neu-pressed rounded-xl p-5">
               <h3 className="font-semibold mb-2">Reading</h3>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground text-sm">
                 <li><em>The Alignment Problem</em> by Brian Christian</li>
@@ -100,7 +108,7 @@ export default function NowPage() {
               </ul>
             </div>
 
-            <div className="p-5 rounded-xl bg-muted/50">
+            <div className="neu-pressed rounded-xl p-5">
               <h3 className="font-semibold mb-2">Courses</h3>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground text-sm">
                 <li>DeepLearning.AI - Building LLM Applications</li>
@@ -113,10 +121,12 @@ export default function NowPage() {
         {/* Thinking About */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <Lightbulb className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold">💭 Thinking About</h2>
+            <div className="neu-flat-sm rounded-xl p-2">
+              <Lightbulb className="h-6 w-6 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold">Thinking About</h2>
           </div>
-          <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-800 bg-gradient-to-br from-background to-muted/20">
+          <div className="neu-card p-5">
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary mt-1">→</span>
@@ -139,7 +149,7 @@ export default function NowPage() {
         </section>
 
         {/* Footer */}
-        <div className="p-6 rounded-2xl bg-muted/50 border border-gray-200 dark:border-gray-800">
+        <div className="neu-pressed rounded-2xl p-6">
           <p className="text-sm text-muted-foreground">
             This page is inspired by Derek Sivers&apos;{" "}
             <a

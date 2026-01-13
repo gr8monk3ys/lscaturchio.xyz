@@ -18,139 +18,139 @@ interface ServiceContent {
 
 const services: ServiceContent[] = [
   {
-    title: "AUTONOMOUS AGENT DEVELOPMENT",
-    subtitle: "Build intelligent, autonomous systems that transform your business operations",
+    title: "AI Agents & Automation",
+    subtitle: "Custom AI agents that actually work for your specific use case",
     tabs: [
       {
-        name: "Strategy Development",
-        content: "My comprehensive autonomous agent development strategy focuses on creating intelligent systems that seamlessly integrate with your existing infrastructure while driving innovation and efficiency. I take a holistic approach to ensure your autonomous agents deliver measurable business value.",
+        name: "What I Build",
+        content: "I build AI agents that handle real tasks - from research assistants that dig through documents to workflow automations that save hours of manual work. Each agent is designed around your actual needs, not generic templates.",
         features: [
-          "Custom agent architecture design",
-          "Integration planning with existing systems",
-          "Scalability and performance optimization",
-          "Security and compliance considerations"
+          "LangChain & CrewAI implementations",
+          "RAG systems with your data",
+          "Tool-using agents",
+          "Multi-agent workflows"
         ]
       },
       {
-        name: "Performance Evaluation",
-        content: "I implement rigorous testing and evaluation frameworks to ensure your autonomous agents perform optimally across diverse scenarios. My evaluation process combines quantitative metrics with qualitative assessments to guarantee reliable and efficient agent behavior.",
+        name: "How It Works",
+        content: "We start with a conversation about what you're trying to accomplish. Then I prototype quickly, iterate based on your feedback, and deliver something production-ready. No 50-page proposals - just working software.",
         features: [
-          "Comprehensive performance metrics",
-          "Real-world scenario testing",
-          "Load and stress testing",
-          "Continuous monitoring systems"
+          "Rapid prototyping",
+          "Weekly progress updates",
+          "Your feedback shapes direction",
+          "Production deployment support"
         ]
       },
       {
-        name: "Use Case Identification",
-        content: "My expert team works closely with your organization to identify and prioritize high-impact use cases for autonomous agents. I analyze your business processes, pain points, and opportunities to determine where autonomous agents can deliver the greatest value.",
+        name: "Use Cases",
+        content: "I've built agents for document analysis, customer support automation, research workflows, content generation, and data processing pipelines. If there's a repetitive task eating up your team's time, there's probably an agent for it.",
         features: [
-          "Business process analysis",
-          "ROI potential assessment",
-          "Implementation roadmap",
-          "Risk and opportunity mapping"
+          "Document Q&A systems",
+          "Support ticket routing",
+          "Research automation",
+          "Content pipelines"
         ]
       },
       {
-        name: "Feasibility Assessments",
-        content: "Before implementation, I conduct thorough feasibility assessments to ensure project success. My assessment covers technical requirements, resource allocation, potential challenges, and expected outcomes to provide a clear picture of project viability.",
+        name: "Getting Started",
+        content: "Book a free 30-minute call and tell me what you're working on. I'll give you honest feedback on whether AI is the right solution and what it would take to build. No sales pitch, just straight talk.",
         features: [
-          "Technical capability analysis",
-          "Resource requirement planning",
-          "Risk assessment and mitigation",
-          "Cost-benefit analysis"
+          "Free initial consultation",
+          "Honest feasibility assessment",
+          "Clear scope and timeline",
+          "Transparent pricing"
         ]
       },
     ],
   },
   {
-    title: "ENTERPRISE CONSULTING",
-    subtitle: "Transform your business with expert AI implementation guidance",
+    title: "RAG & Search Systems",
+    subtitle: "Make your data actually searchable and useful",
     tabs: [
       {
-        name: "Strategy Development",
-        content: "My enterprise consulting services help organizations navigate the complex landscape of AI implementation. I develop comprehensive strategies that align with your business objectives while ensuring practical and sustainable solutions.",
+        name: "What I Build",
+        content: "Retrieval-Augmented Generation systems that let you chat with your documents, search through knowledge bases, and get accurate answers grounded in your actual data. No hallucinations, just facts from your sources.",
         features: [
-          "Digital transformation roadmap",
-          "Technology stack assessment",
-          "Change management planning",
-          "Innovation strategy development"
+          "Vector database setup",
+          "Embedding optimization",
+          "Hybrid search strategies",
+          "Citation & source tracking"
         ]
       },
       {
-        name: "Performance Evaluation",
-        content: "I provide in-depth analysis of your current systems and processes, identifying opportunities for optimization through AI integration. My evaluation framework ensures that implemented solutions deliver measurable improvements to your business operations.",
+        name: "Tech Stack",
+        content: "I work with Supabase pgvector, Pinecone, Weaviate, and Chroma depending on your needs and scale. OpenAI, Anthropic, or open-source models for embeddings and generation. Whatever fits your requirements and budget.",
         features: [
-          "System efficiency analysis",
-          "Process optimization planning",
-          "Performance benchmark creation",
-          "ROI tracking frameworks"
+          "Supabase / Pinecone / Weaviate",
+          "OpenAI / Claude / Open-source",
+          "Next.js / Python backends",
+          "Vercel / AWS deployment"
         ]
       },
       {
-        name: "Use Case Identification",
-        content: "My experts work with your team to identify and prioritize AI implementation opportunities across your enterprise. I focus on finding use cases that deliver maximum business value while considering technical feasibility and resource constraints.",
+        name: "Common Projects",
+        content: "Internal knowledge bases for teams, customer-facing documentation search, research paper analysis tools, legal document review systems, and support chatbots that actually know your product.",
         features: [
-          "Opportunity assessment",
-          "Priority matrix development",
-          "Impact analysis",
-          "Implementation timeline planning"
+          "Internal knowledge search",
+          "Documentation chatbots",
+          "Research tools",
+          "Support automation"
         ]
       },
       {
-        name: "Feasibility Assessments",
-        content: "I conduct comprehensive feasibility studies for proposed AI initiatives, examining technical requirements, resource needs, and potential return on investment. My assessment provides a clear picture of project viability and implementation challenges.",
+        name: "Results",
+        content: "My clients typically see 60-80% reduction in time spent searching for information, higher accuracy than keyword search, and actually useful AI chat interfaces that people want to use.",
         features: [
-          "Technical feasibility analysis",
-          "Resource assessment",
-          "Implementation cost estimation",
-          "Risk evaluation"
+          "Faster information retrieval",
+          "Higher search accuracy",
+          "Reduced support tickets",
+          "Better user experience"
         ]
       },
     ],
   },
   {
-    title: "CHATBOT DEVELOPMENT",
-    subtitle: "Create intelligent conversational interfaces that enhance user experience",
+    title: "Technical Consulting",
+    subtitle: "Get unstuck on AI/ML projects with hands-on help",
     tabs: [
       {
-        name: "Strategy Development",
-        content: "I develop sophisticated chatbot solutions that enhance customer engagement and streamline operations. My strategy focuses on creating natural, efficient, and context-aware conversational experiences that meet your specific business needs.",
+        name: "How I Help",
+        content: "Sometimes you don't need someone to build the whole thing - you just need expertise to unblock your team. I do code reviews, architecture sessions, pair programming, and strategic planning for AI projects.",
         features: [
-          "Conversation flow design",
-          "Natural language processing",
-          "Multi-channel integration",
-          "Personalization strategy"
+          "Architecture review",
+          "Code review & optimization",
+          "Team training sessions",
+          "Technical strategy"
         ]
       },
       {
-        name: "Performance Evaluation",
-        content: "My comprehensive evaluation framework ensures your chatbot delivers consistent, high-quality interactions. I monitor key metrics and user satisfaction to continuously improve the chatbot's performance and effectiveness.",
+        name: "Common Asks",
+        content: "\"Our RAG system is returning garbage\" - \"We need to add AI features but don't know where to start\" - \"Our LLM costs are out of control\" - \"Should we fine-tune or use prompting?\" I've helped teams work through all of these.",
         features: [
-          "Response accuracy tracking",
-          "User satisfaction metrics",
-          "Conversation flow analysis",
-          "Performance optimization"
+          "Debugging AI systems",
+          "Cost optimization",
+          "Model selection guidance",
+          "Prompt engineering"
         ]
       },
       {
-        name: "Use Case Identification",
-        content: "I analyze your customer interaction patterns and business processes to identify optimal chatbot implementation opportunities. My approach ensures that chatbot solutions address real business needs and enhance user experience.",
+        name: "Engagement Types",
+        content: "One-time deep dives, weekly office hours, or embedded support with your team. Flexible arrangements based on what you actually need. Remote-friendly, async-friendly.",
         features: [
-          "Customer journey mapping",
-          "Pain point analysis",
-          "Automation opportunity identification",
-          "ROI potential assessment"
+          "One-time consultations",
+          "Weekly advisory calls",
+          "Embedded team support",
+          "Async code review"
         ]
       },
       {
-        name: "Feasibility Assessments",
-        content: "My feasibility assessment covers all aspects of chatbot implementation, from technical requirements to user adoption considerations. I provide detailed insights into resource needs, integration possibilities, and expected outcomes.",
+        name: "Background",
+        content: "I've been building with LLMs since GPT-3, worked on production RAG systems, and keep up with the latest research. Not a generalist who read a blog post - someone who's shipped real AI products.",
         features: [
-          "Technical requirements analysis",
-          "Integration assessment",
-          "Resource planning",
-          "Implementation roadmap"
+          "Production experience",
+          "Current research knowledge",
+          "Practical implementation focus",
+          "No-BS communication"
         ]
       },
     ],
@@ -183,18 +183,21 @@ export default function ServicesSection() {
                 setSelectedTab(0);
               }}
               className={cn(
-                "group cursor-pointer rounded-lg p-8 transition-all border",
+                "group cursor-pointer rounded-xl p-8 transition-all",
                 selectedService === index
-                  ? "bg-primary border-primary text-primary-foreground"
-                  : "bg-background hover:bg-accent border-border"
+                  ? "neu-pressed bg-primary/5"
+                  : "neu-card"
               )}
             >
               <div className="flex flex-col h-full">
-                <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
-                <p className="text-sm opacity-90 mb-4">{service.subtitle}</p>
+                <h3 className={cn(
+                  "text-xl font-semibold mb-3",
+                  selectedService === index && "text-primary"
+                )}>{service.title}</h3>
+                <p className="text-sm text-muted-foreground mb-4">{service.subtitle}</p>
                 <div className="mt-auto flex items-center">
                   <ArrowUpRight className={cn(
-                    "w-5 h-5 transition-transform",
+                    "w-5 h-5 transition-transform text-primary",
                     selectedService === index ? "rotate-45" : "group-hover:rotate-45"
                   )} />
                 </div>
@@ -211,16 +214,16 @@ export default function ServicesSection() {
           className="space-y-8"
         >
           {/* Tabs */}
-          <div className="flex flex-wrap gap-4 justify-start">
+          <div className="flex flex-wrap gap-3 justify-start">
             {services[selectedService].tabs.map((tab, index) => (
               <button
                 key={tab.name}
                 onClick={() => setSelectedTab(index)}
                 className={cn(
-                  "px-4 py-2 rounded-md transition-all text-sm font-medium",
+                  "px-5 py-2.5 rounded-xl transition-all text-sm font-medium",
                   selectedTab === index
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary hover:bg-secondary/80"
+                    ? "neu-pressed text-primary"
+                    : "neu-button hover:text-primary"
                 )}
               >
                 {tab.name}
@@ -234,16 +237,17 @@ export default function ServicesSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="bg-card rounded-lg p-8 border"
+            className="neu-card rounded-xl p-8"
           >
             <div className="max-w-3xl">
-              <p className="text-lg text-card-foreground leading-relaxed mb-6">
+              <p className="text-lg leading-relaxed mb-6">
                 {services[selectedService].tabs[selectedTab].content}
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {services[selectedService].tabs[selectedTab].features.map((feature, index) => (
                   <div key={index} className="flex items-center gap-2">
-                    <Badge variant="secondary">{feature}</Badge>
+                    <span className="text-primary">→</span>
+                    <span className="text-muted-foreground">{feature}</span>
                   </div>
                 ))}
               </div>

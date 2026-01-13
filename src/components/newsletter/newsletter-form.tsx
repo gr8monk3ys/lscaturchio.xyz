@@ -49,7 +49,7 @@ export function NewsletterForm() {
     <div className="w-full max-w-md">
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
           <input
             type="email"
             value={email}
@@ -57,7 +57,7 @@ export function NewsletterForm() {
             placeholder="Enter your email"
             required
             disabled={status === 'loading' || status === 'success'}
-            className="w-full pl-10 pr-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full pl-11 pr-4 py-3 rounded-xl neu-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -66,7 +66,7 @@ export function NewsletterForm() {
           disabled={status === 'loading' || status === 'success'}
           whileHover={{ scale: status === 'idle' || status === 'error' ? 1.02 : 1 }}
           whileTap={{ scale: status === 'idle' || status === 'error' ? 0.98 : 1 }}
-          className="w-full px-4 py-2 rounded-md bg-primary text-primary-foreground font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
+          className="w-full px-4 py-3 rounded-xl neu-button bg-primary text-primary-foreground font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
         >
           {status === 'loading' && (
             <>
@@ -90,10 +90,10 @@ export function NewsletterForm() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`mt-3 p-3 rounded-md text-sm flex items-start gap-2 ${
+          className={`mt-3 p-3 rounded-xl text-sm flex items-start gap-2 neu-pressed-sm ${
             status === 'success'
-              ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
-              : 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200'
+              ? 'text-green-700 dark:text-green-300'
+              : 'text-red-700 dark:text-red-300'
           }`}
         >
           {status === 'success' ? (

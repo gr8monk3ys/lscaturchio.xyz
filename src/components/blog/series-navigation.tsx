@@ -53,7 +53,7 @@ export function SeriesNavigation({
 
   if (isLoading) {
     return (
-      <div className="my-8 animate-pulse rounded-xl bg-secondary/50 h-48" />
+      <div className="my-8 animate-pulse rounded-2xl neu-flat h-48" />
     );
   }
 

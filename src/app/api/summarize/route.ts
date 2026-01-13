@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { summarizeContent, generateKeyTakeaways } from '@/lib/summarize'
 import { withRateLimit } from '@/lib/with-rate-limit'
 import { RATE_LIMITS } from '@/lib/rate-limit'
+import { logError } from '@/lib/logger'
 
 const handlePost = async (request: NextRequest) => {
   try {
@@ -34,7 +35,7 @@ const handlePost = async (request: NextRequest) => {
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Summarization API error:', error)
+    logError('Summarize API: Unexpected error', error, { component: 'summarize', action: 'POST' })
     return NextResponse.json(
       { error: 'Failed to process content' },
       { status: 500 }

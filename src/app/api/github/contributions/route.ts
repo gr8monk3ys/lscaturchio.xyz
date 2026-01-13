@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
+import { logError } from '@/lib/logger';
 
 const GITHUB_USERNAME = 'lscaturchio'; // Change to your GitHub username
 
@@ -58,7 +59,7 @@ const handleGet = async (request: NextRequest) => {
       weeks: calendar.weeks,
     });
   } catch (error) {
-    console.error('GitHub contributions error:', error);
+    logError('GitHub Contributions: API error', error, { component: 'github-contributions', action: 'GET' });
 
     // Return mock data on error
     return NextResponse.json({

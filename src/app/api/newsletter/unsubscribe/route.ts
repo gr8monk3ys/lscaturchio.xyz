@@ -1,18 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabase } from '@/lib/supabase';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
-
-function getSupabase() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Supabase credentials not configured');
-  }
-
-  return createClient(supabaseUrl, supabaseKey);
-}
+import { logError } from '@/lib/logger';
 
 const handlePost = async (request: NextRequest) => {
   try {
@@ -62,7 +52,7 @@ const handlePost = async (request: NextRequest) => {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Newsletter unsubscribe error:', error);
+    logError('Newsletter Unsubscribe: Unexpected error', error, { component: 'newsletter/unsubscribe', action: 'POST' });
     return NextResponse.json(
       { error: 'Failed to unsubscribe. Please try again later.' },
       { status: 500 }

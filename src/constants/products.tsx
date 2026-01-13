@@ -41,10 +41,10 @@ export const products = [
     content: (
       <div>
         <p>
-          Engineered an AI-powered trading bot that automates stock trading by analyzing market sentiment using FinBERT and integrating key technical indicators such as SMA and RSI. The bot employs comprehensive risk management strategies, including portfolio-wide and individual position risk limits.
+          Engineered an AI-powered trading bot that automates stock trading by analyzing market sentiment using FinBERT and integrating key technical indicators such as SMA and RSI. The bot employs strict risk management strategies, including portfolio-wide and individual position risk limits.
         </p>
         <p>
-          Achieved seamless integration with the Alpaca Trading API, enabling real-time trading and paper trading for safe strategy testing before live deployment.
+          Integrated with the Alpaca Trading API, enabling real-time trading and paper trading for safe strategy testing before live deployment.
         </p>
       </div>
     ),
@@ -64,7 +64,7 @@ export const products = [
           Collaborated on developing a web application for the 2019 Hack Merced event that assists users in finding lost dogs. The application allows users to upload a photo of a dog, which is then compared to a database using machine learning-based image recognition to identify potential matches.
         </p>
         <p>
-          Leveraged machine learning techniques to enhance the accuracy of image comparisons, providing a valuable tool for pet owners and shelters in reuniting lost dogs with their families.
+          Used machine learning to improve the accuracy of image comparisons, providing a valuable tool for pet owners and shelters in reuniting lost dogs with their families.
         </p>
       </div>
     ),
@@ -81,7 +81,7 @@ export const products = [
     content: (
       <div>
         <p>
-          Developed an innovative e-book reader application that utilizes eye-tracking technology to provide hands-free control. Features include automatic scrolling when the user&apos;s gaze reaches the bottom of the page and navigation to the main menu when focusing on a button for a specified duration.
+          Built an e-book reader application that uses eye-tracking technology to provide hands-free control. Features include automatic scrolling when the user&apos;s gaze reaches the bottom of the page and navigation to the main menu when focusing on a button for a specified duration.
         </p>
         <p>
           Implemented using JavaScript and web technologies, this application enhances accessibility and offers a novel reading experience by reducing the need for manual interactions.
@@ -118,7 +118,7 @@ export const products = [
     href: "https://github.com/gr8monk3ys/blog-AI",
     title: "Blog-AI",
     description:
-      "A powerful AI content generation tool that leverages GPT-4 and LangChain to automatically create SEO-optimized blog posts and structured books. Generate professional-quality content with clean output in MDX format for blogs and DOCX for books, perfect for content creators and writers looking to streamline their workflow.",
+      "An AI content generation tool that uses GPT-4 and LangChain to create SEO-optimized blog posts and structured books. Generates clean output in MDX format for blogs and DOCX for books.",
     thumbnail: blogAI,
     images: [blogAI],
     stack: ["Python", "OpenAI GPT-4", "Langchain"],
@@ -134,7 +134,7 @@ export const products = [
           descriptions, and detailed sections.
         </p>
         <p>
-          Utilized Python and ConversationBufferMemory for maintaining context
+          Used Python and ConversationBufferMemory for maintaining context
           and orchestrating tasks.
         </p>
       </div>
@@ -152,21 +152,10 @@ export const products = [
     content: (
       <div>
         <p>
-          LinkFlame is a comprehensive link management tool developed to
-          streamline and optimize your digital marketing efforts. It provides
-          functionalities for creating, managing, and tracking links to ensure
-          maximum engagement and performance.
+          LinkFlame is a link management tool for creating, managing, and tracking links. It provides detailed analytics and customizable link appearance.
         </p>
         <p>
-          Leveraging modern technologies like React for the frontend, Node.js
-          for the backend, and MongoDB for the database, LinkFlame offers a
-          robust and scalable solution for marketers and businesses looking to
-          enhance their online presence.
-        </p>
-        <p>
-          Key features include detailed analytics, customizable link appearance,
-          and seamless integration with various marketing platforms, making it
-          an indispensable tool for any digital marketing strategy.
+          Built with React, Node.js, and MongoDB. Integrates with various marketing platforms.
         </p>
       </div>
     ),
@@ -183,19 +172,10 @@ export const products = [
     content: (
       <div>
         <p>
-          Developed a robust tool for summarizing academic papers using advanced
-          NLP techniques, facilitating quick comprehension of complex research
-          documents.
+          A tool for summarizing academic papers using NLP techniques. Extracts key points and generates concise summaries from research documents.
         </p>
         <p>
-          Leveraged state-of-the-art transformers to extract key points and
-          generate concise summaries, enhancing the efficiency of academic
-          research.
-        </p>
-        <p>
-          Integrated with various data sources to allow seamless input of
-          research papers and articles, providing a versatile solution for
-          researchers and students alike.
+          Built with transformers for accurate extraction. Accepts papers from various sources.
         </p>
       </div>
     ),

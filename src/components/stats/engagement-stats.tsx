@@ -34,14 +34,14 @@ export function EngagementStats() {
 
   if (isLoading) {
     return (
-      <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
+      <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800" aria-busy="true" aria-label="Loading engagement statistics">
         <div className="flex items-center gap-2 mb-6">
           <Heart className="h-5 w-5 text-primary" />
           <h3 className="text-xl font-semibold">Engagement</h3>
         </div>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse h-16 bg-muted rounded" />
+            <div key={i} className="animate-pulse h-16 bg-muted rounded" role="presentation" />
           ))}
         </div>
       </div>

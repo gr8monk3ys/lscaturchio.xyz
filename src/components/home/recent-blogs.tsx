@@ -42,10 +42,11 @@ export function RecentBlogs() {
   useEffect(() => {
     async function fetchBlogs() {
       try {
-        const response = await fetch('/api/blogs');
+        const response = await fetch('/api/v1/blogs?limit=3');
         if (!response.ok) throw new Error('Failed to fetch blogs');
-        const data = await response.json();
-        setBlogs(data);
+        const result = await response.json();
+        // v1 API returns { data: [...], meta: {...} }
+        setBlogs(result.data || []);
       } catch (error) {
         logError('Failed to fetch recent blogs', error, { component: 'RecentBlogs', action: 'fetchBlogs' });
       } finally {
@@ -58,7 +59,7 @@ export function RecentBlogs() {
 
   if (isLoading) {
     return (
-      <section ref={containerRef} className="py-16">
+      <section ref={containerRef} className="py-16" aria-busy="true" aria-label="Loading recent blog posts">
         <div className="container px-4 md:px-6">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold">Recent Blogs</h2>
@@ -68,6 +69,7 @@ export function RecentBlogs() {
               <div
                 key={i}
                 className="animate-pulse rounded-xl bg-secondary/50 h-[300px]"
+                role="presentation"
               />
             ))}
           </div>

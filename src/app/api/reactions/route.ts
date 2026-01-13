@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
+import { logError, logInfo } from "@/lib/logger";
+import { validateCsrf } from "@/lib/csrf";
+import { slugQuerySchema, reactionTrackingSchema, reactionQuerySchema, parseBody, parseQuery } from "@/lib/validations";
+import { getVoterHash, isVoteDeduplicationEnabled } from "@/lib/voter-hash";
 
 interface Reactions {
   likes: number;
   bookmarks: number;
-}
-
-interface ReactionData {
-  slug: string;
-  type: "like" | "bookmark";
 }
 
 /**
@@ -17,11 +16,13 @@ interface ReactionData {
  */
 export async function GET(req: NextRequest) {
   try {
-    const slug = req.nextUrl.searchParams.get("slug");
-
-    if (!slug) {
-      return NextResponse.json({ error: "Slug is required" }, { status: 400 });
+    // Zod validation
+    const parsed = parseQuery(slugQuerySchema, req.nextUrl.searchParams);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
+
+    const { slug } = parsed.data;
 
     const supabase = getSupabase();
 
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
       .single();
 
     if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
-      console.error("[Reactions] Database error:", error);
+      logError("Reactions: Database error", error, { component: 'reactions', action: 'GET', slug });
       return NextResponse.json(
         { error: "Failed to fetch reactions" },
         { status: 500 }
@@ -43,7 +44,7 @@ export async function GET(req: NextRequest) {
     const reactions: Reactions = data || { likes: 0, bookmarks: 0 };
     return NextResponse.json({ slug, ...reactions });
   } catch (error) {
-    console.error("[Reactions] Error:", error);
+    logError("Reactions: Unexpected error", error, { component: 'reactions', action: 'GET' });
     return NextResponse.json(
       { error: "Failed to fetch reactions" },
       { status: 500 }
@@ -54,47 +55,88 @@ export async function GET(req: NextRequest) {
 /**
  * POST /api/reactions
  * Add a reaction (like or bookmark) to a blog post
+ * Uses server-side deduplication to prevent vote manipulation
  */
 export async function POST(req: NextRequest) {
+  // CSRF protection
+  const csrfError = validateCsrf(req);
+  if (csrfError) return csrfError;
+
   try {
-    const body = (await req.json()) as ReactionData;
-    const { slug, type } = body;
+    const body = await req.json();
 
-    if (!slug || typeof slug !== "string") {
-      return NextResponse.json({ error: "Valid slug is required" }, { status: 400 });
+    // Zod validation
+    const parsed = parseBody(reactionTrackingSchema, body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
 
-    if (type !== "like" && type !== "bookmark") {
-      return NextResponse.json({ error: "Type must be 'like' or 'bookmark'" }, { status: 400 });
-    }
-
+    const { slug, type } = parsed.data;
     const supabase = getSupabase();
 
-    // Get current reactions
-    const { data: currentData } = await supabase
-      .from("reactions")
-      .select("likes, bookmarks")
-      .eq("slug", slug)
-      .single();
+    // Check if vote deduplication is enabled
+    if (isVoteDeduplicationEnabled()) {
+      const voterHash = getVoterHash(req);
 
-    const current = currentData || { likes: 0, bookmarks: 0 };
+      // Use atomic RPC function with deduplication
+      const { data, error } = await supabase.rpc("record_vote", {
+        p_slug: slug,
+        p_type: type,
+        p_voter_hash: voterHash,
+      });
 
-    // Increment the appropriate counter
-    const newReactions = {
-      slug,
-      likes: type === "like" ? current.likes + 1 : current.likes,
-      bookmarks: type === "bookmark" ? current.bookmarks + 1 : current.bookmarks,
-      updated_at: new Date().toISOString(),
-    };
+      if (error) {
+        // If record_vote doesn't exist, fall back to old method
+        if (error.code === '42883') { // function does not exist
+          logInfo("Reactions: record_vote RPC not found, using fallback", { component: 'reactions', action: 'POST', slug, type });
+        } else {
+          logError("Reactions: RPC error", error, { component: 'reactions', action: 'POST', slug, type });
+          return NextResponse.json(
+            { error: "Failed to record reaction" },
+            { status: 500 }
+          );
+        }
+      } else {
+        // data is the new count, or -1 if already voted
+        if (data === -1) {
+          // Already voted - return current counts without error
+          const { data: current } = await supabase
+            .from("reactions")
+            .select("likes, bookmarks")
+            .eq("slug", slug)
+            .single();
 
-    const { data, error } = await supabase
-      .from("reactions")
-      .upsert(newReactions, { onConflict: 'slug' })
-      .select("likes, bookmarks")
-      .single();
+          return NextResponse.json({
+            slug,
+            likes: current?.likes || 0,
+            bookmarks: current?.bookmarks || 0,
+            alreadyVoted: true,
+          });
+        }
+
+        // Get full reaction counts to return
+        const { data: reactions } = await supabase
+          .from("reactions")
+          .select("likes, bookmarks")
+          .eq("slug", slug)
+          .single();
+
+        return NextResponse.json({
+          slug,
+          likes: reactions?.likes || 0,
+          bookmarks: reactions?.bookmarks || 0,
+        });
+      }
+    }
+
+    // Fallback: Use original toggle_reaction (no deduplication)
+    const { data, error } = await supabase.rpc("toggle_reaction", {
+      post_slug: slug,
+      reaction_type: type,
+    });
 
     if (error) {
-      console.error("[Reactions] Upsert error:", error);
+      logError("Reactions: RPC error", error, { component: 'reactions', action: 'POST', slug, type });
       return NextResponse.json(
         { error: "Failed to record reaction" },
         { status: 500 }
@@ -103,7 +145,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ slug, ...data });
   } catch (error) {
-    console.error("[Reactions] Error:", error);
+    logError("Reactions: Unexpected error", error, { component: 'reactions', action: 'POST' });
     return NextResponse.json(
       { error: "Failed to record reaction" },
       { status: 500 }
@@ -114,47 +156,86 @@ export async function POST(req: NextRequest) {
 /**
  * DELETE /api/reactions?slug=xxx&type=like
  * Remove a reaction (for toggle functionality)
+ * Uses server-side deduplication to ensure only actual votes can be removed
  */
 export async function DELETE(req: NextRequest) {
+  // CSRF protection
+  const csrfError = validateCsrf(req);
+  if (csrfError) return csrfError;
+
   try {
-    const slug = req.nextUrl.searchParams.get("slug");
-    const type = req.nextUrl.searchParams.get("type") as "like" | "bookmark" | null;
-
-    if (!slug || !type) {
-      return NextResponse.json({ error: "Slug and type are required" }, { status: 400 });
+    // Zod validation
+    const parsed = parseQuery(reactionQuerySchema, req.nextUrl.searchParams);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
 
-    if (type !== "like" && type !== "bookmark") {
-      return NextResponse.json({ error: "Type must be 'like' or 'bookmark'" }, { status: 400 });
-    }
-
+    const { slug, type } = parsed.data;
     const supabase = getSupabase();
 
-    // Get current reactions
-    const { data: currentData } = await supabase
-      .from("reactions")
-      .select("likes, bookmarks")
-      .eq("slug", slug)
-      .single();
+    // Check if vote deduplication is enabled
+    if (isVoteDeduplicationEnabled()) {
+      const voterHash = getVoterHash(req);
 
-    const current = currentData || { likes: 0, bookmarks: 0 };
+      // Use atomic RPC function with deduplication
+      const { data, error } = await supabase.rpc("remove_vote", {
+        p_slug: slug,
+        p_type: type,
+        p_voter_hash: voterHash,
+      });
 
-    // Decrement the appropriate counter (min 0)
-    const newReactions = {
-      slug,
-      likes: type === "like" ? Math.max(0, current.likes - 1) : current.likes,
-      bookmarks: type === "bookmark" ? Math.max(0, current.bookmarks - 1) : current.bookmarks,
-      updated_at: new Date().toISOString(),
-    };
+      if (error) {
+        // If remove_vote doesn't exist, fall back to old method
+        if (error.code === '42883') { // function does not exist
+          logInfo("Reactions: remove_vote RPC not found, using fallback", { component: 'reactions', action: 'DELETE', slug, type });
+        } else {
+          logError("Reactions: RPC error", error, { component: 'reactions', action: 'DELETE', slug, type });
+          return NextResponse.json(
+            { error: "Failed to remove reaction" },
+            { status: 500 }
+          );
+        }
+      } else {
+        // data is the new count, or -1 if never voted
+        if (data === -1) {
+          // Never voted - return current counts without error
+          const { data: current } = await supabase
+            .from("reactions")
+            .select("likes, bookmarks")
+            .eq("slug", slug)
+            .single();
 
-    const { data, error } = await supabase
-      .from("reactions")
-      .upsert(newReactions, { onConflict: 'slug' })
-      .select("likes, bookmarks")
-      .single();
+          return NextResponse.json({
+            slug,
+            likes: current?.likes || 0,
+            bookmarks: current?.bookmarks || 0,
+            neverVoted: true,
+          });
+        }
+
+        // Get full reaction counts to return
+        const { data: reactions } = await supabase
+          .from("reactions")
+          .select("likes, bookmarks")
+          .eq("slug", slug)
+          .single();
+
+        return NextResponse.json({
+          slug,
+          likes: reactions?.likes || 0,
+          bookmarks: reactions?.bookmarks || 0,
+        });
+      }
+    }
+
+    // Fallback: Use original decrement_reaction (no deduplication)
+    const { data, error } = await supabase.rpc("decrement_reaction", {
+      post_slug: slug,
+      reaction_type: type,
+    });
 
     if (error) {
-      console.error("[Reactions] Upsert error:", error);
+      logError("Reactions: RPC error", error, { component: 'reactions', action: 'DELETE', slug, type });
       return NextResponse.json(
         { error: "Failed to remove reaction" },
         { status: 500 }
@@ -163,7 +244,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ slug, ...data });
   } catch (error) {
-    console.error("[Reactions] Error:", error);
+    logError("Reactions: Unexpected error", error, { component: 'reactions', action: 'DELETE' });
     return NextResponse.json(
       { error: "Failed to remove reaction" },
       { status: 500 }
