@@ -5,7 +5,7 @@ export const timeline = [
     date: "June 2024 - Present",
     description: "Actualizing the full pipeline for data processing, model training, and deployment of nutritional factors and macro nutrients for any given recipe.",
     responsibilities: [
-      "Integrated AI solutions into Google Cloud services using VertexAI to streamline operations.",
+      "Integrated AI solutions into Google Cloud services using VertexAI to speed up operations.",
       "Improved data analysis capabilities from custom REST API endpoints, resulting in an easily scalable solution.",
     ],
   },
@@ -24,7 +24,7 @@ export const timeline = [
     company: "Joint Genome Institute",
     title: "Bio-Informatics Data Analyst",
     date: "May 2020 - August 2021",
-    description: "Utilized R with a cross-functional team of researchers to construct workflows for genetic homology comparison.",
+    description: "Used R with a team of researchers to build workflows for genetic homology comparison.",
     responsibilities: [
       "Slashed processing time by 90%.",
       "Constructed a model based on plant species datasets for microbial interactions, achieving 98% accuracy.",

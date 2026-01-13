@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { getSupabase } from "@/lib/supabase";
-
-interface ViewData {
-  slug: string;
-}
+import { logError } from "@/lib/logger";
+import { validateCsrf } from "@/lib/csrf";
+import { slugQuerySchema, viewTrackingSchema, parseBody, parseQuery } from "@/lib/validations";
 
 /**
  * GET /api/views?slug=xxx
@@ -12,11 +11,13 @@ interface ViewData {
  */
 export async function GET(req: NextRequest) {
   try {
-    const slug = req.nextUrl.searchParams.get("slug");
-
-    if (!slug) {
-      return NextResponse.json({ error: "Slug is required" }, { status: 400 });
+    // Zod validation
+    const parsed = parseQuery(slugQuerySchema, req.nextUrl.searchParams);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
+
+    const { slug } = parsed.data;
 
     const supabase = getSupabase();
 
@@ -28,7 +29,7 @@ export async function GET(req: NextRequest) {
       .single();
 
     if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
-      console.error("[View Counter] Database error:", error);
+      logError("View Counter: Database error", error, { component: 'views', action: 'GET' });
       return NextResponse.json(
         { error: "Failed to fetch views" },
         { status: 500 }
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
     const views = data?.count || 0;
     return NextResponse.json({ slug, views });
   } catch (error) {
-    console.error("[View Counter] Error:", error);
+    logError("View Counter: Unexpected error", error, { component: 'views', action: 'GET' });
     return NextResponse.json(
       { error: "Failed to fetch views" },
       { status: 500 }
@@ -48,50 +49,42 @@ export async function GET(req: NextRequest) {
 
 /**
  * POST /api/views
- * Increment view count for a blog post
+ * Increment view count for a blog post (atomic operation)
  */
 export async function POST(req: NextRequest) {
-  try {
-    const body = (await req.json()) as ViewData;
-    const { slug } = body;
+  // CSRF protection
+  const csrfError = validateCsrf(req);
+  if (csrfError) return csrfError;
 
-    if (!slug || typeof slug !== "string") {
-      return NextResponse.json({ error: "Valid slug is required" }, { status: 400 });
+  try {
+    const body = await req.json();
+
+    // Zod validation
+    const parsed = parseBody(viewTrackingSchema, body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
     }
+
+    const { slug } = parsed.data;
 
     const supabase = getSupabase();
 
-    // Use upsert to increment or create view count
-    const { data, error } = await supabase
-      .from("views")
-      .select("count")
-      .eq("slug", slug)
-      .single();
+    // Use atomic RPC function to prevent race conditions
+    const { data, error } = await supabase.rpc("increment_view_count", {
+      post_slug: slug,
+    });
 
-    const currentCount = data?.count || 0;
-    const newCount = currentCount + 1;
-
-    const { error: upsertError } = await supabase
-      .from("views")
-      .upsert({
-        slug,
-        count: newCount,
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'slug'
-      });
-
-    if (upsertError) {
-      console.error("[View Counter] Upsert error:", upsertError);
+    if (error) {
+      logError("View Counter: RPC error", error, { component: 'views', action: 'POST', slug });
       return NextResponse.json(
         { error: "Failed to record view" },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ slug, views: newCount });
+    return NextResponse.json({ slug, views: data });
   } catch (error) {
-    console.error("[View Counter] Error:", error);
+    logError("View Counter: Unexpected error", error, { component: 'views', action: 'POST' });
     return NextResponse.json(
       { error: "Failed to record view" },
       { status: 500 }
@@ -114,7 +107,7 @@ export async function OPTIONS() {
       .order("count", { ascending: false });
 
     if (error) {
-      console.error("[View Counter] Database error:", error);
+      logError("View Counter: Database error", error, { component: 'views', action: 'OPTIONS' });
       return NextResponse.json(
         { error: "Failed to fetch views" },
         { status: 500 }
@@ -134,7 +127,7 @@ export async function OPTIONS() {
 
     return NextResponse.json({ views: allViews, total: allViews.length });
   } catch (error) {
-    console.error("[View Counter] Error:", error);
+    logError("View Counter: Unexpected error", error, { component: 'views', action: 'OPTIONS' });
     return NextResponse.json(
       { error: "Failed to fetch views" },
       { status: 500 }

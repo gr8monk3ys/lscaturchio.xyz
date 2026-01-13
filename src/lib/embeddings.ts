@@ -1,6 +1,11 @@
 import OpenAI from 'openai';
 import { getSupabase } from './supabase';
 
+// Configurable similarity threshold for embedding search (0-1, higher = stricter)
+const EMBEDDING_MATCH_THRESHOLD = parseFloat(
+  process.env.EMBEDDING_MATCH_THRESHOLD || '0.5'
+);
+
 // Lazy initialization to avoid build-time errors with missing env vars
 let openai: OpenAI | null = null;
 
@@ -8,6 +13,8 @@ function getOpenAI() {
   if (!openai) {
     openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY!,
+      timeout: 30000, // 30 second timeout
+      maxRetries: 1,
     });
   }
   return openai;
@@ -71,7 +78,7 @@ export async function searchSimilarContent(query: string, limit: number = 5) {
 
   const { data, error } = await client.rpc('match_embeddings', {
     query_embedding: embedding,
-    match_threshold: 0.5,
+    match_threshold: EMBEDDING_MATCH_THRESHOLD,
     match_count: limit,
   });
 

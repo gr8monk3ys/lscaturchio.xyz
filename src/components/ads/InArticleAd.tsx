@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { logError, logWarn } from "@/lib/logger";
 
+const ADSENSE_CLIENT_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-4505962980988232";
+
 // Type definition for Google AdSense
 interface AdSenseConfig {
   google_ad_client?: string;
@@ -60,7 +62,7 @@ export function InArticleAd({ slot, className = "" }: InArticleAdProps) {
         style={{ display: "block", textAlign: "center" }}
         data-ad-layout="in-article"
         data-ad-format="fluid"
-        data-ad-client="ca-pub-4505962980988232"
+        data-ad-client={ADSENSE_CLIENT_ID}
         data-ad-slot={slot}
       ></ins>
     </div>

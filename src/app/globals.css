@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 96%;
     --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
+    --card: 0 0% 96%;
     --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
+    --popover: 0 0% 96%;
     --popover-foreground: 240 10% 3.9%;
     --primary: 82 32% 16%;
     --primary-foreground: 0 0% 100%;
@@ -23,17 +23,26 @@
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 82 32% 16%;
-    --radius: 0.5rem;
+    --radius: 1rem;
+
+    /* Neumorphic shadows - light mode (subtle, barely visible) */
+    --neu-shadow-light: rgba(255, 255, 255, 0.85);
+    --neu-shadow-dark: rgba(200, 200, 210, 0.2);
+    --neu-shadow-sm: 3px 3px 5px -1px var(--neu-shadow-dark), -2px -2px 5px var(--neu-shadow-light);
+    --neu-shadow: 6px 6px 10px -2px var(--neu-shadow-dark), -5px -5px 10px -1px var(--neu-shadow-light);
+    --neu-shadow-lg: 10px 10px 15px -3px var(--neu-shadow-dark), -8px -8px 15px -2px var(--neu-shadow-light);
+    --neu-shadow-inset: inset -3px -3px 5px -1px var(--neu-shadow-light), inset 2px 2px 6px -1px var(--neu-shadow-dark);
+    --neu-shadow-inset-sm: inset -2px -2px 3px var(--neu-shadow-light), inset 1px 1px 3px var(--neu-shadow-dark);
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 10% 8%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 240 10% 8%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 240 10% 8%;
     --popover-foreground: 0 0% 98%;
-    --primary: 82 32% 16%;
+    --primary: 82 32% 40%;
     --primary-foreground: 0 0% 100%;
     --secondary: 82 31% 32%;
     --secondary-foreground: 0 0% 100%;
@@ -45,6 +54,92 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 82 32% 16%;
+    --ring: 82 32% 40%;
+
+    /* Neumorphic shadows - dark mode (asymmetric for natural depth) */
+    --neu-shadow-light: rgba(50, 50, 60, 0.6);
+    --neu-shadow-dark: rgba(5, 5, 10, 0.6);
+    --neu-shadow-sm: 4px 4px 6px -1px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light);
+    --neu-shadow: 8px 8px 12px -2px var(--neu-shadow-dark), -6px -6px 12px -1px var(--neu-shadow-light);
+    --neu-shadow-lg: 12px 12px 18px -3px var(--neu-shadow-dark), -9px -9px 18px -2px var(--neu-shadow-light);
+    --neu-shadow-inset: inset -4px -4px 6px -1px var(--neu-shadow-light), inset 2px 2px 8px -1px var(--neu-shadow-dark);
+    --neu-shadow-inset-sm: inset -2px -2px 4px var(--neu-shadow-light), inset 1px 1px 4px var(--neu-shadow-dark);
+  }
+}
+
+@layer utilities {
+  /* Neumorphic utility classes */
+  .neu-flat {
+    box-shadow: var(--neu-shadow);
+    background: hsl(var(--background));
+    border: none;
+  }
+
+  .neu-flat-sm {
+    box-shadow: var(--neu-shadow-sm);
+    background: hsl(var(--background));
+    border: none;
+  }
+
+  .neu-flat-lg {
+    box-shadow: var(--neu-shadow-lg);
+    background: hsl(var(--background));
+    border: none;
+  }
+
+  .neu-pressed {
+    box-shadow: var(--neu-shadow-inset);
+    background: hsl(var(--background));
+    border: none;
+  }
+
+  .neu-pressed-sm {
+    box-shadow: var(--neu-shadow-inset-sm);
+    background: hsl(var(--background));
+    border: none;
+  }
+
+  /* Neumorphic button styles */
+  .neu-button {
+    box-shadow: var(--neu-shadow-sm);
+    background: hsl(var(--background));
+    border: none;
+    transition: box-shadow 0.2s ease, transform 0.1s ease;
+  }
+
+  .neu-button:hover {
+    box-shadow: var(--neu-shadow);
+  }
+
+  .neu-button:active {
+    box-shadow: var(--neu-shadow-inset-sm);
+    transform: scale(0.98);
+  }
+
+  /* Neumorphic card with hover effect */
+  .neu-card {
+    box-shadow: var(--neu-shadow);
+    background: hsl(var(--background));
+    border: none;
+    border-radius: var(--radius);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+
+  .neu-card:hover {
+    box-shadow: var(--neu-shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  /* Neumorphic input fields */
+  .neu-input {
+    box-shadow: var(--neu-shadow-inset-sm);
+    background: hsl(var(--background));
+    border: none;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .neu-input:focus {
+    box-shadow: var(--neu-shadow-inset);
+    outline: none;
   }
 }

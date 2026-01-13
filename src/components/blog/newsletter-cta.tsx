@@ -11,11 +11,8 @@ export function NewsletterCTA() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="my-12 p-8 rounded-2xl bg-gradient-to-br from-primary/5 via-background to-background border border-primary/20 relative overflow-hidden"
+      className="my-12 p-8 rounded-2xl neu-card relative overflow-hidden"
     >
-      {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -z-10" />
 
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-4">
@@ -30,25 +27,25 @@ export function NewsletterCTA() {
 
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           <div className="flex items-start gap-3">
-            <div className="mt-1 p-2 rounded-lg bg-primary/10">
+            <div className="mt-1 p-2 rounded-xl neu-flat-sm">
               <BookOpen className="h-4 w-4 text-primary" />
             </div>
             <div>
               <h4 className="font-semibold text-sm mb-1">Deep Dives</h4>
               <p className="text-xs text-muted-foreground">
-                Technical tutorials and comprehensive guides
+                Technical tutorials and detailed guides
               </p>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="mt-1 p-2 rounded-lg bg-primary/10">
+            <div className="mt-1 p-2 rounded-xl neu-flat-sm">
               <TrendingUp className="h-4 w-4 text-primary" />
             </div>
             <div>
               <h4 className="font-semibold text-sm mb-1">Latest Trends</h4>
               <p className="text-xs text-muted-foreground">
-                Stay ahead with cutting-edge tech insights
+                The latest in AI and tech
               </p>
             </div>
           </div>

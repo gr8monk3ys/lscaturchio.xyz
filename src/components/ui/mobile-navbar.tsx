@@ -3,26 +3,20 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { navigation } from '@/constants/navlinks';
+import { navigationCategories, contactLink } from '@/constants/navlinks';
 import { ThemeToggle } from './theme-toggle';
 import { SearchButton } from '../search/search-button';
 
-const navItemVariants = {
-  closed: { opacity: 0, y: 20 },
-  open: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.1,
-    },
-  }),
-};
-
 export function MobileNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const pathname = usePathname();
+
+  const toggleCategory = (name: string) => {
+    setExpandedCategory(expandedCategory === name ? null : name);
+  };
 
   return (
     <>
@@ -32,7 +26,7 @@ export function MobileNavbar() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="flex h-9 w-9 items-center justify-center rounded-md bg-white hover:bg-accent hover:text-accent-foreground dark:bg-black"
+          className="flex h-10 w-10 items-center justify-center rounded-xl neu-button"
           aria-label="Toggle menu"
         >
           {isMenuOpen ? (
@@ -51,39 +45,115 @@ export function MobileNavbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[150] flex flex-col bg-white dark:bg-black md:hidden"
+            className="fixed inset-0 z-[150] flex flex-col bg-background md:hidden overflow-y-auto"
           >
-            <div className="flex h-full w-full flex-col items-center justify-center space-y-8 p-6">
-              {navigation.map((item, i) => (
-                <motion.div
-                  key={item.name}
-                  custom={i}
-                  initial="closed"
-                  animate="open"
-                  variants={navItemVariants}
-                  className="w-full max-w-sm"
-                >
-                  <Link
-                    href={item.href}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`block w-full rounded-lg px-4 py-3 text-center text-xl font-medium transition-colors ${
-                      pathname === item.href
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-foreground/60 hover:bg-accent hover:text-accent-foreground'
-                    }`}
+            <div className="flex flex-col w-full max-w-md mx-auto p-6 pt-20 space-y-2">
+              {/* Category Sections */}
+              {navigationCategories.map((category, categoryIndex) => {
+                const Icon = category.icon;
+                const isExpanded = expandedCategory === category.name;
+                const hasActiveItem = category.items.some(item => pathname === item.href);
+
+                return (
+                  <motion.div
+                    key={category.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + categoryIndex * 0.05 }}
+                    className="space-y-1"
                   >
-                    {item.name}
-                  </Link>
-                </motion.div>
-              ))}
+                    {/* Category Header */}
+                    <button
+                      onClick={() => toggleCategory(category.name)}
+                      className={`flex items-center justify-between w-full rounded-xl px-4 py-3 text-lg font-medium transition-colors ${
+                        hasActiveItem
+                          ? 'text-primary'
+                          : 'text-foreground/80 hover:bg-muted/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {Icon && <Icon className="h-5 w-5" />}
+                        {category.name}
+                      </div>
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform duration-200 ${
+                          isExpanded ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
+
+                    {/* Category Items */}
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="pl-4 space-y-1">
+                            {category.items.map((item) => {
+                              const ItemIcon = item.icon;
+                              const isActive = pathname === item.href;
+
+                              return (
+                                <Link
+                                  key={item.href}
+                                  href={item.href}
+                                  onClick={() => setIsMenuOpen(false)}
+                                  className={`flex items-center gap-3 rounded-lg px-4 py-2.5 transition-colors ${
+                                    isActive
+                                      ? 'neu-pressed-sm bg-primary/10 text-primary'
+                                      : 'text-foreground/70 hover:bg-muted/50 hover:text-foreground'
+                                  }`}
+                                >
+                                  {ItemIcon && (
+                                    <ItemIcon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                                  )}
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-medium">{item.name}</span>
+                                    {item.description && (
+                                      <span className="text-xs text-muted-foreground">{item.description}</span>
+                                    )}
+                                  </div>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+
+              {/* Contact Link */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Link
+                  href={contactLink.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`flex items-center gap-3 w-full rounded-xl px-4 py-3 text-lg font-medium transition-colors ${
+                    pathname === contactLink.href
+                      ? 'neu-pressed bg-primary/10 text-primary'
+                      : 'hover:bg-muted/50'
+                  }`}
+                >
+                  {contactLink.icon && <contactLink.icon className="h-5 w-5" />}
+                  {contactLink.name}
+                </Link>
+              </motion.div>
 
               {/* Search and Theme Toggle */}
               <motion.div
-                custom={navigation.length}
-                initial="closed"
-                animate="open"
-                variants={navItemVariants}
-                className="pt-4 flex items-center justify-center gap-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="pt-6 flex items-center justify-center gap-4"
               >
                 <SearchButton />
                 <ThemeToggle />

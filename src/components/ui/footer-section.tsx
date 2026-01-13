@@ -26,7 +26,7 @@ function Footer() {
   const substackUrl = socials.find(social => social.label === "Substack")?.href || "https://substack.com/@gr8monk3ys"
 
   return (
-    <footer className="relative border-t bg-background text-foreground transition-colors duration-300">
+    <footer className="relative bg-background text-foreground transition-colors duration-300">
       <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="relative">
@@ -37,14 +37,15 @@ function Footer() {
             <div className="flex flex-col gap-3">
               <Button
                 onClick={() => window.open(substackUrl, '_blank')}
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                variant="primary"
+                className="inline-flex items-center gap-2"
               >
                 <Send className="h-4 w-4" />
                 Subscribe to Newsletter
               </Button>
               <Button
                 onClick={() => window.open('/api/rss', '_blank')}
-                variant="outline"
+                variant="default"
                 className="inline-flex items-center gap-2"
               >
                 <Rss className="h-4 w-4" />
@@ -52,7 +53,7 @@ function Footer() {
               </Button>
               <Button
                 onClick={() => window.open('https://www.buymeacoffee.com/lorenzoscak', '_blank')}
-                variant="outline"
+                variant="default"
                 className="inline-flex items-center gap-2"
               >
                 <Pizza className="h-4 w-4" />
@@ -79,20 +80,20 @@ function Footer() {
             <address className="space-y-2 text-sm not-italic">
               <p>Los Angeles, California</p>
               <p>United States</p>
-              <p>Email: lorenzosca7@gmail.com</p>
+              <p>Email: lorenzosca7@protonmail.ch</p>
             </address>
           </div>
           <div className="relative">
             <h3 className="mb-4 text-lg font-semibold">Follow Me</h3>
-            <div className="mb-6 flex flex-wrap gap-4">
+            <div className="mb-6 flex flex-wrap gap-3">
               {socials.map((social) => (
                 <TooltipProvider key={social.label}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        size="icon" 
-                        className="rounded-full"
+                      <Button
+                        variant="default"
+                        size="icon"
+                        className="rounded-xl"
                         onClick={() => window.open(social.href, '_blank')}
                       >
                         <social.icon className="h-4 w-4" />

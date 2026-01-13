@@ -15,31 +15,87 @@ interface TILItem {
   url?: string
 }
 
-// This would eventually be loaded from a JSON file or CMS
+// AI-focused learnings and discoveries
 const SAMPLE_TILS: TILItem[] = [
   {
     id: '1',
-    title: 'Next.js 14 App Router Caching',
-    content: 'The App Router has multiple caching layers: Router Cache (client), Full Route Cache (server), Request Memoization, and Data Cache. Understanding when each layer kicks in is crucial for performance.',
+    title: 'Claude 3.5 Sonnet Outperforms GPT-4 on Code',
+    content: 'In my testing, Claude 3.5 Sonnet consistently produces better code than GPT-4, especially for complex refactoring tasks. The key is its stronger instruction following and lower hallucination rate on technical details. Context window of 200k tokens makes it ideal for large codebases.',
     date: '2025-01-18',
-    tags: ['nextjs', 'performance'],
-    category: 'code',
+    tags: ['llm', 'claude', 'coding'],
+    category: 'ai',
   },
   {
     id: '2',
-    title: 'OpenAI Embedding Dimensions',
-    content: 'text-embedding-ada-002 creates 1536-dimensional vectors. You can reduce dimensions using PCA for faster similarity search, but you lose some semantic precision. Trade-off is usually worth it above 10k documents.',
+    title: 'RAG Chunking: Semantic > Fixed-Size',
+    content: 'Switched from fixed 500-token chunks to semantic chunking using sentence-transformers for topic boundaries. Retrieval precision jumped from 73% to 89%. The key insight: preserve logical units of meaning, not arbitrary character counts.',
     date: '2025-01-17',
-    tags: ['ai', 'embeddings', 'optimization'],
+    tags: ['rag', 'embeddings', 'nlp'],
     category: 'ai',
   },
   {
     id: '3',
-    title: 'Service Worker Caching Strategies',
-    content: 'Network-first is great for dynamic content with offline fallback. Cache-first is better for static assets. Stale-while-revalidate gives instant response while updating cache in background - perfect for blogs.',
+    title: 'Fine-tuning vs RAG: When to Choose Each',
+    content: 'Fine-tuning is for style/behavior changes. RAG is for knowledge injection. Tried fine-tuning GPT-3.5 on domain docs - model hallucinated more. Same docs in RAG pipeline: 94% accuracy. Fine-tune for HOW the model responds, use RAG for WHAT it knows.',
     date: '2025-01-16',
-    tags: ['pwa', 'caching'],
-    category: 'code',
+    tags: ['fine-tuning', 'rag', 'llm'],
+    category: 'ai',
+  },
+  {
+    id: '4',
+    title: 'Vector DB Showdown: Pinecone vs Chroma vs FAISS',
+    content: 'For production RAG: Pinecone wins on managed infra + hybrid search. For local dev: Chroma is perfect (embedded, Python-native). For scale on a budget: FAISS with IVF index handles 10M+ vectors on a single GPU. Match your tool to your scale.',
+    date: '2025-01-15',
+    tags: ['vector-db', 'rag', 'infrastructure'],
+    category: 'ai',
+  },
+  {
+    id: '5',
+    title: 'Prompt Engineering: Chain-of-Thought Still Wins',
+    content: 'Tested various prompting strategies on reasoning tasks. Simple CoT ("Let\'s think step by step") still beats zero-shot by 15-20% on complex tasks. But for simple extraction/classification, zero-shot is faster and cheaper. Know when to use each.',
+    date: '2025-01-14',
+    tags: ['prompting', 'llm', 'optimization'],
+    category: 'ai',
+  },
+  {
+    id: '6',
+    title: 'LangChain vs LlamaIndex for RAG',
+    content: 'LangChain: better for complex agent workflows and tool use. LlamaIndex: superior for pure RAG with better out-of-box retrieval. For my blog\'s AI chat, LlamaIndex with sentence-transformers + Supabase pgvector was the sweet spot.',
+    date: '2025-01-13',
+    tags: ['langchain', 'llamaindex', 'rag'],
+    category: 'ai',
+  },
+  {
+    id: '7',
+    title: 'Embedding Model: text-embedding-3-small is Enough',
+    content: 'OpenAI\'s text-embedding-3-small (1536d) performs nearly as well as ada-002 for semantic search at 5x lower cost. For most RAG use cases, the smaller model is the right choice. Only use large (3072d) for cross-lingual or highly nuanced domains.',
+    date: '2025-01-12',
+    tags: ['embeddings', 'openai', 'cost-optimization'],
+    category: 'ai',
+  },
+  {
+    id: '8',
+    title: 'Anthropic\'s Constitutional AI Approach',
+    content: 'Reading Anthropic\'s research on Constitutional AI. The key insight: instead of RLHF with human feedback, use AI feedback guided by a "constitution" of principles. Results in more consistent, explainable alignment. Claude\'s helpfulness comes from this approach.',
+    date: '2025-01-11',
+    tags: ['alignment', 'anthropic', 'research'],
+    category: 'ai',
+  },
+  {
+    id: '9',
+    title: 'Local LLMs: Ollama + Mistral 7B is Surprisingly Good',
+    content: 'Running Mistral 7B locally via Ollama for private/offline tasks. Quantized to 4-bit, it runs at 30 tokens/sec on M2 Mac. Quality is ~80% of GPT-3.5 for most tasks. Perfect for development, testing prompts, and privacy-sensitive applications.',
+    date: '2025-01-10',
+    tags: ['local-llm', 'ollama', 'mistral'],
+    category: 'ai',
+  },
+  {
+    id: '10',
+    title: 'Multimodal AI: Vision Models for Document Parsing',
+    content: 'GPT-4V and Claude Vision are game-changers for document understanding. Parsing complex PDFs with tables/charts that failed traditional OCR? Just screenshot and ask the model. Accuracy jumped from 60% (PyPDF) to 95% (vision model). Cost is higher but worth it for complex docs.',
+    date: '2025-01-09',
+    tags: ['multimodal', 'vision', 'document-ai'],
+    category: 'ai',
   },
 ]
 
@@ -64,15 +120,15 @@ export function TILGrid() {
   return (
     <div>
       {/* Category Filter */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      <div className="flex flex-wrap gap-3 mb-8">
         {categories.map((category) => (
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
               selectedCategory === category
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted hover:bg-muted/80'
+                ? 'neu-pressed text-primary'
+                : 'neu-button hover:text-primary'
             }`}
           >
             {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -88,7 +144,7 @@ export function TILGrid() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-colors"
+            className="p-6 rounded-2xl neu-card"
           >
             <div className="flex items-start justify-between gap-4 mb-3">
               <div className="flex items-center gap-3 flex-wrap">
@@ -144,7 +200,7 @@ export function TILGrid() {
       </div>
 
       {filteredItems.length === 0 && (
-        <div className="text-center py-12">
+        <div className="text-center py-12 neu-flat rounded-2xl">
           <p className="text-muted-foreground">No TILs found in this category.</p>
         </div>
       )}

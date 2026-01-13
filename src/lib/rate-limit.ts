@@ -131,22 +131,44 @@ export const RATE_LIMITS = {
 
 /**
  * Helper to get client IP from Next.js request
+ * Checks multiple headers from various CDN/proxy providers
  */
 export function getClientIp(request: Request): string {
   const headers = request.headers;
 
-  // Try various headers that might contain the real IP
-  const forwardedFor = headers.get('x-forwarded-for');
-  if (forwardedFor) {
-    return forwardedFor.split(',')[0].trim();
+  // Priority order for IP detection (most reliable first)
+  const ipHeaders = [
+    'cf-connecting-ip',      // Cloudflare
+    'x-real-ip',             // Nginx, Vercel
+    'x-forwarded-for',       // Standard proxy header
+    'x-client-ip',           // Apache
+    'x-cluster-client-ip',   // Load balancers
+    'true-client-ip',        // Akamai, Cloudflare
+  ];
+
+  for (const header of ipHeaders) {
+    const value = headers.get(header);
+    if (value) {
+      // x-forwarded-for may contain multiple IPs - take the first (original client)
+      const ip = value.split(',')[0].trim();
+      // Validate it looks like an IP (basic check)
+      if (ip && ip !== 'unknown' && ip.length > 0) {
+        return ip;
+      }
+    }
   }
 
-  const realIp = headers.get('x-real-ip');
-  if (realIp) {
-    return realIp;
-  }
+  // Generate a fingerprint as last resort
+  // This ensures each unique client gets their own bucket
+  const userAgent = headers.get('user-agent') || '';
+  const acceptLanguage = headers.get('accept-language') || '';
+  const acceptEncoding = headers.get('accept-encoding') || '';
 
-  // Fallback to 'unknown' if we can't determine IP
-  // In production with proper infrastructure, this shouldn't happen
-  return 'unknown';
+  // Create a simple hash of browser fingerprint
+  const fingerprint = `${userAgent}:${acceptLanguage}:${acceptEncoding}`;
+  const hash = fingerprint.split('').reduce((acc, char) => {
+    return ((acc << 5) - acc) + char.charCodeAt(0) | 0;
+  }, 0);
+
+  return `fingerprint:${Math.abs(hash).toString(36)}`;
 }

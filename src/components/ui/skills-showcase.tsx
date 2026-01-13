@@ -113,7 +113,7 @@ export function SkillsShowcase() {
                 Technical Proficiencies
               </h2>
               <p className="text-lg text-muted-foreground max-w-prose">
-                A comprehensive overview of my technical skills and areas of expertise.
+                What I work with and what I know well.
               </p>
             </div>
           </motion.div>

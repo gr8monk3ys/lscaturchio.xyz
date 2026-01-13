@@ -2,13 +2,14 @@ import { BlogLayout } from "@/components/blog/BlogLayout";
 import Content from "./content.mdx";
 
 const meta = {
-  title: "Building RAG Systems: A Practical Guide",
-  description: "A comprehensive guide to building Retrieval-Augmented Generation systems from scratch, covering vector databases, embeddings, and practical implementation strategies.",
-  date: "2024-01-23",
-  image: "/images/blog/default.webp",
-  tags: ["ai", "machine-learning", "rag", "python"],
-  series: "AI and Society",
-  seriesOrder: 3,
+  title: "The Definitive Guide to Building RAG Systems in 2025",
+  description:
+    "Simple RAG fails in productionsuccess requires hybrid retrieval, reranking, contextual chunking, and continuous evaluation. A comprehensive guide based on peer-reviewed research and production benchmarks.",
+  date: "2025-01-10",
+  image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80",
+  tags: ["rag", "vector-databases", "embeddings", "llm-engineering", "AI"],
+  series: "AI Engineering",
+  seriesOrder: 1,
 };
 
 export default function Page() {

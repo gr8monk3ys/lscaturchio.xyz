@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAllBlogs } from '@/lib/getAllBlogs';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
+import { logError } from '@/lib/logger';
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lscaturchio.xyz';
 
 const handleGet = async (
   request: NextRequest,
@@ -26,11 +29,11 @@ const handleGet = async (
         slug: blog.slug,
         tags: blog.tags || [],
         image: blog.image || '/images/blog/default.webp',
-        url: `https://lscaturchio.xyz/blog/${blog.slug}`,
+        url: `${SITE_URL}/blog/${blog.slug}`,
       },
     });
   } catch (error) {
-    console.error('API error:', error);
+    logError('Blogs API: Unexpected error', error, { component: 'v1/blogs/[slug]', action: 'GET', slug: params.slug });
     return NextResponse.json(
       { error: 'Failed to fetch blog' },
       { status: 500 }

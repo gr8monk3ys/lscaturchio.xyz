@@ -46,12 +46,12 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
 
   if (isLoading) {
     return (
-      <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+      <div className="mt-12 pt-8">
         <h3 className="text-2xl font-bold mb-6">Related Posts</h3>
         <div className="grid gap-6 md:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse">
-              <div className="aspect-video bg-muted rounded-lg mb-3" />
+            <div key={i} className="animate-pulse neu-flat rounded-2xl p-4">
+              <div className="aspect-video bg-muted rounded-xl mb-3" />
               <div className="h-4 bg-muted rounded w-3/4 mb-2" />
               <div className="h-3 bg-muted rounded w-full" />
             </div>
@@ -66,7 +66,7 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
   }
 
   return (
-    <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+    <div className="mt-12 pt-8">
       <h3 className="text-2xl font-bold mb-6 text-foreground">Related Posts</h3>
       <div className="grid gap-6 md:grid-cols-3">
         {posts.map((post, index) => (
@@ -78,9 +78,9 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
           >
             <Link
               href={post.url}
-              className="group block h-full rounded-lg border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-colors overflow-hidden"
+              className="group block h-full rounded-2xl neu-card overflow-hidden"
             >
-              <div className="aspect-video relative overflow-hidden bg-muted">
+              <div className="aspect-video relative overflow-hidden bg-muted rounded-t-xl">
                 <Image
                   src={post.image}
                   alt={post.title}

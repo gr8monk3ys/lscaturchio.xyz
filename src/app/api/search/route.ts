@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { searchEmbeddings } from '@/lib/embeddings';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
+import { logError } from '@/lib/logger';
 import type { EmbeddingResult, SearchResult } from '@/types/embeddings';
 
 const handleGet = async (request: NextRequest) => {
@@ -74,7 +75,7 @@ const handleGet = async (request: NextRequest) => {
       count: searchResults.length,
     });
   } catch (error) {
-    console.error('Search error:', error);
+    logError('Search: Unexpected error', error, { component: 'search', action: 'GET' });
     return NextResponse.json(
       { error: 'Search failed. Please try again later.' },
       { status: 500 }
@@ -162,7 +163,7 @@ const handlePost = async (request: NextRequest) => {
       count: searchResults.length,
     });
   } catch (error) {
-    console.error('Search error:', error);
+    logError('Search: Unexpected error', error, { component: 'search', action: 'POST' });
     return NextResponse.json(
       { error: 'Search failed. Please try again later.' },
       { status: 500 }

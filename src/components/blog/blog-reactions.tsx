@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Heart, Bookmark } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -18,6 +18,9 @@ export function BlogReactions({ slug }: BlogReactionsProps) {
   const [hasLiked, setHasLiked] = useState(false);
   const [hasBookmarked, setHasBookmarked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  // Prevent double-click race conditions
+  const isLikePending = useRef(false);
+  const isBookmarkPending = useRef(false);
 
   useEffect(() => {
     // Check localStorage for user's reactions
@@ -35,8 +38,8 @@ export function BlogReactions({ slug }: BlogReactionsProps) {
           const data = await response.json();
           setReactions({ likes: data.likes, bookmarks: data.bookmarks });
         }
-      } catch (error) {
-        console.error("Failed to fetch reactions:", error);
+      } catch {
+        // Silently fail - will show 0 counts
       } finally {
         setIsLoading(false);
       }
@@ -46,6 +49,10 @@ export function BlogReactions({ slug }: BlogReactionsProps) {
   }, [slug]);
 
   const handleLike = async () => {
+    // Prevent double-click race conditions
+    if (isLikePending.current) return;
+    isLikePending.current = true;
+
     const likedKey = `liked_${slug}`;
     const newLikedState = !hasLiked;
 
@@ -78,12 +85,18 @@ export function BlogReactions({ slug }: BlogReactionsProps) {
           localStorage.removeItem(likedKey);
         }
       }
-    } catch (error) {
-      console.error("Failed to toggle like:", error);
+    } catch {
+      // Silently fail - user can retry
+    } finally {
+      isLikePending.current = false;
     }
   };
 
   const handleBookmark = async () => {
+    // Prevent double-click race conditions
+    if (isBookmarkPending.current) return;
+    isBookmarkPending.current = true;
+
     const bookmarkedKey = `bookmarked_${slug}`;
     const newBookmarkedState = !hasBookmarked;
 
@@ -116,31 +129,33 @@ export function BlogReactions({ slug }: BlogReactionsProps) {
           localStorage.removeItem(bookmarkedKey);
         }
       }
-    } catch (error) {
-      console.error("Failed to toggle bookmark:", error);
+    } catch {
+      // Silently fail - user can retry
+    } finally {
+      isBookmarkPending.current = false;
     }
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-24 animate-pulse rounded-full bg-muted" />
-        <div className="h-10 w-28 animate-pulse rounded-full bg-muted" />
+      <div className="flex items-center gap-4" aria-busy="true" aria-label="Loading reactions">
+        <div className="h-12 w-28 animate-pulse rounded-xl neu-flat" role="presentation" />
+        <div className="h-12 w-32 animate-pulse rounded-xl neu-flat" role="presentation" />
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-4">
       {/* Like Button */}
       <motion.button
         onClick={handleLike}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
+        className={`flex items-center gap-2 px-5 py-3 rounded-xl transition-all ${
           hasLiked
-            ? "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
-            : "border-gray-200 dark:border-gray-800 hover:border-red-200 dark:hover:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/20"
+            ? "neu-pressed text-red-600 dark:text-red-400"
+            : "neu-button hover:text-red-500"
         }`}
         aria-label={hasLiked ? "Unlike post" : "Like post"}
       >
@@ -162,10 +177,10 @@ export function BlogReactions({ slug }: BlogReactionsProps) {
         onClick={handleBookmark}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
+        className={`flex items-center gap-2 px-5 py-3 rounded-xl transition-all ${
           hasBookmarked
-            ? "bg-primary/10 border-primary/20 text-primary"
-            : "border-gray-200 dark:border-gray-800 hover:border-primary/20 hover:bg-primary/10"
+            ? "neu-pressed text-primary"
+            : "neu-button hover:text-primary"
         }`}
         aria-label={hasBookmarked ? "Remove bookmark" : "Bookmark post"}
       >

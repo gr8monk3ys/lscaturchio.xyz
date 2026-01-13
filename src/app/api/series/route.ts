@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSeriesPosts } from "@/lib/getAllBlogs";
+import { logError } from "@/lib/logger";
 
 /**
  * API route to fetch posts from a specific series
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
       posts: simplifiedPosts,
     });
   } catch (error) {
-    console.error("[Series API] Error:", error);
+    logError("Series API: Unexpected error", error, { component: 'series', action: 'GET' });
     return NextResponse.json(
       { error: "Failed to fetch series posts" },
       { status: 500 }

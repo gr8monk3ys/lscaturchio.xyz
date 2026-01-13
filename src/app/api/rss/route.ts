@@ -24,7 +24,7 @@ export async function GET() {
     },
     author: {
       name: "Lorenzo Scaturchio",
-      email: "lorenzosca7@gmail.com",
+      email: "lorenzosca7@protonmail.ch",
       link: siteURL,
     },
   });
@@ -55,7 +55,7 @@ export async function GET() {
       author: [
         {
           name: "Lorenzo Scaturchio",
-          email: "lorenzosca7@gmail.com",
+          email: "lorenzosca7@protonmail.ch",
           link: siteURL,
         },
       ],

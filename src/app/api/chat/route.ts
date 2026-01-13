@@ -5,9 +5,11 @@ import { logError } from '@/lib/logger';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 
-// Initialize OpenAI client
+// Initialize OpenAI client with timeout to prevent token waste
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
+  timeout: 30000, // 30 second timeout
+  maxRetries: 1,
 });
 
 const handlePost = async (req: NextRequest) => {

@@ -99,29 +99,29 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="bg-background border border-gray-200 dark:border-gray-800 rounded-lg shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden"
+          className="neu-flat rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Search Input */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+          <div className="p-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search blog posts..."
                 autoFocus
-                className="w-full pl-11 pr-10 py-3 text-lg bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground"
+                className="w-full pl-12 pr-12 py-4 text-lg neu-input rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
               {isLoading && (
                 <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-muted-foreground" />
               )}
               <button
                 onClick={onClose}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-accent rounded-md transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 neu-button rounded-lg transition-all hover:text-primary"
               >
-                <X className="h-5 w-5 text-muted-foreground" />
+                <X className="h-4 w-4 text-muted-foreground" />
               </button>
             </div>
           </div>
@@ -142,13 +142,13 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
             )}
 
             {results.length > 0 && (
-              <div className="divide-y divide-gray-200 dark:divide-gray-800">
+              <div className="space-y-3 p-4 pt-0">
                 {results.map((result, index) => (
                   <Link
                     key={index}
                     href={result.url}
                     onClick={onClose}
-                    className="block p-4 hover:bg-accent transition-colors group"
+                    className="block p-4 rounded-xl neu-card group"
                   >
                     <div className="flex items-start gap-3">
                       <FileText className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />
@@ -183,7 +183,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
 
           {/* Footer */}
           {results.length > 0 && (
-            <div className="p-3 border-t border-gray-200 dark:border-gray-800 bg-muted/50 text-center">
+            <div className="p-4 text-center">
               <p className="text-xs text-muted-foreground">
                 Showing {results.length} result{results.length !== 1 ? 's' : ''} • Powered by semantic search
               </p>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAllBlogs } from '@/lib/getAllBlogs';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
+import { logError } from '@/lib/logger';
 
 const handleGet = async (request: NextRequest) => {
   try {
@@ -32,7 +33,7 @@ const handleGet = async (request: NextRequest) => {
       },
     });
   } catch (error) {
-    console.error('API error:', error);
+    logError('Stats API: Unexpected error', error, { component: 'v1/stats', action: 'GET' });
     return NextResponse.json(
       { error: 'Failed to fetch stats' },
       { status: 500 }

@@ -23,6 +23,13 @@ npm run lint                   # Run ESLint checks
 npm run build                  # Production build (auto-generates sitemap)
 npm run start                  # Run production server locally
 
+# Testing
+npm run test                   # Run unit tests (Vitest)
+npm run test:watch             # Run unit tests in watch mode
+npm run test:coverage          # Run tests with coverage report
+npm run test:e2e               # Run E2E tests (Playwright)
+npm run test:e2e:ui            # Run E2E tests with interactive UI
+
 # AI/Content
 npm run generate-embeddings    # Generate OpenAI embeddings for blog content
 npm run generate-sitemap       # Generate XML sitemap (auto-runs post-build)
@@ -35,9 +42,16 @@ npm run generate-sitemap       # Generate XML sitemap (auto-runs post-build)
 
 **Optional Environment Variables:**
 - `GITHUB_TOKEN` - GitHub contributions graph (falls back to mock data if not set)
-- `RESEND_API_KEY` - Contact form email sending (logs to console if not set)
+- `RESEND_API_KEY` - Contact form and newsletter emails (logs to console if not set)
+- `CONTACT_EMAIL` - Destination email for contact form (default: lorenzo@lscaturchio.xyz)
+- `CONTACT_FROM_EMAIL` - Sender address for contact form (default: contact@lscaturchio.xyz)
+- `NEWSLETTER_FROM_EMAIL` - Sender address for newsletter welcome emails (default: newsletter@lscaturchio.xyz)
+- `EMBEDDING_MATCH_THRESHOLD` - AI search similarity threshold 0-1 (default: 0.5)
 - `NEXT_PUBLIC_SITE_URL` - Custom site URL (defaults to localhost in dev)
-- `ANALYTICS_API_KEY` - Analytics endpoint protection
+- `NEXT_PUBLIC_ADSENSE_CLIENT_ID` - Google AdSense publisher ID
+- `UPSTASH_REDIS_REST_URL` - Upstash Redis for distributed rate limiting (falls back to in-memory)
+- `UPSTASH_REDIS_REST_TOKEN` - Upstash Redis token
+- `VOTER_HASH_SALT` - Salt for privacy-preserving vote deduplication
 
 See `.env.example` for details.
 
@@ -88,6 +102,16 @@ newsletter_subscribers (
   created_at TIMESTAMP WITH TIME ZONE,
   unsubscribed_at TIMESTAMP WITH TIME ZONE
 )
+
+-- Vote deduplication (prevents localStorage manipulation)
+vote_records (
+  id BIGSERIAL PRIMARY KEY,
+  slug TEXT NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('like', 'bookmark')),
+  voter_hash TEXT NOT NULL,  -- Privacy-preserving hash of IP
+  created_at TIMESTAMP WITH TIME ZONE,
+  UNIQUE(slug, type, voter_hash)
+)
 ```
 
 **Shared Supabase Client:**
@@ -96,16 +120,16 @@ newsletter_subscribers (
 - Pattern: Lazy initialization to avoid build-time errors
 - Used by: All API routes that need database access
 
-**Engagement API Routes:**
+**Engagement API Routes (use atomic RPC functions to prevent race conditions):**
 1. **`/api/views`** - View tracking
    - GET: Fetch view count for a slug
-   - POST: Increment view count (upsert pattern)
+   - POST: Increment view count (uses `increment_view_count()` RPC)
    - OPTIONS: Get all views with real blog titles
 
-2. **`/api/reactions`** - Like/bookmark tracking
+2. **`/api/reactions`** - Like/bookmark tracking with server-side deduplication
    - GET: Fetch reactions for a slug
-   - POST: Increment reaction (like or bookmark)
-   - DELETE: Decrement reaction (toggle off)
+   - POST: Add reaction (uses `record_vote()` RPC with voter hash, falls back to `toggle_reaction()`)
+   - DELETE: Remove reaction (uses `remove_vote()` RPC, falls back to `decrement_reaction()`)
 
 3. **`/api/engagement-stats`** - Aggregated metrics
    - Returns: totalLikes, totalBookmarks, topLiked[], topBookmarked[]
@@ -117,12 +141,21 @@ newsletter_subscribers (
 5. **`/api/contact`** - Contact form
    - POST: Send email via Resend API (or logs to console if RESEND_API_KEY not set)
 
+6. **`/api/v1/blogs`** - Public blog API (rate-limited)
+   - GET: Paginated blog list with optional tag filter
+   - Query params: `limit`, `offset`, `tag`
+   - Returns: `{ data: [...], meta: { total, limit, offset, hasMore } }`
+
 **First-Time Setup:**
-After cloning the repository, you MUST run the Supabase migration to create the views and reactions tables:
+After cloning the repository, you MUST run the Supabase migrations:
 1. Open Supabase Dashboard → SQL Editor
-2. Copy contents of `supabase/migrations/20250119_create_views_and_reactions_tables.sql`
-3. Execute the SQL migration
-4. Verify tables exist: `SELECT * FROM views; SELECT * FROM reactions;`
+2. Run migrations in order:
+   - `supabase/migrations/20240122_init.sql` (embeddings table)
+   - `supabase/migrations/001_create_newsletter.sql` (newsletter)
+   - `supabase/migrations/20250119_create_views_and_reactions_tables.sql` (views, reactions, atomic RPC functions)
+   - `supabase/migrations/20250111_add_decrement_reaction.sql` (decrement RPC for unlike/unbookmark)
+   - `supabase/migrations/20250112_add_vote_deduplication.sql` (vote tracking for spam prevention)
+3. Verify tables exist: `SELECT * FROM views; SELECT * FROM reactions; SELECT * FROM vote_records;`
 
 See `supabase/migrations/README.md` for detailed instructions.
 
@@ -207,6 +240,22 @@ Handles request/response optimization:
 - **Security Headers:** XSS protection, clickjacking prevention, nosniff
 - **www Redirect:** Normalizes `www.lscaturchio.xyz` → `lscaturchio.xyz`
 
+### Testing Architecture
+
+**Unit Tests (Vitest + React Testing Library):**
+- Location: `src/__tests__/`
+- Config: `vitest.config.ts`
+- Environment: `happy-dom`
+- Setup file: `src/__tests__/setup.tsx` (mocks Next.js router, Image, matchMedia, IntersectionObserver)
+- Run single test: `npm run test -- src/__tests__/lib/utils.test.ts`
+
+**E2E Tests (Playwright):**
+- Location: `e2e/`
+- Config: `playwright.config.ts`
+- Browsers: Chromium (Desktop), Safari (iPhone 13)
+- Requires dev server running (auto-started by Playwright)
+- Run specific test: `npm run test:e2e -- e2e/blog.spec.ts`
+
 ### Component Architecture
 ```
 src/components/
@@ -233,12 +282,14 @@ Wraps all blog posts with consistent features:
 - **Reading Progress**: Visual progress bar and localStorage tracking
 - **Blog Reactions**: Like and bookmark buttons
 - **Series Navigation**: Previous/next navigation for series posts
-- **Text-to-Speech**: Browser-native speech synthesis (Play/Pause controls)
+- **Text-to-Speech**: Extracted to `text-to-speech.tsx` - browser-native speech synthesis
 - **Social Share**: Twitter, LinkedIn, Reddit, Email sharing
-- **JSON-LD Structured Data**: Automatic BlogPosting schema generation
+- **JSON-LD Structured Data**: Extracted to `blog-json-ld.tsx` - automatic BlogPosting schema
 - **AdBanner Integration**: 4 ad units per post (top banner, 2 in-article ads, bottom banner)
 - **Breadcrumb Navigation**: Auto-generated from URL path
 - **FallbackImage**: Hero image with automatic fallback to default.webp
+
+Uses Next.js `usePathname()` hook for SSR-safe slug extraction.
 
 **BlogCard** (`src/components/blog/BlogCard.tsx`)
 Used on blog listing pages:
@@ -320,8 +371,15 @@ This pattern separates content from components for easier updates.
 - API keys never in client code (use server-side only)
 - Supabase service key restricted to API routes
 - Security headers in middleware
-- Type validation on API endpoints
 - Row Level Security (RLS) on Supabase tables
+
+**API Security Utilities:**
+- `src/lib/csrf.ts` - CSRF protection via Origin header validation (POST/DELETE routes)
+- `src/lib/validations.ts` - Zod schemas for type-safe input validation
+- `src/lib/sanitize.ts` - HTML escaping, email validation, slug validation
+- `src/lib/rate-limit.ts` - In-memory rate limiting with IP detection
+- `src/lib/rate-limit-redis.ts` - Upstash Redis rate limiting (production)
+- `src/lib/voter-hash.ts` - Privacy-preserving voter identification for deduplication
 
 ### Google AdSense Integration
 **Setup:**
@@ -348,22 +406,29 @@ This pattern separates content from components for easier updates.
 | File | Purpose |
 |------|---------|
 | `src/lib/supabase.ts` | Shared Supabase client for data persistence |
-| `src/app/api/views/route.ts` | View tracking API (Supabase backed) |
-| `src/app/api/reactions/route.ts` | Like/bookmark API (Supabase backed) |
-| `src/app/api/engagement-stats/route.ts` | Aggregated engagement metrics |
-| `src/app/layout.tsx` | Root layout: fonts, analytics, AdSense, global Suspense boundaries |
-| `src/lib/getAllBlogs.ts` | Scans blog directories, extracts MDX metadata (both `*.mdx` and `*/content.mdx`) |
+| `src/lib/validations.ts` | Zod schemas for API input validation |
+| `src/lib/csrf.ts` | CSRF protection for mutating endpoints |
+| `src/lib/sanitize.ts` | Input sanitization (email, slug, HTML) |
+| `src/lib/rate-limit.ts` | In-memory rate limiting |
+| `src/lib/rate-limit-redis.ts` | Redis rate limiting for production |
+| `src/lib/voter-hash.ts` | Privacy-preserving vote deduplication |
+| `src/lib/email.ts` | Email utilities (newsletter welcome email) |
+| `src/lib/logger.ts` | Structured logging utility (use instead of console.*) |
 | `src/lib/embeddings.ts` | OpenAI embedding generation and Supabase vector search |
+| `src/lib/getAllBlogs.ts` | Scans blog directories, extracts MDX metadata |
+| `src/app/api/views/route.ts` | View tracking API (Supabase backed) |
+| `src/app/api/reactions/route.ts` | Like/bookmark API with vote deduplication |
 | `src/app/api/chat/route.ts` | AI chat endpoint with RAG pattern (GPT-4o-2024-08-06) |
+| `src/app/api/newsletter/subscribe/route.ts` | Newsletter subscription with welcome email |
+| `src/app/layout.tsx` | Root layout: fonts, analytics, AdSense, global Suspense boundaries |
 | `src/components/blog/BlogLayout.tsx` | Blog wrapper: view counter, reactions, series nav, text-to-speech, share, ads |
-| `src/components/ui/fallback-image.tsx` | Image with automatic fallback to default.webp |
-| `src/components/ads/AdBanner.tsx` | Google AdSense integration component |
 | `src/middleware.ts` | Request handling, caching, security headers, www redirect |
 | `next.config.mjs` | Next.js config: performance, MDX, images, webpack |
 | `tailwind.config.ts` | Design system: colors, typography, dark mode |
 | `src/constants/` | All app content data (projects, nav, pricing, etc.) |
-| `src/app/metadata.ts` | Default site metadata (OG, Twitter, robots) |
-| `supabase/migrations/` | Database schema migrations (views, reactions tables) |
+| `supabase/migrations/` | Database schema migrations (views, reactions, vote_records) |
+| `vitest.config.ts` | Unit test configuration (Vitest + happy-dom) |
+| `playwright.config.ts` | E2E test configuration (Playwright) |
 
 ## Common Development Tasks
 
@@ -485,14 +550,6 @@ cwebp -q 85 -resize 1200 0 input.jpg -o output.webp
 4. Verify build passes locally: `npm run build`
 5. Push to main branch
 
-## MCP Configuration
-
-Model Context Protocol servers configured in `.mcp.json`:
-- **GitHub MCP** - Repository operations
-- **Vercel MCP** - Deployment management
-- **Sentry MCP** - Error monitoring
-- **Filesystem MCP** - Local file access
-
 ## Important Notes
 
 ### Data Persistence
@@ -528,7 +585,22 @@ Model Context Protocol servers configured in `.mcp.json`:
 - **ESLint errors must be fixed** - especially unescaped entities (use `&apos;` for apostrophes in JSX)
 - **Accessibility is enforced** - descriptive alt text required for all images
 
+### Testing
+- **Unit tests**: 98 tests in `src/__tests__/` (sanitize, rate-limit, csrf, validations, utils, formatDate, reading-time)
+- **E2E tests**: 13 tests in `e2e/` (navigation, blog, search)
+- **Test before PR**: Run `npm run test && npm run test:e2e` before submitting changes
+- **Mocks provided**: Next.js router, Image, matchMedia, IntersectionObserver mocked in setup file
+- **Run single test**: `npm run test -- src/__tests__/lib/validations.test.ts`
+
 ### API Keys & Security
 - **API keys server-side only** - never expose in client code
 - **Supabase service key** restricted to API routes only
-- **Google AdSense Publisher ID**: ca-pub-4505962980988232
+- **Google AdSense Publisher ID**: Configured via `NEXT_PUBLIC_ADSENSE_CLIENT_ID` env var
+
+### Adding New API Routes
+When creating new API routes, use these patterns:
+1. Import validation schemas from `src/lib/validations.ts` (or add new Zod schemas)
+2. Use `parseBody()` or `parseQuery()` helpers for input validation
+3. Add CSRF protection with `validateCsrf()` for POST/DELETE endpoints
+4. Use `logError()` from `src/lib/logger.ts` instead of console.error
+5. Apply rate limiting with `withRateLimit()` wrapper for public endpoints

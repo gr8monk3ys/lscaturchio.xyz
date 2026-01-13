@@ -2,11 +2,33 @@
 import createMDX from '@next/mdx';
 import remarkGfm from 'remark-gfm';
 import rehypePrismPlus from 'rehype-prism-plus';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   images: {
-    domains: ['images.unsplash.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images-na.ssl-images-amazon.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.ssl-images-amazon.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'a.ltrbxd.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.ltrbxd.com',
+      },
+    ],
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -19,6 +41,7 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
     scrollRestoration: true,
+    instrumentationHook: true,
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
@@ -49,4 +72,26 @@ const withMDX = createMDX({
   },
 });
 
-export default withMDX(nextConfig);
+// Sentry configuration options
+const sentryWebpackPluginOptions = {
+  // Suppress source map upload logs in CI
+  silent: true,
+  // Upload source maps only if Sentry is configured
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  // Only upload source maps in production builds with auth token
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  // Disable source map upload if not configured
+  disableServerWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
+  disableClientWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
+  // Hide source maps from clients
+  hideSourceMaps: true,
+  // Automatically tree-shake Sentry SDK in production
+  disableLogger: true,
+};
+
+// Wrap with Sentry if DSN is configured, otherwise just use MDX
+const configWithMDX = withMDX(nextConfig);
+export default process.env.NEXT_PUBLIC_SENTRY_DSN
+  ? withSentryConfig(configWithMDX, sentryWebpackPluginOptions)
+  : configWithMDX;
