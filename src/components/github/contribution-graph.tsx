@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Github } from 'lucide-react'
+import { logError } from '@/lib/logger'
 
 interface ContributionDay {
   contributionCount: number
@@ -26,7 +27,7 @@ export function ContributionGraph() {
         const contributionData = await response.json()
         setData(contributionData)
       } catch (error) {
-        console.error('Failed to fetch contributions:', error)
+        logError('Failed to fetch contributions', error, { component: 'ContributionGraph' })
       } finally {
         setIsLoading(false)
       }

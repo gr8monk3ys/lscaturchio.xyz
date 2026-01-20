@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Heart, Bookmark, TrendingUp } from "lucide-react";
+import { logError } from "@/lib/logger";
 
 interface EngagementData {
   totalLikes: number;
@@ -23,7 +24,7 @@ export function EngagementStats() {
           setData(result);
         }
       } catch (error) {
-        console.error("Failed to fetch engagement stats:", error);
+        logError("Failed to fetch engagement stats", error, { component: "EngagementStats" });
       } finally {
         setIsLoading(false);
       }

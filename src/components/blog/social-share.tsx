@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Twitter, Linkedin, Link2, Check, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { logError } from "@/lib/logger";
 
 interface SocialShareProps {
   title: string;
@@ -39,7 +40,7 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error("Failed to copy link:", error);
+      logError("Failed to copy link", error, { component: "SocialShare" });
     }
   };
 
@@ -52,7 +53,7 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
           url: shareUrl,
         });
       } catch (error) {
-        console.error("Failed to share:", error);
+        logError("Failed to share", error, { component: "SocialShare" });
       }
     }
   };
