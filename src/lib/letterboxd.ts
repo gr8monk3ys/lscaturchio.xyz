@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { logError } from './logger';
 
 export interface LetterboxdMovie {
   title: string;
@@ -69,7 +70,7 @@ export function getLetterboxdMovies(): LetterboxdMovie[] {
       isRewatch: row['Rewatch'] === 'Yes',
     })).filter(m => m.title);
   } catch (error) {
-    console.error('Error reading Letterboxd diary:', error);
+    logError('Error reading Letterboxd diary', error, { module: 'letterboxd' });
     return [];
   }
 }
@@ -90,7 +91,7 @@ export function getLetterboxdRatings(): LetterboxdMovie[] {
       isRewatch: false,
     })).filter(m => m.title && m.rating);
   } catch (error) {
-    console.error('Error reading Letterboxd ratings:', error);
+    logError('Error reading Letterboxd ratings', error, { module: 'letterboxd' });
     return [];
   }
 }
@@ -111,7 +112,7 @@ export function getLetterboxdWatchlist(): LetterboxdMovie[] {
       isRewatch: false,
     })).filter(m => m.title);
   } catch (error) {
-    console.error('Error reading Letterboxd watchlist:', error);
+    logError('Error reading Letterboxd watchlist', error, { module: 'letterboxd' });
     return [];
   }
 }

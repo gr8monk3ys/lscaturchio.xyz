@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import { logError } from "@/lib/logger";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -42,7 +43,7 @@ export function SeriesNavigation({
           setSeriesPosts(data.posts);
         }
       } catch (error) {
-        console.error("Failed to fetch series posts:", error);
+        logError("Failed to fetch series posts", error, { component: "SeriesNavigation" });
       } finally {
         setIsLoading(false);
       }

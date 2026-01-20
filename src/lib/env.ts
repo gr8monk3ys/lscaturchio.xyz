@@ -3,6 +3,8 @@
  * Provides type-safe access to environment variables with validation
  */
 
+import { logInfo, logWarn } from './logger';
+
 interface EnvConfig {
   // Required for core functionality
   NEXT_PUBLIC_SUPABASE_URL?: string;
@@ -110,10 +112,9 @@ export function logEnvStatus(): void {
   const result = validateEnv();
 
   if (result.warnings.length > 0) {
-    console.log('\n📋 Environment Configuration:');
+    logInfo('Environment Configuration', { module: 'env' });
     result.warnings.forEach(warning => {
-      console.log(`  ⚠️  ${warning}`);
+      logWarn(warning, { module: 'env' });
     });
-    console.log('');
   }
 }
