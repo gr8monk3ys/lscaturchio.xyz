@@ -6,6 +6,7 @@ import { Search, Loader2, FileText, X, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { logError } from "@/lib/logger";
 
 interface SearchResult {
   slug: string;
@@ -73,7 +74,7 @@ export function SearchModal() {
         setResults(data.results || []);
       }
     } catch (error) {
-      console.error("Search error:", error);
+      logError("Search error", error, { component: "SearchModal" });
       setResults([]);
     } finally {
       setIsLoading(false);

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { BookOpen, Clock, Tag, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
+import { logError } from "@/lib/logger";
 
 interface BlogStats {
   totalPosts: number;
@@ -28,7 +29,7 @@ export function BlogStats() {
           setStats(data);
         }
       } catch (error) {
-        console.error("Failed to fetch blog stats:", error);
+        logError("Failed to fetch blog stats", error, { component: "BlogStats" });
       } finally {
         setIsLoading(false);
       }

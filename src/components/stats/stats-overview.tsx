@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Eye, FileText, Users, TrendingUp } from 'lucide-react'
+import { logError } from '@/lib/logger'
 
 interface Stats {
   totalViews: number
@@ -41,7 +42,7 @@ export function StatsOverview() {
           setStats(prev => ({ ...prev, newsletterSubscribers: data.activeSubscribers || 0 }))
         }
       } catch (error) {
-        console.error('Failed to fetch stats:', error)
+        logError('Failed to fetch stats', error, { component: 'StatsOverview' })
       } finally {
         setIsLoading(false)
       }

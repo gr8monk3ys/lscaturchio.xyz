@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { logError } from './logger';
 
 export interface GoodreadsBook {
   id: string;
@@ -96,7 +97,7 @@ export function getGoodreadsBooks(): GoodreadsBook[] {
       };
     }).filter(book => book.title);
   } catch (error) {
-    console.error('Error reading Goodreads data:', error);
+    logError('Error reading Goodreads data', error, { module: 'goodreads' });
     return [];
   }
 }

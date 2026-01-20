@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, Calendar } from 'lucide-react'
 import Image from 'next/image'
+import { logError } from '@/lib/logger'
 
 interface RelatedPost {
   title: string
@@ -35,7 +36,7 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
           setPosts(data.related)
         }
       } catch (error) {
-        console.error('Failed to fetch related posts:', error)
+        logError('Failed to fetch related posts', error, { component: 'RelatedPosts' })
       } finally {
         setIsLoading(false)
       }
