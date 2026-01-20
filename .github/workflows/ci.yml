@@ -92,7 +92,7 @@ jobs:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: playwright-report
