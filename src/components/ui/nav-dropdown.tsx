@@ -18,9 +18,25 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
+  const prevPathnameRef = useRef(pathname);
 
   // Check if any item in this category is active
   const hasActiveItem = category.items.some(item => pathname === item.href);
+
+  // Close dropdown on pathname change - this is a necessary pattern for nav dropdowns
+  // that need to close after navigation. The setState here responds to route changes
+  // from Next.js router, which is an external state source. This is acceptable per
+  // React docs: https://react.dev/learn/synchronizing-with-effects#subscribing-to-events
+  useEffect(() => {
+    if (pathname !== prevPathnameRef.current) {
+      prevPathnameRef.current = pathname;
+      if (isOpen) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional: close dropdown on route change
+        setIsOpen(false);
+        onOpenChange?.(false);
+      }
+    }
+  }, [pathname, isOpen, onOpenChange]);
 
   const openDropdown = useCallback(() => {
     if (timeoutRef.current) {
@@ -58,12 +74,6 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onOpenChange]);
-
-  // Close dropdown when route changes
-  useEffect(() => {
-    setIsOpen(false);
-    onOpenChange?.(false);
-  }, [pathname, onOpenChange]);
 
   // Cleanup timeout on unmount
   useEffect(() => {

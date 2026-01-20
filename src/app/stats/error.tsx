@@ -5,6 +5,7 @@ import { Container } from '@/components/Container'
 import { Heading } from '@/components/Heading'
 import { AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import { logError } from '@/lib/logger'
 
 export default function Error({
   error,
@@ -14,8 +15,7 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    // Log error to console
-    console.error('Stats page error:', error)
+    logError('Stats page error', error, { page: 'stats', digest: error.digest })
   }, [error])
 
   return (
