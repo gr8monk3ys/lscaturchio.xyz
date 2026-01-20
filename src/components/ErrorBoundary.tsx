@@ -5,6 +5,7 @@ import { Container } from './Container'
 import { Heading } from './Heading'
 import { AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import { logError } from '@/lib/logger'
 
 interface Props {
   children: ReactNode
@@ -37,11 +38,11 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log error to console in development
-    console.error('ErrorBoundary caught an error:', error, errorInfo)
-
-    // In production, you might want to log to an error tracking service
-    // e.g., Sentry, LogRocket, etc.
+    // Log error using centralized logger (handles dev/prod logging)
+    logError('ErrorBoundary caught an error', error, {
+      component: 'ErrorBoundary',
+      componentStack: errorInfo.componentStack,
+    })
   }
 
   render() {

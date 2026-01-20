@@ -7,6 +7,7 @@ import { BookOpen, Clock, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { Badge } from "@/components/ui/badge";
+import { logError } from "@/lib/logger";
 
 interface SeriesPost {
   slug: string;
@@ -37,7 +38,7 @@ export default function SeriesPage() {
           setAllSeries(data.series);
         }
       } catch (error) {
-        console.error("Failed to fetch series:", error);
+        logError("Failed to fetch series", error, { page: "SeriesPage" });
       } finally {
         setIsLoading(false);
       }
