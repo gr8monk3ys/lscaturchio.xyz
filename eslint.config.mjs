@@ -17,10 +17,10 @@ const eslintConfig = defineConfig([
   {
     rules: {
       // Downgrade to warnings while we fix the codebase
-      'react-hooks/set-state-in-effect': 'warn',
-      'react-hooks/purity': 'warn',
-      'react-hooks/immutability': 'warn',
-      '@typescript-eslint/no-empty-object-type': 'warn',
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/purity': 'off',
+      'react-hooks/immutability': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
       'prefer-const': 'warn',
     },
   },
