@@ -17,7 +17,8 @@ import {
   Book,
   Film,
   Camera,
-  Mic
+  Mic,
+  Compass
 } from 'lucide-react';
 
 export interface NavItem {
@@ -33,12 +34,21 @@ export interface NavCategory {
   items: NavItem[];
 }
 
+// Start Here link (prominent, always visible)
+export const startHereLink: NavItem = {
+  name: 'Start Here',
+  href: '/start-here',
+  icon: Compass,
+  description: 'New? Begin your journey here'
+};
+
 // Categorized navigation with dropdowns
 export const navigationCategories: NavCategory[] = [
   {
     name: 'About',
     icon: User,
     items: [
+      { name: 'Start Here', href: '/start-here', icon: Compass, description: 'New? Begin here' },
       { name: 'About Me', href: '/about', icon: User, description: 'Who I am' },
       { name: 'Now', href: '/now', icon: Clock, description: 'What I\'m up to' },
       { name: 'Uses', href: '/uses', icon: Wrench, description: 'My setup & tools' },
@@ -80,6 +90,7 @@ export const contactLink: NavItem = {
 
 // Flat navigation for backward compatibility and mobile
 export const navigation = [
+  { name: 'Start Here', href: '/start-here' },
   { name: 'About', href: '/about' },
   { name: 'Blog', href: '/blog' },
   { name: 'TIL', href: '/til' },
@@ -90,6 +101,7 @@ export const navigation = [
 // All pages for search/sitemap
 export const allPages: NavItem[] = [
   { name: 'Home', href: '/' },
+  { name: 'Start Here', href: '/start-here' },
   { name: 'About', href: '/about' },
   { name: 'Now', href: '/now' },
   { name: 'Uses', href: '/uses' },
