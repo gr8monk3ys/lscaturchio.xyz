@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
+import { logError } from "@/lib/logger";
 
 interface BlogViewCountProps {
   slug: string;
@@ -23,7 +24,7 @@ export function BlogViewCount({ slug }: BlogViewCountProps) {
           setViews(data.views);
         }
       } catch (error) {
-        console.error("Failed to fetch views:", error);
+        logError("Failed to fetch views", error, { component: "BlogViewCount", slug });
       }
     };
 
