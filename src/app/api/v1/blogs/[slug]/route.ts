@@ -8,11 +8,12 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lscaturchio.xyz';
 
 const handleGet = async (
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  context: { params: Promise<{ slug: string }> }
 ) => {
+  const { slug } = await context.params;
   try {
     const blogs = await getAllBlogs();
-    const blog = blogs.find(b => b.slug === params.slug);
+    const blog = blogs.find(b => b.slug === slug);
 
     if (!blog) {
       return NextResponse.json(
@@ -33,7 +34,7 @@ const handleGet = async (
       },
     });
   } catch (error) {
-    logError('Blogs API: Unexpected error', error, { component: 'v1/blogs/[slug]', action: 'GET', slug: params.slug });
+    logError('Blogs API: Unexpected error', error, { component: 'v1/blogs/[slug]', action: 'GET', slug });
     return NextResponse.json(
       { error: 'Failed to fetch blog' },
       { status: 500 }
