@@ -1,23 +1,31 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, isSupabaseConfigured, isNoRowsError } from "@/lib/supabase";
 import { logError } from "@/lib/logger";
 import { validateCsrf } from "@/lib/csrf";
 import { slugQuerySchema, viewTrackingSchema, parseBody, parseQuery } from "@/lib/validations";
+import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
+import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
 /**
  * GET /api/views?slug=xxx
  * Get view count for a specific blog post
  */
-export async function GET(req: NextRequest) {
+const handleGet = async (req: NextRequest) => {
   try {
     // Zod validation
     const parsed = parseQuery(slugQuerySchema, req.nextUrl.searchParams);
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error }, { status: 400 });
+      return ApiErrors.badRequest(parsed.error);
     }
 
     const { slug } = parsed.data;
+
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      // Return mock data when Supabase is not configured (dev mode)
+      return apiSuccess({ slug, views: 0 });
+    }
 
     const supabase = getSupabase();
 
@@ -28,30 +36,27 @@ export async function GET(req: NextRequest) {
       .eq("slug", slug)
       .single();
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
+    if (error && !isNoRowsError(error)) {
       logError("View Counter: Database error", error, { component: 'views', action: 'GET' });
-      return NextResponse.json(
-        { error: "Failed to fetch views" },
-        { status: 500 }
-      );
+      return ApiErrors.internalError("Failed to fetch views");
     }
 
     const views = data?.count || 0;
-    return NextResponse.json({ slug, views });
+    return apiSuccess({ slug, views });
   } catch (error) {
     logError("View Counter: Unexpected error", error, { component: 'views', action: 'GET' });
-    return NextResponse.json(
-      { error: "Failed to fetch views" },
-      { status: 500 }
-    );
+    return ApiErrors.internalError("Failed to fetch views");
   }
-}
+};
+
+// Export with rate limiting (100 requests per minute - public read-only endpoint)
+export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
 
 /**
  * POST /api/views
  * Increment view count for a blog post (atomic operation)
  */
-export async function POST(req: NextRequest) {
+const handlePost = async (req: NextRequest) => {
   // CSRF protection
   const csrfError = validateCsrf(req);
   if (csrfError) return csrfError;
@@ -62,10 +67,16 @@ export async function POST(req: NextRequest) {
     // Zod validation
     const parsed = parseBody(viewTrackingSchema, body);
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error }, { status: 400 });
+      return ApiErrors.badRequest(parsed.error);
     }
 
     const { slug } = parsed.data;
+
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      // Return mock data when Supabase is not configured (dev mode)
+      return apiSuccess({ slug, views: 1 });
+    }
 
     const supabase = getSupabase();
 
@@ -76,21 +87,18 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       logError("View Counter: RPC error", error, { component: 'views', action: 'POST', slug });
-      return NextResponse.json(
-        { error: "Failed to record view" },
-        { status: 500 }
-      );
+      return ApiErrors.internalError("Failed to record view");
     }
 
-    return NextResponse.json({ slug, views: data });
+    return apiSuccess({ slug, views: data });
   } catch (error) {
     logError("View Counter: Unexpected error", error, { component: 'views', action: 'POST' });
-    return NextResponse.json(
-      { error: "Failed to record view" },
-      { status: 500 }
-    );
+    return ApiErrors.internalError("Failed to record view");
   }
-}
+};
+
+// Export POST with rate limiting (30 requests per minute - standard mutation endpoint)
+export const POST = withRateLimit(handlePost, RATE_LIMITS.STANDARD);
 
 /**
  * OPTIONS /api/views
@@ -98,6 +106,12 @@ export async function POST(req: NextRequest) {
  */
 export async function OPTIONS() {
   try {
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      // Return empty data when Supabase is not configured (dev mode)
+      return apiSuccess({ views: [], total: 0 });
+    }
+
     const supabase = getSupabase();
 
     // Fetch all views from database
@@ -108,10 +122,7 @@ export async function OPTIONS() {
 
     if (error) {
       logError("View Counter: Database error", error, { component: 'views', action: 'OPTIONS' });
-      return NextResponse.json(
-        { error: "Failed to fetch views" },
-        { status: 500 }
-      );
+      return ApiErrors.internalError("Failed to fetch views");
     }
 
     // Fetch all blog metadata to get real titles
@@ -125,12 +136,9 @@ export async function OPTIONS() {
       views: view.count,
     }));
 
-    return NextResponse.json({ views: allViews, total: allViews.length });
+    return apiSuccess({ views: allViews, total: allViews.length });
   } catch (error) {
     logError("View Counter: Unexpected error", error, { component: 'views', action: 'OPTIONS' });
-    return NextResponse.json(
-      { error: "Failed to fetch views" },
-      { status: 500 }
-    );
+    return ApiErrors.internalError("Failed to fetch views");
   }
 }
