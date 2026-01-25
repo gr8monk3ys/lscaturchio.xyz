@@ -36,12 +36,10 @@ const nextConfig = {
   },
   poweredByHeader: false,
   compress: true,
-  swcMinify: true,
   reactStrictMode: true,
   experimental: {
     optimizeCss: true,
     scrollRestoration: true,
-    instrumentationHook: true,
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
@@ -86,8 +84,12 @@ const sentryWebpackPluginOptions = {
   disableClientWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
   // Hide source maps from clients
   hideSourceMaps: true,
-  // Automatically tree-shake Sentry SDK in production
-  disableLogger: true,
+  // Tree-shake Sentry debug logging in production
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
 };
 
 // Wrap with Sentry if DSN is configured, otherwise just use MDX
