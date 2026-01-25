@@ -3,7 +3,7 @@ import { WorkTimeline } from "@/components/ui/work-timeline";
 import { DownloadButton } from "@/components/ui/download-button";
 import { Badge } from "@/components/ui/badge";
 import { Metadata } from "next";
-import { Code, Brain, Database, Laptop } from "lucide-react";
+import { Code, Brain, Database, Laptop, LucideIcon } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Professional | Lorenzo Scaturchio",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Lorenzo Scaturchio's professional experience, technical skills, and work history in data science, machine learning, and web development.",
 };
 
-const SkillCategory = ({ icon: Icon, title, skills }: { icon: React.ElementType; title: string; skills: string[] }) => (
+const SkillCategory = ({ icon: Icon, title, skills }: { icon: LucideIcon; title: string; skills: string[] }) => (
   <div className="space-y-4">
     <div className="flex items-center gap-3">
       <div className="size-10 rounded-lg neu-pressed-sm text-primary flex items-center justify-center">
