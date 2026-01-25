@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { Container } from "@/components/Container";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Code, Music, Mountain } from "lucide-react";
@@ -7,6 +8,7 @@ import Link from "next/link";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { motion } from "framer-motion";
 import { ThreeBackground } from "@/components/three";
+import { CursorGlow } from "@/components/ui/cursor-glow";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -36,7 +38,7 @@ const photoVariants = {
     scale: 1,
     rotate: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 100,
       damping: 20,
     },
@@ -48,7 +50,7 @@ const iconVariants = {
   visible: (i: number) => ({
     scale: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 200,
       damping: 20,
       delay: 1 + (i * 0.1),
@@ -57,9 +59,22 @@ const iconVariants = {
 };
 
 export function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+
   return (
     <Container>
-      <section className="relative min-h-[80vh] w-full px-4 md:px-6 py-8 flex items-center justify-center overflow-hidden">
+      <section
+        ref={sectionRef}
+        className="relative min-h-[80vh] w-full px-4 md:px-6 py-8 flex items-center justify-center overflow-hidden"
+      >
+        {/* Cursor glow effect - Brittany Chiang style spotlight */}
+        <CursorGlow
+          containerRef={sectionRef}
+          size={700}
+          opacity={0.15}
+          color="hsl(var(--primary))"
+          zIndex={1}
+        />
         {/* 3D Background */}
         <ThreeBackground type="particles" />
         <motion.div 
