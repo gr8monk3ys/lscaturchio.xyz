@@ -11,27 +11,46 @@ import { PWARegister } from '@/components/pwa-register'
 import { ScrollToTop } from '@/components/ui/scroll-to-top'
 import { LayoutWrapper } from '@/components/layout/layout-wrapper'
 import { CanonicalLink } from '@/components/layout/canonical-link'
+import { EasterEggProvider } from '@/components/providers/easter-egg-provider'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Lorenzo Scaturchio | AI Engineer & Full-Stack Developer',
+    default: 'Lorenzo Scaturchio | Data Scientist, Developer & Digital Craftsman',
     template: '%s | Lorenzo Scaturchio'
   },
-  description: 'Personal portfolio and blog of Lorenzo Scaturchio - AI Engineer, Full-Stack Developer, and technology enthusiast.',
+  description: 'Explore Lorenzo Scaturchio\'s portfolio featuring innovative data science projects, web development solutions, and creative digital experiences. Specializing in machine learning, data analysis, and responsive web applications.',
   metadataBase: new URL('https://lscaturchio.xyz'),
+  keywords: ['data scientist', 'developer', 'portfolio', 'machine learning', 'data analysis', 'web development', 'digital solutions', 'AI', 'programmer', 'creative technologist'],
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://lscaturchio.xyz',
-    siteName: 'Lorenzo Scaturchio',
+    siteName: 'Lorenzo Scaturchio Portfolio',
+    title: 'Lorenzo Scaturchio | Data Scientist, Developer & Digital Craftsman',
+    description: 'Explore Lorenzo Scaturchio\'s portfolio featuring innovative data science projects, web development solutions, and creative digital experiences.',
+    images: [
+      {
+        url: '/images/portrait.webp',
+        width: 1200,
+        height: 630,
+        alt: 'Lorenzo Scaturchio - Data Scientist and Developer'
+      }
+    ],
   },
   twitter: {
     card: 'summary_large_image',
+    title: 'Lorenzo Scaturchio | Data Scientist & Developer',
+    description: 'Explore Lorenzo Scaturchio\'s portfolio featuring innovative data science projects, web development solutions, and creative digital experiences.',
+    images: ['/images/portrait.webp'],
+    creator: '@lscaturchio'
   },
   robots: {
     index: true,
     follow: true,
+  },
+  alternates: {
+    canonical: 'https://lscaturchio.xyz',
   },
 }
 
@@ -96,27 +115,29 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Suspense fallback={<div className="min-h-[64px]"></div>}>
-            <Navbar />
-          </Suspense>
-          <Suspense fallback={<div className="min-h-[64px] md:hidden"></div>}>
-            <MobileNavbar />
-          </Suspense>
+          <EasterEggProvider>
+            <Suspense fallback={<div className="min-h-[64px]"></div>}>
+              <Navbar />
+            </Suspense>
+            <Suspense fallback={<div className="min-h-[64px] md:hidden"></div>}>
+              <MobileNavbar />
+            </Suspense>
 
-          {/* LayoutWrapper handles pathname-dependent ContactCTA */}
-          <LayoutWrapper>
-            {children}
-          </LayoutWrapper>
+            {/* LayoutWrapper handles pathname-dependent ContactCTA */}
+            <LayoutWrapper>
+              {children}
+            </LayoutWrapper>
 
-          <Suspense fallback={<div className="min-h-[200px]"></div>}>
-            <Footer />
-          </Suspense>
+            <Suspense fallback={<div className="min-h-[200px]"></div>}>
+              <Footer />
+            </Suspense>
 
-          {/* Load analytics with low priority */}
-          <Analytics />
-          <SpeedInsights />
-          <PWARegister />
-          <ScrollToTop />
+            {/* Load analytics with low priority */}
+            <Analytics />
+            <SpeedInsights />
+            <PWARegister />
+            <ScrollToTop />
+          </EasterEggProvider>
         </ThemeProvider>
       </body>
     </html>
