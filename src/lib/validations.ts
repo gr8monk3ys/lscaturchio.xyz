@@ -64,7 +64,7 @@ export type ViewTrackingInput = z.infer<typeof viewTrackingSchema>;
  * Reaction type enum
  */
 export const reactionTypeSchema = z.enum(['like', 'bookmark'], {
-  errorMap: () => ({ message: "Type must be 'like' or 'bookmark'" }),
+  message: "Type must be 'like' or 'bookmark'",
 });
 
 export type ReactionType = z.infer<typeof reactionTypeSchema>;
@@ -112,7 +112,9 @@ export function parseBody<T extends z.ZodSchema>(
     return { success: true, data: result.data };
   }
   // Return the first error message for simplicity
-  const firstError = result.error.errors[0];
+  // Zod 4 uses .issues, earlier versions use .errors
+  const issues = result.error.issues || (result.error as { errors?: Array<{ message?: string }> }).errors;
+  const firstError = issues?.[0];
   return { success: false, error: firstError?.message || 'Validation failed' };
 }
 
@@ -129,3 +131,30 @@ export function parseQuery<T extends z.ZodSchema>(
   });
   return parseBody(schema, params);
 }
+
+/**
+ * AI Provider enum for chat API
+ */
+export const aiProviderSchema = z.enum(['openai', 'anthropic', 'google'], {
+  message: "Provider must be 'openai', 'anthropic', or 'google'",
+});
+
+export type AIProviderInput = z.infer<typeof aiProviderSchema>;
+
+/**
+ * Chat API request validation
+ * Validates provider, model, and query parameters
+ */
+export const chatRequestSchema = z.object({
+  query: z
+    .string()
+    .min(1, 'Query is required')
+    .max(1000, 'Query too long (max 1000 characters)'),
+  provider: aiProviderSchema.optional(),
+  model: z
+    .string()
+    .max(100, 'Model name too long')
+    .optional(),
+});
+
+export type ChatRequestInput = z.infer<typeof chatRequestSchema>;
