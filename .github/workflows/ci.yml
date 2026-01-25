@@ -23,7 +23,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Run ESLint
-        run: ESLINT_USE_FLAT_CONFIG=false npx eslint src lib --ext .ts,.tsx,.js,.jsx -c .eslintrc.json
+        run: npx next lint -d src -d lib
 
   test:
     name: Test
