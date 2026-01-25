@@ -181,3 +181,17 @@ export const products = [
     ),
   },
 ];
+
+// Get featured projects (first 3)
+export function getFeaturedProjects() {
+  return products.slice(0, 3);
+}
+
+// Get all unique technologies across all products
+export function getAllTechnologies(): string[] {
+  const techSet = new Set<string>();
+  products.forEach((product) => {
+    product.stack?.forEach((tech) => techSet.add(tech));
+  });
+  return Array.from(techSet).sort();
+}
