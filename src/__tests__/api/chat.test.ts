@@ -1,6 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 
+// Mock OpenAI module (must be before route import)
+vi.mock('openai', () => ({
+  default: vi.fn().mockImplementation(() => ({
+    chat: {
+      completions: {
+        create: vi.fn().mockResolvedValue({
+          choices: [{ message: { content: 'Mock AI response' } }],
+        }),
+      },
+    },
+  })),
+}));
+
 // Mock Ollama module
 vi.mock('@/lib/ollama', () => ({
   isOllamaAvailable: vi.fn(),
