@@ -1,6 +1,6 @@
 import { Container } from "@/components/Container";
 import { Metadata } from "next";
-import { ExternalLink, Shield, BookOpen, Globe, Code, Youtube, Rss } from "lucide-react";
+import { ExternalLink, Shield, BookOpen, Globe, Code, Youtube, Rss, LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
@@ -207,7 +207,7 @@ const linksData: Record<string, SectionData> = {
   }
 };
 
-const iconMap: Record<string, React.ElementType> = {
+const iconMap: Record<string, LucideIcon> = {
   privacy: Shield,
   docs: BookOpen,
   indie: Globe,
