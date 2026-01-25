@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkles, ChevronDown, Loader2 } from 'lucide-react'
+import { logError } from '@/lib/logger'
 
 interface AISummaryProps {
   content: string
@@ -14,6 +15,7 @@ export function AISummary({ content }: AISummaryProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [hasGenerated, setHasGenerated] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const generateSummary = async () => {
     if (hasGenerated) {
@@ -23,6 +25,7 @@ export function AISummary({ content }: AISummaryProps) {
 
     setIsLoading(true)
     setIsExpanded(true)
+    setError(null)
 
     try {
       // Generate both summary and takeaways in parallel
@@ -39,14 +42,20 @@ export function AISummary({ content }: AISummaryProps) {
         }),
       ])
 
+      if (!summaryRes.ok || !takeawaysRes.ok) {
+        throw new Error('Failed to generate summary. Please try again.')
+      }
+
       const summaryData = await summaryRes.json()
       const takeawaysData = await takeawaysRes.json()
 
       setSummary(summaryData.summary || '')
       setTakeaways(takeawaysData.takeaways || [])
       setHasGenerated(true)
-    } catch (error) {
-      console.error('Failed to generate summary:', error)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate summary. Please try again.'
+      setError(errorMessage)
+      logError('Failed to generate summary', err, { component: 'AISummary' })
     } finally {
       setIsLoading(false)
     }
@@ -83,7 +92,19 @@ export function AISummary({ content }: AISummaryProps) {
       </button>
 
       <AnimatePresence>
-        {isExpanded && hasGenerated && (
+        {isExpanded && error && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="border-t border-purple-200 dark:border-purple-800"
+          >
+            <div className="p-6 bg-red-50 dark:bg-red-950/20">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            </div>
+          </motion.div>
+        )}
+        {isExpanded && hasGenerated && !error && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}

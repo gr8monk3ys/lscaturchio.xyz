@@ -1,10 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CheckCircle2, Circle } from "lucide-react";
+import { useIsClient } from "@/hooks/use-is-client";
+import { safeStorage } from "@/lib/storage";
 
 interface BlogProgressBadgeProps {
   slug: string;
+}
+
+/**
+ * Helper to get reading progress from localStorage
+ */
+function getStoredProgress(slug: string): number {
+  const progressKey = `reading_progress_${slug}`;
+  const data = safeStorage.getJSON<{ progress?: number }>(progressKey);
+  return data?.progress || 0;
 }
 
 /**
@@ -12,22 +23,9 @@ interface BlogProgressBadgeProps {
  * Shows if a post has been read (>= 90%), partially read (> 0%), or unread
  */
 export function BlogProgressBadge({ slug }: BlogProgressBadgeProps) {
-  const [progress, setProgress] = useState<number>(0);
-
-  useEffect(() => {
-    // Get reading progress from localStorage
-    const progressKey = `reading_progress_${slug}`;
-    const stored = localStorage.getItem(progressKey);
-
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        setProgress(data.progress || 0);
-      } catch {
-        setProgress(0);
-      }
-    }
-  }, [slug]);
+  const isClient = useIsClient();
+  // Only read localStorage on the client side
+  const [progress] = useState<number>(() => isClient ? getStoredProgress(slug) : 0);
 
   // Don't show anything if no progress
   if (progress === 0) {

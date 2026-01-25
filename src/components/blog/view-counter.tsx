@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
 import { motion } from "framer-motion";
+import { logError } from "@/lib/logger";
 
 interface ViewCounterProps {
   slug: string;
@@ -20,12 +21,15 @@ export function ViewCounter({ slug }: ViewCounterProps) {
       try {
         // Record view if not already viewed in this session
         if (!hasViewed) {
-          await fetch("/api/views", {
+          const postResponse = await fetch("/api/views", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ slug }),
           });
-          sessionStorage.setItem(viewedKey, "true");
+          // Only set sessionStorage if the POST was successful
+          if (postResponse.ok) {
+            sessionStorage.setItem(viewedKey, "true");
+          }
         }
 
         // Fetch current view count
@@ -35,7 +39,7 @@ export function ViewCounter({ slug }: ViewCounterProps) {
           setViews(data.views);
         }
       } catch (error) {
-        console.error("Failed to record/fetch views:", error);
+        logError("Failed to record/fetch views", error, { component: "ViewCounter", slug });
       }
     };
 
