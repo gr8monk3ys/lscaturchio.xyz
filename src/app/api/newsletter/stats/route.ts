@@ -3,8 +3,13 @@ import { getSupabase } from '@/lib/supabase';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
+import { validateApiKey } from '@/lib/api-auth';
 
 const handleGet = async (request: NextRequest) => {
+  // Require API key authentication
+  const authError = validateApiKey(request, { component: 'newsletter/stats' });
+  if (authError) return authError;
+
   try {
     const supabase = getSupabase();
     const { data, error } = await supabase

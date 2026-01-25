@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { getSupabase } from "@/lib/supabase";
 import { logError } from "@/lib/logger";
+import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
 /**
  * API route to fetch engagement statistics
@@ -20,10 +20,7 @@ export async function GET() {
 
     if (error) {
       logError("Engagement Stats: Database error", error, { component: 'engagement-stats', action: 'GET' });
-      return NextResponse.json(
-        { error: "Failed to fetch engagement stats" },
-        { status: 500 }
-      );
+      return ApiErrors.internalError("Failed to fetch engagement stats");
     }
 
     // Calculate totals
@@ -56,7 +53,7 @@ export async function GET() {
         bookmarks: r.bookmarks,
       }));
 
-    return NextResponse.json({
+    return apiSuccess({
       totalLikes,
       totalBookmarks,
       topLiked,
@@ -64,9 +61,6 @@ export async function GET() {
     });
   } catch (error) {
     logError("Engagement Stats: Unexpected error", error, { component: 'engagement-stats', action: 'GET' });
-    return NextResponse.json(
-      { error: "Failed to fetch engagement stats" },
-      { status: 500 }
-    );
+    return ApiErrors.internalError("Failed to fetch engagement stats");
   }
 }

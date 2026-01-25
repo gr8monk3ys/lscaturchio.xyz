@@ -1,16 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
 import { escapeHtml, sanitizeForHtmlEmail, sanitizeEmailSubject } from "@/lib/sanitize";
 import { logError, logInfo } from "@/lib/logger";
 import { contactFormSchema, parseBody } from "@/lib/validations";
+import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
 async function handler(req: NextRequest) {
   if (req.method !== "POST") {
-    return NextResponse.json(
-      { error: "Method not allowed" },
-      { status: 405 }
-    );
+    return ApiErrors.methodNotAllowed("Method not allowed");
   }
 
   try {
@@ -19,10 +17,7 @@ async function handler(req: NextRequest) {
     // Zod validation
     const parsed = parseBody(contactFormSchema, body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error },
-        { status: 400 }
-      );
+      return ApiErrors.badRequest(parsed.error);
     }
 
     const { name, email, message } = parsed.data;
@@ -39,8 +34,7 @@ async function handler(req: NextRequest) {
         messageLength: message.length,
       });
 
-      return NextResponse.json({
-        success: true,
+      return apiSuccess({
         message: "Message received! (Email not configured - check server logs)",
       });
     }
@@ -76,22 +70,15 @@ async function handler(req: NextRequest) {
       const errorData = await response.json();
       logError("Contact Form: Resend API error", errorData, { component: 'contact', action: 'POST' });
 
-      return NextResponse.json(
-        { error: "Failed to send message. Please try again later." },
-        { status: 500 }
-      );
+      return ApiErrors.internalError("Failed to send message. Please try again later.");
     }
 
-    return NextResponse.json({
-      success: true,
+    return apiSuccess({
       message: "Message sent successfully! I'll get back to you soon.",
     });
   } catch (error) {
     logError("Contact Form: Unexpected error", error, { component: 'contact', action: 'POST' });
-    return NextResponse.json(
-      { error: "An unexpected error occurred. Please try again later." },
-      { status: 500 }
-    );
+    return ApiErrors.internalError("An unexpected error occurred. Please try again later.");
   }
 }
 

@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/supabase';
 import { getAllBlogs } from '@/lib/getAllBlogs';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
+import { validateApiKey } from '@/lib/api-auth';
 
 interface AnalyticsData {
   newsletter: {
@@ -29,7 +30,11 @@ interface AnalyticsData {
   };
 }
 
-const handleGet = async () => {
+const handleGet = async (request: NextRequest) => {
+  // Require API key authentication
+  const authError = validateApiKey(request, { component: 'analytics' });
+  if (authError) return authError;
+
   try {
     const supabase = getSupabase();
     const allBlogs = await getAllBlogs();
