@@ -9,6 +9,9 @@ export const metadata: Metadata = {
     "Lorenzo Scaturchio is a developer, writer and speaker. He is a digital nomad and travels around the world while working remotely.",
 };
 
+// Revalidate projects every hour
+export const revalidate = 3600;
+
 export default function Projects() {
   return (
     <Container size="large">

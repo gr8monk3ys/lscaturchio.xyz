@@ -51,6 +51,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: 'https://lscaturchio.xyz',
+    types: {
+      'application/rss+xml': '/api/rss',
+    },
   },
 }
 
@@ -72,6 +75,9 @@ export default function RootLayout({
 
         {/* Canonical Link - Client Component for dynamic pathname */}
         <CanonicalLink />
+
+        {/* RSS Feed Autodiscovery */}
+        <link rel="alternate" type="application/rss+xml" title="Lorenzo Scaturchio Blog RSS" href="/api/rss" />
 
         {/* Core Meta Tags */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
