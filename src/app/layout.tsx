@@ -11,7 +11,6 @@ import { PWARegister } from '@/components/pwa-register'
 import { ScrollToTop } from '@/components/ui/scroll-to-top'
 import { LayoutWrapper } from '@/components/layout/layout-wrapper'
 import { CanonicalLink } from '@/components/layout/canonical-link'
-import { EasterEggProvider } from '@/components/providers/easter-egg-provider'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -121,29 +120,27 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <EasterEggProvider>
-            <Suspense fallback={<div className="min-h-[64px]"></div>}>
-              <Navbar />
-            </Suspense>
-            <Suspense fallback={<div className="min-h-[64px] md:hidden"></div>}>
-              <MobileNavbar />
-            </Suspense>
+          <Suspense fallback={<div className="min-h-[64px]"></div>}>
+            <Navbar />
+          </Suspense>
+          <Suspense fallback={<div className="min-h-[64px] md:hidden"></div>}>
+            <MobileNavbar />
+          </Suspense>
 
-            {/* LayoutWrapper handles pathname-dependent ContactCTA */}
-            <LayoutWrapper>
-              {children}
-            </LayoutWrapper>
+          {/* LayoutWrapper handles pathname-dependent ContactCTA */}
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
 
-            <Suspense fallback={<div className="min-h-[200px]"></div>}>
-              <Footer />
-            </Suspense>
+          <Suspense fallback={<div className="min-h-[200px]"></div>}>
+            <Footer />
+          </Suspense>
 
-            {/* Load analytics with low priority */}
-            <Analytics />
-            <SpeedInsights />
-            <PWARegister />
-            <ScrollToTop />
-          </EasterEggProvider>
+          {/* Load analytics with low priority */}
+          <Analytics />
+          <SpeedInsights />
+          <PWARegister />
+          <ScrollToTop />
         </ThemeProvider>
       </body>
     </html>
