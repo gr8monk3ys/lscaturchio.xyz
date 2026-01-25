@@ -8,6 +8,9 @@
  * - Tracks which variants are shown
  */
 
+import { logWarn, logDebug } from '@/lib/logger';
+import { safeStorage } from '@/lib/storage';
+
 // Experiment definitions
 export interface Experiment {
   id: string;
@@ -58,10 +61,10 @@ function getUserId(): string {
     return 'server';
   }
 
-  let userId = localStorage.getItem('ab_user_id');
+  let userId = safeStorage.get('ab_user_id');
   if (!userId) {
     userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-    localStorage.setItem('ab_user_id', userId);
+    safeStorage.set('ab_user_id', userId);
   }
   return userId;
 }
@@ -72,12 +75,7 @@ function getStoredAssignments(): Record<string, string> {
     return {};
   }
 
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : {};
-  } catch {
-    return {};
-  }
+  return safeStorage.getJSON<Record<string, string>>(STORAGE_KEY) || {};
 }
 
 // Save experiment assignments
@@ -86,11 +84,7 @@ function saveAssignments(assignments: Record<string, string>): void {
     return;
   }
 
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(assignments));
-  } catch {
-    // Ignore storage errors
-  }
+  safeStorage.setJSON(STORAGE_KEY, assignments);
 }
 
 // Assign a variant based on weights
@@ -124,7 +118,7 @@ function assignVariant(experiment: Experiment, userId: string): string {
 export function getVariant(experimentId: string): string | null {
   const experiment = experiments[experimentId];
   if (!experiment) {
-    console.warn(`Experiment "${experimentId}" not found`);
+    logWarn(`Experiment "${experimentId}" not found`, { action: 'getVariant', experimentId });
     return null;
   }
 
@@ -153,12 +147,12 @@ export function getVariant(experimentId: string): string | null {
 export function forceVariant(experimentId: string, variant: string): void {
   const experiment = experiments[experimentId];
   if (!experiment) {
-    console.warn(`Experiment "${experimentId}" not found`);
+    logWarn(`Experiment "${experimentId}" not found`, { action: 'forceVariant', experimentId });
     return;
   }
 
   if (!experiment.variants.includes(variant)) {
-    console.warn(`Variant "${variant}" not valid for experiment "${experimentId}"`);
+    logWarn(`Variant "${variant}" not valid for experiment "${experimentId}"`, { action: 'forceVariant', experimentId, variant });
     return;
   }
 
@@ -175,8 +169,8 @@ export function clearAssignments(): void {
     return;
   }
 
-  localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem('ab_user_id');
+  safeStorage.remove(STORAGE_KEY);
+  safeStorage.remove('ab_user_id');
 }
 
 /**
@@ -192,9 +186,7 @@ export function getAllAssignments(): Record<string, string> {
 export function trackVariantView(experimentId: string, variant: string): void {
   // This would integrate with your analytics system
   // For now, just log in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[A/B Test] Viewed: ${experimentId} = ${variant}`);
-  }
+  logDebug(`[A/B Test] Viewed: ${experimentId} = ${variant}`, { action: 'trackVariantView', experimentId, variant });
 
   // Could send to analytics endpoint:
   // fetch('/api/analytics/ab-event', {
@@ -212,9 +204,7 @@ export function trackConversion(experimentId: string, conversionType: string): v
     return;
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[A/B Test] Conversion: ${experimentId} = ${variant}, type: ${conversionType}`);
-  }
+  logDebug(`[A/B Test] Conversion: ${experimentId} = ${variant}, type: ${conversionType}`, { action: 'trackConversion', experimentId, variant, conversionType });
 
   // Could send to analytics endpoint:
   // fetch('/api/analytics/ab-event', {
