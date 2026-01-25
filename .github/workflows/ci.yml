@@ -23,7 +23,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Run ESLint
-        run: npx next lint -d src -d lib
+        run: npx next lint
 
   test:
     name: Test
