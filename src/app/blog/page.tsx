@@ -21,6 +21,9 @@ export const metadata = {
     "Lorenzo Scaturchio is a developer, writer and speaker. He is a digital nomad and travels around the world while working remotely.",
 };
 
+// Revalidate the blog listing every hour for fresh content
+export const revalidate = 3600;
+
 export default async function Blog() {
   const blogs = await getAllBlogs();
   const data = blogs.map((blog) => ({
