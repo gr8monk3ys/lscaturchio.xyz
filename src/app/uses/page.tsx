@@ -1,6 +1,6 @@
 import { Container } from "@/components/Container";
 import { Metadata } from "next";
-import { Monitor, Mouse, Keyboard, Laptop, HardDrive, Globe, Terminal, Code, Palette } from "lucide-react";
+import { Monitor, Mouse, Keyboard, Laptop, HardDrive, Globe, Terminal, Code, Palette, LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
   </section>
 );
 
-const Item = ({ icon: Icon, title, children }: { icon: React.ElementType; title: string; children: React.ReactNode }) => (
+const Item = ({ icon: Icon, title, children }: { icon: LucideIcon; title: string; children: React.ReactNode }) => (
   <div className="mb-6 flex gap-4">
     <div className="shrink-0 mt-1">
       <div className="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
