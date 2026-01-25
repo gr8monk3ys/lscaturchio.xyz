@@ -2,6 +2,12 @@ import glob from "fast-glob";
 import * as path from "path";
 import fs from "fs/promises";
 
+// Module-level cache for getAllBlogs() to avoid repeated disk reads
+// This significantly improves performance for API routes that call getAllBlogs()
+let cachedBlogs: BlogPost[] | null = null;
+let cacheTime = 0;
+const CACHE_TTL = 60000; // 1 minute cache TTL
+
 interface BlogMeta {
   title: string;
   description: string;
@@ -20,7 +26,7 @@ interface BlogPost extends BlogMeta {
 }
 
 async function importBlog(blogFileNames: string): Promise<BlogPost> {
-  let { meta, default: component } = await import(
+  const { meta, default: component } = await import(
     `../app/blog/${blogFileNames}`
   );
 
@@ -37,13 +43,33 @@ async function importBlog(blogFileNames: string): Promise<BlogPost> {
 }
 
 export async function getAllBlogs(): Promise<BlogPost[]> {
-  let blogFileNames = await glob(["*.mdx", "*/content.mdx"], {
+  // Return cached blogs if cache is still valid
+  const now = Date.now();
+  if (cachedBlogs && now - cacheTime < CACHE_TTL) {
+    return cachedBlogs;
+  }
+
+  const blogFileNames = await glob(["*.mdx", "*/content.mdx"], {
     cwd: path.join(process.cwd(), "src/app/blog"),
   });
 
-  let blogs = await Promise.all(blogFileNames.map(importBlog));
+  const blogs = await Promise.all(blogFileNames.map(importBlog));
 
-  return blogs.sort((a, b) => b.date.localeCompare(a.date));
+  const sortedBlogs = blogs.sort((a, b) => b.date.localeCompare(a.date));
+
+  // Update cache
+  cachedBlogs = sortedBlogs;
+  cacheTime = now;
+
+  return sortedBlogs;
+}
+
+/**
+ * Clear the blog cache. Useful for development or when blog content changes.
+ */
+export function clearBlogCache(): void {
+  cachedBlogs = null;
+  cacheTime = 0;
 }
 
 /**
