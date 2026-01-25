@@ -114,7 +114,7 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
  * export const POST = withCsrf(handler);
  * ```
  */
-export function withCsrf<T extends any[]>(
+export function withCsrf<T extends unknown[]>(
   handler: (request: NextRequest, ...args: T) => Promise<NextResponse>
 ) {
   return async (request: NextRequest, ...args: T): Promise<NextResponse> => {

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimiter, getClientIp, RATE_LIMITS } from './rate-limit';
 import { getRedisRateLimiter } from './rate-limit-redis';
+import { logError } from './logger';
+
+// Re-export RATE_LIMITS for convenient single-import usage
+export { RATE_LIMITS };
 
 type RateLimitConfig = {
   limit: number;
@@ -22,7 +26,7 @@ type RateLimitConfig = {
  * );
  * ```
  */
-export function withRateLimit<T extends any[]>(
+export function withRateLimit<T extends unknown[]>(
   handler: (request: NextRequest, ...args: T) => Promise<NextResponse>,
   config: RateLimitConfig = RATE_LIMITS.STANDARD
 ) {
@@ -92,6 +96,10 @@ export function withRateLimit<T extends any[]>(
 
       return response;
     } catch (error) {
+      logError('API handler error', error, {
+        component: 'withRateLimit',
+        action: 'handler',
+      });
       // Even on error, include rate limit headers
       return NextResponse.json(
         { error: 'Internal server error' },
