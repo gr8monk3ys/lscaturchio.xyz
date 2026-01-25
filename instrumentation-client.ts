@@ -1,9 +1,13 @@
 /**
  * Sentry client-side configuration
  * This file configures error tracking for the browser
+ * Renamed from sentry.client.config.ts for Turbopack compatibility
  */
 
 import * as Sentry from "@sentry/nextjs";
+
+// Export navigation transition hook for Sentry to instrument page navigations
+export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
 
 // Only initialize Sentry if DSN is configured
 const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
