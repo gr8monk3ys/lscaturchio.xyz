@@ -54,7 +54,7 @@ export function SkillsShowcase() {
   };
 
   const itemVariants = {
-    hidden: { 
+    hidden: {
       opacity: 0,
       y: 20,
       scale: 0.95
@@ -64,7 +64,7 @@ export function SkillsShowcase() {
       y: 0,
       scale: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 100,
         damping: 15
       }
@@ -73,11 +73,11 @@ export function SkillsShowcase() {
 
   const iconVariants = {
     hidden: { scale: 0, rotate: -180 },
-    show: { 
-      scale: 1, 
+    show: {
+      scale: 1,
       rotate: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 200,
         damping: 20
       }
@@ -86,11 +86,11 @@ export function SkillsShowcase() {
 
   const badgeVariants = {
     hidden: { opacity: 0, scale: 0.8 },
-    show: { 
-      opacity: 1, 
+    show: {
+      opacity: 1,
       scale: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 150,
         damping: 15
       }
