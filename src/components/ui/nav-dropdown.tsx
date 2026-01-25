@@ -31,7 +31,6 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
     if (pathname !== prevPathnameRef.current) {
       prevPathnameRef.current = pathname;
       if (isOpen) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional: close dropdown on route change
         setIsOpen(false);
         onOpenChange?.(false);
       }
