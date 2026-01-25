@@ -1,8 +1,10 @@
 /**
  * Centralized logging utility
  * Replaces direct console.* calls with environment-aware logging
- * Can be extended to integrate with services like Sentry, LogRocket, etc.
+ * Integrates with Sentry for production error tracking
  */
+
+import * as Sentry from '@sentry/nextjs';
 
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
@@ -32,8 +34,15 @@ class Logger {
     if (this.isDevelopment) {
       console.warn(`[WARN] ${message}`, context || '');
     }
-    // In production, could send to monitoring service
-    // Example: Sentry.captureMessage(message, 'warning');
+
+    // Send warnings to Sentry in production
+    if (!this.isDevelopment && !this.isTest) {
+      Sentry.captureMessage(message, {
+        level: 'warning',
+        tags: context ? { component: context.component, action: context.action } : undefined,
+        extra: context,
+      });
+    }
   }
 
   /**
@@ -44,40 +53,42 @@ class Logger {
       console.error(`[ERROR] ${message}`, error, context || '');
     }
 
-    // In production, send to error tracking service
-    // Example: Sentry.captureException(error, { tags: context });
-
+    // Send errors to Sentry in production
     if (!this.isDevelopment && !this.isTest) {
-      // Could send to external service here
-      this.sendToErrorTracking(message, error, context);
+      if (error instanceof Error) {
+        Sentry.captureException(error, {
+          tags: context ? { component: context.component, action: context.action } : undefined,
+          extra: { message, ...context },
+        });
+      } else {
+        // If not an Error object, capture as message with error details
+        Sentry.captureMessage(message, {
+          level: 'error',
+          tags: context ? { component: context.component, action: context.action } : undefined,
+          extra: { error, ...context },
+        });
+      }
     }
   }
 
   /**
    * Log debug messages (development only)
+   * In production, adds Sentry breadcrumbs for debugging
    */
   debug(message: string, context?: LogContext): void {
     if (this.isDevelopment) {
       console.debug(`[DEBUG] ${message}`, context || '');
     }
-  }
 
-  /**
-   * Placeholder for future error tracking integration
-   */
-  private sendToErrorTracking(
-    message: string,
-    error?: Error | unknown,
-    context?: LogContext
-  ): void {
-    // TODO: Integrate with Sentry or similar service
-    // Example implementation:
-    // if (typeof window !== 'undefined' && window.Sentry) {
-    //   window.Sentry.captureException(error, {
-    //     tags: { ...context },
-    //     extra: { message }
-    //   });
-    // }
+    // Add breadcrumbs in production for debugging context
+    if (!this.isDevelopment && !this.isTest) {
+      Sentry.addBreadcrumb({
+        category: context?.component || 'debug',
+        message,
+        level: 'debug',
+        data: context,
+      });
+    }
   }
 }
 
