@@ -35,7 +35,7 @@ export function OptimizedImage({
   fill = false,
   quality = 85,
   loading = 'lazy',
-  placeholder = 'empty',
+  placeholder = 'blur',
   sizes = fill 
     ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" 
     : undefined,
