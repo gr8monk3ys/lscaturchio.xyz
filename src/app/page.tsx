@@ -1,31 +1,13 @@
-"use client";
-
 import { Container } from "@/components/Container";
-import { motion, useScroll, useTransform } from "framer-motion";
 import { Hero } from "@/components/home/Hero";
 import { RecentBlogs } from "@/components/home/recent-blogs";
 import { RecentProjects } from "@/components/home/recent-projects";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 import { WebsiteStructuredData, PersonStructuredData, FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/structured-data";
 import Link from "next/link";
-import { ArrowRight, Code, Database, Brain, Server } from "lucide-react";
-
-const fadeInUp = {
-  initial: {
-    opacity: 0,
-    y: 20,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-  },
-};
+import { ArrowRight, Code, Brain, Server } from "lucide-react";
 
 export default function Home() {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 300], [0, 50]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <WebsiteStructuredData
@@ -66,11 +48,11 @@ export default function Home() {
           }
         ]}
       />
-      
+
       <Container size="large">
         <h1 className="sr-only">Lorenzo Scaturchio - Data Scientist and Developer Portfolio</h1>
         <Hero />
-        
+
         <section className="my-16 px-4">
           <h2 className="text-3xl font-bold text-center mb-4">What I&apos;m Currently Working On</h2>
           <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -111,7 +93,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        
+
         <RecentBlogs />
         <RecentProjects />
       </Container>
