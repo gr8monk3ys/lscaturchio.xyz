@@ -1,3 +1,5 @@
+"use client";
+
 import type { MDXComponents } from "mdx/types";
 import dynamic from "next/dynamic";
 import { CodeBlock } from "@/components/blog/code-block";
