@@ -8,17 +8,17 @@ export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
 const textareaVariants = {
-  initial: { 
+  initial: {
     opacity: 0,
     y: 10,
     scale: 0.98
   },
-  animate: { 
+  animate: {
     opacity: 1,
     y: 0,
     scale: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 100,
       damping: 15
     }
@@ -26,7 +26,7 @@ const textareaVariants = {
   focus: {
     scale: 1.01,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 300,
       damping: 20
     }

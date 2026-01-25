@@ -10,15 +10,15 @@ interface BadgeProps {
 }
 
 const badgeVariants = {
-  initial: { 
+  initial: {
     opacity: 0,
     scale: 0.9
   },
-  animate: { 
+  animate: {
     opacity: 1,
     scale: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 200,
       damping: 20
     }
@@ -26,7 +26,7 @@ const badgeVariants = {
   hover: {
     scale: 1.05,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 400,
       damping: 10
     }
