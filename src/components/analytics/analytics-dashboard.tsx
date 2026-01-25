@@ -17,6 +17,7 @@ import {
   UserPlus,
   UserMinus,
   Clock,
+  LucideIcon,
 } from "lucide-react";
 
 interface AnalyticsData {
@@ -52,7 +53,7 @@ function StatCard({
 }: {
   title: string;
   value: number | string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   subtitle?: string;
   color?: "primary" | "red" | "green" | "blue" | "purple";
 }) {
@@ -89,7 +90,7 @@ function TopPostsList({
   color,
 }: {
   title: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   posts: { slug: string; title: string; [key: string]: string | number }[];
   valueKey: string;
   valueLabel: string;
