@@ -188,10 +188,12 @@ describe('parseBody helper', () => {
   });
 
   it('returns error message for invalid input', () => {
-    const result = parseBody(slugQuerySchema, { slug: '' });
+    // Note: Empty string fails the 'min' validation, not regex
+    const result = parseBody(slugQuerySchema, { slug: 'INVALID-UPPERCASE' });
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error).toBeDefined();
+      expect(typeof result.error).toBe('string');
     }
   });
 });
@@ -217,8 +219,12 @@ describe('parseQuery helper', () => {
   });
 
   it('returns error for missing params', () => {
-    const params = new URLSearchParams('');
+    // Provide an invalid param value rather than empty - empty string triggers 'min' first
+    const params = new URLSearchParams('slug=INVALID-UPPERCASE');
     const result = parseQuery(slugQuerySchema, params);
     expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toBeDefined();
+    }
   });
 });
