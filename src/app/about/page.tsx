@@ -4,11 +4,12 @@ import { AboutJourney } from "@/components/about/Journey";
 import { PersonalFavorites } from "@/components/about/PersonalFavorites";
 import { Interests } from "@/components/about/Interests";
 import { WorkTimeline } from "@/components/ui/work-timeline";
-import { DownloadButton } from "@/components/ui/download-button";
+import { ResumeDownloadButton } from "@/components/ui/resume-download-button";
 import { Movies } from "@/components/about/Movies";
 import { Music } from "@/components/about/Music";
 import { Books } from "@/components/about/Books";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "About | Lorenzo Scaturchio",
@@ -27,7 +28,11 @@ export default function AboutPage() {
         <Movies />
         <Music />
         <Books />
-        <DownloadButton href="/Lorenzo_resume_DS.pdf" />
+        <Suspense fallback={<div className="flex justify-center mt-16"><span className="text-muted-foreground">Loading...</span></div>}>
+          <div className="flex justify-center mt-16">
+            <ResumeDownloadButton />
+          </div>
+        </Suspense>
       </div>
     </Container>
   );
