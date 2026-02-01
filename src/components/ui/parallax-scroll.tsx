@@ -1,17 +1,19 @@
 "use client";
 import { useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useMemo, memo } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-export const ParallaxScrollSecond = ({
-  images,
-  className,
-}: {
+interface ParallaxScrollProps {
   images: string[];
   className?: string;
-}) => {
+}
+
+const ParallaxScrollSecondComponent = ({
+  images,
+  className,
+}: ParallaxScrollProps) => {
   const gridRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     container: gridRef, // remove this if your container is not fixed height
@@ -26,11 +28,15 @@ export const ParallaxScrollSecond = ({
   const translateXThird = useTransform(scrollYProgress, [0, 1], [0, 200]);
   const rotateXThird = useTransform(scrollYProgress, [0, 1], [0, 20]);
 
-  const third = Math.ceil(images.length / 3);
-
-  const firstPart = images.slice(0, third);
-  const secondPart = images.slice(third, 2 * third);
-  const thirdPart = images.slice(2 * third);
+  // Memoize the image partitioning to avoid recalculating on every render
+  const { firstPart, secondPart, thirdPart } = useMemo(() => {
+    const third = Math.ceil(images.length / 3);
+    return {
+      firstPart: images.slice(0, third),
+      secondPart: images.slice(third, 2 * third),
+      thirdPart: images.slice(2 * third),
+    };
+  }, [images]);
 
   return (
     <div
@@ -97,3 +103,6 @@ export const ParallaxScrollSecond = ({
     </div>
   );
 };
+
+// Memoize the component to prevent unnecessary re-renders when parent changes
+export const ParallaxScrollSecond = memo(ParallaxScrollSecondComponent);
