@@ -1,14 +1,15 @@
 "use client";
 
-import { ProjectCategory, ProjectStatus } from "@/types/products";
+import { ProjectCategory, Product } from "@/types/products";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { X, Filter, ChevronDown } from "lucide-react";
-import { useCallback, useState, useRef, useEffect } from "react";
+import { X } from "lucide-react";
+import { useCallback, useMemo } from "react";
 
 interface ProjectFiltersProps {
   className?: string;
+  projects: Product[];
 }
 
 type CategoryOption = {
@@ -16,13 +17,8 @@ type CategoryOption = {
   label: string;
 };
 
-type StatusOption = {
-  value: ProjectStatus | "all";
-  label: string;
-};
-
 const categories: CategoryOption[] = [
-  { value: "all", label: "All Projects" },
+  { value: "all", label: "All" },
   { value: "ai-ml", label: "AI/ML" },
   { value: "web-apps", label: "Web Apps" },
   { value: "tools", label: "Tools" },
@@ -30,36 +26,26 @@ const categories: CategoryOption[] = [
   { value: "data-science", label: "Data Science" },
 ];
 
-const statuses: StatusOption[] = [
-  { value: "all", label: "All Status" },
-  { value: "active", label: "Active" },
-  { value: "maintained", label: "Maintained" },
-  { value: "archived", label: "Archived" },
-];
-
-export function ProjectFilters({ className }: ProjectFiltersProps) {
+export function ProjectFilters({ className, projects }: ProjectFiltersProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const [statusOpen, setStatusOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const currentCategory = (searchParams?.get("category") as ProjectCategory | "all") || "all";
-  const currentStatus = (searchParams?.get("status") as ProjectStatus | "all") || "all";
   const currentTech = searchParams?.get("tech") || "";
 
-  const hasFilters = currentCategory !== "all" || currentStatus !== "all" || currentTech;
+  const hasFilters = currentCategory !== "all" || currentTech;
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setStatusOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // Calculate project counts per category
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: projects.length };
+    categories.slice(1).forEach((cat) => {
+      counts[cat.value] = projects.filter((p) =>
+        p.categories?.includes(cat.value as ProjectCategory)
+      ).length;
+    });
+    return counts;
+  }, [projects]);
 
   const updateFilters = useCallback(
     (key: string, value: string) => {
@@ -82,135 +68,68 @@ export function ProjectFilters({ className }: ProjectFiltersProps) {
     <div className={cn("space-y-4", className)}>
       {/* Category Tabs */}
       <div className="flex flex-wrap gap-2">
-        {categories.map((category) => (
-          <motion.button
-            key={category.value}
-            onClick={() => updateFilters("category", category.value)}
-            className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-all",
-              currentCategory === category.value
-                ? "bg-primary text-primary-foreground shadow-md"
-                : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {category.label}
-          </motion.button>
-        ))}
-      </div>
+        {categories.map((category) => {
+          const count = categoryCounts[category.value] || 0;
+          const isActive = currentCategory === category.value;
 
-      {/* Additional Filters Row */}
-      <div className="flex flex-wrap items-center gap-3">
-        {/* Status Dropdown */}
-        <div className="relative" ref={dropdownRef}>
-          <button
-            onClick={() => setStatusOpen(!statusOpen)}
-            aria-expanded={statusOpen}
-            aria-haspopup="listbox"
-            aria-label="Filter by project status"
-            className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
-              "bg-muted/50 hover:bg-muted",
-              currentStatus !== "all" && "bg-primary/10 text-primary"
-            )}
-          >
-            <Filter className="h-4 w-4" />
-            {statuses.find((s) => s.value === currentStatus)?.label || "Status"}
-            <ChevronDown className={cn("h-4 w-4 transition-transform", statusOpen && "rotate-180")} />
-          </button>
-          {statusOpen && (
-            <motion.div
-              role="listbox"
-              aria-label="Status options"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 mt-2 z-50 min-w-[160px] p-1 rounded-lg border border-border bg-background shadow-lg"
+          // Don't show categories with 0 projects (except "All")
+          if (count === 0 && category.value !== "all") return null;
+
+          return (
+            <motion.button
+              key={category.value}
+              onClick={() => updateFilters("category", category.value)}
+              className={cn(
+                "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              {statuses.map((status) => (
-                <button
-                  key={status.value}
-                  role="option"
-                  aria-selected={currentStatus === status.value}
-                  onClick={() => {
-                    updateFilters("status", status.value);
-                    setStatusOpen(false);
-                  }}
-                  className={cn(
-                    "w-full px-3 py-2 text-left text-sm rounded-md transition-colors",
-                    currentStatus === status.value
-                      ? "bg-primary/10 text-primary"
-                      : "hover:bg-muted"
-                  )}
-                >
-                  {status.label}
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </div>
-
-        {/* Clear Filters */}
-        {hasFilters && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            onClick={clearFilters}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium",
-              "text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-            )}
-          >
-            <X className="h-4 w-4" />
-            Clear filters
-          </motion.button>
-        )}
+              {category.label}
+              <span
+                className={cn(
+                  "text-xs px-1.5 py-0.5 rounded-full",
+                  isActive
+                    ? "bg-primary-foreground/20 text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                )}
+              >
+                {count}
+              </span>
+            </motion.button>
+          );
+        })}
       </div>
 
-      {/* Active Filters Display */}
+      {/* Active Tech Filter & Clear Button */}
       {hasFilters && (
         <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          className="flex flex-wrap items-center gap-2 pt-2"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-wrap items-center gap-2"
         >
-          <span className="text-sm text-muted-foreground">Active filters:</span>
-          {currentCategory !== "all" && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-sm">
-              {categories.find((c) => c.value === currentCategory)?.label}
-              <button
-                onClick={() => updateFilters("category", "all")}
-                className="hover:text-primary/70"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          )}
-          {currentStatus !== "all" && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-sm">
-              {statuses.find((s) => s.value === currentStatus)?.label}
-              <button
-                onClick={() => updateFilters("status", "all")}
-                className="hover:text-primary/70"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          )}
           {currentTech && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-sm">
-              {currentTech}
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
+              Tech: {currentTech}
               <button
                 onClick={() => updateFilters("tech", "")}
-                className="hover:text-primary/70"
+                className="hover:text-primary/70 transition-colors"
+                aria-label={`Remove ${currentTech} filter`}
               >
-                <X className="h-3 w-3" />
+                <X className="h-3.5 w-3.5" />
               </button>
             </span>
           )}
+          <button
+            onClick={clearFilters}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+          >
+            <X className="h-3.5 w-3.5" />
+            Clear all
+          </button>
         </motion.div>
       )}
     </div>
@@ -223,7 +142,6 @@ export function useProjectFilters() {
 
   return {
     category: (searchParams?.get("category") as ProjectCategory | "all") || "all",
-    status: (searchParams?.get("status") as ProjectStatus | "all") || "all",
     tech: searchParams?.get("tech") || "",
   };
 }
