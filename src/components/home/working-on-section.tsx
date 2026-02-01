@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Code, Brain, Server } from "lucide-react";
 import { HoverCard } from "@/components/ui/animated-card";
+import { Section, SectionHeader } from "@/components/ui/Section";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 
 const workItems = [
@@ -35,23 +36,15 @@ const workItems = [
 
 export function WorkingOnSection() {
   return (
-    <section className="my-16 px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.4 }}
-      >
-        <h2 className="text-3xl font-bold text-center mb-4">
-          What I&apos;m Currently Working On
-        </h2>
-        <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
-          A few things keeping me busy these days
-        </p>
-      </motion.div>
+    <Section padding="default" size="wide" divider>
+      <SectionHeader
+        title="What I'm Currently Working On"
+        description="A few things keeping me busy these days"
+        align="center"
+      />
 
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        className="grid grid-cols-1 md:grid-cols-3 gap-6"
         variants={staggerContainer}
         initial="initial"
         whileInView="animate"
@@ -79,6 +72,6 @@ export function WorkingOnSection() {
           );
         })}
       </motion.div>
-    </section>
+    </Section>
   );
 }
