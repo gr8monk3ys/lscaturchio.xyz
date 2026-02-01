@@ -91,7 +91,7 @@ describe('api-auth', () => {
 
     describe('production mode', () => {
       beforeEach(() => {
-        process.env.NODE_ENV = 'production';
+        (process.env as { NODE_ENV: string }).NODE_ENV = 'production';
       });
 
       it('returns 401 when API key env var is not configured', async () => {
@@ -194,7 +194,7 @@ describe('api-auth', () => {
 
     describe('development mode', () => {
       beforeEach(() => {
-        process.env.NODE_ENV = 'development';
+        (process.env as { NODE_ENV: string }).NODE_ENV = 'development';
       });
 
       it('allows access when API key env var is not configured', () => {
@@ -241,7 +241,7 @@ describe('api-auth', () => {
 
     describe('test mode', () => {
       beforeEach(() => {
-        process.env.NODE_ENV = 'test';
+        (process.env as { NODE_ENV: string }).NODE_ENV = 'test';
       });
 
       it('allows access when API key env var is not configured', () => {
@@ -257,7 +257,7 @@ describe('api-auth', () => {
 
     describe('timing attack resistance', () => {
       it('processes valid and invalid keys in similar time', () => {
-        process.env.NODE_ENV = 'production';
+        (process.env as { NODE_ENV: string }).NODE_ENV = 'production';
         process.env.ANALYTICS_API_KEY = 'a'.repeat(64);
 
         // Measure time for valid key
@@ -281,7 +281,7 @@ describe('api-auth', () => {
 
     describe('options parameter', () => {
       beforeEach(() => {
-        process.env.NODE_ENV = 'production';
+        (process.env as { NODE_ENV: string }).NODE_ENV = 'production';
       });
 
       it('uses default options when none provided', () => {
