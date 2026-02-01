@@ -3,8 +3,6 @@ import {
   FileText,
   Briefcase,
   BookOpen,
-  Lightbulb,
-  Code2,
   FolderKanban,
   Layers,
   Tags,
@@ -18,7 +16,10 @@ import {
   Film,
   Camera,
   Mic,
-  Compass
+  Compass,
+  MessageSquare,
+  Bookmark,
+  Heart
 } from 'lucide-react';
 
 export interface NavItem {
@@ -42,7 +43,7 @@ export const startHereLink: NavItem = {
   description: 'New? Begin your journey here'
 };
 
-// Categorized navigation with dropdowns
+// Categorized navigation with dropdowns - reorganized into 4 cleaner categories
 export const navigationCategories: NavCategory[] = [
   {
     name: 'About',
@@ -51,23 +52,7 @@ export const navigationCategories: NavCategory[] = [
       { name: 'Start Here', href: '/start-here', icon: Compass, description: 'New? Begin here' },
       { name: 'About Me', href: '/about', icon: User, description: 'Who I am' },
       { name: 'Now', href: '/now', icon: Clock, description: 'What I\'m up to' },
-      { name: 'Uses', href: '/uses', icon: Wrench, description: 'My setup & tools' },
-      { name: 'Books', href: '/books', icon: Book, description: 'What I\'m reading' },
-      { name: 'Movies', href: '/movies', icon: Film, description: 'Films I\'ve watched' },
-      { name: 'Photos', href: '/photos', icon: Camera, description: 'Photography' },
-      { name: 'Links', href: '/links', icon: Link2, description: 'Bookmarks & resources' },
-    ],
-  },
-  {
-    name: 'Content',
-    icon: FileText,
-    items: [
-      { name: 'Blog', href: '/blog', icon: BookOpen, description: 'Articles and thoughts' },
-      { name: 'Podcast', href: '/podcast', icon: Mic, description: 'Audio episodes' },
-      { name: 'TIL', href: '/til', icon: Lightbulb, description: 'Today I learned' },
-      { name: 'Snippets', href: '/snippets', icon: Code2, description: 'Code snippets' },
-      { name: 'Series', href: '/series', icon: Layers, description: 'Article series' },
-      { name: 'Tags', href: '/tags', icon: Tags, description: 'Browse by topic' },
+      { name: 'Professional', href: '/professional', icon: Sparkles, description: 'Work history' },
     ],
   },
   {
@@ -76,7 +61,29 @@ export const navigationCategories: NavCategory[] = [
     items: [
       { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
       { name: 'Services', href: '/services', icon: Building2, description: 'What I offer' },
-      { name: 'Professional', href: '/professional', icon: Sparkles, description: 'Work history' },
+      { name: 'Testimonials', href: '/testimonials', icon: MessageSquare, description: 'Client feedback' },
+    ],
+  },
+  {
+    name: 'Content',
+    icon: FileText,
+    items: [
+      { name: 'Blog', href: '/blog', icon: BookOpen, description: 'Articles and thoughts' },
+      { name: 'Series', href: '/series', icon: Layers, description: 'Article series' },
+      { name: 'Podcast', href: '/podcast', icon: Mic, description: 'Audio episodes' },
+      { name: 'Bookmarks', href: '/bookmarks', icon: Bookmark, description: 'Curated resources' },
+      { name: 'Tags', href: '/tags', icon: Tags, description: 'Browse by topic' },
+    ],
+  },
+  {
+    name: 'Personal',
+    icon: Heart,
+    items: [
+      { name: 'Books', href: '/books', icon: Book, description: 'What I\'m reading' },
+      { name: 'Movies', href: '/movies', icon: Film, description: 'Films I\'ve watched' },
+      { name: 'Uses', href: '/uses', icon: Wrench, description: 'My setup & tools' },
+      { name: 'Photos', href: '/photos', icon: Camera, description: 'Photography' },
+      { name: 'Links', href: '/links', icon: Link2, description: 'External links' },
     ],
   },
 ];
@@ -93,9 +100,8 @@ export const navigation = [
   { name: 'Start Here', href: '/start-here' },
   { name: 'About', href: '/about' },
   { name: 'Blog', href: '/blog' },
-  { name: 'TIL', href: '/til' },
-  { name: 'Snippets', href: '/snippets' },
   { name: 'Projects', href: '/projects' },
+  { name: 'Services', href: '/services' },
 ];
 
 // All pages for search/sitemap
@@ -104,19 +110,19 @@ export const allPages: NavItem[] = [
   { name: 'Start Here', href: '/start-here' },
   { name: 'About', href: '/about' },
   { name: 'Now', href: '/now' },
-  { name: 'Uses', href: '/uses' },
-  { name: 'Books', href: '/books' },
-  { name: 'Movies', href: '/movies' },
-  { name: 'Photos', href: '/photos' },
-  { name: 'Links', href: '/links' },
-  { name: 'Blog', href: '/blog' },
-  { name: 'Podcast', href: '/podcast' },
-  { name: 'TIL', href: '/til' },
-  { name: 'Snippets', href: '/snippets' },
-  { name: 'Series', href: '/series' },
-  { name: 'Tags', href: '/tags' },
+  { name: 'Professional', href: '/professional' },
   { name: 'Projects', href: '/projects' },
   { name: 'Services', href: '/services' },
-  { name: 'Professional', href: '/professional' },
+  { name: 'Testimonials', href: '/testimonials' },
+  { name: 'Blog', href: '/blog' },
+  { name: 'Series', href: '/series' },
+  { name: 'Podcast', href: '/podcast' },
+  { name: 'Bookmarks', href: '/bookmarks' },
+  { name: 'Tags', href: '/tags' },
+  { name: 'Books', href: '/books' },
+  { name: 'Movies', href: '/movies' },
+  { name: 'Uses', href: '/uses' },
+  { name: 'Photos', href: '/photos' },
+  { name: 'Links', href: '/links' },
   { name: 'Contact', href: '/contact' },
 ];

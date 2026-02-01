@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Code2, RefreshCw, Clock, Calendar } from "lucide-react";
-import { AnimatedCounter, SkillBar } from "./animated-counter";
+import { AnimatedCounter, SkillBar } from "@/components/ui/animated-counter";
 import { logError } from "@/lib/logger";
 import type { WakaTimeStats } from "@/lib/wakatime";
 import { getLanguageColor } from "@/lib/wakatime";

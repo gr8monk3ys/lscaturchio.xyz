@@ -34,7 +34,7 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
       className={cn(
         "relative flex flex-col gap-8 overflow-hidden p-8",
         isHighlighted
-          ? "bg-foreground text-background shadow-[12px_12px_24px_rgba(0,0,0,0.3),-12px_-12px_24px_rgba(60,60,60,0.2)]"
+          ? "bg-foreground text-background shadow-[var(--neu-shadow-lg)]"
           : "",
         isPopular && "neu-flat-lg"
       )}

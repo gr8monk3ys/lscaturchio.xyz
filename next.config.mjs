@@ -6,6 +6,35 @@ import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
+  async redirects() {
+    return [
+      {
+        source: '/til',
+        destination: '/blog',
+        permanent: true,
+      },
+      {
+        source: '/til/:path*',
+        destination: '/blog',
+        permanent: true,
+      },
+      {
+        source: '/snippets',
+        destination: '/blog',
+        permanent: true,
+      },
+      {
+        source: '/snippets/:path*',
+        destination: '/blog',
+        permanent: true,
+      },
+      {
+        source: '/analytics',
+        destination: '/stats',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

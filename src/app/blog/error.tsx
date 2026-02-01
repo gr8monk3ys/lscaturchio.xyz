@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import { logError } from '@/lib/logger'
 
 export default function BlogError({
   error,
@@ -11,7 +12,7 @@ export default function BlogError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('Blog error:', error)
+    logError('Blog error', error, { component: 'blog-error-boundary', digest: error.digest })
   }, [error])
 
   return (
