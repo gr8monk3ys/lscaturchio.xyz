@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { Copy, Check, Code2, ChevronDown } from 'lucide-react'
+import { Copy, Check, Code2, ChevronDown, FileJson } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Endpoint {
@@ -129,15 +129,42 @@ export function ApiDocumentation() {
         </code>
 
         <h3 className="text-lg font-semibold mt-6 mb-3">Rate Limiting</h3>
-        <p className="text-sm text-muted-foreground">
-          No rate limiting currently. Please be respectful and don&apos;t abuse the API.
-        </p>
+        <div className="text-sm text-muted-foreground space-y-2">
+          <p>
+            <strong>Standard endpoints:</strong> 100 requests per minute
+          </p>
+          <p>
+            <strong>Search endpoint:</strong> 5 requests per minute (due to AI processing)
+          </p>
+          <p className="text-xs mt-2">
+            Rate limit headers are included in all responses:
+            <code className="ml-2 bg-black/10 dark:bg-white/10 px-1 rounded">X-RateLimit-Limit</code>,
+            <code className="ml-1 bg-black/10 dark:bg-white/10 px-1 rounded">X-RateLimit-Remaining</code>,
+            <code className="ml-1 bg-black/10 dark:bg-white/10 px-1 rounded">X-RateLimit-Reset</code>
+          </p>
+        </div>
 
         <h3 className="text-lg font-semibold mt-6 mb-3">Response Format</h3>
         <p className="text-sm text-muted-foreground">
           All responses are JSON. Successful responses return 200 status code with data.
-          Errors return appropriate status codes (404, 500) with error message.
+          Errors return appropriate status codes (400, 404, 429, 500) with error message.
         </p>
+
+        <h3 className="text-lg font-semibold mt-6 mb-3">OpenAPI Specification</h3>
+        <div className="flex items-center gap-2">
+          <a
+            href="/api/openapi.json"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity"
+          >
+            <FileJson className="h-4 w-4" />
+            Download OpenAPI 3.0 Spec
+          </a>
+          <span className="text-xs text-muted-foreground">
+            (JSON format, compatible with Swagger UI, Postman, etc.)
+          </span>
+        </div>
       </div>
 
       {/* Endpoints */}

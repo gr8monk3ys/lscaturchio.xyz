@@ -18,21 +18,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Development
-npm run dev                    # Start dev server at localhost:3000
-npm run lint                   # Run ESLint checks
-npm run build                  # Production build (auto-generates sitemap)
-npm run start                  # Run production server locally
+bun dev                        # Start dev server at localhost:3000
+bun run lint                   # Run ESLint checks
+bun run build                  # Production build (auto-generates sitemap)
+bun start                      # Run production server locally
 
-# Testing
-npm run test                   # Run unit tests (Vitest)
-npm run test:watch             # Run unit tests in watch mode
-npm run test:coverage          # Run tests with coverage report
-npm run test:e2e               # Run E2E tests (Playwright)
-npm run test:e2e:ui            # Run E2E tests with interactive UI
+# Testing (use 'bun run' to invoke Vitest - 'bun test' uses Bun's incompatible runner)
+bun run test                   # Run unit tests (Vitest)
+bun run test:watch             # Run unit tests in watch mode
+bun run test:coverage          # Run tests with coverage report
+bun run test:e2e               # Run E2E tests (Playwright)
+bun run test:e2e:ui            # Run E2E tests with interactive UI
 
 # AI/Content
-npm run generate-embeddings    # Generate OpenAI embeddings for blog content
-npm run generate-sitemap       # Generate XML sitemap (auto-runs post-build)
+bun run generate-embeddings    # Generate OpenAI embeddings for blog content
+bun run generate-sitemap       # Generate XML sitemap (auto-runs post-build)
 ```
 
 **Environment Variables Required:**
@@ -247,14 +247,14 @@ Handles request/response optimization:
 - Config: `vitest.config.ts`
 - Environment: `happy-dom`
 - Setup file: `src/__tests__/setup.tsx` (mocks Next.js router, Image, matchMedia, IntersectionObserver)
-- Run single test: `npm run test -- src/__tests__/lib/utils.test.ts`
+- Run single test: `bun test src/__tests__/lib/utils.test.ts`
 
 **E2E Tests (Playwright):**
 - Location: `e2e/`
 - Config: `playwright.config.ts`
 - Browsers: Chromium (Desktop), Safari (iPhone 13)
 - Requires dev server running (auto-started by Playwright)
-- Run specific test: `npm run test:e2e -- e2e/blog.spec.ts`
+- Run specific test: `bun run test:e2e -- e2e/blog.spec.ts`
 
 ### Component Architecture
 ```
@@ -373,6 +373,29 @@ This pattern separates content from components for easier updates.
 - Security headers in middleware
 - Row Level Security (RLS) on Supabase tables
 
+**Environment Variable Validation (`src/lib/env.ts`):**
+Uses `@t3-oss/env-nextjs` for runtime validation with Zod schemas:
+- **Automatic validation** - Throws errors at build/startup for missing required vars
+- **Type-safe access** - Full TypeScript support via `env.VARIABLE_NAME`
+- **Server/client separation** - Server vars throw if accessed on client
+- **Empty string handling** - Empty strings treated as undefined
+
+Usage:
+```typescript
+import { env } from '@/lib/env'
+
+// Type-safe access to environment variables
+const supabaseKey = env.SUPABASE_SERVICE_KEY  // Required - throws if missing
+const githubToken = env.GITHUB_TOKEN           // Optional - returns undefined
+const threshold = env.EMBEDDING_MATCH_THRESHOLD // Transformed to number with default 0.5
+```
+
+Required variables:
+- `SUPABASE_SERVICE_KEY` - Server-side Supabase access
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase database URL
+
+To skip validation (e.g., Docker builds): Set `SKIP_ENV_VALIDATION=true`
+
 **API Security Utilities:**
 - `src/lib/csrf.ts` - CSRF protection via Origin header validation (POST/DELETE routes)
 - `src/lib/validations.ts` - Zod schemas for type-safe input validation
@@ -405,6 +428,7 @@ This pattern separates content from components for easier updates.
 
 | File | Purpose |
 |------|---------|
+| `src/lib/env.ts` | Runtime environment variable validation (@t3-oss/env-nextjs) |
 | `src/lib/supabase.ts` | Shared Supabase client for data persistence |
 | `src/lib/validations.ts` | Zod schemas for API input validation |
 | `src/lib/csrf.ts` | CSRF protection for mutating endpoints |
@@ -473,8 +497,8 @@ This pattern separates content from components for easier updates.
    ```
 4. **Important:** Meta object must be duplicated in both files (TypeScript limitation)
 5. Add blog image to `public/images/blog/` (use WebP format, optimize with cwebp)
-6. Run `npm run generate-embeddings` to index for AI chat
-7. Build to regenerate sitemap: `npm run build`
+6. Run `bun run generate-embeddings` to index for AI chat
+7. Build to regenerate sitemap: `bun run build`
 
 ### Creating a Blog Series
 To group related blog posts into a series:
@@ -495,7 +519,7 @@ To group related blog posts into a series:
    - Similarity threshold: `matchEmbeddings()` in `embeddings.ts`
    - Number of retrieved chunks: `matchThreshold` and result limit
    - GPT model: `model: "gpt-4o"` in chat route
-3. Test with `npm run dev` → Navigate to chat page
+3. Test with `bun dev` → Navigate to chat page
 
 ### Styling Changes
 - **Theme colors:** Edit `tailwind.config.ts` custom color vars
@@ -540,14 +564,14 @@ cwebp -q 85 -resize 1200 0 input.jpg -o output.webp
 
 **Build Process:**
 1. `next build` - Generates optimized static/server pages
-2. Post-build hook: `npm run generate-sitemap`
+2. Post-build hook: `bun run generate-sitemap`
 3. Vercel deploys to global edge network
 
 **First Deploy Checklist:**
 1. Configure environment variables in Vercel
 2. Run Supabase migration (views and reactions tables)
-3. Generate embeddings: `npm run generate-embeddings`
-4. Verify build passes locally: `npm run build`
+3. Generate embeddings: `bun run generate-embeddings`
+4. Verify build passes locally: `bun run build`
 5. Push to main branch
 
 ## Important Notes
@@ -563,7 +587,7 @@ cwebp -q 85 -resize 1200 0 input.jpg -o output.webp
 - **Meta object must be duplicated** - Define meta in both `content.mdx` AND `page.tsx` (TypeScript limitation prevents importing from MDX)
 - **Date format**: Use "YYYY-MM-DD" format in meta.date field
 - **Series metadata**: Optional but recommended for tutorial content
-- **Embeddings must be regenerated** after blog content changes for AI chat to reflect updates: `npm run generate-embeddings`
+- **Embeddings must be regenerated** after blog content changes for AI chat to reflect updates: `bun run generate-embeddings`
 - **All blog posts get 4 ads** automatically via BlogLayout (top, 2 in-article, bottom)
 - **Text-to-speech is built-in** - BlogLayout provides Play/Pause controls
 - **Engagement tracking**: Views auto-tracked on page load, reactions require user interaction
@@ -588,9 +612,9 @@ cwebp -q 85 -resize 1200 0 input.jpg -o output.webp
 ### Testing
 - **Unit tests**: 98 tests in `src/__tests__/` (sanitize, rate-limit, csrf, validations, utils, formatDate, reading-time)
 - **E2E tests**: 13 tests in `e2e/` (navigation, blog, search)
-- **Test before PR**: Run `npm run test && npm run test:e2e` before submitting changes
+- **Test before PR**: Run `bun test && bun run test:e2e` before submitting changes
 - **Mocks provided**: Next.js router, Image, matchMedia, IntersectionObserver mocked in setup file
-- **Run single test**: `npm run test -- src/__tests__/lib/validations.test.ts`
+- **Run single test**: `bun test src/__tests__/lib/validations.test.ts`
 
 ### API Keys & Security
 - **API keys server-side only** - never expose in client code
