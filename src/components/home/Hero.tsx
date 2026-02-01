@@ -89,7 +89,7 @@ export function Hero() {
               variants={photoVariants}
               whileHover={{ 
                 scale: 1.05,
-                transition: { type: "spring", stiffness: 300 }
+                transition: { type: "spring" as const, stiffness: 300 }
               }}
             >
               <OptimizedImage
@@ -164,7 +164,7 @@ export function Hero() {
                 variants={iconVariants}
                 whileHover={{
                   scale: 1.1,
-                  transition: { type: "spring", stiffness: 400 }
+                  transition: { type: "spring" as const, stiffness: 400 }
                 }}
               >
                 <item.icon className="h-5 w-5" />

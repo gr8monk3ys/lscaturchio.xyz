@@ -53,7 +53,7 @@ function ToggleButton({ isActive, onClick, icon, label }: ToggleButtonProps) {
         <motion.div
           layoutId="activeViewToggle"
           className="absolute inset-0 bg-primary rounded-md"
-          transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+          transition={{ type: "spring" as const, bounce: 0.2, duration: 0.4 }}
         />
       )}
       <span className="relative flex items-center gap-2">

@@ -91,7 +91,7 @@ export function StatCard({
       className={`relative p-6 rounded-2xl bg-secondary/50 backdrop-blur-sm border border-border/50 overflow-hidden ${className}`}
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
       whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
     >
       {/* Background gradient */}
@@ -155,7 +155,7 @@ export function AnimatedProgress({
           animate={isInView ? { width: `${percentage}%` } : {}}
           transition={{
             duration,
-            ease: [0.22, 1, 0.36, 1],
+            ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
           }}
         />
       </div>
@@ -212,7 +212,7 @@ export function SkillBar({
           transition={{
             duration: 1,
             delay: 0.2,
-            ease: [0.22, 1, 0.36, 1],
+            ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
           }}
         />
       </div>
@@ -273,7 +273,7 @@ export function CircularProgress({
           cy={size / 2}
           initial={{ strokeDashoffset: circumference }}
           animate={isInView ? { strokeDashoffset: offset } : {}}
-          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           style={{ strokeDasharray: circumference }}
         />
       </svg>

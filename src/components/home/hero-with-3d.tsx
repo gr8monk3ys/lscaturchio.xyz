@@ -46,7 +46,7 @@ const photoVariants = {
     scale: 1,
     rotate: 0,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 100,
       damping: 20,
     },
@@ -58,7 +58,7 @@ const iconVariants = {
   visible: (i: number) => ({
     scale: 1,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 200,
       damping: 20,
       delay: 1 + i * 0.1,
@@ -124,7 +124,7 @@ export function HeroWith3D({ simplified = false, disable3D = false }: HeroWith3D
               variants={photoVariants}
               whileHover={{
                 scale: 1.05,
-                transition: { type: 'spring', stiffness: 300 },
+                transition: { type: 'spring' as const, stiffness: 300 },
               }}
             >
               <OptimizedImage
@@ -205,7 +205,7 @@ export function HeroWith3D({ simplified = false, disable3D = false }: HeroWith3D
                 variants={iconVariants}
                 whileHover={{
                   scale: 1.1,
-                  transition: { type: 'spring', stiffness: 400 },
+                  transition: { type: 'spring' as const, stiffness: 400 },
                 }}
               >
                 <item.icon className="h-5 w-5" />
