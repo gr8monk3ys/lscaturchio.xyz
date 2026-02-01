@@ -144,7 +144,7 @@ export function EasterEggModal({ isOpen, onClose }: EasterEggModalProps) {
                 transition={{
                   duration: piece.duration,
                   delay: piece.delay,
-                  ease: "easeIn",
+                  ease: "easeIn" as const,
                 }}
               />
             ))}
@@ -157,14 +157,14 @@ export function EasterEggModal({ isOpen, onClose }: EasterEggModalProps) {
             initial={{ scale: 0.8, y: 20, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.8, y: 20, opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            transition={{ type: "spring" as const, damping: 25, stiffness: 300 }}
           >
             {/* Header with gradient */}
             <div className="bg-gradient-to-r from-primary/20 via-purple-500/20 to-pink-500/20 p-6 text-center">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring", damping: 10 }}
+                transition={{ delay: 0.2, type: "spring" as const, damping: 10 }}
                 className="text-6xl mb-2"
               >
                 🎮

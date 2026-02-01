@@ -356,7 +356,7 @@ export default function GuestbookPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{
-                      type: 'spring',
+                      type: 'spring' as const,
                       stiffness: 300,
                       damping: 30,
                       delay: index * 0.05,

@@ -46,7 +46,7 @@ export function AnimatedText({ text, className = "", once = true, delay = 0 }: A
           variants={wordVariants}
           transition={{
             duration: 0.5,
-            ease: [0.22, 1, 0.36, 1],
+            ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
           }}
           style={{ perspective: 1000 }}
         >
@@ -107,7 +107,7 @@ export function AnimatedHeading({
             variants={charVariants}
             transition={{
               duration: 0.4,
-              ease: [0.22, 1, 0.36, 1],
+              ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
             }}
             style={{
               perspective: 1000,
@@ -144,7 +144,7 @@ export function GradientText({
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: 0.5,
-        ease: [0.22, 1, 0.36, 1],
+        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
       }}
     >
       {children}
@@ -220,7 +220,7 @@ export function BlurInText({ children, className = "", delay = 0 }: BlurInTextPr
       transition={{
         duration: 0.8,
         delay,
-        ease: [0.22, 1, 0.36, 1],
+        ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
       }}
     >
       {children}
@@ -259,7 +259,7 @@ export function SplitText({
             transition={{
               duration: 0.6,
               delay: delay + index * 0.1,
-              ease: [0.22, 1, 0.36, 1],
+              ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
             }}
           >
             {line}

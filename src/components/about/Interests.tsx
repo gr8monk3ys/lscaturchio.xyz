@@ -131,7 +131,7 @@ export function Interests() {
                 variants={itemVariants}
                 whileHover={{ 
                   scale: 1.02,
-                  transition: { type: "spring", stiffness: 300 }
+                  transition: { type: "spring" as const, stiffness: 300 }
                 }}
                 className="group relative flex flex-col gap-4"
               >

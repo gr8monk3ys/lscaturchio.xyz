@@ -32,11 +32,11 @@ export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps
       transition={{
         duration: 0.5,
         delay: index * 0.1,
-        ease: [0.6, -0.05, 0.01, 0.99],
+        ease: [0.6, -0.05, 0.01, 0.99] as [number, number, number, number],
       }}
       whileHover={{
         y: -4,
-        transition: { duration: 0.2, ease: 'easeOut' },
+        transition: { duration: 0.2, ease: 'easeOut' as const },
       }}
       className="group relative h-full"
     >

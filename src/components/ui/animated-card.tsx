@@ -277,7 +277,7 @@ export function FlipCard({ front, back, className = "" }: FlipCardProps) {
       className={`relative cursor-pointer ${className}`}
       style={{ transformStyle: "preserve-3d", perspective: 1000 }}
       whileHover={{ rotateY: 180 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
     >
       {/* Front */}
       <div
