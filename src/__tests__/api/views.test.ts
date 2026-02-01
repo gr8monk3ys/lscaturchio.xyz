@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Mock the dependencies - use inline vi.fn() in factory since it's hoisted
 vi.mock('@/lib/supabase', () => ({
@@ -53,7 +54,7 @@ describe('Views API Route', () => {
     process.env.SUPABASE_SERVICE_KEY = 'test-service-key';
     // Reset mocks to their default behavior
     vi.mocked(isSupabaseConfigured).mockReturnValue(true);
-    vi.mocked(getSupabase).mockReturnValue(mockSupabase);
+    vi.mocked(getSupabase).mockReturnValue(mockSupabase as unknown as SupabaseClient);
     vi.mocked(validateCsrf).mockReturnValue(null);
   });
 
@@ -137,7 +138,9 @@ describe('Views API Route', () => {
       ]);
 
       // Note: The route uses OPTIONS method for fetching all views, not GET with ?all=true
-      const response = await OPTIONS();
+      // OPTIONS is wrapped with withRateLimit, so it requires a NextRequest argument
+      const request = new NextRequest('http://localhost/api/views', { method: 'OPTIONS' });
+      const response = await OPTIONS(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);

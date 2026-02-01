@@ -357,8 +357,8 @@ describe('/api/v1/blogs', () => {
   });
 
   describe('GET /api/v1/blogs/[slug] (single)', () => {
-    // Helper to create mock params
-    const createParams = (slug: string) => ({ slug });
+    // Helper to create mock params (Next.js 15+ uses Promise-based params)
+    const createParams = (slug: string) => Promise.resolve({ slug });
 
     beforeEach(() => {
       // Reset mock to default resolved value after list tests

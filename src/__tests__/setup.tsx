@@ -1,5 +1,23 @@
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
+
+// Vitest 4.x compatibility helpers
+// Add vi.mocked if not available (polyfill for older patterns)
+if (typeof vi.mocked !== 'function') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (vi as any).mocked = function mocked<T>(fn: T): T & Mock {
+    return fn as T & Mock;
+  };
+}
+
+// Add vi.stubGlobal if not available
+if (typeof vi.stubGlobal !== 'function') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (vi as any).stubGlobal = function stubGlobal(name: string, value: unknown): void {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (globalThis as any)[name] = value;
+  };
+}
 
 // Mock Next.js router
 vi.mock('next/navigation', () => ({

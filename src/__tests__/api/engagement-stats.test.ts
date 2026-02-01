@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 // Mock dependencies before importing the route
 vi.mock('@/lib/supabase', () => ({
@@ -74,8 +74,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -98,8 +97,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -127,8 +125,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -158,8 +155,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -180,8 +176,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -199,8 +194,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -219,8 +213,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -240,8 +233,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -256,8 +248,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -274,8 +265,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -294,8 +284,7 @@ describe('/api/engagement-stats', () => {
         error: { code: 'PGRST301', message: 'Connection failed' },
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -310,8 +299,7 @@ describe('/api/engagement-stats', () => {
         error: dbError,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      await GET(request);
+      await GET();
 
       expect(logError).toHaveBeenCalledWith(
         'Engagement Stats: Database error',
@@ -329,8 +317,7 @@ describe('/api/engagement-stats', () => {
         new Error('File system error')
       );
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -346,8 +333,7 @@ describe('/api/engagement-stats', () => {
       });
       (getAllBlogs as ReturnType<typeof vi.fn>).mockRejectedValue(error);
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      await GET(request);
+      await GET();
 
       expect(logError).toHaveBeenCalledWith(
         'Engagement Stats: Unexpected error',
@@ -361,8 +347,7 @@ describe('/api/engagement-stats', () => {
         throw new Error('Supabase not configured');
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -378,8 +363,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -396,8 +380,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -416,8 +399,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -438,8 +420,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      await GET(request);
+      await GET();
 
       expect(mockSupabase.from).toHaveBeenCalledWith('reactions');
       expect(mockSupabase.select).toHaveBeenCalledWith('slug, likes, bookmarks');
@@ -458,8 +439,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -480,8 +460,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -505,8 +484,7 @@ describe('/api/engagement-stats', () => {
         error: null,
       });
 
-      const request = new NextRequest('http://localhost/api/engagement-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
