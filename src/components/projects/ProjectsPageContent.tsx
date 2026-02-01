@@ -3,12 +3,11 @@
 import { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { products } from "@/constants/products";
-import { ProjectCategory, ProjectStatus } from "@/types/products";
+import { ProjectCategory } from "@/types/products";
 import { ProjectFilters } from "./ProjectFilters";
 import { ProjectGrid } from "./ProjectGrid";
 import { ProjectTimeline } from "./ProjectTimeline";
 import { ProjectViewToggle, ProjectViewWrapper } from "./ProjectViewToggle";
-import { TechStackViz } from "./TechStackViz";
 
 type ViewMode = "grid" | "timeline";
 
@@ -18,27 +17,15 @@ function ProjectsContent() {
 
   // Get filter values from URL
   const category = (searchParams?.get("category") as ProjectCategory | "all") || "all";
-  const status = (searchParams?.get("status") as ProjectStatus | "all") || "all";
   const tech = searchParams?.get("tech") || "";
 
   // Filter projects based on current filters
   const filteredProjects = useMemo(() => {
     let result = [...products];
 
-    // Filter by category (skip if products don't have categories)
+    // Filter by category
     if (category && category !== "all") {
-      result = result.filter((p) => {
-        const productCategories = (p as { categories?: ProjectCategory[] }).categories;
-        return productCategories?.includes(category as ProjectCategory);
-      });
-    }
-
-    // Filter by status (skip if products don't have status)
-    if (status && status !== "all") {
-      result = result.filter((p) => {
-        const productStatus = (p as { status?: ProjectStatus }).status;
-        return productStatus === status;
-      });
+      result = result.filter((p) => p.categories?.includes(category as ProjectCategory));
     }
 
     // Filter by tech
@@ -47,32 +34,23 @@ function ProjectsContent() {
     }
 
     return result;
-  }, [category, status, tech]);
+  }, [category, tech]);
 
   // Calculate filter counts for display
-  const filterCounts = useMemo(() => {
-    return {
-      total: products.length,
-      filtered: filteredProjects.length,
-      hasFilters: category !== "all" || status !== "all" || !!tech,
-    };
-  }, [category, status, tech, filteredProjects.length]);
+  const hasFilters = category !== "all" || !!tech;
 
   return (
     <div className="space-y-8">
-      {/* Tech Stack Visualization */}
-      <TechStackViz />
-
       {/* Filters and View Toggle */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-        <ProjectFilters className="flex-1" />
+        <ProjectFilters className="flex-1" projects={products} />
         <ProjectViewToggle mode={viewMode} onModeChange={setViewMode} />
       </div>
 
       {/* Results Count */}
-      {filterCounts.hasFilters && (
+      {hasFilters && (
         <div className="text-sm text-muted-foreground">
-          Showing {filterCounts.filtered} of {filterCounts.total} projects
+          Showing {filteredProjects.length} of {products.length} projects
         </div>
       )}
 

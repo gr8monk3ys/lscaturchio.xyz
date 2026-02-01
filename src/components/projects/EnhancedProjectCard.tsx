@@ -13,6 +13,7 @@ interface EnhancedProjectCardProps {
   product: Product;
   variant?: "featured" | "default";
   className?: string;
+  showCaseStudyPreview?: boolean;
 }
 
 const statusColors: Record<ProjectStatus, { bg: string; text: string; label: string }> = {
@@ -33,6 +34,7 @@ export function EnhancedProjectCard({
   product,
   variant = "default",
   className,
+  showCaseStudyPreview = false,
 }: EnhancedProjectCardProps) {
   const isFeatured = variant === "featured" || product.featured;
   const status = product.status || "active";
@@ -128,6 +130,30 @@ export function EnhancedProjectCard({
               {product.description}
             </p>
           </Link>
+
+          {/* Case Study Preview - Only for featured cards */}
+          {showCaseStudyPreview && product.caseStudy && (
+            <div className="p-3 rounded-lg bg-primary/5 border border-primary/10 space-y-2">
+              <p className="text-xs font-medium text-primary uppercase tracking-wide">
+                Case Study
+              </p>
+              <p className="text-sm text-muted-foreground line-clamp-2">
+                {product.caseStudy.challenge}
+              </p>
+              {product.caseStudy.results && product.caseStudy.results.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {product.caseStudy.results.slice(0, 2).map((result, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full"
+                    >
+                      {result}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Tech Stack */}
           {product.stack && product.stack.length > 0 && (

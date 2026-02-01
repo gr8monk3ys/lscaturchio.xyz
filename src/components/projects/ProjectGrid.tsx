@@ -5,10 +5,12 @@ import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { EnhancedProjectCard } from "./EnhancedProjectCard";
 import { cn } from "@/lib/utils";
+import { Sparkles, Archive } from "lucide-react";
 
 interface ProjectGridProps {
   projects: Product[];
   className?: string;
+  showSectionHeaders?: boolean;
 }
 
 const containerVariants = {
@@ -40,25 +42,24 @@ const itemVariants = {
   },
 };
 
-export function ProjectGrid({ projects, className }: ProjectGridProps) {
-  // Memoize sorted featured projects
-  const sortedFeatured = useMemo(() => {
-    return [...projects]
+export function ProjectGrid({ projects, className, showSectionHeaders = true }: ProjectGridProps) {
+  // Separate featured and regular projects, sorted by date
+  const { featuredProjects, regularProjects } = useMemo(() => {
+    const featured = [...projects]
       .filter((p) => p.featured)
       .sort((a, b) => {
         if (!a.startDate || !b.startDate) return 0;
         return b.startDate.localeCompare(a.startDate);
       });
-  }, [projects]);
 
-  // Memoize sorted regular projects
-  const sortedRegular = useMemo(() => {
-    return [...projects]
+    const regular = [...projects]
       .filter((p) => !p.featured)
       .sort((a, b) => {
         if (!a.startDate || !b.startDate) return 0;
         return b.startDate.localeCompare(a.startDate);
       });
+
+    return { featuredProjects: featured, regularProjects: regular };
   }, [projects]);
 
   if (projects.length === 0) {
@@ -75,32 +76,62 @@ export function ProjectGrid({ projects, className }: ProjectGridProps) {
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: "-50px" }}
-      className={cn("space-y-8", className)}
+      className={cn("space-y-12", className)}
     >
       {/* Featured Projects - Bento Layout */}
-      {sortedFeatured.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {sortedFeatured.map((project) => (
-            <motion.div
-              key={project.slug}
-              variants={itemVariants}
-              className="md:col-span-2 lg:col-span-1"
-            >
-              <EnhancedProjectCard product={project} variant="featured" />
-            </motion.div>
-          ))}
-        </div>
+      {featuredProjects.length > 0 && (
+        <section>
+          {showSectionHeaders && (
+            <div className="flex items-center gap-2 mb-6">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <h2 className="text-xl font-semibold">Featured Projects</h2>
+              <span className="text-sm text-muted-foreground">({featuredProjects.length})</span>
+            </div>
+          )}
+
+          {/* Bento Grid: First project large (2 cols), rest in 2-col grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredProjects.map((project, index) => (
+              <motion.div
+                key={project.slug}
+                variants={itemVariants}
+                className={cn(
+                  // First project spans 2 columns on large screens
+                  index === 0 && "md:col-span-2 lg:col-span-2",
+                  // Make the first project row span for bento effect on desktop
+                  index === 0 && "lg:row-span-1"
+                )}
+              >
+                <EnhancedProjectCard
+                  product={project}
+                  variant={index === 0 ? "featured" : "default"}
+                  showCaseStudyPreview={index === 0}
+                />
+              </motion.div>
+            ))}
+          </div>
+        </section>
       )}
 
-      {/* Regular Projects - Standard Grid */}
-      {sortedRegular.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedRegular.map((project) => (
-            <motion.div key={project.slug} variants={itemVariants}>
-              <EnhancedProjectCard product={project} variant="default" />
-            </motion.div>
-          ))}
-        </div>
+      {/* Regular/Archived Projects */}
+      {regularProjects.length > 0 && (
+        <section>
+          {showSectionHeaders && (
+            <div className="flex items-center gap-2 mb-6">
+              <Archive className="h-5 w-5 text-muted-foreground" />
+              <h2 className="text-xl font-semibold text-muted-foreground">Other Projects</h2>
+              <span className="text-sm text-muted-foreground">({regularProjects.length})</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {regularProjects.map((project) => (
+              <motion.div key={project.slug} variants={itemVariants}>
+                <EnhancedProjectCard product={project} variant="default" />
+              </motion.div>
+            ))}
+          </div>
+        </section>
       )}
     </motion.div>
   );
