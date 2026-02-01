@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import type { GitHubRepo, GitHubTopicsResponse } from '@/types/github';
+import { logError } from '@/lib/logger';
 
 async function getGithubRepos(): Promise<GitHubRepo[]> {
   const response = await fetch('https://api.github.com/users/gr8monk3ys/repos', {
@@ -32,7 +33,7 @@ async function getRepoTopics(repoName: string): Promise<string[]> {
   return data.names || [];
 }
 
-export async function GET() {
+export async function GET(_request: NextRequest) {
   try {
     const repos = await getGithubRepos();
     
@@ -58,6 +59,7 @@ export async function GET() {
     
     return NextResponse.json(sortedRepos);
   } catch (error) {
+    logError('GitHub API: Unexpected error', error, { component: 'github', action: 'GET' });
     return NextResponse.json(
       { error: 'Failed to fetch repositories' },
       { status: 500 }

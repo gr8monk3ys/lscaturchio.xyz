@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Mock OpenAI module (must be before route import)
 vi.mock('openai', () => ({
@@ -118,9 +118,7 @@ describe('/api/chat', () => {
   describe('CSRF protection', () => {
     it('returns CSRF error when validation fails', async () => {
       vi.mocked(validateCsrf).mockReturnValue(
-        new Response(JSON.stringify({ error: 'CSRF validation failed' }), {
-          status: 403,
-        })
+        NextResponse.json({ error: 'CSRF validation failed' }, { status: 403 })
       );
 
       const request = createMockRequest({ query: 'test query' });
