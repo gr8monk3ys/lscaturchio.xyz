@@ -8,7 +8,7 @@ export const fadeInUp = {
     opacity: 1,
     transition: {
       duration: 0.5,
-      ease: [0.6, -0.05, 0.01, 0.99]
+      ease: [0.6, -0.05, 0.01, 0.99] as [number, number, number, number]
     }
   }
 }
@@ -29,7 +29,7 @@ export const fadeIn = {
     opacity: 1,
     transition: {
       duration: 0.5,
-      ease: "easeInOut"
+      ease: "easeInOut" as const
     }
   }
 }
@@ -44,7 +44,7 @@ export const scaleUp = {
     opacity: 1,
     transition: {
       duration: 0.5,
-      ease: [0.6, -0.05, 0.01, 0.99]
+      ease: [0.6, -0.05, 0.01, 0.99] as [number, number, number, number]
     }
   }
 }
@@ -59,7 +59,7 @@ export const slideIn = {
     opacity: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
+      ease: "easeOut" as const
     }
   }
 }
@@ -71,7 +71,7 @@ export const parallaxScroll = (yOffset: number = 100) => ({
   animate: {
     y: yOffset,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 10,
       damping: 100,
       mass: 1

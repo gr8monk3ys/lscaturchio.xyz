@@ -125,7 +125,7 @@ export function SkillsShowcase() {
                 variants={itemVariants}
                 whileHover={{ 
                   scale: 1.02,
-                  transition: { type: "spring", stiffness: 300 }
+                  transition: { type: "spring" as const, stiffness: 300 }
                 }}
                 className="bg-background/50 backdrop-blur-sm rounded-xl p-6 border border-primary/10 group"
               >

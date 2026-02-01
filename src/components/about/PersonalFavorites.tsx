@@ -117,7 +117,7 @@ export function PersonalFavorites() {
                 variants={itemVariants}
                 whileHover={{
                   scale: 1.02,
-                  transition: { type: "spring", stiffness: 300 }
+                  transition: { type: "spring" as const, stiffness: 300 }
                 }}
                 className="flex items-start gap-4 p-4 rounded-xl neu-card"
               >

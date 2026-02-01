@@ -94,7 +94,7 @@ export function SecretPageContent() {
             className="text-6xl mb-4"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", damping: 10 }}
+            transition={{ delay: 0.2, type: "spring" as const, damping: 10 }}
           >
             🎉
           </motion.div>

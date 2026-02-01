@@ -89,7 +89,7 @@ export function Navbar() {
                       <motion.div
                         className="absolute bottom-0 left-0 h-0.5 w-full bg-primary"
                         layoutId="navbar-underline"
-                        transition={{ type: "spring", bounce: 0.25 }}
+                        transition={{ type: "spring" as const, bounce: 0.25 }}
                       />
                     )}
                   </Link>

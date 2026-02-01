@@ -27,7 +27,7 @@ export const RepositoryCard = ({ repository }: { repository: Repository }) => {
         y: -5,
         transition: { 
           duration: 0.2,
-          ease: "easeOut"
+          ease: "easeOut" as const
         }
       }}
       viewport={{ once: true, margin: "-100px" }}

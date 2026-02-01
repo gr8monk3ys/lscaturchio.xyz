@@ -110,7 +110,7 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
             initial={{ opacity: 0, y: 8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.96 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
+            transition={{ duration: 0.15, ease: 'easeOut' as const }}
             onMouseEnter={cancelClose}
             onMouseLeave={closeDropdown}
             className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50"
