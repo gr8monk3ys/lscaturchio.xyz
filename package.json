@@ -50,7 +50,7 @@
     "eslint": "9.39.2",
     "eslint-config-next": "16.1.4",
     "fast-glob": "^3.3.3",
-    "fast-xml-parser": "^5.3.3",
+    "fast-xml-parser": "^5.3.4",
     "feed": "^5.2.0",
     "framer-motion": "^12.28.1",
     "glob": "^13.0.0",
