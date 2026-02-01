@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -10,10 +10,96 @@ import { ThemeToggle } from './theme-toggle';
 import { SearchModal } from './search-modal';
 import { NavDropdown } from './nav-dropdown';
 
+// Animation variants for nav items
+const navItemVariants = {
+  initial: { scale: 1 },
+  hover: {
+    scale: 1.05,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 25,
+    },
+  },
+  tap: {
+    scale: 0.95,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 25,
+    },
+  },
+};
+
+// Underline animation variants
+const underlineVariants = {
+  initial: {
+    scaleX: 0,
+    originX: 0,
+  },
+  hover: {
+    scaleX: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 30,
+    },
+  },
+  active: {
+    scaleX: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 30,
+    },
+  },
+};
+
+// ============================================
+// NAV LINK - Individual navigation link with micro-interactions
+// ============================================
+interface NavLinkProps {
+  href: string;
+  children: React.ReactNode;
+  isActive?: boolean;
+}
+
+function NavLink({ href, children, isActive = false }: NavLinkProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <motion.div
+      variants={navItemVariants}
+      initial="initial"
+      whileHover="hover"
+      whileTap="tap"
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+    >
+      <Link
+        href={href}
+        className={`relative px-3 py-2 text-sm font-medium transition-colors block ${
+          isActive
+            ? 'text-foreground'
+            : 'text-foreground/60 hover:text-foreground/80'
+        }`}
+      >
+        {children}
+        {/* Animated underline */}
+        <motion.div
+          className="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-primary to-secondary rounded-full"
+          variants={underlineVariants}
+          initial="initial"
+          animate={isActive ? "active" : isHovered ? "hover" : "initial"}
+        />
+      </Link>
+    </motion.div>
+  );
+}
+
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const dropdownRefs = useRef<Map<string, () => void>>(new Map());
   const pathname = usePathname();
 
   useEffect(() => {
@@ -74,25 +160,14 @@ export function Navbar() {
                   </li>
                 ))}
 
-                {/* Contact Link */}
+                {/* Contact Link with enhanced hover animation */}
                 <li>
-                  <Link
+                  <NavLink
                     href={contactLink.href}
-                    className={`relative px-3 py-2 text-sm font-medium transition-colors ${
-                      pathname === contactLink.href
-                        ? 'text-foreground'
-                        : 'text-foreground/60 hover:text-foreground/80'
-                    }`}
+                    isActive={pathname === contactLink.href}
                   >
                     {contactLink.name}
-                    {pathname === contactLink.href && (
-                      <motion.div
-                        className="absolute bottom-0 left-0 h-0.5 w-full bg-primary"
-                        layoutId="navbar-underline"
-                        transition={{ type: "spring" as const, bounce: 0.25 }}
-                      />
-                    )}
-                  </Link>
+                  </NavLink>
                 </li>
               </ul>
             </nav>
