@@ -6,15 +6,17 @@ Welcome to the repository for my personal website, **lscaturchio.xyz**! This pro
 
 ## 🌟 Key Features
 
-- **🚀 Powered by Next.js 13**: Utilizes the latest version of Next.js for efficient, scalable, and production-ready web applications.
+- **🚀 Powered by Next.js 14**: Utilizes the App Router and React Server Components for efficient, scalable, and production-ready web applications.
+- **🤖 AI Chat with RAG**: GPT-4o powered chat that answers questions using blog content via retrieval-augmented generation.
+- **📊 Engagement Tracking**: View counts, likes, and bookmarks persisted in Supabase with server-side deduplication.
 - **💅 Styled with Tailwind CSS**: A utility-first CSS framework ensuring rapid and consistent design implementation.
 - **🎨 Interactive Animations**: Smooth, responsive animations created with Framer Motion for an engaging UI.
-- **📝 MDX Integration**: Blog posts and content written in MDX, blending Markdown simplicity with React component flexibility.
+- **📝 MDX Integration**: Blog posts with syntax highlighting, series support, and React component flexibility.
 - **📱 Fully Responsive**: Optimized for all devices, from desktop monitors to smartphones.
-- **🎯 SEO-Optimized**: Meta tags, structured data, and best practices ensure improved discoverability on search engines.
-- **📄 Dynamic Content**: Modular blog and project pages that can be updated effortlessly.
-- **📬 Contact Form**: Enables easy communication with visitors.
-- **📑 Resume Section**: A dedicated page to highlight professional achievements and skills.
+- **🎯 SEO-Optimized**: Structured data (JSON-LD), automated sitemap/RSS generation, and Open Graph support.
+- **📄 Dynamic Content**: Modular blog and project pages with bento grid layouts.
+- **📬 Contact Form**: Email integration via Resend API with rate limiting.
+- **📰 Newsletter**: Subscription system with welcome emails and Supabase persistence.
 
 ## 📂 Project Structure
 
@@ -30,10 +32,12 @@ This repository follows a clean and modular structure for ease of navigation and
 
 This project leverages a modern tech stack to deliver exceptional performance and developer experience:
 
-- **[Next.js 13](https://nextjs.org/)**: The React framework for modern web development, providing server-side rendering, static site generation, and more.  
-- **[TypeScript](https://www.typescriptlang.org/)**: Ensures strong typing for improved code quality and maintainability.  
-- **[Tailwind CSS](https://tailwindcss.com/)**: Rapid UI design using a utility-first CSS framework.  
-- **[Framer Motion](https://www.framer.com/motion/)**: A powerful animation library for creating stunning motion effects.  
+- **[Next.js 14](https://nextjs.org/)**: The React framework for modern web development, with App Router, Server Components, and more.
+- **[Bun](https://bun.sh/)**: Fast all-in-one JavaScript runtime and package manager.
+- **[TypeScript](https://www.typescriptlang.org/)**: Ensures strong typing for improved code quality and maintainability.
+- **[Tailwind CSS](https://tailwindcss.com/)**: Rapid UI design using a utility-first CSS framework.
+- **[Supabase](https://supabase.com/)**: PostgreSQL database with vector search for engagement tracking and AI chat.
+- **[Framer Motion](https://www.framer.com/motion/)**: A powerful animation library for creating stunning motion effects.
 - **[MDX](https://mdxjs.com/)**: Combines Markdown and JSX for flexible, component-driven content.  
 
 ## 🚀 Getting Started
@@ -48,19 +52,11 @@ Follow these steps to set up and run the project locally:
 
 2. **Install Dependencies**:
    ```bash
-   npm install
-   # or
-   yarn install
-   # or
    bun install
    ```
 
 3. **Run the Development Server**:
    ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or
    bun dev
    ```
 
