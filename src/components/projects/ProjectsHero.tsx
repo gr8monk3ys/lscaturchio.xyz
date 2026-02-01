@@ -9,30 +9,7 @@ import { getFeaturedProjects, getAllTechnologies, products } from "@/constants/p
 import { Code2, Layers, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring" as const,
-      stiffness: 100,
-      damping: 15,
-    },
-  },
-};
+import { showContainerVariants, showItemSpringVariants } from "@/lib/animations";
 
 export function ProjectsHero() {
   const featuredProjects = getFeaturedProjects().slice(0, 3);
@@ -49,13 +26,13 @@ export function ProjectsHero() {
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <motion.div
-          variants={containerVariants}
+          variants={showContainerVariants}
           initial="hidden"
           animate="show"
           className="space-y-12"
         >
           {/* Hero Text */}
-          <motion.div variants={itemVariants} className="text-center space-y-6 max-w-3xl mx-auto">
+          <motion.div variants={showItemSpringVariants} className="text-center space-y-6 max-w-3xl mx-auto">
             <Badge variant="secondary" className="mb-4">
               <Star className="h-3 w-3 mr-1.5 fill-primary text-primary" />
               Portfolio
@@ -77,7 +54,7 @@ export function ProjectsHero() {
           </motion.div>
 
           {/* Stats Banner */}
-          <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-6 md:gap-12">
+          <motion.div variants={showItemSpringVariants} className="flex flex-wrap justify-center gap-6 md:gap-12">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-primary/10">
                 <Layers className="h-5 w-5 text-primary" />
@@ -108,7 +85,7 @@ export function ProjectsHero() {
           </motion.div>
 
           {/* Featured Projects Preview */}
-          <motion.div variants={itemVariants} className="pt-8">
+          <motion.div variants={showItemSpringVariants} className="pt-8">
             <h2 className="text-center text-sm font-medium text-muted-foreground mb-6">
               Featured Projects
             </h2>
