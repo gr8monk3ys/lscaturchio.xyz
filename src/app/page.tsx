@@ -2,10 +2,11 @@ import { Container } from "@/components/Container";
 import { Hero } from "@/components/home/Hero";
 import { RecentBlogs } from "@/components/home/recent-blogs";
 import { RecentProjects } from "@/components/home/recent-projects";
+import { WorkingOnSection } from "@/components/home/working-on-section";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 import { WebsiteStructuredData, PersonStructuredData, FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/structured-data";
 import Link from "next/link";
-import { ArrowRight, Code, Brain, Server } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
@@ -53,46 +54,7 @@ export default function Home() {
         <h1 className="sr-only">Lorenzo Scaturchio - Data Scientist and Developer Portfolio</h1>
         <Hero />
 
-        <section className="my-16 px-4">
-          <h2 className="text-3xl font-bold text-center mb-4">What I&apos;m Currently Working On</h2>
-          <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
-            A few things keeping me busy these days
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="neu-card p-6">
-              <div className="neu-flat-sm rounded-xl p-3 w-fit mb-4">
-                <Brain className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Building RAG Systems</h3>
-              <p className="text-muted-foreground mb-4">Exploring different use cases for retrieval-augmented generation systems and making them more marketable (basically trying to get paid for doing cool stuff).</p>
-              <Link href="/blog" className="text-primary hover:underline flex items-center">
-                Read my thoughts <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            </div>
-
-            <div className="neu-card p-6">
-              <div className="neu-flat-sm rounded-xl p-3 w-fit mb-4">
-                <Code className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Open-Source Contribution</h3>
-              <p className="text-muted-foreground mb-4">Navigating different types of project ideas and continually pushing for open-source contribution. Making data science problems more user-friendly.</p>
-              <Link href="/projects" className="text-primary hover:underline flex items-center">
-                See my projects <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            </div>
-
-            <div className="neu-card p-6">
-              <div className="neu-flat-sm rounded-xl p-3 w-fit mb-4">
-                <Server className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Community Impact</h3>
-              <p className="text-muted-foreground mb-4">Actively looking to better others around me, be it volunteer work like a tool loaning workshop or helping people learn to code.</p>
-              <Link href="/about" className="text-primary hover:underline flex items-center">
-                Learn more about me <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
+        <WorkingOnSection />
 
         <RecentBlogs />
         <RecentProjects />

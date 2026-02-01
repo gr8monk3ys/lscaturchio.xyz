@@ -7,7 +7,7 @@ import { EngagementStats } from '@/components/stats/engagement-stats'
 import { VisitorChart } from '@/components/stats/visitor-chart'
 import { TechStack } from '@/components/stats/tech-stack'
 import { ContributionGraph } from '@/components/github/contribution-graph'
-import { CodingStats } from '@/components/ui/coding-stats'
+import { CodingStats } from '@/components/stats/coding-stats'
 
 export const metadata: Metadata = {
   title: 'Site Statistics | Lorenzo Scaturchio',

@@ -19,12 +19,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lscaturchio.xyz/til</loc>
-    <lastmod>2026-02-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://lscaturchio.xyz/testimonials</loc>
     <lastmod>2026-02-01</lastmod>
     <changefreq>monthly</changefreq>
@@ -50,12 +44,6 @@
   </url>
   <url>
     <loc>https://lscaturchio.xyz/start-here</loc>
-    <lastmod>2026-02-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://lscaturchio.xyz/snippets</loc>
     <lastmod>2026-02-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -260,12 +248,6 @@
   </url>
   <url>
     <loc>https://lscaturchio.xyz/api-docs</loc>
-    <lastmod>2026-02-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://lscaturchio.xyz/analytics</loc>
     <lastmod>2026-02-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

@@ -15,7 +15,10 @@ interface NavDropdownProps {
 
 export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
   const prevPathnameRef = useRef(pathname);
@@ -83,6 +86,68 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
     };
   }, []);
 
+  // Reset focused index when dropdown closes
+  useEffect(() => {
+    if (!isOpen) {
+      setFocusedIndex(-1);
+    }
+  }, [isOpen]);
+
+  // Keyboard navigation handler
+  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+    if (!isOpen) {
+      // Open dropdown on Enter, Space, or ArrowDown when closed
+      if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown') {
+        event.preventDefault();
+        openDropdown();
+        setFocusedIndex(0);
+        return;
+      }
+      return;
+    }
+
+    switch (event.key) {
+      case 'Escape':
+        event.preventDefault();
+        setIsOpen(false);
+        onOpenChange?.(false);
+        buttonRef.current?.focus();
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        setFocusedIndex(prev =>
+          prev < category.items.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        setFocusedIndex(prev =>
+          prev > 0 ? prev - 1 : category.items.length - 1
+        );
+        break;
+      case 'Home':
+        event.preventDefault();
+        setFocusedIndex(0);
+        break;
+      case 'End':
+        event.preventDefault();
+        setFocusedIndex(category.items.length - 1);
+        break;
+      case 'Tab':
+        // Close dropdown when tabbing away
+        setIsOpen(false);
+        onOpenChange?.(false);
+        break;
+    }
+  }, [isOpen, category.items.length, openDropdown, onOpenChange]);
+
+  // Focus the item when focusedIndex changes
+  useEffect(() => {
+    if (focusedIndex >= 0 && itemRefs.current[focusedIndex]) {
+      itemRefs.current[focusedIndex]?.focus();
+    }
+  }, [focusedIndex]);
+
   return (
     <div
       ref={dropdownRef}
@@ -91,8 +156,12 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
       onMouseLeave={closeDropdown}
     >
       <button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors ${
+        onKeyDown={handleKeyDown}
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        className={`flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md ${
           hasActiveItem
             ? 'text-foreground'
             : 'text-foreground/60 hover:text-foreground/80'
@@ -115,21 +184,30 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
             onMouseLeave={closeDropdown}
             className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50"
           >
-            <div className="neu-card rounded-xl p-2 min-w-[200px] shadow-lg border border-border/50">
+            <div
+              className="neu-card rounded-xl p-2 min-w-[200px] shadow-lg border border-border/50"
+              role="menu"
+              aria-orientation="vertical"
+              onKeyDown={handleKeyDown}
+            >
               <div className="space-y-1">
-                {category.items.map((item) => {
+                {category.items.map((item, index) => {
                   const Icon = item.icon;
                   const isActive = pathname === item.href;
+                  const isFocused = focusedIndex === index;
 
                   return (
                     <Link
                       key={item.href}
+                      ref={(el) => { itemRefs.current[index] = el; }}
                       href={item.href}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                      role="menuitem"
+                      tabIndex={isFocused ? 0 : -1}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset ${
                         isActive
                           ? 'neu-pressed bg-primary/10 text-primary'
                           : 'hover:bg-muted/50'
-                      }`}
+                      } ${isFocused ? 'bg-muted/50' : ''}`}
                     >
                       {Icon && (
                         <Icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />

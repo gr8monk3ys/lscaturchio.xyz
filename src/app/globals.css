@@ -143,3 +143,109 @@
     outline: none;
   }
 }
+
+@layer components {
+  /* ============================================
+   * TYPOGRAPHY COMPONENT CLASSES
+   * Use these for consistent text styling
+   * ============================================ */
+
+  /* Display text - for hero sections */
+  .text-display {
+    @apply text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground;
+    line-height: 1.1;
+  }
+
+  /* Page headings */
+  .text-page-title {
+    @apply text-3xl sm:text-4xl font-bold tracking-tight text-foreground;
+  }
+
+  /* Section headings */
+  .text-section-title {
+    @apply text-2xl sm:text-3xl font-semibold tracking-tight text-foreground;
+  }
+
+  /* Card/component headings */
+  .text-card-title {
+    @apply text-xl font-semibold text-foreground;
+  }
+
+  /* Subsection headings */
+  .text-subsection {
+    @apply text-lg font-medium text-foreground;
+  }
+
+  /* Body text variants */
+  .text-body-lg {
+    @apply text-lg text-foreground leading-relaxed;
+  }
+
+  .text-body {
+    @apply text-base text-foreground leading-relaxed;
+  }
+
+  .text-body-sm {
+    @apply text-sm text-foreground leading-normal;
+  }
+
+  /* Muted text for descriptions */
+  .text-description {
+    @apply text-base text-muted-foreground leading-relaxed;
+  }
+
+  .text-description-sm {
+    @apply text-sm text-muted-foreground leading-normal;
+  }
+
+  /* Label text */
+  .text-label {
+    @apply text-sm font-medium text-foreground;
+  }
+
+  /* ============================================
+   * LAYOUT COMPONENT CLASSES
+   * Consistent spacing patterns
+   * ============================================ */
+
+  /* Section spacing */
+  .section-padding {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  .section-padding-sm {
+    @apply py-8 sm:py-12 lg:py-16;
+  }
+
+  /* Card padding */
+  .card-padding {
+    @apply p-6 sm:p-8;
+  }
+
+  .card-padding-sm {
+    @apply p-4 sm:p-6;
+  }
+
+  /* Content max-width containers */
+  .content-narrow {
+    @apply max-w-2xl mx-auto;
+  }
+
+  .content-medium {
+    @apply max-w-4xl mx-auto;
+  }
+
+  .content-wide {
+    @apply max-w-6xl mx-auto;
+  }
+
+  /* ============================================
+   * INTERACTIVE COMPONENT CLASSES
+   * Consistent hover/focus states
+   * ============================================ */
+
+  /* Focus ring for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
+  }
+}

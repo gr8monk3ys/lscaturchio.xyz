@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import { logError } from '@/lib/logger'
 
 export default function Error({
   error,
@@ -11,8 +12,7 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
-    console.error('Page error:', error)
+    logError('Page error', error, { component: 'error-boundary', digest: error.digest })
   }, [error])
 
   return (
