@@ -9,10 +9,10 @@ interface ContainerProps {
 
 export const Container = ({ children, className, size = "default" }: ContainerProps) => {
   return (
-    <main 
+    <div
       className={cn(
         "relative w-full mx-auto",
-        "px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24",
+        "px-4 sm:px-6 md:px-6 lg:px-8 xl:px-12",
         "py-12 sm:py-16 md:py-20",
         "min-h-[calc(100vh-4rem)]",
         className
@@ -33,6 +33,6 @@ export const Container = ({ children, className, size = "default" }: ContainerPr
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
       </div>
-    </main>
+    </div>
   );
 };

@@ -114,6 +114,9 @@ function Footer() {
             {new Date().getFullYear()} Lorenzo Scaturchio. All rights reserved.
           </p>
           <nav className="flex gap-4 text-sm">
+            <a href="/stats" className="transition-colors hover:text-primary">
+              Stats
+            </a>
             <a href="/privacy-policy" className="transition-colors hover:text-primary">
               Privacy Policy
             </a>

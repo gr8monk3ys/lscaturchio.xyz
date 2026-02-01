@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import { logError } from '@/lib/logger'
 
 export default function ProjectsError({
   error,
@@ -11,7 +12,7 @@ export default function ProjectsError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('Projects error:', error)
+    logError('Projects error', error, { component: 'projects-error-boundary', digest: error.digest })
   }, [error])
 
   return (

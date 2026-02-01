@@ -62,15 +62,7 @@ export {
 } from "../floating-elements";
 
 // Card Animations
-export {
-  TiltCard,
-  SpotlightCard,
-  BorderGradientCard,
-  RevealCard,
-  ShimmerCard,
-  FlipCard,
-  GlassCard,
-} from "../animated-card";
+export { TiltCard } from "../animated-card";
 
 // Re-export animation variants from lib
 export * from "@/lib/animations";

@@ -4,7 +4,7 @@ import { motion, useInView } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRef } from 'react';
-import { TestimonialCard } from '@/components/ui/testimonial-card';
+import { TestimonialCard } from '@/components/home/testimonial-card';
 import { featuredTestimonials, testimonials } from '@/constants/testimonials';
 import { Testimonial } from '@/types/testimonial';
 

@@ -9,16 +9,6 @@ export const meta = {
   seriesOrder: 1,
 };
 
-## TL;DR
-
-Simple RAG fails in production. The core insight: **success requires hybrid retrieval, reranking, contextual chunking, and continuous evaluation**. Modern RAG systems achieve 67% lower retrieval failure rates using contextual embeddings. Fine-tuned models outperform general-purpose alternatives by 5-15% on domain tasks. Vector databases now handle billions of vectors with sub-40ms latency. Start with 512-token chunks + 50-100 overlap, add reranking when precision matters, use hybrid search when vocabulary mismatch causes failures. The open-source/proprietary gap has largely closedQwen3-Embedding trails Google Gemini by a small margin while offering Apache 2.0 licensing.
-
----
-
-Retrieval-Augmented Generation has evolved from a 2020 research concept into the dominant architecture for building knowledge-grounded AI applications. This guide synthesizes peer-reviewed research, production benchmarks, and real-world case studies to provide actionable guidance for building RAG systems that work at scale.
-
-Much has changed since the original Lewis et al. paper. Modern RAG systems achieve **67% lower retrieval failure rates** using contextual embeddings, while fine-tuned embedding models outperform general-purpose alternatives by **5-15%** on domain-specific tasks. Vector databases now handle billions of vectors with sub-40ms latency, and frameworks like LangChain and LlamaIndex have maturedthough many production teams report better results after removing heavy abstractions.
-
 ## Academic Foundations: The Retrieve-Then-Generate Paradigm
 
 The term "RAG" was coined by Patrick Lewis and colleagues at Facebook AI Research in their NeurIPS 2020 paper "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks." The breakthrough combined **parametric memory** (a BART seq2seq model) with **non-parametric memory** (21 million Wikipedia passages accessed via Dense Passage Retrieval). The system achieved **44.5% exact match** on Natural Questions, outperforming T5-11B despite having far fewer parameters.
