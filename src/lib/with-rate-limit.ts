@@ -11,6 +11,9 @@ type RateLimitConfig = {
   window: number;
 };
 
+// API documentation links header (RFC 8288 Web Linking)
+const API_DOCS_LINK_HEADER = '</api/openapi.json>; rel="describedby"; type="application/json", </api-docs>; rel="documentation"';
+
 /**
  * Higher-order function to wrap API routes with rate limiting
  *
@@ -54,6 +57,7 @@ export function withRateLimit<T extends unknown[]>(
         'X-RateLimit-Remaining': result.remaining.toString(),
         'X-RateLimit-Reset': new Date(result.reset).toISOString(),
         'X-RateLimit-Backend': 'redis',
+        'Link': API_DOCS_LINK_HEADER,
       };
     } else {
       // Fall back to in-memory rate limiting
@@ -61,6 +65,7 @@ export function withRateLimit<T extends unknown[]>(
       headers = {
         ...rateLimiter.getHeaders(result),
         'X-RateLimit-Backend': 'memory',
+        'Link': API_DOCS_LINK_HEADER,
       };
     }
 
