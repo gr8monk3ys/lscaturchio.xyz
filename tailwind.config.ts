@@ -57,6 +57,37 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+          muted: "hsl(var(--success-muted))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+          muted: "hsl(var(--warning-muted))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+          muted: "hsl(var(--info-muted))",
+        },
+      },
+      // Transition duration scale
+      transitionDuration: {
+        fast: "var(--duration-fast)",
+        DEFAULT: "var(--duration-default)",
+        slow: "var(--duration-slow)",
+      },
+      // Z-index scale for consistent layering
+      zIndex: {
+        dropdown: "var(--z-dropdown)",
+        sticky: "var(--z-sticky)",
+        fixed: "var(--z-fixed)",
+        "modal-backdrop": "var(--z-modal-backdrop)",
+        modal: "var(--z-modal)",
+        popover: "var(--z-popover)",
+        tooltip: "var(--z-tooltip)",
       },
       // Font sizes with line-height included
       fontSize: {

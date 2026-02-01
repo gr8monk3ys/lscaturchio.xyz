@@ -25,6 +25,31 @@
     --ring: 82 32% 16%;
     --radius: 1rem;
 
+    /* Status colors - for badges, alerts, notifications */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --success-muted: 142 76% 36% / 0.1;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+    --warning-muted: 38 92% 50% / 0.1;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+    --info-muted: 217 91% 60% / 0.1;
+
+    /* Transition durations */
+    --duration-fast: 150ms;
+    --duration-default: 200ms;
+    --duration-slow: 300ms;
+
+    /* Z-index scale for layering */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+
     /* Neumorphic shadows - light mode (subtle, barely visible) */
     --neu-shadow-light: rgba(255, 255, 255, 0.85);
     --neu-shadow-dark: rgba(200, 200, 210, 0.2);
@@ -55,6 +80,31 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 82 32% 40%;
+
+    /* Status colors - dark mode variants */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-muted: 142 71% 45% / 0.15;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+    --warning-muted: 38 92% 50% / 0.15;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+    --info-muted: 217 91% 60% / 0.15;
+
+    /* Transition durations (same in dark mode) */
+    --duration-fast: 150ms;
+    --duration-default: 200ms;
+    --duration-slow: 300ms;
+
+    /* Z-index scale (same in dark mode) */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
 
     /* Neumorphic shadows - dark mode (asymmetric for natural depth) */
     --neu-shadow-light: rgba(50, 50, 60, 0.6);
@@ -247,5 +297,277 @@
   /* Focus ring for accessibility */
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  /* ============================================
+   * SKELETON LOADING ANIMATION
+   * Shimmer effect for loading states
+   * ============================================ */
+
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skeleton-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: shimmer 1.5s infinite;
+  }
+
+  .dark .skeleton-shimmer::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+  }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* ============================================
+   * GRADIENT TEXT CLASSES
+   * Animated and static gradient text effects
+   * ============================================ */
+
+  .gradient-text {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--secondary)) 25%,
+      hsl(280 60% 50%) 50%,
+      hsl(var(--secondary)) 75%,
+      hsl(var(--primary)) 100%
+    );
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  .gradient-text-primary {
+    background: linear-gradient(
+      135deg,
+      hsl(82 40% 30%) 0%,
+      hsl(82 32% 40%) 33%,
+      hsl(90 35% 35%) 66%,
+      hsl(82 40% 30%) 100%
+    );
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 6s ease infinite;
+  }
+
+  .dark .gradient-text-primary {
+    background: linear-gradient(
+      135deg,
+      hsl(82 35% 50%) 0%,
+      hsl(82 40% 60%) 33%,
+      hsl(90 38% 55%) 66%,
+      hsl(82 35% 50%) 100%
+    );
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .gradient-text-rainbow {
+    background: linear-gradient(
+      135deg,
+      #ff6b6b 0%,
+      #feca57 16%,
+      #48dbfb 33%,
+      #ff9ff3 50%,
+      #54a0ff 66%,
+      #5f27cd 83%,
+      #ff6b6b 100%
+    );
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 10s ease infinite;
+  }
+
+  /* Static gradient variants (no animation) */
+  .gradient-text-static {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--secondary)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* ============================================
+   * ANIMATED BORDER CLASSES
+   * Moving gradient border effect
+   * ============================================ */
+
+  .animated-border {
+    position: relative;
+    background: hsl(var(--background));
+    border-radius: var(--radius);
+  }
+
+  .animated-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(
+      var(--border-angle, 0deg),
+      hsl(var(--primary)),
+      hsl(var(--secondary)),
+      hsl(280 60% 50%),
+      hsl(var(--primary))
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: border-rotate 4s linear infinite;
+  }
+
+  .animated-border-slow::before {
+    animation: border-rotate 8s linear infinite;
+  }
+
+  .animated-border-fast::before {
+    animation: border-rotate 2s linear infinite;
+  }
+
+  /* Hover-only animated border */
+  .animated-border-hover::before {
+    animation-play-state: paused;
+  }
+
+  .animated-border-hover:hover::before {
+    animation-play-state: running;
+  }
+
+  @keyframes border-rotate {
+    to {
+      --border-angle: 360deg;
+    }
+  }
+
+  /* Register the custom property for animation */
+  @property --border-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  /* ============================================
+   * GLASSMORPHISM CLASSES
+   * Frosted glass effect utilities
+   * ============================================ */
+
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .glass {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-subtle {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .dark .glass-subtle {
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .glass-heavy {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .dark .glass-heavy {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  /* ============================================
+   * NAV UNDERLINE ANIMATION
+   * Slide-in underline effect for navigation
+   * ============================================ */
+
+  .nav-underline {
+    position: relative;
+  }
+
+  .nav-underline::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--primary)),
+      hsl(var(--secondary))
+    );
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav-underline:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* Active state */
+  .nav-underline-active::after {
+    transform: scaleX(1);
   }
 }
