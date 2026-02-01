@@ -27,7 +27,7 @@ interface CursorGlowProps {
    * Whether to scope the glow to a container element.
    * If provided, glow only appears within the container bounds.
    */
-  containerRef?: RefObject<HTMLElement>;
+  containerRef?: RefObject<HTMLElement | null>;
   /**
    * Additional CSS classes for the glow element.
    */
@@ -235,7 +235,7 @@ interface GradientCursorGlowProps {
   /**
    * Container ref for scoped glow.
    */
-  containerRef?: RefObject<HTMLElement>;
+  containerRef?: RefObject<HTMLElement | null>;
   /**
    * Z-index of the glow layer.
    * @default 0
