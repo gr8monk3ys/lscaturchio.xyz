@@ -1,96 +1,48 @@
 "use client";
 
 import { useRef } from "react";
-import { Container } from "@/components/Container";
+import { Section } from "@/components/ui/Section";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Code, Music, Mountain } from "lucide-react";
 import Link from "next/link";
 import { OptimizedImage } from "@/components/ui/optimized-image";
 import { motion } from "framer-motion";
-import { ThreeBackground } from "@/components/three";
 import { CursorGlow } from "@/components/ui/cursor-glow";
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-      delayChildren: 0.3,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-    },
-  },
-};
-
-const photoVariants = {
-  hidden: { scale: 0, rotate: -180 },
-  visible: {
-    scale: 1,
-    rotate: 0,
-    transition: {
-      type: "spring" as const,
-      stiffness: 100,
-      damping: 20,
-    },
-  },
-};
-
-const iconVariants = {
-  hidden: { scale: 0 },
-  visible: (i: number) => ({
-    scale: 1,
-    transition: {
-      type: "spring" as const,
-      stiffness: 200,
-      damping: 20,
-      delay: 1 + (i * 0.1),
-    },
-  }),
-};
+import {
+  staggerContainerVariants,
+  staggerItemVariants,
+  photoReveal,
+  iconPop
+} from "@/lib/animations";
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
 
   return (
-    <Container>
+    <Section padding="large" size="wide">
       <section
         ref={sectionRef}
-        className="relative min-h-[80vh] w-full px-4 md:px-6 py-8 flex items-center justify-center overflow-hidden"
+        className="relative min-h-[50vh] sm:min-h-[55vh] w-full flex items-center justify-center overflow-hidden"
       >
-        {/* Cursor glow effect - Brittany Chiang style spotlight */}
+        {/* Cursor glow effect */}
         <CursorGlow
           containerRef={sectionRef}
-          size={700}
-          opacity={0.15}
+          size={600}
+          opacity={0.12}
           color="hsl(var(--primary))"
           zIndex={1}
         />
-        {/* 3D Background */}
-        <ThreeBackground type="particles" />
-        <motion.div 
-          className="w-full max-w-7xl mx-auto space-y-6"
-          variants={containerVariants}
+
+        <motion.div
+          className="w-full max-w-6xl mx-auto space-y-6"
+          variants={staggerContainerVariants}
           initial="hidden"
           animate="visible"
         >
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-            <motion.div 
-              className="relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden"
-              variants={photoVariants}
-              whileHover={{ 
-                scale: 1.05,
-                transition: { type: "spring" as const, stiffness: 300 }
-              }}
+            <motion.div
+              className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-52 md:h-52 rounded-full overflow-hidden"
+              variants={photoReveal}
             >
               <OptimizedImage
                 src="/images/portrait.webp"
@@ -101,56 +53,44 @@ export function Hero() {
               />
             </motion.div>
             <div className="text-center md:text-left space-y-4 max-w-2xl">
-              <motion.h1 
-                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
-                variants={itemVariants}
+              <motion.h2
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight"
+                variants={staggerItemVariants}
               >
                 Hey, I&apos;m{" "}
                 <span className="text-primary">Lorenzo Scaturchio</span>
-              </motion.h1>
+              </motion.h2>
               <motion.p
-                className="text-xl md:text-2xl text-muted-foreground"
-                variants={itemVariants}
+                className="text-lg sm:text-xl text-muted-foreground"
+                variants={staggerItemVariants}
               >
                 Data Scientist from Southern California. Building RAG systems, contributing to open source,
-                and making data science more accessible. Also: bagpipes, Arctic Monkeys, and Rust.
+                and making data science more accessible.
               </motion.p>
             </div>
           </div>
 
           <motion.div
-            variants={itemVariants}
-            className="flex flex-wrap justify-center gap-4"
+            variants={staggerItemVariants}
+            className="flex flex-wrap justify-center gap-3 sm:gap-4"
           >
-            <motion.div 
-              whileHover={{ scale: 1.05 }} 
-              whileTap={{ scale: 0.95 }}
-              className="origin-center"
-            >
-              <Button asChild size="lg" className="text-lg h-12">
-                <Link href="/projects">
-                  View My Work
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </motion.div>
-            <motion.div 
-              whileHover={{ scale: 1.05 }} 
-              whileTap={{ scale: 0.95 }}
-              className="origin-center"
-            >
-              <Button asChild size="lg" variant="outline" className="text-lg h-12">
-                <Link href="https://calendly.com/gr8monk3ys/30min">
-                  Let&apos;s Chat
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </motion.div>
+            <Button asChild size="lg" className="text-base sm:text-lg h-11 sm:h-12">
+              <Link href="/projects">
+                View My Work
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="text-base sm:text-lg h-11 sm:h-12">
+              <Link href="https://calendly.com/gr8monk3ys/30min">
+                Let&apos;s Chat
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+              </Link>
+            </Button>
           </motion.div>
 
           <motion.div
-            variants={itemVariants}
-            className="flex flex-wrap justify-center gap-6 pt-4"
+            variants={staggerItemVariants}
+            className="flex flex-wrap justify-center gap-4 sm:gap-6 pt-2"
           >
             {[
               { icon: Code, text: "Data Science" },
@@ -161,19 +101,15 @@ export function Hero() {
                 key={item.text}
                 className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
                 custom={index}
-                variants={iconVariants}
-                whileHover={{
-                  scale: 1.1,
-                  transition: { type: "spring" as const, stiffness: 400 }
-                }}
+                variants={iconPop}
               >
-                <item.icon className="h-5 w-5" />
-                <span>{item.text}</span>
+                <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="text-sm sm:text-base">{item.text}</span>
               </motion.div>
             ))}
           </motion.div>
         </motion.div>
       </section>
-    </Container>
+    </Section>
   );
 }

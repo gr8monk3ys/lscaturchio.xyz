@@ -154,3 +154,102 @@ export const staggerItem = {
     }
   }
 }
+
+// Stagger item with hidden/visible for whileInView usage
+export const staggerItemVariants = {
+  hidden: {
+    opacity: 0,
+    y: 15
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: ANIMATION_DURATION
+    }
+  }
+}
+
+// Container variants with hidden/visible for staggered animations
+export const staggerContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    }
+  }
+}
+
+// Photo/image reveal with spring animation
+export const photoReveal = {
+  hidden: { scale: 0.8, opacity: 0 },
+  visible: {
+    scale: 1,
+    opacity: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 150,
+      damping: 20
+    }
+  }
+}
+
+// Icon/badge animation with custom delay support
+export const iconPop = {
+  hidden: { scale: 0, opacity: 0 },
+  visible: (i: number) => ({
+    scale: 1,
+    opacity: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 200,
+      damping: 20,
+      delay: 0.4 + (i * 0.08)
+    }
+  })
+}
+
+// ============================================
+// SHOW/HIDDEN VARIANTS (alternative naming)
+// For components using "show" instead of "visible"
+// ============================================
+
+// Container variants with hidden/show naming
+export const showContainerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    }
+  }
+}
+
+// Item variants with hidden/show naming
+export const showItemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: ANIMATION_DURATION
+    }
+  }
+}
+
+// Item with spring animation for hidden/show
+export const showItemSpringVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 100,
+      damping: 15
+    }
+  }
+}

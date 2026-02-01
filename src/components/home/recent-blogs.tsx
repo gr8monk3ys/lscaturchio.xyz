@@ -4,9 +4,11 @@ import { motion, useInView } from "framer-motion";
 import { ArrowUpRight, Calendar } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
+import { Section, SectionHeader } from "../ui/Section";
 import { useRef, useEffect, useState } from "react";
 import { logError } from "@/lib/logger";
 import { BlogViewCount } from "../blog/blog-view-count";
+import { showContainerVariants, showItemVariants } from "@/lib/animations";
 
 interface BlogPost {
   title: string;
@@ -16,22 +18,6 @@ interface BlogPost {
   tags: string[];
   image?: string;
 }
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-};
 
 export function RecentBlogs() {
   const containerRef = useRef(null);
@@ -45,7 +31,6 @@ export function RecentBlogs() {
         const response = await fetch('/api/v1/blogs?limit=3');
         if (!response.ok) throw new Error('Failed to fetch blogs');
         const result = await response.json();
-        // v1 API returns { data: [...], meta: {...} }
         setBlogs(result.data || []);
       } catch (error) {
         logError('Failed to fetch recent blogs', error, { component: 'RecentBlogs', action: 'fetchBlogs' });
@@ -59,41 +44,41 @@ export function RecentBlogs() {
 
   if (isLoading) {
     return (
-      <section ref={containerRef} className="py-16" aria-busy="true" aria-label="Loading recent blog posts">
-        <div className="container px-4 md:px-6">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">Recent Blogs</h2>
-          </div>
+      <Section padding="default" size="wide" divider>
+        <div ref={containerRef} aria-busy="true" aria-label="Loading recent blog posts">
+          <SectionHeader title="Recent Blogs" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="animate-pulse rounded-xl bg-secondary/50 h-[300px]"
+                className="animate-pulse rounded-xl bg-secondary/50 h-[280px]"
                 role="presentation"
               />
             ))}
           </div>
         </div>
-      </section>
+      </Section>
     );
   }
 
   return (
-    <section ref={containerRef} className="py-16">
-      <div className="container px-4 md:px-6">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold">Recent Blogs</h2>
-          <Link 
-            href="/blog"
-            className="group inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            View all blogs
-            <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </Link>
-        </div>
+    <Section padding="default" size="wide" divider>
+      <div ref={containerRef}>
+        <SectionHeader
+          title="Recent Blogs"
+          action={
+            <Link
+              href="/blog"
+              className="group inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              View all blogs
+              <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
+          }
+        />
 
         <motion.div
-          variants={containerVariants}
+          variants={showContainerVariants}
           initial="hidden"
           animate={isInView ? "show" : "hidden"}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -101,7 +86,7 @@ export function RecentBlogs() {
           {blogs.map((post) => (
             <motion.div
               key={post.slug}
-              variants={itemVariants}
+              variants={showItemVariants}
               className="group relative flex flex-col overflow-hidden rounded-xl bg-secondary/50 transition-all hover:bg-secondary/70"
             >
               <Link href={`/blog/${post.slug}`} className="flex flex-col flex-1 p-6">
@@ -113,7 +98,7 @@ export function RecentBlogs() {
                   <BlogViewCount slug={post.slug} />
                 </div>
 
-                <h3 className="text-lg font-semibold tracking-tight mb-2">
+                <h3 className="text-lg font-semibold tracking-tight mb-2 group-hover:text-primary transition-colors">
                   {post.title}
                 </h3>
 
@@ -122,7 +107,7 @@ export function RecentBlogs() {
                 </p>
 
                 <div className="mt-auto flex flex-wrap gap-1.5">
-                  {post.tags?.map((tag) => (
+                  {post.tags?.slice(0, 3).map((tag) => (
                     <Badge
                       key={tag}
                       variant="secondary"
@@ -133,7 +118,7 @@ export function RecentBlogs() {
                   ))}
                 </div>
 
-                <div className="mt-4 flex items-center gap-2 text-sm font-medium">
+                <div className="mt-4 flex items-center gap-2 text-sm font-medium text-primary">
                   Read more
                   <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
@@ -142,6 +127,6 @@ export function RecentBlogs() {
           ))}
         </motion.div>
       </div>
-    </section>
+    </Section>
   );
 }

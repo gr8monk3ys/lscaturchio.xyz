@@ -64,5 +64,8 @@ export {
 // Card Animations
 export { TiltCard } from "../animated-card";
 
+// Section Animations
+export { AnimatedSection, AnimatedItem } from "../animated-section";
+
 // Re-export animation variants from lib
 export * from "@/lib/animations";

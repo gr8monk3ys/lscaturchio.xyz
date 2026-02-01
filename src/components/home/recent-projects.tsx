@@ -4,8 +4,10 @@ import { motion, useInView } from "framer-motion";
 import { ArrowUpRight, Star, GitFork, Clock } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
+import { Section, SectionHeader } from "../ui/Section";
 import { useRef, useEffect, useState } from "react";
 import { logError } from "@/lib/logger";
+import { showContainerVariants, showItemVariants } from "@/lib/animations";
 
 interface Repository {
   title: string;
@@ -17,22 +19,6 @@ interface Repository {
   forks: number;
   lastUpdated: string;
 }
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-};
 
 function formatTimeAgo(dateString: string): string {
   const date = new Date(dateString);
@@ -69,11 +55,10 @@ export function RecentProjects() {
           throw new Error('Failed to fetch repositories');
         }
         const data = await response.json();
-        // Sort by lastUpdated date (most recent first)
-        const sortedRepos = data.sort((a: Repository, b: Repository) => 
+        const sortedRepos = data.sort((a: Repository, b: Repository) =>
           new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
         );
-        setRepositories(sortedRepos.slice(0, 3)); // Get only the 3 most recently updated repos
+        setRepositories(sortedRepos.slice(0, 3));
       } catch (error) {
         logError('Failed to fetch GitHub repositories', error, { component: 'RecentProjects', action: 'fetchRepositories' });
       } finally {
@@ -85,31 +70,32 @@ export function RecentProjects() {
   }, []);
 
   return (
-    <section ref={containerRef} className="py-16">
-      <div className="container px-4 md:px-6">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold">Recent Updates</h2>
-          <Link 
-            href="/projects"
-            className="group inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            View all projects
-            <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </Link>
-        </div>
+    <Section padding="default" size="wide" divider>
+      <div ref={containerRef}>
+        <SectionHeader
+          title="Recent Updates"
+          action={
+            <Link
+              href="/projects"
+              className="group inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              View all projects
+              <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
+          }
+        />
 
         <motion.div
-          variants={containerVariants}
+          variants={showContainerVariants}
           initial="hidden"
           animate={isInView ? "show" : "hidden"}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {loading ? (
-            // Show loading skeletons for 3 cards
             [...Array(3)].map((_, i) => (
               <motion.div
                 key={i}
-                variants={itemVariants}
+                variants={showItemVariants}
                 className="bg-secondary/50 rounded-xl p-4 h-[200px] animate-pulse"
               />
             ))
@@ -117,12 +103,14 @@ export function RecentProjects() {
             repositories.map((repo) => (
               <motion.div
                 key={repo.href}
-                variants={itemVariants}
-                className="group relative bg-secondary/50 hover:bg-secondary/70 rounded-xl p-4 transition-colors"
+                variants={showItemVariants}
+                className="group relative bg-secondary/50 hover:bg-secondary/70 rounded-xl p-5 transition-colors"
               >
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold truncate">{repo.title}</h3>
+                    <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
+                      {repo.title}
+                    </h3>
                     <Link
                       href={repo.href}
                       target="_blank"
@@ -136,12 +124,12 @@ export function RecentProjects() {
                     {repo.description}
                   </p>
                   {repo.stack && repo.stack.length > 0 && (
-                    <div className="flex flex-wrap gap-1 pt-2">
-                      {repo.stack.map((tech) => (
-                        <Badge 
-                          key={tech} 
+                    <div className="flex flex-wrap gap-1.5">
+                      {repo.stack.slice(0, 3).map((tech) => (
+                        <Badge
+                          key={tech}
                           variant="secondary"
-                          className="transition-colors group-hover:bg-primary/10 group-hover:text-primary"
+                          className="text-xs"
                         >
                           {tech}
                         </Badge>
@@ -150,16 +138,16 @@ export function RecentProjects() {
                   )}
                   <div className="flex items-center justify-between pt-2">
                     <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground group-hover:text-primary/80 transition-colors">
+                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                         <Star className="size-4" />
                         <span>{repo.stars}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground group-hover:text-primary/80 transition-colors">
+                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                         <GitFork className="size-4" />
                         <span>{repo.forks}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground group-hover:text-primary/80 transition-colors">
+                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                       <Clock className="size-4" />
                       <span>{formatTimeAgo(repo.lastUpdated)}</span>
                     </div>
@@ -170,6 +158,6 @@ export function RecentProjects() {
           )}
         </motion.div>
       </div>
-    </section>
+    </Section>
   );
 }
