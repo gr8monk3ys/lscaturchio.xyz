@@ -7,6 +7,67 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { NavCategory } from '@/constants/navlinks';
 
+// Animation variants for dropdown button
+const buttonVariants = {
+  initial: { scale: 1 },
+  hover: {
+    scale: 1.05,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 25,
+    },
+  },
+  tap: {
+    scale: 0.95,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 25,
+    },
+  },
+};
+
+// Animation variants for underline
+const underlineVariants = {
+  initial: {
+    scaleX: 0,
+    originX: 0,
+  },
+  hover: {
+    scaleX: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 30,
+    },
+  },
+  active: {
+    scaleX: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 30,
+    },
+  },
+};
+
+// Animation variants for dropdown menu items
+const menuItemVariants = {
+  initial: {
+    x: 0,
+    backgroundColor: "transparent",
+  },
+  hover: {
+    x: 4,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 25,
+    },
+  },
+};
+
 interface NavDropdownProps {
   category: NavCategory;
   onOpenChange?: (isOpen: boolean) => void;
@@ -155,23 +216,37 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
       onMouseEnter={openDropdown}
       onMouseLeave={closeDropdown}
     >
-      <button
+      <motion.button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         onKeyDown={handleKeyDown}
         aria-expanded={isOpen}
         aria-haspopup="menu"
-        className={`flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md ${
+        variants={buttonVariants}
+        initial="initial"
+        whileHover="hover"
+        whileTap="tap"
+        className={`relative flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md ${
           hasActiveItem
             ? 'text-foreground'
             : 'text-foreground/60 hover:text-foreground/80'
         }`}
       >
         {category.name}
-        <ChevronDown
-          className={`h-3.5 w-3.5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+        <motion.span
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ type: "spring" as const, stiffness: 300, damping: 20 }}
+        >
+          <ChevronDown className="h-3.5 w-3.5" />
+        </motion.span>
+        {/* Animated underline for dropdown button */}
+        <motion.div
+          className="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-primary to-secondary rounded-full"
+          variants={underlineVariants}
+          initial="initial"
+          animate={hasActiveItem ? "active" : isOpen ? "hover" : "initial"}
         />
-      </button>
+      </motion.button>
 
       <AnimatePresence>
         {isOpen && (
@@ -197,32 +272,43 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
                   const isFocused = focusedIndex === index;
 
                   return (
-                    <Link
+                    <motion.div
                       key={item.href}
-                      ref={(el) => { itemRefs.current[index] = el; }}
-                      href={item.href}
-                      role="menuitem"
-                      tabIndex={isFocused ? 0 : -1}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset ${
-                        isActive
-                          ? 'neu-pressed bg-primary/10 text-primary'
-                          : 'hover:bg-muted/50'
-                      } ${isFocused ? 'bg-muted/50' : ''}`}
+                      variants={menuItemVariants}
+                      initial="initial"
+                      whileHover="hover"
                     >
-                      {Icon && (
-                        <Icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
-                      )}
-                      <div className="flex flex-col">
-                        <span className={`text-sm font-medium ${isActive ? 'text-primary' : ''}`}>
-                          {item.name}
-                        </span>
-                        {item.description && (
-                          <span className="text-xs text-muted-foreground">
-                            {item.description}
-                          </span>
+                      <Link
+                        ref={(el) => { itemRefs.current[index] = el; }}
+                        href={item.href}
+                        role="menuitem"
+                        tabIndex={isFocused ? 0 : -1}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset ${
+                          isActive
+                            ? 'neu-pressed bg-primary/10 text-primary'
+                            : 'hover:bg-muted/50'
+                        } ${isFocused ? 'bg-muted/50' : ''}`}
+                      >
+                        {Icon && (
+                          <motion.span
+                            whileHover={{ scale: 1.2, rotate: 5 }}
+                            transition={{ type: "spring" as const, stiffness: 400, damping: 15 }}
+                          >
+                            <Icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                          </motion.span>
                         )}
-                      </div>
-                    </Link>
+                        <div className="flex flex-col">
+                          <span className={`text-sm font-medium ${isActive ? 'text-primary' : ''}`}>
+                            {item.name}
+                          </span>
+                          {item.description && (
+                            <span className="text-xs text-muted-foreground">
+                              {item.description}
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    </motion.div>
                   );
                 })}
               </div>
