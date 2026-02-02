@@ -4,59 +4,10 @@ import { motion } from "framer-motion";
 import { Play, Clock, Calendar, ExternalLink, Bell, Headphones, Radio } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { episodes, podcastPlatforms } from "@/constants/episodes";
+import { EpisodeStatus } from "@/types/podcast";
 
-interface Episode {
-  id: string;
-  title: string;
-  description: string;
-  guest?: string;
-  duration: string;
-  date: string;
-  audioUrl?: string;
-  spotifyUrl?: string;
-  appleUrl?: string;
-  youtubeUrl?: string;
-  status: "published" | "upcoming" | "recording";
-}
-
-// Placeholder episodes - replace with your actual episodes
-const episodes: Episode[] = [
-  {
-    id: "ep-001",
-    title: "Coming Soon: The AI Engineering Podcast",
-    description: "Join me for conversations with engineers, researchers, and builders working on the cutting edge of AI. We'll explore practical insights, lessons learned, and the future of AI development.",
-    duration: "~60 min",
-    date: "2025-02",
-    status: "upcoming"
-  },
-  {
-    id: "ep-002",
-    title: "Building Production RAG Systems",
-    description: "A deep dive into the challenges and solutions for building retrieval-augmented generation systems that actually work in production. From chunking strategies to evaluation frameworks.",
-    guest: "TBA",
-    duration: "~45 min",
-    date: "2025-02",
-    status: "upcoming"
-  },
-  {
-    id: "ep-003",
-    title: "The Future of AI Agents",
-    description: "Exploring autonomous AI agents: what works today, what doesn't, and where the technology is heading. Practical advice for building agent systems.",
-    guest: "TBA",
-    duration: "~50 min",
-    date: "2025-03",
-    status: "upcoming"
-  },
-];
-
-const platforms = [
-  { name: "Spotify", icon: "🎵", url: "#", color: "hover:text-green-500" },
-  { name: "Apple Podcasts", icon: "🎙️", url: "#", color: "hover:text-purple-500" },
-  { name: "YouTube", icon: "▶️", url: "#", color: "hover:text-red-500" },
-  { name: "RSS Feed", icon: "📡", url: "#", color: "hover:text-orange-500" },
-];
-
-function StatusBadge({ status }: { status: Episode["status"] }) {
+function StatusBadge({ status }: { status: EpisodeStatus }) {
   const styles = {
     published: "bg-green-500/10 text-green-600",
     upcoming: "bg-yellow-500/10 text-yellow-600",
@@ -132,7 +83,7 @@ export function PodcastSection() {
       <div>
         <h3 className="text-lg font-semibold mb-4 text-center">Subscribe on your favorite platform</h3>
         <div className="flex flex-wrap justify-center gap-4">
-          {platforms.map((platform) => (
+          {podcastPlatforms.map((platform) => (
             <Link
               key={platform.name}
               href={platform.url}
@@ -185,7 +136,7 @@ export function PodcastSection() {
 
                   {episode.guest && (
                     <p className="text-sm text-primary mb-2">
-                      Guest: {episode.guest}
+                      Guest: {typeof episode.guest === "string" ? episode.guest : episode.guest.name}
                     </p>
                   )}
 
