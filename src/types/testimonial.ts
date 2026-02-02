@@ -4,8 +4,11 @@ export interface Testimonial {
   role: string;
   company: string;
   avatar?: string;
+  companyLogo?: string;
   content: string;
   linkedinUrl?: string;
   twitterUrl?: string;
   date?: string;
+  project?: string; // Related project slug
+  featured?: boolean;
 }
