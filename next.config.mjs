@@ -1,7 +1,5 @@
 /** @type {import('next').NextConfig} */
 import createMDX from '@next/mdx';
-import remarkGfm from 'remark-gfm';
-import rehypePrismPlus from 'rehype-prism-plus';
 import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig = {
@@ -31,6 +29,11 @@ const nextConfig = {
       {
         source: '/analytics',
         destination: '/stats',
+        permanent: true,
+      },
+      {
+        source: '/start-here',
+        destination: '/',
         permanent: true,
       },
     ];
@@ -94,8 +97,9 @@ const nextConfig = {
 
 const withMDX = createMDX({
   options: {
-    remarkPlugins: [remarkGfm],
-    rehypePlugins: [rehypePrismPlus],
+    // Use string paths instead of function imports for Turbopack compatibility
+    remarkPlugins: ['remark-gfm'],
+    rehypePlugins: ['rehype-prism-plus'],
   },
 });
 
