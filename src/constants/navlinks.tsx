@@ -16,7 +16,6 @@ import {
   Film,
   Camera,
   Mic,
-  Compass,
   MessageSquare,
   Bookmark,
   Heart
@@ -35,21 +34,12 @@ export interface NavCategory {
   items: NavItem[];
 }
 
-// Start Here link (prominent, always visible)
-export const startHereLink: NavItem = {
-  name: 'Start Here',
-  href: '/start-here',
-  icon: Compass,
-  description: 'New? Begin your journey here'
-};
-
 // Categorized navigation with dropdowns - reorganized into 4 cleaner categories
 export const navigationCategories: NavCategory[] = [
   {
     name: 'About',
     icon: User,
     items: [
-      { name: 'Start Here', href: '/start-here', icon: Compass, description: 'New? Begin here' },
       { name: 'About Me', href: '/about', icon: User, description: 'Who I am' },
       { name: 'Now', href: '/now', icon: Clock, description: 'What I\'m up to' },
       { name: 'Professional', href: '/professional', icon: Sparkles, description: 'Work history' },
@@ -97,7 +87,6 @@ export const contactLink: NavItem = {
 
 // Flat navigation for backward compatibility and mobile
 export const navigation = [
-  { name: 'Start Here', href: '/start-here' },
   { name: 'About', href: '/about' },
   { name: 'Blog', href: '/blog' },
   { name: 'Projects', href: '/projects' },
@@ -107,7 +96,6 @@ export const navigation = [
 // All pages for search/sitemap
 export const allPages: NavItem[] = [
   { name: 'Home', href: '/' },
-  { name: 'Start Here', href: '/start-here' },
   { name: 'About', href: '/about' },
   { name: 'Now', href: '/now' },
   { name: 'Professional', href: '/professional' },
