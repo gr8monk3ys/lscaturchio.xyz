@@ -1,9 +1,10 @@
 import { Hero } from "@/components/home/Hero";
+import { NewHereAccordion } from "@/components/home/new-here-accordion";
 import { RecentBlogs } from "@/components/home/recent-blogs";
 import { RecentProjects } from "@/components/home/recent-projects";
 import { WorkingOnSection } from "@/components/home/working-on-section";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
-import { Section, SectionHeader } from "@/components/ui/Section";
+import { Section } from "@/components/ui/Section";
 import { WebsiteStructuredData, PersonStructuredData, FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/structured-data";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -54,6 +55,9 @@ export default function Home() {
 
       {/* Hero Section */}
       <Hero />
+
+      {/* New Here Accordion */}
+      <NewHereAccordion />
 
       {/* What I'm Working On */}
       <WorkingOnSection />
