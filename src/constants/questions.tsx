@@ -5,35 +5,35 @@ interface FaqItem {
 
 export const questions: FaqItem[] = [
   {
-    question: "Why do you care so much about privacy and open source?",
-    answer: "I believe the internet should remain open, free, and neutral - the way it was meant to be. Using FOSS (Free and Open Source Software) isn't just about avoiding bloat; it's about maintaining control over your own digital life. I use Firefox, Bitwarden, ProtonMail, and Arch Linux (btw) because I want to know what's running on my machine and who has access to my data.",
+    question: "What is your typical project engagement process?",
+    answer: "I start with a free 30-minute discovery call to understand your goals and challenges. From there, I provide a detailed scope document outlining deliverables, timeline, and pricing. Once aligned, we kick off with a deeper technical discovery phase, followed by iterative development with regular check-ins. I prioritize clear communication and transparency throughout.",
   },
   {
-    question: "What got you into music production?",
-    answer: "I've always been drawn to creating things, whether it's code or sound. I produce indie/folk music with industrial textures - it's my way of exploring the intersection of organic and synthetic, nature and technology. Arctic Monkeys heavily influenced my taste, and producing music gives me a creative outlet that's completely different from coding but equally satisfying.",
+    question: "What industries have you worked with?",
+    answer: "I have experience across fintech, healthcare, e-commerce, and developer tools. My focus areas include AI/ML systems, data pipelines, and full-stack web applications. Whether you need a RAG-powered chatbot, a data analytics dashboard, or a custom automation solution, I can adapt to your domain.",
   },
   {
-    question: "Can you really play the Scottish Border Bagpipes?",
-    answer: "Yes! It's my weird skill. I picked them up because I wanted to learn something completely outside my comfort zone. There's something meditative about the practice, and it's a great conversation starter. Plus, it's way more memorable than saying I'm a 'machine learning enthusiast.'",
+    question: "How do you handle pricing and estimates?",
+    answer: "I offer both project-based and hourly pricing depending on the scope. For well-defined projects, I provide fixed-price quotes with clear milestones. For exploratory or ongoing work, I bill hourly with detailed time tracking. I always discuss budget constraints upfront to find an approach that works for both of us.",
   },
   {
-    question: "What's the best coffee shop in Pasadena?",
-    answer: "Rose City Coffee Co., hands down. It's my favorite spot to work remotely or just think. Great atmosphere, solid coffee, and the kind of place where you can lose track of time. If you're ever in Pasadena, it's worth the visit.",
+    question: "What deliverables can clients expect?",
+    answer: "Depending on the project, deliverables typically include production-ready code, technical documentation, deployment guides, and knowledge transfer sessions. For data science projects, you will also receive model performance reports, data quality assessments, and recommendations for ongoing maintenance.",
   },
   {
-    question: "Why do you write about philosophy on a tech blog?",
-    answer: "Because technology doesn't exist in a vacuum. I fall under the camp of absurdism - influenced by Camus, Nietzsche, and Jung. Understanding the human condition, morality, and consciousness shapes how I think about building AI systems and data tools. The Red Book by Jung completely reshaped how I think about self-exploration. These aren't separate interests; they're all connected.",
+    question: "How do you handle data confidentiality and NDAs?",
+    answer: "I take data security seriously. I am happy to sign NDAs before any sensitive information is shared. All client data is handled according to best practices - encrypted in transit and at rest, with access strictly limited. I can also work within your existing security protocols if required.",
   },
   {
-    question: "What's with all the movie references?",
-    answer: "Between 2023 and now, I've become obsessed with cinema - the plots, cinematography, method acting. Movies have become my primary catalyst for introspection and philosophical growth. I'm a big believer in Richard Feynman's style of explaining complex topics simply, and movies do that visually in ways that text sometimes can't.",
+    question: "What is the difference between one-time consulting and ongoing support?",
+    answer: "One-time consulting is ideal for specific projects like building a proof-of-concept, auditing existing systems, or solving a particular technical challenge. Ongoing support includes regular maintenance, feature development, and strategic advisory. Many clients start with a one-time project and transition to ongoing support as their needs evolve.",
   },
   {
-    question: "Are you actually trying to make data science 'user-friendly'?",
-    answer: "Yes, that's the goal. I want to create open-source solutions that make data science problems accessible to people who aren't data scientists. Too much of this field is locked behind academic papers and complex tooling. If I can build something that makes someone's life easier, that's a win. Basically trying to get paid for doing cool stuff that actually helps people.",
+    question: "Do you work with teams or just individuals?",
+    answer: "Both. I work directly with founders and solo entrepreneurs, but I also collaborate with existing engineering teams. For team engagements, I can serve as a technical advisor, help with code reviews, or work as an embedded contributor. I adapt my communication style and workflow to fit your team structure.",
   },
   {
-    question: "Why Rust over Python for some projects?",
-    answer: "Rust is my favorite programming language because it forces you to think clearly about memory, concurrency, and safety. Yes, Python is great for rapid prototyping and data science, but Rust makes you a better programmer. The compiler is your friend, even when it feels like your enemy. Plus, the performance benefits are undeniable.",
-  }
+    question: "What is your availability and typical response time?",
+    answer: "I am based in Pasadena, CA (Pacific Time) and typically work Monday through Friday. For active projects, I respond to messages within 24 hours and am available for scheduled calls during business hours. For urgent matters, we can discuss priority support arrangements.",
+  },
 ];
