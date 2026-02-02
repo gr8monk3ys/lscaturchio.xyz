@@ -17,7 +17,6 @@ import {
   X,
   ArrowRight,
   BookOpen,
-  Code,
   Sparkles,
   Loader2,
   Bookmark,
@@ -156,15 +155,6 @@ export function CommandPalette({ className }: CommandPaletteProps) {
         category: "navigation",
         action: () => router.push("/blog"),
         keywords: ["articles", "posts", "writing"],
-      },
-      {
-        id: "snippets",
-        title: "Snippets",
-        description: "Code snippets and TIL",
-        icon: <Code className="h-4 w-4" />,
-        category: "navigation",
-        action: () => router.push("/snippets"),
-        keywords: ["code", "til", "today i learned"],
       },
       {
         id: "series",
