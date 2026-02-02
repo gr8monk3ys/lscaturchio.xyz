@@ -1,14 +1,23 @@
+import { Suspense } from "react";
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { PhotosGrid } from "@/components/photos/PhotosGrid";
 import { Metadata } from "next";
-import { Camera } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Photos | Lorenzo Scaturchio",
-  description: "A collection of my favorite photographs. Moments captured through my lens.",
+  title: "Photography | Lorenzo Scaturchio",
+  description: "A collection of travel, landscape, and nature photography. Shot on Fuji X-T30 II with various film simulation recipes.",
 };
+
+function PhotosGridSkeleton() {
+  return (
+    <div className="flex items-center justify-center py-16">
+      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+    </div>
+  );
+}
 
 export default function PhotosPage() {
   return (
@@ -20,15 +29,17 @@ export default function PhotosPage() {
             <div className="neu-flat-sm rounded-xl p-3">
               <Camera className="h-8 w-8 text-primary" />
             </div>
-            <Heading className="text-4xl font-bold">Photos</Heading>
+            <Heading className="text-4xl font-bold">Photography</Heading>
           </div>
           <Paragraph className="text-lg text-muted-foreground">
-            Moments captured through my lens. A mix of travel, nature, urban exploration,
-            and everyday life. Shot primarily on my Sony A7III.
+            Moments captured through my lens. A collection of travel, landscape, and nature
+            photography shot on my Fuji X-T30 II with custom film simulation recipes.
           </Paragraph>
         </div>
 
-        <PhotosGrid />
+        <Suspense fallback={<PhotosGridSkeleton />}>
+          <PhotosGrid />
+        </Suspense>
       </div>
     </Container>
   );
