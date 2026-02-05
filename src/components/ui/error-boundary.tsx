@@ -155,14 +155,14 @@ export function DefaultErrorFallback({
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={reset}
-            className="neu-button bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-all focus-ring"
+            className="cta-primary px-6 py-3 rounded-xl focus-ring"
           >
             Try again
           </button>
           {showHomeLink && (
             <Link
               href="/"
-              className="neu-button px-6 py-3 rounded-xl font-medium text-foreground hover:text-primary transition-all focus-ring"
+              className="cta-secondary px-6 py-3 rounded-xl font-medium focus-ring"
             >
               Go home
             </Link>

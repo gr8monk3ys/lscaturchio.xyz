@@ -92,14 +92,14 @@ export function ContactForm() {
             <div className="neu-flat-sm rounded-xl p-3 w-fit mx-auto mb-4">
               <method.icon className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg mb-2">{method.title}</h3>
+            <h3 className="text-card-title mb-2">{method.title}</h3>
             <p className="text-muted-foreground text-sm mb-4">{method.description}</p>
             {method.href ? (
               <Link
                 href={method.href}
                 target={method.external ? "_blank" : undefined}
                 rel={method.external ? "noopener noreferrer" : undefined}
-                className="neu-button px-4 py-2 rounded-lg text-sm font-medium text-primary hover:bg-primary hover:text-primary-foreground transition-all inline-block"
+                className="cta-secondary px-4 py-2 rounded-lg text-sm inline-block"
               >
                 {method.action}
               </Link>
@@ -118,7 +118,7 @@ export function ContactForm() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h2 className="text-2xl font-bold mb-6">Send a Message</h2>
+          <h2 className="text-section-title mb-6">Send a Message</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
@@ -181,7 +181,7 @@ export function ContactForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="neu-button w-full bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-all disabled:opacity-50"
+              className="cta-primary w-full px-6 py-3 rounded-xl disabled:opacity-50"
             >
               {isSubmitting ? "Sending..." : "Send Message"}
             </button>
@@ -204,7 +204,7 @@ export function ContactForm() {
         >
           {/* What to Expect */}
           <div className="neu-card p-6">
-            <h3 className="font-semibold text-lg mb-4">What to Expect</h3>
+            <h3 className="text-subsection mb-4">What to Expect</h3>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary mt-1">→</span>
@@ -227,7 +227,7 @@ export function ContactForm() {
 
           {/* Current Availability */}
           <div className="neu-pressed rounded-xl p-6">
-            <h3 className="font-semibold text-lg mb-2">Current Availability</h3>
+            <h3 className="text-subsection mb-2">Current Availability</h3>
             <p className="text-muted-foreground mb-4">
               I&apos;m currently accepting new projects and consulting engagements.
             </p>
@@ -239,7 +239,7 @@ export function ContactForm() {
 
           {/* Social Links */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Connect on Social</h3>
+            <h3 className="text-subsection mb-4">Connect on Social</h3>
             <div className="flex gap-4">
               {socialLinks.map((social) => (
                 <Link
