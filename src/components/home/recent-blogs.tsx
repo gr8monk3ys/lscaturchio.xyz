@@ -62,7 +62,7 @@ export function RecentBlogs() {
   }
 
   return (
-    <Section padding="default" size="wide" divider>
+    <Section padding="default" size="wide" divider topDivider>
       <div ref={containerRef}>
         <SectionHeader
           title="Recent Blogs"
