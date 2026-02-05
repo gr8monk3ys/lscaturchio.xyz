@@ -226,7 +226,7 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
         initial="initial"
         whileHover="hover"
         whileTap="tap"
-        className={`relative flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md ${
+        className={`relative flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-full ${
           hasActiveItem
             ? 'text-foreground'
             : 'text-foreground/60 hover:text-foreground/80'
@@ -257,10 +257,10 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
             transition={{ duration: 0.15, ease: 'easeOut' as const }}
             onMouseEnter={cancelClose}
             onMouseLeave={closeDropdown}
-            className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50"
+            className="absolute left-1/2 -translate-x-1/2 top-full pt-3 z-50"
           >
             <div
-              className="neu-card rounded-xl p-2 min-w-[200px] shadow-lg border border-border/50"
+              className="neu-card rounded-2xl p-2 min-w-[220px] shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-border/60 bg-background/95 backdrop-blur"
               role="menu"
               aria-orientation="vertical"
               onKeyDown={handleKeyDown}
@@ -283,10 +283,10 @@ export function NavDropdown({ category, onOpenChange, closeOthers }: NavDropdown
                         href={item.href}
                         role="menuitem"
                         tabIndex={isFocused ? 0 : -1}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset ${
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset ${
                           isActive
                             ? 'neu-pressed bg-primary/10 text-primary'
-                            : 'hover:bg-muted/50'
+                            : 'hover:bg-muted/40'
                         } ${isFocused ? 'bg-muted/50' : ''}`}
                       >
                         {Icon && (

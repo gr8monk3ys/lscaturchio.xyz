@@ -12,6 +12,20 @@ import { ScrollToTop } from '@/components/ui/scroll-to-top'
 import { LayoutWrapper } from '@/components/layout/layout-wrapper'
 import { CanonicalLink } from '@/components/layout/canonical-link'
 import { Metadata } from 'next'
+import localFont from "next/font/local";
+import { Manrope } from "next/font/google";
+
+const calSans = localFont({
+  src: [{ path: "../../fonts/CalSans-SemiBold.woff2" }],
+  display: "swap",
+  variable: "--font-display",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-body",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -62,7 +76,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${manrope.variable} ${calSans.variable}`}
+    >
       <head>
         {/* DNS Prefetch & Preconnect for External Resources */}
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
