@@ -71,7 +71,7 @@ export function PodcastSection() {
             />
             <button
               type="submit"
-              className="neu-button bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-all"
+            className="cta-primary px-6 py-3 rounded-xl"
             >
               Notify Me
             </button>

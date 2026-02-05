@@ -69,7 +69,7 @@ export function BlogGrid({ blogs }: BlogGridProps) {
           </p>
           <Link
             href="/blog"
-            className="mt-4 inline-block px-6 py-2 rounded-xl neu-button text-primary hover:text-primary/80 transition-all"
+            className="mt-4 inline-block px-6 py-2 rounded-xl cta-secondary"
           >
             View all posts
           </Link>
