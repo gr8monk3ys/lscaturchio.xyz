@@ -126,20 +126,22 @@ export function Navbar() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-[50] backdrop-blur-sm transition-all duration-300 hidden md:block ${
-          isScrolled ? 'bg-background/90 shadow-[0_4px_12px_rgba(0,0,0,0.05)]' : 'bg-background/0'
+        className={`fixed inset-x-0 top-0 z-[50] hidden md:block transition-all duration-300 ${
+          isScrolled
+            ? 'bg-background/90 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md'
+            : 'bg-transparent'
         }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
+          <div className="flex h-20 items-center justify-between">
             {/* Logo */}
-            <div className="w-[180px]">
+            <div className="w-[200px]">
               <Link href="/" className="flex items-center">
                 <Image
                   src="/cursive.svg"
                   alt="Lorenzo Scaturchio"
-                  width={180}
-                  height={36}
+                  width={200}
+                  height={40}
                   priority
                   className="w-auto h-14"
                 />
@@ -148,7 +150,7 @@ export function Navbar() {
 
             {/* Desktop Navigation Links */}
             <nav className="flex items-center">
-              <ul className="flex items-center space-x-1">
+              <ul className="flex items-center space-x-2 rounded-full border border-border bg-background/80 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur">
                 {/* Category Dropdowns */}
                 {navigationCategories.map((category) => (
                   <li key={category.name}>
@@ -173,14 +175,14 @@ export function Navbar() {
             </nav>
 
             {/* Search and theme toggle */}
-            <div className="w-[180px] flex justify-end items-center gap-2">
+            <div className="w-[200px] flex justify-end items-center gap-2">
               <SearchModal />
               <ThemeToggle />
             </div>
           </div>
         </div>
       </header>
-      <div className="h-16 hidden md:block" /> {/* Spacer for fixed header */}
+      <div className="h-20 hidden md:block" /> {/* Spacer for fixed header */}
     </>
   );
 }
