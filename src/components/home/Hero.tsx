@@ -22,8 +22,13 @@ export function Hero() {
     <Section padding="large" size="wide">
       <section
         ref={sectionRef}
-        className="relative min-h-[50vh] sm:min-h-[55vh] w-full flex items-center justify-center overflow-hidden"
+        className="relative min-h-[55vh] sm:min-h-[60vh] w-full flex items-center justify-center overflow-hidden"
       >
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute -top-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
+          <div className="absolute top-8 right-10 h-64 w-64 rounded-full bg-secondary/20 blur-3xl" />
+          <div className="absolute bottom-6 left-10 h-48 w-48 rounded-full bg-accent/70 blur-2xl" />
+        </div>
         {/* Cursor glow effect */}
         <CursorGlow
           containerRef={sectionRef}
@@ -34,7 +39,7 @@ export function Hero() {
         />
 
         <motion.div
-          className="w-full max-w-6xl mx-auto space-y-6"
+          className="relative z-10 w-full max-w-6xl mx-auto space-y-6"
           variants={staggerContainerVariants}
           initial="hidden"
           animate="visible"
@@ -53,8 +58,14 @@ export function Hero() {
               />
             </motion.div>
             <div className="text-center md:text-left space-y-4 max-w-2xl">
+              <motion.div
+                className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary"
+                variants={staggerItemVariants}
+              >
+                Applied ML + RAG Systems
+              </motion.div>
               <motion.h2
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight"
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight"
                 variants={staggerItemVariants}
               >
                 Hey, I&apos;m{" "}
@@ -64,25 +75,33 @@ export function Hero() {
                 className="text-lg sm:text-xl text-muted-foreground"
                 variants={staggerItemVariants}
               >
-                Data Scientist from Southern California. Building RAG systems, contributing to open source,
-                and making data science more accessible.
+                I build practical RAG and ML systems that ship cleanly, feel human, and stay reliable in production.
+              </motion.p>
+              <motion.p
+                className="text-sm sm:text-base text-muted-foreground/80"
+                variants={staggerItemVariants}
+              >
+                Ship real systems, not demos.
               </motion.p>
             </div>
           </div>
 
           <motion.div
             variants={staggerItemVariants}
-            className="flex flex-wrap justify-center gap-3 sm:gap-4"
+            className="flex flex-wrap justify-center gap-4 sm:gap-5 pt-2"
           >
-            <Button asChild size="lg" className="text-base sm:text-lg h-11 sm:h-12">
+            <div className="w-full text-center text-xs sm:text-sm text-muted-foreground/80">
+              For teams shipping RAG, applied ML, and production-grade data products.
+            </div>
+            <Button asChild size="lg" variant="primary" className="text-base sm:text-lg h-12 px-8">
               <Link href="/projects">
                 View My Work
                 <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="text-base sm:text-lg h-11 sm:h-12">
-              <Link href="https://calendly.com/gr8monk3ys/30min">
-                Let&apos;s Chat
+            <Button asChild size="lg" variant="outline" className="cta-secondary text-base sm:text-lg h-12 px-8">
+              <Link href="/contact">
+                Contact Me
                 <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Link>
             </Button>
