@@ -1,8 +1,9 @@
 import { Hero } from "@/components/home/Hero";
-import { NewHereAccordion } from "@/components/home/new-here-accordion";
+import { NewHereSection } from "@/components/home/new-here-section";
 import { RecentBlogs } from "@/components/home/recent-blogs";
 import { RecentProjects } from "@/components/home/recent-projects";
 import { WorkingOnSection } from "@/components/home/working-on-section";
+import { ProofBar } from "@/components/home/proof-bar";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 import { Section } from "@/components/ui/Section";
 import { WebsiteStructuredData, PersonStructuredData, FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/structured-data";
@@ -56,8 +57,11 @@ export default function Home() {
       {/* Hero Section */}
       <Hero />
 
-      {/* New Here Accordion */}
-      <NewHereAccordion />
+      {/* Proof Bar */}
+      <ProofBar />
+
+      {/* New Here Section */}
+      <NewHereSection />
 
       {/* What I'm Working On */}
       <WorkingOnSection />
@@ -69,8 +73,8 @@ export default function Home() {
       <RecentProjects />
 
       {/* Unified CTA Section */}
-      <Section padding="large" size="default" background="muted">
-        <div className="neu-card p-8 lg:p-12 rounded-2xl">
+      <Section padding="large" size="wide" background="muted" topDivider>
+        <div className="neu-card p-8 lg:p-12 rounded-3xl bg-gradient-to-br from-background via-background to-primary/5">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             {/* Left: Contact CTA */}
             <div className="text-center md:text-left">
@@ -83,17 +87,11 @@ export default function Home() {
               </p>
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                 <Link
-                  href="https://calendly.com/gr8monk3ys/30min"
-                  className="neu-button bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-all inline-flex items-center gap-2"
+                  href="/contact"
+                  className="cta-primary px-7 py-3.5 rounded-2xl inline-flex items-center gap-2"
                 >
                   <ArrowRight className="h-4 w-4" />
-                  Schedule a Call
-                </Link>
-                <Link
-                  href="/services"
-                  className="neu-button px-6 py-3 rounded-xl font-medium text-foreground hover:text-primary transition-all"
-                >
-                  View Services
+                  Start a Project
                 </Link>
               </div>
             </div>
