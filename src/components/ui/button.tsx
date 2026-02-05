@@ -20,7 +20,7 @@ const buttonVariants = cva(
           "neu-button text-secondary-foreground bg-secondary hover:bg-secondary/90",
         ghost: "hover:neu-flat-sm hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        primary: "bg-primary text-primary-foreground neu-button hover:bg-primary/90",
+        primary: "cta-primary",
       },
       size: {
         default: "h-10 px-4 py-2",

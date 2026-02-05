@@ -66,7 +66,7 @@ export function NewsletterForm() {
           disabled={status === 'loading' || status === 'success'}
           whileHover={{ scale: status === 'idle' || status === 'error' ? 1.02 : 1 }}
           whileTap={{ scale: status === 'idle' || status === 'error' ? 0.98 : 1 }}
-          className="w-full px-4 py-3 rounded-xl neu-button bg-primary text-primary-foreground font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
+        className="w-full px-4 py-3 rounded-xl cta-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {status === 'loading' && (
             <>

@@ -14,11 +14,11 @@ export function ContactCTA() {
           viewport={{ once: true }}
           className="flex flex-col items-center text-center gap-8"
         >
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tighter max-w-3xl">
+          <h2 className="text-display max-w-3xl">
             Let&apos;s Create Something{" "}
             <span className="text-primary">Amazing</span> Together
           </h2>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl">
+          <p className="text-body-lg text-muted-foreground max-w-2xl">
             Whether you have a project in mind or just want to chat, I&apos;m always
             open to discussing new opportunities and ideas.
           </p>
@@ -27,7 +27,7 @@ export function ContactCTA() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="https://calendly.com/gr8monk3ys/30min"
-                className="neu-button bg-primary text-primary-foreground px-8 py-4 rounded-xl font-medium text-lg inline-flex items-center gap-3 hover:bg-primary/90 transition-all"
+                className="cta-primary px-8 py-4 rounded-xl text-lg inline-flex items-center gap-3"
               >
                 <Mail className="h-5 w-5" />
                 Let&apos;s Chat
@@ -36,7 +36,7 @@ export function ContactCTA() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/services"
-                className="neu-button px-8 py-4 rounded-xl font-medium text-lg inline-flex items-center gap-3 text-foreground hover:text-primary transition-all"
+                className="cta-secondary px-8 py-4 rounded-xl text-lg inline-flex items-center gap-3"
               >
                 Learn More
                 <ArrowRight className="h-5 w-5" />
