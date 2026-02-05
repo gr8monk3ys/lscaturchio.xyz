@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface SectionProps {
@@ -14,6 +15,10 @@ interface SectionProps {
   id?: string;
   /** Show divider below section */
   divider?: boolean;
+  /** Optional top separator */
+  topDivider?: boolean;
+  /** Reveal animation on enter */
+  reveal?: boolean;
   /** Background variant */
   background?: "default" | "muted" | "card";
 }
@@ -49,8 +54,16 @@ export function Section({
   padding = "default",
   id,
   divider = false,
+  topDivider = false,
+  reveal = true,
   background = "default",
 }: SectionProps) {
+  const reduceMotion = useReducedMotion();
+  const revealVariants = {
+    hidden: { opacity: 0, y: reduceMotion ? 0 : 16 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
     <section
       id={id}
@@ -60,15 +73,23 @@ export function Section({
         className
       )}
     >
-      <div
+      {topDivider && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 max-w-lg h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      )}
+      <motion.div
         className={cn(
           "mx-auto px-4 sm:px-6 lg:px-8",
           sizeClasses[size],
           paddingClasses[padding]
         )}
+        initial={reveal ? "hidden" : false}
+        whileInView={reveal ? "show" : undefined}
+        viewport={{ once: true, margin: "-80px" }}
+        variants={revealVariants}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       >
         {children}
-      </div>
+      </motion.div>
       {divider && (
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 max-w-md h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       )}
@@ -106,7 +127,7 @@ export function SectionHeader({
       )}
     >
       <div className={cn(align === "center" && "mx-auto")}>
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">{title}</h2>
+        <h2 className="text-section-title">{title}</h2>
         {description && (
           <p className="mt-2 text-muted-foreground max-w-2xl">
             {description}
