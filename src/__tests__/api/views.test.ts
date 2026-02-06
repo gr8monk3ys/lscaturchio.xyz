@@ -106,7 +106,7 @@ describe('Views API Route', () => {
       expect(data.success).toBe(false);
     });
 
-    it('returns 500 on database error', async () => {
+    it('returns 200 with zero views on database error (graceful fallback)', async () => {
       mockSupabase.single.mockResolvedValue({
         data: null,
         error: { code: 'DB_ERROR', message: 'Connection failed' },
@@ -116,9 +116,8 @@ describe('Views API Route', () => {
       const response = await GET(request);
       const data = await response.json();
 
-      expect(response.status).toBe(500);
-      expect(data.error).toBe('Failed to fetch views');
-      expect(data.success).toBe(false);
+      expect(response.status).toBe(200);
+      expect(data).toEqual({ data: { slug: 'test-post', views: 0 }, success: true });
     });
 
     it('returns all views with titles when all=true', async () => {

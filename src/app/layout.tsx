@@ -86,10 +86,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
 
-        {/* Preload Critical Resources */}
-        <link rel="preload" href="/images/portrait.webp" as="image" />
-        <link rel="preload" href="/fonts/CalSans-SemiBold.woff2" as="font" crossOrigin="anonymous" />
-
         {/* Canonical Link - Client Component for dynamic pathname */}
         <CanonicalLink />
 
@@ -121,8 +117,6 @@ export default function RootLayout({
           id="google-adsense"
         />
 
-        {/* Resource Hints */}
-        <link rel="modulepreload" href="/_next/static/chunks/main.js" />
       </head>
       <body>
         {/* Skip to content link for accessibility */}
