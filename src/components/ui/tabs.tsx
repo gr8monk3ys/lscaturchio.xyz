@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import * as TabsPrimitive from "@radix-ui/react-tabs"
+import * as TabsPrimitive from "./tabs-primitive"
 import { cva, type VariantProps } from "class-variance-authority"
 import { motion } from "framer-motion"
 
