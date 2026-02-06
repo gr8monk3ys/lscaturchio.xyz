@@ -38,7 +38,8 @@ const handleGet = async (req: NextRequest) => {
 
     if (error && !isNoRowsError(error)) {
       logError("View Counter: Database error", error, { component: 'views', action: 'GET' });
-      return ApiErrors.internalError("Failed to fetch views");
+      // Graceful fallback so blog pages still render even if views storage is unavailable
+      return apiSuccess({ slug, views: 0 });
     }
 
     const views = data?.count || 0;
@@ -122,7 +123,8 @@ const handleOptions = async () => {
 
     if (error) {
       logError("View Counter: Database error", error, { component: 'views', action: 'OPTIONS' });
-      return ApiErrors.internalError("Failed to fetch views");
+      // Graceful fallback for public stats widgets
+      return apiSuccess({ views: [], total: 0 });
     }
 
     // Fetch all blog metadata to get real titles
