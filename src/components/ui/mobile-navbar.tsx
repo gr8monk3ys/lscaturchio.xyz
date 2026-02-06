@@ -21,7 +21,7 @@ export function MobileNavbar() {
   return (
     <>
       {/* Mobile Menu Button */}
-      <div className="fixed top-0 right-0 z-[200] p-4 md:hidden">
+      <div className="fixed top-0 right-0 z-[450] p-4 md:hidden">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -45,7 +45,7 @@ export function MobileNavbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[150] flex flex-col bg-background md:hidden overflow-y-auto"
+            className="fixed inset-0 z-[400] flex flex-col bg-background/95 backdrop-blur-sm md:hidden overflow-y-auto"
           >
             <div className="flex flex-col w-full max-w-md mx-auto p-6 pt-20 space-y-2">
               {/* Category Sections */}
