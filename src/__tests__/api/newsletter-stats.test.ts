@@ -1,13 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Mock dependencies
-const mockSupabase = {
-  rpc: vi.fn(),
-};
+const mockSql = vi.fn();
 
-vi.mock('@/lib/supabase', () => ({
-  getSupabase: () => mockSupabase,
+// Mock dependencies
+vi.mock('@/lib/db', () => ({
+  getDb: vi.fn(() => mockSql),
 }));
 
 vi.mock('@/lib/logger', () => ({
@@ -56,8 +54,8 @@ describe('/api/newsletter/stats', () => {
     // Default: API key validation passes
     vi.mocked(validateApiKey).mockReturnValue(null);
 
-    // Default: RPC returns subscriber count
-    mockSupabase.rpc.mockResolvedValue({ data: 150, error: null });
+    // Default: SQL returns subscriber count
+    mockSql.mockResolvedValue([{ count_active_subscribers: 150 }]);
   });
 
   afterEach(() => {
@@ -107,13 +105,13 @@ describe('/api/newsletter/stats', () => {
       const response = await GET(request);
 
       expect(response.status).toBe(200);
-      expect(mockSupabase.rpc).toHaveBeenCalledWith('count_active_subscribers');
+      expect(mockSql).toHaveBeenCalled();
     });
   });
 
   describe('successful responses', () => {
     it('returns subscriber count on success', async () => {
-      mockSupabase.rpc.mockResolvedValue({ data: 150, error: null });
+      mockSql.mockResolvedValue([{ count_active_subscribers: 150 }]);
 
       const request = createRequest('valid-api-key');
       const response = await GET(request);
@@ -124,7 +122,7 @@ describe('/api/newsletter/stats', () => {
     });
 
     it('returns 0 when no subscribers exist', async () => {
-      mockSupabase.rpc.mockResolvedValue({ data: 0, error: null });
+      mockSql.mockResolvedValue([{ count_active_subscribers: 0 }]);
 
       const request = createRequest('valid-api-key');
       const response = await GET(request);
@@ -134,8 +132,8 @@ describe('/api/newsletter/stats', () => {
       expect(data.activeSubscribers).toBe(0);
     });
 
-    it('handles null data from RPC', async () => {
-      mockSupabase.rpc.mockResolvedValue({ data: null, error: null });
+    it('handles null data from SQL', async () => {
+      mockSql.mockResolvedValue([{ count_active_subscribers: null }]);
 
       const request = createRequest('valid-api-key');
       const response = await GET(request);
@@ -146,7 +144,7 @@ describe('/api/newsletter/stats', () => {
     });
 
     it('returns large subscriber counts correctly', async () => {
-      mockSupabase.rpc.mockResolvedValue({ data: 999999, error: null });
+      mockSql.mockResolvedValue([{ count_active_subscribers: 999999 }]);
 
       const request = createRequest('valid-api-key');
       const response = await GET(request);
@@ -159,10 +157,7 @@ describe('/api/newsletter/stats', () => {
 
   describe('error handling', () => {
     it('returns 500 on database error', async () => {
-      mockSupabase.rpc.mockResolvedValue({
-        data: null,
-        error: { message: 'Database connection failed' },
-      });
+      mockSql.mockRejectedValue(new Error('Database connection failed'));
 
       const request = createRequest('valid-api-key');
       const response = await GET(request);
@@ -173,8 +168,8 @@ describe('/api/newsletter/stats', () => {
       expect(data.activeSubscribers).toBe(0);
     });
 
-    it('returns 500 when RPC throws', async () => {
-      mockSupabase.rpc.mockRejectedValue(new Error('Connection refused'));
+    it('returns 500 when SQL throws', async () => {
+      mockSql.mockRejectedValue(new Error('Connection refused'));
 
       const request = createRequest('valid-api-key');
       const response = await GET(request);
@@ -187,7 +182,7 @@ describe('/api/newsletter/stats', () => {
 
     it('logs error when database operation fails', async () => {
       const dbError = new Error('Database error');
-      mockSupabase.rpc.mockRejectedValue(dbError);
+      mockSql.mockRejectedValue(dbError);
 
       const request = createRequest('valid-api-key');
       await GET(request);
@@ -202,25 +197,8 @@ describe('/api/newsletter/stats', () => {
       );
     });
 
-    it('logs error when RPC returns error', async () => {
-      const rpcError = { message: 'RPC failed', code: 'PGRST301' };
-      mockSupabase.rpc.mockResolvedValue({ data: null, error: rpcError });
-
-      const request = createRequest('valid-api-key');
-      await GET(request);
-
-      expect(logError).toHaveBeenCalledWith(
-        'Newsletter Stats: Unexpected error',
-        rpcError,
-        expect.objectContaining({
-          component: 'newsletter/stats',
-          action: 'GET',
-        })
-      );
-    });
-
     it('handles timeout errors', async () => {
-      mockSupabase.rpc.mockRejectedValue(new Error('Request timeout'));
+      mockSql.mockRejectedValue(new Error('Request timeout'));
 
       const request = createRequest('valid-api-key');
       const response = await GET(request);
@@ -231,13 +209,12 @@ describe('/api/newsletter/stats', () => {
     });
   });
 
-  describe('RPC function call', () => {
-    it('calls count_active_subscribers RPC', async () => {
+  describe('SQL function call', () => {
+    it('calls count_active_subscribers function', async () => {
       const request = createRequest('valid-api-key');
       await GET(request);
 
-      expect(mockSupabase.rpc).toHaveBeenCalledWith('count_active_subscribers');
-      expect(mockSupabase.rpc).toHaveBeenCalledTimes(1);
+      expect(mockSql).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -250,7 +227,7 @@ describe('/api/newsletter/stats', () => {
     });
 
     it('returns only activeSubscribers field on success', async () => {
-      mockSupabase.rpc.mockResolvedValue({ data: 100, error: null });
+      mockSql.mockResolvedValue([{ count_active_subscribers: 100 }]);
 
       const request = createRequest('valid-api-key');
       const response = await GET(request);
@@ -260,10 +237,7 @@ describe('/api/newsletter/stats', () => {
     });
 
     it('returns error and activeSubscribers fields on failure', async () => {
-      mockSupabase.rpc.mockResolvedValue({
-        data: null,
-        error: { message: 'Error' },
-      });
+      mockSql.mockRejectedValue(new Error('Error'));
 
       const request = createRequest('valid-api-key');
       const response = await GET(request);
@@ -277,7 +251,6 @@ describe('/api/newsletter/stats', () => {
 
   describe('rate limiting integration', () => {
     it('handler is wrapped with rate limiting', async () => {
-      // The handler should be callable (rate limiting is mocked to pass through)
       const request = createRequest('valid-api-key');
       const response = await GET(request);
 

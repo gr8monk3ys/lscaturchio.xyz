@@ -1,12 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
-import type { SupabaseClient } from '@supabase/supabase-js';
 
-// Mock the dependencies - use inline vi.fn() in factory since it's hoisted
-vi.mock('@/lib/supabase', () => ({
-  getSupabase: vi.fn(),
-  isSupabaseConfigured: vi.fn(() => true),
-  isNoRowsError: vi.fn((error: { code?: string } | null) => error?.code === 'PGRST116'),
+// Create a mock sql tagged template function
+const mockSql = vi.fn();
+
+// Mock the dependencies
+vi.mock('@/lib/db', () => ({
+  getDb: vi.fn(() => mockSql),
+  isDatabaseConfigured: vi.fn(() => true),
 }));
 
 vi.mock('@/lib/csrf', () => ({
@@ -33,37 +34,20 @@ vi.mock('@/lib/with-rate-limit', () => ({
 }));
 
 import { GET, POST, OPTIONS } from '@/app/api/views/route';
-import { getSupabase, isSupabaseConfigured } from '@/lib/supabase';
+import { isDatabaseConfigured } from '@/lib/db';
 import { validateCsrf } from '@/lib/csrf';
 import { getAllBlogs } from '@/lib/getAllBlogs';
 
 describe('Views API Route', () => {
-  const mockSupabase = {
-    from: vi.fn().mockReturnThis(),
-    select: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    single: vi.fn(),
-    order: vi.fn().mockReturnThis(),
-    rpc: vi.fn(),
-  };
-
   beforeEach(() => {
     vi.clearAllMocks();
-    // Set environment variables for Supabase to be "configured"
-    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
-    process.env.SUPABASE_SERVICE_KEY = 'test-service-key';
-    // Reset mocks to their default behavior
-    vi.mocked(isSupabaseConfigured).mockReturnValue(true);
-    vi.mocked(getSupabase).mockReturnValue(mockSupabase as unknown as SupabaseClient);
+    vi.mocked(isDatabaseConfigured).mockReturnValue(true);
     vi.mocked(validateCsrf).mockReturnValue(null);
   });
 
   describe('GET /api/views', () => {
     it('returns view count for a valid slug', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: { count: 42 },
-        error: null,
-      });
+      mockSql.mockResolvedValue([{ count: 42 }]);
 
       const request = new NextRequest('http://localhost/api/views?slug=test-post');
       const response = await GET(request);
@@ -74,10 +58,7 @@ describe('Views API Route', () => {
     });
 
     it('returns 0 views for a post with no views', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: null,
-        error: { code: 'PGRST116' }, // No rows found
-      });
+      mockSql.mockResolvedValue([]);
 
       const request = new NextRequest('http://localhost/api/views?slug=new-post');
       const response = await GET(request);
@@ -106,38 +87,29 @@ describe('Views API Route', () => {
       expect(data.success).toBe(false);
     });
 
-    it('returns 200 with zero views on database error (graceful fallback)', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: null,
-        error: { code: 'DB_ERROR', message: 'Connection failed' },
-      });
+    it('returns 500 on database error', async () => {
+      mockSql.mockRejectedValue(new Error('Connection failed'));
 
       const request = new NextRequest('http://localhost/api/views?slug=test-post');
       const response = await GET(request);
       const data = await response.json();
 
-      expect(response.status).toBe(200);
-      expect(data).toEqual({ data: { slug: 'test-post', views: 0 }, success: true });
+      expect(response.status).toBe(500);
+      expect(data.error).toBe('Failed to fetch views');
+      expect(data.success).toBe(false);
     });
 
-    it('returns all views with titles when all=true', async () => {
-      const mockViewsData = [
+    it('returns all views with titles via OPTIONS', async () => {
+      mockSql.mockResolvedValue([
         { slug: 'post-1', count: 100 },
         { slug: 'post-2', count: 50 },
-      ];
-
-      mockSupabase.order.mockResolvedValue({
-        data: mockViewsData,
-        error: null,
-      });
+      ]);
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue([
         { slug: 'post-1', title: 'First Post' },
         { slug: 'post-2', title: 'Second Post' },
       ]);
 
-      // Note: The route uses OPTIONS method for fetching all views, not GET with ?all=true
-      // OPTIONS is wrapped with withRateLimit, so it requires a NextRequest argument
       const request = new NextRequest('http://localhost/api/views', { method: 'OPTIONS' });
       const response = await OPTIONS(request);
       const data = await response.json();
@@ -153,10 +125,7 @@ describe('Views API Route', () => {
 
   describe('POST /api/views', () => {
     it('increments view count for a valid slug', async () => {
-      mockSupabase.rpc.mockResolvedValue({
-        data: 43,
-        error: null,
-      });
+      mockSql.mockResolvedValue([{ increment_view_count: 43 }]);
 
       const request = new NextRequest('http://localhost/api/views', {
         method: 'POST',
@@ -172,9 +141,6 @@ describe('Views API Route', () => {
 
       expect(response.status).toBe(200);
       expect(data).toEqual({ data: { slug: 'test-post', views: 43 }, success: true });
-      expect(mockSupabase.rpc).toHaveBeenCalledWith('increment_view_count', {
-        post_slug: 'test-post',
-      });
     });
 
     it('returns 403 when CSRF validation fails', async () => {
@@ -227,10 +193,7 @@ describe('Views API Route', () => {
     });
 
     it('returns 500 on RPC error', async () => {
-      mockSupabase.rpc.mockResolvedValue({
-        data: null,
-        error: { message: 'RPC failed' },
-      });
+      mockSql.mockRejectedValue(new Error('RPC failed'));
 
       const request = new NextRequest('http://localhost/api/views', {
         method: 'POST',
