@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, ReactNode } from "react";
+import { useRef, ReactNode } from "react";
 import { motion } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 import { formatDate } from "../../../lib/formatDate";
@@ -10,8 +10,6 @@ import { Paragraph } from "../Paragraph";
 import { Prose } from "@/components/blog/Prose";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
-import { AdBanner } from "@/components/ads/AdBanner";
-import { InArticleAd } from "@/components/ads/InArticleAd";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { ReadingProgress } from "./reading-progress";
 import { ReadingTimeBadge } from "./reading-time-badge";
@@ -20,18 +18,11 @@ import { GiscusComments } from "./giscus-comments";
 import { TableOfContents } from "./table-of-contents";
 import { NewsletterCTA } from "./newsletter-cta";
 import { ViewCounter } from "./view-counter";
-import { BlogReactions } from "./blog-reactions";
 import { SocialShare } from "./social-share";
 import { SeriesNavigation } from "./series-navigation";
 import { ReadingProgressTracker } from "./reading-progress-tracker";
 import { TextToSpeech } from "./text-to-speech";
 import { BlogJsonLd } from "./blog-json-ld";
-
-// Ad placement configuration - positions where in-article ads are injected
-const AD_PLACEMENT = {
-  FIRST_IN_ARTICLE_AFTER_PARAGRAPH: 3,
-  SECOND_IN_ARTICLE_AFTER_PARAGRAPH: 8,
-} as const;
 
 interface BlogMeta {
   title: string;
@@ -176,34 +167,11 @@ export function BlogLayout({
                 />
               </div>
               
-              {/* Top of article ad */}
-              <AdBanner slot="1234567890" format="horizontal" />
               <Prose>
                 <div ref={contentRef}>
-                  {/* Inject in-article ads at strategic positions */}
-                  {React.Children.map(children, (child, index) => {
-                    if (index === AD_PLACEMENT.FIRST_IN_ARTICLE_AFTER_PARAGRAPH) {
-                      return (
-                        <>
-                          {child}
-                          <InArticleAd slot="2345678901" />
-                        </>
-                      );
-                    } else if (index === AD_PLACEMENT.SECOND_IN_ARTICLE_AFTER_PARAGRAPH) {
-                      return (
-                        <>
-                          {child}
-                          <InArticleAd slot="3456789012" />
-                        </>
-                      );
-                    }
-                    return child;
-                  })}
+                  {children}
                 </div>
               </Prose>
-
-              {/* Bottom of article ad */}
-              <AdBanner slot="4567890123" format="horizontal" className="mt-8" />
             </motion.div>
 
             {/* Series Navigation (if part of a series) */}
@@ -217,11 +185,6 @@ export function BlogLayout({
 
             {/* Newsletter CTA */}
             <NewsletterCTA />
-
-            {/* Blog Reactions */}
-            <div className="my-8 flex justify-center">
-              <BlogReactions slug={slug} />
-            </div>
 
             {/* Comments Section */}
             <GiscusComments />
