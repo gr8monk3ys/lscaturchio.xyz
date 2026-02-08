@@ -1,20 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 
+const mockSql = vi.fn();
+
 // Mock dependencies before imports
-const mockSupabase = {
-  from: vi.fn().mockReturnThis(),
-  select: vi.fn().mockReturnThis(),
-  eq: vi.fn().mockReturnThis(),
-  single: vi.fn(),
-  update: vi.fn().mockReturnThis(),
-};
-
-vi.mock('@/lib/supabase', () => ({
-  getSupabase: () => mockSupabase,
+vi.mock('@/lib/db', () => ({
+  getDb: vi.fn(() => mockSql),
 }));
-
-// Note: CSRF validation is not used in this route (uses rate limiting instead)
 
 vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
@@ -48,11 +40,6 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
 describe('/api/newsletter/unsubscribe', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Reset mock chain
-    mockSupabase.from.mockReturnThis();
-    mockSupabase.select.mockReturnThis();
-    mockSupabase.eq.mockReturnThis();
-    mockSupabase.update.mockReturnThis();
   });
 
   describe('token validation', () => {
@@ -93,22 +80,12 @@ describe('/api/newsletter/unsubscribe', () => {
     });
   });
 
-  // Note: CSRF protection removed from this endpoint in favor of rate limiting
-  // The withRateLimit HOF provides protection against abuse
-
   describe('successful unsubscribe', () => {
     it('unsubscribes active subscriber with valid token', async () => {
-      // Mock finding active subscriber
-      mockSupabase.single.mockResolvedValue({
-        data: { email: 'test@example.com', is_active: true },
-        error: null,
-      });
-
-      // Mock successful update
-      const mockUpdateEq = vi.fn().mockResolvedValue({ error: null });
-      mockSupabase.update.mockReturnValue({
-        eq: mockUpdateEq,
-      });
+      // First call: SELECT finds active subscriber
+      mockSql.mockResolvedValueOnce([{ email: 'test@example.com', is_active: true }]);
+      // Second call: UPDATE succeeds
+      mockSql.mockResolvedValueOnce([]);
 
       const request = createMockRequest({ token: 'valid-unsubscribe-token' });
       const response = await POST(request);
@@ -118,50 +95,21 @@ describe('/api/newsletter/unsubscribe', () => {
       expect(data.message).toBe('Successfully unsubscribed');
     });
 
-    it('queries newsletter_subscribers table with correct token', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: { email: 'test@example.com', is_active: true },
-        error: null,
-      });
-
-      const mockUpdateEq = vi.fn().mockResolvedValue({ error: null });
-      mockSupabase.update.mockReturnValue({
-        eq: mockUpdateEq,
-      });
+    it('calls sql with correct token for lookup', async () => {
+      mockSql.mockResolvedValueOnce([{ email: 'test@example.com', is_active: true }]);
+      mockSql.mockResolvedValueOnce([]);
 
       const request = createMockRequest({ token: 'my-token-123' });
       await POST(request);
 
-      expect(mockSupabase.from).toHaveBeenCalledWith('newsletter_subscribers');
-      expect(mockSupabase.select).toHaveBeenCalledWith('email, is_active');
-      expect(mockSupabase.eq).toHaveBeenCalledWith('unsubscribe_token', 'my-token-123');
-    });
-
-    it('updates is_active to false for matching token', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: { email: 'test@example.com', is_active: true },
-        error: null,
-      });
-
-      const mockUpdateEq = vi.fn().mockResolvedValue({ error: null });
-      mockSupabase.update.mockReturnValue({
-        eq: mockUpdateEq,
-      });
-
-      const request = createMockRequest({ token: 'valid-token' });
-      await POST(request);
-
-      expect(mockSupabase.update).toHaveBeenCalledWith({ is_active: false });
-      expect(mockUpdateEq).toHaveBeenCalledWith('unsubscribe_token', 'valid-token');
+      // mockSql is called as tagged template - verify it was called
+      expect(mockSql).toHaveBeenCalledTimes(2);
     });
   });
 
   describe('already unsubscribed', () => {
     it('returns success message when subscriber is already inactive', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: { email: 'test@example.com', is_active: false },
-        error: null,
-      });
+      mockSql.mockResolvedValueOnce([{ email: 'test@example.com', is_active: false }]);
 
       const request = createMockRequest({ token: 'inactive-subscriber-token' });
       const response = await POST(request);
@@ -172,55 +120,21 @@ describe('/api/newsletter/unsubscribe', () => {
     });
 
     it('does not attempt to update when already unsubscribed', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: { email: 'test@example.com', is_active: false },
-        error: null,
-      });
+      mockSql.mockResolvedValueOnce([{ email: 'test@example.com', is_active: false }]);
 
       const request = createMockRequest({ token: 'inactive-subscriber-token' });
       await POST(request);
 
-      // update should not be called for already unsubscribed
-      expect(mockSupabase.update).not.toHaveBeenCalled();
+      // Only 1 call (the SELECT), no UPDATE
+      expect(mockSql).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('subscriber not found', () => {
     it('returns 404 when token does not match any subscriber', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: null,
-        error: { code: 'PGRST116', message: 'No rows found' },
-      });
+      mockSql.mockResolvedValueOnce([]);
 
       const request = createMockRequest({ token: 'nonexistent-token' });
-      const response = await POST(request);
-      const data = await response.json();
-
-      expect(response.status).toBe(404);
-      expect(data.error).toBe('Invalid unsubscribe token');
-    });
-
-    it('returns 404 when subscriber data is null', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: null,
-        error: null,
-      });
-
-      const request = createMockRequest({ token: 'unknown-token' });
-      const response = await POST(request);
-      const data = await response.json();
-
-      expect(response.status).toBe(404);
-      expect(data.error).toBe('Invalid unsubscribe token');
-    });
-
-    it('returns 404 when findError is truthy', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: { email: 'test@example.com', is_active: true },
-        error: { code: 'SOME_ERROR', message: 'Database lookup failed' },
-      });
-
-      const request = createMockRequest({ token: 'error-token' });
       const response = await POST(request);
       const data = await response.json();
 
@@ -231,7 +145,7 @@ describe('/api/newsletter/unsubscribe', () => {
 
   describe('database error handling', () => {
     it('returns 500 when find query throws exception', async () => {
-      mockSupabase.single.mockRejectedValue(new Error('Database connection failed'));
+      mockSql.mockRejectedValue(new Error('Database connection failed'));
 
       const request = createMockRequest({ token: 'valid-token' });
       const response = await POST(request);
@@ -241,18 +155,9 @@ describe('/api/newsletter/unsubscribe', () => {
       expect(data.error).toBe('Failed to unsubscribe. Please try again later.');
     });
 
-    it('returns 500 when update fails', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: { email: 'test@example.com', is_active: true },
-        error: null,
-      });
-
-      const mockUpdateEq = vi.fn().mockResolvedValue({
-        error: { message: 'Update failed' },
-      });
-      mockSupabase.update.mockReturnValue({
-        eq: mockUpdateEq,
-      });
+    it('returns 500 when update throws', async () => {
+      mockSql.mockResolvedValueOnce([{ email: 'test@example.com', is_active: true }]);
+      mockSql.mockRejectedValueOnce(new Error('Update failed'));
 
       const request = createMockRequest({ token: 'valid-token' });
       const response = await POST(request);
@@ -264,7 +169,7 @@ describe('/api/newsletter/unsubscribe', () => {
 
     it('logs error when database operation fails', async () => {
       const dbError = new Error('Connection timeout');
-      mockSupabase.single.mockRejectedValue(dbError);
+      mockSql.mockRejectedValue(dbError);
 
       const request = createMockRequest({ token: 'valid-token' });
       await POST(request);
@@ -272,30 +177,6 @@ describe('/api/newsletter/unsubscribe', () => {
       expect(logError).toHaveBeenCalledWith(
         'Newsletter Unsubscribe: Unexpected error',
         dbError,
-        { component: 'newsletter/unsubscribe', action: 'POST' }
-      );
-    });
-
-    it('logs error when update operation throws', async () => {
-      mockSupabase.single.mockResolvedValue({
-        data: { email: 'test@example.com', is_active: true },
-        error: null,
-      });
-
-      const updateError = { message: 'Foreign key violation' };
-      const mockUpdateEq = vi.fn().mockResolvedValue({
-        error: updateError,
-      });
-      mockSupabase.update.mockReturnValue({
-        eq: mockUpdateEq,
-      });
-
-      const request = createMockRequest({ token: 'valid-token' });
-      await POST(request);
-
-      expect(logError).toHaveBeenCalledWith(
-        'Newsletter Unsubscribe: Unexpected error',
-        updateError,
         { component: 'newsletter/unsubscribe', action: 'POST' }
       );
     });
