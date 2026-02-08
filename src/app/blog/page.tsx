@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { Container } from "@/components/Container";
-import { getAllBlogs } from "../../../lib/getAllBlogs";
+import { getAllBlogs } from "@/lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
 import { BlogStats } from "@/components/blog/blog-stats";
 import Link from "next/link";
