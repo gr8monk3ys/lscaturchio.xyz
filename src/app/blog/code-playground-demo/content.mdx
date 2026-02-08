@@ -1,30 +1,19 @@
 export const meta = {
-  title: "Interactive Code Playgrounds: Learn by Doing",
-  description: "Explore interactive code examples that you can edit and run directly in your browser. Learn React, CSS animations, and JavaScript through hands-on experimentation.",
+  title: "Code Walkthrough: React, CSS Animations, and State Management",
+  description: "Explore practical code examples covering React components, CSS animations, and JavaScript state management patterns. Learn through clear, annotated examples you can copy and try yourself.",
   date: "2025-01-24",
   image: "/images/blog/default.webp",
-  tags: ["tutorial", "react", "css", "javascript", "interactive"],
+  tags: ["tutorial", "react", "css", "javascript"],
 };
 
-One of the best ways to learn programming is through hands-on experimentation. Rather than just reading code snippets, you can now **edit and run code directly** in your browser. Welcome to interactive code playgrounds.
-
-## Why Interactive Examples Matter
-
-Traditional code snippets are static. You read them, maybe copy them to your editor, and hope they work. Interactive playgrounds change that dynamic entirely:
-
-- **Immediate feedback** - See your changes instantly
-- **Safe experimentation** - Break things without consequences
-- **Reduced friction** - No setup, no configuration, just code
-
-Let me show you how these work with some real examples.
+Learning programming is most effective when you study real, working examples and then experiment with them yourself. Here are some practical code walkthroughs covering React components, CSS animations, and state management patterns.
 
 ## React Example: Building a Counter
 
-Here is a classic React counter component. Try modifying the increment value or adding a decrement button:
+Here is a classic React counter component. Copy it into your own project and try modifying the increment value or adding a decrement button:
 
-<CodePlayground
-  files={{
-    "/App.js": `import { useState } from 'react';
+```jsx
+import { useState } from 'react';
 
 export default function Counter() {
   const [count, setCount] = useState(0);
@@ -57,12 +46,8 @@ export default function Counter() {
       </p>
     </div>
   );
-}`,
-  }}
-  template="react"
-  showPreview={true}
-  editorHeight="450px"
-/>
+}
+```
 
 **Challenge:** Add a "Decrement" button that decreases the count. Can you also add a "Reset" button that sets the count back to zero?
 
@@ -70,9 +55,8 @@ export default function Counter() {
 
 CSS animations bring interfaces to life. This example demonstrates a pulsing animation. Try changing the colors, timing, or animation properties:
 
-<CodePlayground
-  files={{
-    "/index.html": `<!DOCTYPE html>
+```html
+<!DOCTYPE html>
 <html>
   <head>
     <link rel="stylesheet" href="/styles.css" />
@@ -86,8 +70,11 @@ CSS animations bring interfaces to life. This example demonstrates a pulsing ani
     </div>
     <p class="hint">Try changing the colors or animation timing!</p>
   </body>
-</html>`,
-    "/styles.css": `* {
+</html>
+```
+
+```css
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -152,12 +139,8 @@ body {
   color: #666;
   margin-top: 2rem;
   font-size: 0.875rem;
-}`,
-  }}
-  template="static"
-  showPreview={true}
-  editorHeight="500px"
-/>
+}
+```
 
 **Ideas to try:**
 - Change `#84cc16` to a different color (try `#60a5fa` for blue or `#f472b6` for pink)
@@ -169,9 +152,8 @@ body {
 
 Here is a more complex example demonstrating React state with a todo list. You can add, toggle, and delete items:
 
-<CodePlayground
-  files={{
-    "/App.js": `import { useState } from 'react';
+```jsx
+import { useState } from 'react';
 
 const initialTodos = [
   { id: 1, text: 'Learn React', completed: true },
@@ -312,12 +294,8 @@ const styles = {
     fontSize: '0.875rem',
     marginTop: '1rem',
   },
-};`,
-  }}
-  template="react"
-  showPreview={true}
-  editorHeight="600px"
-/>
+};
+```
 
 **Enhancements to try:**
 - Add an "Edit" feature to modify existing todos
@@ -325,13 +303,12 @@ const styles = {
 - Add localStorage persistence so todos survive page refresh
 - Style the completed items differently (maybe with a strikethrough animation)
 
-## Using the Console
+## Understanding React Lifecycle with Console Logging
 
-Sometimes you need to see what is happening under the hood. This playground shows the console output, which is perfect for debugging or understanding how code executes:
+Sometimes you need to see what is happening under the hood. This example demonstrates how React effects fire and in what order. Copy it into your project, open your browser console, and click the button to observe the logs:
 
-<CodePlayground
-  files={{
-    "/App.js": `import { useState, useEffect } from 'react';
+```jsx
+import { useState, useEffect } from 'react';
 
 export default function LifecycleDemo() {
   const [count, setCount] = useState(0);
@@ -368,24 +345,17 @@ export default function LifecycleDemo() {
         Increment & Log
       </button>
       <p style={{ color: '#666', marginTop: '1rem', fontSize: '0.875rem' }}>
-        Watch the console tab to see the logs!
+        Open your browser console to see the logs!
       </p>
     </div>
   );
-}`,
-  }}
-  template="react"
-  showPreview={true}
-  showConsole={true}
-  editorHeight="400px"
-/>
+}
+```
 
-Click the button and watch the console tab to see when effects run and what values are logged.
+Click the button and watch your browser console to see when effects run and what values are logged. Notice how the mount effect fires once, but the count effect fires on every state change.
 
 ## Wrapping Up
 
-Interactive code playgrounds transform passive reading into active learning. Every example on this page can be modified, experimented with, and broken (safely). That is how real learning happens.
-
-Try forking these examples and building something new. Add features, change styles, break things and fix them. The code is yours to explore.
+These examples cover fundamental patterns you will use constantly in frontend development. Copy them into your own projects, modify them, break things and fix them. That is how real learning happens.
 
 Happy coding!
