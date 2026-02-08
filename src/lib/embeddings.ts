@@ -10,7 +10,7 @@
  * - Otherwise, uses Ollama (must be running locally)
  */
 
-import { getSupabase } from './supabase';
+import { getDb } from './db';
 import { createOllamaEmbedding, isOllamaAvailable, getEmbeddingDimensions } from './ollama';
 import { logError, logInfo } from './logger';
 
@@ -108,25 +108,21 @@ export function getEmbeddingProvider(): string {
 }
 
 /**
- * Store an embedding in Supabase
+ * Store an embedding in the database
  */
 export async function storeEmbedding(
   text: string,
   embedding: number[],
   metadata: Record<string, unknown> = {}
 ) {
-  const client = getSupabase();
-  const { error } = await client.from('embeddings').insert({
-    content: text,
-    embedding,
-    metadata: {
-      ...metadata,
-      provider: getEmbeddingProvider(),
-      dimensions: embedding.length,
-    },
+  const sql = getDb();
+  const embeddingStr = `[${embedding.join(',')}]`;
+  const metadataJson = JSON.stringify({
+    ...metadata,
+    provider: getEmbeddingProvider(),
+    dimensions: embedding.length,
   });
-
-  if (error) throw error;
+  await sql`INSERT INTO embeddings (content, embedding, metadata) VALUES (${text}, ${embeddingStr}::vector, ${metadataJson}::jsonb)`;
 }
 
 /**
@@ -135,20 +131,12 @@ export async function storeEmbedding(
 export async function searchSimilarContent(query: string, limit: number = 5) {
   try {
     const embedding = await createEmbedding(query);
-    const client = getSupabase();
+    const sql = getDb();
+    const embeddingStr = `[${embedding.join(',')}]`;
 
-    const { data, error } = await client.rpc('match_embeddings', {
-      query_embedding: embedding,
-      match_threshold: EMBEDDING_MATCH_THRESHOLD,
-      match_count: limit,
-    });
+    const rows = await sql`SELECT * FROM match_embeddings(${embeddingStr}::vector, ${EMBEDDING_MATCH_THRESHOLD}, ${limit})`;
 
-    if (error) {
-      logError('Embedding search failed', error, { component: 'embeddings' });
-      throw error;
-    }
-
-    return data || [];
+    return rows;
   } catch (error) {
     logError('Search similar content failed', error, { component: 'embeddings' });
     // Return empty array on error to allow graceful degradation

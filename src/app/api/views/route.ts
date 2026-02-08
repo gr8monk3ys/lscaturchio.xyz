@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
-import { getSupabase, isSupabaseConfigured, isNoRowsError } from "@/lib/supabase";
+import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { logError } from "@/lib/logger";
 import { validateCsrf } from "@/lib/csrf";
 import { slugQuerySchema, viewTrackingSchema, parseBody, parseQuery } from "@/lib/validations";
@@ -21,28 +21,22 @@ const handleGet = async (req: NextRequest) => {
 
     const { slug } = parsed.data;
 
-    // Check if Supabase is properly configured
-    if (!isSupabaseConfigured()) {
-      // Return mock data when Supabase is not configured (dev mode)
+    // Check if database is properly configured
+    if (!isDatabaseConfigured()) {
+      // Return mock data when database is not configured (dev mode)
       return apiSuccess({ slug, views: 0 });
     }
 
-    const supabase = getSupabase();
+    const sql = getDb();
 
     // Get view count from database
-    const { data, error } = await supabase
-      .from("views")
-      .select("count")
-      .eq("slug", slug)
-      .single();
+    const rows = await sql`SELECT count FROM views WHERE slug = ${slug}`;
 
-    if (error && !isNoRowsError(error)) {
-      logError("View Counter: Database error", error, { component: 'views', action: 'GET' });
-      // Graceful fallback so blog pages still render even if views storage is unavailable
+    if (rows.length === 0) {
       return apiSuccess({ slug, views: 0 });
     }
 
-    const views = data?.count || 0;
+    const views = rows[0].count || 0;
     return apiSuccess({ slug, views });
   } catch (error) {
     logError("View Counter: Unexpected error", error, { component: 'views', action: 'GET' });
@@ -73,25 +67,23 @@ const handlePost = async (req: NextRequest) => {
 
     const { slug } = parsed.data;
 
-    // Check if Supabase is properly configured
-    if (!isSupabaseConfigured()) {
-      // Return mock data when Supabase is not configured (dev mode)
+    // Check if database is properly configured
+    if (!isDatabaseConfigured()) {
+      // Return mock data when database is not configured (dev mode)
       return apiSuccess({ slug, views: 1 });
     }
 
-    const supabase = getSupabase();
+    const sql = getDb();
 
     // Use atomic RPC function to prevent race conditions
-    const { data, error } = await supabase.rpc("increment_view_count", {
-      post_slug: slug,
-    });
+    const rows = await sql`SELECT increment_view_count(${slug})`;
 
-    if (error) {
-      logError("View Counter: RPC error", error, { component: 'views', action: 'POST', slug });
+    if (!rows.length) {
+      logError("View Counter: RPC returned no result", null, { component: 'views', action: 'POST', slug });
       return ApiErrors.internalError("Failed to record view");
     }
 
-    return apiSuccess({ slug, views: data });
+    return apiSuccess({ slug, views: rows[0].increment_view_count });
   } catch (error) {
     logError("View Counter: Unexpected error", error, { component: 'views', action: 'POST' });
     return ApiErrors.internalError("Failed to record view");
@@ -107,32 +99,23 @@ export const POST = withRateLimit(handlePost, RATE_LIMITS.STANDARD);
  */
 const handleOptions = async () => {
   try {
-    // Check if Supabase is properly configured
-    if (!isSupabaseConfigured()) {
-      // Return empty data when Supabase is not configured (dev mode)
+    // Check if database is properly configured
+    if (!isDatabaseConfigured()) {
+      // Return empty data when database is not configured (dev mode)
       return apiSuccess({ views: [], total: 0 });
     }
 
-    const supabase = getSupabase();
+    const sql = getDb();
 
     // Fetch all views from database
-    const { data: viewsData, error } = await supabase
-      .from("views")
-      .select("slug, count")
-      .order("count", { ascending: false });
-
-    if (error) {
-      logError("View Counter: Database error", error, { component: 'views', action: 'OPTIONS' });
-      // Graceful fallback for public stats widgets
-      return apiSuccess({ views: [], total: 0 });
-    }
+    const rows = await sql`SELECT slug, count FROM views ORDER BY count DESC`;
 
     // Fetch all blog metadata to get real titles
     const allBlogs = await getAllBlogs();
     const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
 
     // Map views to include real titles
-    const allViews = (viewsData || []).map((view) => ({
+    const allViews = rows.map((view) => ({
       slug: view.slug,
       title: blogMap.get(view.slug) || view.slug, // Fallback to slug if title not found
       views: view.count,

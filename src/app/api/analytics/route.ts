@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabase } from '@/lib/supabase';
+import { getDb } from '@/lib/db';
 import { getAllBlogs } from '@/lib/getAllBlogs';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
@@ -36,7 +36,7 @@ const handleGet = async (request: NextRequest) => {
   if (authError) return authError;
 
   try {
-    const supabase = getSupabase();
+    const sql = getDb();
     const allBlogs = await getAllBlogs();
     const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
 
@@ -45,38 +45,41 @@ const handleGet = async (request: NextRequest) => {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const [
-      { data: activeCount },
-      { count: totalCount },
-      { count: unsubCount },
-      { count: recentCount },
+      activeRows,
+      totalRows,
+      unsubRows,
+      recentRows,
     ] = await Promise.all([
-      supabase.rpc('count_active_subscribers'),
-      supabase.from('newsletter_subscribers').select('*', { count: 'exact', head: true }),
-      supabase.from('newsletter_subscribers').select('*', { count: 'exact', head: true }).not('unsubscribed_at', 'is', null),
-      supabase.from('newsletter_subscribers').select('*', { count: 'exact', head: true }).gte('created_at', thirtyDaysAgo.toISOString()).is('unsubscribed_at', null),
+      sql`SELECT count_active_subscribers() as count`,
+      sql`SELECT COUNT(*) as count FROM newsletter_subscribers`,
+      sql`SELECT COUNT(*) as count FROM newsletter_subscribers WHERE is_active = false`,
+      sql`SELECT COUNT(*) as count FROM newsletter_subscribers WHERE subscribed_at >= ${thirtyDaysAgo.toISOString()} AND is_active = true`,
     ]);
 
+    const activeCount = Number(activeRows[0].count) || 0;
+    const totalCount = Number(totalRows[0].count) || 0;
+    const unsubCount = Number(unsubRows[0].count) || 0;
+    const recentCount = Number(recentRows[0].count) || 0;
+
     // Fetch views
-    const { data: viewsData } = await supabase
-      .from('views')
-      .select('slug, count')
-      .order('count', { ascending: false });
+    const viewsData = await sql`
+      SELECT slug, count FROM views ORDER BY count DESC
+    `;
 
     // Fetch reactions
-    const { data: reactionsData } = await supabase
-      .from('reactions')
-      .select('slug, likes, bookmarks')
-      .order('likes', { ascending: false });
+    const reactionsData = await sql`
+      SELECT slug, likes, bookmarks FROM reactions ORDER BY likes DESC
+    `;
 
     // Calculate totals
-    const totalViews = (viewsData || []).reduce((sum, v) => sum + v.count, 0);
-    const totalLikes = (reactionsData || []).reduce((sum, r) => sum + r.likes, 0);
-    const totalBookmarks = (reactionsData || []).reduce((sum, r) => sum + r.bookmarks, 0);
+    const totalViews = viewsData.reduce((sum, v) => sum + v.count, 0);
+    const totalLikes = reactionsData.reduce((sum, r) => sum + r.likes, 0);
+    const totalBookmarks = reactionsData.reduce((sum, r) => sum + r.bookmarks, 0);
 
     // Get unique posts with any engagement
     const postsWithEngagement = new Set([
-      ...(viewsData || []).map(v => v.slug),
-      ...(reactionsData || []).map(r => r.slug),
+      ...viewsData.map(v => v.slug),
+      ...reactionsData.map(r => r.slug),
     ]);
 
     // Calculate tag distribution
@@ -93,10 +96,10 @@ const handleGet = async (request: NextRequest) => {
 
     const analyticsData: AnalyticsData = {
       newsletter: {
-        activeSubscribers: activeCount || 0,
-        totalSubscribers: totalCount || 0,
-        unsubscribed: unsubCount || 0,
-        last30Days: recentCount || 0,
+        activeSubscribers: activeCount,
+        totalSubscribers: totalCount,
+        unsubscribed: unsubCount,
+        last30Days: recentCount,
       },
       engagement: {
         totalViews,
@@ -105,12 +108,12 @@ const handleGet = async (request: NextRequest) => {
         uniquePosts: postsWithEngagement.size,
       },
       topPosts: {
-        byViews: (viewsData || []).slice(0, 5).map(v => ({
+        byViews: viewsData.slice(0, 5).map(v => ({
           slug: v.slug,
           title: blogMap.get(v.slug) || v.slug,
           views: v.count,
         })),
-        byLikes: (reactionsData || [])
+        byLikes: reactionsData
           .filter(r => r.likes > 0)
           .sort((a, b) => b.likes - a.likes)
           .slice(0, 5)
@@ -119,7 +122,7 @@ const handleGet = async (request: NextRequest) => {
             title: blogMap.get(r.slug) || r.slug,
             likes: r.likes,
           })),
-        byBookmarks: (reactionsData || [])
+        byBookmarks: reactionsData
           .filter(r => r.bookmarks > 0)
           .sort((a, b) => b.bookmarks - a.bookmarks)
           .slice(0, 5)
