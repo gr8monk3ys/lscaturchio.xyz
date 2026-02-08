@@ -26,8 +26,8 @@ export const env = createEnv({
     // REQUIRED - Core Services
     // ============================================
 
-    // Supabase Service Role Key (required for server-side database operations)
-    SUPABASE_SERVICE_KEY: z.string().min(1, 'SUPABASE_SERVICE_KEY is required'),
+    // Neon PostgreSQL connection string (required for database operations)
+    DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
 
     // ============================================
     // AI Providers (at least one required for AI chat)
@@ -96,9 +96,6 @@ export const env = createEnv({
    * These are exposed to the browser and must be prefixed with NEXT_PUBLIC_.
    */
   client: {
-    // Supabase Database URL (required)
-    NEXT_PUBLIC_SUPABASE_URL: z.string().url('NEXT_PUBLIC_SUPABASE_URL must be a valid URL'),
-
     // Site URL (for canonical URLs, Open Graph, etc.)
     NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
 
@@ -125,7 +122,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
 
     // Server-side variables
-    SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY,
+    DATABASE_URL: process.env.DATABASE_URL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL,
     OLLAMA_EMBED_MODEL: process.env.OLLAMA_EMBED_MODEL,
@@ -151,7 +148,6 @@ export const env = createEnv({
     SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
 
     // Client-side variables
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_ADSENSE_CLIENT_ID: process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID,
     NEXT_PUBLIC_GITHUB_CLIENT_ID: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
