@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ExternalLink, Github, ChevronLeft, ChevronRight } from "lucide-react";
+import { useIsDesktop } from "@/hooks/use-is-desktop";
 
 // Dynamically import the 3D component to avoid SSR issues
 const InteractiveProjectCard = dynamic(
@@ -46,6 +47,7 @@ export function InteractiveShowcase({
   projects,
   className = "",
 }: InteractiveShowcaseProps) {
+  const isDesktop = useIsDesktop();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [shouldRender3D, setShouldRender3D] = useState(false);
@@ -53,11 +55,7 @@ export function InteractiveShowcase({
   useEffect(() => {
     // Check device capabilities
     const isLowEnd =
-      typeof navigator !== "undefined" &&
-      (navigator.hardwareConcurrency < 4 ||
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        ));
+      typeof navigator !== "undefined" && navigator.hardwareConcurrency < 4;
 
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -94,7 +92,7 @@ export function InteractiveShowcase({
     <div className={`relative ${className}`}>
       {/* Main Showcase */}
       <div className="relative h-[400px] rounded-2xl overflow-hidden bg-gray-900">
-        {shouldRender3D ? (
+        {shouldRender3D && isDesktop ? (
           <Suspense
             fallback={
               <div className="h-full bg-gradient-to-br from-primary/20 to-primary/5 animate-pulse" />

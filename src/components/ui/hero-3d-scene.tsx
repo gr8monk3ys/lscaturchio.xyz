@@ -4,6 +4,7 @@ import { useRef, useMemo, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float, Environment, MeshTransmissionMaterial } from '@react-three/drei';
 import * as THREE from 'three';
+import { useIsDesktop } from '@/hooks/use-is-desktop';
 
 // Mouse position tracker for the entire scene
 function useMousePosition() {
@@ -376,6 +377,7 @@ export interface Hero3DSceneProps {
 }
 
 export function Hero3DScene({ className = '', simplified = false }: Hero3DSceneProps) {
+  const isDesktop = useIsDesktop();
   const [mounted, setMounted] = useState(false);
   const [isLowEnd, setIsLowEnd] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -388,23 +390,19 @@ export function Hero3DScene({ className = '', simplified = false }: Hero3DSceneP
     setPrefersReducedMotion(motionQuery.matches);
 
     // Check for low-end device
-    const isLowEndDevice =
-      navigator.hardwareConcurrency < 4 ||
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
+    const isLowEndDevice = navigator.hardwareConcurrency < 4;
     setIsLowEnd(isLowEndDevice);
 
-    const handleMotionChange = (e: MediaQueryListEvent) => {
+    function handleMotionChange(e: MediaQueryListEvent): void {
       setPrefersReducedMotion(e.matches);
-    };
+    }
 
     motionQuery.addEventListener('change', handleMotionChange);
     return () => motionQuery.removeEventListener('change', handleMotionChange);
   }, []);
 
-  // Do not render on server or if user prefers reduced motion
-  if (!mounted || prefersReducedMotion) {
+  // Skip rendering on mobile/tablet, during SSR, or if user prefers reduced motion
+  if (!mounted || !isDesktop || prefersReducedMotion) {
     return null;
   }
 
