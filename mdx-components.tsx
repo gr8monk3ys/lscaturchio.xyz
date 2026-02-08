@@ -1,6 +1,5 @@
 import type { MDXComponents } from "mdx/types";
 import { CodeBlock } from "@/components/blog/code-block";
-import { CodePlayground } from "@/components/blog/code-playground";
 
 // This file allows you to provide custom React components
 // to be used in MDX files. You can import and use any
@@ -10,9 +9,7 @@ import { CodePlayground } from "@/components/blog/code-playground";
 // This file is required to use MDX in `app` directory.
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    // Allows customizing built-in components, e.g. to add styling.
     pre: CodeBlock,
-    CodePlayground,
     ...components,
   };
 }
