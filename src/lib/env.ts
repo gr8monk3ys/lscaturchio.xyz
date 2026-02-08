@@ -48,17 +48,6 @@ export const env = createEnv({
     // GitHub Personal Access Token (for contribution graph)
     GITHUB_TOKEN: z.string().optional(),
 
-    // GitHub OAuth (for guestbook authentication)
-    GITHUB_CLIENT_SECRET: z.string().optional(),
-
-    // WakaTime API Key (for coding stats)
-    WAKATIME_API_KEY: z.string().optional(),
-
-    // Spotify Integration (for now playing widget)
-    SPOTIFY_CLIENT_ID: z.string().optional(),
-    SPOTIFY_CLIENT_SECRET: z.string().optional(),
-    SPOTIFY_REFRESH_TOKEN: z.string().optional(),
-
     // Resend API Key (for contact form and newsletter)
     RESEND_API_KEY: z.string().optional(),
 
@@ -81,9 +70,6 @@ export const env = createEnv({
     UPSTASH_REDIS_REST_URL: z.string().url().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 
-    // Vote Deduplication Salt
-    VOTER_HASH_SALT: z.string().optional(),
-
     // Sentry Error Tracking
     SENTRY_DSN: z.string().url().optional(),
     SENTRY_ORG: z.string().optional(),
@@ -98,12 +84,6 @@ export const env = createEnv({
   client: {
     // Site URL (for canonical URLs, Open Graph, etc.)
     NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
-
-    // Google AdSense Publisher ID
-    NEXT_PUBLIC_ADSENSE_CLIENT_ID: z.string().optional(),
-
-    // GitHub OAuth Client ID (for guestbook)
-    NEXT_PUBLIC_GITHUB_CLIENT_ID: z.string().optional(),
 
     // Sentry DSN (for client-side error tracking)
     NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
@@ -128,11 +108,6 @@ export const env = createEnv({
     OLLAMA_EMBED_MODEL: process.env.OLLAMA_EMBED_MODEL,
     OLLAMA_CHAT_MODEL: process.env.OLLAMA_CHAT_MODEL,
     GITHUB_TOKEN: process.env.GITHUB_TOKEN,
-    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-    WAKATIME_API_KEY: process.env.WAKATIME_API_KEY,
-    SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID,
-    SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET,
-    SPOTIFY_REFRESH_TOKEN: process.env.SPOTIFY_REFRESH_TOKEN,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     CONTACT_EMAIL: process.env.CONTACT_EMAIL,
     CONTACT_FROM_EMAIL: process.env.CONTACT_FROM_EMAIL,
@@ -141,7 +116,6 @@ export const env = createEnv({
     ANALYTICS_API_KEY: process.env.ANALYTICS_API_KEY,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
-    VOTER_HASH_SALT: process.env.VOTER_HASH_SALT,
     SENTRY_DSN: process.env.SENTRY_DSN,
     SENTRY_ORG: process.env.SENTRY_ORG,
     SENTRY_PROJECT: process.env.SENTRY_PROJECT,
@@ -149,8 +123,6 @@ export const env = createEnv({
 
     // Client-side variables
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-    NEXT_PUBLIC_ADSENSE_CLIENT_ID: process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID,
-    NEXT_PUBLIC_GITHUB_CLIENT_ID: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_GISCUS_REPO_ID: process.env.NEXT_PUBLIC_GISCUS_REPO_ID,
     NEXT_PUBLIC_GISCUS_CATEGORY_ID: process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID,
