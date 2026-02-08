@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getSupabase, isNoRowsError } from "@/lib/supabase";
+import { getDb } from "@/lib/db";
 import { logError, logInfo } from "@/lib/logger";
 import { validateCsrf } from "@/lib/csrf";
 import { slugQuerySchema, reactionTrackingSchema, reactionQuerySchema, parseBody, parseQuery } from "@/lib/validations";
@@ -13,34 +13,43 @@ interface Reactions {
 }
 
 /**
+ * Fetch current reaction counts for a slug, defaulting to zeros if no row exists.
+ */
+async function fetchReactions(slug: string): Promise<Reactions> {
+  const sql = getDb();
+  const rows = await sql`SELECT likes, bookmarks FROM reactions WHERE slug = ${slug}`;
+
+  if (rows.length === 0) {
+    return { likes: 0, bookmarks: 0 };
+  }
+
+  return { likes: rows[0].likes, bookmarks: rows[0].bookmarks };
+}
+
+/**
+ * Check whether an error is a "function does not exist" PostgreSQL error.
+ */
+function isFunctionNotFoundError(error: unknown): boolean {
+  if (error instanceof Error) {
+    return error.message.includes('function') && error.message.includes('does not exist');
+  }
+  return false;
+}
+
+/**
  * GET /api/reactions?slug=xxx
  * Get reactions (likes and bookmarks) for a specific blog post
  */
 const handleGet = async (req: NextRequest) => {
   try {
-    // Zod validation
     const parsed = parseQuery(slugQuerySchema, req.nextUrl.searchParams);
     if (!parsed.success) {
       return ApiErrors.badRequest(parsed.error);
     }
 
     const { slug } = parsed.data;
+    const reactions = await fetchReactions(slug);
 
-    const supabase = getSupabase();
-
-    // Get reactions from database
-    const { data, error } = await supabase
-      .from("reactions")
-      .select("likes, bookmarks")
-      .eq("slug", slug)
-      .single();
-
-    if (error && !isNoRowsError(error)) {
-      logError("Reactions: Database error", error, { component: 'reactions', action: 'GET', slug });
-      return ApiErrors.internalError("Failed to fetch reactions");
-    }
-
-    const reactions: Reactions = data || { likes: 0, bookmarks: 0 };
     return apiSuccess({ slug, ...reactions });
   } catch (error) {
     logError("Reactions: Unexpected error", error, { component: 'reactions', action: 'GET' });
@@ -57,84 +66,47 @@ export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
  * Uses server-side deduplication to prevent vote manipulation
  */
 const handlePost = async (req: NextRequest) => {
-  // CSRF protection
   const csrfError = validateCsrf(req);
   if (csrfError) return csrfError;
 
   try {
     const body = await req.json();
 
-    // Zod validation
     const parsed = parseBody(reactionTrackingSchema, body);
     if (!parsed.success) {
       return ApiErrors.badRequest(parsed.error);
     }
 
     const { slug, type } = parsed.data;
-    const supabase = getSupabase();
+    const sql = getDb();
 
-    // Check if vote deduplication is enabled
     if (isVoteDeduplicationEnabled()) {
       const voterHash = getVoterHash(req);
 
-      // Use atomic RPC function with deduplication
-      const { data, error } = await supabase.rpc("record_vote", {
-        p_slug: slug,
-        p_type: type,
-        p_voter_hash: voterHash,
-      });
+      try {
+        const rows = await sql`SELECT record_vote(${slug}, ${type}, ${voterHash})`;
+        const result = rows[0].record_vote;
 
-      if (error) {
-        // If record_vote doesn't exist, fall back to old method
-        if (error.code === '42883') { // function does not exist
+        if (result === -1) {
+          const reactions = await fetchReactions(slug);
+          return apiSuccess({ slug, ...reactions, alreadyVoted: true });
+        }
+
+        const reactions = await fetchReactions(slug);
+        return apiSuccess({ slug, ...reactions });
+      } catch (rpcError) {
+        if (isFunctionNotFoundError(rpcError)) {
           logInfo("Reactions: record_vote RPC not found, using fallback", { component: 'reactions', action: 'POST', slug, type });
         } else {
-          logError("Reactions: RPC error", error, { component: 'reactions', action: 'POST', slug, type });
+          logError("Reactions: RPC error", rpcError, { component: 'reactions', action: 'POST', slug, type });
           return ApiErrors.internalError("Failed to record reaction");
         }
-      } else {
-        // data is the new count, or -1 if already voted
-        if (data === -1) {
-          // Already voted - return current counts without error
-          const { data: current } = await supabase
-            .from("reactions")
-            .select("likes, bookmarks")
-            .eq("slug", slug)
-            .single();
-
-          return apiSuccess({
-            slug,
-            likes: current?.likes || 0,
-            bookmarks: current?.bookmarks || 0,
-            alreadyVoted: true,
-          });
-        }
-
-        // Get full reaction counts to return
-        const { data: reactions } = await supabase
-          .from("reactions")
-          .select("likes, bookmarks")
-          .eq("slug", slug)
-          .single();
-
-        return apiSuccess({
-          slug,
-          likes: reactions?.likes || 0,
-          bookmarks: reactions?.bookmarks || 0,
-        });
       }
     }
 
     // Fallback: Use original toggle_reaction (no deduplication)
-    const { data, error } = await supabase.rpc("toggle_reaction", {
-      post_slug: slug,
-      reaction_type: type,
-    });
-
-    if (error) {
-      logError("Reactions: RPC error", error, { component: 'reactions', action: 'POST', slug, type });
-      return ApiErrors.internalError("Failed to record reaction");
-    }
+    const rows = await sql`SELECT toggle_reaction(${slug}, ${type})`;
+    const data = rows[0].toggle_reaction;
 
     return apiSuccess({ slug, ...data });
   } catch (error) {
@@ -152,82 +124,45 @@ export const POST = withRateLimit(handlePost, RATE_LIMITS.STANDARD);
  * Uses server-side deduplication to ensure only actual votes can be removed
  */
 const handleDelete = async (req: NextRequest) => {
-  // CSRF protection
   const csrfError = validateCsrf(req);
   if (csrfError) return csrfError;
 
   try {
-    // Zod validation
     const parsed = parseQuery(reactionQuerySchema, req.nextUrl.searchParams);
     if (!parsed.success) {
       return ApiErrors.badRequest(parsed.error);
     }
 
     const { slug, type } = parsed.data;
-    const supabase = getSupabase();
+    const sql = getDb();
 
-    // Check if vote deduplication is enabled
     if (isVoteDeduplicationEnabled()) {
       const voterHash = getVoterHash(req);
 
-      // Use atomic RPC function with deduplication
-      const { data, error } = await supabase.rpc("remove_vote", {
-        p_slug: slug,
-        p_type: type,
-        p_voter_hash: voterHash,
-      });
+      try {
+        const rows = await sql`SELECT remove_vote(${slug}, ${type}, ${voterHash})`;
+        const result = rows[0].remove_vote;
 
-      if (error) {
-        // If remove_vote doesn't exist, fall back to old method
-        if (error.code === '42883') { // function does not exist
+        if (result === -1) {
+          const reactions = await fetchReactions(slug);
+          return apiSuccess({ slug, ...reactions, neverVoted: true });
+        }
+
+        const reactions = await fetchReactions(slug);
+        return apiSuccess({ slug, ...reactions });
+      } catch (rpcError) {
+        if (isFunctionNotFoundError(rpcError)) {
           logInfo("Reactions: remove_vote RPC not found, using fallback", { component: 'reactions', action: 'DELETE', slug, type });
         } else {
-          logError("Reactions: RPC error", error, { component: 'reactions', action: 'DELETE', slug, type });
+          logError("Reactions: RPC error", rpcError, { component: 'reactions', action: 'DELETE', slug, type });
           return ApiErrors.internalError("Failed to remove reaction");
         }
-      } else {
-        // data is the new count, or -1 if never voted
-        if (data === -1) {
-          // Never voted - return current counts without error
-          const { data: current } = await supabase
-            .from("reactions")
-            .select("likes, bookmarks")
-            .eq("slug", slug)
-            .single();
-
-          return apiSuccess({
-            slug,
-            likes: current?.likes || 0,
-            bookmarks: current?.bookmarks || 0,
-            neverVoted: true,
-          });
-        }
-
-        // Get full reaction counts to return
-        const { data: reactions } = await supabase
-          .from("reactions")
-          .select("likes, bookmarks")
-          .eq("slug", slug)
-          .single();
-
-        return apiSuccess({
-          slug,
-          likes: reactions?.likes || 0,
-          bookmarks: reactions?.bookmarks || 0,
-        });
       }
     }
 
     // Fallback: Use original decrement_reaction (no deduplication)
-    const { data, error } = await supabase.rpc("decrement_reaction", {
-      post_slug: slug,
-      reaction_type: type,
-    });
-
-    if (error) {
-      logError("Reactions: RPC error", error, { component: 'reactions', action: 'DELETE', slug, type });
-      return ApiErrors.internalError("Failed to remove reaction");
-    }
+    const rows = await sql`SELECT decrement_reaction(${slug}, ${type})`;
+    const data = rows[0].decrement_reaction;
 
     return apiSuccess({ slug, ...data });
   } catch (error) {

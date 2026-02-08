@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getSupabase } from '@/lib/supabase';
+import { getDb } from '@/lib/db';
 import crypto from 'crypto';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
@@ -23,30 +23,18 @@ const handlePost = async (request: NextRequest) => {
     // Generate unsubscribe token
     const unsubscribeToken = crypto.randomBytes(32).toString('hex');
 
-    const supabase = getSupabase();
+    const sql = getDb();
 
     // Check if email already exists
-    const { data: existing } = await supabase
-      .from('newsletter_subscribers')
-      .select('email, is_active')
-      .eq('email', normalizedEmail)
-      .single();
+    const rows = await sql`SELECT email, is_active FROM newsletter_subscribers WHERE email = ${normalizedEmail}`;
+    const existing = rows[0];
 
     if (existing) {
       if (existing.is_active) {
         return apiSuccess({ message: 'Already subscribed', alreadySubscribed: true });
       } else {
         // Reactivate subscription
-        const { error } = await supabase
-          .from('newsletter_subscribers')
-          .update({
-            is_active: true,
-            subscribed_at: new Date().toISOString(),
-            unsubscribe_token: unsubscribeToken,
-          })
-          .eq('email', normalizedEmail);
-
-        if (error) throw error;
+        await sql`UPDATE newsletter_subscribers SET is_active = true, subscribed_at = NOW(), unsubscribe_token = ${unsubscribeToken} WHERE email = ${normalizedEmail}`;
 
         // Send welcome back email (non-blocking)
         sendWelcomeEmail(normalizedEmail, unsubscribeToken).catch(() => {});
@@ -56,14 +44,7 @@ const handlePost = async (request: NextRequest) => {
     }
 
     // Insert new subscriber (no IP/user-agent for GDPR compliance)
-    const { error } = await supabase
-      .from('newsletter_subscribers')
-      .insert({
-        email: normalizedEmail,
-        unsubscribe_token: unsubscribeToken,
-      });
-
-    if (error) throw error;
+    await sql`INSERT INTO newsletter_subscribers (email, unsubscribe_token) VALUES (${normalizedEmail}, ${unsubscribeToken})`;
 
     // Send welcome email (non-blocking - don't fail subscription if email fails)
     sendWelcomeEmail(normalizedEmail, unsubscribeToken).catch(() => {});

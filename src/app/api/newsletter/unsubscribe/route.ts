@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabase } from '@/lib/supabase';
+import { getDb } from '@/lib/db';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
@@ -16,16 +16,13 @@ const handlePost = async (request: NextRequest) => {
       );
     }
 
-    const supabase = getSupabase();
+    const sql = getDb();
 
     // Find subscriber by token
-    const { data: subscriber, error: findError } = await supabase
-      .from('newsletter_subscribers')
-      .select('email, is_active')
-      .eq('unsubscribe_token', token)
-      .single();
+    const rows = await sql`SELECT email, is_active FROM newsletter_subscribers WHERE unsubscribe_token = ${token}`;
+    const subscriber = rows[0];
 
-    if (findError || !subscriber) {
+    if (!subscriber) {
       return NextResponse.json(
         { error: 'Invalid unsubscribe token' },
         { status: 404 }
@@ -40,12 +37,7 @@ const handlePost = async (request: NextRequest) => {
     }
 
     // Deactivate subscription
-    const { error: updateError } = await supabase
-      .from('newsletter_subscribers')
-      .update({ is_active: false })
-      .eq('unsubscribe_token', token);
-
-    if (updateError) throw updateError;
+    await sql`UPDATE newsletter_subscribers SET is_active = false WHERE unsubscribe_token = ${token}`;
 
     return NextResponse.json(
       { message: 'Successfully unsubscribed' },

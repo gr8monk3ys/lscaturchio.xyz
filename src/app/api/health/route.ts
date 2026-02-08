@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getSupabase, isSupabaseConfigured } from '@/lib/supabase'
+import { getDb, isDatabaseConfigured } from '@/lib/db'
 import { logError } from '@/lib/logger'
 
 /**
@@ -19,8 +19,7 @@ interface HealthCheckResponse {
  * Critical environment variables that must be set for the app to function
  */
 const CRITICAL_ENV_VARS = [
-  'NEXT_PUBLIC_SUPABASE_URL',
-  'SUPABASE_SERVICE_KEY',
+  'DATABASE_URL',
   'OPENAI_API_KEY',
 ] as const
 
@@ -40,19 +39,14 @@ function checkEnvironment(): boolean {
  * Check database connectivity with a simple query
  */
 async function checkDatabase(): Promise<boolean> {
-  if (!isSupabaseConfigured()) {
+  if (!isDatabaseConfigured()) {
     return false
   }
 
   try {
-    const supabase = getSupabase()
-    // Simple query to check database connectivity
-    const { error } = await supabase
-      .from('views')
-      .select('slug')
-      .limit(1)
-
-    return !error
+    const sql = getDb()
+    await sql`SELECT slug FROM views LIMIT 1`
+    return true
   } catch {
     return false
   }
