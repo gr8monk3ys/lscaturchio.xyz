@@ -8,6 +8,7 @@ import { ArrowRight, Code, Music, Mountain } from 'lucide-react';
 import Link from 'next/link';
 import { OptimizedImage } from '@/components/ui/optimized-image';
 import { motion } from 'framer-motion';
+import { useIsDesktop } from '@/hooks/use-is-desktop';
 
 // Dynamically import 3D scene to avoid SSR issues
 const Hero3DScene = dynamic(
@@ -74,6 +75,7 @@ interface HeroWith3DProps {
 }
 
 export function HeroWith3D({ simplified = false, disable3D = false }: HeroWith3DProps) {
+  const isDesktop = useIsDesktop();
   const [webglSupported, setWebglSupported] = useState(true);
   const [mounted, setMounted] = useState(false);
 
@@ -91,7 +93,7 @@ export function HeroWith3D({ simplified = false, disable3D = false }: HeroWith3D
     }
   }, []);
 
-  const show3D = mounted && webglSupported && !disable3D;
+  const show3D = mounted && isDesktop && webglSupported && !disable3D;
 
   return (
     <Container>
