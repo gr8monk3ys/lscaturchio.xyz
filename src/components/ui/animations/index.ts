@@ -5,12 +5,8 @@
 
 // Text Animations
 export {
-  AnimatedText,
   AnimatedHeading,
   GradientText,
-  Typewriter,
-  BlurInText,
-  SplitText,
 } from "../animated-text";
 
 // Button Effects
@@ -31,15 +27,6 @@ export {
   ScaleOnScroll,
   MaskReveal,
 } from "../page-transition";
-
-// Animated Counters & Stats
-export {
-  AnimatedCounter,
-  StatCard,
-  AnimatedProgress,
-  SkillBar,
-  CircularProgress,
-} from "../animated-counter";
 
 // Cursor Effects
 export {
@@ -63,9 +50,6 @@ export {
 
 // Card Animations
 export { TiltCard } from "../animated-card";
-
-// Section Animations
-export { AnimatedSection, AnimatedItem } from "../animated-section";
 
 // Re-export animation variants from lib
 export * from "@/lib/animations";
