@@ -2,12 +2,12 @@ import { BlogLayout } from "@/components/blog/BlogLayout";
 import Content from "./content.mdx";
 
 const meta = {
-  title: "Interactive Code Playgrounds: Learn by Doing",
+  title: "Code Walkthrough: React, CSS Animations, and State Management",
   description:
-    "Explore interactive code examples that you can edit and run directly in your browser. Learn React, CSS animations, and JavaScript through hands-on experimentation.",
+    "Explore practical code examples covering React components, CSS animations, and JavaScript state management patterns. Learn through clear, annotated examples you can copy and try yourself.",
   date: "2025-01-24",
   image: "/images/blog/default.webp",
-  tags: ["tutorial", "react", "css", "javascript", "interactive"],
+  tags: ["tutorial", "react", "css", "javascript"],
 };
 
 export default function Page() {
