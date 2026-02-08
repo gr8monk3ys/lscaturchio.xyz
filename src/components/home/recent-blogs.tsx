@@ -5,8 +5,7 @@ import { ArrowUpRight, Calendar } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { Section, SectionHeader } from "../ui/Section";
-import { useRef, useEffect, useState } from "react";
-import { logError } from "@/lib/logger";
+import { useRef } from "react";
 import { BlogViewCount } from "../blog/blog-view-count";
 import { showContainerVariants, showItemVariants } from "@/lib/animations";
 
@@ -19,47 +18,13 @@ interface BlogPost {
   image?: string;
 }
 
-export function RecentBlogs() {
+interface RecentBlogsProps {
+  blogs: BlogPost[];
+}
+
+export function RecentBlogs({ blogs }: RecentBlogsProps) {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
-  const [blogs, setBlogs] = useState<BlogPost[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchBlogs() {
-      try {
-        const response = await fetch('/api/v1/blogs?limit=3');
-        if (!response.ok) throw new Error('Failed to fetch blogs');
-        const result = await response.json();
-        setBlogs(result.data || []);
-      } catch (error) {
-        logError('Failed to fetch recent blogs', error, { component: 'RecentBlogs', action: 'fetchBlogs' });
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchBlogs();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <Section padding="default" size="wide" divider>
-        <div ref={containerRef} aria-busy="true" aria-label="Loading recent blog posts">
-          <SectionHeader title="Recent Blogs" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(3)].map((_, i) => (
-              <div
-                key={i}
-                className="animate-pulse rounded-xl bg-secondary/50 h-[280px]"
-                role="presentation"
-              />
-            ))}
-          </div>
-        </div>
-      </Section>
-    );
-  }
 
   return (
     <Section padding="default" size="wide" divider topDivider>

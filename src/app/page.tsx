@@ -7,10 +7,23 @@ import { ProofBar } from "@/components/home/proof-bar";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 import { Section } from "@/components/ui/Section";
 import { WebsiteStructuredData, PersonStructuredData, FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/structured-data";
+import { getAllBlogs } from "@/lib/getAllBlogs";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-export default function Home() {
+export default async function Home() {
+  const allBlogs = await getAllBlogs();
+  const recentBlogs = allBlogs
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3)
+    .map(({ title, description, date, slug, tags, image }) => ({
+      title,
+      description,
+      date,
+      slug,
+      tags: tags || [],
+      image: image || '/images/blog/default.webp',
+    }));
   return (
     <main className="flex min-h-screen flex-col">
       <WebsiteStructuredData
@@ -67,7 +80,7 @@ export default function Home() {
       <WorkingOnSection />
 
       {/* Recent Blog Posts */}
-      <RecentBlogs />
+      <RecentBlogs blogs={recentBlogs} />
 
       {/* Recent GitHub Activity */}
       <RecentProjects />

@@ -89,7 +89,7 @@ You now match or exceed Brittany Chiang's visual effects. Bruno Simon's **full 3
 | GitHub contributions graph | ✅ | ✅ | ❌ | Both have |
 | WakaTime coding stats | ✅ | ❌ | ❌ | **Unique** |
 | Code snippets library | ✅ | ❌ | ❌ | Searchable collection |
-| Public API with docs | ✅ | ❌ | ❌ | `/api-docs` page |
+| Public API with docs | ❌ | ❌ | ❌ | Removed (unused) |
 | Open source projects | ✅ | ✅ | ✅ | All showcase these |
 
 ### Analysis

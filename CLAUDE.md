@@ -141,11 +141,6 @@ vote_records (
 5. **`/api/contact`** - Contact form
    - POST: Send email via Resend API (or logs to console if RESEND_API_KEY not set)
 
-6. **`/api/v1/blogs`** - Public blog API (rate-limited)
-   - GET: Paginated blog list with optional tag filter
-   - Query params: `limit`, `offset`, `tag`
-   - Returns: `{ data: [...], meta: { total, limit, offset, hasMore } }`
-
 **First-Time Setup:**
 After cloning the repository, you MUST run the Supabase migrations:
 1. Open Supabase Dashboard → SQL Editor
