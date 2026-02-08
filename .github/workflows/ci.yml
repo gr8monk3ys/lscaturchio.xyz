@@ -120,7 +120,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           # Optional - analytics and monitoring
-          NEXT_PUBLIC_ADSENSE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_ADSENSE_CLIENT_ID }}
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}

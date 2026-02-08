@@ -4,7 +4,6 @@ import { Navbar } from "@/components/ui/navbar";
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { MobileNavbar } from "@/components/ui/mobile-navbar"
-import Script from 'next/script'
 import { Suspense } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
 import { PWARegister } from '@/components/pwa-register'
@@ -82,10 +81,6 @@ export default function RootLayout({
       className={`${manrope.variable} ${calSans.variable}`}
     >
       <head>
-        {/* DNS Prefetch & Preconnect for External Resources */}
-        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
-        <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
-
         {/* Canonical Link - Client Component for dynamic pathname */}
         <CanonicalLink />
 
@@ -107,15 +102,6 @@ export default function RootLayout({
 
         {/* Performance Hints */}
         <link rel="preconnect" href="https://vitals.vercel-insights.com" />
-
-        {/* Google AdSense Script - Load with Lower Priority */}
-        <Script
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-4505962980988232"}`}
-          crossOrigin="anonymous"
-          strategy="lazyOnload"
-          id="google-adsense"
-        />
 
       </head>
       <body>
