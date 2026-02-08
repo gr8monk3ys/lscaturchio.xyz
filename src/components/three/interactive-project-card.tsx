@@ -2,8 +2,9 @@
 
 import { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Text, RoundedBox, Float, MeshDistortMaterial } from "@react-three/drei";
+import { RoundedBox, Float, MeshDistortMaterial } from "@react-three/drei";
 import * as THREE from "three";
+import { useIsDesktop } from "@/hooks/use-is-desktop";
 
 interface ProjectData {
   title: string;
@@ -114,6 +115,7 @@ export function InteractiveProjectCard({
   project,
   className = "",
 }: InteractiveProjectCardProps) {
+  const isDesktop = useIsDesktop();
   const [isHovered, setIsHovered] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
 
@@ -125,7 +127,7 @@ export function InteractiveProjectCard({
     }
   }, []);
 
-  if (!shouldRender) {
+  if (!shouldRender || !isDesktop) {
     // Fallback for reduced motion or SSR
     return (
       <div

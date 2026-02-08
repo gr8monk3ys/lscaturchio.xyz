@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
+import { useIsDesktop } from '@/hooks/use-is-desktop';
 
 // Dynamically import Three.js components to avoid SSR issues
 const ParticleField = dynamic(
@@ -27,6 +28,7 @@ interface ThreeBackgroundProps {
 }
 
 export function ThreeBackground({ type = 'particles', className = '' }: ThreeBackgroundProps) {
+  const isDesktop = useIsDesktop();
   const [shouldRender, setShouldRender] = useState(false);
   const [isLowEnd, setIsLowEnd] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -36,12 +38,8 @@ export function ThreeBackground({ type = 'particles', className = '' }: ThreeBac
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(motionQuery.matches);
 
-    // Check for low-end device (less than 4 cores or mobile)
-    const isLowEndDevice =
-      navigator.hardwareConcurrency < 4 ||
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
+    // Check for low-end device (less than 4 cores)
+    const isLowEndDevice = navigator.hardwareConcurrency < 4;
     setIsLowEnd(isLowEndDevice);
 
     // Only render after hydration and if motion is allowed
@@ -49,16 +47,16 @@ export function ThreeBackground({ type = 'particles', className = '' }: ThreeBac
       setShouldRender(true);
     }
 
-    const handleMotionChange = (e: MediaQueryListEvent) => {
+    function handleMotionChange(e: MediaQueryListEvent): void {
       setPrefersReducedMotion(e.matches);
       setShouldRender(!e.matches);
-    };
+    }
 
     motionQuery.addEventListener('change', handleMotionChange);
     return () => motionQuery.removeEventListener('change', handleMotionChange);
   }, []);
 
-  if (!shouldRender || prefersReducedMotion || type === 'none') {
+  if (!shouldRender || !isDesktop || prefersReducedMotion || type === 'none') {
     return null;
   }
 
