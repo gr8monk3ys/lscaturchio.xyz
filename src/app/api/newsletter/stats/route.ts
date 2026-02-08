@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabase } from '@/lib/supabase';
+import { getDb } from '@/lib/db';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
@@ -11,14 +11,11 @@ const handleGet = async (request: NextRequest) => {
   if (authError) return authError;
 
   try {
-    const supabase = getSupabase();
-    const { data, error } = await supabase
-      .rpc('count_active_subscribers');
-
-    if (error) throw error;
+    const sql = getDb();
+    const rows = await sql`SELECT count_active_subscribers()`;
 
     return NextResponse.json(
-      { activeSubscribers: data || 0 },
+      { activeSubscribers: rows[0].count_active_subscribers || 0 },
       { status: 200 }
     );
   } catch (error) {

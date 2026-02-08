@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabase, isSupabaseConfigured } from '@/lib/supabase';
+import { getDb, isDatabaseConfigured } from '@/lib/db';
 import { logError, logInfo } from '@/lib/logger';
 import { validateCsrf } from '@/lib/csrf';
 import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit';
@@ -38,34 +38,24 @@ export interface GuestbookEntry {
  */
 export async function GET(): Promise<NextResponse> {
   try {
-    if (!isSupabaseConfigured()) {
+    if (!isDatabaseConfigured()) {
       return NextResponse.json(
         { entries: [], message: 'Guestbook not configured' },
         { status: 200 }
       );
     }
 
-    const supabase = getSupabase();
+    const sql = getDb();
 
-    const { data, error } = await supabase
-      .from('guestbook')
-      .select('id, name, email, avatar_url, message, github_username, created_at')
-      .order('created_at', { ascending: false })
-      .limit(100);
-
-    if (error) {
-      logError('Guestbook: Database error', error, {
-        component: 'guestbook',
-        action: 'GET',
-      });
-      return NextResponse.json(
-        { error: 'Failed to fetch guestbook entries' },
-        { status: 500 }
-      );
-    }
+    const rows = await sql`
+      SELECT id, name, email, avatar_url, message, github_username, created_at
+      FROM guestbook
+      ORDER BY created_at DESC
+      LIMIT 100
+    `;
 
     // Sanitize messages for safe display (extra precaution)
-    const sanitizedEntries = (data || []).map((entry) => ({
+    const sanitizedEntries = rows.map((entry) => ({
       ...entry,
       message: escapeHtml(entry.message),
     }));
@@ -93,7 +83,7 @@ async function postHandler(req: NextRequest): Promise<NextResponse> {
   if (csrfError) return csrfError;
 
   try {
-    if (!isSupabaseConfigured()) {
+    if (!isDatabaseConfigured()) {
       return NextResponse.json(
         { error: 'Guestbook not configured' },
         { status: 503 }
@@ -119,16 +109,16 @@ async function postHandler(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const supabase = getSupabase();
+    const sql = getDb();
 
     // Check if user has already signed (optional: limit entries per user)
-    const { data: existingEntries } = await supabase
-      .from('guestbook')
-      .select('id')
-      .eq('github_username', githubUser.login)
-      .limit(5);
+    const existingEntries = await sql`
+      SELECT id FROM guestbook
+      WHERE github_username = ${githubUser.login}
+      LIMIT 5
+    `;
 
-    if (existingEntries && existingEntries.length >= 5) {
+    if (existingEntries.length >= 5) {
       return NextResponse.json(
         { error: 'You have reached the maximum number of guestbook entries (5)' },
         { status: 429 }
@@ -138,30 +128,18 @@ async function postHandler(req: NextRequest): Promise<NextResponse> {
     // Sanitize message before storing
     const sanitizedMessage = escapeHtml(message);
 
-    // Insert new guestbook entry
-    const { data, error } = await supabase
-      .from('guestbook')
-      .insert({
-        name: githubUser.name || githubUser.login,
-        email: githubUser.email,
-        avatar_url: githubUser.avatar_url,
-        message: sanitizedMessage,
-        github_username: githubUser.login,
-      })
-      .select()
-      .single();
+    const name = githubUser.name || githubUser.login;
+    const email = githubUser.email;
+    const avatar_url = githubUser.avatar_url;
 
-    if (error) {
-      logError('Guestbook: Insert error', error, {
-        component: 'guestbook',
-        action: 'POST',
-        github_username: githubUser.login,
-      });
-      return NextResponse.json(
-        { error: 'Failed to create guestbook entry' },
-        { status: 500 }
-      );
-    }
+    // Insert new guestbook entry
+    const rows = await sql`
+      INSERT INTO guestbook (name, email, avatar_url, message, github_username)
+      VALUES (${name}, ${email}, ${avatar_url}, ${sanitizedMessage}, ${githubUser.login})
+      RETURNING *
+    `;
+
+    const data = rows[0];
 
     logInfo('Guestbook: New entry created', {
       component: 'guestbook',
