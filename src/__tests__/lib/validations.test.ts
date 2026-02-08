@@ -4,11 +4,8 @@ import {
   emailSchema,
   contactFormSchema,
   viewTrackingSchema,
-  reactionTrackingSchema,
-  reactionTypeSchema,
   newsletterSubscribeSchema,
   slugQuerySchema,
-  reactionQuerySchema,
   parseBody,
   parseQuery,
 } from '@/lib/validations';
@@ -131,37 +128,6 @@ describe('viewTrackingSchema', () => {
   });
 });
 
-describe('reactionTypeSchema', () => {
-  it('accepts like and bookmark', () => {
-    expect(reactionTypeSchema.safeParse('like').success).toBe(true);
-    expect(reactionTypeSchema.safeParse('bookmark').success).toBe(true);
-  });
-
-  it('rejects other values', () => {
-    expect(reactionTypeSchema.safeParse('upvote').success).toBe(false);
-    expect(reactionTypeSchema.safeParse('').success).toBe(false);
-    expect(reactionTypeSchema.safeParse('Like').success).toBe(false);
-  });
-});
-
-describe('reactionTrackingSchema', () => {
-  it('accepts valid reaction data', () => {
-    const result = reactionTrackingSchema.safeParse({
-      slug: 'my-post',
-      type: 'like',
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it('rejects invalid type', () => {
-    const result = reactionTrackingSchema.safeParse({
-      slug: 'my-post',
-      type: 'upvote',
-    });
-    expect(result.success).toBe(false);
-  });
-});
-
 describe('newsletterSubscribeSchema', () => {
   it('accepts valid email', () => {
     const result = newsletterSubscribeSchema.safeParse({
@@ -208,13 +174,12 @@ describe('parseQuery helper', () => {
     }
   });
 
-  it('parses multiple params', () => {
-    const params = new URLSearchParams('slug=test-post&type=like');
-    const result = parseQuery(reactionQuerySchema, params);
+  it('parses slug param correctly', () => {
+    const params = new URLSearchParams('slug=another-post');
+    const result = parseQuery(slugQuerySchema, params);
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.slug).toBe('test-post');
-      expect(result.data.type).toBe('like');
+      expect(result.data.slug).toBe('another-post');
     }
   });
 

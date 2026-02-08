@@ -61,25 +61,6 @@ export const viewTrackingSchema = z.object({
 export type ViewTrackingInput = z.infer<typeof viewTrackingSchema>;
 
 /**
- * Reaction type enum
- */
-export const reactionTypeSchema = z.enum(['like', 'bookmark'], {
-  message: "Type must be 'like' or 'bookmark'",
-});
-
-export type ReactionType = z.infer<typeof reactionTypeSchema>;
-
-/**
- * Reaction tracking - POST body
- */
-export const reactionTrackingSchema = z.object({
-  slug: slugSchema,
-  type: reactionTypeSchema,
-});
-
-export type ReactionTrackingInput = z.infer<typeof reactionTrackingSchema>;
-
-/**
  * Newsletter subscription
  */
 export const newsletterSubscribeSchema = z.object({
@@ -93,11 +74,6 @@ export type NewsletterSubscribeInput = z.infer<typeof newsletterSubscribeSchema>
  */
 export const slugQuerySchema = z.object({
   slug: slugSchema,
-});
-
-export const reactionQuerySchema = z.object({
-  slug: slugSchema,
-  type: reactionTypeSchema,
 });
 
 /**
