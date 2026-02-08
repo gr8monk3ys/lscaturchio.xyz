@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BlogCard } from "@/components/blog/BlogCard";
-import { AdBanner } from "@/components/ads/AdBanner";
 import { useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
 import Link from "next/link";
@@ -78,15 +77,7 @@ export function BlogGrid({ blogs }: BlogGridProps) {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {filteredBlogs.map((blog, index) => (
-          <React.Fragment key={blog.slug}>
-            <BlogCard {...blog} />
-            {/* Insert ad after every 6th blog post */}
-            {index > 0 && (index + 1) % 6 === 0 && (
-              <div key={`ad-${index}`} className="col-span-full my-6">
-                <AdBanner slot="6789012345" format="horizontal" responsive={true} />
-              </div>
-            )}
-          </React.Fragment>
+          <BlogCard key={blog.slug} {...blog} />
         ))}
       </div>
     </>

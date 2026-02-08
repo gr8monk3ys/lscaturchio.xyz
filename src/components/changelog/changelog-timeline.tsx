@@ -49,7 +49,6 @@ const CHANGELOG: ChangelogEntry[] = [
       { type: 'added', text: 'AI chat powered by OpenAI GPT-4o' },
       { type: 'added', text: 'RSS feed generation' },
       { type: 'added', text: 'Automated sitemap generation' },
-      { type: 'added', text: 'Google AdSense integration' },
       { type: 'added', text: 'Vercel Analytics integration' },
     ],
   },
