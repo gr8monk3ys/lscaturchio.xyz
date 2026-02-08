@@ -3,11 +3,9 @@ import { Heading } from '@/components/Heading'
 import { Metadata } from 'next'
 import { StatsOverview } from '@/components/stats/stats-overview'
 import { PopularPosts } from '@/components/stats/popular-posts'
-import { EngagementStats } from '@/components/stats/engagement-stats'
 import { VisitorChart } from '@/components/stats/visitor-chart'
 import { TechStack } from '@/components/stats/tech-stack'
 import { ContributionGraph } from '@/components/github/contribution-graph'
-import { CodingStats } from '@/components/stats/coding-stats'
 
 export const metadata: Metadata = {
   title: 'Site Statistics | Lorenzo Scaturchio',
@@ -37,14 +35,8 @@ export default function StatsPage() {
           <div className="space-y-8">
             <StatsOverview />
             <VisitorChart />
-            <div className="grid lg:grid-cols-2 gap-8">
-              <ContributionGraph />
-              <CodingStats showProjects showEditors />
-            </div>
-            <div className="grid lg:grid-cols-2 gap-8">
-              <PopularPosts />
-              <EngagementStats />
-            </div>
+            <ContributionGraph />
+            <PopularPosts />
             <TechStack />
           </div>
         </div>
