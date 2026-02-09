@@ -30,9 +30,6 @@ yarn-error.log*
 .env
 .env*.local
 
-# pre-generated TTS audio files (large, generated via bun run generate-tts)
-/public/audio/*.mp3
-
 # vercel
 .vercel
 
