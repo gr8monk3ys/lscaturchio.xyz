@@ -35,8 +35,8 @@ export function ViewCounter({ slug }: ViewCounterProps) {
         // Fetch current view count
         const response = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
         if (response.ok) {
-          const data = await response.json();
-          setViews(data.views);
+          const json = await response.json();
+          setViews(json.data?.views ?? json.views ?? 0);
         }
       } catch (error) {
         logError("Failed to record/fetch views", error, { component: "ViewCounter", slug });
