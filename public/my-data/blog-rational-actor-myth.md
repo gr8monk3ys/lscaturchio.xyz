@@ -1,0 +1,75 @@
+# The Rational Actor Is Dead
+
+## Nobody Has Ever Made a Decision the Way Economists Think They Do
+
+Open an introductory economics textbook (any of them, pick one) and within the first few chapters you'll meet *Homo economicus*. Rational Economic Man. He has complete information, stable preferences, and unlimited computational power. He weighs costs against benefits with machine precision. He maximizes his utility function. He is, in every meaningful sense, a fictional character.
+
+The problem isn't that economists know he's fictional. Most do. The problem is that they build models on his assumptions anyway, and then those models become policy, and then real humans get crushed by institutions designed for a species that doesn't exist.
+
+## The Kill Shot: Kahneman and Tversky
+
+Daniel Kahneman and Amos Tversky started publishing together in the early 1970s. By the time they were done, they had dismantled the rational actor model so thoroughly that Kahneman won the Nobel Prize in Economics for it in 2002. (Tversky would have shared it, but he died in 1996. The Nobel isn't awarded posthumously.)
+
+Their work centered on what they called *prospect theory*, published in *Econometrica* in 1979. The findings were simple and brutal.
+
+People don't evaluate outcomes in absolute terms. They evaluate them relative to a reference point. Losing $100 feels roughly twice as bad as gaining $100 feels good. This is *loss aversion*, and it violates the most basic assumption of expected utility theory: that gains and losses of equal magnitude should carry equal psychological weight.
+
+They also showed that people systematically miscalculate probabilities. We overweight small probabilities (which is why people buy lottery tickets and catastrophic insurance) and underweight large ones (which is why people don't save for retirement even when they know they should). We anchor to irrelevant numbers. We're swayed by how options are framed; the same surgery described as "90% survival rate" versus "10% mortality rate" produces different choices, even among doctors.
+
+None of this was subtle. None of it required special conditions. These biases showed up reliably, across populations, across cultures, across levels of education. The rational actor wasn't a simplification. It was wrong.
+
+## The Status Quo Is Velcro
+
+One of the most consequential biases for policy is *status quo bias*, our disproportionate preference for the current state of affairs. William Samuelson and Richard Zeckhauser documented this in 1988, and the implications ripple through every domain where people face choices.
+
+Consider organ donation. In countries where you must opt *in* to be a donor (like the United States and Germany), donation rates hover between 4% and 28%. In countries where you must opt *out* (like Austria, Belgium, and France), rates exceed 99%. The difference isn't values or culture. It's which box is checked by default.
+
+Eric Johnson and Daniel Goldstein published this comparison in *Science* in 2003, and it should have ended every argument about whether "choice architecture" matters. People don't carefully weigh their preferences and choose accordingly. They do whatever requires the least effort. The default wins. Almost always.
+
+A rational actor wouldn't care about defaults. The rational actor examines each option on its merits. But the rational actor doesn't exist, and the 70% of Americans who haven't registered as organ donors aren't making a principled stand. They just never got around to checking a box.
+
+## Policy for Fictional Humans
+
+Here's where the fiction becomes dangerous. When you design policy for rational actors, you get institutions that systematically fail real people.
+
+American healthcare is the most expensive example. The theory: give consumers information about prices, quality, and outcomes, and they'll shop rationally for medical care like they shop for televisions. The reality: people facing a cancer diagnosis don't comparison shop. They go where their doctor tells them to go, or where their insurance sends them, or to the closest hospital. They're terrified. They're confused. They're operating under cognitive load that would make rational calculation impossible even if they had the information, which they usually don't.
+
+The entire architecture of high-deductible health plans, the idea that "skin in the game" will make healthcare consumers more cost-conscious, is built on rational actor assumptions. What actually happens, as the RAND Health Insurance Experiment showed decades ago, is that people cut back on *all* care, including the care they need. They can't distinguish between valuable and wasteful spending because they're not health economists. They're sick people trying to get better.
+
+Retirement savings tells the same story. For decades, American policy relied on individual choice: open a 401(k), choose your contribution rate, select your investments, rebalance periodically. A rational actor could handle this. Real humans? Only about half of eligible workers participate in employer-sponsored plans. Among those who do, many pick whatever option is listed first, contribute at whatever rate avoids thinking about it, and never rebalance.
+
+Richard Thaler and Shlomo Benartzi's "Save More Tomorrow" program demonstrated this perfectly. Instead of asking people to save more *now* (loss aversion makes this painful), they asked people to commit to saving more in the *future*, timed to coincide with raises (so take-home pay never decreases). Participation rates jumped from 3.5% to 13.6% initial enrollment, with contribution rates eventually reaching nearly 14%. Same people. Same incomes. Different architecture.
+
+## The Nudge and Its Limits
+
+Thaler and Cass Sunstein formalized this approach in *Nudge* (2008), and for a while it looked like the answer. Don't ban bad choices. Don't mandate good ones. Just arrange the choice environment so that the path of least resistance leads somewhere reasonable.
+
+It works. Default enrollment in retirement plans works. Putting fruit at eye level in cafeterias works. Opt-out organ donation works. Simplifying financial aid applications increases college enrollment. The evidence is overwhelming.
+
+But here's my problem with nudge theory, and it's not a small one: it doesn't go far enough. It accepts the framework that produced the problem.
+
+Nudging keeps the individual as the unit of analysis. It still assumes the solution is to tweak how choices are presented rather than questioning the choices themselves. You still have a retirement system that depends on individual investment decisions; you've just made the default smarter. You still have a healthcare system that treats patients as consumers; you've just made the shopping easier.
+
+The deeper question nudge theory doesn't ask: why are we designing systems that require ordinary people to make expert-level financial and medical decisions in the first place?
+
+## Behavioral Realism, Not Behavioral Patches
+
+The real lesson of behavioral economics isn't that we can trick people into better choices with clever defaults. It's that the rational actor model was always a convenient fiction that served particular interests, namely, the interest of institutions that want to shift responsibility to individuals.
+
+If people are bad at saving for retirement, the rational actor model says that's their problem. If people make poor healthcare choices, the rational actor model says give them more information. If people are drowning in debt, the rational actor model says they should have calculated the interest rates more carefully.
+
+In every case, the fiction serves the institution and blames the person. Behavioral economics, at its best, exposes this blame-shifting for what it is.
+
+The alternative isn't paternalism. It's *design*. Design systems for the humans who actually exist (distractible, loss-averse, status-quo-loving, framing-dependent, cognitively limited humans) instead of the utility-maximizing robots we pretend they are.
+
+This means more than nudges. It means automatic enrollment as the norm, not the exception. It means simplified systems that don't require expertise to navigate. It means institutional design that absorbs complexity rather than passing it through to individuals. It means, fundamentally, admitting that the gap between Homo economicus and Homo sapiens isn't a rounding error. It's a chasm.
+
+## The Dead Model Walks
+
+And yet. Open an economics textbook published this year and you'll still find rational choice theory presented as the baseline. Graduate programs still train economists on models that assume perfect rationality as the starting point and treat behavioral findings as "deviations" or "anomalies."
+
+This is like teaching astronomy with the Ptolemaic model and treating Copernicus as a footnote. The anomalies aren't anomalies. They're the reality. The model is the anomaly.
+
+Kahneman and Tversky killed the rational actor fifty years ago. Economics just hasn't finished burying the body. Meanwhile, real people navigate systems designed for creatures they've never been, making choices the models say they shouldn't make, suffering consequences the models say they deserve.
+
+The rational actor was never a useful simplification. It was a flattering lie. And we're still paying for it.

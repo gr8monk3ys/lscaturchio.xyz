@@ -1,0 +1,91 @@
+# The Commons Never Left
+
+## A Convenient Myth
+
+Everyone knows the tragedy of the commons. Shared pastures get overgrazed because each herder has an incentive to add more livestock while the costs get distributed to everyone. Without private ownership or government regulation, common resources inevitably get destroyed. It's basic economics.
+
+Except it isn't true. Not historically. Not empirically. Not as a general principle.
+
+The "tragedy of the commons" argument comes from a 1968 essay that wasn't based on any actual commons. It was a thought experiment about an imaginary pasture with imaginary herders who had no social relationships, no communication, no rules, and no consequences for defection. In other words, a situation that has never existed anywhere.
+
+Real commons have governance. They always have. The reason they lasted for centuries, in some cases millennia, is precisely because communities developed sophisticated systems for managing shared resources. The "tragedy" describes what happens when those systems break down or get deliberately destroyed. It doesn't describe commons. It describes their absence.
+
+## What Commons Actually Were
+
+Before enclosure, the centuries-long process of converting common land to private property, most of the world's productive landscape was managed through some form of collective governance. Forests, fisheries, pastures, waterways, game. These weren't open-access free-for-alls. They were regulated commons.
+
+The regulations varied enormously. Some were formal, written into law. Others were customary, enforced through social pressure and community sanction. But the basic pattern was consistent: defined boundaries, clear membership, rules about use, mechanisms for monitoring, graduated sanctions for violations, and processes for resolving disputes.
+
+This isn't romantic speculation. It's extensively documented. Researchers have studied functioning commons on every continent. The patterns are remarkably consistent despite emerging independently in completely different cultural contexts.
+
+Commons work when they're actually commons, meaning when the community has the authority and capacity to govern them. They fail when that governance gets undermined, whether by state seizure, privatization, or external pressures that make local management impossible.
+
+## Enclosure Wasn't Progress
+
+The standard story treats enclosure as an unfortunate but necessary step toward modernity. Common land was inefficient. Private ownership enabled investment and improvement. The displaced peasants eventually became industrial workers, which was better for everyone in the long run.
+
+This is propaganda written by the beneficiaries of enclosure.
+
+What actually happened was massive theft. Land that communities had used for generations got converted to private property through a combination of legal chicanery, political corruption, and outright violence. The people who'd depended on that land lost their livelihoods and were forced into wage labor or destitution.
+
+The efficiency gains were real, for the new owners. Enclosure was extremely efficient at concentrating wealth and creating a dispossessed class with no choice but to sell their labor. Whether this counts as progress depends entirely on whose perspective you're taking.
+
+And the claim that commons were inherently inefficient is simply false. Many commons were highly productive precisely because they were managed for sustainability rather than maximum short-term extraction. The "improvements" that enclosure enabled often amounted to mining the soil for a few generations of profit before exhausting it.
+
+## The Commons That Remain
+
+Despite centuries of enclosure, commons persist. They're everywhere once you know how to look.
+
+Community forests in South Asia and Latin America manage millions of hectares through collective governance. Irrigation systems in arid regions coordinate water use across thousands of farms. Fishing communities maintain sustainable harvests through traditional rules that scientists are only beginning to understand.
+
+But you don't have to look at traditional societies. Digital commons are ubiquitous. Open source software runs most of the internet's infrastructure. Wikipedia contains more knowledge than any privately-produced encyclopedia ever did. Creative Commons licenses enable sharing that proprietary copyright would prohibit.
+
+These aren't marginal experiments. Linux underpins everything from web servers to smartphones. The protocols that make the internet function were developed cooperatively and remain collectively governed. The most successful information resources in human history are commons.
+
+Urban commons are equally present if less celebrated. Community gardens. Parks maintained by neighborhood associations. Tool libraries. Community land trusts. Even informal arrangements like neighbors sharing equipment or watching each other's children constitute micro-commons operating beneath the formal economy.
+
+## Why We Stopped Seeing Them
+
+The dominance of private property in economic theory makes commons conceptually invisible. If your analytical framework only recognizes individual ownership and state ownership, everything else gets misclassified.
+
+Commons often get coded as government property (they're not; the state doesn't own them). Or as primitive arrangements waiting to be modernized (they're not; many are highly sophisticated). Or as market failures requiring correction (they're not; they're alternative institutions that work differently, not worse).
+
+This isn't accidental confusion. The enclosure mindset actively resists recognizing commons because doing so raises uncomfortable questions. If communities can successfully manage resources without privatization, why do we keep privatizing? If digital commons produce superior information goods, why do we keep extending copyright? If the tragedy of the commons is a myth, why do we keep citing it?
+
+The answer, obviously, is that enclosure benefits powerful interests. Recognizing actually-existing commons threatens the justification for ongoing privatization. So the commons get erased, redefined, or dismissed as exceptions that prove the rule.
+
+## The New Enclosures
+
+Enclosure isn't history. It's ongoing.
+
+The privatization of water resources. The patenting of seeds and genetic sequences. The commodification of data generated by our daily activities. The conversion of public universities into profit centers. The enclosure of urban space through exclusionary zoning and hostile architecture.
+
+And perhaps most significantly, the ongoing enclosure of the digital commons through surveillance capitalism, platform monopolization, and the erosion of interoperability that once made the internet genuinely open.
+
+Each wave of enclosure follows the same pattern. Resources that communities have developed and managed collectively get captured by private interests claiming efficiency improvements. The gains get concentrated. The losses get distributed. And within a generation, people forget that alternatives ever existed.
+
+This is why the history matters. Not as nostalgia for a lost golden age, but as evidence that enclosure is a choice, not an inevitability. The commons didn't disappear because they failed. They were destroyed because they competed with private accumulation.
+
+## Reclaiming and Defending
+
+Commons don't maintain themselves. They require active defense against enclosure and active construction of governance institutions.
+
+Defense means resisting privatization: fighting against the conversion of public assets to private ownership, opposing the extension of intellectual property into new domains, maintaining the open standards and protocols that enable digital commons to function.
+
+But defense alone isn't enough. Creating new commons requires building the social infrastructure that makes collective governance possible. This means developing rules for use, mechanisms for monitoring, processes for conflict resolution, and, critically, the relationships of trust that enable cooperation.
+
+The good news is that people are actually doing this. Urban land trusts are removing housing from speculative markets. Community-owned renewable energy projects are scaling up. Platform cooperatives are offering alternatives to extractive gig economy companies. Indigenous communities are reasserting governance over traditional territories.
+
+None of this is easy. Building commons takes time, skill, and sustained commitment. The forces of enclosure have enormous resources and legal systems designed to protect property rights far more vigorously than common rights.
+
+## Beyond The Binary
+
+The standard political discourse offers two options: private property or state control. Markets or government. This framing is deeply impoverished.
+
+Commons are neither. They're a third category: collective ownership and governance that operates through community institutions rather than either market transactions or bureaucratic administration. Recognizing this expands the range of possible solutions to any given problem.
+
+Not everything should be a commons. Some goods and services work better as private property. Some require state provision. But the refusal to even consider commons as an option artificially constrains our options.
+
+The tragedy of the commons isn't that commons fail. The tragedy is that we've been taught to believe they must fail, preventing us from building and defending them.
+
+They're still here. They've always been here. The commons never left; we just stopped looking.

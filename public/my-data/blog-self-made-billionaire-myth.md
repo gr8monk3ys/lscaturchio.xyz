@@ -1,0 +1,67 @@
+# Nobody Is Self-Made
+
+## The Founding Myth
+
+Every billionaire has an origin story. Jeff Bezos started Amazon in his garage. Bill Gates dropped out of Harvard to build Microsoft. Steve Jobs tinkered in a workshop. The narrative is always the same: genius plus grit equals billions. It's the American creation myth, updated for the tech era.
+
+It's also bullshit. Not entirely; these are clearly smart, driven people who made real decisions that mattered. But the "self-made" framing erases so much context that it becomes a kind of fiction. And that fiction does political work.
+
+Let's start with the garage.
+
+## The Garage Was Never the Whole Story
+
+Jeff Bezos got a $245,573 investment from his parents in 1995 to start Amazon. His stepfather, Miguel Bezos, was a petroleum engineer. His maternal grandfather was a regional director at the Atomic Energy Commission who owned a 25,000-acre ranch in Texas. Bezos spent summers there. He went to Princeton. He worked at D.E. Shaw, a quantitative hedge fund, before launching his startup. The garage was real. The safety net underneath it was enormous.
+
+Bill Gates attended Lakeside School in Seattle, one of the few institutions in the country with a computer terminal in 1968. His mother, Mary Gates, served on the board of directors for First Interstate BancSystem and the national board of United Way, where she met IBM CEO John Opel. When IBM needed an operating system for its personal computer, it went to Microsoft. Gates's family connections didn't write the code, but they opened the door that mattered most.
+
+Elon Musk's father, Errol Musk, owned a stake in a Zambian emerald mine during apartheid. Elon has disputed the extent of the family's wealth, but he grew up in one of the wealthiest suburbs of Pretoria, attended private schools, and had enough financial support to move to Canada at 17 and then transfer to the University of Pennsylvania. His first startup, Zip2, was funded in part by his father's investment. The bootstrap narrative requires ignoring a lot of boots.
+
+Warren Buffett, the "Oracle of Omaha" and patron saint of folksy capitalism, is the son of Howard Buffett, a four-term U.S. congressman. He bought his first stock at age 11. He had a paper route, which is always the detail that gets mentioned. The detail that doesn't get mentioned is the congressman father who gave him access to financial networks before he could drive.
+
+These aren't gotchas. They're the pattern. Study the biographies of self-made billionaires and you find, with remarkable consistency, family wealth, elite education, strategic connections, and above all, the financial cushion to take risks that would destroy someone without a safety net.
+
+## The Infrastructure Beneath the Individual
+
+But the problem with "self-made" goes deeper than individual stories of privilege. Every successful business depends on infrastructure that no individual built.
+
+Public roads move your products. Public schools educated your workforce. Public research created the technologies your company uses. Public courts enforce your contracts. Public police protect your property. Public health systems kept your employees alive during pandemics. Public monetary policy keeps the financial system from collapsing. All of this is paid for collectively, through taxes and public investment.
+
+Mariana Mazzucato's *The Entrepreneurial State* dismantles the myth of private sector innovation with devastating specificity. Take the iPhone, the canonical example of American entrepreneurial genius. GPS: funded by the U.S. military. Touchscreen technology: developed with CIA and NSF funding. The internet itself: DARPA. Siri: originated from a DARPA-funded project at SRI International. Lithium-ion batteries: commercialized with Department of Energy support.
+
+Apple designed a beautiful product and built a brilliant supply chain. That's real. But the core technologies were developed with public money, over decades, at public risk. The taxpayer funded the research. Apple captured the profit. The "self-made" narrative attributes the entire outcome to the private actor and erases the public foundation.
+
+This isn't unique to Apple. Mazzucato documents the same pattern across biotech, pharmaceuticals, computing, and clean energy. The riskiest, most expensive stage of innovation, basic research, is overwhelmingly funded by governments. The private sector enters after the hard work is done, captures the commercialization profits, and then lobbies for lower taxes on the grounds that government is inefficient and the private sector creates all the value.
+
+The audacity of it is almost admirable.
+
+## Luck Is a Dirty Word
+
+There's another factor that self-made mythology systematically denies: luck.
+
+Not just the luck of birth (being born into the right family, the right country, the right era), though that's enormous. Also the luck of timing, of meeting the right person, of being in the right market at the right moment, of surviving the hundred things that kill other businesses.
+
+Robert Frank, the Cornell economist, wrote an entire book about this: *Success and Luck: Good Fortune and the Myth of Meritocracy*. His argument isn't that talent and effort don't matter. They do. But in a competitive economy with many talented, hardworking people, the difference between the person who becomes a billionaire and the person who flames out is often contingent, path-dependent, and random.
+
+Bezos himself has acknowledged this. In interviews, he's said that Amazon's success depended on timing, launching an online bookstore in 1994, when the web was new enough to be undervalued by established retailers but mature enough to support e-commerce. A year earlier would have been too soon. A few years later, competition would have been fiercer. The window was narrow. He walked through it. Others, equally talented, didn't.
+
+But acknowledging luck is dangerous to the self-made narrative. If success is partly random, then the distribution of wealth isn't purely meritocratic. And if wealth isn't purely earned, then taxing it isn't theft; it's recalibrating a system that overrewarded some people for outcomes they didn't fully control.
+
+## The Political Function
+
+This is where the myth does its real work.
+
+"Self-made" isn't just a biographical claim. It's a political argument. If billionaires earned every dollar through individual genius and effort, then their wealth is morally legitimate by definition. Questioning it is *envy*. Taxing it is *punishment*. Redistributing it is *theft*.
+
+This framing makes policy conversations nearly impossible. You can't argue for a wealth tax if wealth is sacred. You can't argue for public investment if the private sector does everything. You can't argue for a stronger safety net if poverty is a personal failure.
+
+The myth converts a structural question (how should a society distribute the gains from collective activity?) into a moral question about individual virtue. And once you're arguing about whether billionaires "deserve" their money, you've already lost, because that's a question with no empirical answer. What you *can* answer empirically is whether extreme concentration of wealth produces good outcomes for a society. The evidence is clear: it doesn't. Countries with more equal wealth distribution have better health outcomes, longer life expectancy, lower crime, higher social trust, and greater intergenerational mobility. The data comes from Richard Wilkinson and Kate Pickett's *The Spirit Level*, replicated across dozens of studies.
+
+But the self-made myth keeps the conversation personal instead of structural. It keeps us debating whether Elon Musk is a genius or an asshole instead of whether any individual should control more wealth than the GDP of most countries.
+
+## What Honesty Looks Like
+
+Nobody is self-made. Everybody is made by the circumstances of their birth, the infrastructure of their society, the labor of other people, the investments of prior generations, the luck of their timing, and yes, their own talent and effort. All of those things. Together.
+
+Saying this isn't an insult to successful people. It's an accurate description of how success works. The insult is the myth, the pretense that one person in a garage did it alone, that the rest of us are spectators to greatness rather than participants in a collective project.
+
+The self-made billionaire is a story we tell to avoid asking harder questions about the system that made them. Those questions don't go away just because the story is compelling.
