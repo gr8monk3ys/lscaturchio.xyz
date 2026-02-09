@@ -1,0 +1,60 @@
+name: Generate TTS Audio
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/blog/**/content.mdx'
+      - 'src/app/blog/**/*.mdx'
+
+jobs:
+  generate-tts:
+    name: Generate TTS for new blog posts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Generate TTS audio
+        run: bun run generate-tts
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Check for new audio files
+        id: check-audio
+        run: |
+          git add public/audio/
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push audio files
+        if: steps.check-audio.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/audio/
+          git commit -m "chore: generate TTS audio for new blog posts [skip ci]"
+          git push
