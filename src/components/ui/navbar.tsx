@@ -150,7 +150,7 @@ export function Navbar() {
 
             {/* Desktop Navigation Links */}
             <nav className="flex items-center">
-              <ul className="flex items-center space-x-2 rounded-full border border-border bg-background/80 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur">
+              <ul className="flex items-center space-x-2 rounded-full border border-border bg-background/80 px-3 py-2 shadow-[inset_0_1px_0_hsl(var(--border))] backdrop-blur">
                 {/* Category Dropdowns */}
                 {navigationCategories.map((category) => (
                   <li key={category.name}>
