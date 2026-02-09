@@ -22,16 +22,6 @@ if (SENTRY_DSN && process.env.NODE_ENV === "production") {
     // Environment tag
     environment: process.env.NODE_ENV,
 
-    // Integrations
-    integrations: [
-      Sentry.replayIntegration({
-        // Mask all text for privacy
-        maskAllText: true,
-        // Block all media for privacy
-        blockAllMedia: true,
-      }),
-    ],
-
     // Filter out common non-actionable errors
     ignoreErrors: [
       // Browser extensions
