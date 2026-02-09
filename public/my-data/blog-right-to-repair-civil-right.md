@@ -1,0 +1,77 @@
+# Right to Repair Is a Civil Right
+
+## You Don't Own What You Bought
+
+You paid $1,200 for that iPhone. You own it. Except you can't replace the battery without Apple's blessing. You can't swap a cracked screen with an aftermarket part without the phone throwing error messages at you. You can't even transfer a working camera module from one identical iPhone to another; Apple's parts pairing system will flag it as unauthorized and disable features.
+
+This is what ownership looks like in 2026. You hold the object. A corporation holds the keys.
+
+And it's not just phones.
+
+## The Tractor That Won't Start
+
+A farmer in Iowa buys a John Deere combine harvester for $500,000. During harvest season, the narrow window when every day matters, a sensor fails. The farmer could diagnose and fix the problem in an afternoon. They've been fixing equipment for decades. But John Deere's software locks prevent unauthorized repairs. The farmer has to wait for an authorized technician, who might be days away, while crops rot in the field.
+
+This isn't hypothetical. The American Farm Bureau Federation has documented these delays extensively. Farmers have resorted to downloading pirated Ukrainian firmware to bypass Deere's software locks on their own equipment. Read that again. American farmers pirating foreign software to use machines they paid half a million dollars for.
+
+In 2015, the Copyright Office had to grant a specific DMCA exemption just so farmers could legally access the software on equipment they already owned. The fact that this exemption was necessary tells you everything about how broken the system is.
+
+## Follow the Money
+
+Why do manufacturers fight repair so hard? Because repair restrictions create a captive market.
+
+Apple's out-of-warranty screen replacement costs $279-$379. An independent repair shop could do it for $80. Apple doesn't want you going to that shop. They want you either paying their price or, better yet, deciding the repair cost is close enough to an upgrade that you just buy a new phone.
+
+The FTC's 2021 report, "Nixing the Fix," laid this out plainly. Manufacturers use a combination of design choices (proprietary screws, glued-in batteries), parts restrictions (refusing to sell components to independent shops), software locks (parts pairing that disables functionality), and legal threats (DMCA claims against anyone who reverse-engineers repair procedures) to funnel consumers into manufacturer-controlled repair channels.
+
+This isn't a side effect of modern design. It's the business model.
+
+## Who Gets Hurt
+
+Here's where the civil rights framing matters. Repair restrictions don't hit everyone equally.
+
+If you live in a major city, an Apple Store is probably within driving distance. If you live in rural Montana, it's not. If you can afford $379 for a screen repair, you pay and move on. If you're on a fixed income, a broken phone might mean losing access to banking, healthcare portals, two-factor authentication for work, the digital infrastructure that society now requires for basic participation.
+
+The FTC report found that repair restrictions "disproportionately affect communities of color and lower-income communities." When you limit who can fix essential technology, you're limiting who can fully participate in modern life.
+
+Medical equipment is maybe the starkest example. Hospitals, particularly rural hospitals operating on thin margins, need to maintain ventilators, infusion pumps, patient monitors. Manufacturers increasingly restrict access to service manuals, diagnostic software, and replacement parts. During COVID, the absurdity peaked: hospitals couldn't get timely repairs on ventilators because the manufacturer's authorized technicians were overwhelmed. iFixit stepped in to distribute repair documentation, and manufacturers *still* pushed back.
+
+People's lives depended on these machines. The manufacturer's service agreement didn't care.
+
+## Massachusetts Showed the Way
+
+In 2012, Massachusetts passed the first automotive right-to-repair law by ballot initiative. Voters approved it 86% to 14%. Not a squeaker, but a landslide. In 2020, the state expanded it to include telematics data, again by overwhelming margins.
+
+The auto industry's response was telling. They spent $26 million trying to defeat the 2020 measure. They ran ads claiming that right-to-repair would help stalkers track victims through their cars. Voters saw through it.
+
+But here's the problem with state-by-state approaches: manufacturers can just comply nationally with the strictest state law (which they've largely done for automotive) or they can fight every new state bill individually, spending down local advocacy groups that can't match corporate lobbying budgets.
+
+By 2025, over 40 states had introduced right-to-repair legislation. A handful passed meaningful bills. Most died in committee after manufacturer lobbying. The pattern is consistent: overwhelming public support, intense industry opposition, legislative inaction.
+
+## The Ownership Lie
+
+Kyle Wiens, the CEO of iFixit, has been making this argument for over a decade: if you can't fix it, you don't own it.
+
+He's right, but I'd go further. What we're witnessing is a fundamental redefinition of ownership itself. You don't buy products anymore. You buy a license to use a physical object under conditions set by the manufacturer. Your tractor, your phone, your wheelchair, your hearing aid: they're all tethered to someone else's server, someone else's software, someone else's willingness to let you use what you paid for.
+
+This is a subscription model wearing the costume of ownership. You pay full price for the object but get the rights of a renter.
+
+The Copyright Office's triennial DMCA exemption process, where citizens have to petition the government for permission to tinker with things they own, is an admission that current law treats manufacturers' software interests as superior to owners' property rights. Every three years, we ask for permission. Sometimes we get it. Sometimes we don't. Either way, we're asking for something that should be a given.
+
+## The Environmental Cost Nobody Mentions
+
+Americans generate roughly 6.9 million tons of e-waste per year. The EPA estimates that only about 25% of it gets recycled. The rest goes to landfills or gets shipped to developing countries where it's processed under conditions that poison workers and contaminate soil and groundwater.
+
+Every device that gets thrown away because it's too expensive or too difficult to repair is a device that didn't need to become waste. Repair is the most effective form of recycling; it keeps the product in use, preserving all the energy and materials that went into manufacturing it. A repaired phone produces zero additional manufacturing emissions. A new phone requires mining rare earth minerals, often under exploitative conditions in the DRC or China.
+
+Right-to-repair isn't just a consumer issue or a property rights issue. It's an environmental issue. Manufacturers have figured out that making repair difficult increases sales of new units, and they've decided that's an acceptable trade-off. The planet's material limits suggest otherwise.
+
+## What Ownership Should Mean
+
+The right to repair your own property used to be so obvious it didn't need a name. Your grandparents fixed their own appliances, cars, radios. Not because they were unusually handy, but because manufacturers built things to be fixed, sold parts to anyone, and published service manuals.
+
+We didn't lose this by accident. We lost it because companies realized that controlling the aftermarket was more profitable than selling durable goods. Every locked-down device is a deliberate choice to prioritize recurring revenue over the owner's autonomy.
+
+Right-to-repair legislation isn't asking for anything radical. It's asking for access to parts, tools, and documentation at fair prices. It's asking that software locks not prevent owners from servicing their own property. It's asking for what we had fifty years ago, before the lawyers and the DRM got involved.
+
+Ownership without the right to repair is just a long-term lease with a purchase price. And we should stop pretending otherwise.

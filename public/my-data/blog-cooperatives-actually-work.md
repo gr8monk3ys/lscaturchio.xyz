@@ -1,0 +1,87 @@
+# Cooperatives Actually Work
+
+## The Numbers Don't Lie
+
+Worker cooperatives have a five-year survival rate of around 80%. Traditional businesses? About half that. This isn't some fringe statistic cherry-picked from a cooperative advocacy group; it's been documented repeatedly across different countries, different industries, different decades.
+
+So why aren't cooperatives everywhere?
+
+The standard response goes something like this: cooperatives are nice in theory, but they can't scale. They're inefficient. They lack the capital to compete. Workers don't want the responsibility of ownership. These arguments get repeated so often that most people assume they must be true.
+
+They're not.
+
+## The Efficiency Myth
+
+There's a persistent belief that hierarchical management is simply more efficient than democratic decision-making. Faster decisions. Clearer accountability. Less time wasted in meetings. The logic seems intuitive, until you actually look at how traditional corporations operate.
+
+Most corporate bureaucracies are staggeringly inefficient. Layers of middle management exist not to improve productivity but to monitor workers who have no stake in the enterprise's success. The entire field of "management science" exists largely to solve problems that wouldn't exist if workers had ownership.
+
+Cooperatives don't need as much supervision. Why would they? Members are supervising themselves. They don't need elaborate incentive structures to prevent shirking because the incentive is built in: you're working for yourself, collectively.
+
+And those endless meetings everyone worries about? Large cooperatives have solved this problem decades ago. They elect management. They use representative democracy. They delegate operational decisions while retaining strategic control. It's not that complicated. We figured out representative governance for political systems centuries ago. Applying it to workplaces isn't some impossible innovation.
+
+## The Capital Problem
+
+Here's where things get more honest. Cooperatives do face real obstacles in capital formation. But these obstacles are political, not inherent.
+
+Traditional corporations can issue stock to raise money. They can promise investors returns extracted from worker productivity. Cooperatives can't, or won't, do this. By design, they don't have external shareholders demanding profit extraction. This is a feature, not a bug. It's also a genuine disadvantage when competing for startup capital in a system designed around external investment.
+
+Banks are often hostile to cooperative lending. Not because cooperatives are bad credit risks (they're actually better) but because banks don't understand the model, lack standard evaluation criteria for cooperative proposals, and frankly, haven't been trained to see worker ownership as legitimate.
+
+The state could fix this easily. Cooperative development banks exist in other countries. Spain's Mondragon network has its own financial institutions. Germany has a robust cooperative banking sector. The obstacles are choices, not inevitabilities.
+
+## Why The Resistance?
+
+If cooperatives perform better on almost every metric that matters (survival, worker satisfaction, wage equality, community stability) why do they remain marginal?
+
+Follow the incentives.
+
+Venture capitalists don't fund cooperatives because they can't extract the returns they're accustomed to. Business schools don't teach cooperative management because their curriculum serves corporate recruiters. Politicians don't champion cooperative policy because their donors are conventional business owners who see worker ownership as a threat.
+
+The entire ecosystem of business development (incubators, accelerators, angel networks, MBA programs) is optimized for the extraction model. Cooperatives require building parallel infrastructure, which requires resources, which requires political will.
+
+And then there's ideology. The dominant economic assumption is that capital deserves returns simply for existing. Worker ownership challenges this at a fundamental level. If workers can successfully manage enterprises without external owners, what exactly is the capitalist class contributing?
+
+This is an uncomfortable question. Most people in positions of influence would rather not ask it.
+
+## The Labor Problem That Isn't
+
+One critique deserves serious engagement: the claim that workers don't actually want ownership. They want a paycheck and predictability, not the stress of running an enterprise.
+
+There's something to this. Not everyone wants to be an entrepreneur. Not everyone wants to attend governance meetings. Many workers, having been systematically excluded from decision-making their entire careers, don't immediately embrace it when offered.
+
+But this proves less than critics think. People who've never been trusted with responsibility often don't seek it. This doesn't mean they're incapable of it; it means they've been trained out of expecting it.
+
+Cooperatives that invest in member education and gradual onboarding don't report these problems. The issue isn't some inherent worker aversion to ownership. It's that ownership requires skills and dispositions that traditional employment actively suppresses.
+
+## Scaling Isn't The Problem
+
+Mondragon employs over 80,000 people. It's one of the largest corporations in Spain, operating across multiple sectors including manufacturing, retail, and finance. It's been doing this since the 1950s.
+
+The cooperative dairy sector controls significant market share in multiple countries. Credit unions serve over 300 million people globally. Housing cooperatives provide affordable homes in every major city.
+
+The "cooperatives can't scale" argument simply ignores the cooperatives that have scaled. It mistakes unfamiliarity for impossibility.
+
+What cooperatives don't do is scale in the specific way that venture capital demands: exponential growth with exit strategies designed to enrich early investors. They grow steadily. They reinvest in workers and communities. They resist the grow-or-die logic that leads traditional corporations into endless mergers, layoffs, and consolidation.
+
+This is framed as a weakness. It's actually the point.
+
+## What Would It Take?
+
+Expanding cooperative ownership doesn't require convincing workers to take risks they can't afford. It requires changing the conditions under which businesses form and compete.
+
+Public banking that understands cooperative finance. Legal reforms that simplify cooperative incorporation. Technical assistance programs comparable to what small business development centers provide. Procurement preferences that reward worker ownership. Tax policies that recognize cooperative profit-sharing differently than traditional dividends.
+
+None of this is utopian. All of it exists somewhere. The question isn't whether these policies work (they demonstrably do). The question is whether there's political will to implement them against the interests of those who benefit from the current arrangement.
+
+That's a political question, not an economic one. And that's precisely why it rarely gets asked in economics departments.
+
+## The Actual Alternative
+
+Cooperatives aren't a solution to every problem. They won't fix climate change by themselves. They won't end discrimination. They're a form of business organization, not a comprehensive political program.
+
+But they prove something that's worth proving: the extraction model isn't the only way to organize productive enterprise. Workers can manage themselves. Democratic governance can coordinate complex operations. Firms can survive and thrive without external owners claiming the surplus.
+
+The fact that this even needs to be demonstrated, that the dominant assumption is worker incapacity unless supervised by capital, reveals how ideological our supposedly neutral economic discourse actually is.
+
+Cooperatives work. They've always worked. The question is why we keep pretending otherwise.

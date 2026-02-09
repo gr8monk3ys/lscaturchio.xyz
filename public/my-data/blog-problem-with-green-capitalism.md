@@ -1,0 +1,99 @@
+# The Problem With Green Capitalism
+
+## The Comfortable Lie
+
+There's a story being sold right now, and it goes like this: we can solve the climate crisis without fundamentally changing anything. Just swap out the products. Electric cars instead of gas cars. Solar panels instead of coal plants. Sustainable packaging instead of regular packaging. Keep consuming, keep growing, keep the economic machinery humming along, just make it *green*.
+
+It's a seductive narrative. It demands nothing. No sacrifice, no systemic change, no uncomfortable questions about how we organize society. The market will handle it. Innovation will save us. Just buy the right things.
+
+This is a fantasy. And the longer we cling to it, the worse things will get.
+
+## The Consumption Trap
+
+The core premise of green capitalism is that sustainable consumption can replace unsustainable consumption. But this fundamentally misunderstands the problem.
+
+Environmental degradation isn't primarily about *what* we consume. It's about *how much* we consume. An electric vehicle is better than a gasoline vehicle, sure. But building a new electric vehicle still requires mining lithium, cobalt, nickel, and rare earth elements. It still requires enormous energy inputs for manufacturing. It still requires roads, parking lots, and all the infrastructure of car-dependent society.
+
+Multiply that by hundreds of millions of vehicles, and the environmental impact remains staggering, regardless of what powers the drivetrain.
+
+Green capitalism can't escape this trap because it refuses to question consumption itself. Growth must continue. Sales must increase. The economy must expand. The only variable permitted to change is the color of the consumption, from dirty brown to clean green.
+
+But there is no clean version of infinite growth. The numbers don't work.
+
+## Market Incentives vs. Ecological Limits
+
+Markets optimize for profit. This isn't controversial; it's the explicit purpose of the system. Companies that generate higher returns survive and expand. Those that don't, disappear.
+
+Environmental protection generates costs, not profits. Cleaning up pollution, preserving ecosystems, reducing emissions: these activities extract value from the economic system rather than adding to it. From a pure market perspective, they're inefficiencies to be minimized.
+
+Yes, regulations exist. Taxes, caps, mandates. But notice the pattern: every environmental regulation represents a *constraint* on market logic, not an expression of it. Markets don't spontaneously develop sustainable practices. They have to be forced.
+
+And forced they must be, constantly and against determined resistance. The moment enforcement weakens, corners get cut. The moment public attention shifts, standards erode. The moment a cheaper but dirtier option appears, the market gravitates toward it.
+
+Green capitalism imagines that market incentives can be permanently aligned with ecological limits. But the incentive structures point in opposite directions. Profit maximization pushes toward externalization of costs: make someone else pay for pollution, resource depletion, and climate damage. Ecological sustainability requires internalization of those costs, which reduces profits.
+
+These aren't compatible goals. Something has to give.
+
+## The Carbon Offset Delusion
+
+Carbon offsets represent green capitalism at its most absurd. The premise: companies can continue emitting greenhouse gases as long as they pay someone else to absorb equivalent amounts.
+
+Set aside the well-documented problems with offset verification (the phantom forests, the double-counted credits, the projects that would have happened anyway). Even if every offset were perfectly legitimate, the math doesn't work.
+
+Atmospheric carbon must peak and then decline. Offsetting maintains emissions at current levels (at best). It's treading water when we need to swim to shore.
+
+Worse, offsets create moral license to continue polluting. "We've offset our emissions" becomes a shield against demands for actual change. The corporate flight continues, the server farms keep expanding, the supply chains keep sprawling, but it's fine because someone planted trees in a distant country.
+
+This is accounting fiction masquerading as environmental action. The atmosphere doesn't care about ledger entries. It responds to actual molecules.
+
+## The Efficiency Paradox
+
+Green capitalism loves efficiency. More output per unit of input means less environmental impact per unit of production. Win-win.
+
+Except it doesn't work that way.
+
+Efficiency gains in a growth-oriented economy get plowed back into more production. A more efficient factory doesn't produce the same output with fewer resources; it produces more output with the same resources. Or it produces the same output at lower cost, reducing prices, increasing demand, and ultimately increasing total production.
+
+This pattern repeats across every sector. More fuel-efficient vehicles mean cheaper transportation, which means more driving. More energy-efficient buildings mean lower operating costs, which mean more buildings. More efficient manufacturing means lower prices, which means more consumption.
+
+The technical term is the rebound effect, and it consistently eats efficiency gains. Sometimes partially. Sometimes completely. Occasionally, efficiency improvements actually *increase* total resource use by making previously uneconomical activities viable.
+
+Green capitalism cannot solve this problem because growth itself is the problem. Efficiency improvements within a growth framework are running on a treadmill. You can run faster and faster, but you're not actually going anywhere.
+
+## What Markets Can't Do
+
+Some coordination problems exceed market capacity. Climate change is one of them.
+
+The issue is timescale and scope. Markets optimize over short timeframes: quarterly earnings, annual returns, maybe decade-long investment horizons. Climate change operates over centuries. Markets optimize within their boundaries: what's profitable for this company, this industry, this nation. Climate change is planetary.
+
+No market mechanism can properly price damage that occurs decades from now to people who don't yet exist. No market mechanism can coordinate the phase-out of entire industries that remain profitable in the short term. No market mechanism can enforce the kind of global cooperation that preventing climate catastrophe requires.
+
+Markets are tools. Useful for some purposes, useless for others. Using a market to solve climate change is like using a screwdriver to hammer nails. You might make some progress if you try hard enough, but you're using the wrong tool.
+
+## The Political Function of Green Capitalism
+
+Green capitalism isn't just ineffective; it's actively counterproductive. It serves a specific political function: absorbing environmental concern into channels that don't threaten existing power structures.
+
+Feel guilty about your carbon footprint? Buy offsets. Worried about plastic pollution? Switch to sustainable packaging. Concerned about climate change? Purchase an electric vehicle.
+
+Every systemic problem gets translated into an individual consumer choice. Every collective challenge becomes a personal lifestyle decision. The focus shifts from what companies do to what you buy. From policy to products. From power to purchasing.
+
+This is enormously convenient for the industries most responsible for environmental destruction. As long as the conversation stays focused on consumer behavior, corporate behavior escapes scrutiny. As long as people believe they can shop their way to sustainability, they don't demand the regulations and restructuring that would actually address the problem.
+
+Green capitalism is a pressure release valve. It captures genuine environmental concern and channels it into forms that reinforce rather than challenge the economic status quo.
+
+## Beyond Markets
+
+The alternative isn't state bureaucracy managing every aspect of production. That strawman can be dismissed immediately.
+
+The alternative is recognizing that markets are one tool among many, appropriate for some purposes and inappropriate for others. Coordinating distributed economic activity across millions of actors? Markets work reasonably well. Preserving stable climate conditions for future generations? Markets fail, completely and predictably.
+
+Different problems require different tools. Climate change requires democratic planning, binding regulations, public investment, and international coordination. It requires treating fossil fuels as a managed phase-out, not a market sector. It requires production for need rather than production for profit.
+
+None of this requires eliminating markets entirely. It requires subordinating them to ecological constraints and democratic decisions. Markets can exist within a framework of sustainability, but what they cannot do is create that framework themselves.
+
+Green capitalism asks us to believe otherwise. It asks us to believe that the same economic logic that created the climate crisis will somehow solve it. That profit-maximizing corporations will spontaneously prioritize planetary survival. That growth can continue forever on a finite planet.
+
+These are comfortable beliefs. They're also false. And the longer we pretend otherwise, the less time we have to build something that actually works.
+
+The market will not save us. We'll have to save ourselves.

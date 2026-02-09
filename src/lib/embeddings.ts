@@ -3,7 +3,7 @@
  *
  * Supports:
  * - Ollama (default, free, local) - uses nomic-embed-text model
- * - OpenAI (optional) - uses text-embedding-ada-002
+ * - OpenAI (optional) - uses text-embedding-3-small (768 dimensions)
  *
  * Provider selection:
  * - If OPENAI_API_KEY is set, uses OpenAI
@@ -73,8 +73,9 @@ export async function createEmbedding(text: string): Promise<number[]> {
     if (!client) throw new Error('OpenAI client not initialized');
 
     const response = await client.embeddings.create({
-      model: 'text-embedding-ada-002',
+      model: 'text-embedding-3-small',
       input: text,
+      dimensions: 768,
     });
     return response.data[0].embedding;
   }
@@ -95,7 +96,7 @@ export async function createEmbedding(text: string): Promise<number[]> {
  */
 export function getProviderEmbeddingDimensions(): number {
   if (USE_OPENAI) {
-    return 1536; // OpenAI ada-002
+    return 768; // OpenAI text-embedding-3-small with dimensions=768
   }
   return getEmbeddingDimensions(); // Ollama model dimensions
 }

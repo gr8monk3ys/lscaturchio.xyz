@@ -1,0 +1,71 @@
+# Attention Is Not a Resource
+
+## The metaphor is the problem
+
+Everyone talks about attention like it's oil. A finite resource. Something you spend, invest, or waste. Tech companies "compete for your attention." Self-help authors tell you to "budget your attention." Economists model it as a scarce commodity in an information-rich world.
+
+This framing feels so natural that questioning it sounds pedantic. But the metaphor is doing real work, and the work it's doing is bad.
+
+When you treat attention as a resource, you accept a set of assumptions that happen to be very convenient for the people extracting it. You accept that attention is a *thing* that can be transferred from you to someone else. You accept that this transfer is a kind of transaction. And you accept that the correct response is better personal management of your attention budget.
+
+Every one of those assumptions is wrong.
+
+## Attention is a relation, not a substance
+
+William James defined attention in 1890 as "the taking possession by the mind, in clear and vivid form, of one out of what seem several simultaneously possible objects or trains of thought." That's not a description of spending something. That's a description of *orienting toward something*. There's a difference.
+
+When you pay attention to a conversation with a friend, you don't have less attention afterward. You might be tired, sure. But fatigue isn't the same as depletion. Attention isn't a tank that drains. It's more like a posture. You can sustain it, redirect it, let it go slack. But you can't hand it to someone.
+
+Simone Weil called attention "the rarest and purest form of generosity." She wasn't being poetic. She was being precise. Attention is a way of being present to something. It's relational. It exists between you and what you're attending to.
+
+Matthew Crawford makes this argument well in *The World Beyond Your Head*. The resource model treats attention as something that happens inside your skull. Crawford argues that real attention is *ecological*; it depends on the environment, the body, the tools, the other people in the room. Skilled craftspeople don't "spend attention" on their work. They enter a mode of engagement where the boundary between self and task gets thin. That's not a transaction. That's a relationship.
+
+## Why the metaphor matters politically
+
+This isn't a philosophy seminar distinction. The resource metaphor has policy implications.
+
+If attention is a scarce resource that companies compete for, then the "attention economy" is just another market. Markets have winners and losers. If you lose, it's because you managed your resources poorly. Downloaded too many apps. Didn't set screen time limits. Failed to practice digital minimalism.
+
+The blame lands on you.
+
+But what's actually happening is that billions of dollars in engineering talent are being deployed to manipulate human psychology at a scale that no individual can resist through willpower alone. Aza Raskin, who invented infinite scroll, has said explicitly that these features are designed to bypass conscious choice. Tristan Harris's entire career at the Center for Humane Technology is built on documenting how attention capture works at the neurological level: variable reward schedules, social validation feedback loops, outrage amplification.
+
+Calling this "competition for a scarce resource" is like calling a mugging "competition for a scarce wallet." The framing erases the power asymmetry.
+
+When Tim Wu wrote *The Attention Merchants* in 2016, he traced the history from newspaper ads to social media and framed it as an escalating series of bargains, your attention in exchange for free content. But a bargain implies informed consent between rough equals. The actual dynamic is closer to what Shoshana Zuboff calls "behavioral surplus extraction" in *The Age of Surveillance Capitalism*. Your attention isn't being traded. It's being harvested. The resource metaphor obscures this because resources are traded in markets, and markets are supposed to be fair.
+
+## The personal management trap
+
+The other thing the resource metaphor does is generate an entire industry of "solutions" that don't solve anything.
+
+Digital detoxes. Focus apps. Pomodoro timers. Notification management. Screen time dashboards. These are all responses that make sense if the problem is resource allocation. Budget better. Spend wisely. Invest in deep work.
+
+Cal Newport is probably the most influential voice in this space, and his work is genuinely useful at the individual level. But *Digital Minimalism* is a personal strategy for a structural problem. It's the equivalent of telling people to drink bottled water instead of cleaning up the municipal supply. It works for those who can afford it. It does nothing about the contamination.
+
+The research is mixed on whether individual management strategies even work. A 2021 study by Lyngs et al. in *CHI* found that most "digital wellbeing" tools had no lasting effect on behavior. People downloaded them, used them for a week, then either disabled the restrictions or worked around them. The gravitational pull of design that has been A/B tested on billions of users is stronger than any timer you set for yourself.
+
+## What would change if we dropped the metaphor
+
+If attention isn't a resource, then the problem isn't scarcity management. It's environmental design.
+
+The question shifts from "how do I budget my attention better?" to "who is manipulating my perceptual environment, and why do we let them?"
+
+That's a regulation question, not a self-help question. It points toward things like banning dark patterns in UI design, requiring algorithmic transparency, restricting behavioral advertising, and treating attentional manipulation the way we treat environmental pollution, as an externality imposed on the public without consent.
+
+Some of this is already happening at the margins. The EU's Digital Services Act restricts some dark patterns. COPPA limits targeting of children. But the core business model (capture attention through psychological manipulation, sell the resulting behavioral data) remains untouched. Because the resource metaphor makes it sound like a market, and markets are supposed to be left alone.
+
+James Williams, a former Google strategist turned philosopher, wrote in *Stand Out of Our Light* that the attention economy is best understood not as an economic problem but as an *ethical* one. The question isn't who gets the scarce resource. The question is who gets to determine what you attend to, and therefore, in a meaningful sense, who gets to determine what your life is about.
+
+## The oldest insight
+
+There's nothing new about understanding attention as something other than a commodity. Contemplative traditions have been saying this for millennia.
+
+Buddhist *sati* (mindfulness) isn't attention management. It's a practice of non-reactive awareness, noticing what arises without grasping at it. The point isn't to direct attention more efficiently. The point is to change your relationship to the act of attending itself.
+
+Weil again: "Attention, taken to its highest degree, is the same thing as prayer." She meant that real attention is an act of self-giving, not self-spending. You don't lose something when you attend fully to another person. You gain a kind of contact that isn't possible any other way.
+
+The resource metaphor flattens all of this into inputs and outputs. It takes one of the most fundamental aspects of conscious experience and turns it into a line item on a budget.
+
+Your attention isn't a resource that companies are competing for. It's your orientation toward the world. The fact that someone else is directing it isn't a market inefficiency. It's a form of control.
+
+Stop managing it. Start asking who took it.

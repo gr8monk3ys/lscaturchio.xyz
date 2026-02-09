@@ -1,0 +1,67 @@
+# Expertise Is a Social Relation
+
+## The Recognition Problem
+
+Here's a puzzle that bothers epistemologists more than it should: someone can know something true, have good reasons for believing it, and still not count as an expert. Meanwhile, someone can be completely wrong about almost everything in their domain and still retain expert status for years.
+
+Expertise isn't just about what's in your head. It's about whether other people treat you as an expert.
+
+This sounds like relativism, but it's not. Facts are facts. The earth orbits the sun regardless of who believes it. But expertise, the social status of being someone whose knowledge claims carry weight, is thoroughly relational. You can't be an expert alone. You need others to recognize you as one.
+
+## How Recognition Works
+
+Think about what makes someone an expert in practice. Credentials help. Institutional affiliation helps more. Publications, citations, awards, committee memberships: all these markers accumulate into a kind of epistemic credit score. When you speak, people listen. Your claims get the benefit of the doubt. Your mistakes get explained away as anomalies.
+
+Strip away the markers and the same claims meet skepticism. The same evidence gets dismissed. The same arguments sound like the ravings of someone who's read too many books and understood too few.
+
+This isn't conspiracy. It's just how social knowledge works. We can't verify everything ourselves, so we rely on trust networks. Credentials serve as trust proxies. Institutions serve as trust amplifiers. The system mostly works; genuine expertise tends to accumulate genuine recognition over time. But the mapping is imperfect, and the imperfections reveal something important about how knowledge actually circulates.
+
+## The Gatekeeping Function
+
+Every field has gatekeepers. Journal editors decide what gets published. Department committees decide who gets hired. Conference organizers decide who gets platforms. Funding agencies decide whose research continues.
+
+These gatekeepers don't just filter quality (though they try). They filter according to existing paradigms, methodological commitments, institutional relationships, and (let's be honest) personal networks and status hierarchies. Revolutionary work often struggles precisely because it threatens the frameworks through which gatekeepers evaluate work.
+
+This isn't necessarily bad. Most revolutionary claims are wrong. The filter protects against charlatans and cranks who would otherwise overwhelm any field with noise. But the filter also has systematic biases. It favors the central over the peripheral. The conventional over the novel. The credentialed over the outsider.
+
+And crucially: it favors the already-recognized. Expertise compounds. Early recognition leads to resources, which leads to productivity, which leads to more recognition. Those who start without recognition face an uphill climb that has nothing to do with the quality of their knowledge.
+
+## The Credentialing Pipeline
+
+How do you become an expert? First, you need access to training, typically expensive, time-consuming, and geographically concentrated. Then you need to be selected by existing experts who control admissions, mentorship, and advancement. Then you need to produce work that satisfies the standards those experts set. Then you need to have that work recognized by venues those experts control.
+
+At every stage, existing experts shape who becomes a new expert. The pipeline reproduces itself. This isn't just nepotism (though nepotism happens). It's structural. The criteria for evaluating expertise are set by those who already have it, according to frameworks developed by those who came before.
+
+Some fields are more closed than others. Academic philosophy is notoriously insular; try publishing in a top journal without the right pedigree and methodology. Software engineering is unusually open; working code provides relatively objective feedback, and credentials matter less than demonstrated ability. But even in open fields, recognition hierarchies emerge. Who gets invited to speak. Whose opinions shape discourse. Whose work gets cited.
+
+## Knowledge Without Recognition
+
+What happens to knowledge that exists outside recognized channels? It doesn't disappear. It circulates in different networks. It gets dismissed by official experts and embraced by communities that don't trust those experts. Sometimes it's wrong. Sometimes it's right. Either way, it lacks the legitimacy that would allow it to enter mainstream discourse.
+
+This creates dangerous dynamics. When legitimate expertise becomes associated with particular institutions, classes, or political positions, people who distrust those institutions, classes, or positions start distrusting expertise itself. They don't become more epistemically humble. They just shift their trust to alternative hierarchies: influencers, ideologues, anyone who performs opposition to the establishment.
+
+The problem isn't that people trust the wrong experts. It's that expertise has become illegible; the markers that used to signal competence have become markers of tribal affiliation instead. Or at least, that's how large portions of the population perceive them.
+
+## The Politics of Legitimate Knowledge
+
+Recognition is political. Not in the narrow sense of electoral politics, but in the deeper sense that power shapes what counts as knowledge and who counts as a knower.
+
+Consider which research questions get funded. Which methods are considered rigorous. Which journals are considered prestigious. Which kinds of evidence are considered compelling. These aren't neutral epistemic judgments; they emerge from historical struggles, institutional path dependencies, and the interests of those who hold power within knowledge-producing systems.
+
+This doesn't mean knowledge is just power, or that truth is whatever powerful people say it is. That's the lazy misreading of every thinker who's pointed out that knowledge has political dimensions. The point is subtler: the social processes that produce and certify knowledge are embedded in broader social structures, and those structures have political characteristics. Ignoring this doesn't make it go away. It just makes you naive about how knowledge actually works.
+
+## What Follows
+
+If expertise is a social relation, then changing who gets recognized as experts is a political project, not just an epistemic one. Diversifying scientific institutions isn't merely about fairness (though it's that too). It's about expanding the range of questions asked, methods employed, and frameworks applied. Different people notice different things.
+
+Similarly, building legitimate alternative institutions isn't just about competing with established ones. It's about creating new pathways to recognition that don't require passing through gates controlled by people who might not recognize valuable knowledge when they see it.
+
+But here's the catch: alternative institutions can become just as closed, just as captured, just as blind to their own biases as the establishments they challenged. The problem isn't particular gatekeepers; it's the structure of gatekeeping itself.
+
+## Living With It
+
+There's no clean solution here. Some filtering is necessary; we can't evaluate every claim ourselves, and most claims don't deserve our attention anyway. But every filter introduces bias. Every gatekeeping system advantages some and disadvantages others. Every expert community has blindspots shaped by its composition and history.
+
+The best we can do is maintain epistemic humility about our own certainties, pay attention to challenges from outside our recognition networks, and remember that "expert consensus" describes a social fact, not a guarantee of truth. Experts are often right. They're especially right about well-established findings in mature fields. But the social processes that produce expertise are human processes, with all the limitations that implies.
+
+Expertise is real. Knowledge is real. But who counts as an expert, and whose knowledge counts as legitimate, these are matters of social negotiation as much as epistemic achievement. Understanding that doesn't undermine expertise. It just locates it in the social world where it actually lives.
