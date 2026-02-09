@@ -1,0 +1,93 @@
+# Degrowth Isn
+
+## The Strawman That Won't Die
+
+Bring up degrowth in any mainstream policy conversation and watch what happens. Within minutes, someone will suggest you want humanity to return to the caves. Or subsistence farming. Or, if they're feeling particularly dramatic, the bronze age.
+
+This is nonsense. But it's persistent nonsense, so apparently it needs addressing.
+
+Degrowth doesn't mean abandoning modern medicine. It doesn't mean living without electricity. It doesn't mean dismantling every factory and weaving your own clothes. The critique is so obviously wrong that its persistence reveals something important: people genuinely don't understand what degrowth actually proposes.
+
+So let's be clear.
+
+## What Degrowth Actually Targets
+
+Degrowth targets *throughput*, the total flow of materials and energy through the economy. Not quality of life. Not human flourishing. Not technological capability. Throughput.
+
+An economy that extracts ever-increasing quantities of raw materials, processes them into products, uses those products briefly, then discards them as waste: that economy cannot continue indefinitely on a finite planet. This is so obvious it feels stupid to type, but apparently the obviousness hasn't penetrated mainstream economic thinking.
+
+The goal isn't less well-being. It's the same (or better) well-being with less material throughput. These are not the same thing.
+
+Consider healthcare. A society could spend enormous resources on treating preventable diseases caused by pollution, poor diet, and stress, or it could prevent those diseases in the first place. The second option produces better health outcomes with lower resource use. Is that "primitivism"? Obviously not.
+
+Or consider transportation. A society could build sprawling suburbs requiring millions of individual vehicles, each burning fuel to move single occupants across vast distances, or it could build compact cities with efficient public transit. The second option provides superior mobility with a fraction of the resource use. Primitivism? Hardly.
+
+## The Conflation Problem
+
+Critics of degrowth consistently conflate two completely different things: production and consumption.
+
+Production of certain goods genuinely requires advanced technology and significant resource inputs. Medicine manufacturing. Semiconductor fabrication. Scientific instrumentation. Nobody serious is proposing we stop producing these things.
+
+But most economic growth isn't driven by production of necessities or genuinely useful technology. It's driven by consumption of disposable goods, planned obsolescence, artificial product differentiation, and the relentless manufacture of demand through advertising.
+
+Do we need seventeen varieties of essentially identical laundry detergent? Do we need smartphones designed to become obsolete in two years? Do we need fast fashion that falls apart after a few washes? Do we need single-use plastic packaging for products that don't require packaging at all?
+
+Degrowth says: maybe we don't.
+
+And here's the thing: reducing this kind of wasteful production doesn't diminish anyone's quality of life. It might actually improve it. Less time working to afford things you don't need. Less clutter. Less environmental degradation in your community. Less mental bandwidth consumed by advertising.
+
+## The GDP Fetish
+
+Modern economies measure success through GDP growth. This metric treats all economic activity as equally valuable. A dollar spent treating lung cancer counts the same as a dollar spent on education. Rebuilding after a disaster registers as positive economic activity. The more stuff produced and consumed, the better, regardless of what that stuff is or whether anyone actually benefits from it.
+
+This is absurd. But it's the framework within which policy operates.
+
+Degrowth challenges this framework directly. It asks: what are economies actually *for*? If the answer is human flourishing, then GDP is at best a crude proxy and at worst actively misleading.
+
+A degrowth economy would prioritize what actually matters (health, education, meaningful work, leisure, social connection, environmental quality) rather than treating aggregate production as the ultimate goal. Some sectors would shrink. Others would grow. The net material throughput would decline while the things people actually care about would improve.
+
+## Technology Isn't the Problem
+
+Here's where degrowth critics consistently miss the point: the argument isn't against technology. It's against a specific *use* of technology, namely, using efficiency gains to increase throughput rather than reduce it.
+
+Every time technology makes production more efficient, a choice emerges. That efficiency could reduce resource use while maintaining output. Or it could maintain resource use while increasing output. Modern economies consistently choose the latter. More efficient cars mean we drive more miles. More efficient manufacturing means we produce more goods. More efficient agriculture means we farm more land.
+
+This pattern (sometimes called the Jevons Paradox) ensures that technological progress doesn't automatically reduce environmental impact. Often it increases it.
+
+Degrowth proposes we make different choices. Use efficiency gains to actually reduce throughput. Cap resource use and let technology improve quality within those limits. It's not anti-technology. It's anti-growth-at-all-costs.
+
+## What Degrowth Societies Actually Look Like
+
+Concrete proposals exist. They're not vague fantasies.
+
+Work-time reduction. Distributing productivity gains as leisure rather than higher consumption. A four-day week isn't primitivism; it's progress.
+
+Public luxury over private affluence. Excellent parks, libraries, transit, and public spaces accessible to everyone, rather than private amenities available only to the wealthy. Better outcomes for more people with less total resource use.
+
+Emphasis on durability. Products designed to last decades rather than years. Repair infrastructure that makes fixing things cheaper than replacing them. This isn't going backward; it's building things properly.
+
+Localized production where appropriate. Not everything needs global supply chains. Food, construction materials, many basic goods can be produced locally with lower transport costs and more community resilience. (Some things genuinely require global coordination; nobody's suggesting every village manufacture its own semiconductors.)
+
+Democratic planning of investment. Directing resources toward genuine needs rather than manufactured wants. This means less advertising, less financialization, more deliberate collective choices about what kind of economy to build.
+
+## The Growth Requirement Myth
+
+One persistent objection: modern economies *require* growth. Without growth, everything collapses: unemployment rises, social programs become unfundable, debt spirals out of control.
+
+There's truth here, but it's a design feature, not a law of nature.
+
+Modern economies are *structured* to require growth. Debt-based money creation, compound interest, shareholder expectations: these institutional arrangements create growth dependency. But they're choices. Different institutional arrangements could produce stability without growth.
+
+Saying "we can't degrow because our current system requires growth" is circular. It's like saying "we can't stop burning coal because our power plants burn coal." True, but not an argument against transition.
+
+## The Actually Difficult Questions
+
+Degrowth does face genuine challenges. Distribution is the big one.
+
+In a growing economy, distributional conflicts can be partially papered over. Everyone can get more (even if some get much more than others) as long as the total pie keeps expanding. In a steady-state or contracting economy, distribution becomes zero-sum. Someone getting more means someone else getting less.
+
+This requires actually confronting inequality in ways that growth-dependent societies have avoided. It means genuine redistribution, not just promising that growth will eventually lift all boats. This is politically difficult. But "politically difficult" isn't the same as "impossible" or "primitivist."
+
+The path forward isn't abandoning modernity. It's reorganizing modernity around different priorities: well-being over throughput, sufficiency over excess, quality over quantity. We can have hospitals and universities and internet access and scientific research. What we can't have, what no amount of green technology will deliver, is infinite material growth on a finite planet.
+
+That's not primitivism. That's mathematics.

@@ -1,0 +1,191 @@
+# When Machines Learned to See: A Century of Art and Technology in Conflict
+
+## The "Painting Is Dead" Myth and What Actually Happened
+
+On January 9, 1839, the astronomer François Arago presented Louis Daguerre's invention to the Académie des Sciences in Paris. By August, the French government had declared photography a gift "Free to the World." The painter Paul Delaroche allegedly intoned, "From today, painting is dead!"
+
+**Except he almost certainly never said it.** Historian Stephen Bann traced the quote to an 1873 survey34 years after Delaroche supposedly spoke. The phrase, Bann notes, "has served more than any other to fix the relationship between painting and photography in a condition of mythic stasis." The irony: Delaroche continued painting until his death in 1856 and actually championed photography, calling it "an immense service to the arts."
+
+What photography did kill was a specific economic model. By the early 1850s, Parisian daguerreotype studios produced over **100,000 portraits annually**, devastating portrait painters who'd served the middle class. But this liberation from pure representation enabled something unexpected: the Impressionists.
+
+**Edgar Degas had what art historian Aaron Scharf called "a photographic eye"**he "loved and appreciated photography at a time when artists despised it or did not dare admit they made use of it." By autumn 1895, an artist friend wrote that "Degas abandons himself entirely to his new passion for photography." But here's the paradox: cameras in Degas's early career couldn't capture true snapshotsexposure times required several minutes. His paintings of frozen motion, arbitrary cropping, and visual disjuncture weren't copying photographs. They were showing what cameras couldn't capture. He had "set about inventing an idiom that showed us the world in the way the camera could not."
+
+## The Women Who Taught Machines to Dream
+
+Before AI could generate art, humans had to teach it to see. This story begins with a Hungarian émigré making marks on paper by hand while imagining a machine that didn't yet exist.
+
+**Vera Molnár** arrived in Paris in 1947, the year she met Brancusi, Kandinsky, and Vasarely at Café Le Select in Montparnasse. By 1960, she'd developed what she called her **"machine imaginaire"**an imaginary computer she simulated by executing simple algorithmic programs manually, feeding her drawings through systematic variations. "You could say I am a computer gone wrong, that turned into a woman," she later joked.
+
+When she finally gained access to an actual computer in 1968 at a Sorbonne research lab, she taught herself FORTRAN. She was 44 years old. She worked continuously until her death in December 2023 at age 99, and in 1989 articulated computer art's fundamental paradox: **"It may seem paradoxical that this so-called inhuman machine helps to realize what is most subjective, what is most profound in man."**
+
+Meanwhile in 1966, **Harold Cohen** represented Britain at the Venice Biennalethen discovered programming two years later as a visiting professor at UC San Diego. By 1973, he'd named his creation **AARON** (alluding to the biblical figure who spoke for Moses). The program ran continuously, evolving, for over four decades"one of the longest-running, continually maintained AI systems in history."
+
+Cohen made two bargains with himself: "I would never accept the position of having to apologize because this was done by a computer," and "the work the program did would have to stand on equal terms with art made by hand." In 1982, he wrote what reads today as prophecy: "We are in the process of coming to terms with the fact that 'intelligence' no longer means, uniquely, 'human intelligence.'"
+
+The establishment finally caught up. In summer 1968, London's Institute of Contemporary Arts hosted **"Cybernetic Serendipity"**the first major computer art exhibition, drawing 44,000-60,000 visitors. The Evening Standard captured the moment: "Where in London could you take a hippy, a computer programmer, a ten-year-old schoolboy and guarantee that each would be perfectly happy for an hour without you having to lift a finger to entertain them?" From that exhibition to the Whitney Museum's digital art committee took nearly 50 years.
+
+## August 2022: The Moment Everything Accelerated
+
+The dates arrive in rapid succession: **DALL-E 2** (April 2022), **Midjourney** (July 2022), **Stable Diffusion** (August 2022). Midjourney reached profitability within two months with zero marketing spend. By November 2023, it had **16.4 million users**.
+
+Then, on August 29, 2022, **Jason Allen** won first place in the "Digital Arts/Digitally-Manipulated Photography" category at the Colorado State Fair with "Théâtre D'opéra Spatial"a work created using Midjourney. He'd used at least **624 text prompts** and spent approximately 80 hours refining the image through Photoshop and Gigapixel AI.
+
+The backlash was immediate. Artist OmniMorpho tweeted: "We're watching the death of artistry unfold right before our eyes." Allen remained defiant: "I'm not going to apologize for it." He later declared, provocatively, **"Art is dead, dude. It's over. A.I. won. Humans lost."**
+
+But the most chilling realization came from **Greg Rutkowski**, a Polish digital artist who'd spent years building his reputation creating fantasy illustrations for Dungeons & Dragons and Magic: The Gathering. His name was being used as a prompt in Stable Diffusion **93,000+ times**more than Picasso, Michelangelo, or Da Vinci combined. "I became like a meme," he said. "All that we've been working on for so many years has been taken from us so easily with AI."
+
+## The Artists Strike Back: A Legal Reckoning
+
+On **January 13, 2023**, three artistscartoonist **Sarah Andersen** ("Sarah's Scribbles"), watercolor artist **Kelly McKernan**, and concept artist **Karla Ortiz**filed suit against Stability AI, Midjourney, and DeviantArt. Their attorney, Matthew Butterick, noted that his own visual work appeared in AI training datasets.
+
+The core allegation: the LAION dataset containing **5.85 billion images** scraped from the internet without consent was used to train these systems. Andersen had already experienced her distinctive style weaponized against herfirst by far-right groups who manipulated her comics, now by AI that could generate her style on command. "I see a monster forming," she wrote in the New York Times.
+
+The legal battle continues toward a **September 8, 2026 trial date**. In August 2024, Judge William Orrick ruled the case could proceed to discovery, finding the "model theory"that AI contains compressed copies of training dataplausible.
+
+**Getty Images** filed separately in January 2023, armed with damning evidence: AI-generated images sometimes reproduced Getty's distinctive watermarks, mangled and distortedproof that training included their copyrighted photographs. The UK judgment in November 2025 provided mixed results: the court ruled that model weights are NOT "infringing copies," but Getty won limited trademark infringement claims.
+
+The December 2022 **ArtStation protests** showed artists' collective fury. On December 14, over 2,000 artists flooded the platform's trending page with "No AI Art" images, drowning out everything else. The cruel irony was inescapable: **"Trending on ArtStation"** had become one of Stable Diffusion's most popular prompts because the platform's images were scraped for training data.
+
+## The $69 Million JPG and the Hangover That Followed
+
+On **March 11, 2021**, Christie's sold a JPG for **$69,346,250**. The work: "Everydays: The First 5000 Days" by **Beeple** (Mike Winkelmann), a graphic designer who had started posting one digital artwork daily on May 1, 2007. Before NFTs, he'd never sold a print for more than $100.
+
+The buyer, Singapore-based cryptocurrency investor **Vignesh Sundaresan** (pseudonym MetaKovan), paid 42,329 ETH. Beeple's Twitter reaction: **"holy fuck."** But critics noted that both buyer and seller had vested interests in the NFT boomthe sale drove up B20 tokens, a speculative asset related to other Beeple works, which subsequently collapsed.
+
+The peak came fast. By September 2021, NFT art sales hit approximately **$881 million** in 30-day volume. Celebrities piled in: **Stephen Curry** bought a Bored Ape for $178,000. **Justin Bieber** paid $1.31 million for his (later worth ~$59,090). **Pak's "The Merge"** sold for **$91.8 million** in December 2021 through a mass-participation mechanism28,983 collectors purchasing 312,686 units.
+
+Then came the crash. Trading volumes collapsed **97%** from January 2022's $17 billion to September's $466 million. The Terra/LUNA collapse in May 2022 and FTX's implosion in November accelerated the freefall. Average NFT prices fell **92%** from $3,894 (May 2022) to $293 (February 2023). Art NFT trading volume crashed **93%** from $2.9 billion (2021) to just **$197 million** (2024).
+
+The human stories cut both ways. **Brittany Pierre**, a 36-year-old photographer living paycheck-to-paycheck in under-$15/hour jobs, made **$109,000** in nine months during 2021. "Last year has been the first year that I could live completely abundantly," she said. Transgender teen artist **Victor Langlois (FEWOCiOUS)** sold five lots at Christie's for **$2.16 million**, thanking buyers for "believing in me and my story."
+
+But there were casualties. **Douglas Newton**, an 85-year-old artist, was approached via LinkedIn with an "opportunity" to convert his artwork to NFTs. Over months, he paid escalating fees for "gas," "taxes," and "verification"and never received payment. "It was like a nightmare," he told investigators. At least two other artists were victimized by the same criminals.
+
+By Q1 2025, **95% of NFT collections** had a market cap of zero. Active traders numbered just **19,575**down 96% from the peak.
+
+## David Hockney at 72, Drawing on Glass
+
+When the iPad launched in 2010, **David Hockney** was 72 years old. His sister Margaret had recommended the Brushes app by Steve Sprang, and Hockney, who had declared in 1980 "I love new mediums," dove in.
+
+He drew initially with his fingers, creating work **en plein air**the lightweight device replacing heavy sketchbooks and painting supplies. The backlit screen enabled something impossible with traditional media: "Once, when we were just sitting outside the house, we put all the lights off to see the moonlight more clearly. The moon could then be seen to cast shadows of the trees on the grass, so with my backlit iPad I could draw it. This would have been virtually impossible without it."
+
+His Yorkshire landscapes series, "The Arrival of Spring in Woldgate, East Yorkshire in 2011," comprised 51 iPad drawingseach titled by date like a visual diary. Then came crisis: in 2016, Brushes was updated. "They altered it, to improve it they said. Well, I thought they had ruined it." By 2018, his assistant Jonathan Wilkinson and a mathematician in Leeds had created a custom app with brushes Hockney designed himself.
+
+When COVID-19 locked down the world in 2020, Hockney was in Normandy creating **116 prints** of spring arriving. He sent daily works to friends via email. His message to a worried world: **"They can't cancel spring."**
+
+## Inside the Immersive Empire of teamLab
+
+In 1998, five engineering students at the University of Tokyo began sketching ideas for something that didn't yet have a name. **Toshiyuki Inoko**, who would graduate with a degree in Mathematical Engineering and Information Physics, founded **teamLab** officially in 2001"an experimental place of collective creation."
+
+Early survival was brutal. "We were still ignored by the art world," Inoko recalls. The team sold technology solutions during the day and created art late into the night. The breakthrough came in 2011 when **Takashi Murakami** invited them to the Singapore Biennale.
+
+Their philosophy draws from pre-modern Japanese scroll paintings that "contained several scenes derived from multiple perspectives combined into a single painting"what they call **"Ultrasubjective Space."** "Throwing one's whole body into the art," Inoko explains, "causes the border established between oneself and an artwork to become ambiguous."
+
+When **teamLab Borderless** opened in Tokyo's Odaiba district on June 21, 2018, using over **400 projectors**, the results exceeded imagination. The "museum without a map"where artworks drift freely between roomsset a **Guinness World Record** for the most visited museum dedicated to a single group or artist: **2,198,284 visitors** in 2019, surpassing the Van Gogh Museum. **50% of overseas visitors** said their main purpose for visiting Tokyo was teamLab.
+
+Today the collective employs around **1,000 members**artists, programmers, engineers, CG animators, mathematicians, architectsall calling themselves "ultra-technologists." Their vision: "I hope that after people come and see the artworks, it expands how they perceive the world. Everything in this world exists in a continuity."
+
+## The Man Who Makes Buildings Dream
+
+**Refik Anadol** was eight years old in Istanbul when he watched *Blade Runner*. "Since that moment," he says, "one of my inspirations has been that question: 'What can a machine do with someone else's memories?'" By eight, he was teaching himself basic programming on a Commodore 64.
+
+After earning an MFA at UCLA (mentored by digital art pioneers Casey Reas and Jennifer Steinkamp), Anadol founded his studio in 2014 and became the first artist-in-residence at Google's Artists and Machine Intelligence Program in 2016. That's when he encountered the DeepDream algorithmand the "Machine Hallucinations" project was born.
+
+For the **Los Angeles Philharmonic's centennial** in September 2018, Anadol transformed Frank Gehry's Walt Disney Concert Hall into a canvas. Using 42 projectors at 50K resolution, he processed **587,763 images, 1,880 videos, and 17,773 audio files** from the orchestra's archives44.5 terabytes of memory. The three-part performance climaxed in "Dream," where he merged visual and audio data to create hallucinations, described by the New York Times as "a sort of combinatorial Fantasia."
+
+In November 2022, MoMA installed his **"Unsupervised"** in their main lobbya 24-foot data sculpture processing 138,151 records from the museum's collection through custom machine learning creating maps in 1024 dimensions. Visitors averaged **38 minutes** watching the work (versus under 20 seconds for typical museum artworks). More than **3 million people** saw it before it closed in October 2023"one of the museum's most popular exhibitions of all time." MoMA acquired it as their **first generative artwork in the permanent collection**.
+
+Critics split sharply. Jerry Saltz of New York Magazine compared it to **"a lava lamp."** Ben Davis of Artnet called it "An Extremely Intelligent Lava Lamp"high-tech formalism treating art history as "just a bunch of random visual tics to be permuted." Anadol's response is to keep building. His **DATALAND**the world's first AI art museumopens in downtown Los Angeles in 2025.
+
+## Trevor Paglen: Photographing What Shouldn't Exist
+
+**Trevor Paglen** holds a PhD in Geography from UC Berkeley. This matters. His art practice depends on understanding physical space as political terrain.
+
+His **"Limit Telephotography"** series documents classified military sites using telescopes with focal lengths between **1300mm and 7000mm**, photographing from distances up to **40-65 miles**. The images are deliberately blurred by dense atmosphere, dust, and debris. The blur is the pointit makes visible the apparatus of invisibility. "Photographing a secret military base means insisting on the right to do it, and enacting that right," he explains.
+
+With WikiLeaks contributor **Jacob Appelbaum**, Paglen created **"Autonomy Cube"** (2014)a Plexiglas sculpture containing circuit boards that create an open Wi-Fi hotspot routing all traffic through the Tor anonymizing network. The sculpture itself becomes a Tor relay used by people worldwide. "We've come to learn that the network is hostile," Paglen says. "The Internet was supposed to be the greatest tool of global communications... And it is. But it has also become the most effective instrument of mass surveillance and potentially one of the greatest instruments of totalitarianism in the history of the world."
+
+His most viral project came in September 2019. **"ImageNet Roulette"**created with AI researcher **Kate Crawford**let users upload selfies to be classified by AI trained on the ImageNet database. The results exposed the racist, misogynistic classifications embedded in the training data: Black users received labels like "wrongdoer" and racial epithets; Asian users got slurs like "gook, slant-eye."
+
+The impact was immediate. **Within five days**, ImageNet announced removal of **600,040 images** and 438 "unsafe" categories. Paglen and Crawford shut the project down on September 27: "ImageNet Roulette has made its pointit has inspired a long-overdue public conversation about the politics of training data."
+
+## The Aura Problem: Can Digital Art Be Authentic?
+
+In 1935, Walter Benjamin wrote that "even the most perfect reproduction of a work of art is lacking in one element: Its presence in time and space, its unique existence at the place where it happens to be." He called this the **"aura"**the authenticity derived from uniqueness, tradition, and distance.
+
+Digital art obliterates these categories. Every copy is identical. There is no "original" in the traditional sense. Works exist across distributed networks simultaneously. Some incorporate real-time data, making each viewing unique in ways Benjamin never anticipated.
+
+Recent scholarship proposes **"semi-aura"** for AI-generated arta partial authenticity shaped by the synergy of human intent and algorithmic generative power. This concept, emerging in a 2025 AI & Society journal paper, positions AI art "somewhere between the fully unique aura of a historically situated original and the purely mechanical or digital copy."
+
+But critics remain unconvinced. Artist **Molly Crabapple**: "AI is a way for witless dullards to suck every bit of anima, pathos, and humanity out of art." Designer **Matt Corrall**: "Through the sweat and the hours they put in, the artist communicates those feelings to us... Take away that substance, and what do you have? A lifeless matrix of pixels."
+
+The preservationists face their own crisis. Vint Cerf, co-inventor of internet protocols, articulates the problem: "What faces all of us with digital preservation is the amount of infrastructure that needs to be available in order to retain the experience... In the older artistic productions, our eyes and ears and sense of touch are sufficient for us to experience those preserved works of art." When MoMA examined early 1990s work by Teiji Furuhashi in 2011, they discovered "much of the playback and display equipment needed for experiencing this artwork had become obsolete."
+
+**Rhizome**, affiliated with the New Museum, has pioneered solutionsemulation-as-a-service, web archiving tools, semantic linked data. But format obsolescence threatens an entire generation of cultural heritage.
+
+## The Democratization Paradox: Everyone Can Create, No One Can Rest
+
+The numbers are seductive. **51% of high-net-worth collectors** purchased digital artwork in 2024-2025. Average share of digital art in collections jumped from 3% to **13%** between 2024-2025. Saatchi Art hosts **1.4 million original artworks** from 94,000+ artists. Procreate has been the best-selling iPad app since 2018. **32% of artists worldwide** now use digital tools.
+
+Success stories abound. **Dina Brodsky** credits Instagram with transforming her career from uncertainty to "a financially secure existence where a majority of my time would be spent in the studio, painting." **FEWOCiOUS** went from transgender teen artist to Christie's auction star. Photographer **Brittany Pierre** escaped poverty-wage jobs through NFT sales.
+
+But the dark side is brutal. Professional illustrator **Steven Zapata** warned that DeviantArt's AI launch was "completely tone-deaf." Musician Jim Kroft describes "a relentless loop of performance, visibility, and noise"noting that "every hour you give to the digital world, you're borrowing it from somewhere else in your life. And most artists don't have hours to spare."
+
+Artist @ArtbyKellyanne: "I dedicated hours of my day to this social media quest, like a drug dealer, but instead of drugs, I was pushing hashtags. My artistic journey had morphed from a creative adventure into a numbers game. And so, burnout set in."
+
+Artist **Dan Howard** confesses: "At some point, I stopped creating to grow as an artist and started chasing the algorithm. Comparison kills art. It doesn't happen overnight, but it's like rustit spreads if you don't catch it."
+
+Instagram content remains visible for an average of **21 hours** before disappearing into algorithmic oblivion. The treadmill never stops.
+
+## Where We Stand in Early 2026
+
+The AI art legal situation remains unresolved but is crystallizing. In February 2025, **Thomson Reuters v. Ross Intelligence** became the first major ruling rejecting fair use for AI training on copyrighted content. In June 2025, **Bartz v. Anthropic** found training itself was "exceedingly transformative" fair usebut downloading pirated copies for training was not. Anthropic faces billions in potential damages for piracy, even as the principle of training on legally-obtained content survives.
+
+The Copyright Office's position is clear: "If content is entirely generated by AI, it cannot be protected by copyright" due to the human authorship requirement. But in February 2025, they granted copyright to "A Single Piece of American Cheese" by Kent Keirsey after he documented **35 iterative human edits**suggesting a path forward for AI-assisted works.
+
+The tools continue advancing. **Midjourney v6.1** delivers "best-in-class output quality." **Runway Gen-4** achieves identity and style consistency for persistent characters. **Pika 2.0** offers physics-defying effects. Video generation has become the frontier.
+
+**Adobe Firefly** markets itself as "ethical AI" trained on licensed imagesbut Bloomberg revealed in April 2024 that approximately 5% of training data consisted of AI-generated images from competitors including Midjourney. Adobe Stock now contains **57 million AI-generated images**14% of its total library.
+
+Christie's held their first AI-only auction in March 2025: **"Augmented Intelligence"** sold $728,784 of work, with Refik Anadol's "Machine Hallucinations - ISS Dreams - A" achieving $277,200. **48% of bidders** were Millennials or Gen Z. But 6,500+ artists signed an open letter protesting the sale.
+
+In October 2024, thousands of creatorsincluding Radiohead members, Julianne Moore, Kevin Bacon, and Kazuo Ishigurosigned a statement declaring: "The unlicensed use of creative works for training generative AI is a major, unjust threat to the livelihoods of the people behind those works, and must not be permitted."
+
+## The Pattern HoldsBut Faster
+
+History suggests a resolution. Photography didn't kill painting; it freed painters from representation and enabled Impressionism. Early computer art pioneers insisted their tools served human creativity. Each technological disruption has ultimately expanded art's possibilities.
+
+But the timeline has compressed. From Daguerre's announcement to Impressionism took roughly 30 years. From Stable Diffusion's public release to multi-million-dollar AI art auctions took less than three. The artists suing AI companies won't see their trial until 2026by which point the technology will have transformed again.
+
+Vera Molnár, working until 99, captured what may endure: "Listen, I can't say it any other way: what makes me happy is getting up in the morning, making myself some tea, picking up a pencil... and I'm completely bowled over by this joy that a pencil leaves on paper when you move it around. And that's not even art yet, it's nothing, but it's leaving a mark, making something that hadn't existed until then."
+
+The tools change. The joyand the anxietyof marking something into existence remains human.
+
+---
+
+## Key Figures Reference
+
+| Figure | Contribution |
+|--------|--------------|
+| **Vera Molnár** (1924-2023) | Pioneer of computer art; "machine imaginaire" concept; worked until age 99 |
+| **Harold Cohen** | AARON system creator; 40+ years of continuous AI art development |
+| **David Hockney** | Embraced iPad at 72; created pandemic spring series at 83 |
+| **teamLab** | World record museum attendance; 1,000-member collective |
+| **Refik Anadol** | MoMA's first generative artwork; DATALAND museum founder |
+| **Trevor Paglen** | ImageNet Roulette; surveillance documentation |
+| **Greg Rutkowski** | Most-prompted artist in Stable Diffusion (93,000+ times) |
+
+---
+
+## Timeline
+
+| Year | Event |
+|------|-------|
+| 1839 | Daguerre presents photography to French Academy |
+| 1968 | "Cybernetic Serendipity" exhibition; Molnár accesses first computer |
+| 1973 | Harold Cohen begins AARON |
+| 2010 | Hockney starts iPad drawings |
+| 2018 | teamLab Borderless opens; Anadol's Disney Hall projection |
+| 2021 | Beeple's $69M NFT sale |
+| 2022 | Stable Diffusion/Midjourney launch; Colorado State Fair controversy |
+| 2023 | Artist lawsuits filed; MoMA acquires "Unsupervised" |
+| 2025 | First AI-only Christie's auction; legal precedents set |

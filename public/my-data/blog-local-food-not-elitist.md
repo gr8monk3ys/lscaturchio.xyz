@@ -1,0 +1,67 @@
+# Local Food Isn
+
+## The Wrong Question
+
+Go to a farmers market in any American city and you'll find $6 tomatoes. Drive to Walmart and you'll find tomatoes for $1.50. The conclusion seems obvious: local food is for people with money to burn. Farmers markets are a lifestyle accessory for the upper middle class. Real food policy is about making groceries cheaper for everyone.
+
+This framing gets the problem exactly backwards.
+
+The question isn't "why do farmers market tomatoes cost $6?" The question is "why do Walmart tomatoes cost $1.50?" Because that $1.50 tomato is a lie. It's artificially cheap, and someone is paying the difference, just not you, not at the register, not right now.
+
+## The Subsidy Machine
+
+The United States federal government spends over $20 billion annually on agricultural subsidies. The vast majority goes to commodity crops: corn, soybeans, wheat, cotton, rice. Between 1995 and 2021, the USDA distributed roughly $478 billion in farm subsidies. The top 10% of recipients captured 78% of the payments.
+
+These subsidies don't go to the farmer at your local market growing heirloom tomatoes and kale. They go to industrial operations growing corn and soy, the raw materials for high-fructose corn syrup, animal feed, processed food ingredients, and ethanol. The system is designed to produce maximum calories at minimum retail cost, regardless of nutritional value, environmental impact, or what it does to actual farming communities.
+
+This is why a bag of Doritos is cheaper per calorie than a bag of carrots. The corn in the Doritos was subsidized. The carrots weren't. The price at the register reflects a policy choice, not a natural economic reality.
+
+When someone calls local food "elitist," they're comparing a subsidized product to an unsubsidized one and concluding the unsubsidized one is overpriced. That's like comparing a toll road to a "free" highway and concluding that toll roads are a rip-off, ignoring that the "free" highway was paid for with taxes. The cost didn't disappear. It moved.
+
+## The Hidden Bill
+
+So who pays for cheap food? Pretty much everyone, through channels that never show up on a receipt.
+
+*Environmental costs.* Industrial agriculture is responsible for roughly 10% of U.S. greenhouse gas emissions, according to the EPA. Nitrogen fertilizer runoff from Midwest corn and soy farms flows down the Mississippi River and creates a dead zone in the Gulf of Mexico, an area roughly the size of New Jersey where oxygen levels are too low to support marine life. The fishing industry loses revenue. Coastal communities lose livelihoods. The cleanup, to the extent it happens, is publicly funded.
+
+Pesticide contamination of groundwater affects rural communities across the agricultural belt. Atrazine, the second most commonly used herbicide in the U.S., is a known endocrine disruptor found in the drinking water of millions of Americans. The health costs of this exposure don't show up in the price of corn.
+
+*Health costs.* The American diet, shaped by agricultural subsidies toward corn, soy, and animal products, is a primary driver of obesity, type 2 diabetes, and cardiovascular disease. The CDC estimates that 42% of American adults are obese. The annual medical cost of obesity in the U.S. is roughly $173 billion. Diet-related chronic diseases cost the healthcare system over $1 trillion annually by some estimates.
+
+Cheap food makes us sick, and then we pay again to treat the sickness. The farmer at the market charging $6 for tomatoes grown without synthetic pesticides isn't overcharging you. The industrial system is undercharging you at the register and sending the rest of the bill to your insurance company, your tax returns, and the next generation's climate.
+
+*Labor costs.* Agricultural workers in the U.S. are among the lowest-paid workers in the country, with a median hourly wage of around $15. Many lack health insurance, workers' compensation, or basic labor protections. The Fair Labor Standards Act of 1938 explicitly exempted farmworkers from overtime and minimum wage provisions, an exclusion originally designed to maintain the cheap labor structure of the Jim Crow South. Some of those exemptions persist.
+
+Cheap food is cheap in part because the people who pick it are paid poverty wages and denied protections that workers in other industries take for granted.
+
+## Food Deserts Are a Policy Choice
+
+The "elitist" critique of local food often points to food deserts, low-income neighborhoods where the nearest grocery store is miles away and the nearest farmers market might as well be on Mars. This is real. Approximately 23.5 million Americans live in food deserts, according to the USDA. Access to fresh food correlates tightly with income and race.
+
+But food deserts aren't an argument against local food. They're an argument against the food system that created them. Grocery chains closed stores in low-income neighborhoods because the margins were thin and the real estate was worth more as something else. Dollar stores and fast food moved in because their business models work in exactly the conditions that grocery stores can't survive: low purchasing power, high turnover, shelf-stable products.
+
+The solution isn't to tell low-income communities that they should be grateful for Dollar General because farmers markets are for rich people. The solution is to build food infrastructure in those communities.
+
+And this is already happening. Over 7,500 farmers markets in the U.S. now accept SNAP benefits (food stamps). Many offer "Double Up Food Bucks" programs that match SNAP dollars: spend $10 in SNAP at a farmers market, get $20 worth of produce. These programs are consistently oversubscribed. When you remove the price barrier, low-income shoppers choose fresh food at the same rates as everyone else. The preference for cheap processed food isn't a cultural choice. It's a budget constraint.
+
+Community land trusts are putting urban agriculture on a permanent, non-speculative footing. Detroit, with its vast tracts of vacant land, now has over 1,500 urban farms and gardens. Some are commercial operations selling to restaurants and grocery stores. Some are community gardens feeding neighborhoods. None of them look like the farmers market stereotypes that populate Sunday supplement think pieces.
+
+## True Cost Accounting
+
+Raj Patel's *Stuffed and Starved* makes the case that the global food system simultaneously produces too much and too little: too many calories and too little nutrition, too much profit for corporations and too little income for farmers, too much environmental damage and too little accountability.
+
+The concept of *true cost accounting* attempts to fix this by pricing in the externalities. What does a pound of ground beef actually cost when you include the water usage (1,800 gallons per pound), the methane emissions, the antibiotic resistance risk from industrial feedlots, the topsoil depletion, the manure lagoon contamination, and the healthcare costs of diet-related disease?
+
+The Rockefeller Foundation released a report in 2021 estimating that the true cost of the U.S. food system is at least $3.2 trillion annually, roughly triple the $1.1 trillion Americans spend at the grocery store and in restaurants. The gap between what we pay and what food actually costs is filled by environmental damage, healthcare spending, and the underpayment of workers.
+
+Local food doesn't have a price problem. Industrial food has a cost-hiding problem.
+
+## What This Is Actually About
+
+The "elitist" framing of local food does something politically convenient: it turns a systemic critique into a lifestyle debate. Instead of asking why the federal government spends billions subsidizing corn syrup and soybean oil while vegetables get almost nothing, we argue about whether farmers markets are pretentious.
+
+This is how every structural problem gets individualized in American discourse. Don't ask why housing is unaffordable; ask why millennials buy avocado toast. Don't ask why healthcare bankrupts people; ask why they didn't shop around. Don't ask why fresh food is inaccessible; ask why poor people make bad choices.
+
+The farmer charging $6 for tomatoes is charging you what food actually costs when the people who grow it are paid fairly, the soil isn't depleted, the water isn't poisoned, and the full price isn't hidden in your tax bill and your medical bills and your children's climate.
+
+That's not elitism. It's honesty. And the fact that honesty looks expensive tells you everything about the dishonesty baked into the system we've built.

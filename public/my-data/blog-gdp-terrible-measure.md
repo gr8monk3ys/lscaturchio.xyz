@@ -1,0 +1,73 @@
+# GDP Is a Terrible Measure of Progress
+
+## What Gets Counted
+
+GDP goes up when you get cancer. The chemotherapy, the hospital stays, the imaging, the drugs, the follow-up appointments. All economic activity. If you die, the funeral counts too.
+
+GDP goes up when there's a car crash. The ambulance ride, the emergency room, the surgeries, the physical therapy, the car repairs, the legal fees, the increased insurance premiums. A five-car pileup is, by this metric, an economic stimulus event.
+
+GDP goes up when a forest is clearcut. The timber sale, the trucking, the mill processing, the construction materials. What it doesn't count: the carbon sequestration that stopped, the watershed protection that vanished, the biodiversity that died, the recreation value that evaporated. Those weren't transactions, so they don't exist.
+
+This is the number we use to decide whether things are going well.
+
+## The Man Who Warned Us
+
+Simon Kuznets developed the national income accounting framework that became GDP in the 1930s. He did it for the U.S. Congress, which needed to understand the scope of the Great Depression. It was a measurement tool for a specific crisis.
+
+Kuznets explicitly warned against using his metric as a measure of welfare. In 1934, he told Congress: "The welfare of a nation can scarcely be inferred from a measurement of national income." He repeated this warning for decades. He argued that GDP couldn't distinguish between productive and destructive economic activity, between sustainable and unsustainable growth, between equitable and inequitable distribution of gains.
+
+Nobody listened. Or rather, policymakers understood perfectly and used it anyway. An economy "growing" at 3% is a better headline than an economy where "wellbeing metrics present a mixed picture." Simplicity won. It always does in politics.
+
+Kuznets won the Nobel Prize in Economics in 1971. His warning about GDP has been quoted in roughly ten thousand articles and books since then. The number is still on the front page of every business section, every quarterly report, every campaign ad. Knowing something is broken and continuing to use it isn't ignorance. It's a choice.
+
+## The Inventory of Omissions
+
+Consider what GDP misses entirely.
+
+*Unpaid care work.* Hire a nanny and it's GDP. Raise your own children and it's nothing. Cook a meal at home: invisible. Buy a meal at McDonald's: economic activity. The value of unpaid domestic labor in the United States has been estimated at roughly $1.5 trillion annually by the Bureau of Economic Analysis's satellite accounts. That's about 7% of GDP, disproportionately performed by women. By the measure that drives policy, this work does not exist.
+
+*Environmental degradation.* Pulling fish out of the ocean adds to GDP. Collapsing the fishery subtracts nothing. Mining coal is economic growth. The asthma, the groundwater contamination, the black lung: those are also economic growth, because treating them generates transactions. This is accounting that would get a private company investigated for fraud. At a national level, we call it standard practice.
+
+*Leisure and time.* Americans work more hours per year than workers in every other wealthy nation. GDP registers this as productivity. Whether those hours produce anything meaningful, whether people would trade some of them for time with their families or time doing nothing at all: outside the model. Doesn't compute.
+
+*Distribution.* GDP per capita is an average. If Jeff Bezos walks into a room with 50 people in it, the average net worth in that room is roughly $3 billion. Averages that span populations with extreme inequality are worse than useless. They actively mislead. They let you say "the economy is doing great" while median wages stagnate and a third of the country can't cover a $400 emergency expense.
+
+*Health. Education. Trust. Meaning.* None of it. Zero.
+
+## Alternatives That Already Exist
+
+The measurement problem is solved. It's been solved for decades. What we lack isn't methodology. It's political will.
+
+Bhutan adopted *Gross National Happiness* in the 1970s. It measures nine domains: psychological wellbeing, health, education, time use, cultural resilience, good governance, community vitality, ecological diversity, and living standards. Is it perfect? No. Is it asking better questions than "how many transactions happened?" Obviously.
+
+New Zealand launched its *Wellbeing Budget* in 2019 under Prime Minister Jacinda Ardern. Government spending was evaluated against child poverty rates, mental health outcomes, family violence statistics, and environmental quality. Implementation was uneven. The framework was directionally correct.
+
+Kate Raworth's *Doughnut Economics* defines a safe and just operating space for humanity: a social foundation below which nobody should fall, and an ecological ceiling above which we cannot push. The goal isn't growth. The goal is balance. Amsterdam adopted the doughnut model as a policy framework in 2020. It's being piloted in cities across four continents.
+
+The Genuine Progress Indicator starts with personal consumption expenditure and then adjusts. It adds the value of household work and volunteering. It subtracts crime, pollution, resource depletion, and the costs of inequality. In the United States, GDP has risen steadily since the 1970s. GPI has been essentially flat. That divergence is the distance between the economy as measured and the economy as experienced.
+
+## Why the Wrong Number Persists
+
+GDP persists because it's useful to the people who benefit from the current arrangement.
+
+If your measure says the economy is growing while median wages stagnate, while healthcare becomes unaffordable, while life expectancy actually *declines*, that's not a failure for everyone. For the people capturing the growth, GDP is working precisely as intended. It tells a story of prosperity without requiring that prosperity be shared.
+
+Growth provides political cover. A politician can point to 3% GDP growth without being asked who got the 3%. The number doesn't care. It just adds things up. Cancer treatment and kindergarten construction get the same weight. An opioid epidemic and an organic farm expansion are both "growth."
+
+And there's institutional inertia. Every government reports GDP. The IMF, the World Bank, the WTO: all use it for lending decisions, policy recommendations, country rankings. Shifting the framework means rebuilding analytical infrastructure across hundreds of institutions, retraining economists, renegotiating international agreements. The switching costs are real, even when the existing metric is demonstrably garbage.
+
+Robert Kennedy, speaking at the University of Kansas in March 1968:
+
+> "Gross National Product counts air pollution and cigarette advertising, and ambulances to clear our highways of carnage... Yet the gross national product does not allow for the health of our children, the quality of their education or the joy of their play... It measures everything, in short, except that which makes life worthwhile."
+
+Three months later he was dead. Fifty-eight years later the speech gets quoted in think-piece after think-piece. And we're still measuring everything except that which makes life worthwhile.
+
+## The Compass Problem
+
+What you measure shapes what you pursue. A country that measures GDP will chase GDP: will cut forests, will tolerate pollution, will ignore care work, will celebrate financial speculation, will treat a billionaire and a thousand struggling families as statistically equivalent. Not because its leaders are stupid but because the compass points that way.
+
+A country that measured wellbeing would build different infrastructure, write different tax codes, invest in different things. The people wouldn't need to be different. The direction would.
+
+We have the alternative dashboards. We've had them for years. The fact that we refuse to look at them isn't an information problem. It's a power problem. The current dashboard benefits the people who get to decide which dashboard we use.
+
+At some point, staring at the wrong number stops being a mistake and starts being a policy.

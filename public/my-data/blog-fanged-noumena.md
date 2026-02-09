@@ -1,0 +1,206 @@
+# Nick Land: The Philosopher Who Became Explicitly Racist
+
+## The Philosopher Who "Didn't Survive" His Own Thought Experiment
+
+**Nick Land was born on March 14, 1962**, in England, though his childhood and family background remain almost entirely undocumented. He studied philosophy at the University of Essex, completing his PhD in **1987** under David Farrell Krell. Contrary to widespread belief that his doctoral work focused on Kant, Land's thesis**"Heidegger's 'Die Sprache im Gedicht' and the Cultivation of the Grapheme"**analyzed Heidegger's 1953 essay on the poet Georg Trakl.
+
+Land joined the University of Warwick immediately after completing his doctorate, serving as Lecturer in Continental Philosophy from **1987 to 1998**. His seminars became legendary for their intensityRobin Mackay described them as events more like "raves or séances." At Virtual Futures 96, Land was found "lying on the ground, croaking into a mic" while Mackay played jungle records. He attracted students who would become significant philosophers in their own right: Ray Brassier, Iain Hamilton Grant, and Mark Fisher all passed through his orbit.
+
+In **1992**, Land published his only monograph, *The Thirst for Annihilation: Georges Bataille and Virulent Nihilism*the first book in English to seriously engage with Bataille's writings. It was not conventional academic commentary but, as Land conceived it, a "communion" with Bataille's ideas about expenditure, excess, and the drive toward dissolution.
+
+His departure from Warwick in **1998** followed what Land himself later described as "perhaps a year of fanatical abuse" of "the sacred substance amphetamine" and "prolonged artificial insomnia...devoted to futile 'writing' practices." Ray Brassier noted that "most of the department really hated and despised Nick, and that hatred extended to his students." When Mackay contacted Land years later about republishing his work, Land reportedly said: **"It's another life; I have nothing to say about itI don't even remember writing half of those things... It belongs in the clawed embrace of the undead amphetamine god."**
+
+Land relocated to Shanghai around **2004-2006**, where he lives today with his wife, **Anna Greenspan** (a professor at NYU Shanghai), and their children. His recent activities include publishing *Xenosystems* (2024), giving interviews to *The Spectator* (October 2025), and appearing in conversations with figures ranging from Tucker Carlson to Russian philosopher Aleksandr Dugin. Marc Andreessen has named him a "patron saint" of his thinking.
+
+## The CCRU Never Officially ExistedAnd Never Officially Ended
+
+The **Cybernetic Culture Research Unit (CCRU)** occupies a peculiar institutional position: it was, according to one Warwick professor, something that "does not, has not and will never exist." Founded in **late 1995** around cyberfeminist theorist **Sadie Plant**, who was recruited to Warwick from Birmingham, the CCRU became what Simon Reynolds called "the academic equivalent of Kurtz."
+
+Plant and Landreportedly former loversestablished the unit to explore cybernetics, technology, and culture through an aggressively interdisciplinary lens. When Plant departed in early **1997** to write *Zeros + Ones*, Land became its de facto leader. She reportedly "couldn't really go along with the trip into numerical mysticism" that Land was steering toward.
+
+**Core members included:**
+- **Mark Fisher** (later author of *Capitalist Realism*, PhD thesis: *Flatline Constructs*)
+- **Kodwo Eshun** (author of *More Brilliant Than The Sun*)
+- **Steve Goodman/Kode9** (founder of Hyperdub Records, PhD: *Turbulence*)
+- **Iain Hamilton Grant** (translator of Lyotard, later speculative realist)
+- **Robin Mackay** (founder of Urbanomic publishing)
+- **Ray Brassier** (author of *Nihil Unbound*, later speculative realist)
+- **Anna Greenspan**, **Suzanne Livingston**, **Matthew Fuller**, and art collective **Orphan Drift**
+
+The CCRU's outputs included the pamphlet series *Abstract Culture* (1997-1999), the 437-page collaborative book *Cyberpositive* (1995), and events like Virtual Futures and Virotechnics. After Land's departure from Warwick, the CCRU operated from a flat in Leamington Spareportedly Aleister Crowley's birthplacebefore effectively ceasing around **2003**. Iain Hamilton Grant asserted that "the later excesses drove several members into mental breakdown."
+
+## Deleuze Stripped of Vitalism, Fused with Schopenhauer's Death Drive
+
+Land's philosophical project drew on a distinctive constellation of thinkers: **Kant, Schopenhauer, Nietzsche, Bataille, and Deleuze & Guattari**, though his readings diverged sharply from orthodox interpretations.
+
+He approached **Anti-Oedipus** not as philosophy but as "an engineering manual; a package of software implements for hacking into the machinic unconscious." Yet where Deleuze and Guattari maintained revolutionary critique and Bergsonian vitalism, Land stripped away these affirmative elements. Fisher captured this precisely: Land's philosophy was **"Deleuze and Guattari's machinic desire remorselessly stripped of all Bergsonian vitalism, and made backwards-compatible with Freud's death drive and Schopenhauer's Will."**
+
+Land recasts **Kant** as "a philosopher of cybernetics-as-control," arguing that Kantian transcendental philosophy limits cognition to the phenomenal realm, making the noumenon an epistemological barrier that ideology exploits. He called Kant's critical philosophy **"the most elaborate fit of panic in the history of the Earth."** His essay "Kant, Capital, and the Prohibition of Incest" (1988-89) connected Kantian limits to capitalism's internal prohibitions.
+
+From **Schopenhauer**, Land took the insight that the noumenon could be approached as "an energetic unconscious"will as pre-representational, blind impulse. He wrote that Schopenhauer was "the great well-spring of the impersonal in post-Kantian thought; the sole member of the immediately succeeding generation to begin vomiting monotheism out of their cosmology."
+
+From **Bataille**, Land drew concepts of expenditure, base materialism, and sacrifice. In *The Thirst for Annihilation*, he constructed a lineage: Kant → Schopenhauer → Nietzsche → Freud → Bataille → Deleuze and Guattari → Land.
+
+Other influences included **William Gibson** (cyberpunk as philosophy), **H.P. Lovecraft** (cosmic horror as anti-anthropocentric thinking), and **William Burroughs** (cut-up technique, viral language).
+
+## Accelerationism: Who Coined It and What It Actually Means
+
+**Benjamin Noys**, now Professor of Critical Theory at the University of Chichester, coined "accelerationism" in a **2008 blog post**, publishing it formally in his **2010** book *The Persistence of the Negative*. Crucially, **Noys intended the term pejoratively**to critique certain post-structuralist thinkers who embraced "unorthodox Marxist and counter-Marxist overviews of capitalist growth."
+
+Land's key accelerationist text is **"Meltdown" (1994)**, published in CCRU's *Abstract Culture* journal. It contains his famous line: **"Nothing human makes it out of the near-future."** The essay describes capitalism as "machinic (non-instrumental) globalization-miniaturization scaling dilation: an automatizing nihilist vortex, neutralizing all values through commensuration to digitized commerce."
+
+The intellectual genealogy traces back to Marx's **"Fragment on Machines"** (Grundrisse, 1857-58) and especially to Deleuze and Guattari's *Anti-Oedipus* (1972), which contains the often-cited "accelerationist fragment": "Not to withdraw from the process, but to go further, to 'accelerate the process,' as Nietzsche put it: in this matter, the truth is that we haven't seen anything yet."
+
+The movement split in **2013** when **Alex Williams and Nick Srnicek** published **"#Accelerate: Manifesto for an Accelerationist Politics"** (May 14, 2013, Critical Legal Thinking). Their "left-accelerationism" sought to repurpose capitalist technologies for egalitarian ends under democratic controldiametrically opposed to Land's vision. Their subsequent book, *Inventing the Future* (Verso, 2015), dropped the accelerationist label entirely.
+
+**Unconditional accelerationism (U/Acc)** emerged around **2016-2017**, primarily through philosopher **Vincent Garton**. It rejects both left and right political projects as misguided attempts to control fundamentally uncontrollable processes, answering the question "What is to be done?" with: **"Do what thou wiltand let go."**
+
+## Hyperstition: Fictions That Make Themselves Real
+
+The CCRU **coined "hyperstition" in 1995**, first describing it in their publication *Catacomic*. Land defined it in a 2009 interview: **"Hyperstition is a positive feedback circuit including culture as a component. It can be defined as the experimental (techno-)science of self-fulfilling prophecies. Superstitions are merely false beliefs, but hyperstitionsby their very existence as ideasfunction causally to bring about their own reality."**
+
+The oft-cited formula is **"fictions that make themselves real."** CCRU identified four characteristics:
+1. An element of effective culture that makes itself real
+2. A fictional quality functional as a time-travelling device
+3. A coincidence intensifier
+4. In Lovecraftian registera call to the Old Ones
+
+**Specific examples:**
+- **Cyberspace**: The fictional idea contributed to investment making it a "technosocial reality"
+- **Jerusalem**: By treating it as holy, cultural investment ensured that treatment's validation
+- **Capitalist economics**: Confidence as "effective tonic"speculation as self-fulfilling prophecy
+- **Cryptocurrency**: Cited as a contemporary hyperstitional entity
+
+The concept has since been applied to phenomena from QAnon to Silicon Valley's speculative narratives. Reza Negarestani's *Cyclonopedia* (2008) exemplifies the "theory-fiction" genre hyperstition inspired.
+
+## The Dark Enlightenment: Land's Neo-Reactionary Turn
+
+Land's **"The Dark Enlightenment"** essay was published serially on his blog in **2012**, spanning ten parts totaling approximately **45,000 words**. Land himself coined the movement's name. The essay draws heavily on **Curtis Yarvin** (pen name Mencius Moldbug), a software engineer whose blog *Unqualified Reservations* (2007-2014) provided neo-reaction's theoretical foundation.
+
+**The "Cathedral"**a term Yarvin originateddescribes the alleged self-organizing consensus of progressivism embodied in universities, media, and civil service, functioning as a secular religion descended from Puritanism. Land adopted this concept wholesale, calling it "a mystery cult of power."
+
+**Core arguments include:**
+- **Democracy is "doom itself"**not merely doomed but actively degenerative
+- **Exit over Voice**: Drawing from Albert Hirschman, advocating "voiceless flight" from democracy
+- **Neocameralism**: States should be run as profit-maximizing corporations with CEO-monarchs
+- **Patchwork**: A world of competing sovereign city-states (Singapore, Hong Kong, Dubai as models)
+
+Land's writings explicitly embrace **"Human Biodiversity" (HBD)** and what he calls **"hyper-racism."** He has written that "HBD, broadly conceived, is simply a fact" and that "socio-economic status is a strong proxy for IQ." Roger Burrows, writing in *The Sociological Review* (2018), described neo-reaction as **"hyper-neoliberal, technologically deterministic, anti-democratic, anti-egalitarian, pro-eugenicist, racist and, likely, fascist."**
+
+Silicon Valley connections are documented: Peter Thiel invested in Yarvin's company Tlon Corp; Yarvin reportedly watched 2016 election returns with Thiel; JD Vance praised Yarvin publicly; and Yarvin attended Trump's 2025 inaugural gala.
+
+## The Arc from Feminist Guerrilla Warfare to Neo-Reaction
+
+One of Land's more uncomfortable intellectual transitions involves gender. In his **1988 essay "Kant, Capital and the Prohibition of Incest,"** Land wrote: **"The only resolutely revolutionary politics is feminist in orientation"** and proposed "an international feminist guerrilla war to destroy modernity," drawing on Luce Irigaray and Monique Wittig.
+
+Vincent Le's **2019 article in *Hypatia*** traces this trajectory, "drawing upon the younger Land's feminist resources to immanently critique the disappearance of women from his more recent neoreactionary philosophy in favor of concessions to patriarchal traditionalists." The shift is documented and stark.
+
+Former colleagues have distanced themselves. **Ray Brassier** stated in 2017: **"Land has gone from arguing 'Politics is dead', 20 years ago, to this completely old-fashioned, standard reactionary stuff."** Mark Fisher maintained what Jenny Turner called "personal loyalty" to Land but "didn't follow Land into the dreadful work on 'The Dark Enlightenment' and 'Hyper-Racism.'" In **March 2017**, the New Centre for Research & Practice terminated its relationship with Land "following several tweets...in which he espoused intolerant opinions about Muslims and immigrants."
+
+Benjamin Noys characterized the Dark Enlightenment as **"an acceleration of capitalism to a fascist point."** Land disputes the fascism comparison, arguing that "Fascism is a mass anti-capitalist movement" while he prefers "capitalist corporate power should become the organizing force in society"a distinction critics find unconvincing.
+
+## Mark Fisher: From Student to Divergent Intellectual Heir
+
+**Mark Fisher** encountered Land while pursuing his PhD at Warwick in the 1990s, completing his thesis *Flatline Constructs: Gothic Materialism and Cybernetic Theory-Fiction* in 1999. He was a founding CCRU member and remained, by many accounts, its most electrifying thinker.
+
+Fisher's assessment of Land was characteristically complex. In his essay **"Terminator vs Avatar"** (published in *#Accelerate: The Accelerationist Reader*, 2014), Fisher wrote: **"Land was our Nietzschewith the same baiting of the so-called progressive tendencies, the same bizarre mixture of the reactionary and the futuristic, and a writing style that updates nineteenth century aphorisms into what Kodwo Eshun called 'text at sample velocity.'"**
+
+Fisher praised Land's "withering assaults on the academic leftor the embourgeoisified state-subsidised grumbling that so often calls itself academic Marxism" while "taking issue with his interpretation of Deleuze and Guattari's views on capitalism." Fisher accused Land of a kind of "capitalist realism"of treating capitalism as transcendental and fixed rather than contingent.
+
+Their trajectories diverged fundamentally: Fisher became a major left-wing cultural theorist, author of *Capitalist Realism* (2009), *Ghosts of My Life* (2014), and posthumously *The Weird and the Eerie* (2017). His unfinished *Acid Communism* represented an explicitly socialist project. Fisher died by suicide on January 13, 2017, at age 48.
+
+## From Jungle to Hyperdub: Land's Musical Afterlife
+
+**Steve Goodman (Kode9)** studied philosophy at Warwick and was a CCRU member whose PhD thesis, *Turbulence: A Cartography of Postmodern Violence*, emerged from that milieu. He founded **Hyperdub Records in 2004**, describing it as an "info-virus that replicates in both humans and machines."
+
+Goodman on Land: **"the thing that always got me about the resonance between Nick's writing and jungle was this theme of turbulence...his interest in the productivity of systems on the edge of chaos, for me, was basically a direct and very literal description of what was going on rhythmically in jungle with breakbeat science."**
+
+The "K-" prefix in Kode9 and Fisher's k-punk derives from CCRUshorthand for "cyber(netic)" drawn from multiple sources (Josef K, German spelling of Kybernetik, Kondratieff waves). Hyperdub released Burial's seminal 2006 debut and became central to dubstep's emergence, signing artists including DJ Rashad, Zomby, and Fatima Al Qadiri.
+
+Fisher noted in 2011 that **"Land's greatest impact had been on music and art rather than philosophy."** Artists Jake and Dinos Chapman commissioned Land to write a text for their 1996 ICA retrospective; a Chapman print graces *Fanged Noumena*'s cover. Art collective **Orphan Drift** collaborated with Land on multiple events. Reza Negarestani's theory-fiction *Cyclonopedia* (2008)named one of Artforum's best books of 2009was written under Land's direct influence.
+
+## *Fanged Noumena*: The Anthology That Created a Cult Following
+
+**Publication**: March/April **2011** by Urbanomic/Sequence Press (later MIT Press), edited by **Robin Mackay** and **Ray Brassier**. The 680-page anthology collects texts from 1987-2007 spanning three periods: early radical rereadings of Heidegger, Nietzsche, Kant, and Bataille; mid-1990s CCRU theory-fiction; and later Ballardian and neo-qabbalistic texts. It concludes with pages of schizonumeric diagrams from Land's notebooks.
+
+The book introduced Land's work to a new generation and is credited with accelerationism's rising profile. Simon Critchley wrote: "Land had the most brilliantly seductive and meteoric mind...Nick was dismissed by professional philosophers because they simply didn't want to think." Jeremy Biles called it "a bevy of aggressively strange, virulently antihumanistic essays...this book will intoxicate."
+
+Land's prose style defies easy summary. He coined multiple neologisms: **hyperstition**, **geotraumatics** (treating Earth-history as nested traumas), **schizonumerics**, **cybergothic**, and **meltdown** (convergence toward technocapital singularity). His writing is "extremely dense, full of neologisms and esoteric terminology"yet Fisher compared it to jungle music's intensity: philosophy written "at sample velocity."
+
+## The Documented Record: What Land Has Actually Written
+
+Land's problematic statements are not inferred but documented in his own texts:
+
+**On race and IQ**: Land explicitly embraces "Human Bio-Diversity" and coined the term "hyper-racism" for his position. He has written that "HBD, broadly conceived, is simply a fact."
+
+**On democracy**: "For the hardcore neo-reactionaries, democracy is not merely doomed, it is doom itself." He calls the belief in human equality "a superstition."
+
+**On immigration**: The Dark Enlightenment essay compares immigrants to zombies. His 2017 termination from the New Centre followed "intolerant opinions about Muslims and immigrants."
+
+Critics remain divided on how seriously to take Land. Elizabeth Sandifer notes "the ambiguity surrounding Land: Simply put, nobody's quite sure if he's serious." This ironic distance appears deliberatebut the documented statements exist regardless of intended register.
+
+## The Central Tension, and Where I Come Down
+
+Nick Land's work presents genuine interpretive challenges. The CCRU-era writings collected in *Fanged Noumena* represent innovative philosophical experimentation, theory-fiction that genuinely anticipated speculative realism, influenced electronic music's development, and produced concepts like "hyperstition" that retain analytical value. Mark Fisher's complex assessment remains apt: Land was simultaneously their Nietzsche and someone whose later work Fisher refused to follow.
+
+The documented facts are clear: Land moved from feminist revolutionary rhetoric in 1988 to explicit "hyper-racism" and anti-democratic politics by 2012. Former colleagues from Brassier to the New Centre have distanced themselves. His influence on the alt-right's theoretical apparatus is scholarly consensus.
+
+**Here's where I land:** The standard academic move is to maintain studied neutrality: "Land is controversial" or "his work presents challenges." This is cowardice dressed as objectivity. Land calls his own position "hyper-racism." He compares immigrants to zombies. He argues human equality is a superstition. These aren't misinterpretations or taken out of context; they're his explicit, documented views.
+
+The CCRU work was genuinely innovative. "Hyperstition" remains a useful concept. The jungle music connection matters for understanding that cultural moment. None of this excuses what Land became, and we should stop pretending the interesting 90s theory somehow counterbalances the explicit racism.
+
+I wrote this piece because understanding how theoretical transgression slides into actual fascism matters more than pretending it didn't happen. Land's trajectory is a case study in how "edgy" theorizing (deliberately shocking bourgeois sensibilities, cultivating deliberate ambiguity about whether you're serious) creates runway for positions that start as provocation and end as earnest ideology. The ironic distance that makes his writing seductive is the same mechanism that let him arrive at "hyper-racism" while his readers assumed he couldn't possibly mean it.
+
+He means it. The innovations don't redeem that. Engage his early work if useful; just know who you're reading.
+
+---
+
+## Timeline
+
+| Year | Event |
+|------|-------|
+| 1962 | Nick Land born (March 14) |
+| 1987 | PhD completed; joins Warwick |
+| 1992 | *The Thirst for Annihilation* published |
+| 1994 | "Meltdown" published in *Abstract Culture* |
+| 1995 | CCRU founded; "hyperstition" coined |
+| 1997 | Sadie Plant departs CCRU |
+| 1998 | Land leaves Warwick |
+| 2003 | CCRU effectively ceases |
+| 2008 | Benjamin Noys coins "accelerationism" (pejoratively) |
+| 2011 | *Fanged Noumena* published |
+| 2012 | "The Dark Enlightenment" essay published |
+| 2013 | Left-accelerationist manifesto splits movement |
+| 2017 | New Centre terminates relationship; Fisher dies |
+
+---
+
+## Key Concepts Reference
+
+| Concept | Definition |
+|---------|------------|
+| **Hyperstition** | "Fictions that make themselves real"ideas that function causally to bring about their own reality |
+| **Meltdown** | Convergence toward technocapital singularity; "Nothing human makes it out of the near-future" |
+| **The Cathedral** | Yarvin's term for progressive institutional consensus (universities, media, civil service) |
+| **Geotraumatics** | Treating Earth-history as nested traumas |
+| **Neocameralism** | States run as profit-maximizing corporations with CEO-monarchs |
+| **K-Gothic/Cybergothic** | CCRU's blend of cyberpunk, gothic horror, and theory |
+
+---
+
+## Further Reading
+
+**Primary Sources:**
+- Land, Nick. *Fanged Noumena: Collected Writings 1987-2007*. Urbanomic, 2011.
+- Land, Nick. *The Thirst for Annihilation*. Routledge, 1992.
+- CCRU. *Writings 1997-2003*. Urbanomic, 2017.
+
+**Secondary Sources:**
+- Fisher, Mark. "Terminator vs Avatar." *#Accelerate: The Accelerationist Reader*, 2014.
+- Noys, Benjamin. *The Persistence of the Negative*. Edinburgh UP, 2010.
+- Mackay, Robin & Avanessian, Armen, eds. *#Accelerate: The Accelerationist Reader*. Urbanomic, 2014.
+
+**Critical Assessments:**
+- Burrows, Roger. "On Nick Land." *The Sociological Review*, 2018.
+- Le, Vincent. "Neoreaction and the Disappearance of Women." *Hypatia*, 2019.
+- Sandifer, Elizabeth. *Neoreaction a Basilisk*. Eruditorum Press, 2017.

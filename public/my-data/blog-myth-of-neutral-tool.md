@@ -1,0 +1,93 @@
+# The Myth of the Neutral Tool
+
+## The Comfortable Lie
+
+"Technology is neutral. It's just a tool. What matters is how you use it."
+
+This sentiment gets repeated constantly, in boardrooms, in classrooms, in policy debates. It's convenient. It absolves designers of responsibility. It reduces complex questions about power and society to simple matters of individual choice. And it's completely wrong.
+
+Tools aren't neutral. They never were.
+
+A highway isn't neutral; it embeds assumptions about car ownership, suburban development patterns, and the value of speed over community. A social media feed isn't neutral; it embeds assumptions about what content deserves attention and how human relationships should be structured. An algorithm isn't neutral; it embeds whatever values its creators poured into its design, whether they intended to or not.
+
+The myth of neutrality persists because it's useful. Useful for avoiding difficult conversations about who benefits and who loses when a technology gets deployed. Useful for pretending technical decisions aren't political decisions. Useful for maintaining the fiction that engineers are just engineers, not people making choices that shape society.
+
+## The Politics of Design
+
+Every design decision is a political decision. Not in the sense of party politics, but deeper than that. Political in the sense of deciding how power gets distributed, who gets access to what, whose interests get centered and whose get ignored.
+
+Consider the automobile. Seems like pure transportation technology, right? Just getting people from A to B.
+
+But the automobile, as designed and deployed, embedded specific politics. It required massive public investment in roads and highways. It enabled suburban sprawl that segregated communities by race and class. It created dependency on petroleum, with all the geopolitical implications that entails. It made streets dangerous for non-drivers while treating that danger as normal and acceptable.
+
+None of this was inevitable. Different design choices, different political choices, would have created different outcomes. Prioritizing public transit. Building denser cities. Designing for pedestrians rather than drivers. The technology could have gone many directions. The direction it went reflected who had power and what they valued.
+
+The same analysis applies to digital technology. Every platform, every protocol, every interface embeds assumptions about how the world should work.
+
+## Algorithms as Ideology
+
+Algorithmic systems make this particularly clear, and particularly insidious.
+
+When a platform decides what content to show users, it's making value judgments. What counts as "engaging" content? What behaviors should be rewarded with visibility? What kinds of speech should be amplified, suppressed, or removed entirely?
+
+These aren't neutral technical questions. They're profoundly political questions dressed up in technical language.
+
+An algorithm optimizing for engagement will promote content that triggers strong emotional reactions, often outrage, fear, or tribal conflict. Not because the engineers are evil, but because that's what the optimization target produces. The technical choice (optimize for engagement) embeds a political choice (prioritize attention capture over social cohesion, emotional wellbeing, or truth).
+
+And crucially, users don't get to see how these choices are made. The algorithm is a black box. Its political assumptions are rendered invisible, naturalized, turned into "just how things work." Which is, of course, how ideology always operates, most effectively when it doesn't look like ideology at all.
+
+## The Designer's Intentions Don't Matter
+
+Here's where defenders of technological neutrality make their stand: what about intent? Surely a technology is neutral if its creators didn't intend it for harm?
+
+Intent is irrelevant.
+
+Technologies have effects regardless of what their creators intended. They create possibilities and foreclose others. They empower some groups and disempower others. They shape behavior and thought in ways that persist long after the original designers have moved on.
+
+The people who designed early social networks probably didn't intend to create outrage machines that would destabilize democracies. But that's what happened. The design choices they made (the metrics they optimized for, the feedback loops they created, the attention models they adopted) produced predictable outcomes that had nothing to do with their intentions.
+
+This isn't a gotcha. It's how technology works.
+
+When you build something that millions of people use, the consequences are systemic, not individual. You've created an environment that shapes behavior at scale. And environments aren't neutral; they have architectures that make some outcomes more likely and others less likely.
+
+## Resistance Through Design
+
+If technology embeds politics, then designing technology is a political act. Which means technologists are political actors whether they want to be or not.
+
+This reframing matters because it changes what responsibility looks like.
+
+Under the neutrality myth, engineers are just craftspeople. They build what they're told to build. Questions about social impact are someone else's problem: ethicists, regulators, users themselves. The engineer's job is technical excellence, not political judgment.
+
+But if technologies aren't neutral, this division of labor collapses. Technical decisions are political decisions. Building a feature a certain way is taking a political position. Refusing to consider consequences is itself a political choice, a choice to prioritize other things over the impacts your work will have on human beings.
+
+Some technologists understand this. They make design choices explicitly aimed at distributing power rather than concentrating it. End-to-end encryption. Decentralized protocols. Open standards. These aren't just technical preferences; they're political commitments encoded into technology.
+
+Other technologists understand it too, but prefer to pretend they don't. It's easier that way. Less responsibility. Less conflict with employers and investors who have their own political preferences and prefer engineers who don't ask inconvenient questions.
+
+## The Question of Alternatives
+
+"Okay, so technology isn't neutral. Now what?"
+
+First: stop pretending. Stop accepting the frame that technical questions and political questions are separate domains. They're not. Every conversation about how to build something is also a conversation about how power should be distributed, who benefits, who loses, and what values get embedded into the systems people depend on.
+
+Second: ask different questions. Not just "what's technically possible" or "what's most efficient" but "who does this serve?" Not just "will users engage with this" but "what kind of behavior does this incentivize?" Not just "can we build it" but "should we?"
+
+Third: demand transparency. Technologies that shape public life should be publicly accountable. The algorithms that determine what information people see, what prices they pay, what opportunities they get: these shouldn't be trade secrets. They should be subject to scrutiny, debate, and democratic input.
+
+Fourth: support alternatives. Technologies built on different political assumptions than the dominant ones. Decentralized where centralized is the default. Open where proprietary is standard. User-controlled where platform-controlled is the norm. These alternatives exist, often developed by people working without the resources of major corporations, precisely because they understand that design is politics.
+
+## The Stakes of Clarity
+
+Why does this framing matter? Because the myth of neutrality is doing political work.
+
+When people believe technology is neutral, they don't ask critical questions about its design. They accept whatever gets built as inevitable rather than chosen. They blame individuals for outcomes that are actually produced by systems. They defer to technologists as neutral experts rather than recognizing them as political actors with interests and blind spots.
+
+The neutrality myth serves power. It deflects accountability. It makes political choices look like technical necessities. It's ideological cover for building whatever is profitable while pretending questions about impact are someone else's problem.
+
+Dispelling that myth is the first step toward building technology that serves human flourishing rather than just whatever generates returns. It won't solve everything; there's still the matter of power, resources, and political will. But at least the conversation happens on honest terms.
+
+Technology shapes society. Society should shape technology. That can only happen when enough people reject the comfortable lie that tools are just tools and start asking the harder questions about what we're building and why.
+
+The code is politics.
+
+Time to start reading it that way.
