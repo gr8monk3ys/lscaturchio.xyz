@@ -20,7 +20,6 @@ interface HealthCheckResponse {
  */
 const CRITICAL_ENV_VARS = [
   'DATABASE_URL',
-  'OPENAI_API_KEY',
 ] as const
 
 /**
