@@ -20,8 +20,8 @@ export function BlogViewCount({ slug }: BlogViewCountProps) {
       try {
         const response = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
         if (response.ok) {
-          const data = await response.json();
-          setViews(data.views);
+          const json = await response.json();
+          setViews(json.data?.views ?? json.views ?? 0);
         }
       } catch (error) {
         logError("Failed to fetch views", error, { component: "BlogViewCount", slug });
