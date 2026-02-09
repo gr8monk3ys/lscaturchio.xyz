@@ -5,7 +5,7 @@ const meta = {
   title: "Journalism Is Dead, Long Live Journalism",
   description: "The business model collapsed. The practice survives in unexpected places. What journalism means when the newspapers are gone.",
   date: "2025-08-18",
-  image: "/images/blog/default.webp",
+  image: "https://images.unsplash.com/photo-1504711434969-e33886168d5c?w=1200&q=80",
   tags: ["media", "journalism", "information", "institutions"],
 };
 
