@@ -26,8 +26,8 @@ export const env = createEnv({
     // REQUIRED - Core Services
     // ============================================
 
-    // Neon PostgreSQL connection string (required for database operations)
-    DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+    // Neon PostgreSQL connection string (optional, gracefully degraded in db.ts)
+    DATABASE_URL: z.string().min(1).optional(),
 
     // ============================================
     // AI Providers (at least one required for AI chat)
