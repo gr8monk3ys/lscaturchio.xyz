@@ -8,11 +8,6 @@ export async function register() {
   // Initialize Sentry based on runtime
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     await import('../sentry.server.config');
-
-    const { logEnvStatus } = await import('./lib/env');
-
-    // Log environment status in development
-    logEnvStatus();
   }
 
   if (process.env.NEXT_RUNTIME === 'edge') {
