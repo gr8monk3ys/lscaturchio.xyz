@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { formatDate } from "../../../lib/formatDate";
+import { formatDate } from "@/lib/formatDate";
 import { Clock, Calendar, ArrowUpRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { BlogFilters } from "./BlogFilters";
