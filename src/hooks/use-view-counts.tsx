@@ -25,9 +25,11 @@ export function ViewCountsProvider({ children }: { children: ReactNode }) {
       try {
         const response = await fetch("/api/views?all=true");
         if (response.ok) {
-          const data = await response.json();
+          const json = await response.json();
+          // apiSuccess wraps as { data: { views: [...] }, success: true }
+          const views = json.data?.views ?? json.views ?? [];
           const counts: Record<string, number> = {};
-          data.views?.forEach((view: { slug: string; views: number }) => {
+          views.forEach((view: { slug: string; views: number }) => {
             counts[view.slug] = view.views;
           });
           setViewCounts(counts);
@@ -58,10 +60,11 @@ export function ViewCountsProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ slug }),
       });
       if (response.ok) {
-        const data = await response.json();
+        const json = await response.json();
+        const views = json.data?.views ?? json.views ?? 0;
         setViewCounts((prev) => ({
           ...prev,
-          [slug]: data.views,
+          [slug]: views,
         }));
       }
     } catch {
