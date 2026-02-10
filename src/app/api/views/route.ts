@@ -8,12 +8,31 @@ import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
 import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
 /**
- * GET /api/views?slug=xxx
- * Get view count for a specific blog post
+ * GET /api/views?slug=xxx    - Get view count for a specific blog post
+ * GET /api/views?all=true    - Get all view counts (batched, used by ViewCountsProvider)
  */
 const handleGet = async (req: NextRequest) => {
   try {
-    // Zod validation
+    const allParam = req.nextUrl.searchParams.get('all');
+
+    // Batch-fetch all view counts (used by ViewCountsProvider to avoid N+1)
+    if (allParam === 'true') {
+      if (!isDatabaseConfigured()) {
+        return apiSuccess({ views: [] });
+      }
+
+      const sql = getDb();
+      const rows = await sql`SELECT slug, count FROM views ORDER BY count DESC`;
+
+      const views = rows.map((row) => ({
+        slug: row.slug,
+        views: row.count || 0,
+      }));
+
+      return apiSuccess({ views });
+    }
+
+    // Single slug lookup
     const parsed = parseQuery(slugQuerySchema, req.nextUrl.searchParams);
     if (!parsed.success) {
       return ApiErrors.badRequest(parsed.error);
