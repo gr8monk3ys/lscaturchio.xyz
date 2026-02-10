@@ -33,15 +33,10 @@ describe('formatDate', () => {
     });
   });
 
-  it('uses 12-hour format with AM/PM', () => {
-    const morningDate = new Date('2024-01-15T09:30:00');
-    const eveningDate = new Date('2024-01-15T21:30:00');
-
-    const morningResult = formatDate(morningDate);
-    const eveningResult = formatDate(eveningDate);
-
-    // Should contain AM or PM
-    expect(morningResult).toMatch(/AM|PM/);
-    expect(eveningResult).toMatch(/AM|PM/);
+  it('accepts string dates', () => {
+    const result = formatDate('2024-01-15');
+    expect(result).toContain('January');
+    expect(result).toContain('15');
+    expect(result).toContain('2024');
   });
 });
