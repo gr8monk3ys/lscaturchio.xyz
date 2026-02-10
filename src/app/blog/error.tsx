@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
-import { logError } from '@/lib/logger'
 
 /**
  * Error boundary for blog pages.
@@ -16,7 +15,7 @@ export default function BlogError({
   reset: () => void
 }) {
   useEffect(() => {
-    logError('Blog error', error, { component: 'blog-error-boundary', digest: error.digest })
+    console.error('[blog-error-boundary]', error)
   }, [error])
 
   return (
