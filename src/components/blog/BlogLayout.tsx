@@ -108,11 +108,11 @@ export function BlogLayout({
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     <div className="flex flex-col">
-                      <time dateTime={meta.date} className="text-stone-600">
+                      <time dateTime={meta.date} className="text-stone-600 dark:text-stone-400">
                         {formatDate(meta.date)}
                       </time>
                       {meta.updated && (
-                        <span className="text-xs text-stone-500">
+                        <span className="text-xs text-stone-500 dark:text-stone-400">
                           Updated: {formatDate(meta.updated)}
                         </span>
                       )}
@@ -124,17 +124,17 @@ export function BlogLayout({
                     <Tag className="h-4 w-4" />
                     <div className="flex gap-2">
                       {meta.tags.map((tag) => (
-                        <span key={tag} className="text-stone-600">
+                        <span key={tag} className="text-stone-600 dark:text-stone-400">
                           {tag}
                         </span>
                       ))}
                     </div>
                   </div>
                 </div>
-                <Heading className="mt-6 text-4xl font-bold tracking-tight text-stone-800 sm:text-5xl">
+                <Heading className="mt-6 text-4xl font-bold tracking-tight text-stone-800 dark:text-stone-100 sm:text-5xl">
                   {meta.title}
                 </Heading>
-                <Paragraph className="mt-4 text-sm leading-8 text-stone-600">
+                <Paragraph className="mt-4 text-sm leading-8 text-stone-600 dark:text-stone-400">
                   {meta.description}
                 </Paragraph>
               </motion.div>
@@ -142,7 +142,7 @@ export function BlogLayout({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="mt-8 aspect-video relative overflow-hidden rounded-2xl bg-stone-100"
+                className="mt-8 aspect-video relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-800"
               >
                 <FallbackImage
                   src={meta.image}

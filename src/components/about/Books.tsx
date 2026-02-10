@@ -89,7 +89,7 @@ export function Books() {
           <motion.div variants={cardVariants} className="flex gap-4 flex-col items-start">
             <Badge variant="secondary">Philosophy</Badge>
             <div className="flex gap-2 flex-col">
-              <h2 className="text-3xl md:text-5xl tracking-tighter font-bold text-stone-600">
+              <h2 className="text-3xl md:text-5xl tracking-tighter font-bold text-stone-600 dark:text-stone-300">
                 Essential Reads
               </h2>
               <p className="text-lg max-w-prose">
