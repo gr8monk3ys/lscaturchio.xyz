@@ -34,6 +34,11 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local voice cloning
+/voice/
+scripts/.tts-venv/
+__pycache__/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

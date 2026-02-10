@@ -1,0 +1,5 @@
+TTS>=0.22.0
+pydub>=0.25.1
+torch>=2.0.0
+torchcodec>=0.1.0
+transformers>=4.33.0,<4.44.0
