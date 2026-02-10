@@ -16,6 +16,7 @@ import {
   Palette,
 } from "lucide-react";
 import { photos, photoCategories, placeholderImages, type Photo, type PhotoCategory } from "@/constants/photos";
+import { logError } from "@/lib/logger";
 
 export function PhotosGrid() {
   const router = useRouter();
@@ -118,7 +119,7 @@ export function PhotosGrid() {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Download failed:", error);
+      logError("Photo download failed", error, { component: "PhotosGrid" });
     }
   };
 
