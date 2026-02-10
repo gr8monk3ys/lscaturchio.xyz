@@ -91,7 +91,7 @@ export function InteractiveShowcase({
   return (
     <div className={`relative ${className}`}>
       {/* Main Showcase */}
-      <div className="relative h-[400px] rounded-2xl overflow-hidden bg-gray-900">
+      <div className="relative h-[400px] rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-900">
         {shouldRender3D && isDesktop ? (
           <Suspense
             fallback={

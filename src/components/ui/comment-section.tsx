@@ -35,7 +35,7 @@ export function CommentSection() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold tracking-tight text-stone-800">Comments</h2>
+      <h2 className="text-2xl font-bold tracking-tight text-stone-800 dark:text-stone-100">Comments</h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <Textarea
@@ -57,11 +57,11 @@ export function CommentSection() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold">{comment.author}</h3>
-                <span className="text-sm text-stone-500">
+                <span className="text-sm text-stone-500 dark:text-stone-400">
                   {formatDate(comment.date)}
                 </span>
               </div>
-              <p className="mt-1 text-stone-600">{comment.content}</p>
+              <p className="mt-1 text-stone-600 dark:text-stone-300">{comment.content}</p>
             </div>
           </div>
         ))}

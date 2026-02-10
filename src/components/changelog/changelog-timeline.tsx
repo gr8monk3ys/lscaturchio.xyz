@@ -88,7 +88,7 @@ export function ChangelogTimeline() {
 
           {/* Version header */}
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold z-10">
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold z-10">
               {entry.version.split('.')[0]}
             </div>
             <div>

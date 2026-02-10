@@ -143,7 +143,7 @@ export function Navbar() {
                   width={200}
                   height={40}
                   priority
-                  className="w-auto h-14"
+                  className="w-auto h-14 dark:invert"
                 />
               </Link>
             </div>
