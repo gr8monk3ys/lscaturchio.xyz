@@ -7,12 +7,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **lscaturchio.xyz** is a modern personal portfolio and blog website built with Next.js 14 App Router, showcasing work in data science, web development, and AI integration. The site features:
 - MDX-based blog with syntax highlighting and series support
 - AI chat powered by OpenAI GPT-4o with RAG (retrieval-augmented generation)
-- Engagement tracking (views, likes, bookmarks) with Supabase persistence
+- Engagement tracking (views, likes, bookmarks) with Neon PostgreSQL persistence
 - Server-side rendering with React Server Components
-- Vector search using Supabase for semantic blog content retrieval
+- Vector search using Neon PostgreSQL for semantic blog content retrieval
 - Comprehensive SEO with structured data and automated sitemap/RSS generation
 
-**Tech Stack:** Next.js 14, React 18, TypeScript, Tailwind CSS, Supabase, OpenAI API, Framer Motion
+**Tech Stack:** Next.js 14, React 18, TypeScript, Tailwind CSS, Neon PostgreSQL, OpenAI API, Framer Motion
 
 ## Development Commands
 
@@ -37,8 +37,7 @@ bun run generate-sitemap       # Generate XML sitemap (auto-runs post-build)
 
 **Environment Variables Required:**
 - `OPENAI_API_KEY` - OpenAI API access for chat and embeddings
-- `NEXT_PUBLIC_SUPABASE_URL` - Supabase database URL
-- `SUPABASE_SERVICE_KEY` - Server-side Supabase access (full permissions)
+- `DATABASE_URL` - Neon PostgreSQL connection string
 
 **Optional Environment Variables:**
 - `GITHUB_TOKEN` - GitHub contributions graph (falls back to mock data if not set)
@@ -66,7 +65,7 @@ See `.env.example` for details.
 
 ### Data Persistence & Engagement Architecture
 
-**CRITICAL:** All engagement data (views, reactions) is stored in Supabase PostgreSQL for persistence across deploys.
+**CRITICAL:** All engagement data (views, reactions) is stored in Neon PostgreSQL for persistence across deploys.
 
 **Database Tables:**
 ```sql
@@ -114,11 +113,15 @@ vote_records (
 )
 ```
 
-**Shared Supabase Client:**
-- Location: `src/lib/supabase.ts`
-- Exports: `getSupabase()` function
+**Shared Database Client (Neon):**
+- Location: `src/lib/db.ts`
+- Exports: `getDb()` function (returns Neon SQL tagged template client), `isDatabaseConfigured()` helper
+- Package: `@neondatabase/serverless`
 - Pattern: Lazy initialization to avoid build-time errors
 - Used by: All API routes that need database access
+- Query style: Tagged template literals (e.g., `` sql`SELECT * FROM views WHERE slug = ${slug}` ``)
+- Returns: Plain arrays of row objects (no `.data`/`.error` wrapper)
+- For raw SQL strings: Use `sql.query(stmt)` (NOT `sql(stmt)`, which throws an error)
 
 **Engagement API Routes (use atomic RPC functions to prevent race conditions):**
 1. **`/api/views`** - View tracking
@@ -142,14 +145,11 @@ vote_records (
    - POST: Send email via Resend API (or logs to console if RESEND_API_KEY not set)
 
 **First-Time Setup:**
-After cloning the repository, you MUST run the Supabase migrations:
-1. Open Supabase Dashboard → SQL Editor
-2. Run migrations in order:
-   - `supabase/migrations/20240122_init.sql` (embeddings table)
-   - `supabase/migrations/001_create_newsletter.sql` (newsletter)
-   - `supabase/migrations/20250119_create_views_and_reactions_tables.sql` (views, reactions, atomic RPC functions)
-   - `supabase/migrations/20250111_add_decrement_reaction.sql` (decrement RPC for unlike/unbookmark)
-   - `supabase/migrations/20250112_add_vote_deduplication.sql` (vote tracking for spam prevention)
+After cloning the repository, you MUST run the Neon database migration:
+1. Set the `DATABASE_URL` environment variable to your Neon connection string
+2. Run the combined migration: `bun run scripts/run-neon-migration.ts`
+   - Migration file: `supabase/migrations/neon_combined_migration.sql`
+   - The runner uses `sql.query()` to execute raw SQL
 3. Verify tables exist: `SELECT * FROM views; SELECT * FROM reactions; SELECT * FROM vote_records;`
 
 See `supabase/migrations/README.md` for detailed instructions.
@@ -214,14 +214,14 @@ Located in `src/app/api/chat/route.ts`:
 
 1. User sends message to `/api/chat`
 2. Generate embedding of user query (OpenAI text-embedding-ada-002)
-3. Search Supabase `embeddings` table using `match_embeddings()` RPC
+3. Search `embeddings` table using vector similarity query
 4. Retrieve top 3 most similar blog content chunks
 5. Build context with retrieved content
 6. Send to GPT-4o-2024-08-06 with Lorenzo's first-person persona prompt
 7. Return JSON response with answer (non-streaming)
 
 **Key files:**
-- `src/lib/supabase.ts` - Shared Supabase client
+- `src/lib/db.ts` - Shared Neon database client
 - `src/lib/embeddings.ts` - Embedding generation and search
 - `src/lib/generateEmbeddings.ts` - CLI tool to pre-process blog content
 - `src/app/api/chat/route.ts` - Chat endpoint (model: gpt-4o-2024-08-06, temp: 0.4, max_tokens: 1000)
@@ -364,9 +364,8 @@ This pattern separates content from components for easier updates.
 
 ### Security Patterns
 - API keys never in client code (use server-side only)
-- Supabase service key restricted to API routes
+- Database connection string (`DATABASE_URL`) restricted to server-side API routes
 - Security headers in middleware
-- Row Level Security (RLS) on Supabase tables
 
 **Environment Variable Validation (`src/lib/env.ts`):**
 Uses `@t3-oss/env-nextjs` for runtime validation with Zod schemas:
@@ -380,14 +379,13 @@ Usage:
 import { env } from '@/lib/env'
 
 // Type-safe access to environment variables
-const supabaseKey = env.SUPABASE_SERVICE_KEY  // Required - throws if missing
+const dbUrl = env.DATABASE_URL                 // Required - throws if missing
 const githubToken = env.GITHUB_TOKEN           // Optional - returns undefined
 const threshold = env.EMBEDDING_MATCH_THRESHOLD // Transformed to number with default 0.5
 ```
 
 Required variables:
-- `SUPABASE_SERVICE_KEY` - Server-side Supabase access
-- `NEXT_PUBLIC_SUPABASE_URL` - Supabase database URL
+- `DATABASE_URL` - Neon PostgreSQL connection string
 
 To skip validation (e.g., Docker builds): Set `SKIP_ENV_VALIDATION=true`
 
@@ -424,7 +422,7 @@ To skip validation (e.g., Docker builds): Set `SKIP_ENV_VALIDATION=true`
 | File | Purpose |
 |------|---------|
 | `src/lib/env.ts` | Runtime environment variable validation (@t3-oss/env-nextjs) |
-| `src/lib/supabase.ts` | Shared Supabase client for data persistence |
+| `src/lib/db.ts` | Shared Neon PostgreSQL client (`getDb()`, `isDatabaseConfigured()`) |
 | `src/lib/validations.ts` | Zod schemas for API input validation |
 | `src/lib/csrf.ts` | CSRF protection for mutating endpoints |
 | `src/lib/sanitize.ts` | Input sanitization (email, slug, HTML) |
@@ -433,9 +431,9 @@ To skip validation (e.g., Docker builds): Set `SKIP_ENV_VALIDATION=true`
 | `src/lib/voter-hash.ts` | Privacy-preserving vote deduplication |
 | `src/lib/email.ts` | Email utilities (newsletter welcome email) |
 | `src/lib/logger.ts` | Structured logging utility (use instead of console.*) |
-| `src/lib/embeddings.ts` | OpenAI embedding generation and Supabase vector search |
+| `src/lib/embeddings.ts` | OpenAI embedding generation and Neon vector search |
 | `src/lib/getAllBlogs.ts` | Scans blog directories, extracts MDX metadata |
-| `src/app/api/views/route.ts` | View tracking API (Supabase backed) |
+| `src/app/api/views/route.ts` | View tracking API (Neon PostgreSQL backed) |
 | `src/app/api/reactions/route.ts` | Like/bookmark API with vote deduplication |
 | `src/app/api/chat/route.ts` | AI chat endpoint with RAG pattern (GPT-4o-2024-08-06) |
 | `src/app/api/newsletter/subscribe/route.ts` | Newsletter subscription with welcome email |
@@ -445,7 +443,8 @@ To skip validation (e.g., Docker builds): Set `SKIP_ENV_VALIDATION=true`
 | `next.config.mjs` | Next.js config: performance, MDX, images, webpack |
 | `tailwind.config.ts` | Design system: colors, typography, dark mode |
 | `src/constants/` | All app content data (projects, nav, pricing, etc.) |
-| `supabase/migrations/` | Database schema migrations (views, reactions, vote_records) |
+| `supabase/migrations/neon_combined_migration.sql` | Combined Neon database migration (all tables) |
+| `scripts/run-neon-migration.ts` | Migration runner for Neon PostgreSQL |
 | `vitest.config.ts` | Unit test configuration (Vitest + happy-dom) |
 | `playwright.config.ts` | E2E test configuration (Playwright) |
 
@@ -564,7 +563,7 @@ cwebp -q 85 -resize 1200 0 input.jpg -o output.webp
 
 **First Deploy Checklist:**
 1. Configure environment variables in Vercel
-2. Run Supabase migration (views and reactions tables)
+2. Run Neon database migration (`bun run scripts/run-neon-migration.ts`)
 3. Generate embeddings: `bun run generate-embeddings`
 4. Verify build passes locally: `bun run build`
 5. Push to main branch
@@ -572,9 +571,9 @@ cwebp -q 85 -resize 1200 0 input.jpg -o output.webp
 ## Important Notes
 
 ### Data Persistence
-- **CRITICAL:** Views and reactions are stored in Supabase PostgreSQL
-- **First-time setup:** Must run SQL migration from `supabase/migrations/`
-- **Migration location:** `supabase/migrations/20250119_create_views_and_reactions_tables.sql`
+- **CRITICAL:** Views and reactions are stored in Neon PostgreSQL
+- **First-time setup:** Run the combined migration via `bun run scripts/run-neon-migration.ts`
+- **Migration file:** `supabase/migrations/neon_combined_migration.sql`
 - **Migration guide:** See `supabase/migrations/README.md` for detailed instructions
 - **Verification:** After migration, test API endpoints to ensure data persists
 
@@ -613,7 +612,7 @@ cwebp -q 85 -resize 1200 0 input.jpg -o output.webp
 
 ### API Keys & Security
 - **API keys server-side only** - never expose in client code
-- **Supabase service key** restricted to API routes only
+- **Database connection string** (`DATABASE_URL`) restricted to server-side only
 - **Google AdSense Publisher ID**: Configured via `NEXT_PUBLIC_ADSENSE_CLIENT_ID` env var
 
 ### Adding New API Routes
