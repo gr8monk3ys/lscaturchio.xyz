@@ -3,7 +3,6 @@ import * as path from "path";
 import fs from "fs/promises";
 
 // Module-level cache for getAllBlogs() to avoid repeated disk reads
-// This significantly improves performance for API routes that call getAllBlogs()
 let cachedBlogs: BlogPost[] | null = null;
 let cacheTime = 0;
 const CACHE_TTL = 60000; // 1 minute cache TTL
@@ -12,38 +11,82 @@ interface BlogMeta {
   title: string;
   description: string;
   date: string;
-  updated?: string; // Optional last updated date
+  updated?: string;
   image: string;
   tags: string[];
-  series?: string; // Optional series name
-  seriesOrder?: number; // Order within the series (1, 2, 3...)
+  series?: string;
+  seriesOrder?: number;
 }
 
-interface BlogPost extends BlogMeta {
+export interface BlogPost extends BlogMeta {
   slug: string;
   content: string;
-  component: React.ComponentType;
 }
 
-async function importBlog(blogFileNames: string): Promise<BlogPost> {
-  const { meta, default: component } = await import(
-    `../app/blog/${blogFileNames}`
-  );
+/**
+ * Extract meta object from MDX/TSX file content using regex.
+ * Avoids dynamic import() which causes the bundler to pull in
+ * all files under src/app/blog/ (including error.tsx, loading.tsx, etc.)
+ */
+function extractMeta(content: string): Partial<BlogMeta> {
+  const meta: Partial<BlogMeta> = {};
 
-  // Read the MDX file content
-  const filePath = path.join(process.cwd(), "src/app/blog", blogFileNames);
+  const titleMatch = content.match(/title:\s*["'`]([^"'`]+)["'`]/);
+  if (titleMatch) meta.title = titleMatch[1];
+
+  const descMatch = content.match(/description:\s*["'`]([^"'`]+)["'`]/);
+  if (descMatch) meta.description = descMatch[1];
+
+  const dateMatch = content.match(/date:\s*["'`]([^"'`]+)["'`]/);
+  if (dateMatch) meta.date = dateMatch[1];
+
+  const updatedMatch = content.match(/updated:\s*["'`]([^"'`]+)["'`]/);
+  if (updatedMatch) meta.updated = updatedMatch[1];
+
+  const imageMatch = content.match(/image:\s*["'`]([^"'`]+)["'`]/);
+  if (imageMatch) meta.image = imageMatch[1];
+
+  const seriesMatch = content.match(/series:\s*["'`]([^"'`]+)["'`]/);
+  if (seriesMatch) meta.series = seriesMatch[1];
+
+  const seriesOrderMatch = content.match(/seriesOrder:\s*(\d+)/);
+  if (seriesOrderMatch) meta.seriesOrder = parseInt(seriesOrderMatch[1], 10);
+
+  // Extract tags array: tags: ["tag1", "tag2"]
+  const tagsMatch = content.match(/tags:\s*\[([\s\S]*?)\]/);
+  if (tagsMatch) {
+    const tagStrings = tagsMatch[1].match(/["'`]([^"'`]+)["'`]/g);
+    meta.tags = tagStrings
+      ? tagStrings.map((t) => t.replace(/["'`]/g, ""))
+      : [];
+  }
+
+  return meta;
+}
+
+async function readBlog(fileName: string): Promise<BlogPost | null> {
+  const blogDir = path.join(process.cwd(), "src/app/blog");
+  const filePath = path.join(blogDir, fileName);
   const content = await fs.readFile(filePath, "utf-8");
+  const meta = extractMeta(content);
+
+  if (!meta.title || !meta.date) return null;
 
   return {
-    slug: blogFileNames.replace(/(\/content)?\.mdx$/, ""),
+    slug: fileName.replace(/(\/content)?\.mdx$/, ""),
     content,
-    ...meta,
-    component,
+    title: meta.title,
+    description: meta.description || "",
+    date: meta.date,
+    updated: meta.updated,
+    image: meta.image || "/images/blog/default.webp",
+    tags: meta.tags || [],
+    series: meta.series,
+    seriesOrder: meta.seriesOrder,
   };
 }
 
 export async function getAllBlogs(): Promise<BlogPost[]> {
-  // Return cached blogs if cache is still valid
   const now = Date.now();
   if (cachedBlogs && now - cacheTime < CACHE_TTL) {
     return cachedBlogs;
@@ -53,11 +96,10 @@ export async function getAllBlogs(): Promise<BlogPost[]> {
     cwd: path.join(process.cwd(), "src/app/blog"),
   });
 
-  const blogs = await Promise.all(blogFileNames.map(importBlog));
-
+  const results = await Promise.all(blogFileNames.map(readBlog));
+  const blogs = results.filter((b): b is BlogPost => b !== null);
   const sortedBlogs = blogs.sort((a, b) => b.date.localeCompare(a.date));
 
-  // Update cache
   cachedBlogs = sortedBlogs;
   cacheTime = now;
 
@@ -65,7 +107,7 @@ export async function getAllBlogs(): Promise<BlogPost[]> {
 }
 
 /**
- * Clear the blog cache. Useful for development or when blog content changes.
+ * Clear the blog cache.
  */
 export function clearBlogCache(): void {
   cachedBlogs = null;
@@ -74,8 +116,6 @@ export function clearBlogCache(): void {
 
 /**
  * Get all posts from the same series
- * @param seriesName - The name of the series
- * @returns Array of blog posts sorted by seriesOrder
  */
 export async function getSeriesPosts(seriesName: string): Promise<BlogPost[]> {
   const allBlogs = await getAllBlogs();
