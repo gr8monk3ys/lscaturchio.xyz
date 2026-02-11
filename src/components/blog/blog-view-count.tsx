@@ -50,9 +50,9 @@ export function BlogViewCount({ slug }: BlogViewCountProps) {
   }
 
   return (
-    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
       <Eye className="h-3 w-3" />
       <span>{views.toLocaleString()}</span>
-    </div>
+    </span>
   );
 }
