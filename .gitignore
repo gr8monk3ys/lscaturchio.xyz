@@ -38,6 +38,7 @@ yarn-error.log*
 /voice/
 scripts/.tts-venv/
 __pycache__/
+public/audio/.tmp/
 
 # typescript
 *.tsbuildinfo
