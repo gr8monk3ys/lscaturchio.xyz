@@ -4,19 +4,71 @@ import {
   createEmbedding,
   splitIntoChunks,
   storeEmbedding,
+  deleteEmbeddingsBySource,
   getEmbeddingProvider,
   getProviderEmbeddingDimensions,
   isEmbeddingsAvailable,
 } from '../src/lib/embeddings';
+import { extractBlogMeta } from '../src/lib/blog-meta';
 
 const DATA_DIR = path.join(process.cwd(), 'public', 'my-data');
+const BLOG_DIR = path.join(process.cwd(), 'src', 'app', 'blog');
 
-async function processFile(filePath: string) {
+function slugToTitle(slug: string): string {
+  return slug
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function getSourceMetadata(fileName: string): Record<string, unknown> {
+  const baseMeta: Record<string, unknown> = { source: fileName };
+
+  if (!fileName.startsWith('blog-') || !fileName.endsWith('.md')) {
+    return baseMeta;
+  }
+
+  const slug = fileName.replace(/^blog-/, '').replace(/\.md$/, '');
+  const contentPath = path.join(BLOG_DIR, slug, 'content.mdx');
+
+  if (!fs.existsSync(contentPath)) {
+    return {
+      ...baseMeta,
+      slug,
+      url: `/blog/${slug}`,
+      title: slugToTitle(slug),
+    };
+  }
+
+  const mdxContent = fs.readFileSync(contentPath, 'utf-8');
+  const meta = extractBlogMeta(mdxContent);
+
+  return {
+    ...baseMeta,
+    slug,
+    url: `/blog/${slug}`,
+    title: meta.title ?? slugToTitle(slug),
+    description: meta.description ?? '',
+    date: meta.date ?? '',
+    image: meta.image ?? '/images/blog/default.webp',
+    tags: meta.tags ?? [],
+  };
+}
+
+async function processFile(filePath: string, appendMode: boolean) {
   const content = fs.readFileSync(filePath, 'utf-8');
   const fileName = path.basename(filePath);
+  const sourceMetadata = getSourceMetadata(fileName);
 
   // Split content into chunks
   const chunks = splitIntoChunks(content);
+
+  if (!appendMode) {
+    const removed = await deleteEmbeddingsBySource(fileName);
+    if (removed > 0) {
+      console.log(`Removed ${removed} existing embedding chunks for ${fileName}`);
+    }
+  }
 
   console.log(`Processing ${fileName}: ${chunks.length} chunks`);
 
@@ -29,8 +81,9 @@ async function processFile(filePath: string) {
 
       // Store in database
       await storeEmbedding(chunk, embedding, {
-        source: fileName,
+        ...sourceMetadata,
         chunk_index: i,
+        chunk_total: chunks.length,
       });
 
       console.log(`✓ Processed chunk ${i + 1}/${chunks.length} of ${fileName}`);
@@ -44,6 +97,15 @@ async function processFile(filePath: string) {
 }
 
 async function main() {
+  const args = new Set(process.argv.slice(2));
+  const appendMode = args.has('--append');
+
+  if (!process.env.DATABASE_URL) {
+    console.error('❌ DATABASE_URL is not configured.');
+    console.error('Set DATABASE_URL in your environment or .env.local before running embeddings generation.');
+    process.exit(1);
+  }
+
   // Check if embedding provider is available
   const available = await isEmbeddingsAvailable();
   if (!available) {
@@ -60,6 +122,7 @@ async function main() {
   const provider = getEmbeddingProvider();
   const dimensions = getProviderEmbeddingDimensions();
   console.log(`Using ${provider} for embeddings (${dimensions} dimensions)`);
+  console.log(`Mode: ${appendMode ? 'append' : 'replace existing by source'}`);
   console.log('');
 
   // Create data directory if it doesn't exist
@@ -86,7 +149,7 @@ async function main() {
   // Process each file
   for (const file of files) {
     const filePath = path.join(DATA_DIR, file);
-    await processFile(filePath);
+    await processFile(filePath, appendMode);
   }
 
   console.log('');

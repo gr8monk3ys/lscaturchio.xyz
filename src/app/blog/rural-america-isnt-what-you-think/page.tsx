@@ -1,13 +1,5 @@
 import { BlogLayout } from "@/components/blog/BlogLayout";
-import Content from "./content.mdx";
-
-const meta = {
-  title: "Rural America Isn't What You Think",
-  description: "The countryside isn't monolithically conservative. It's complicated, abandoned, and organizing in ways that defy stereotypes.",
-  date: "2025-07-21",
-  image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80",
-  tags: ["rural", "politics", "america", "geography"],
-};
+import Content, { meta } from "./content.mdx";
 
 export default function Page() {
   return (
