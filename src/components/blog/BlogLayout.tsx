@@ -35,6 +35,18 @@ interface BlogMeta {
   seriesOrder?: number; // Order within the series
 }
 
+function getTodayIsoDate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function clampToToday(date: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return date;
+  }
+  const today = getTodayIsoDate();
+  return date > today ? today : date;
+}
+
 interface BlogLayoutProps {
   children: ReactNode;
   meta: BlogMeta;
@@ -53,6 +65,8 @@ export function BlogLayout({
   const router = useRouter();
   const pathname = usePathname();
   const contentRef = useRef<HTMLDivElement>(null);
+  const safeDate = clampToToday(meta.date);
+  const safeUpdated = meta.updated ? clampToToday(meta.updated) : undefined;
 
   // Get slug from pathname
   const slug = pathname.split('/').pop() || '';
@@ -75,8 +89,8 @@ export function BlogLayout({
         <BlogJsonLd
           title={meta.title}
           description={meta.description}
-          date={meta.date}
-          updated={meta.updated}
+          date={safeDate}
+          updated={safeUpdated}
           image={meta.image}
           tags={meta.tags}
           url={fullUrl}
@@ -108,12 +122,12 @@ export function BlogLayout({
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     <div className="flex flex-col">
-                      <time dateTime={meta.date} className="text-stone-600 dark:text-stone-400">
-                        {formatDate(meta.date)}
+                      <time dateTime={safeDate} className="text-stone-600 dark:text-stone-400">
+                        {formatDate(safeDate)}
                       </time>
-                      {meta.updated && (
+                      {safeUpdated && (
                         <span className="text-xs text-stone-500 dark:text-stone-400">
-                          Updated: {formatDate(meta.updated)}
+                          Updated: {formatDate(safeUpdated)}
                         </span>
                       )}
                     </div>
