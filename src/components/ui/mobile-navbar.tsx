@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { navigationCategories, contactLink } from '@/constants/navlinks';
 import { ThemeToggle } from './theme-toggle';
 import { SearchButton } from '../search/search-button';
+import { LanguageSwitcher } from "@/components/i18n/google-translate";
 
 export function MobileNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -158,6 +159,7 @@ export function MobileNavbar() {
                 transition={{ delay: 0.4 }}
                 className="pt-6 flex items-center justify-center gap-4"
               >
+                <LanguageSwitcher compact />
                 <SearchButton />
                 <ThemeToggle />
               </motion.div>

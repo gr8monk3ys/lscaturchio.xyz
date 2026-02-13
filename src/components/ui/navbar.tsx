@@ -9,6 +9,7 @@ import { navigationCategories, contactLink } from '@/constants/navlinks';
 import { ThemeToggle } from './theme-toggle';
 import { SearchModal } from './search-modal';
 import { NavDropdown } from './nav-dropdown';
+import { LanguageSwitcher } from "@/components/i18n/google-translate";
 
 // Animation variants for nav items
 const navItemVariants = {
@@ -175,7 +176,8 @@ export function Navbar() {
             </nav>
 
             {/* Search and theme toggle */}
-            <div className="w-[200px] flex justify-end items-center gap-2">
+            <div className="w-[290px] flex justify-end items-center gap-2">
+              <LanguageSwitcher />
               <SearchModal />
               <ThemeToggle />
             </div>
