@@ -10,15 +10,13 @@ import { logError } from "@/lib/logger";
 import { showContainerVariants, showItemVariants } from "@/lib/animations";
 import Image from "next/image";
 
-interface Repository {
-  title: string;
-  description: string;
-  href: string;
-  slug: string;
-  stack?: string[];
-  stars: number;
-  forks: number;
-  lastUpdated: string;
+function getInitials(title: string): string {
+  return title
+    .split(/[-\s_]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? "")
+    .join("");
 }
 
 function getInitials(title: string): string {
@@ -58,7 +56,7 @@ function formatTimeAgo(dateString: string): string {
 export function RecentProjects() {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
-  const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [repositories, setRepositories] = useState<PortfolioRepo[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,8 +66,8 @@ export function RecentProjects() {
         if (!response.ok) {
           throw new Error('Failed to fetch repositories');
         }
-        const data = await response.json();
-        const sortedRepos = data.sort((a: Repository, b: Repository) =>
+        const data: PortfolioRepo[] = await response.json();
+        const sortedRepos = data.sort((a: PortfolioRepo, b: PortfolioRepo) =>
           new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
         );
         setRepositories(sortedRepos.slice(0, 3));
@@ -190,5 +188,21 @@ export function RecentProjects() {
         </motion.div>
       </div>
     </Section>
+  );
+}
+
+function ProjectLogo({ logo, title }: { logo: string; title: string }) {
+  const [src, setSrc] = useState(logo);
+
+  return (
+    <Image
+      src={src}
+      alt={`${title} logo`}
+      width={180}
+      height={112}
+      unoptimized
+      className="max-h-24 w-auto rounded-xl border border-white/10 object-contain p-2"
+      onError={() => setSrc("/images/projects/logos/default.svg")}
+    />
   );
 }

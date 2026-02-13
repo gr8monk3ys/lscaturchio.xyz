@@ -1,4 +1,9 @@
 declare module "*.webp" {
-  const src: string
-  export default src
+  const content: import("next/image").StaticImageData
+  export default content
+}
+
+declare module "*.svg" {
+  const content: import("next/image").StaticImageData
+  export default content
 }
