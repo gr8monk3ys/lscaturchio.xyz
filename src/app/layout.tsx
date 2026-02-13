@@ -10,6 +10,7 @@ import { PWARegister } from '@/components/pwa-register'
 import { ScrollToTop } from '@/components/ui/scroll-to-top'
 import { LayoutWrapper } from '@/components/layout/layout-wrapper'
 import { CanonicalLink } from '@/components/layout/canonical-link'
+import { GoogleTranslateProvider } from "@/components/i18n/google-translate";
 import { Metadata } from 'next'
 import localFont from "next/font/local";
 import { Manrope } from "next/font/google";
@@ -105,6 +106,8 @@ export default function RootLayout({
 
       </head>
       <body>
+        <GoogleTranslateProvider />
+
         {/* Skip to content link for accessibility */}
         <a
           href="#main-content"
