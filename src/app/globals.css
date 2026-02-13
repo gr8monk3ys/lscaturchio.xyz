@@ -225,22 +225,46 @@
 
   /* CTA Style Guide */
   .cta-primary {
-    @apply neu-button bg-primary text-primary-foreground font-semibold transition-all;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    @apply inline-flex items-center justify-center font-semibold transition-all;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border: 1px solid hsl(var(--primary) / 0.42);
+    box-shadow: var(--neu-shadow-sm), 0 10px 24px hsl(var(--primary) / 0.18);
   }
 
   .cta-primary:hover {
-    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.2);
+    color: hsl(var(--primary-foreground));
+    filter: brightness(1.03);
+    box-shadow: var(--neu-shadow), 0 14px 28px hsl(var(--primary) / 0.24);
+  }
+
+  .cta-primary:disabled,
+  .cta-primary[aria-disabled="true"] {
+    background-color: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    border-color: hsl(var(--border));
+    box-shadow: none;
   }
 
   .cta-secondary {
-    @apply neu-button text-foreground;
+    @apply inline-flex items-center justify-center font-medium transition-all;
+    color: hsl(var(--foreground));
     background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--accent)));
-    border-color: hsl(var(--border));
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--neu-shadow-sm);
   }
 
   .cta-secondary:hover {
+    color: hsl(var(--foreground));
     border-color: hsl(var(--primary) / 0.35);
+    box-shadow: var(--neu-shadow);
+  }
+
+  .cta-secondary:disabled,
+  .cta-secondary[aria-disabled="true"] {
+    color: hsl(var(--muted-foreground));
+    border-color: hsl(var(--border));
+    box-shadow: none;
   }
 
   .cta-link {

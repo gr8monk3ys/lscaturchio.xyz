@@ -29,15 +29,15 @@ const proofItems = [
 
 export function ProofBar() {
   return (
-    <Section padding="compact" size="wide" topDivider>
-      <div className="neu-card rounded-2xl px-6 py-6 bg-gradient-to-br from-background via-background to-primary/5">
+    <Section padding="compact" size="wide">
+      <div className="neu-card rounded-2xl px-6 py-6">
         <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
           {proofItems.map((item) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.label}
-                className="flex items-center gap-3 rounded-xl bg-secondary/40 px-4 py-3"
+                className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/85 px-4 py-3"
               >
                 <div className="neu-flat-sm rounded-lg p-2">
                   <Icon className="h-4 w-4 text-primary" />

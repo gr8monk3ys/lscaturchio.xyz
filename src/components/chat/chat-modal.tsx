@@ -31,11 +31,12 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
   const handleSubmit = async (e?: FormEvent) => {
     e?.preventDefault();
-    if (!input.trim() || isLoading) return;
+    const query = input.trim();
+    if (!query || isLoading) return;
 
     const userMessage = {
       id: messages.length + 1,
-      content: input,
+      content: query,
       sender: "user",
     };
 
@@ -49,14 +50,17 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ query: input }),
+        body: JSON.stringify({ query }),
       });
 
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error("Failed to get response");
+        throw new Error(
+          data?.message ||
+          data?.error ||
+          `Chat request failed with status ${response.status}`
+        );
       }
-
-      const data = await response.json();
       
       setMessages((prev) => [
         ...prev,
@@ -114,7 +118,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                       ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64&h=64&q=80&crop=faces&fit=crop"
                       : "/images/portrait.webp"
                   }
-                  fallback={message.sender === "user" ? "You" : "LS"}
+                  fallback={message.sender === "user" ? "Y" : "LS"}
                 />
                 <ChatBubbleMessage
                   variant={message.sender === "user" ? "sent" : "received"}
@@ -168,7 +172,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                   <Mic className="h-4 w-4" />
                 </Button>
               </div>
-              <Button type="submit" size="sm" className="ml-auto gap-1.5">
+              <Button type="submit" size="sm" className="ml-auto h-8 px-4 gap-1.5">
                 Send Message
                 <CornerDownLeft className="h-3.5 w-3.5" />
               </Button>
