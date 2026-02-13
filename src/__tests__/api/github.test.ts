@@ -131,6 +131,7 @@ describe('GitHub API Route', () => {
         slug: 'awesome-project',
         stars: 100,
         forks: 25,
+        logo: '/images/projects/logos/awesome-project.svg',
       });
       // Stack should include language and topics
       expect(data[0].stack).toContain('TypeScript');
@@ -161,6 +162,7 @@ describe('GitHub API Route', () => {
       const data = await response.json();
 
       expect(data[0].description).toBe('No description available');
+      expect(data[0].logo).toBe('/images/projects/logos/another-repo.svg');
     });
 
     it('filters out forked repositories', async () => {

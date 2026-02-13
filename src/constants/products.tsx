@@ -1,13 +1,13 @@
 import { Product } from "@/types/products";
 
-import leetcodeSolver from "../../public/images/logos/leetcode-solver.webp";
-import findMyDoggo from "../../public/images/logos/find-my-doggo.webp";
-import tradingBot from "../../public/images/logos/trading-bot.webp";
-import eyebookReader from "../../public/images/logos/eyebook-reader.webp";
-import linkFlame from "../../public/images/logos/linkflame.webp";
-import TAlker from "../../public/images/logos/talker.webp";
-import blogAI from "../../public/images/logos/blog-ai.webp";
-import paperSummarizer from "../../public/images/logos/paper-summarizer.webp";
+import leetcodeSolver from "../../public/images/logos-modern/leetcode-solver.svg";
+import findMyDoggo from "../../public/images/logos-modern/find-my-doggo.svg";
+import tradingBot from "../../public/images/logos-modern/trading-bot.svg";
+import eyebookReader from "../../public/images/logos-modern/eyebook-reader.svg";
+import linkFlame from "../../public/images/logos-modern/linkflame.svg";
+import TAlker from "../../public/images/logos-modern/talker.svg";
+import blogAI from "../../public/images/logos-modern/blog-ai.svg";
+import paperSummarizer from "../../public/images/logos-modern/paper-summarizer.svg";
 
 export const products: Product[] = [
   // ============================================

@@ -8,16 +8,16 @@ import { Section, SectionHeader } from "../ui/Section";
 import { useRef, useEffect, useState } from "react";
 import { logError } from "@/lib/logger";
 import { showContainerVariants, showItemVariants } from "@/lib/animations";
+import Image from "next/image";
+import type { PortfolioRepo } from "@/types/github";
 
-interface Repository {
-  title: string;
-  description: string;
-  href: string;
-  slug: string;
-  stack?: string[];
-  stars: number;
-  forks: number;
-  lastUpdated: string;
+function getInitials(title: string): string {
+  return title
+    .split(/[-\s_]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? "")
+    .join("");
 }
 
 function formatTimeAgo(dateString: string): string {
@@ -44,7 +44,7 @@ function formatTimeAgo(dateString: string): string {
 export function RecentProjects() {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-100px" });
-  const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [repositories, setRepositories] = useState<PortfolioRepo[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,8 +54,8 @@ export function RecentProjects() {
         if (!response.ok) {
           throw new Error('Failed to fetch repositories');
         }
-        const data = await response.json();
-        const sortedRepos = data.sort((a: Repository, b: Repository) =>
+        const data: PortfolioRepo[] = await response.json();
+        const sortedRepos = data.sort((a: PortfolioRepo, b: PortfolioRepo) =>
           new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
         );
         setRepositories(sortedRepos.slice(0, 3));
@@ -89,33 +89,42 @@ export function RecentProjects() {
           variants={showContainerVariants}
           initial="hidden"
           animate={isInView ? "show" : "hidden"}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 gap-6 md:grid-cols-6"
         >
           {loading ? (
             [...Array(3)].map((_, i) => (
               <motion.div
                 key={i}
                 variants={showItemVariants}
-                className="bg-secondary/50 rounded-xl p-4 h-[200px] animate-pulse"
+                className="h-[260px] animate-pulse rounded-2xl bg-muted/50 md:col-span-2"
               />
             ))
           ) : (
-            repositories.map((repo) => (
+            repositories.map((repo, index) => (
               <motion.div
                 key={repo.href}
                 variants={showItemVariants}
-                className="group relative bg-secondary/50 hover:bg-secondary/70 rounded-xl p-5 transition-colors"
+                className={`group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl ${
+                  index === 2 ? "md:col-span-6" : "md:col-span-3"
+                }`}
               >
-                <div className="space-y-3">
+                <div className="relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-indigo-950/70 to-slate-900">
+                  <ProjectLogo logo={repo.logo} title={repo.title} />
+                  <div className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-2xl border border-white/20 bg-gradient-to-br from-indigo-500/70 to-violet-500/70 text-sm font-semibold text-white backdrop-blur-md">
+                    {getInitials(repo.title)}
+                  </div>
+                </div>
+
+                <div className="space-y-3 p-5">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
+                    <h3 className="truncate font-semibold transition-colors group-hover:text-primary">
                       {repo.title}
                     </h3>
                     <Link
                       href={repo.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="shrink-0 size-8 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                      className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
                     >
                       <ArrowUpRight className="size-4" />
                     </Link>
@@ -159,5 +168,21 @@ export function RecentProjects() {
         </motion.div>
       </div>
     </Section>
+  );
+}
+
+function ProjectLogo({ logo, title }: { logo: string; title: string }) {
+  const [src, setSrc] = useState(logo);
+
+  return (
+    <Image
+      src={src}
+      alt={`${title} logo`}
+      width={180}
+      height={112}
+      unoptimized
+      className="max-h-24 w-auto rounded-xl border border-white/10 object-contain p-2"
+      onError={() => setSrc("/images/projects/logos/default.svg")}
+    />
   );
 }
