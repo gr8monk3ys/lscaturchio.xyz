@@ -39,6 +39,7 @@ yarn-error.log*
 scripts/.tts-venv/
 __pycache__/
 public/audio/.tmp/
+/tmp/
 
 # typescript
 *.tsbuildinfo
