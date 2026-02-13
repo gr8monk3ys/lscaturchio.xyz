@@ -54,7 +54,7 @@ export function RecentBlogs({ blogs }: RecentBlogsProps) {
               key={post.slug}
               variants={showItemVariants}
               className={`group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl ${
-                index === 2 ? "md:col-span-6" : "md:col-span-3"
+                index === 0 ? "md:col-span-4" : "md:col-span-2"
               }`}
             >
               <Link href={`/blog/${post.slug}`} className="flex h-full flex-col">
