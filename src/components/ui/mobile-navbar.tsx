@@ -28,6 +28,8 @@ export function MobileNavbar() {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="flex h-10 w-10 items-center justify-center rounded-xl neu-button"
           aria-label="Toggle menu"
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-navigation-menu"
         >
           {isMenuOpen ? (
             <X className="h-5 w-5" />
@@ -45,6 +47,7 @@ export function MobileNavbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
+            id="mobile-navigation-menu"
             className="fixed inset-0 z-[400] flex flex-col bg-background/95 backdrop-blur-sm md:hidden overflow-y-auto"
           >
             <div className="flex flex-col w-full max-w-md mx-auto p-6 pt-20 space-y-2">
