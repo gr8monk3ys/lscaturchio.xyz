@@ -1,8 +1,14 @@
 /** @type {import('next').NextConfig} */
 import createMDX from '@next/mdx';
 import { withSentryConfig } from '@sentry/nextjs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const nextConfig = {
+  outputFileTracingRoot: __dirname,
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   async redirects() {
     return [
@@ -78,6 +84,14 @@ const nextConfig = {
   },
   // Performance optimizations
   webpack: (config, { dev, isServer }) => {
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      {
+        module: /@opentelemetry\/instrumentation/,
+        message: /Critical dependency: the request of a dependency is an expression/,
+      },
+    ];
+
     // Only run in production client-side builds
     if (!dev && !isServer) {
       // Enable tree shaking and purging
