@@ -8,6 +8,7 @@ import { Section, SectionHeader } from "../ui/Section";
 import { useRef, useEffect, useState } from "react";
 import { logError } from "@/lib/logger";
 import { showContainerVariants, showItemVariants } from "@/lib/animations";
+import Image from "next/image";
 
 interface Repository {
   title: string;
@@ -18,6 +19,19 @@ interface Repository {
   stars: number;
   forks: number;
   lastUpdated: string;
+}
+
+function getInitials(title: string): string {
+  return title
+    .split(/[-\s_]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+function getRepoCover(repoName: string): string {
+  return `https://opengraph.githubassets.com/1/gr8monk3ys/${repoName}`;
 }
 
 function formatTimeAgo(dateString: string): string {
@@ -89,33 +103,50 @@ export function RecentProjects() {
           variants={showContainerVariants}
           initial="hidden"
           animate={isInView ? "show" : "hidden"}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 gap-6 md:grid-cols-6"
         >
           {loading ? (
             [...Array(3)].map((_, i) => (
               <motion.div
                 key={i}
                 variants={showItemVariants}
-                className="bg-secondary/50 rounded-xl p-4 h-[200px] animate-pulse"
+                className="h-[260px] animate-pulse rounded-2xl bg-muted/50 md:col-span-2"
               />
             ))
           ) : (
-            repositories.map((repo) => (
+            repositories.map((repo, index) => (
               <motion.div
                 key={repo.href}
                 variants={showItemVariants}
-                className="group relative bg-secondary/50 hover:bg-secondary/70 rounded-xl p-5 transition-colors"
+                className={`group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl ${
+                  index === 1 ? "md:col-span-4" : "md:col-span-2"
+                }`}
               >
-                <div className="space-y-3">
+                <div className="relative h-36 overflow-hidden">
+                  <Image
+                    src={getRepoCover(repo.title)}
+                    alt={`${repo.title} repository cover`}
+                    fill
+                    unoptimized
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                  <div className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-2xl border border-white/20 bg-gradient-to-br from-indigo-500/70 to-violet-500/70 text-sm font-semibold text-white backdrop-blur-md">
+                    {getInitials(repo.title)}
+                  </div>
+                </div>
+
+                <div className="space-y-3 p-5">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
+                    <h3 className="truncate font-semibold transition-colors group-hover:text-primary">
                       {repo.title}
                     </h3>
                     <Link
                       href={repo.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="shrink-0 size-8 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                      className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
                     >
                       <ArrowUpRight className="size-4" />
                     </Link>
