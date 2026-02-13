@@ -16,3 +16,15 @@ export interface GitHubRepo {
 export interface GitHubTopicsResponse {
   names: string[];
 }
+
+export interface PortfolioRepo {
+  title: string;
+  description: string;
+  href: string;
+  slug: string;
+  stack: string[];
+  stars: number;
+  forks: number;
+  lastUpdated: string;
+  logo: string;
+}

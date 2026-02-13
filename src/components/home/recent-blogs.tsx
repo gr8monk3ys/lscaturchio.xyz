@@ -8,6 +8,7 @@ import { Section, SectionHeader } from "../ui/Section";
 import { useRef } from "react";
 import { BlogViewCount } from "../blog/blog-view-count";
 import { showContainerVariants, showItemVariants } from "@/lib/animations";
+import Image from "next/image";
 
 interface BlogPost {
   title: string;
@@ -46,46 +47,60 @@ export function RecentBlogs({ blogs }: RecentBlogsProps) {
           variants={showContainerVariants}
           initial="hidden"
           animate={isInView ? "show" : "hidden"}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 gap-6 md:grid-cols-6"
         >
-          {blogs.map((post) => (
+          {blogs.map((post, index) => (
             <motion.div
               key={post.slug}
               variants={showItemVariants}
-              className="group relative flex flex-col overflow-hidden rounded-xl bg-secondary/50 transition-all hover:bg-secondary/70"
+              className={`group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl ${
+                index === 2 ? "md:col-span-6" : "md:col-span-3"
+              }`}
             >
-              <Link href={`/blog/${post.slug}`} className="flex flex-col flex-1 p-6">
-                <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="size-4" />
-                    <time dateTime={post.date}>{post.date}</time>
+              <Link href={`/blog/${post.slug}`} className="flex h-full flex-col">
+                <div className="relative h-44 overflow-hidden md:h-52">
+                  <Image
+                    src={post.image || "/images/blog/default.webp"}
+                    alt={post.title}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 66vw, 40vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs text-white/90">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="size-3.5" />
+                      <time dateTime={post.date}>{post.date}</time>
+                    </div>
+                    <BlogViewCount slug={post.slug} />
                   </div>
-                  <BlogViewCount slug={post.slug} />
                 </div>
 
-                <h3 className="text-lg font-semibold tracking-tight mb-2 group-hover:text-primary transition-colors">
-                  {post.title}
-                </h3>
+                <div className="flex flex-1 flex-col p-5">
+                  <h3 className="mb-2 text-lg font-semibold tracking-tight transition-colors group-hover:text-primary">
+                    {post.title}
+                  </h3>
 
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                  {post.description}
-                </p>
+                  <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
+                    {post.description}
+                  </p>
 
-                <div className="mt-auto flex flex-wrap gap-1.5">
-                  {post.tags?.slice(0, 3).map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant="secondary"
-                      className="px-2 py-0.5 text-xs font-medium"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
+                  <div className="mt-auto flex flex-wrap gap-1.5">
+                    {post.tags?.slice(0, 3).map((tag) => (
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="border border-border/50 bg-muted/70 px-2 py-0.5 text-xs font-medium"
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
 
-                <div className="mt-4 flex items-center gap-2 text-sm font-medium text-primary">
-                  Read more
-                  <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <div className="mt-4 flex items-center gap-2 text-sm font-medium text-primary">
+                    Read more
+                    <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </div>
                 </div>
               </Link>
             </motion.div>
