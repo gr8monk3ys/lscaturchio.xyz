@@ -62,6 +62,25 @@ Follow these steps to set up and run the project locally:
 
 4. **View in Browser**: Open [http://localhost:3000](http://localhost:3000) to preview the site locally.
 
+## 🤖 Content Pipelines
+
+```bash
+# Regenerate RAG embeddings (requires DATABASE_URL and OpenAI/Ollama)
+npm run generate-embeddings
+
+# Build Matisse-style blog cover prompts only
+npm run generate-matisse-covers -- --prepare-only
+
+# Generate + apply Matisse-style blog covers (requires OPENAI_API_KEY)
+npm run generate-matisse-covers -- --force
+
+# Generate missing blog audio with OpenAI TTS (requires OPENAI_API_KEY)
+npm run generate-tts-openai
+
+# Audit generated media footprint and coverage
+npm run audit-media
+```
+
 ## 📈 Deployment
 
 The website is deployed using [Vercel](https://vercel.com/), ensuring rapid and reliable performance with automatic CI/CD pipelines. For production deployment:

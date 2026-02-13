@@ -4,7 +4,7 @@ import { getAllBlogs } from "@/lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
 import { BlogStats } from "@/components/blog/blog-stats";
 import Link from "next/link";
-import { Tag } from "lucide-react";
+import { MessageSquare, Tag } from "lucide-react";
 
 interface Blog {
   slug: string;
@@ -47,13 +47,22 @@ export default async function Blog() {
               Thoughts on software development, technology, and life.
             </p>
           </div>
-          <Link
-            href="/tags"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl neu-button hover:text-primary transition-all"
-          >
-            <Tag className="h-4 w-4" />
-            <span className="text-sm font-medium">Browse by tag</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/chat"
+              className="flex items-center gap-2 rounded-xl px-4 py-2 cta-secondary hover:text-primary transition-all"
+            >
+              <MessageSquare className="h-4 w-4" />
+              <span className="text-sm font-medium">Chat about posts</span>
+            </Link>
+            <Link
+              href="/tags"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl neu-button hover:text-primary transition-all"
+            >
+              <Tag className="h-4 w-4" />
+              <span className="text-sm font-medium">Browse by tag</span>
+            </Link>
+          </div>
         </div>
 
         {/* Blog Statistics */}

@@ -1,6 +1,7 @@
 import glob from "fast-glob";
 import * as path from "path";
 import fs from "fs/promises";
+import { extractBlogMeta } from "@/lib/blog-meta";
 
 // Module-level cache for getAllBlogs() to avoid repeated disk reads
 let cachedBlogs: BlogPost[] | null = null;
@@ -23,52 +24,11 @@ export interface BlogPost extends BlogMeta {
   content: string;
 }
 
-/**
- * Extract meta object from MDX/TSX file content using regex.
- * Avoids dynamic import() which causes the bundler to pull in
- * all files under src/app/blog/ (including error.tsx, loading.tsx, etc.)
- */
-function extractMeta(content: string): Partial<BlogMeta> {
-  const meta: Partial<BlogMeta> = {};
-
-  const titleMatch = content.match(/title:\s*["'`]([^"'`]+)["'`]/);
-  if (titleMatch) meta.title = titleMatch[1];
-
-  const descMatch = content.match(/description:\s*["'`]([^"'`]+)["'`]/);
-  if (descMatch) meta.description = descMatch[1];
-
-  const dateMatch = content.match(/date:\s*["'`]([^"'`]+)["'`]/);
-  if (dateMatch) meta.date = dateMatch[1];
-
-  const updatedMatch = content.match(/updated:\s*["'`]([^"'`]+)["'`]/);
-  if (updatedMatch) meta.updated = updatedMatch[1];
-
-  const imageMatch = content.match(/image:\s*["'`]([^"'`]+)["'`]/);
-  if (imageMatch) meta.image = imageMatch[1];
-
-  const seriesMatch = content.match(/series:\s*["'`]([^"'`]+)["'`]/);
-  if (seriesMatch) meta.series = seriesMatch[1];
-
-  const seriesOrderMatch = content.match(/seriesOrder:\s*(\d+)/);
-  if (seriesOrderMatch) meta.seriesOrder = parseInt(seriesOrderMatch[1], 10);
-
-  // Extract tags array: tags: ["tag1", "tag2"]
-  const tagsMatch = content.match(/tags:\s*\[([\s\S]*?)\]/);
-  if (tagsMatch) {
-    const tagStrings = tagsMatch[1].match(/["'`]([^"'`]+)["'`]/g);
-    meta.tags = tagStrings
-      ? tagStrings.map((t) => t.replace(/["'`]/g, ""))
-      : [];
-  }
-
-  return meta;
-}
-
 async function readBlog(fileName: string): Promise<BlogPost | null> {
   const blogDir = path.join(process.cwd(), "src/app/blog");
   const filePath = path.join(blogDir, fileName);
   const content = await fs.readFile(filePath, "utf-8");
-  const meta = extractMeta(content);
+  const meta = extractBlogMeta(content);
 
   if (!meta.title || !meta.date) return null;
 
