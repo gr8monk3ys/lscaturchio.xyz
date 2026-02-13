@@ -1,6 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import type { GitHubRepo, GitHubTopicsResponse } from '@/types/github';
 import { logError } from '@/lib/logger';
+
+function normalizeSlug(name: string): string {
+  return name.toLowerCase().replace(/\s+/g, '-');
+}
+
+function getProjectLogoPath(slug: string): string {
+  return `/images/projects/logos/${slug}.svg`;
+}
 
 async function getGithubRepos(): Promise<GitHubRepo[]> {
   const response = await fetch('https://api.github.com/users/gr8monk3ys/repos', {
@@ -33,7 +41,8 @@ async function getRepoTopics(repoName: string): Promise<string[]> {
   return data.names || [];
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET(request?: Request) {
+  void request;
   try {
     const repos = await getGithubRepos();
     
@@ -45,11 +54,12 @@ export async function GET(_request: NextRequest) {
           title: repo.name,
           description: repo.description || 'No description available',
           href: repo.html_url,
-          slug: repo.name.toLowerCase().replace(/\s+/g, '-'),
+          slug: normalizeSlug(repo.name),
           stack: [repo.language, ...topics].filter(Boolean), // Combine language with topics
           stars: repo.stargazers_count,
           forks: repo.forks_count,
           lastUpdated: new Date(repo.updated_at).toLocaleDateString(),
+          logo: getProjectLogoPath(normalizeSlug(repo.name)),
         };
       })
     );

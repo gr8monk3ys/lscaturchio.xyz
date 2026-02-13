@@ -24,6 +24,22 @@ type PlaybackSpeed = 0.5 | 0.75 | 1 | 1.25 | 1.5 | 1.75 | 2
 const SPEED_OPTIONS: PlaybackSpeed[] = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
 const SKIP_SECONDS = 15
 
+function getSafeDuration(audio: HTMLAudioElement): number {
+  if (Number.isFinite(audio.duration) && audio.duration > 0) {
+    return audio.duration
+  }
+
+  if (audio.seekable.length > 0) {
+    return audio.seekable.end(audio.seekable.length - 1)
+  }
+
+  if (audio.buffered.length > 0) {
+    return audio.buffered.end(audio.buffered.length - 1)
+  }
+
+  return 0
+}
+
 function formatTime(seconds: number): string {
   if (!isFinite(seconds) || seconds < 0) return "0:00"
   const mins = Math.floor(seconds / 60)
@@ -89,14 +105,19 @@ export function TextToSpeech({ slug, contentRef }: AudioPlayerProps) {
     const audio = audioRef.current
     if (!audio) return
 
+    const updateDuration = (): void => {
+      setDuration(getSafeDuration(audio))
+    }
+
     const onTimeUpdate = (): void => setCurrentTime(audio.currentTime)
-    const onDurationChange = (): void => setDuration(audio.duration)
+    const onDurationChange = (): void => updateDuration()
     const onEnded = (): void => {
       setIsPlaying(false)
       setCurrentTime(0)
     }
     const onWaiting = (): void => setIsLoading(true)
     const onCanPlay = (): void => setIsLoading(false)
+    const onLoadedMetadata = (): void => updateDuration()
     const onPlay = (): void => {
       setIsPlaying(true)
       setIsLoading(false)
@@ -108,8 +129,11 @@ export function TextToSpeech({ slug, contentRef }: AudioPlayerProps) {
     audio.addEventListener("ended", onEnded)
     audio.addEventListener("waiting", onWaiting)
     audio.addEventListener("canplay", onCanPlay)
+    audio.addEventListener("loadedmetadata", onLoadedMetadata)
     audio.addEventListener("play", onPlay)
     audio.addEventListener("pause", onPause)
+
+    updateDuration()
 
     return () => {
       audio.removeEventListener("timeupdate", onTimeUpdate)
@@ -117,6 +141,7 @@ export function TextToSpeech({ slug, contentRef }: AudioPlayerProps) {
       audio.removeEventListener("ended", onEnded)
       audio.removeEventListener("waiting", onWaiting)
       audio.removeEventListener("canplay", onCanPlay)
+      audio.removeEventListener("loadedmetadata", onLoadedMetadata)
       audio.removeEventListener("play", onPlay)
       audio.removeEventListener("pause", onPause)
     }
@@ -167,13 +192,18 @@ export function TextToSpeech({ slug, contentRef }: AudioPlayerProps) {
     (e: React.MouseEvent<HTMLDivElement>): void => {
       const audio = audioRef.current
       const bar = progressRef.current
-      if (!audio || !bar || !duration) return
+      if (!audio || !bar) return
+
+      const totalDuration = getSafeDuration(audio)
+      if (!totalDuration) return
 
       const rect = bar.getBoundingClientRect()
-      const percent = (e.clientX - rect.left) / rect.width
-      audio.currentTime = percent * duration
+      const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
+      audio.currentTime = percent * totalDuration
+      setCurrentTime(audio.currentTime)
+      setDuration(totalDuration)
     },
-    [duration]
+    []
   )
 
   // Web Speech API fallback
