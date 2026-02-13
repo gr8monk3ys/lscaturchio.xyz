@@ -9,6 +9,7 @@ import { chatRequestSchema, parseBody } from '@/lib/validations';
 
 // Determine which chat provider to use
 const USE_OPENAI = !!process.env.OPENAI_API_KEY;
+const OPENAI_CHAT_MODEL = process.env.OPENAI_CHAT_MODEL || 'gpt-4o-mini';
 
 // Lazy OpenAI initialization
 let openaiClient: import('openai').default | null = null;
@@ -30,6 +31,14 @@ const SYSTEM_PROMPT = `You are me - Lorenzo Scaturchio, a software engineer and 
 When introducing yourself, simply say "Hi, I'm Lorenzo" or something similarly natural. Avoid mentioning that you're an AI - just be me. Use a friendly, professional tone and speak from my perspective about my work, experience, and services.
 
 If asked about specific experiences or project details not covered in the context, you can say something like "I'd be happy to discuss that in more detail over a call" or suggest reaching out directly.`;
+
+function buildFallbackAnswer(context: string): string {
+  if (context.trim().length > 0) {
+    const snippet = context.replace(/\s+/g, ' ').trim().slice(0, 500);
+    return `I can’t reach my AI backend right now, but here’s relevant context from my writing: ${snippet}${snippet.length >= 500 ? '…' : ''}`;
+  }
+  return "I’m temporarily unable to run full AI responses right now. Please try again shortly or reach out through the contact page.";
+}
 
 const handlePost = async (req: NextRequest) => {
   // CSRF protection
@@ -67,53 +76,70 @@ const handlePost = async (req: NextRequest) => {
       ? `${SYSTEM_PROMPT}\n\nContext:\n${context}`
       : SYSTEM_PROMPT;
 
-    let answer: string;
+    let answer: string | null = null;
+    let provider: 'openai' | 'ollama' | 'fallback' = 'fallback';
 
+    // Try OpenAI first when configured
     if (USE_OPENAI) {
-      // Use OpenAI
-      const client = await getOpenAI();
-      if (!client) {
-        throw new Error('OpenAI client not initialized');
+      try {
+        const client = await getOpenAI();
+        if (!client) {
+          throw new Error('OpenAI client not initialized');
+        }
+
+        const completion = await client.chat.completions.create({
+          model: OPENAI_CHAT_MODEL,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: query },
+          ],
+          temperature: 0.4,
+          max_tokens: 1000,
+        });
+
+        answer = completion.choices[0].message?.content || null;
+        if (answer) {
+          provider = 'openai';
+        }
+      } catch (error) {
+        logError('OpenAI chat failed; falling back', error, { component: 'chat', model: OPENAI_CHAT_MODEL });
       }
+    }
 
-      const completion = await client.chat.completions.create({
-        model: 'gpt-4o-2024-08-06',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: query },
-        ],
-        temperature: 0.4,
-        max_tokens: 1000,
-      });
-
-      answer = completion.choices[0].message?.content || "Sorry, I couldn't generate a response.";
-    } else {
-      // Use Ollama
+    // Fall back to Ollama if OpenAI is unavailable/fails
+    if (!answer) {
       const ollamaAvailable = await isOllamaAvailable();
-      if (!ollamaAvailable) {
-        return NextResponse.json(
-          {
-            error: 'Chat service unavailable',
-            message: 'No AI provider configured. Please set OPENAI_API_KEY or start Ollama server.',
-          },
-          { status: 503 }
-        );
+      if (ollamaAvailable) {
+        try {
+          logInfo('Using Ollama for chat', {
+            component: 'chat',
+            model: process.env.OLLAMA_CHAT_MODEL || 'llama3.2',
+          });
+
+          answer = await createOllamaChatCompletion(
+            [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: query },
+            ],
+            { temperature: 0.4, maxTokens: 1000 }
+          );
+          provider = 'ollama';
+        } catch (error) {
+          logError('Ollama chat failed; using fallback response', error, { component: 'chat' });
+        }
       }
+    }
 
-      logInfo('Using Ollama for chat', { component: 'chat', model: process.env.OLLAMA_CHAT_MODEL || 'llama3.2' });
-
-      answer = await createOllamaChatCompletion(
-        [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: query },
-        ],
-        { temperature: 0.4, maxTokens: 1000 }
-      );
+    // Never hard-fail the chat UX when providers are unavailable
+    if (!answer) {
+      answer = buildFallbackAnswer(context);
+      provider = 'fallback';
     }
 
     return NextResponse.json({
       answer,
-      provider: USE_OPENAI ? 'openai' : 'ollama',
+      provider,
+      degraded: provider === 'fallback',
     });
   } catch (error: unknown) {
     logError('Chat API request failed', error, { endpoint: '/api/chat' });

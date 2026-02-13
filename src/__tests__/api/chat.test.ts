@@ -173,26 +173,29 @@ describe('/api/chat', () => {
   });
 
   describe('error handling', () => {
-    it('returns 503 when no AI provider is available', async () => {
+    it('returns fallback response when no AI provider is available', async () => {
       vi.mocked(isOllamaAvailable).mockResolvedValue(false);
 
       const request = createMockRequest({ query: 'test query' });
       const response = await POST(request);
       const data = await response.json();
 
-      expect(response.status).toBe(503);
-      expect(data.error).toBe('Chat service unavailable');
+      expect(response.status).toBe(200);
+      expect(data.provider).toBe('fallback');
+      expect(data.degraded).toBe(true);
+      expect(data.answer).toContain('temporarily unable');
     });
 
-    it('returns 500 when AI chat fails', async () => {
+    it('returns fallback response when AI chat fails', async () => {
       vi.mocked(createOllamaChatCompletion).mockRejectedValue(new Error('Ollama error'));
 
       const request = createMockRequest({ query: 'test query' });
       const response = await POST(request);
       const data = await response.json();
 
-      expect(response.status).toBe(500);
-      expect(data.error).toBe('Failed to process chat request');
+      expect(response.status).toBe(200);
+      expect(data.provider).toBe('fallback');
+      expect(data.degraded).toBe(true);
     });
 
     it('continues without context when embeddings search fails', async () => {

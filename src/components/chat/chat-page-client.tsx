@@ -53,11 +53,14 @@ export function ChatPageClient() {
         body: JSON.stringify({ query }),
       });
 
+      const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(`Chat request failed with status ${response.status}`);
+        throw new Error(
+          data?.message ||
+          data?.error ||
+          `Chat request failed with status ${response.status}`
+        );
       }
-
-      const data = await response.json();
 
       setMessages((prev) => [
         ...prev,
@@ -112,7 +115,7 @@ export function ChatPageClient() {
               <ChatBubbleAvatar
                 className="h-8 w-8 shrink-0"
                 src={message.sender === "user" ? undefined : "/images/portrait.webp"}
-                fallback={message.sender === "user" ? "You" : "LS"}
+                fallback={message.sender === "user" ? "Y" : "LS"}
               />
               <ChatBubbleMessage
                 variant={message.sender === "user" ? "sent" : "received"}
@@ -173,7 +176,7 @@ export function ChatPageClient() {
             <Button
               type="submit"
               size="sm"
-              className="ml-auto gap-1.5"
+              className="ml-auto h-8 px-4 gap-1.5"
               disabled={isLoading}
               aria-label="Send message"
             >
