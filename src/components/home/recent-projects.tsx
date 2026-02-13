@@ -9,7 +9,6 @@ import { useRef, useEffect, useState } from "react";
 import { logError } from "@/lib/logger";
 import { showContainerVariants, showItemVariants } from "@/lib/animations";
 import Image from "next/image";
-import type { PortfolioRepo } from "@/types/github";
 
 function getInitials(title: string): string {
   return title
@@ -18,6 +17,19 @@ function getInitials(title: string): string {
     .slice(0, 2)
     .map((word) => word[0]?.toUpperCase() ?? "")
     .join("");
+}
+
+function getInitials(title: string): string {
+  return title
+    .split(/[-\s_]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
+function getRepoCover(repoName: string): string {
+  return `https://opengraph.githubassets.com/1/gr8monk3ys/${repoName}`;
 }
 
 function formatTimeAgo(dateString: string): string {
@@ -105,11 +117,19 @@ export function RecentProjects() {
                 key={repo.href}
                 variants={showItemVariants}
                 className={`group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl ${
-                  index === 2 ? "md:col-span-6" : "md:col-span-3"
+                  index === 1 ? "md:col-span-4" : "md:col-span-2"
                 }`}
               >
-                <div className="relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-indigo-950/70 to-slate-900">
-                  <ProjectLogo logo={repo.logo} title={repo.title} />
+                <div className="relative h-36 overflow-hidden">
+                  <Image
+                    src={getRepoCover(repo.title)}
+                    alt={`${repo.title} repository cover`}
+                    fill
+                    unoptimized
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                   <div className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-2xl border border-white/20 bg-gradient-to-br from-indigo-500/70 to-violet-500/70 text-sm font-semibold text-white backdrop-blur-md">
                     {getInitials(repo.title)}
                   </div>
