@@ -127,6 +127,16 @@ export async function storeEmbedding(
 }
 
 /**
+ * Delete embeddings for a given source.
+ * Used by ingestion scripts to make reruns idempotent.
+ */
+export async function deleteEmbeddingsBySource(source: string): Promise<number> {
+  const sql = getDb();
+  const rows = await sql`DELETE FROM embeddings WHERE metadata->>'source' = ${source} RETURNING id`;
+  return rows.length;
+}
+
+/**
  * Search for similar content using vector similarity
  */
 export async function searchSimilarContent(query: string, limit: number = 5) {
