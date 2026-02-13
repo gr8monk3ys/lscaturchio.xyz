@@ -8,6 +8,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary"
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isBlogPage = pathname?.startsWith('/blog')
+  const isHomePage = pathname === '/'
 
   return (
     <>
@@ -17,7 +18,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         </ErrorBoundary>
       </main>
 
-      {!isBlogPage && (
+      {!isBlogPage && !isHomePage && (
         <Suspense fallback={<div className="min-h-[200px]"></div>}>
           <ContactCTA />
         </Suspense>

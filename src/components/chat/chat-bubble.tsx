@@ -21,6 +21,7 @@ export function ChatBubble({
 }: ChatBubbleProps) {
   return (
     <div
+      data-layout={layout}
       className={cn(
         "flex items-start gap-2 mb-4",
         variant === "sent" && "flex-row-reverse",
@@ -48,7 +49,7 @@ export function ChatBubbleMessage({
   return (
     <div
       className={cn(
-        "rounded-lg p-3",
+        "max-w-[78ch] rounded-2xl px-4 py-3 text-sm leading-relaxed",
         variant === "sent" ? "bg-primary text-primary-foreground" : "bg-muted",
         className
       )}
