@@ -25,9 +25,9 @@ export function Hero() {
         className="relative min-h-[55vh] sm:min-h-[60vh] w-full flex items-center justify-center overflow-hidden"
       >
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -top-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
-          <div className="absolute top-8 right-10 h-64 w-64 rounded-full bg-secondary/20 blur-3xl" />
-          <div className="absolute bottom-6 left-10 h-48 w-48 rounded-full bg-accent/70 blur-2xl" />
+          <div className="absolute -top-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-primary/12 blur-3xl" />
+          <div className="absolute top-8 right-10 h-64 w-64 rounded-full bg-secondary/10 blur-3xl" />
+          <div className="absolute bottom-6 left-10 h-48 w-48 rounded-full bg-accent/35 blur-2xl" />
         </div>
         {/* Cursor glow effect */}
         <CursorGlow
@@ -93,13 +93,13 @@ export function Hero() {
             <div className="w-full text-center text-xs sm:text-sm text-muted-foreground/80">
               For teams shipping RAG, applied ML, and production-grade data products.
             </div>
-            <Button asChild size="lg" variant="primary" className="text-base sm:text-lg h-12 px-8">
+            <Button asChild size="lg" variant="primary" className="text-base sm:text-lg h-11 px-7">
               <Link href="/projects">
                 View My Work
                 <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="cta-secondary text-base sm:text-lg h-12 px-8">
+            <Button asChild size="lg" variant="outline" className="cta-secondary text-base sm:text-lg h-11 px-7">
               <Link href="/contact">
                 Contact Me
                 <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
