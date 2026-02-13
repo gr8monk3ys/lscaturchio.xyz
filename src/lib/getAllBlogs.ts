@@ -24,6 +24,19 @@ export interface BlogPost extends BlogMeta {
   content: string;
 }
 
+function getTodayIsoDate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function clampToToday(date: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return date;
+  }
+
+  const today = getTodayIsoDate();
+  return date > today ? today : date;
+}
+
 async function readBlog(fileName: string): Promise<BlogPost | null> {
   const blogDir = path.join(process.cwd(), "src/app/blog");
   const filePath = path.join(blogDir, fileName);
@@ -32,13 +45,16 @@ async function readBlog(fileName: string): Promise<BlogPost | null> {
 
   if (!meta.title || !meta.date) return null;
 
+  const publishDate = clampToToday(meta.date);
+  const updatedDate = meta.updated ? clampToToday(meta.updated) : undefined;
+
   return {
     slug: fileName.replace(/(\/content)?\.mdx$/, ""),
     content,
     title: meta.title,
     description: meta.description || "",
-    date: meta.date,
-    updated: meta.updated,
+    date: publishDate,
+    updated: updatedDate,
     image: meta.image || "/images/blog/default.webp",
     tags: meta.tags || [],
     series: meta.series,
