@@ -113,7 +113,7 @@ Handles cache control (1yr static assets, 5min HTML, no-cache API), security hea
 
 - Structured data: `src/components/ui/structured-data.tsx` (Schema.org JSON-LD)
 - Metadata: `src/app/metadata.ts` (global defaults) + per-page Next.js metadata API
-- Sitemap: `scripts/generate-sitemap.js` (auto-runs post-build)
+- Sitemap: `src/app/sitemap.ts` (Next.js metadata route)
 - RSS: `src/app/api/rss/route.ts`
 
 ## Code Style
