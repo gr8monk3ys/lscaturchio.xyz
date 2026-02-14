@@ -10,6 +10,7 @@ import { PWARegister } from '@/components/pwa-register'
 import { ScrollToTop } from '@/components/ui/scroll-to-top'
 import { LayoutWrapper } from '@/components/layout/layout-wrapper'
 import { CanonicalLink } from '@/components/layout/canonical-link'
+import { HreflangLinks } from "@/components/layout/hreflang-links";
 import { GoogleTranslateProvider } from "@/components/i18n/google-translate";
 import { HtmlLangSync } from "@/components/i18n/html-lang-sync";
 import { Metadata } from 'next'
@@ -70,7 +71,6 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: SITE_URL,
     types: {
       'application/rss+xml': '/api/rss',
     },
@@ -124,6 +124,8 @@ export default function RootLayout({
       <head>
         {/* Canonical Link - Client Component for dynamic pathname */}
         <CanonicalLink />
+        {/* Hreflang Links - Client Component for dynamic pathname */}
+        <HreflangLinks />
 
         {/* RSS Feed Autodiscovery */}
         <link rel="alternate" type="application/rss+xml" title="Lorenzo Scaturchio Blog RSS" href="/api/rss" />
