@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { FAQStructuredData } from "@/components/ui/structured-data";
 
 interface FaqItem {
@@ -84,6 +84,16 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
               ))}
             </Accordion>
           </dl>
+
+          <div className="mt-10 rounded-2xl neu-card p-6">
+            <h3 className="text-lg font-semibold">{contactInfo.title}</h3>
+            <p className="mt-2 text-muted-foreground">{contactInfo.description}</p>
+            <Button asChild variant="primary" className="mt-4">
+              <a href={contactInfo.contactUrl} target="_blank" rel="noopener noreferrer">
+                {contactInfo.buttonText}
+              </a>
+            </Button>
+          </div>
         </div>
       </div>
     </motion.div>

@@ -182,19 +182,3 @@ export function RecentProjects() {
     </Section>
   );
 }
-
-function ProjectLogo({ logo, title }: { logo: string; title: string }) {
-  const [src, setSrc] = useState(logo);
-
-  return (
-    <Image
-      src={src}
-      alt={`${title} logo`}
-      width={180}
-      height={112}
-      unoptimized
-      className="max-h-24 w-auto rounded-xl border border-white/10 object-contain p-2"
-      onError={() => setSrc("/images/projects/logos/default.svg")}
-    />
-  );
-}

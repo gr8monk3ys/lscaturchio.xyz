@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
 
 const GITHUB_USERNAME = 'lscaturchio'; // Change to your GitHub username
 
-const handleGet = async (request: NextRequest) => {
+const handleGet = async () => {
   try {
     // Fetch GitHub contribution data using GitHub GraphQL API
     const token = process.env.GITHUB_TOKEN;

@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { NextRequest } from 'next/server';
 
 // Mock dependencies before importing the route
 vi.mock('@/lib/getAllBlogs', () => ({
@@ -9,17 +8,6 @@ vi.mock('@/lib/getAllBlogs', () => ({
 vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
   logInfo: vi.fn(),
-}));
-
-// Mock rate limiting to pass through for tests
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-}));
-
-vi.mock('@/lib/rate-limit', () => ({
-  RATE_LIMITS: {
-    PUBLIC: { limit: 100, window: 60000 },
-  },
 }));
 
 import { GET } from '@/app/api/blog-stats/route';
@@ -65,8 +53,7 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -110,8 +97,7 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -136,8 +122,7 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -147,8 +132,7 @@ describe('/api/blog-stats', () => {
     it('handles empty blog list', async () => {
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue([]);
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -173,8 +157,7 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -197,8 +180,7 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -231,8 +213,7 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -247,8 +228,7 @@ describe('/api/blog-stats', () => {
         new Error('Database connection failed')
       );
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -259,8 +239,7 @@ describe('/api/blog-stats', () => {
       const error = new Error('File system error');
       (getAllBlogs as ReturnType<typeof vi.fn>).mockRejectedValue(error);
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-      await GET(request);
+      await GET();
 
       expect(logError).toHaveBeenCalledWith(
         'Blog Stats: Unexpected error',
@@ -285,11 +264,9 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-
       // The route should handle this gracefully or throw an error
       // Based on the implementation, it will throw because blog.tags.forEach() fails on undefined
-      const response = await GET(request);
+      const response = await GET();
 
       // Depending on implementation, this might be a 500 error
       expect(response.status).toBe(500);
@@ -312,8 +289,7 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -342,8 +318,7 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const request = new NextRequest('http://localhost/api/blog-stats');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);

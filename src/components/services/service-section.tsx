@@ -3,7 +3,6 @@
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
 
 interface ServiceContent {

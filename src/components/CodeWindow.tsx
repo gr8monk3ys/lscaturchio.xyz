@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, Children, useState, useRef, ReactNode } from "react";
+import React, { useEffect, useState, useRef, ReactNode } from "react";
 import clsx from "clsx";
 import { logError } from "@/lib/logger";
 
@@ -39,8 +39,6 @@ export const CodeWindow = ({ title, children }: CodeWindowProps) => {
         });
     }
   };
-
-  let child = Children.only(children);
 
   return (
     isClient && (

@@ -68,7 +68,7 @@ export default async function TagPage({ params }: Props) {
               {tag}
             </h1>
             <p className="text-muted-foreground">
-              {filtered.length} {filtered.length === 1 ? "post" : "posts"} tagged with "{tag}".
+              {filtered.length} {filtered.length === 1 ? "post" : "posts"} tagged with &quot;{tag}&quot;.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -90,7 +90,7 @@ export default async function TagPage({ params }: Props) {
         {filtered.length === 0 ? (
           <div className="text-center py-16 neu-card rounded-2xl">
             <p className="text-lg text-muted-foreground">
-              No blog posts found with the tag "{tag}".
+              No blog posts found with the tag &quot;{tag}&quot;.
             </p>
             <Link href="/tags" className="mt-4 inline-block px-6 py-2 rounded-xl cta-secondary">
               Browse tags
@@ -115,4 +115,3 @@ export default async function TagPage({ params }: Props) {
     </Container>
   );
 }
-

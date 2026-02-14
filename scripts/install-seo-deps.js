@@ -23,7 +23,7 @@ const nextConfigPath = path.join(process.cwd(), 'next.config.mjs');
 if (fs.existsSync(nextConfigPath)) {
   console.log('Checking next.config.mjs for SEO optimization...');
   
-  let nextConfig = fs.readFileSync(nextConfigPath, 'utf8');
+  const nextConfig = fs.readFileSync(nextConfigPath, 'utf8');
   
   // Check if config already has SEO optimization
   if (!nextConfig.includes('poweredByHeader') && !nextConfig.includes('compress')) {
