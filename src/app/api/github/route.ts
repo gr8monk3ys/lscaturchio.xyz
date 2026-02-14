@@ -41,8 +41,7 @@ async function getRepoTopics(repoName: string): Promise<string[]> {
   return data.names || [];
 }
 
-export async function GET(request?: Request) {
-  void request;
+export async function GET() {
   try {
     const repos = await getGithubRepos();
     

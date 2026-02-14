@@ -9,15 +9,7 @@ import { useRef, useEffect, useState } from "react";
 import { logError } from "@/lib/logger";
 import { showContainerVariants, showItemVariants } from "@/lib/animations";
 import Image from "next/image";
-
-function getInitials(title: string): string {
-  return title
-    .split(/[-\s_]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? "")
-    .join("");
-}
+import type { PortfolioRepo } from "@/types/github";
 
 function getInitials(title: string): string {
   return title
