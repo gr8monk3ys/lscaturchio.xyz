@@ -18,8 +18,6 @@
     "generate-tts-openai": "tsx scripts/generate-openai-tts.ts",
     "generate-matisse-covers": "node scripts/generate-matisse-covers.mjs",
     "audit-media": "node scripts/audit-media-assets.mjs",
-    "generate-sitemap": "node scripts/generate-sitemap.js",
-    "postbuild": "npm run generate-sitemap",
     "generate-project-logos": "node scripts/generate-project-logos.mjs"
   },
   "dependencies": {
