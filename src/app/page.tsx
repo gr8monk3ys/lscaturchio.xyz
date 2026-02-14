@@ -1,5 +1,6 @@
 import { Hero } from "@/components/home/Hero";
 import { NewHereSection } from "@/components/home/new-here-section";
+import { HowIWorkSection } from "@/components/home/how-i-work-section";
 import { RecentBlogs } from "@/components/home/recent-blogs";
 import { RecentProjects } from "@/components/home/recent-projects";
 import { WorkingOnSection } from "@/components/home/working-on-section";
@@ -53,6 +54,9 @@ export default async function Home() {
 
       {/* New Here Section */}
       <NewHereSection />
+
+      {/* How I Work */}
+      <HowIWorkSection />
 
       {/* What I'm Working On */}
       <WorkingOnSection />
