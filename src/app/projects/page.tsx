@@ -4,11 +4,34 @@ import { Paragraph } from "@/components/Paragraph";
 import { ProjectsPageContent } from "@/components/projects/ProjectsPageContent";
 import { Metadata } from "next";
 import { FolderKanban } from "lucide-react";
+import { ogCardUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Projects | Lorenzo Scaturchio",
   description:
     "A collection of AI/ML, web development, and open source projects. Full case studies with technical details, challenges, and results.",
+  openGraph: {
+    title: "Projects | Lorenzo Scaturchio",
+    description:
+      "A collection of AI/ML, web development, and open source projects with full case studies.",
+    images: [
+      {
+        url: ogCardUrl({
+          title: "Projects",
+          description: "Case studies and technical write-ups",
+          type: "project",
+        }),
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Projects | Lorenzo Scaturchio",
+    description: "Case studies and technical write-ups.",
+    images: [ogCardUrl({ title: "Projects", description: "Case studies and technical write-ups", type: "project" })],
+  },
 };
 
 export default function Projects() {
