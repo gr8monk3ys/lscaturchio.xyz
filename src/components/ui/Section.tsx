@@ -60,7 +60,8 @@ export function Section({
 }: SectionProps) {
   const reduceMotion = useReducedMotion();
   const revealVariants = {
-    hidden: { opacity: 0, y: reduceMotion ? 0 : 16 },
+    // Keep content visible during SSR; only apply subtle motion on reveal.
+    hidden: { opacity: 1, y: reduceMotion ? 0 : 16 },
     show: { opacity: 1, y: 0 },
   };
 
