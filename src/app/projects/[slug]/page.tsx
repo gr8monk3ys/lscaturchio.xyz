@@ -4,6 +4,7 @@ import { products } from "@/constants/products";
 import { Product } from "@/types/products";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { buildProjectMetadata } from "@/lib/seo";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -13,10 +14,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = products.find((p) => p.slug === slug) as Product | undefined;
   if (product) {
-    return {
+    return buildProjectMetadata({
       title: product.title,
       description: product.description,
-    };
+    });
   } else {
     return {
       title: "Projects | Lorenzo Scaturchio",
