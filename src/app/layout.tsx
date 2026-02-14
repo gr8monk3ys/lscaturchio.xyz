@@ -16,6 +16,8 @@ import { Metadata } from 'next'
 import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Unbounded } from "next/font/google";
 
+const SITE_URL = "https://lscaturchio.xyz";
+
 const displayFont = Unbounded({
   subsets: ["latin"],
   display: "swap",
@@ -34,12 +36,12 @@ export const metadata: Metadata = {
     template: '%s | Lorenzo Scaturchio'
   },
   description: 'Explore Lorenzo Scaturchio\'s portfolio featuring innovative data science projects, web development solutions, and creative digital experiences. Specializing in machine learning, data analysis, and responsive web applications.',
-  metadataBase: new URL('https://lscaturchio.xyz'),
+  metadataBase: new URL(SITE_URL),
   keywords: ['data scientist', 'developer', 'portfolio', 'machine learning', 'data analysis', 'web development', 'digital solutions', 'AI', 'programmer', 'creative technologist'],
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://lscaturchio.xyz',
+    url: SITE_URL,
     siteName: 'Lorenzo Scaturchio Portfolio',
     title: 'Lorenzo Scaturchio | Data Scientist, Developer & Digital Craftsman',
     description: 'Explore Lorenzo Scaturchio\'s portfolio featuring innovative data science projects, web development solutions, and creative digital experiences.',
@@ -68,7 +70,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   alternates: {
-    canonical: 'https://lscaturchio.xyz',
+    canonical: SITE_URL,
     types: {
       'application/rss+xml': '/api/rss',
     },
@@ -80,6 +82,38 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: "Lorenzo Scaturchio",
+        description:
+          "Personal site for Lorenzo Scaturchio: RAG systems, machine learning, web development, and writing.",
+        inLanguage: "en",
+      },
+      {
+        "@type": "Person",
+        "@id": `${SITE_URL}/#person`,
+        name: "Lorenzo Scaturchio",
+        url: SITE_URL,
+        image: `${SITE_URL}/images/portrait.webp`,
+        jobTitle: "Data Scientist & Developer",
+        sameAs: [
+          "https://github.com/gr8monk3ys",
+          "https://linkedin.com/in/lorenzo-scaturchio",
+          "https://www.instagram.com/lorenzo.scaturchio",
+          "https://letterboxd.com/gr8monk3ys/",
+          "https://www.goodreads.com/user/show/168274083-lorenzo",
+          "https://leetcode.com/u/gr8monk3ys/",
+          "https://substack.com/@gr8monk3ys",
+        ],
+      },
+    ],
+  };
+
   return (
     <html
       lang="en"
@@ -110,6 +144,11 @@ export default function RootLayout({
         {/* Performance Hints */}
         <link rel="preconnect" href="https://vitals.vercel-insights.com" />
 
+        {/* Global JSON-LD structured data (site-wide) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body>
         <GoogleTranslateProvider />
