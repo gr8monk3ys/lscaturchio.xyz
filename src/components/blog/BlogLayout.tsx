@@ -24,6 +24,7 @@ import { ReadingProgressTracker } from "./reading-progress-tracker";
 import { TextToSpeech } from "./text-to-speech";
 import { BlogJsonLd } from "./blog-json-ld";
 import Link from "next/link";
+import { getTopicHubsForTags } from "@/constants/topics";
 
 interface BlogMeta {
   title: string;
@@ -68,6 +69,7 @@ export function BlogLayout({
   const contentRef = useRef<HTMLDivElement>(null);
   const safeDate = clampToToday(meta.date);
   const safeUpdated = meta.updated ? clampToToday(meta.updated) : undefined;
+  const relatedHubs = getTopicHubsForTags(meta.tags);
 
   // Get slug from pathname
   const slug = pathname.split('/').pop() || '';
@@ -156,6 +158,20 @@ export function BlogLayout({
                 <Paragraph className="mt-4 text-sm leading-8 text-stone-600 dark:text-stone-400">
                   {meta.description}
                 </Paragraph>
+                {relatedHubs.length > 0 && (
+                  <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+                    <span className="text-stone-500 dark:text-stone-400">Explore:</span>
+                    {relatedHubs.map((hub) => (
+                      <Link
+                        key={hub.slug}
+                        href={`/topics/${hub.slug}`}
+                        className="rounded-full bg-primary/10 px-3 py-1 text-primary hover:bg-primary/15 transition-colors"
+                      >
+                        {hub.title}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
