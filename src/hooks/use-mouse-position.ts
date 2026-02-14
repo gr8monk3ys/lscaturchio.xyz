@@ -40,7 +40,6 @@ export function useMousePosition(options: UseMousePositionOptions = {}): MousePo
   const { containerRef, trackOnlyInside = false } = options;
   const isClient = useIsClient();
   const [position, setPosition] = useState<MousePosition>({ x: 0, y: 0 });
-  const [isInside, setIsInside] = useState(false);
 
   // Check for reduced motion preference
   const prefersReducedMotion = isClient
@@ -62,8 +61,6 @@ export function useMousePosition(options: UseMousePositionOptions = {}): MousePo
           y >= 0 &&
           y <= rect.height;
 
-        setIsInside(inside);
-
         if (!trackOnlyInside || inside) {
           setPosition({ x, y });
         }
@@ -74,10 +71,6 @@ export function useMousePosition(options: UseMousePositionOptions = {}): MousePo
     [containerRef, trackOnlyInside, prefersReducedMotion]
   );
 
-  const handleMouseLeave = useCallback(() => {
-    setIsInside(false);
-  }, []);
-
   useEffect(() => {
     if (!isClient || prefersReducedMotion) return;
 
@@ -87,17 +80,10 @@ export function useMousePosition(options: UseMousePositionOptions = {}): MousePo
 
     element.addEventListener('mousemove', handleMouseMove as EventListener);
 
-    if (container) {
-      container.addEventListener('mouseleave', handleMouseLeave);
-    }
-
     return () => {
       element.removeEventListener('mousemove', handleMouseMove as EventListener);
-      if (container) {
-        container.removeEventListener('mouseleave', handleMouseLeave);
-      }
     };
-  }, [isClient, handleMouseMove, handleMouseLeave, containerRef, prefersReducedMotion]);
+  }, [isClient, handleMouseMove, containerRef, prefersReducedMotion]);
 
   // Return position regardless of isInside for simpler API
   // Components can use the hook with trackOnlyInside if they need that behavior

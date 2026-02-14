@@ -21,7 +21,7 @@ async function generateSitemap() {
   // Transform file paths to URL paths
   const routes = pages.map(page => {
     // Remove src/app/ and page.tsx to get the route
-    let route = page.replace('src/app/', '').replace('/page.tsx', '');
+    const route = page.replace('src/app/', '').replace('/page.tsx', '');
     
     // Handle index/home page
     if (route === '') {

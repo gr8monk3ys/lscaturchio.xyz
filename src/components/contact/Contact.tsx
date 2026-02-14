@@ -107,7 +107,7 @@ export default function Contact() {
         // Reset form on success
         setFormData(defaultFormState);
       }
-    } catch (error) {
+    } catch {
       setStatus({
         type: "error",
         message: "Network error. Please check your connection and try again.",

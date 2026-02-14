@@ -1,29 +1,10 @@
 'use client';
 
 import { useRef, useMemo, useState, useEffect, Suspense } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Environment, MeshTransmissionMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import { useIsDesktop } from '@/hooks/use-is-desktop';
-
-// Mouse position tracker for the entire scene
-function useMousePosition() {
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      setMouse({
-        x: (event.clientX / window.innerWidth) * 2 - 1,
-        y: -(event.clientY / window.innerHeight) * 2 + 1,
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  return mouse;
-}
 
 // Shared mouse context inside Canvas
 const MouseContext = {
@@ -32,8 +13,6 @@ const MouseContext = {
 };
 
 function MouseTracker() {
-  const { viewport } = useThree();
-
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       MouseContext.x = (event.clientX / window.innerWidth) * 2 - 1;

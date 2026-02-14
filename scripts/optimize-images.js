@@ -14,7 +14,7 @@ const { execSync } = require('child_process');
 try {
   require.resolve('sharp');
   console.log('Sharp is already installed');
-} catch (e) {
+} catch {
   console.log('Installing sharp...');
   execSync('npm install sharp', { stdio: 'inherit' });
 }
@@ -47,7 +47,7 @@ function optimizeImage(imagePath) {
   const ext = path.extname(imagePath).toLowerCase();
   const relativePath = path.relative(path.join(__dirname, '..'), imagePath);
   
-  console.log(`Optimizing: ${relativePath}`);
+  console.log(`Optimizing (${ext}): ${relativePath}`);
   
   // In a production implementation, you would use sharp to actually process the images
   // For example:

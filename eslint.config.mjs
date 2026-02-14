@@ -13,7 +13,17 @@ const eslintConfig = defineConfig([
     'node_modules/**',
     'playwright-report/**',
     'test-results/**',
+    'tmp/**',
+    'public/audio/.tmp/**',
+    'scripts/.tts-venv/**',
   ]),
+  {
+    files: ['scripts/**/*.{js,cjs}'],
+    rules: {
+      // Node scripts in this repo are allowed to use CommonJS requires.
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
   {
     rules: {
       // Downgrade to warnings while we fix the codebase

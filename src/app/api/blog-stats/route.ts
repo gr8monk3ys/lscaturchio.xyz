@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { logError } from "@/lib/logger";
 
@@ -7,7 +7,7 @@ import { logError } from "@/lib/logger";
  * GET /api/blog-stats
  * Returns total posts, reading time, and top tags
  */
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const blogs = await getAllBlogs();
 

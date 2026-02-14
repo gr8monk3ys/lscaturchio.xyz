@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef, RefObject } from 'react';
+import { useEffect, useState, RefObject } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { useIsClient } from '@/hooks/use-is-client';
 
