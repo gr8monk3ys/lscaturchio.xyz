@@ -1,10 +1,8 @@
 import { BlogLayout } from "@/components/blog/BlogLayout";
 import Content, { meta } from "./content.mdx";
 
-export const metadata = {
-  title: meta.title,
-  description: meta.description,
-};
+import { buildBlogMetadata } from "@/lib/seo";
+export const metadata = buildBlogMetadata(meta);
 
 export default function Page() {
   return (

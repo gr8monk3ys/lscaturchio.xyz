@@ -5,6 +5,8 @@ import { BlogGrid } from "@/components/blog/BlogGrid";
 import { BlogStats } from "@/components/blog/blog-stats";
 import Link from "next/link";
 import { MessageSquare, Tag } from "lucide-react";
+import type { Metadata } from "next";
+import { ogCardUrl } from "@/lib/seo";
 
 interface Blog {
   slug: string;
@@ -15,10 +17,32 @@ interface Blog {
   tags: string[];
 }
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Blog | Lorenzo Scaturchio",
   description:
     "Lorenzo Scaturchio is a developer, writer and speaker. He is a digital nomad and travels around the world while working remotely.",
+  openGraph: {
+    title: "Blog | Lorenzo Scaturchio",
+    description:
+      "Essays on software development, AI, and the politics of technology.",
+    images: [
+      {
+        url: ogCardUrl({
+          title: "Blog",
+          description: "Essays on software, AI, and technology",
+          type: "blog",
+        }),
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog | Lorenzo Scaturchio",
+    description: "Essays on software, AI, and technology.",
+    images: [ogCardUrl({ title: "Blog", description: "Essays on software, AI, and technology", type: "blog" })],
+  },
 };
 
 // Revalidate the blog listing every hour for fresh content
