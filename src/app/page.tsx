@@ -4,7 +4,7 @@ import { RecentBlogs } from "@/components/home/recent-blogs";
 import { RecentProjects } from "@/components/home/recent-projects";
 import { WorkingOnSection } from "@/components/home/working-on-section";
 import { ProofBar } from "@/components/home/proof-bar";
-import { WebsiteStructuredData, PersonStructuredData, FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/structured-data";
+import { FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/structured-data";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 
 export default async function Home() {
@@ -22,24 +22,6 @@ export default async function Home() {
     }));
   return (
     <main className="flex min-h-screen flex-col">
-      <WebsiteStructuredData
-        url="https://lscaturchio.xyz"
-        name="Lorenzo Scaturchio | Data Scientist & Developer"
-        description="Lorenzo Scaturchio's personal site - building RAG systems, contributing to open source, and exploring the intersection of AI and user-friendly applications. Based in Southern California."
-        siteType="Portfolio"
-      />
-      <PersonStructuredData
-        name="Lorenzo Scaturchio"
-        description="Data Scientist and Developer specializing in machine learning, data analysis, and web development"
-        image="https://lscaturchio.xyz/images/portrait.webp"
-        jobTitle="Data Scientist & Developer"
-        url="https://lscaturchio.xyz"
-        sameAs={[
-          "https://github.com/lscaturchio",
-          "https://linkedin.com/in/lscaturchio",
-          "https://twitter.com/lscaturchio"
-        ]}
-      />
       <BreadcrumbStructuredData
         items={[
           {
