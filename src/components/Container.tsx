@@ -28,11 +28,6 @@ export const Container = ({ children, className, size = "default" }: ContainerPr
       >
         {children}
       </div>
-      
-      {/* Background gradient */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
-      </div>
     </div>
   );
 };
