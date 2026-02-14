@@ -41,7 +41,7 @@ function UnsubscribeContent() {
           setStatus('error')
           setMessage(data.error || 'Failed to unsubscribe')
         }
-      } catch (error) {
+      } catch {
         setStatus('error')
         setMessage('Network error. Please try again later.')
       }

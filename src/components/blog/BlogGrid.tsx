@@ -76,7 +76,7 @@ export function BlogGrid({ blogs }: BlogGridProps) {
       )}
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredBlogs.map((blog, index) => (
+        {filteredBlogs.map((blog) => (
           <BlogCard key={blog.slug} {...blog} />
         ))}
       </div>

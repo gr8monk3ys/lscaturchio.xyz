@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, X, Loader2, FileText, Calendar, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 
 interface SearchResult {
   title: string
@@ -25,7 +24,6 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
   const [results, setResults] = useState<SearchResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  const router = useRouter()
 
   const performSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) {
@@ -46,7 +44,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
         setError(data.error || 'Search failed')
         setResults([])
       }
-    } catch (err) {
+    } catch {
       setError('Network error. Please try again.')
       setResults([])
     } finally {

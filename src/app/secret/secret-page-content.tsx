@@ -74,8 +74,6 @@ export function SecretPageContent() {
   const [revealedJoke, setRevealedJoke] = useState<number | null>(null);
   const [factIndex, setFactIndex] = useState(0);
 
-  const currentJoke = DEV_JOKES[revealedJoke ?? 0];
-
   const nextFact = () => {
     setFactIndex((prev) => (prev + 1) % SECRET_FACTS.length);
   };

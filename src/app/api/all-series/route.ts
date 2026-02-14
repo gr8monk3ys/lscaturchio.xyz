@@ -51,11 +51,8 @@ export async function GET() {
         // Sort posts by seriesOrder
         const sortedPosts = posts.sort((a, b) => a.seriesOrder - b.seriesOrder);
 
-        // Estimate total reading time (1000 chars ≈ 5 min)
-        const totalReadingTime = sortedPosts.reduce((total, post) => {
-          const estimatedMinutes = 5; // Default estimate per post
-          return total + estimatedMinutes;
-        }, 0);
+        // Estimate total reading time (roughly 5 min per post)
+        const totalReadingTime = sortedPosts.length * 5;
 
         return {
           name,

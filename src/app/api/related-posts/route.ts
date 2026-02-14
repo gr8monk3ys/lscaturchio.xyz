@@ -107,7 +107,10 @@ const handleGet = async (request: NextRequest) => {
     const relatedPosts = Array.from(relatedPostsMap.values())
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
-      .map(({ score, ...post }) => post); // Remove score from response
+      .map(({ score: _score, ...post }) => {
+        void _score; // Strip from response (kept only for sorting)
+        return post;
+      });
 
     return NextResponse.json({
       related: relatedPosts,

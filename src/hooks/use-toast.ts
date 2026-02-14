@@ -38,7 +38,7 @@ const TOAST_LIMIT = 5;
 const DEFAULT_DURATION = 5000;
 
 let toasts: Toast[] = [];
-let listeners: Set<() => void> = new Set();
+const listeners: Set<() => void> = new Set();
 
 function emitChange() {
   listeners.forEach((listener) => listener());

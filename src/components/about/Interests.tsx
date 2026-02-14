@@ -125,7 +125,7 @@ export function Interests() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {interests.map((interest, index) => (
+            {interests.map((interest) => (
               <motion.div
                 key={interest.title}
                 variants={itemVariants}
