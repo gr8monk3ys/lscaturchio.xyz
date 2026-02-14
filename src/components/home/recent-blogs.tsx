@@ -9,6 +9,7 @@ import { useRef } from "react";
 import { BlogViewCount } from "../blog/blog-view-count";
 import { showContainerVariants, showItemVariants } from "@/lib/animations";
 import Image from "next/image";
+import { formatDate } from "@/lib/formatDate";
 
 interface BlogPost {
   title: string;
@@ -70,7 +71,7 @@ export function RecentBlogs({ blogs }: RecentBlogsProps) {
                   <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs text-white/90">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="size-3.5" />
-                      <time dateTime={post.date}>{post.date}</time>
+                      <time dateTime={post.date}>{formatDate(post.date)}</time>
                     </div>
                     <BlogViewCount slug={post.slug} />
                   </div>
