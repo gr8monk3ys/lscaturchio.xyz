@@ -270,6 +270,29 @@
   .cta-link {
     @apply text-primary font-semibold;
   }
+
+  /* Scroll reveal primitives (IntersectionObserver toggles data-reveal-state) */
+  .reveal {
+    --reveal-y: 14px;
+    --reveal-delay: 0ms;
+    --reveal-duration: 650ms;
+    --reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+    transform: translate3d(0, var(--reveal-y), 0);
+    transition: transform var(--reveal-duration) var(--reveal-ease);
+    transition-delay: var(--reveal-delay);
+  }
+
+  .reveal[data-reveal-state="in"] {
+    transform: translate3d(0, 0, 0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      transform: none !important;
+      transition: none !important;
+    }
+  }
 }
 
 @layer components {

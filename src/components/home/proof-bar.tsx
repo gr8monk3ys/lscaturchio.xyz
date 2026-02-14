@@ -3,6 +3,7 @@
 import { Section } from "@/components/ui/Section";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, BarChart3, Users, Star } from "lucide-react";
+import { Reveal } from "@/components/motion/reveal";
 
 const proofItems = [
   {
@@ -32,11 +33,12 @@ export function ProofBar() {
     <Section padding="compact" size="wide">
       <div className="neu-card rounded-2xl px-6 py-6">
         <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
-          {proofItems.map((item) => {
+          {proofItems.map((item, index) => {
             const Icon = item.icon;
             return (
-              <div
+              <Reveal
                 key={item.label}
+                delayMs={index * 70}
                 className="flex items-center gap-3 rounded-xl border border-border/60 bg-background/85 px-4 py-3"
               >
                 <div className="neu-flat-sm rounded-lg p-2">
@@ -49,7 +51,7 @@ export function ProofBar() {
                 <Badge variant="secondary" className="ml-1 hidden lg:inline-flex">
                   Proof
                 </Badge>
-              </div>
+              </Reveal>
             );
           })}
         </div>
