@@ -7,7 +7,7 @@ import { Reveal } from "@/components/motion/reveal";
 
 export function NewHereSection() {
   return (
-    <Section padding="compact" size="wide" divider topDivider>
+    <Section padding="compact" size="wide" divider topDivider reveal={false}>
       <div className="max-w-4xl mx-auto">
         <SectionHeader
           title="New here? Start with these"
