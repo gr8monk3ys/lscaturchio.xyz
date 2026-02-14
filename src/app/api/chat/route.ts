@@ -58,7 +58,14 @@ const handlePost = async (req: NextRequest) => {
 
     // Get relevant context from our embeddings (gracefully degrades if unavailable)
     let context = '';
-    const embeddingsAvailable = await isEmbeddingsAvailable();
+    let embeddingsAvailable = false;
+    try {
+      embeddingsAvailable = await isEmbeddingsAvailable();
+    } catch (error) {
+      logError('Embeddings availability check failed', error, { component: 'chat' });
+      embeddingsAvailable = false;
+    }
+
     if (embeddingsAvailable) {
       try {
         const similarContent = await searchSimilarContent(query);
