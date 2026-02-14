@@ -54,6 +54,15 @@ function getAllowedOrigins(): string[] {
   return baseOrigins;
 }
 
+function isAllowedVercelAppOrigin(origin: string): boolean {
+  try {
+    const url = new URL(origin);
+    return url.hostname.endsWith(".vercel.app");
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Validates that the request is from an allowed origin
  * Returns null if valid, or an error response if invalid
@@ -77,6 +86,11 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
 
   // Check Origin header first (most reliable)
   if (origin) {
+    // Vercel deployments can be accessed via multiple *.vercel.app hostnames,
+    // which may not match the single VERCEL_URL env var.
+    if (isAllowedVercelAppOrigin(origin)) {
+      return null;
+    }
     if (allowedOrigins.includes(origin)) {
       return null;
     }
@@ -90,6 +104,9 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
   if (referer) {
     try {
       const refererUrl = new URL(referer);
+      if (refererUrl.hostname.endsWith(".vercel.app")) {
+        return null;
+      }
       if (allowedOrigins.includes(refererUrl.origin)) {
         return null;
       }

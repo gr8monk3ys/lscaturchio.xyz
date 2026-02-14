@@ -141,16 +141,16 @@ export function ChatPageClient() {
       <div className="p-4 border-t">
         <form
           onSubmit={handleSubmit}
-          className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring p-1"
+          className="relative rounded-xl border bg-background focus-within:ring-1 focus-within:ring-ring"
         >
           <ChatInput
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
-            className="min-h-12 resize-none rounded-lg bg-background border-0 p-3 shadow-none focus-visible:ring-0"
+            className="border-0 bg-transparent shadow-none focus:ring-0 focus-visible:ring-0"
           />
-          <div className="flex items-center p-3 pt-0 justify-between">
+          <div className="flex items-center justify-between px-3 pb-3">
             <div className="flex">
               <Button
                 variant="ghost"
@@ -176,7 +176,7 @@ export function ChatPageClient() {
             <Button
               type="submit"
               size="sm"
-              className="ml-auto h-8 px-4 gap-1.5"
+              className="ml-auto gap-1.5"
               disabled={isLoading}
               aria-label="Send message"
             >
