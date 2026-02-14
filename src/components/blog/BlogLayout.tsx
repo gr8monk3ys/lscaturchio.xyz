@@ -23,6 +23,7 @@ import { SeriesNavigation } from "./series-navigation";
 import { ReadingProgressTracker } from "./reading-progress-tracker";
 import { TextToSpeech } from "./text-to-speech";
 import { BlogJsonLd } from "./blog-json-ld";
+import Link from "next/link";
 
 interface BlogMeta {
   title: string;
@@ -138,9 +139,13 @@ export function BlogLayout({
                     <Tag className="h-4 w-4" />
                     <div className="flex gap-2">
                       {meta.tags.map((tag) => (
-                        <span key={tag} className="text-stone-600 dark:text-stone-400">
+                        <Link
+                          key={tag}
+                          href={`/tag/${encodeURIComponent(tag)}`}
+                          className="text-stone-600 hover:text-primary dark:text-stone-400 dark:hover:text-primary transition-colors"
+                        >
                           {tag}
-                        </span>
+                        </Link>
                       ))}
                     </div>
                   </div>
