@@ -11,18 +11,18 @@ import { ScrollToTop } from '@/components/ui/scroll-to-top'
 import { LayoutWrapper } from '@/components/layout/layout-wrapper'
 import { CanonicalLink } from '@/components/layout/canonical-link'
 import { GoogleTranslateProvider } from "@/components/i18n/google-translate";
+import { HtmlLangSync } from "@/components/i18n/html-lang-sync";
 import { Metadata } from 'next'
 import { ogCardUrl } from "@/lib/seo";
-import localFont from "next/font/local";
-import { Manrope } from "next/font/google";
+import { Instrument_Sans, Unbounded } from "next/font/google";
 
-const calSans = localFont({
-  src: [{ path: "../../fonts/CalSans-SemiBold.woff2" }],
+const displayFont = Unbounded({
+  subsets: ["latin"],
   display: "swap",
   variable: "--font-display",
 });
 
-const manrope = Manrope({
+const bodyFont = Instrument_Sans({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-body",
@@ -83,8 +83,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      dir="ltr"
       suppressHydrationWarning
-      className={`${manrope.variable} ${calSans.variable}`}
+      className={`${bodyFont.variable} ${displayFont.variable}`}
     >
       <head>
         {/* Canonical Link - Client Component for dynamic pathname */}
@@ -112,6 +113,7 @@ export default function RootLayout({
       </head>
       <body>
         <GoogleTranslateProvider />
+        <HtmlLangSync />
 
         {/* Skip to content link for accessibility */}
         <a
