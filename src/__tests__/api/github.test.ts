@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 // Mock rate limiting to pass through for tests
 vi.mock('@/lib/with-rate-limit', () => ({
@@ -89,8 +89,7 @@ describe('GitHub API Route', () => {
         return Promise.reject(new Error('Unknown URL'));
       });
 
-      const request = new NextRequest('http://localhost/api/github');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -120,8 +119,7 @@ describe('GitHub API Route', () => {
         return Promise.reject(new Error('Unknown URL'));
       });
 
-      const request = new NextRequest('http://localhost/api/github');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(data[0]).toMatchObject({
@@ -157,8 +155,7 @@ describe('GitHub API Route', () => {
         return Promise.reject(new Error('Unknown URL'));
       });
 
-      const request = new NextRequest('http://localhost/api/github');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(data[0].description).toBe('No description available');
@@ -183,8 +180,7 @@ describe('GitHub API Route', () => {
         return Promise.reject(new Error('Unknown URL'));
       });
 
-      const request = new NextRequest('http://localhost/api/github');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       // The forked-repo should not be in the results
@@ -210,8 +206,7 @@ describe('GitHub API Route', () => {
         return Promise.reject(new Error('Unknown URL'));
       });
 
-      const request = new NextRequest('http://localhost/api/github');
-      await GET(request);
+      await GET();
 
       // Check that the correct Accept header was included for repos
       expect(mockFetch).toHaveBeenCalledWith(
@@ -231,8 +226,7 @@ describe('GitHub API Route', () => {
         headers: new Headers({ 'X-RateLimit-Remaining': '10' }),
       });
 
-      const request = new NextRequest('http://localhost/api/github');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -248,8 +242,7 @@ describe('GitHub API Route', () => {
         headers: new Headers({ 'X-RateLimit-Remaining': '0' }),
       });
 
-      const request = new NextRequest('http://localhost/api/github');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -274,8 +267,7 @@ describe('GitHub API Route', () => {
         return Promise.reject(new Error('Unknown URL'));
       });
 
-      const request = new NextRequest('http://localhost/api/github');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -306,8 +298,7 @@ describe('GitHub API Route', () => {
         return Promise.reject(new Error('Unknown URL'));
       });
 
-      const request = new NextRequest('http://localhost/api/github');
-      const response = await GET(request);
+      const response = await GET();
       const data = await response.json();
 
       expect(response.status).toBe(200);
