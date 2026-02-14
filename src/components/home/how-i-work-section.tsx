@@ -120,7 +120,7 @@ export function HowIWorkSection() {
   };
 
   return (
-    <Section padding="large" size="wide" divider topDivider>
+    <Section padding="large" size="wide" divider topDivider reveal={false}>
       <div ref={containerRef} className="grid items-start gap-10 lg:grid-cols-[minmax(280px,380px)_1fr]">
         <div className="space-y-6 lg:sticky lg:top-28">
           <SectionHeader
