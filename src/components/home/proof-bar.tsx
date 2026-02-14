@@ -30,7 +30,7 @@ const proofItems = [
 
 export function ProofBar() {
   return (
-    <Section padding="compact" size="wide">
+    <Section padding="compact" size="wide" reveal={false}>
       <div className="neu-card rounded-2xl px-6 py-6">
         <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
           {proofItems.map((item, index) => {

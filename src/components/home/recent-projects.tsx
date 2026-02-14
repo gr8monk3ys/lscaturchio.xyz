@@ -71,7 +71,7 @@ export function RecentProjects() {
   }, []);
 
   return (
-    <Section padding="default" size="wide" divider topDivider>
+    <Section padding="default" size="wide" divider topDivider reveal={false}>
       <div>
         <SectionHeader
           title="Recent Updates"
