@@ -1,15 +1,14 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
 import { ArrowUpRight, Star, GitFork, Clock } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { Section, SectionHeader } from "../ui/Section";
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { logError } from "@/lib/logger";
-import { showContainerVariants, showItemVariants } from "@/lib/animations";
 import Image from "next/image";
 import type { PortfolioRepo } from "@/types/github";
+import { Reveal } from "@/components/motion/reveal";
 
 function getInitials(title: string): string {
   return title
@@ -46,8 +45,6 @@ function formatTimeAgo(dateString: string): string {
 }
 
 export function RecentProjects() {
-  const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
   const [repositories, setRepositories] = useState<PortfolioRepo[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -75,7 +72,7 @@ export function RecentProjects() {
 
   return (
     <Section padding="default" size="wide" divider topDivider>
-      <div ref={containerRef}>
+      <div>
         <SectionHeader
           title="Recent Updates"
           action={
@@ -89,95 +86,85 @@ export function RecentProjects() {
           }
         />
 
-        <motion.div
-          variants={showContainerVariants}
-          initial="hidden"
-          animate={isInView ? "show" : "hidden"}
-          className="grid grid-cols-1 gap-6 md:grid-cols-6"
-        >
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-6">
           {loading ? (
             [...Array(3)].map((_, i) => (
-              <motion.div
+              <div
                 key={i}
-                variants={showItemVariants}
                 className="h-[260px] animate-pulse rounded-2xl bg-muted/50 md:col-span-2"
               />
             ))
           ) : (
             repositories.map((repo, index) => (
-              <motion.div
+              <Reveal
                 key={repo.href}
-                variants={showItemVariants}
-                className={`group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl ${
-                  index === 1 ? "md:col-span-4" : "md:col-span-2"
-                }`}
+                delayMs={index * 80}
+                className={index === 1 ? "md:col-span-4" : "md:col-span-2"}
               >
-                <div className="relative h-36 overflow-hidden">
-                  <Image
-                    src={getRepoCover(repo.title)}
-                    alt={`${repo.title} repository cover`}
-                    fill
-                    unoptimized
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                  <div className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-2xl border border-white/20 bg-gradient-to-br from-indigo-500/70 to-violet-500/70 text-sm font-semibold text-white backdrop-blur-md">
-                    {getInitials(repo.title)}
+                <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl">
+                  <div className="relative h-36 overflow-hidden">
+                    <Image
+                      src={getRepoCover(repo.title)}
+                      alt={`${repo.title} repository cover`}
+                      fill
+                      unoptimized
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                    <div className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-2xl border border-white/20 bg-gradient-to-br from-indigo-500/70 to-violet-500/70 text-sm font-semibold text-white backdrop-blur-md">
+                      {getInitials(repo.title)}
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-3 p-5">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="truncate font-semibold transition-colors group-hover:text-primary">
-                      {repo.title}
-                    </h3>
-                    <Link
-                      href={repo.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
-                    >
-                      <ArrowUpRight className="size-4" />
-                    </Link>
-                  </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {repo.description}
-                  </p>
-                  {repo.stack && repo.stack.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {repo.stack.slice(0, 3).map((tech) => (
-                        <Badge
-                          key={tech}
-                          variant="secondary"
-                          className="text-xs"
-                        >
-                          {tech}
-                        </Badge>
-                      ))}
+                  <div className="space-y-3 p-5">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="truncate font-semibold transition-colors group-hover:text-primary">
+                        {repo.title}
+                      </h3>
+                      <Link
+                        href={repo.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
+                      >
+                        <ArrowUpRight className="size-4" />
+                      </Link>
                     </div>
-                  )}
-                  <div className="flex items-center justify-between pt-2">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <Star className="size-4" />
-                        <span>{repo.stars}</span>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {repo.description}
+                    </p>
+                    {repo.stack && repo.stack.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {repo.stack.slice(0, 3).map((tech) => (
+                          <Badge key={tech} variant="secondary" className="text-xs">
+                            {tech}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between pt-2">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                          <Star className="size-4" />
+                          <span>{repo.stars}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                          <GitFork className="size-4" />
+                          <span>{repo.forks}</span>
+                        </div>
                       </div>
                       <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <GitFork className="size-4" />
-                        <span>{repo.forks}</span>
+                        <Clock className="size-4" />
+                        <span>{formatTimeAgo(repo.lastUpdated)}</span>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                      <Clock className="size-4" />
-                      <span>{formatTimeAgo(repo.lastUpdated)}</span>
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </Reveal>
             ))
           )}
-        </motion.div>
+        </div>
       </div>
     </Section>
   );
