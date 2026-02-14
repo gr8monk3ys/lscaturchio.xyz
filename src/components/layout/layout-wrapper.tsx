@@ -5,10 +5,17 @@ import { Suspense } from 'react'
 import { ContactCTA } from "@/components/ui/contact-cta"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
 
+const CONTACT_CTA_EXCLUDED_PATHS = new Set<string>([
+  "/chat",
+  "/contact",
+  "/services",
+]);
+
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isBlogPage = pathname?.startsWith('/blog')
   const isHomePage = pathname === '/'
+  const isExcluded = pathname ? CONTACT_CTA_EXCLUDED_PATHS.has(pathname) : false
 
   return (
     <>
@@ -18,7 +25,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         </ErrorBoundary>
       </main>
 
-      {!isBlogPage && !isHomePage && (
+      {!isBlogPage && !isHomePage && !isExcluded && (
         <Suspense fallback={<div className="min-h-[200px]"></div>}>
           <ContactCTA />
         </Suspense>
