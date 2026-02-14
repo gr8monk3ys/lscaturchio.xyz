@@ -57,7 +57,7 @@ export default async function TagsPage() {
           {tags.map((tag) => (
             <Link
               key={tag.name}
-              href={`/blog?tag=${encodeURIComponent(tag.name)}`}
+              href={`/tag/${encodeURIComponent(tag.name)}`}
               className="group p-6 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-all hover:shadow-lg bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm"
             >
               <div className="flex items-start justify-between mb-3">
@@ -94,7 +94,7 @@ export default async function TagsPage() {
             {tags.map((tag) => (
               <Link
                 key={tag.name}
-                href={`/blog?tag=${encodeURIComponent(tag.name)}`}
+                href={`/tag/${encodeURIComponent(tag.name)}`}
                 className="px-3 py-1 rounded-full bg-background border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary text-sm capitalize transition-colors"
               >
                 {tag.name} ({tag.count})
