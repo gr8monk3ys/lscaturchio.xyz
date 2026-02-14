@@ -17,6 +17,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // Get allowed origins from environment or use defaults
 function getAllowedOrigins(): string[] {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const vercelUrl = process.env.VERCEL_URL;
   const baseOrigins = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
@@ -32,6 +33,15 @@ function getAllowedOrigins(): string[] {
       }
     } catch {
       // Invalid URL, ignore
+    }
+  }
+
+  // Allow the active Vercel deployment URL (preview + production *.vercel.app)
+  // See: https://vercel.com/docs/projects/environment-variables/system-environment-variables
+  if (vercelUrl) {
+    baseOrigins.push(`https://${vercelUrl}`);
+    if (!vercelUrl.startsWith('www.')) {
+      baseOrigins.push(`https://www.${vercelUrl}`);
     }
   }
 
