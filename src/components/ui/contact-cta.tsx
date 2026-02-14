@@ -8,12 +8,8 @@ export function ContactCTA() {
   return (
     <section className="w-full px-4 md:px-6 py-12 lg:py-20">
       <div className="w-full max-w-5xl mx-auto neu-card p-8 lg:p-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="flex flex-col items-center text-center gap-7"
-        >
+        {/* Keep this CTA visible during SSR; avoid "hidden until hydration" issues. */}
+        <div className="flex flex-col items-center text-center gap-7">
           <h2 className="text-display max-w-3xl text-balance">
             Let&apos;s Create Something{" "}
             <span className="text-primary">Amazing</span> Together
@@ -68,7 +64,7 @@ export function ContactCTA() {
               </Link>
             </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
