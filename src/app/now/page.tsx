@@ -3,6 +3,7 @@ import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { Clock, BookOpen, Code, Lightbulb, MapPin } from "lucide-react";
 import { Metadata } from "next";
+import { nowData } from "@/lib/now-data";
 
 export const metadata: Metadata = {
   title: "Now - Lorenzo Scaturchio",
@@ -10,8 +11,6 @@ export const metadata: Metadata = {
 };
 
 export default function NowPage() {
-  const lastUpdated = "January 2025";
-
   return (
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-3xl mx-auto">
@@ -33,7 +32,7 @@ export default function NowPage() {
             >
               nownownow.com
             </a>
-            . Last updated: <span className="font-medium">{lastUpdated}</span>
+            . Last updated: <span className="font-medium">{nowData.lastUpdatedLabel}</span>
           </Paragraph>
         </div>
 
@@ -46,8 +45,9 @@ export default function NowPage() {
             <h2 className="text-2xl font-bold">Location</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed">
-            Currently based in <span className="font-medium text-foreground">Southern California</span>,
-            working remotely as a freelance AI consultant and developer.
+            Currently based in{" "}
+            <span className="font-medium text-foreground">{nowData.location.label}</span>,{" "}
+            {nowData.location.detail}
           </p>
         </section>
 
@@ -63,18 +63,18 @@ export default function NowPage() {
             <div className="neu-card p-5">
               <h3 className="font-semibold text-lg mb-2">Client Projects</h3>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                <li>Building production RAG systems with LangChain and Supabase</li>
-                <li>Developing autonomous AI agents for enterprise clients</li>
-                <li>Consulting on AI integration strategies</li>
+                {nowData.workingOn.clientProjects.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
 
             <div className="neu-card p-5">
               <h3 className="font-semibold text-lg mb-2">Personal Projects</h3>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                <li>Rebuilding this website with Next.js 14 App Router</li>
-                <li>Creating open-source AI tools and templates</li>
-                <li>Writing technical blog posts about AI engineering</li>
+                {nowData.workingOn.personalProjects.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
           </div>
@@ -92,27 +92,27 @@ export default function NowPage() {
             <div className="neu-pressed rounded-xl p-5">
               <h3 className="font-semibold mb-2">Technical Skills</h3>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground text-sm">
-                <li>Advanced prompt engineering techniques</li>
-                <li>Fine-tuning LLMs with LoRA and QLoRA</li>
-                <li>Vector database optimization (Pinecone, Weaviate)</li>
-                <li>Next.js 14 Server Components deep dive</li>
+                {nowData.learning.technicalSkills.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
 
             <div className="neu-pressed rounded-xl p-5">
               <h3 className="font-semibold mb-2">Reading</h3>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground text-sm">
-                <li><em>The Alignment Problem</em> by Brian Christian</li>
-                <li><em>Designing Data-Intensive Applications</em> by Martin Kleppmann</li>
-                <li>Research papers on retrieval-augmented generation</li>
+                {nowData.learning.reading.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
 
             <div className="neu-pressed rounded-xl p-5">
               <h3 className="font-semibold mb-2">Courses</h3>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground text-sm">
-                <li>DeepLearning.AI - Building LLM Applications</li>
-                <li>Full Stack LangChain course</li>
+                {nowData.learning.courses.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
           </div>
@@ -128,22 +128,12 @@ export default function NowPage() {
           </div>
           <div className="neu-card p-5">
             <ul className="space-y-3 text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
-                <span>How to build AI systems that are truly helpful rather than just impressive</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
-                <span>The future of knowledge work in an AI-augmented world</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
-                <span>Balancing technical sophistication with practical utility</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
-                <span>The ethical implications of autonomous AI systems</span>
-              </li>
+              {nowData.thinkingAbout.map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <span className="text-primary mt-1">→</span>
+                  <span>{item}</span>
+                </li>
+              ))}
             </ul>
           </div>
         </section>
