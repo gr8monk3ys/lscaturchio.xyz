@@ -347,6 +347,24 @@
       will-change: auto;
     }
   }
+
+  /* Selected writing rail */
+  .selected-writing-media {
+    transform: translate3d(var(--writing-parallax-x, 0px), 0, 0) scale(1.12);
+    will-change: transform;
+  }
+
+  .selected-writing-card:hover .selected-writing-media {
+    transform: translate3d(var(--writing-parallax-x, 0px), -2px, 0) scale(1.16);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .selected-writing-media,
+    .selected-writing-card:hover .selected-writing-media {
+      transform: none !important;
+      will-change: auto;
+    }
+  }
 }
 
 @layer components {
