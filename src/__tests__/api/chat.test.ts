@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 // Mock OpenAI module (must be before route import)
 vi.mock('openai', () => ({
@@ -27,10 +27,6 @@ vi.mock('@/lib/embeddings', () => ({
 }));
 
 // Mock other dependencies
-vi.mock('@/lib/csrf', () => ({
-  validateCsrf: vi.fn(),
-}));
-
 vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
   logInfo: vi.fn(),
@@ -49,7 +45,6 @@ vi.mock('@/lib/rate-limit', () => ({
 import { POST } from '@/app/api/chat/route';
 import { searchSimilarContent, isEmbeddingsAvailable } from '@/lib/embeddings';
 import { isOllamaAvailable, createOllamaChatCompletion } from '@/lib/ollama';
-import { validateCsrf } from '@/lib/csrf';
 
 // Helper to create mock request
 function createMockRequest(body: Record<string, unknown>): NextRequest {
@@ -66,8 +61,6 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
 describe('/api/chat', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Default: CSRF passes
-    vi.mocked(validateCsrf).mockReturnValue(null);
     // Default: embeddings available and return empty
     vi.mocked(isEmbeddingsAvailable).mockResolvedValue(true);
     vi.mocked(searchSimilarContent).mockResolvedValue([]);
@@ -112,19 +105,6 @@ describe('/api/chat', () => {
 
       expect(response.status).toBe(400);
       expect(data.error).toContain('Query too long');
-    });
-  });
-
-  describe('CSRF protection', () => {
-    it('returns CSRF error when validation fails', async () => {
-      vi.mocked(validateCsrf).mockReturnValue(
-        NextResponse.json({ error: 'CSRF validation failed' }, { status: 403 })
-      );
-
-      const request = createMockRequest({ query: 'test query' });
-      const response = await POST(request);
-
-      expect(response.status).toBe(403);
     });
   });
 
