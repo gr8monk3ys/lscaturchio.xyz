@@ -10,6 +10,8 @@ import {
   VolumeX,
   Headphones,
   Loader2,
+  List,
+  FileText,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -23,6 +25,13 @@ type PlaybackSpeed = 0.5 | 0.75 | 1 | 1.25 | 1.5 | 1.75 | 2
 
 const SPEED_OPTIONS: PlaybackSpeed[] = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
 const SKIP_SECONDS = 15
+
+interface Chapter {
+  id: string
+  title: string
+  level: number
+  startTime: number
+}
 
 function getSafeDuration(audio: HTMLAudioElement): number {
   if (Number.isFinite(audio.duration) && audio.duration > 0) {
@@ -47,6 +56,17 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, "0")}`
 }
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+}
+
+function countWords(text: string): number {
+  return text.split(/\s+/).filter(Boolean).length
+}
+
 export function TextToSpeech({ slug, contentRef }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const progressRef = useRef<HTMLDivElement>(null)
@@ -59,6 +79,10 @@ export function TextToSpeech({ slug, contentRef }: AudioPlayerProps) {
   const [speed, setSpeed] = useState<PlaybackSpeed>(1)
   const [isMuted, setIsMuted] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [showChapters, setShowChapters] = useState(false)
+  const [showTranscript, setShowTranscript] = useState(false)
+  const [chapters, setChapters] = useState<Chapter[]>([])
+  const [transcript, setTranscript] = useState<string>("")
 
   // Fallback to Web Speech API
   const [useFallback, setUseFallback] = useState(false)
@@ -99,6 +123,63 @@ export function TextToSpeech({ slug, contentRef }: AudioPlayerProps) {
       audio.src = ""
     }
   }, [slug])
+
+  // Build transcript text (client-side, from rendered content)
+  useEffect(() => {
+    const root = contentRef.current
+    if (!root) return
+    const text = (root.textContent || "").trim()
+    setTranscript(text.length > 40_000 ? `${text.slice(0, 40_000)}\n\n[truncated]` : text)
+  }, [contentRef, slug])
+
+  // Build approximate chapters from headings + word-count proportion of duration
+  useEffect(() => {
+    const root = contentRef.current
+    if (!root) return
+    if (!duration || duration <= 0) return
+
+    const totalWords = countWords(root.textContent || "")
+    if (!totalWords) return
+
+    const headingEls = Array.from(root.querySelectorAll("h2, h3")) as HTMLElement[]
+    const next: Chapter[] = []
+
+    // Start marker
+    next.push({ id: "start", title: "Start", level: 2, startTime: 0 })
+
+    for (const el of headingEls) {
+      const title = (el.textContent || "").trim()
+      if (!title) continue
+
+      if (!el.id) {
+        el.id = slugify(title)
+      }
+
+      let wordsBefore = 0
+      try {
+        const range = document.createRange()
+        range.setStart(root, 0)
+        range.setEnd(el, 0)
+        wordsBefore = countWords(range.toString())
+      } catch {
+        wordsBefore = 0
+      }
+
+      const startTime = Math.max(0, Math.min(duration, (wordsBefore / totalWords) * duration))
+      const level = Number.parseInt(el.tagName[1] ?? "2", 10) || 2
+      next.push({ id: el.id, title, level, startTime })
+    }
+
+    // De-dupe by id and keep ascending by time
+    const seen = new Set<string>()
+    const deduped = next.filter((c) => {
+      if (seen.has(c.id)) return false
+      seen.add(c.id)
+      return true
+    })
+    deduped.sort((a, b) => a.startTime - b.startTime)
+    setChapters(deduped.slice(0, 24))
+  }, [contentRef, duration])
 
   // Audio element event listeners
   useEffect(() => {
@@ -376,6 +457,84 @@ export function TextToSpeech({ slug, contentRef }: AudioPlayerProps) {
               </button>
             </div>
           </div>
+
+          {/* Extras */}
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowChapters((v) => !v)
+                  setShowTranscript(false)
+                }}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors",
+                  showChapters ? "neu-pressed text-stone-900 dark:text-stone-100" : "neu-button text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
+                )}
+              >
+                <List className="h-3.5 w-3.5" />
+                Chapters
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowTranscript((v) => !v)
+                  setShowChapters(false)
+                }}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors",
+                  showTranscript ? "neu-pressed text-stone-900 dark:text-stone-100" : "neu-button text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
+                )}
+              >
+                <FileText className="h-3.5 w-3.5" />
+                Transcript
+              </button>
+            </div>
+            <span className="text-xs text-stone-500 dark:text-stone-400">
+              {chapters.length > 1 ? "Chapters are approximate" : ""}
+            </span>
+          </div>
+
+          {showChapters && chapters.length > 1 && (
+            <div className="rounded-2xl border border-border/60 bg-background/60 p-3 max-h-56 overflow-y-auto">
+              <div className="space-y-1">
+                {chapters.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => {
+                      const audio = audioRef.current
+                      if (!audio) return
+                      audio.currentTime = c.startTime
+                      setCurrentTime(c.startTime)
+                      audio.play()
+                    }}
+                    className={cn(
+                      "w-full text-left rounded-xl px-3 py-2 text-sm transition-colors",
+                      "hover:bg-muted/60"
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className={cn("min-w-0 truncate", c.level === 3 ? "pl-3 text-stone-700 dark:text-stone-300" : "text-stone-900 dark:text-stone-100")}>
+                        {c.title}
+                      </div>
+                      <div className="shrink-0 font-mono text-xs text-stone-500 dark:text-stone-400">
+                        {formatTime(c.startTime)}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {showTranscript && transcript && (
+            <div className="rounded-2xl border border-border/60 bg-background/60 p-4 max-h-56 overflow-y-auto">
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                {transcript}
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
