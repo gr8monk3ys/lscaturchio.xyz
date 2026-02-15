@@ -1,17 +1,18 @@
 "use client"
 
 import { Code2 } from 'lucide-react'
+import { SITE_TECH } from '@/constants/site-tech'
 
 export function TechStack() {
   const stack = [
-    { name: 'Next.js 14', category: 'Framework', color: 'bg-black dark:bg-white' },
-    { name: 'React 18', category: 'Library', color: 'bg-blue-500' },
-    { name: 'TypeScript', category: 'Language', color: 'bg-blue-600' },
-    { name: 'Tailwind CSS', category: 'Styling', color: 'bg-cyan-500' },
-    { name: 'Framer Motion', category: 'Animation', color: 'bg-purple-500' },
-    { name: 'Supabase', category: 'Database', color: 'bg-green-600' },
+    { name: SITE_TECH.framework, category: 'Framework', color: 'bg-black dark:bg-white' },
+    { name: SITE_TECH.library, category: 'Library', color: 'bg-blue-500' },
+    { name: SITE_TECH.language, category: 'Language', color: 'bg-blue-600' },
+    { name: SITE_TECH.styling, category: 'Styling', color: 'bg-cyan-500' },
+    { name: SITE_TECH.animations, category: 'Animation', color: 'bg-purple-500' },
+    { name: SITE_TECH.database, category: 'Database', color: 'bg-green-600' },
     { name: 'OpenAI', category: 'AI', color: 'bg-emerald-500' },
-    { name: 'Vercel', category: 'Hosting', color: 'bg-black dark:bg-white' },
+    { name: SITE_TECH.deployment, category: 'Hosting', color: 'bg-black dark:bg-white' },
   ]
 
   return (

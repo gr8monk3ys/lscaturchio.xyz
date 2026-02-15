@@ -20,14 +20,14 @@ export function PopularPosts() {
     const fetchPopular = async () => {
       try {
         // Fetch real views data from our views API
-        const response = await fetch('/api/views', { method: 'OPTIONS' });
+        const response = await fetch('/api/views?format=detailed');
         if (!response.ok) {
           throw new Error('Failed to load popular posts');
         }
         const data = await response.json();
 
         // Sort by views and take top 5
-        const sortedPosts = data.views
+        const sortedPosts = (data.data?.views ?? data.views)
           .sort((a: { views: number }, b: { views: number }) => b.views - a.views)
           .slice(0, 5)
           .map((post: { slug: string; title: string; views: number }) => ({

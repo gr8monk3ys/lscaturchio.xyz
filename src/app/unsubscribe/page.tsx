@@ -51,7 +51,7 @@ function UnsubscribeContent() {
   }, [searchParams])
 
   return (
-    <main className="min-h-screen flex items-center justify-center py-20">
+    <div className="min-h-screen flex items-center justify-center py-20">
       <Container>
         <div className="max-w-md mx-auto text-center">
           <motion.div
@@ -110,20 +110,20 @@ function UnsubscribeContent() {
           </motion.div>
         </div>
       </Container>
-    </main>
+    </div>
   )
 }
 
 export default function UnsubscribePage() {
   return (
     <Suspense fallback={
-      <main className="min-h-screen flex items-center justify-center py-20">
+      <div className="min-h-screen flex items-center justify-center py-20">
         <Container>
           <div className="max-w-md mx-auto text-center">
             <Loader2 className="h-16 w-16 animate-spin text-primary mx-auto" />
           </div>
         </Container>
-      </main>
+      </div>
     }>
       <UnsubscribeContent />
     </Suspense>

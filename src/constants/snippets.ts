@@ -198,8 +198,8 @@ const prompt = summarizePrompt({
   },
   {
     id: '6',
-    title: 'Supabase Vector Search',
-    description: 'Semantic search using Supabase pgvector extension with match_embeddings RPC.',
+    title: 'pgvector Semantic Search',
+    description: 'Semantic search using PostgreSQL pgvector extension with a match_embeddings function.',
     code: `-- SQL: Create embeddings table with vector extension
 create extension if not exists vector;
 
@@ -237,7 +237,7 @@ begin
 end;
 $$;`,
     language: 'sql',
-    tags: ['supabase', 'pgvector', 'vector-search', 'sql'],
+    tags: ['pgvector', 'vector-search', 'sql', 'embeddings'],
     category: 'AI/ML',
   },
   {

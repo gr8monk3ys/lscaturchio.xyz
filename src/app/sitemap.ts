@@ -3,8 +3,7 @@ import type { MetadataRoute } from "next";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { products } from "@/constants/products";
 import { TOPIC_HUBS } from "@/constants/topics";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://lscaturchio.xyz";
+import { SITE_URL } from "@/lib/site-url";
 
 const DEFAULT_LOCALE = "en";
 const LOCALES = ["en", "es", "fr", "hi", "ar", "zh-cn"] as const;

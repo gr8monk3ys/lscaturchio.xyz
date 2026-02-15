@@ -14,7 +14,7 @@ export const Container = ({ children, className, size = "default" }: ContainerPr
         "relative w-full mx-auto",
         "px-4 sm:px-6 md:px-6 lg:px-8 xl:px-12",
         "py-12 sm:py-16 md:py-20",
-        "min-h-[calc(100vh-4rem)]",
+        "min-h-[calc(100vh-5rem)]",
         className
       )}
     >
