@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { NextRequest } from 'next/server';
 
 // Mock dependencies before importing the route
 vi.mock('@/lib/getAllBlogs', () => ({
@@ -10,9 +11,19 @@ vi.mock('@/lib/logger', () => ({
   logInfo: vi.fn(),
 }));
 
+vi.mock('@/lib/rate-limit-redis', () => ({
+  getRedisRateLimiter: vi.fn(() => null),
+}));
+
 import { GET } from '@/app/api/blog-stats/route';
 import { getAllBlogs } from '@/lib/getAllBlogs';
 import { logError } from '@/lib/logger';
+
+function createMockRequest(): NextRequest {
+  return new NextRequest('http://localhost:3000/api/blog-stats', {
+    method: 'GET',
+  });
+}
 
 describe('/api/blog-stats', () => {
   beforeEach(() => {
@@ -53,15 +64,16 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const response = await GET();
+      const response = await GET(createMockRequest());
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.totalPosts).toBe(3);
-      expect(data.totalReadingTime).toBe(35); // 10 + 20 + 5
-      expect(data.avgReadingTime).toBe(12); // Math.round(35/3)
-      expect(data.topTags).toBeDefined();
-      expect(data.topTags.length).toBeGreaterThan(0);
+      expect(data.success).toBe(true);
+      expect(data.data.totalPosts).toBe(3);
+      expect(data.data.totalReadingTime).toBe(35); // 10 + 20 + 5
+      expect(data.data.avgReadingTime).toBe(12); // Math.round(35/3)
+      expect(data.data.topTags).toBeDefined();
+      expect(data.data.topTags.length).toBeGreaterThan(0);
     });
 
     it('returns correct tag counts in topTags', async () => {
@@ -97,14 +109,15 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const response = await GET();
+      const response = await GET(createMockRequest());
       const data = await response.json();
 
       expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
       // React appears 3 times, should be first
-      expect(data.topTags[0]).toEqual({ tag: 'react', count: 3 });
+      expect(data.data.topTags[0]).toEqual({ tag: 'react', count: 3 });
       // Other tags appear once each
-      expect(data.topTags.length).toBeLessThanOrEqual(5);
+      expect(data.data.topTags.length).toBeLessThanOrEqual(5);
     });
 
     it('limits topTags to maximum 5 tags', async () => {
@@ -122,24 +135,26 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const response = await GET();
+      const response = await GET(createMockRequest());
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.topTags.length).toBe(5);
+      expect(data.success).toBe(true);
+      expect(data.data.topTags.length).toBe(5);
     });
 
     it('handles empty blog list', async () => {
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue([]);
 
-      const response = await GET();
+      const response = await GET(createMockRequest());
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.totalPosts).toBe(0);
-      expect(data.totalReadingTime).toBe(0);
+      expect(data.success).toBe(true);
+      expect(data.data.totalPosts).toBe(0);
+      expect(data.data.totalReadingTime).toBe(0);
       // NaN from 0/0, but Math.round(NaN) = NaN
-      expect(data.topTags).toEqual([]);
+      expect(data.data.topTags).toEqual([]);
     });
 
     it('handles blogs with no tags', async () => {
@@ -157,12 +172,13 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const response = await GET();
+      const response = await GET(createMockRequest());
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.totalPosts).toBe(1);
-      expect(data.topTags).toEqual([]);
+      expect(data.success).toBe(true);
+      expect(data.data.totalPosts).toBe(1);
+      expect(data.data.topTags).toEqual([]);
     });
 
     it('handles blogs with empty content', async () => {
@@ -180,13 +196,14 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const response = await GET();
+      const response = await GET(createMockRequest());
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.totalPosts).toBe(1);
+      expect(data.success).toBe(true);
+      expect(data.data.totalPosts).toBe(1);
       // Math.ceil(0/1000) * 5 = 0
-      expect(data.totalReadingTime).toBe(0);
+      expect(data.data.totalReadingTime).toBe(0);
     });
 
     it('calculates reading time correctly for various content lengths', async () => {
@@ -213,12 +230,13 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const response = await GET();
+      const response = await GET(createMockRequest());
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.totalReadingTime).toBe(15); // 5 + 10
-      expect(data.avgReadingTime).toBe(8); // Math.round(15/2)
+      expect(data.success).toBe(true);
+      expect(data.data.totalReadingTime).toBe(15); // 5 + 10
+      expect(data.data.avgReadingTime).toBe(8); // Math.round(15/2)
     });
   });
 
@@ -228,10 +246,11 @@ describe('/api/blog-stats', () => {
         new Error('Database connection failed')
       );
 
-      const response = await GET();
+      const response = await GET(createMockRequest());
       const data = await response.json();
 
       expect(response.status).toBe(500);
+      expect(data.success).toBe(false);
       expect(data.error).toBe('Failed to fetch blog stats');
     });
 
@@ -239,7 +258,7 @@ describe('/api/blog-stats', () => {
       const error = new Error('File system error');
       (getAllBlogs as ReturnType<typeof vi.fn>).mockRejectedValue(error);
 
-      await GET();
+      await GET(createMockRequest());
 
       expect(logError).toHaveBeenCalledWith(
         'Blog Stats: Unexpected error',
@@ -266,7 +285,7 @@ describe('/api/blog-stats', () => {
 
       // The route should handle this gracefully or throw an error
       // Based on the implementation, it will throw because blog.tags.forEach() fails on undefined
-      const response = await GET();
+      const response = await GET(createMockRequest());
 
       // Depending on implementation, this might be a 500 error
       expect(response.status).toBe(500);
@@ -289,18 +308,20 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const response = await GET();
+      const response = await GET(createMockRequest());
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data).toHaveProperty('totalPosts');
-      expect(data).toHaveProperty('totalReadingTime');
-      expect(data).toHaveProperty('avgReadingTime');
-      expect(data).toHaveProperty('topTags');
-      expect(typeof data.totalPosts).toBe('number');
-      expect(typeof data.totalReadingTime).toBe('number');
-      expect(typeof data.avgReadingTime).toBe('number');
-      expect(Array.isArray(data.topTags)).toBe(true);
+      expect(data).toHaveProperty('success', true);
+      expect(data).toHaveProperty('data');
+      expect(data.data).toHaveProperty('totalPosts');
+      expect(data.data).toHaveProperty('totalReadingTime');
+      expect(data.data).toHaveProperty('avgReadingTime');
+      expect(data.data).toHaveProperty('topTags');
+      expect(typeof data.data.totalPosts).toBe('number');
+      expect(typeof data.data.totalReadingTime).toBe('number');
+      expect(typeof data.data.avgReadingTime).toBe('number');
+      expect(Array.isArray(data.data.topTags)).toBe(true);
     });
 
     it('topTags items have correct structure', async () => {
@@ -318,11 +339,12 @@ describe('/api/blog-stats', () => {
 
       (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue(mockBlogs);
 
-      const response = await GET();
+      const response = await GET(createMockRequest());
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      data.topTags.forEach((tagItem: { tag: string; count: number }) => {
+      expect(data.success).toBe(true);
+      data.data.topTags.forEach((tagItem: { tag: string; count: number }) => {
         expect(tagItem).toHaveProperty('tag');
         expect(tagItem).toHaveProperty('count');
         expect(typeof tagItem.tag).toBe('string');

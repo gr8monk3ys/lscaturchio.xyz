@@ -70,16 +70,17 @@ describe('Search API Route', () => {
 
       const request = new NextRequest('http://localhost/api/search?q=typescript');
       const response = await GET(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.query).toBe('typescript');
-      expect(data.results).toHaveLength(1); // Grouped by URL
-      expect(data.results[0].title).toBe('Test Blog Post');
-      expect(data.results[0].url).toBe('/blog/test-post');
-      expect(data.results[0].snippets).toHaveLength(2);
-      expect(data.results[0].similarity).toBe(0.85); // Highest similarity
-      expect(data.count).toBe(1);
+      expect(json.success).toBe(true);
+      expect(json.data.query).toBe('typescript');
+      expect(json.data.results).toHaveLength(1); // Grouped by URL
+      expect(json.data.results[0].title).toBe('Test Blog Post');
+      expect(json.data.results[0].url).toBe('/blog/test-post');
+      expect(json.data.results[0].snippets).toHaveLength(2);
+      expect(json.data.results[0].similarity).toBe(0.85); // Highest similarity
+      expect(json.data.count).toBe(1);
     });
 
     it('returns multiple grouped results from different posts', async () => {
@@ -103,12 +104,12 @@ describe('Search API Route', () => {
 
       const request = new NextRequest('http://localhost/api/search?q=react');
       const response = await GET(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results).toHaveLength(2);
-      expect(data.results[0].title).toBe('Test Blog Post'); // Higher similarity first
-      expect(data.results[1].title).toBe('Second Blog Post');
+      expect(json.data.results).toHaveLength(2);
+      expect(json.data.results[0].title).toBe('Test Blog Post'); // Higher similarity first
+      expect(json.data.results[1].title).toBe('Second Blog Post');
     });
 
     it('returns 400 for missing query parameter', async () => {
@@ -176,10 +177,10 @@ describe('Search API Route', () => {
 
       const request = new NextRequest('http://localhost/api/search?q=test&limit=5');
       const response = await GET(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results).toHaveLength(5);
+      expect(json.data.results).toHaveLength(5);
       expect(searchEmbeddings).toHaveBeenCalledWith('test', 5);
     });
 
@@ -213,10 +214,10 @@ describe('Search API Route', () => {
 
       const request = new NextRequest('http://localhost/api/search?q=test');
       const response = await GET(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results[0].snippets).toHaveLength(2);
+      expect(json.data.results[0].snippets).toHaveLength(2);
     });
 
     it('deduplicates identical snippets from same post', async () => {
@@ -233,11 +234,11 @@ describe('Search API Route', () => {
 
       const request = new NextRequest('http://localhost/api/search?q=test');
       const response = await GET(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results[0].snippets).toHaveLength(1);
-      expect(data.results[0].snippets[0]).toBe('Same snippet content');
+      expect(json.data.results[0].snippets).toHaveLength(1);
+      expect(json.data.results[0].snippets[0]).toBe('Same snippet content');
     });
 
     it('skips results without URL in metadata', async () => {
@@ -253,11 +254,11 @@ describe('Search API Route', () => {
 
       const request = new NextRequest('http://localhost/api/search?q=test');
       const response = await GET(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results).toHaveLength(1);
-      expect(data.results[0].title).toBe('Test Blog Post');
+      expect(json.data.results).toHaveLength(1);
+      expect(json.data.results[0].title).toBe('Test Blog Post');
     });
 
     it('returns 500 when searchEmbeddings throws an error', async () => {
@@ -283,11 +284,11 @@ describe('Search API Route', () => {
 
       const request = new NextRequest('http://localhost/api/search?q=nonexistent');
       const response = await GET(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results).toEqual([]);
-      expect(data.count).toBe(0);
+      expect(json.data.results).toEqual([]);
+      expect(json.data.count).toBe(0);
     });
 
     it('does not include tags in GET response', async () => {
@@ -296,10 +297,10 @@ describe('Search API Route', () => {
 
       const request = new NextRequest('http://localhost/api/search?q=test');
       const response = await GET(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results[0].tags).toBeUndefined();
+      expect(json.data.results[0].tags).toBeUndefined();
     });
   });
 
@@ -318,12 +319,12 @@ describe('Search API Route', () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.query).toBe('typescript');
-      expect(data.results).toHaveLength(1);
-      expect(data.results[0]).toEqual({
+      expect(json.data.query).toBe('typescript');
+      expect(json.data.results).toHaveLength(1);
+      expect(json.data.results[0]).toEqual({
         slug: 'test-post',
         title: 'Test Blog Post',
         description: 'A description of the test post',
@@ -331,7 +332,7 @@ describe('Search API Route', () => {
         tags: ['typescript', 'testing'],
         relevance: 0.85,
       });
-      expect(data.count).toBe(1);
+      expect(json.data.count).toBe(1);
     });
 
     it('includes tags in POST response', async () => {
@@ -348,25 +349,22 @@ describe('Search API Route', () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results[0].tags).toEqual(['typescript', 'testing']);
+      expect(json.data.results[0].tags).toEqual(['typescript', 'testing']);
     });
 
     it('handles request without origin header gracefully', async () => {
-      // Note: The implementation doesn't explicitly validate CSRF for search
       const mockResults = [createMockEmbeddingResult()];
       (searchEmbeddings as ReturnType<typeof vi.fn>).mockResolvedValue(mockResults);
 
       const request = new NextRequest('http://localhost/api/search', {
         method: 'POST',
         body: JSON.stringify({ query: 'test' }),
-        // No Origin header
       });
 
       const response = await POST(request);
-      // Should still work without CSRF validation
       expect(response.status).toBe(200);
     });
 
@@ -466,10 +464,10 @@ describe('Search API Route', () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results).toHaveLength(3);
+      expect(json.data.results).toHaveLength(3);
       expect(searchEmbeddings).toHaveBeenCalledWith('test', 3);
     });
 
@@ -498,10 +496,10 @@ describe('Search API Route', () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results[0].slug).toBe('deep-nested-post');
+      expect(json.data.results[0].slug).toBe('deep-nested-post');
     });
 
     it('returns 500 when searchEmbeddings throws an error', async () => {
@@ -555,10 +553,10 @@ describe('Search API Route', () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results[0].tags).toEqual([]);
+      expect(json.data.results[0].tags).toEqual([]);
     });
 
     it('handles limit passed as string', async () => {
@@ -603,12 +601,12 @@ describe('Search API Route', () => {
 
       const request = new NextRequest('http://localhost/api/search?q=typescript');
       const response = await GET(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results).toHaveLength(1);
-      expect(data.results[0].similarity).toBe(0.9); // Highest preserved
-      expect(data.results[0].snippets).toHaveLength(2); // Limited to 2
+      expect(json.data.results).toHaveLength(1);
+      expect(json.data.results[0].similarity).toBe(0.9); // Highest preserved
+      expect(json.data.results[0].snippets).toHaveLength(2); // Limited to 2
     });
 
     it('sorts grouped results by highest similarity', async () => {
@@ -649,12 +647,12 @@ describe('Search API Route', () => {
 
       const request = new NextRequest('http://localhost/api/search?q=test');
       const response = await GET(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results[0].title).toBe('High Similarity Post');
-      expect(data.results[1].title).toBe('Medium Similarity Post');
-      expect(data.results[2].title).toBe('Low Similarity Post');
+      expect(json.data.results[0].title).toBe('High Similarity Post');
+      expect(json.data.results[1].title).toBe('Medium Similarity Post');
+      expect(json.data.results[2].title).toBe('Low Similarity Post');
     });
 
     it('preserves metadata from first occurrence of grouped result', async () => {
@@ -685,12 +683,12 @@ describe('Search API Route', () => {
 
       const request = new NextRequest('http://localhost/api/search?q=test');
       const response = await GET(request);
-      const data = await response.json();
+      const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.results[0].title).toBe('Original Title');
-      expect(data.results[0].description).toBe('Original Description');
-      expect(data.results[0].similarity).toBe(0.9); // Highest similarity
+      expect(json.data.results[0].title).toBe('Original Title');
+      expect(json.data.results[0].description).toBe('Original Description');
+      expect(json.data.results[0].similarity).toBe(0.9); // Highest similarity
     });
   });
 });

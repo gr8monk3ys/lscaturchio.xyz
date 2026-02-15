@@ -4,11 +4,7 @@ import { RATE_LIMITS } from "@/lib/rate-limit";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { calculateReadingTime } from "@/lib/reading-time";
 import { hasAudioForSlug } from "@/lib/audio";
-
-function getSiteUrl(): string {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  return siteUrl && siteUrl.startsWith("http") ? siteUrl : "https://lscaturchio.xyz";
-}
+import { getSiteUrl } from "@/lib/site-url";
 
 const handleGet = async (req: NextRequest) => {
   const siteUrl = getSiteUrl();

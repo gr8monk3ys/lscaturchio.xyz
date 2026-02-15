@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit';
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -10,14 +11,28 @@ function truncate(s: string, max: number): string {
   return t.length > max ? `${t.slice(0, max - 1)}…` : t;
 }
 
-export async function GET(request: NextRequest) {
+const handleGet = async (request: NextRequest): Promise<NextResponse> => {
   const { searchParams } = new URL(request.url);
   const origin = new URL(request.url).origin;
 
   const title = searchParams.get('title') || 'Lorenzo Scaturchio';
   const description = searchParams.get('description') || 'Data Scientist & Developer';
   const type = searchParams.get('type') || 'default'; // 'blog', 'project', 'default'
-  const cover = searchParams.get('cover');
+  let cover = searchParams.get('cover');
+
+  // Restrict cover URL to prevent SSRF - only allow this project's domains
+  const ALLOWED_COVER_HOSTS = ['lscaturchio.xyz', 'www.lscaturchio.xyz'];
+  if (cover) {
+    try {
+      // Only validate external URLs (absolute); relative paths are resolved to origin below
+      if (cover.startsWith('http://') || cover.startsWith('https://')) {
+        const coverHost = new URL(cover).hostname;
+        if (!ALLOWED_COVER_HOSTS.includes(coverHost)) cover = null;
+      }
+    } catch {
+      cover = null;
+    }
+  }
 
   const coverUrl = cover
     ? cover.startsWith('http://') || cover.startsWith('https://')
@@ -236,5 +251,7 @@ export async function GET(request: NextRequest) {
       width: 1200,
       height: 630,
     }
-  );
-}
+  ) as unknown as NextResponse;
+};
+
+export const GET = withRateLimit(handleGet, RATE_LIMITS.STANDARD);

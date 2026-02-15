@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { logError } from "@/lib/logger";
+import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
 
 interface SeriesInfo {
   name: string;
@@ -21,7 +22,7 @@ interface SeriesInfo {
  * GET /api/all-series
  * Returns all series with their posts
  */
-export async function GET() {
+const handleGet = async () => {
   try {
     const blogs = await getAllBlogs();
 
@@ -77,4 +78,6 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+};
+
+export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);

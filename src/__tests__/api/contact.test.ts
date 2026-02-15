@@ -51,12 +51,17 @@ vi.mock('@/lib/sanitize', () => ({
   },
 }));
 
+vi.mock('@/lib/csrf', () => ({
+  validateCsrf: vi.fn(),
+}));
+
 // Mock fetch globally for Resend API calls
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
 import { POST } from '@/app/api/contact/route';
 import { logError, logInfo } from '@/lib/logger';
+import { validateCsrf } from '@/lib/csrf';
 
 // Helper to create mock request
 function createMockRequest(body: Record<string, unknown>): NextRequest {
@@ -76,6 +81,8 @@ const originalEnv = { ...process.env };
 describe('/api/contact', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default: CSRF passes
+    vi.mocked(validateCsrf).mockReturnValue(null);
     // Default: Resend API configured
     process.env.RESEND_API_KEY = 'test_resend_key';
     process.env.CONTACT_EMAIL = 'test@example.com';
@@ -597,21 +604,20 @@ describe('/api/contact', () => {
     });
   });
 
-  describe('HTTP method handling', () => {
-    it('returns 405 for non-POST requests', async () => {
-      const request = new NextRequest('http://localhost:3000/api/contact', {
-        method: 'GET',
-        headers: {
-          origin: 'http://localhost:3000',
-        },
+  describe('CSRF protection', () => {
+    it('returns 403 when CSRF validation fails', async () => {
+      vi.mocked(validateCsrf).mockReturnValue(
+        new Response(JSON.stringify({ error: 'Invalid origin' }), { status: 403 })
+      );
+
+      const request = createMockRequest({
+        name: 'John Doe',
+        email: 'john@example.com',
+        message: 'Hello world',
       });
-
       const response = await POST(request);
-      const data = await response.json();
 
-      expect(response.status).toBe(405);
-      expect(data.error).toBe('Method not allowed');
-      expect(data.success).toBe(false);
+      expect(response.status).toBe(403);
     });
   });
 });

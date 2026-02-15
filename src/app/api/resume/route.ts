@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
+import { validateCsrf } from "@/lib/csrf";
 import { logInfo, logError } from "@/lib/logger";
+import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
 
 // Resume file path - stored in public directory
 const RESUME_FILENAME = "Lorenzo_Scaturchio_Resume.pdf";
@@ -67,7 +69,10 @@ export async function GET() {
  * POST /api/resume
  * Track resume downloads (optional analytics)
  */
-export async function POST(req: NextRequest) {
+const handlePost = async (req: NextRequest) => {
+  const csrfError = validateCsrf(req);
+  if (csrfError) return csrfError;
+
   try {
     const body = await req.json();
 
@@ -80,9 +85,9 @@ export async function POST(req: NextRequest) {
         userAgent: req.headers.get("user-agent") || "unknown",
       });
 
-      // Optionally: Increment counter in Supabase
-      // const supabase = getSupabase();
-      // await supabase.rpc('increment_resume_downloads');
+      // Optionally: Increment counter in Neon PostgreSQL
+      // const sql = getDb();
+      // await sql`SELECT increment_resume_downloads()`;
 
       return NextResponse.json({ success: true });
     }
@@ -102,4 +107,6 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+};
+
+export const POST = withRateLimit(handlePost, RATE_LIMITS.STANDARD);

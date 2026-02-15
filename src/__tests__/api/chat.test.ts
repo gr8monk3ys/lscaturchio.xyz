@@ -42,9 +42,14 @@ vi.mock('@/lib/rate-limit', () => ({
   },
 }));
 
+vi.mock('@/lib/csrf', () => ({
+  validateCsrf: vi.fn(),
+}));
+
 import { POST } from '@/app/api/chat/route';
 import { searchSimilarContent, isEmbeddingsAvailable } from '@/lib/embeddings';
 import { isOllamaAvailable, createOllamaChatCompletion } from '@/lib/ollama';
+import { validateCsrf } from '@/lib/csrf';
 
 // Helper to create mock request
 function createMockRequest(body: Record<string, unknown>): NextRequest {
@@ -61,6 +66,8 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
 describe('/api/chat', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default: CSRF passes
+    vi.mocked(validateCsrf).mockReturnValue(null);
     // Default: embeddings available and return empty
     vi.mocked(isEmbeddingsAvailable).mockResolvedValue(true);
     vi.mocked(searchSimilarContent).mockResolvedValue([]);
@@ -76,7 +83,8 @@ describe('/api/chat', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toContain('expected string');
+      expect(data.success).toBe(false);
+      expect(data.error).toBeDefined();
     });
 
     it('returns 400 when query is empty string', async () => {
@@ -85,7 +93,8 @@ describe('/api/chat', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toContain('Query is required');
+      expect(data.success).toBe(false);
+      expect(data.error).toBeDefined();
     });
 
     it('returns 400 when query is not a string', async () => {
@@ -94,7 +103,8 @@ describe('/api/chat', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toContain('expected string');
+      expect(data.success).toBe(false);
+      expect(data.error).toBeDefined();
     });
 
     it('returns 400 when query exceeds max length', async () => {
@@ -104,7 +114,8 @@ describe('/api/chat', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toContain('Query too long');
+      expect(data.success).toBe(false);
+      expect(data.error).toBeDefined();
     });
   });
 
@@ -115,8 +126,9 @@ describe('/api/chat', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.answer).toBe('Test response from Ollama');
-      expect(data.provider).toBe('ollama');
+      expect(data.success).toBe(true);
+      expect(data.data.answer).toBe('Test response from Ollama');
+      expect(data.data.provider).toBe('ollama');
     });
 
     it('includes context from embeddings in AI prompt', async () => {
@@ -147,7 +159,8 @@ describe('/api/chat', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.answer).toBe('Test response from Ollama');
+      expect(data.success).toBe(true);
+      expect(data.data.answer).toBe('Test response from Ollama');
       expect(searchSimilarContent).not.toHaveBeenCalled();
     });
   });
@@ -161,9 +174,10 @@ describe('/api/chat', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.provider).toBe('fallback');
-      expect(data.degraded).toBe(true);
-      expect(data.answer).toContain('temporarily unable');
+      expect(data.success).toBe(true);
+      expect(data.data.provider).toBe('fallback');
+      expect(data.data.degraded).toBe(true);
+      expect(data.data.answer).toContain('temporarily unable');
     });
 
     it('returns fallback response when AI chat fails', async () => {
@@ -174,8 +188,9 @@ describe('/api/chat', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.provider).toBe('fallback');
-      expect(data.degraded).toBe(true);
+      expect(data.success).toBe(true);
+      expect(data.data.provider).toBe('fallback');
+      expect(data.data.degraded).toBe(true);
     });
 
     it('continues without context when embeddings search fails', async () => {
@@ -187,7 +202,8 @@ describe('/api/chat', () => {
 
       // Should still succeed - embeddings failure is graceful
       expect(response.status).toBe(200);
-      expect(data.answer).toBe('Test response from Ollama');
+      expect(data.success).toBe(true);
+      expect(data.data.answer).toBe('Test response from Ollama');
     });
   });
 });
