@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Twitter, Linkedin, Link2, Check, Share2 } from "lucide-react";
+import { Twitter, Linkedin, Link2, Check, Share2, Globe, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { logError } from "@/lib/logger";
 
@@ -32,6 +32,19 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
       shareUrl
     )}`;
     window.open(linkedinUrl, "_blank", "noopener,noreferrer");
+  };
+
+  const handleBlueskyShare = () => {
+    const text = `${title}\n${shareUrl}`;
+    const url = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleHackerNewsShare = () => {
+    const url = `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(
+      shareUrl
+    )}&t=${encodeURIComponent(title)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const handleCopyLink = async () => {
@@ -90,6 +103,30 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
       >
         <Linkedin className="h-4 w-4" />
         <span className="hidden sm:inline">LinkedIn</span>
+      </Button>
+
+      {/* Bluesky Share */}
+      <Button
+        onClick={handleBlueskyShare}
+        variant="outline"
+        size="sm"
+        className="flex items-center gap-2"
+        aria-label="Share on Bluesky"
+      >
+        <Globe className="h-4 w-4" />
+        <span className="hidden sm:inline">Bluesky</span>
+      </Button>
+
+      {/* Hacker News Share */}
+      <Button
+        onClick={handleHackerNewsShare}
+        variant="outline"
+        size="sm"
+        className="flex items-center gap-2"
+        aria-label="Share on Hacker News"
+      >
+        <Zap className="h-4 w-4" />
+        <span className="hidden sm:inline">HN</span>
       </Button>
 
       {/* Copy Link */}
