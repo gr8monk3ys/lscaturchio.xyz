@@ -1,24 +1,10 @@
-import fs from "fs";
-import path from "path";
-
-export function getAudioFilePath(slug: string): string {
-  return path.join(process.cwd(), "public", "audio", `${slug}.mp3`);
-}
+import { AUDIO_BYTES_BY_SLUG } from "@/generated/audio-manifest";
 
 export function hasAudioForSlug(slug: string): boolean {
-  try {
-    return fs.existsSync(getAudioFilePath(slug));
-  } catch {
-    return false;
-  }
+  return Object.prototype.hasOwnProperty.call(AUDIO_BYTES_BY_SLUG, slug);
 }
 
 export function getAudioByteLength(slug: string): number | null {
-  try {
-    const stat = fs.statSync(getAudioFilePath(slug));
-    return Number.isFinite(stat.size) ? stat.size : null;
-  } catch {
-    return null;
-  }
+  const size = AUDIO_BYTES_BY_SLUG[slug];
+  return Number.isFinite(size) ? size : null;
 }
-
