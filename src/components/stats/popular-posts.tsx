@@ -78,14 +78,14 @@ export function PopularPosts() {
               className="flex items-center justify-between group hover:translate-x-1 transition-transform"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <span className="text-sm font-medium text-muted-foreground w-6">
+                <span className="text-sm font-medium text-muted-foreground w-6 tabular-nums">
                   {index + 1}
                 </span>
                 <p className="text-sm text-foreground group-hover:text-primary truncate">
                   {post.title}
                 </p>
               </div>
-              <span className="text-sm text-muted-foreground ml-4">
+              <span className="text-sm text-muted-foreground ml-4 tabular-nums">
                 {post.views.toLocaleString()} views
               </span>
             </Link>

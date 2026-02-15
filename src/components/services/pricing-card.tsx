@@ -62,14 +62,14 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
                 maximumFractionDigits: 0,
               }}
               value={price}
-              className="text-4xl font-medium"
+              className="text-4xl font-medium tabular-nums"
             />
             <p className="-mt-2 text-xs text-muted-foreground">
               Per month/project
             </p>
           </>
         ) : (
-          <h1 className="text-4xl font-medium">{price}</h1>
+          <h1 className="text-4xl font-medium tabular-nums">{price}</h1>
         )}
       </div>
 
