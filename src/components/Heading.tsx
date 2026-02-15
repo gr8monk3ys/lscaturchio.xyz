@@ -1,15 +1,19 @@
+import { twMerge } from "tailwind-merge";
 import React from "react";
 
-import localFont from "next/font/local";
-import { twMerge } from "tailwind-merge";
-
-// Font files can be colocated inside of `app`
-const CalSans = localFont({
-  src: [{ path: "../../fonts/CalSans-SemiBold.woff2" }],
-  display: "swap",
-});
-
 type HeadingTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span" | "div";
+
+const defaultSizeByTag: Record<HeadingTag, string> = {
+  h1: "text-page-title",
+  h2: "text-section-title",
+  h3: "text-card-title",
+  h4: "text-subsection",
+  h5: "text-subsection",
+  h6: "text-subsection",
+  p: "text-body",
+  span: "",
+  div: "",
+};
 
 export const Heading = ({
   className,
@@ -23,8 +27,9 @@ export const Heading = ({
   return (
     <Component
       className={twMerge(
-        CalSans.className,
-        "text-base md:text-xl lg:text-4xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary",
+        // Use the site display font by default; keep sizing flexible via caller.
+        "font-display tracking-tight text-foreground",
+        defaultSizeByTag[Component],
         className
       )}
     >

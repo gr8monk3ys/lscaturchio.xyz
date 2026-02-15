@@ -147,11 +147,11 @@ export function RecentProjects() {
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                           <Star className="size-4" />
-                          <span>{repo.stars}</span>
+                          <span className="tabular-nums">{repo.stars}</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                           <GitFork className="size-4" />
-                          <span>{repo.forks}</span>
+                          <span className="tabular-nums">{repo.forks}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
