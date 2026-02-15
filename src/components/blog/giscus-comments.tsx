@@ -8,6 +8,7 @@ interface GiscusCommentsProps {
   repoId?: string
   category?: string
   categoryId?: string
+  showFallback?: boolean
 }
 
 export function GiscusComments({
@@ -15,6 +16,7 @@ export function GiscusComments({
   repoId = process.env.NEXT_PUBLIC_GISCUS_REPO_ID || "",
   category = process.env.NEXT_PUBLIC_GISCUS_CATEGORY || "Blog Comments",
   categoryId = process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID || "",
+  showFallback = false,
 }: GiscusCommentsProps) {
   const ref = useRef<HTMLDivElement>(null)
   const { resolvedTheme } = useTheme()
@@ -73,9 +75,41 @@ export function GiscusComments({
     )
   }, [isConfigured, resolvedTheme])
 
-  // Don't render if Giscus is not configured
+  // Don't render if Giscus is not configured (unless explicitly requested)
   if (!isConfigured) {
-    return null
+    if (!showFallback) return null
+
+    return (
+      <div className="mt-12 pt-8">
+        <h3 className="text-2xl font-bold mb-6 text-foreground">Comments</h3>
+        <div className="neu-flat rounded-2xl p-6">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Comments are currently disabled because Giscus isn&apos;t configured for this deployment.
+          </p>
+          <div className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">To enable comments:</p>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>Create a Giscus integration for your repo and discussion category.</li>
+              <li>
+                Set <code className="font-mono text-xs">NEXT_PUBLIC_GISCUS_REPO_ID</code> and{" "}
+                <code className="font-mono text-xs">NEXT_PUBLIC_GISCUS_CATEGORY_ID</code> in your environment variables.
+              </li>
+            </ol>
+            <p className="pt-2">
+              Setup:{" "}
+              <a
+                href="https://giscus.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                giscus.app
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
