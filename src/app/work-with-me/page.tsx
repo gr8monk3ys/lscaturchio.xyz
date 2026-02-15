@@ -13,7 +13,15 @@ export const metadata: Metadata = {
 };
 
 const frequencies = ["monthly", "yearly"];
-const tiers = pricingTiers.map(({ id: _id, ...tier }) => tier);
+const tiers = pricingTiers.map((tier) => ({
+  name: tier.name,
+  price: tier.price,
+  description: tier.description,
+  features: tier.features,
+  cta: tier.cta,
+  highlighted: tier.highlighted,
+  popular: tier.popular,
+}));
 
 export default function WorkWithMePage() {
   return (
@@ -94,4 +102,3 @@ export default function WorkWithMePage() {
     </Container>
   );
 }
-

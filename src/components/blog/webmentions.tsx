@@ -65,8 +65,11 @@ export function Webmentions({ path }: { path: string }) {
     };
   }, [path]);
 
-  const entries = data?.entries ?? [];
-  const counts = data?.counts ?? { like: 0, repost: 0, reply: 0, mention: 0 };
+  const entries = useMemo(() => data?.entries ?? [], [data]);
+  const counts = useMemo(
+    () => data?.counts ?? { like: 0, repost: 0, reply: 0, mention: 0 },
+    [data]
+  );
 
   const replies = useMemo(
     () =>
@@ -253,4 +256,3 @@ export function Webmentions({ path }: { path: string }) {
     </section>
   );
 }
-
