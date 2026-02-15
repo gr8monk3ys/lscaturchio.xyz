@@ -1,7 +1,6 @@
 "use client"
 
-import * as React from "react"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { navigation } from '@/constants/navlinks';
 import {
   Tooltip,
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/tooltip"
 import { Send, Rss, Pizza } from "lucide-react"
 import { socials } from "@/constants/socials"
+import { cn } from "@/lib/utils"
 
 function Footer() {
 
@@ -26,30 +26,33 @@ function Footer() {
               Subscribe to my AI News newsletter for the latest updates in artificial intelligence, machine learning, and tech innovations.
             </p>
             <div className="flex flex-col gap-3">
-              <Button
-                onClick={() => window.open(substackUrl, '_blank')}
-                variant="primary"
-                className="inline-flex items-center gap-2"
+              <a
+                href={substackUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ variant: "primary" }), "inline-flex items-center gap-2")}
               >
                 <Send className="h-4 w-4" />
                 Subscribe to Newsletter
-              </Button>
-              <Button
-                onClick={() => window.open('/api/rss', '_blank')}
-                variant="default"
-                className="inline-flex items-center gap-2"
+              </a>
+              <a
+                href="/api/rss"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ variant: "default" }), "inline-flex items-center gap-2")}
               >
                 <Rss className="h-4 w-4" />
                 RSS Feed
-              </Button>
-              <Button
-                onClick={() => window.open('https://www.buymeacoffee.com/lorenzoscak', '_blank')}
-                variant="default"
-                className="inline-flex items-center gap-2"
+              </a>
+              <a
+                href="https://www.buymeacoffee.com/lorenzoscak"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ variant: "default" }), "inline-flex items-center gap-2")}
               >
                 <Pizza className="h-4 w-4" />
                 Buy me a pizza
-              </Button>
+              </a>
             </div>
           </div>
           <div>
@@ -81,15 +84,15 @@ function Footer() {
                 <TooltipProvider key={social.label}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button
-                        variant="default"
-                        size="icon"
-                        className="rounded-xl"
-                        onClick={() => window.open(social.href, '_blank')}
+                      <a
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={cn(buttonVariants({ variant: "default", size: "icon" }), "rounded-xl")}
                       >
                         <social.icon className="h-4 w-4" />
                         <span className="sr-only">{social.label}</span>
-                      </Button>
+                      </a>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>{social.label}</p>

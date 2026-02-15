@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 // ============================================
@@ -96,7 +96,20 @@ export function GlassCard({
 
   if (!hoverEffect) {
     return (
-      <div className={baseClasses} onClick={onClick}>
+      <div
+        className={baseClasses}
+        onClick={onClick}
+        {...(onClick ? {
+          role: 'button' as const,
+          tabIndex: 0,
+          onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              onClick?.()
+            }
+          },
+        } : {})}
+      >
         {gradientBorder && <GradientBorderOverlay rounded={rounded} />}
         {children}
       </div>
@@ -111,6 +124,16 @@ export function GlassCard({
       whileHover="hover"
       whileTap={onClick ? "tap" : undefined}
       onClick={onClick}
+      {...(onClick ? {
+        role: 'button' as const,
+        tabIndex: 0,
+        onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onClick?.()
+          }
+        },
+      } : {})}
     >
       {/* Hover glow effect */}
       <motion.div

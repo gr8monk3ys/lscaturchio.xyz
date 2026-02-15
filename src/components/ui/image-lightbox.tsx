@@ -422,17 +422,43 @@ export function LightboxImage({
   priority = false,
 }: LightboxImageProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLDivElement>(null);
+
+  const openLightbox = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const closeLightbox = useCallback(() => {
+    setIsOpen(false);
+    // Return focus to the trigger element when lightbox closes
+    triggerRef.current?.focus();
+  }, []);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openLightbox();
+      }
+    },
+    [openLightbox]
+  );
 
   return (
     <>
       <motion.div
+        ref={triggerRef}
+        role="button"
+        tabIndex={0}
+        aria-label={alt ? `View ${alt} in lightbox` : 'View image in lightbox'}
         className={cn(
           "relative cursor-zoom-in overflow-hidden rounded-lg",
           className
         )}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        onClick={() => setIsOpen(true)}
+        onClick={openLightbox}
+        onKeyDown={handleKeyDown}
       >
         <Image
           src={src}
@@ -456,7 +482,7 @@ export function LightboxImage({
       <ImageLightbox
         images={[{ src, alt, caption, width, height }]}
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={closeLightbox}
       />
     </>
   );

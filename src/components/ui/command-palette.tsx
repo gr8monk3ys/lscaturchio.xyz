@@ -405,7 +405,12 @@ export function CommandPalette({ className }: CommandPaletteProps) {
               transition={{ duration: 0.15 }}
               className="fixed left-1/2 top-[20%] -translate-x-1/2 w-full max-w-xl z-50 px-4"
             >
-              <div className="bg-popover border border-border rounded-xl shadow-2xl overflow-hidden">
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-label="Search and navigate"
+                className="bg-popover border border-border rounded-xl shadow-2xl overflow-hidden"
+              >
                 {/* Search Input */}
                 <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
                   <Search className="h-5 w-5 text-muted-foreground shrink-0" />
@@ -415,6 +420,7 @@ export function CommandPalette({ className }: CommandPaletteProps) {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search pages, blogs, or actions..."
+                    aria-label="Search pages, blogs, or actions"
                     className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
                   />
                   {isSearching && (
