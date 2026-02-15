@@ -1,10 +1,10 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutGrid, Clock } from "lucide-react";
+import { LayoutDashboard, LayoutGrid, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type ViewMode = "grid" | "timeline";
+type ViewMode = "gallery" | "grid" | "timeline";
 
 interface ProjectViewToggleProps {
   mode: ViewMode;
@@ -15,6 +15,12 @@ interface ProjectViewToggleProps {
 export function ProjectViewToggle({ mode, onModeChange, className }: ProjectViewToggleProps) {
   return (
     <div className={cn("flex items-center gap-1 p-1 rounded-lg bg-muted/50", className)}>
+      <ToggleButton
+        isActive={mode === "gallery"}
+        onClick={() => onModeChange("gallery")}
+        icon={<LayoutDashboard className="h-4 w-4" />}
+        label="Gallery"
+      />
       <ToggleButton
         isActive={mode === "grid"}
         onClick={() => onModeChange("grid")}
@@ -67,6 +73,7 @@ function ToggleButton({ isActive, onClick, icon, label }: ToggleButtonProps) {
 // Wrapper component that handles view mode state and renders children
 interface ProjectViewWrapperProps {
   mode: ViewMode;
+  galleryView: React.ReactNode;
   gridView: React.ReactNode;
   timelineView: React.ReactNode;
   className?: string;
@@ -74,6 +81,7 @@ interface ProjectViewWrapperProps {
 
 export function ProjectViewWrapper({
   mode,
+  galleryView,
   gridView,
   timelineView,
   className,
@@ -81,7 +89,17 @@ export function ProjectViewWrapper({
   return (
     <div className={cn("relative min-h-[400px]", className)}>
       <AnimatePresence mode="wait">
-        {mode === "grid" ? (
+        {mode === "gallery" ? (
+          <motion.div
+            key="gallery"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            {galleryView}
+          </motion.div>
+        ) : mode === "grid" ? (
           <motion.div
             key="grid"
             initial={{ opacity: 0, y: 10 }}
