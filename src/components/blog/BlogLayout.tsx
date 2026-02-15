@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 import { formatDate } from "../../../lib/formatDate";
 import { Container } from "../Container";
@@ -70,6 +70,7 @@ export function BlogLayout({
 }: BlogLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const reduceMotion = useReducedMotion();
   const contentRef = useRef<HTMLDivElement>(null);
   const safeDate = clampToToday(meta.date);
   const safeUpdated = meta.updated ? clampToToday(meta.updated) : undefined;
@@ -87,6 +88,8 @@ export function BlogLayout({
   const fullUrl = typeof window !== 'undefined'
     ? window.location.href
     : `${siteUrl}${pathname}`;
+
+  const shared = !reduceMotion && !!slug;
 
   return (
     <>
@@ -156,9 +159,11 @@ export function BlogLayout({
                     </div>
                   </div>
                 </div>
-                <Heading className="mt-6 text-4xl font-bold tracking-tight text-stone-800 dark:text-stone-100 sm:text-5xl">
-                  {meta.title}
-                </Heading>
+                <motion.div layoutId={shared ? `blog-title-${slug}` : undefined}>
+                  <Heading className="mt-6 text-4xl font-bold tracking-tight text-stone-800 dark:text-stone-100 sm:text-5xl">
+                    {meta.title}
+                  </Heading>
+                </motion.div>
                 <Paragraph className="mt-4 text-sm leading-8 text-stone-600 dark:text-stone-400">
                   {meta.description}
                 </Paragraph>
@@ -178,6 +183,7 @@ export function BlogLayout({
                 )}
               </motion.div>
               <motion.div
+                layoutId={shared ? `blog-cover-${slug}` : undefined}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
