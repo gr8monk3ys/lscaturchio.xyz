@@ -8,11 +8,35 @@ import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
 import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
 /**
- * GET /api/views?slug=xxx    - Get view count for a specific blog post
- * GET /api/views?all=true    - Get all view counts (batched, used by ViewCountsProvider)
+ * GET /api/views?slug=xxx              - Get view count for a specific blog post
+ * GET /api/views?all=true              - Get all view counts (batched, used by ViewCountsProvider)
+ * GET /api/views?format=detailed       - Get all views with blog titles (for stats/popular posts)
  */
 const handleGet = async (req: NextRequest) => {
   try {
+    const formatParam = req.nextUrl.searchParams.get('format');
+
+    // Detailed format: views enriched with blog titles (used by stats page)
+    if (formatParam === 'detailed') {
+      if (!isDatabaseConfigured()) {
+        return apiSuccess({ views: [], total: 0 });
+      }
+
+      const sql = getDb();
+      const rows = await sql`SELECT slug, count FROM views ORDER BY count DESC`;
+
+      const allBlogs = await getAllBlogs();
+      const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
+
+      const allViews = rows.map((view) => ({
+        slug: view.slug,
+        title: blogMap.get(view.slug) || view.slug,
+        views: view.count,
+      }));
+
+      return apiSuccess({ views: allViews, total: allViews.length });
+    }
+
     const allParam = req.nextUrl.searchParams.get('all');
 
     // Batch-fetch all view counts (used by ViewCountsProvider to avoid N+1)
@@ -111,41 +135,3 @@ const handlePost = async (req: NextRequest) => {
 
 // Export POST with rate limiting (30 requests per minute - standard mutation endpoint)
 export const POST = withRateLimit(handlePost, RATE_LIMITS.STANDARD);
-
-/**
- * OPTIONS /api/views
- * Get all views with blog titles (for stats/popular posts)
- */
-const handleOptions = async () => {
-  try {
-    // Check if database is properly configured
-    if (!isDatabaseConfigured()) {
-      // Return empty data when database is not configured (dev mode)
-      return apiSuccess({ views: [], total: 0 });
-    }
-
-    const sql = getDb();
-
-    // Fetch all views from database
-    const rows = await sql`SELECT slug, count FROM views ORDER BY count DESC`;
-
-    // Fetch all blog metadata to get real titles
-    const allBlogs = await getAllBlogs();
-    const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
-
-    // Map views to include real titles
-    const allViews = rows.map((view) => ({
-      slug: view.slug,
-      title: blogMap.get(view.slug) || view.slug, // Fallback to slug if title not found
-      views: view.count,
-    }));
-
-    return apiSuccess({ views: allViews, total: allViews.length });
-  } catch (error) {
-    logError("View Counter: Unexpected error", error, { component: 'views', action: 'OPTIONS' });
-    return ApiErrors.internalError("Failed to fetch views");
-  }
-};
-
-// Export OPTIONS with rate limiting (100 requests per minute - public read-only endpoint)
-export const OPTIONS = withRateLimit(handleOptions, RATE_LIMITS.PUBLIC);

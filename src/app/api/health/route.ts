@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getDb, isDatabaseConfigured } from '@/lib/db'
 import { logError } from '@/lib/logger'
+import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit'
 
 /**
  * Health check response type
@@ -57,7 +58,7 @@ async function checkDatabase(): Promise<boolean> {
  *
  * Returns 200 if healthy, 503 if any check fails
  */
-export async function GET(): Promise<NextResponse> {
+const handleGet = async (): Promise<NextResponse> => {
   try {
     // Run checks
     const environmentOk = checkEnvironment()
@@ -109,3 +110,5 @@ export async function GET(): Promise<NextResponse> {
     })
   }
 }
+
+export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC)

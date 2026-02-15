@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSeriesPosts } from "@/lib/getAllBlogs";
 import { logError } from "@/lib/logger";
+import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
 
 /**
  * API route to fetch posts from a specific series
  * GET /api/series?name=seriesName
  */
-export async function GET(req: NextRequest) {
+const handleGet = async (req: NextRequest) => {
   try {
     const seriesName = req.nextUrl.searchParams.get("name");
 
@@ -37,4 +38,6 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+};
+
+export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);

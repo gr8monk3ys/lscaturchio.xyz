@@ -57,7 +57,8 @@ function getAllowedOrigins(): string[] {
 function isAllowedVercelAppOrigin(origin: string): boolean {
   try {
     const url = new URL(origin);
-    return url.hostname.endsWith(".vercel.app");
+    return url.hostname.endsWith('.vercel.app') &&
+           url.hostname.includes('lscaturchio');
   } catch {
     return false;
   }
@@ -104,7 +105,8 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
   if (referer) {
     try {
       const refererUrl = new URL(referer);
-      if (refererUrl.hostname.endsWith(".vercel.app")) {
+      if (refererUrl.hostname.endsWith('.vercel.app') &&
+          refererUrl.hostname.includes('lscaturchio')) {
         return null;
       }
       if (allowedOrigins.includes(refererUrl.origin)) {
@@ -119,14 +121,13 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
     );
   }
 
-  // No origin or referer - could be:
-  // 1. Same-origin request (browser doesn't send for same-origin)
-  // 2. Request from a tool like curl (allowed for API flexibility)
-  // 3. Malicious request without headers
-  //
-  // For public APIs, we allow requests without origin/referer
-  // For sensitive operations, consider requiring authentication instead
-  return null;
+  // No origin or referer - reject the request.
+  // Modern browsers always send Origin on cross-origin and same-origin POST/DELETE.
+  // Allowing requests without both headers is a CSRF bypass vector.
+  return NextResponse.json(
+    { error: 'Missing origin header' },
+    { status: 403 }
+  );
 }
 
 /**

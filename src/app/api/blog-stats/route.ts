@@ -1,13 +1,14 @@
-import { NextResponse } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { logError } from "@/lib/logger";
+import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
+import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
 /**
  * API route to fetch blog statistics
  * GET /api/blog-stats
  * Returns total posts, reading time, and top tags
  */
-export async function GET() {
+const handleGet = async () => {
   try {
     const blogs = await getAllBlogs();
 
@@ -17,7 +18,7 @@ export async function GET() {
     // Estimate average reading time (assuming 200 words per minute)
     // We'll estimate based on content length
     const totalReadingTime = blogs.reduce((total, blog) => {
-      // Rough estimate: 1000 characters ≈ 5 minutes
+      // Rough estimate: 1000 characters ~ 5 minutes
       const estimatedMinutes = Math.ceil(blog.content.length / 1000) * 5;
       return total + estimatedMinutes;
     }, 0);
@@ -38,7 +39,7 @@ export async function GET() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
-    return NextResponse.json({
+    return apiSuccess({
       totalPosts,
       totalReadingTime,
       avgReadingTime,
@@ -46,9 +47,8 @@ export async function GET() {
     });
   } catch (error) {
     logError("Blog Stats: Unexpected error", error, { component: 'blog-stats', action: 'GET' });
-    return NextResponse.json(
-      { error: "Failed to fetch blog stats" },
-      { status: 500 }
-    );
+    return ApiErrors.internalError("Failed to fetch blog stats");
   }
-}
+};
+
+export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);

@@ -1,11 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { searchSimilarContent, isEmbeddingsAvailable } from '@/lib/embeddings';
 import { createOllamaChatCompletion, isOllamaAvailable } from '@/lib/ollama';
 import { logError, logInfo } from '@/lib/logger';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
+import { validateCsrf } from '@/lib/csrf';
 import { chatRequestSchema, parseBody } from '@/lib/validations';
 import { extractBlogMeta } from '@/lib/blog-meta';
+import { apiSuccess, ApiErrors } from '@/lib/api-response';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -108,13 +110,16 @@ function buildFallbackAnswer(context: string): string {
 }
 
 const handlePost = async (req: NextRequest) => {
+  const csrfError = validateCsrf(req);
+  if (csrfError) return csrfError;
+
   try {
     const body = await req.json();
 
     // Validate request body with Zod schema
     const parsed = parseBody(chatRequestSchema, body);
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error }, { status: 400 });
+      return ApiErrors.badRequest(parsed.error);
     }
 
     const { query } = parsed.data;
@@ -227,17 +232,14 @@ const handlePost = async (req: NextRequest) => {
       provider = 'fallback';
     }
 
-    return NextResponse.json({
+    return apiSuccess({
       answer,
       provider,
       degraded: provider === 'fallback',
     });
   } catch (error: unknown) {
     logError('Chat API request failed', error, { endpoint: '/api/chat' });
-    return NextResponse.json(
-      { error: 'Failed to process chat request' },
-      { status: 500 }
-    );
+    return ApiErrors.internalError('Failed to process chat request');
   }
 };
 

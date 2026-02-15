@@ -33,7 +33,7 @@ vi.mock('@/lib/with-rate-limit', () => ({
   },
 }));
 
-import { GET, POST, OPTIONS } from '@/app/api/views/route';
+import { GET, POST } from '@/app/api/views/route';
 import { isDatabaseConfigured } from '@/lib/db';
 import { validateCsrf } from '@/lib/csrf';
 import { getAllBlogs } from '@/lib/getAllBlogs';
@@ -99,7 +99,7 @@ describe('Views API Route', () => {
       expect(data.success).toBe(false);
     });
 
-    it('returns all views with titles via OPTIONS', async () => {
+    it('returns all views with titles via format=detailed', async () => {
       mockSql.mockResolvedValue([
         { slug: 'post-1', count: 100 },
         { slug: 'post-2', count: 50 },
@@ -110,8 +110,8 @@ describe('Views API Route', () => {
         { slug: 'post-2', title: 'Second Post' },
       ]);
 
-      const request = new NextRequest('http://localhost/api/views', { method: 'OPTIONS' });
-      const response = await OPTIONS(request);
+      const request = new NextRequest('http://localhost/api/views?format=detailed');
+      const response = await GET(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);

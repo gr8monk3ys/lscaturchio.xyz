@@ -1,15 +1,15 @@
 import { NextRequest } from "next/server";
 import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
+import { validateCsrf } from "@/lib/csrf";
 import { escapeHtml, sanitizeForHtmlEmail, sanitizeEmailSubject } from "@/lib/sanitize";
 import { logError, logInfo } from "@/lib/logger";
 import { contactFormSchema, parseBody } from "@/lib/validations";
 import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
 async function handler(req: NextRequest) {
-  if (req.method !== "POST") {
-    return ApiErrors.methodNotAllowed("Method not allowed");
-  }
+  const csrfError = validateCsrf(req);
+  if (csrfError) return csrfError;
 
   try {
     const body = await req.json();

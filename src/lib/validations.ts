@@ -150,3 +150,22 @@ export const chatRequestSchema = z.object({
 });
 
 export type ChatRequestInput = z.infer<typeof chatRequestSchema>;
+
+/**
+ * Summarize API request validation
+ */
+export const summarizeSchema = z.object({
+  content: z.string().min(1, 'Content is required').max(50000, 'Content too long (max 50000 characters)'),
+  type: z.enum(['summary', 'takeaways']).default('summary'),
+});
+
+export type SummarizeInput = z.infer<typeof summarizeSchema>;
+
+/**
+ * Newsletter unsubscribe token validation
+ */
+export const unsubscribeSchema = z.object({
+  token: z.string().min(1, 'Unsubscribe token is required').max(256, 'Token is too long'),
+});
+
+export type UnsubscribeInput = z.infer<typeof unsubscribeSchema>;

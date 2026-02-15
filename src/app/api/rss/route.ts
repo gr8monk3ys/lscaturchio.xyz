@@ -1,9 +1,12 @@
+import { NextResponse } from 'next/server';
 import { getAllBlogs } from '@/lib/getAllBlogs';
 import { Feed } from 'feed';
+import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit';
+import { getSiteUrl } from '@/lib/site-url';
 
-export async function GET() {
+const handleGet = async () => {
   const blogs = await getAllBlogs();
-  const siteURL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lscaturchio.xyz';
+  const siteURL = getSiteUrl();
   const date = new Date();
 
   const feed = new Feed({
@@ -71,9 +74,11 @@ export async function GET() {
     });
   });
 
-  return new Response(feed.rss2(), {
+  return new NextResponse(feed.rss2(), {
     headers: {
       'Content-Type': 'application/xml;charset=utf-8',
     },
   });
-}
+};
+
+export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);

@@ -22,8 +22,13 @@ vi.mock('@/lib/rate-limit', () => ({
   },
 }));
 
+vi.mock('@/lib/csrf', () => ({
+  validateCsrf: vi.fn(),
+}));
+
 import { POST } from '@/app/api/newsletter/unsubscribe/route';
 import { logError } from '@/lib/logger';
+import { validateCsrf } from '@/lib/csrf';
 
 // Helper to create mock request
 function createMockRequest(body: Record<string, unknown>): NextRequest {
@@ -40,6 +45,8 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
 describe('/api/newsletter/unsubscribe', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default: CSRF passes
+    vi.mocked(validateCsrf).mockReturnValue(null);
   });
 
   describe('token validation', () => {
@@ -49,7 +56,8 @@ describe('/api/newsletter/unsubscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Unsubscribe token is required');
+      expect(data.success).toBe(false);
+      expect(data.error).toBeDefined();
     });
 
     it('returns 400 when token is empty string', async () => {
@@ -58,6 +66,7 @@ describe('/api/newsletter/unsubscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
       expect(data.error).toBe('Unsubscribe token is required');
     });
 
@@ -67,7 +76,8 @@ describe('/api/newsletter/unsubscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Unsubscribe token is required');
+      expect(data.success).toBe(false);
+      expect(data.error).toBeDefined();
     });
 
     it('returns 400 when token is null', async () => {
@@ -76,7 +86,8 @@ describe('/api/newsletter/unsubscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Unsubscribe token is required');
+      expect(data.success).toBe(false);
+      expect(data.error).toBeDefined();
     });
   });
 
@@ -92,7 +103,8 @@ describe('/api/newsletter/unsubscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.message).toBe('Successfully unsubscribed');
+      expect(data.success).toBe(true);
+      expect(data.data.message).toBe('Successfully unsubscribed');
     });
 
     it('calls sql with correct token for lookup', async () => {
@@ -116,7 +128,8 @@ describe('/api/newsletter/unsubscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.message).toBe('Already unsubscribed');
+      expect(data.success).toBe(true);
+      expect(data.data.message).toBe('Already unsubscribed');
     });
 
     it('does not attempt to update when already unsubscribed', async () => {
@@ -139,6 +152,7 @@ describe('/api/newsletter/unsubscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(404);
+      expect(data.success).toBe(false);
       expect(data.error).toBe('Invalid unsubscribe token');
     });
   });

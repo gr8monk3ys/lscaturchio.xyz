@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
 import { fetchWebmentions } from "@/lib/webmentions";
-
-function getSiteUrl(): string {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  return siteUrl && siteUrl.startsWith("http") ? siteUrl : "https://lscaturchio.xyz";
-}
+import { getSiteUrl } from "@/lib/site-url";
 
 function isSafePath(path: string): boolean {
   if (!path.startsWith("/")) return false;
