@@ -4,7 +4,6 @@ import { createOllamaChatCompletion, isOllamaAvailable } from '@/lib/ollama';
 import { logError, logInfo } from '@/lib/logger';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
-import { validateCsrf } from '@/lib/csrf';
 import { chatRequestSchema, parseBody } from '@/lib/validations';
 
 // Determine which chat provider to use
@@ -41,10 +40,6 @@ function buildFallbackAnswer(context: string): string {
 }
 
 const handlePost = async (req: NextRequest) => {
-  // CSRF protection
-  const csrfError = validateCsrf(req);
-  if (csrfError) return csrfError;
-
   try {
     const body = await req.json();
 
