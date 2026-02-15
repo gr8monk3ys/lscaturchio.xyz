@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 
 export function NewsletterSection() {
   return (
-    <section className="py-20">
+    <section className="py-20" aria-label="Newsletter signup">
       <Container>
         <div className="max-w-2xl mx-auto text-center neu-card p-10">
           <motion.div

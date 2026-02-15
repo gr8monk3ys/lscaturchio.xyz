@@ -42,6 +42,7 @@ export function CommentSection() {
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Leave a comment..."
+          aria-label="Leave a comment"
           className="min-h-[100px]"
         />
         <Button type="submit">Post Comment</Button>
