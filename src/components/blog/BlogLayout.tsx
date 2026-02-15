@@ -88,7 +88,7 @@ export function BlogLayout({
   return (
     <>
       <ReadingProgress />
-      <ReadingProgressTracker slug={slug} />
+      <ReadingProgressTracker slug={slug} title={meta.title} tags={meta.tags} />
       <Container className="mt-16 lg:mt-32">
         <BlogJsonLd
           title={meta.title}

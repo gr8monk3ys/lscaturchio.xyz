@@ -4,14 +4,53 @@ import { useEffect } from "react";
 
 interface ReadingProgressTrackerProps {
   slug: string;
+  title?: string;
+  tags?: string[];
+}
+
+type ReadingHistoryEntry = {
+  slug: string;
+  title?: string;
+  tags?: string[];
+  lastRead: string;
+};
+
+const HISTORY_KEY = "reading_history_v1";
+
+function safeParseJson<T>(raw: string | null): T | null {
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
+  }
+}
+
+function recordReadingHistory(entry: Omit<ReadingHistoryEntry, "lastRead"> & { lastRead?: string }) {
+  const now = entry.lastRead ?? new Date().toISOString();
+  const existing = safeParseJson<ReadingHistoryEntry[]>(localStorage.getItem(HISTORY_KEY)) ?? [];
+
+  const next: ReadingHistoryEntry[] = [
+    { slug: entry.slug, title: entry.title, tags: entry.tags, lastRead: now },
+    ...existing.filter((e) => e && e.slug !== entry.slug),
+  ].slice(0, 20);
+
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
 }
 
 /**
  * Track reading progress for a blog post
  * Saves scroll progress to localStorage
  */
-export function ReadingProgressTracker({ slug }: ReadingProgressTrackerProps) {
+export function ReadingProgressTracker({ slug, title, tags }: ReadingProgressTrackerProps) {
   useEffect(() => {
+    // Record that the user opened this post (used for homepage personalization).
+    try {
+      recordReadingHistory({ slug, title, tags });
+    } catch {
+      // Ignore localStorage errors (private mode, disabled storage).
+    }
+
     const progressKey = `reading_progress_${slug}`;
     let ticking = false;
 
@@ -72,7 +111,7 @@ export function ReadingProgressTracker({ slug }: ReadingProgressTrackerProps) {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [slug]);
+  }, [slug, title, tags]);
 
   // This component doesn't render anything
   return null;
