@@ -48,7 +48,6 @@ function extractExternalLinks(mdx: string, siteUrl: string): string[] {
     // Avoid iterator-based APIs (`matchAll`) because TS target is ES5.
     const rx = new RegExp(re.source, re.flags.includes("g") ? re.flags : `${re.flags}g`);
     let match: RegExpExecArray | null;
-    // eslint-disable-next-line no-cond-assign
     while ((match = rx.exec(s)) !== null) {
       const raw = match[group];
       if (!raw) continue;
