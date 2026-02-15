@@ -18,6 +18,7 @@ import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Unbounded } from "next/font/google";
 
 const SITE_URL = "https://lscaturchio.xyz";
+const WEBMENTION_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, "");
 
 const displayFont = Unbounded({
   subsets: ["latin"],
@@ -129,6 +130,10 @@ export default function RootLayout({
 
         {/* RSS Feed Autodiscovery */}
         <link rel="alternate" type="application/rss+xml" title="Lorenzo Scaturchio Blog RSS" href="/api/rss" />
+
+        {/* Webmention endpoints (IndieWeb) */}
+        <link rel="webmention" href={`https://webmention.io/${WEBMENTION_DOMAIN}/webmention`} />
+        <link rel="pingback" href={`https://webmention.io/${WEBMENTION_DOMAIN}/xmlrpc`} />
 
         {/* Core Meta Tags */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
