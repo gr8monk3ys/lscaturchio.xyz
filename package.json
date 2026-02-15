@@ -16,6 +16,7 @@
     "generate-embeddings": "tsx lib/generateEmbeddings.ts",
     "generate-tts": "tsx scripts/generate-tts.ts",
     "generate-tts-openai": "tsx scripts/generate-openai-tts.ts",
+    "generate-audio-manifest": "tsx scripts/generate-audio-manifest.ts",
     "generate-matisse-covers": "node scripts/generate-matisse-covers.mjs",
     "audit-media": "node scripts/audit-media-assets.mjs",
     "generate-project-logos": "node scripts/generate-project-logos.mjs",
