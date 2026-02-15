@@ -7,7 +7,7 @@ import { Menu, X, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { navigationCategories, contactLink } from '@/constants/navlinks';
 import { ThemeToggle } from './theme-toggle';
-import { SearchButton } from '../search/search-button';
+import { CommandPalette } from './command-palette';
 import { LanguageSwitcher } from "@/components/i18n/google-translate";
 
 export function MobileNavbar() {
@@ -160,7 +160,7 @@ export function MobileNavbar() {
                 className="pt-6 flex items-center justify-center gap-4"
               >
                 <LanguageSwitcher compact />
-                <SearchButton />
+                <CommandPalette />
                 <ThemeToggle />
               </motion.div>
             </div>

@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import Image from "next/image";
 import { navigationCategories, contactLink } from '@/constants/navlinks';
 import { ThemeToggle } from './theme-toggle';
-import { SearchModal } from './search-modal';
+import { CommandPalette } from './command-palette';
 import { NavDropdown } from './nav-dropdown';
 import { LanguageSwitcher } from "@/components/i18n/google-translate";
 
@@ -178,7 +178,7 @@ export function Navbar() {
             {/* Search and theme toggle */}
             <div className="w-[290px] flex justify-end items-center gap-2">
               <LanguageSwitcher />
-              <SearchModal />
+              <CommandPalette />
               <ThemeToggle />
             </div>
           </div>
