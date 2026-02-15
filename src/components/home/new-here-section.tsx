@@ -6,16 +6,24 @@ import { ArrowRight, Compass, User, BookOpen, MessageSquare, TrendingUp } from "
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { Reveal } from "@/components/motion/reveal";
 import { getTopicHubsForTags } from "@/constants/topics";
-import { logError } from "@/lib/logger";
 
-export function NewHereSection() {
+interface PopularPostData {
+  slug: string;
+  title: string;
+  views: number;
+}
+
+interface NewHereSectionProps {
+  popularPosts: PopularPostData[];
+}
+
+export function NewHereSection({ popularPosts }: NewHereSectionProps) {
   const [lastRead, setLastRead] = useState<{
     slug: string;
     title?: string;
     tags?: string[];
   } | null>(null);
   const [lastReadProgress, setLastReadProgress] = useState<number | null>(null);
-  const [popular, setPopular] = useState<Array<{ slug: string; title: string; views: number }>>([]);
 
   useEffect(() => {
     // Personalization from local reading history (stored on blog pages).
@@ -48,21 +56,6 @@ export function NewHereSection() {
     } catch {
       // Ignore storage errors.
     }
-
-    // Popular posts (views-based) to give new visitors a good entry point.
-    const fetchPopular = async () => {
-      try {
-        const res = await fetch("/api/popular-posts?limit=3");
-        if (!res.ok) return;
-        const json = await res.json();
-        const posts = (json.posts as Array<{ slug: string; title: string; views: number }> | undefined) ?? [];
-        setPopular(posts.filter((p) => !!p?.slug && !!p?.title));
-      } catch (error) {
-        logError("Failed to fetch popular posts", error, { component: "NewHereSection" });
-      }
-    };
-
-    fetchPopular();
   }, []);
 
   const returning = !!lastRead;
@@ -164,7 +157,7 @@ export function NewHereSection() {
           </Reveal>
         </div>
 
-        {popular.length > 0 && (
+        {popularPosts.length > 0 && (
           <div className="mt-6 neu-card rounded-2xl p-5">
             <div className="flex items-center gap-2">
               <TrendingUp className="size-4 text-primary" />
@@ -172,7 +165,7 @@ export function NewHereSection() {
               <div className="text-xs text-muted-foreground">(views)</div>
             </div>
             <div className="mt-4 grid gap-2 sm:grid-cols-3">
-              {popular.map((post, index) => (
+              {popularPosts.map((post, index) => (
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}

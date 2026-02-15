@@ -28,6 +28,7 @@ import { Webmentions } from "./webmentions";
 import { SyndicationLinks } from "./syndication-links";
 import Link from "next/link";
 import { getTopicHubsForTags } from "@/constants/topics";
+import { getSiteUrl } from "@/lib/site-url";
 
 interface BlogMeta {
   title: string;
@@ -84,7 +85,7 @@ export function BlogLayout({
   }
 
   // Build full URL for JSON-LD
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lscaturchio.xyz';
+  const siteUrl = getSiteUrl();
   const fullUrl = typeof window !== 'undefined'
     ? window.location.href
     : `${siteUrl}${pathname}`;
@@ -95,7 +96,7 @@ export function BlogLayout({
     <>
       <ReadingProgress />
       <ReadingProgressTracker slug={slug} title={meta.title} tags={meta.tags} />
-      <Container className="mt-16 lg:mt-32">
+      <Container className="mt-8 lg:mt-16">
         <BlogJsonLd
           title={meta.title}
           description={meta.description}
@@ -193,6 +194,7 @@ export function BlogLayout({
                   src={meta.image}
                   alt={meta.title}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 672px"
                   className="object-cover"
                   priority
                 />

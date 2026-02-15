@@ -52,6 +52,7 @@ export function HeroScrollSignature() {
                 alt="Lorenzo Scaturchio"
                 fill
                 priority
+                sizes="176px"
                 className="rounded-full object-cover"
               />
             </div>
@@ -89,7 +90,7 @@ export function HeroScrollSignature() {
   return (
     <section
       ref={containerRef}
-      className="relative h-[180vh] w-full overflow-hidden"
+      className="relative h-[130vh] w-full overflow-hidden"
       aria-label="Intro"
     >
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -125,6 +126,7 @@ export function HeroScrollSignature() {
                   alt="Lorenzo Scaturchio"
                   fill
                   priority
+                  sizes="240px"
                   className="rounded-full object-cover"
                 />
               </div>

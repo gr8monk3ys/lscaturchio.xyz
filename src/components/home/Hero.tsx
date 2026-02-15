@@ -53,6 +53,7 @@ function HeroStatic() {
               alt="Lorenzo Scaturchio"
               fill
               priority
+              sizes="(max-width: 640px) 160px, (max-width: 768px) 192px, 208px"
               className="rounded-full object-cover"
             />
           </motion.div>
