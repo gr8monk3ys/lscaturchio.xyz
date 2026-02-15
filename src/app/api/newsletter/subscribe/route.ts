@@ -3,6 +3,7 @@ import { getDb } from '@/lib/db';
 import crypto from 'crypto';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
+import { validateCsrf } from '@/lib/csrf';
 import { logError } from '@/lib/logger';
 import { newsletterSubscribeSchema, parseBody } from '@/lib/validations';
 import { sendWelcomeEmail } from '@/lib/email';
@@ -10,6 +11,9 @@ import { apiSuccess, ApiErrors } from '@/lib/api-response';
 import { NEWSLETTER_TOPIC_IDS } from '@/constants/newsletter';
 
 const handlePost = async (request: NextRequest) => {
+  const csrfError = validateCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const body = await request.json();
 

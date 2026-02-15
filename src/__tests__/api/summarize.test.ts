@@ -84,10 +84,7 @@ describe('/api/summarize', () => {
       expect(data.error).toBeDefined();
     });
 
-    it('treats invalid type as summary (defaults to summary)', async () => {
-      // Note: Implementation doesn't validate type, just defaults to 'summary' for non-'takeaways' values
-      vi.mocked(summarizeContent).mockResolvedValue('Default summary.');
-
+    it('returns 400 for invalid type value', async () => {
       const request = createMockRequest({
         content: 'Some content',
         type: 'invalid',
@@ -95,9 +92,9 @@ describe('/api/summarize', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      expect(response.status).toBe(200);
-      expect(data.summary).toBe('Default summary.');
-      expect(summarizeContent).toHaveBeenCalled();
+      expect(response.status).toBe(400);
+      expect(data.error).toBeDefined();
+      expect(data.success).toBe(false);
     });
   });
 
@@ -113,7 +110,7 @@ describe('/api/summarize', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.summary).toBe('A concise summary.');
+      expect(data.data.summary).toBe('A concise summary.');
       expect(summarizeContent).toHaveBeenCalledWith(
         'Long blog post content here...',
         50
@@ -130,7 +127,7 @@ describe('/api/summarize', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.summary).toBe('Default summary.');
+      expect(data.data.summary).toBe('Default summary.');
       expect(summarizeContent).toHaveBeenCalled();
       expect(generateKeyTakeaways).not.toHaveBeenCalled();
     });
@@ -152,7 +149,7 @@ describe('/api/summarize', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.takeaways).toEqual([
+      expect(data.data.takeaways).toEqual([
         'First key point',
         'Second key point',
         'Third key point',
@@ -174,7 +171,7 @@ describe('/api/summarize', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.takeaways).toEqual([]);
+      expect(data.data.takeaways).toEqual([]);
     });
   });
 

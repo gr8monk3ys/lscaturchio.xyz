@@ -2,15 +2,21 @@ import { describe, it, expect } from 'vitest';
 import { NextRequest } from 'next/server';
 import { validateCsrf } from '@/lib/csrf';
 
-// Helper to create mock NextRequest
+// Helper to create mock NextRequest with reliable header access.
+// NextRequest strips forbidden headers like 'origin' in test environments,
+// so we override headers.get() to return our custom values.
 function createMockRequest(
   method: string,
-  headers: Record<string, string> = {}
+  customHeaders: Record<string, string> = {}
 ): NextRequest {
-  return new NextRequest('http://localhost:3000/api/test', {
-    method,
-    headers,
-  });
+  const lower: Record<string, string> = {};
+  for (const [k, v] of Object.entries(customHeaders)) {
+    lower[k.toLowerCase()] = v;
+  }
+  const req = new NextRequest('http://localhost:3000/api/test', { method });
+  const originalGet = req.headers.get.bind(req.headers);
+  req.headers.get = (name: string) => lower[name.toLowerCase()] ?? originalGet(name);
+  return req;
 }
 
 describe('validateCsrf', () => {
@@ -95,18 +101,20 @@ describe('validateCsrf', () => {
   });
 
   describe('requests without origin or referer', () => {
-    // The CSRF implementation allows requests without origin/referer
-    // for API flexibility (curl, same-origin requests, etc.)
-    it('allows POST requests without origin or referer headers', () => {
+    it('rejects POST requests without origin or referer headers', async () => {
       const request = createMockRequest('POST');
       const result = validateCsrf(request);
-      expect(result).toBeNull();
+      expect(result).not.toBeNull();
+      const data = await result!.json();
+      expect(data.error).toBe('Missing origin header');
+      expect(result!.status).toBe(403);
     });
 
-    it('allows DELETE requests without origin or referer headers', () => {
+    it('rejects DELETE requests without origin or referer headers', async () => {
       const request = createMockRequest('DELETE');
       const result = validateCsrf(request);
-      expect(result).toBeNull();
+      expect(result).not.toBeNull();
+      expect(result!.status).toBe(403);
     });
   });
 });

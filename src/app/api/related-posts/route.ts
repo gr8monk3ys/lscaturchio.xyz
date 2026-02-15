@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { searchEmbeddings } from '@/lib/embeddings';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
 import type { EmbeddingResult, RelatedPost } from '@/types/embeddings';
 import { getAllBlogs } from '@/lib/getAllBlogs';
+import { apiSuccess, ApiErrors } from '@/lib/api-response';
 
 /**
  * Enhanced related posts algorithm:
@@ -21,10 +22,7 @@ const handleGet = async (request: NextRequest) => {
     const limit = parseInt(searchParams.get('limit') || '3');
 
     if (!title || typeof title !== 'string') {
-      return NextResponse.json(
-        { error: 'Post title is required' },
-        { status: 400 }
-      );
+      return ApiErrors.badRequest('Post title is required');
     }
 
     const allBlogs = await getAllBlogs();
@@ -112,16 +110,13 @@ const handleGet = async (request: NextRequest) => {
         return post;
       });
 
-    return NextResponse.json({
+    return apiSuccess({
       related: relatedPosts,
       count: relatedPosts.length,
     });
   } catch (error) {
     logError('Related Posts: Unexpected error', error, { component: 'related-posts', action: 'GET' });
-    return NextResponse.json(
-      { error: 'Failed to fetch related posts' },
-      { status: 500 }
-    );
+    return ApiErrors.internalError('Failed to fetch related posts');
   }
 };
 

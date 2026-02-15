@@ -1,28 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { summarizeContent, generateKeyTakeaways } from '@/lib/summarize'
 import { withRateLimit } from '@/lib/with-rate-limit'
 import { RATE_LIMITS } from '@/lib/rate-limit'
+import { validateCsrf } from '@/lib/csrf'
 import { logError } from '@/lib/logger'
+import { summarizeSchema, parseBody } from '@/lib/validations'
+import { apiSuccess, ApiErrors } from '@/lib/api-response'
 
 const handlePost = async (request: NextRequest) => {
+  const csrfError = validateCsrf(request)
+  if (csrfError) return csrfError
+
   try {
     const body = await request.json()
-    const { content, type = 'summary' } = body
+    const parsed = parseBody(summarizeSchema, body)
 
-    if (!content || typeof content !== 'string') {
-      return NextResponse.json(
-        { error: 'Content is required' },
-        { status: 400 }
-      )
+    if (!parsed.success) {
+      return ApiErrors.badRequest(parsed.error)
     }
 
-    if (content.length > 10000) {
-      return NextResponse.json(
-        { error: 'Content too long (max 10,000 characters)' },
-        { status: 400 }
-      )
-    }
-
+    const { content, type } = parsed.data
     let result
 
     if (type === 'takeaways') {
@@ -33,13 +30,10 @@ const handlePost = async (request: NextRequest) => {
       result = { summary }
     }
 
-    return NextResponse.json(result)
+    return apiSuccess(result)
   } catch (error) {
     logError('Summarize API: Unexpected error', error, { component: 'summarize', action: 'POST' })
-    return NextResponse.json(
-      { error: 'Failed to process content' },
-      { status: 500 }
-    )
+    return ApiErrors.internalError('Failed to process content')
   }
 }
 

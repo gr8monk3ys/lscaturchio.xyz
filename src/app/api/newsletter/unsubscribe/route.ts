@@ -1,20 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
+import { validateCsrf } from '@/lib/csrf';
 import { logError } from '@/lib/logger';
+import { unsubscribeSchema, parseBody } from '@/lib/validations';
+import { apiSuccess, ApiErrors } from '@/lib/api-response';
 
 const handlePost = async (request: NextRequest) => {
+  const csrfError = validateCsrf(request);
+  if (csrfError) return csrfError;
+
   try {
     const body = await request.json();
-    const { token } = body;
+    const parsed = parseBody(unsubscribeSchema, body);
 
-    if (!token || typeof token !== 'string') {
-      return NextResponse.json(
-        { error: 'Unsubscribe token is required' },
-        { status: 400 }
-      );
+    if (!parsed.success) {
+      return ApiErrors.badRequest(parsed.error);
     }
+
+    const { token } = parsed.data;
 
     const sql = getDb();
 
@@ -23,32 +28,20 @@ const handlePost = async (request: NextRequest) => {
     const subscriber = rows[0];
 
     if (!subscriber) {
-      return NextResponse.json(
-        { error: 'Invalid unsubscribe token' },
-        { status: 404 }
-      );
+      return ApiErrors.notFound('Invalid unsubscribe token');
     }
 
     if (!subscriber.is_active) {
-      return NextResponse.json(
-        { message: 'Already unsubscribed' },
-        { status: 200 }
-      );
+      return apiSuccess({ message: 'Already unsubscribed' });
     }
 
     // Deactivate subscription
     await sql`UPDATE newsletter_subscribers SET is_active = false WHERE unsubscribe_token = ${token}`;
 
-    return NextResponse.json(
-      { message: 'Successfully unsubscribed' },
-      { status: 200 }
-    );
+    return apiSuccess({ message: 'Successfully unsubscribed' });
   } catch (error) {
     logError('Newsletter Unsubscribe: Unexpected error', error, { component: 'newsletter/unsubscribe', action: 'POST' });
-    return NextResponse.json(
-      { error: 'Failed to unsubscribe. Please try again later.' },
-      { status: 500 }
-    );
+    return ApiErrors.internalError('Failed to unsubscribe. Please try again later.');
   }
 };
 

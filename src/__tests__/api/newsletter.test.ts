@@ -16,6 +16,10 @@ vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
 }));
 
+vi.mock('@/lib/csrf', () => ({
+  validateCsrf: vi.fn(() => null),
+}));
+
 vi.mock('@/lib/with-rate-limit', () => ({
   withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
 }));
