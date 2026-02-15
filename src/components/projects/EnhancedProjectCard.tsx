@@ -3,7 +3,7 @@
 import { Product, ProjectStatus, ProjectCategory } from "@/types/products";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { TiltCard } from "@/components/ui/animated-card";
 import { Badge } from "@/components/ui/badge";
 import { Star, ExternalLink, Github, Calendar } from "lucide-react";
@@ -39,6 +39,8 @@ export function EnhancedProjectCard({
   const isFeatured = variant === "featured" || product.featured;
   const status = product.status || "active";
   const statusConfig = statusColors[status];
+  const reduceMotion = useReducedMotion();
+  const shared = !reduceMotion && !!product.slug;
 
   const CardWrapper = isFeatured ? TiltCard : motion.div;
   const cardProps = isFeatured
@@ -73,7 +75,8 @@ export function EnhancedProjectCard({
 
         {/* Image Section */}
         <Link href={`/projects/${product.slug}`} className="block">
-          <div
+          <motion.div
+            layoutId={shared ? `project-cover-${product.slug}` : undefined}
             className={cn(
               "relative overflow-hidden",
               isFeatured ? "aspect-[2/1]" : "aspect-video"
@@ -87,7 +90,7 @@ export function EnhancedProjectCard({
               sizes={isFeatured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-          </div>
+          </motion.div>
         </Link>
 
         {/* Content Section */}
@@ -113,14 +116,16 @@ export function EnhancedProjectCard({
 
           {/* Title & Description */}
           <Link href={`/projects/${product.slug}`} className="block space-y-2">
-            <h3
-              className={cn(
-                "font-bold tracking-tight transition-colors group-hover:text-primary",
-                isFeatured ? "text-xl md:text-2xl" : "text-lg"
-              )}
-            >
-              {product.title}
-            </h3>
+            <motion.div layoutId={shared ? `project-title-${product.slug}` : undefined}>
+              <h3
+                className={cn(
+                  "font-bold tracking-tight transition-colors group-hover:text-primary",
+                  isFeatured ? "text-xl md:text-2xl" : "text-lg"
+                )}
+              >
+                {product.title}
+              </h3>
+            </motion.div>
             <p
               className={cn(
                 "text-muted-foreground leading-relaxed",

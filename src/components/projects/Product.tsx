@@ -7,7 +7,7 @@ import React, { useState, useMemo } from "react";
 import { Heading } from "../Heading";
 import { Paragraph } from "../Paragraph";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft,
@@ -41,6 +41,8 @@ export const SingleProduct = ({ product }: { product: Product }) => {
 
   const status = product.status || "active";
   const statusConfig = statusColors[status];
+  const reduceMotion = useReducedMotion();
+  const shared = !reduceMotion && !!product.slug;
 
   // Get related projects (same category, excluding current)
   const relatedProjects = useMemo(() => {
@@ -110,7 +112,9 @@ export const SingleProduct = ({ product }: { product: Product }) => {
         </div>
 
         {/* Title & Description */}
-        <Heading className="font-bold text-3xl md:text-4xl mb-4">{product.title}</Heading>
+        <motion.div layoutId={shared ? `project-title-${product.slug}` : undefined}>
+          <Heading className="font-bold text-3xl md:text-4xl mb-4">{product.title}</Heading>
+        </motion.div>
         <Paragraph className="text-lg text-muted-foreground">{product.description}</Paragraph>
 
         {/* Action Buttons */}
@@ -158,7 +162,10 @@ export const SingleProduct = ({ product }: { product: Product }) => {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="mb-8"
       >
-        <div className="relative aspect-video rounded-xl overflow-hidden border border-border/50">
+        <motion.div
+          layoutId={shared ? `project-cover-${product.slug}` : undefined}
+          className="relative aspect-video rounded-xl overflow-hidden border border-border/50"
+        >
           <Image
             src={activeImage}
             alt={`${product.title} project screenshot`}
@@ -166,7 +173,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
             className="object-contain bg-muted/30"
             sizes="(max-width: 768px) 100vw, 80vw"
           />
-        </div>
+        </motion.div>
 
         {/* Image Thumbnails */}
         {product.images.length > 1 && (
