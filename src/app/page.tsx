@@ -1,4 +1,5 @@
 import { Hero } from "@/components/home/Hero";
+import { HomeAtmosphere } from "@/components/home/home-atmosphere";
 import { NewHereSection } from "@/components/home/new-here-section";
 import { HowIWorkSection } from "@/components/home/how-i-work-section";
 import { RecentBlogs } from "@/components/home/recent-blogs";
@@ -22,7 +23,8 @@ export default async function Home() {
       image: image || '/images/blog/default.webp',
     }));
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="relative isolate flex min-h-screen flex-col">
+      <HomeAtmosphere />
       <BreadcrumbStructuredData
         items={[
           {
