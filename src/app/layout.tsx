@@ -131,6 +131,7 @@ export default function RootLayout({
         {/* RSS Feed Autodiscovery */}
         <link rel="alternate" type="application/rss+xml" title="Lorenzo Scaturchio Blog RSS" href="/api/rss" />
         <link rel="alternate" type="application/rss+xml" title="Lorenzo Scaturchio Podcast RSS" href="/podcast/rss.xml" />
+        <link rel="alternate" type="application/rss+xml" title="Lorenzo Scaturchio Changelog RSS" href="/changelog/rss.xml" />
 
         {/* Webmention endpoints (IndieWeb) */}
         <link rel="webmention" href={`https://webmention.io/${WEBMENTION_DOMAIN}/webmention`} />
