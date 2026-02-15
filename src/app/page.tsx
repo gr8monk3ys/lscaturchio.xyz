@@ -2,6 +2,7 @@ import { Hero } from "@/components/home/Hero";
 import { HomeAtmosphere } from "@/components/home/home-atmosphere";
 import { NewHereSection } from "@/components/home/new-here-section";
 import { HowIWorkSection } from "@/components/home/how-i-work-section";
+import { SelectedWriting } from "@/components/home/selected-writing";
 import { RecentBlogs } from "@/components/home/recent-blogs";
 import { RecentProjects } from "@/components/home/recent-projects";
 import { WorkingOnSection } from "@/components/home/working-on-section";
@@ -11,16 +12,39 @@ import { getAllBlogs } from "@/lib/getAllBlogs";
 
 export default async function Home() {
   const allBlogs = await getAllBlogs();
-  const recentBlogs = allBlogs
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 3)
+  const now = new Date();
+
+  // Avoid showing future-dated posts on the homepage. We'll clean source dates separately,
+  // but this keeps the landing experience and SEO sane.
+  const sortedBlogs = allBlogs
+    .map((blog) => ({ blog, time: new Date(blog.date).getTime() }))
+    .filter(({ time }) => Number.isFinite(time))
+    .filter(({ time }) => time <= now.getTime() + 1000 * 60 * 60 * 24)
+    .sort((a, b) => b.time - a.time)
+    .map(({ blog }) => blog);
+
+  const recentBlogsRaw = sortedBlogs.slice(0, 3);
+  const recentSlugs = new Set(recentBlogsRaw.map((blog) => blog.slug));
+
+  const recentBlogs = recentBlogsRaw.map(({ title, description, date, slug, tags, image }) => ({
+    title,
+    description,
+    date,
+    slug,
+    tags: tags || [],
+    image: image || "/images/blog/default.webp",
+  }));
+
+  const selectedWriting = sortedBlogs
+    .filter((blog) => !recentSlugs.has(blog.slug))
+    .slice(0, 8)
     .map(({ title, description, date, slug, tags, image }) => ({
       title,
       description,
       date,
       slug,
       tags: tags || [],
-      image: image || '/images/blog/default.webp',
+      image: image || "/images/blog/default.webp",
     }));
   return (
     <main className="relative isolate flex min-h-screen flex-col">
@@ -62,6 +86,9 @@ export default async function Home() {
 
       {/* What I'm Working On */}
       <WorkingOnSection />
+
+      {/* Selected Writing */}
+      <SelectedWriting posts={selectedWriting} />
 
       {/* Recent Blog Posts */}
       <RecentBlogs blogs={recentBlogs} />
