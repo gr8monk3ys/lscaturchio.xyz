@@ -13,6 +13,25 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        // Backed by next/font CSS variables set on <html>.
+        display: [
+          "var(--font-display)",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+        ],
+        body: [
+          "var(--font-body)",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+        ],
+      },
       // Custom spacing scale for consistent layout
       spacing: {
         'xs': '4px',
@@ -91,18 +110,6 @@ const config: Config = {
         modal: "var(--z-modal)",
         popover: "var(--z-popover)",
         tooltip: "var(--z-tooltip)",
-      },
-      // Font sizes with line-height included
-      fontSize: {
-        'display': ['3.5rem', { lineHeight: '1.1', fontWeight: '700' }],
-        'heading-1': ['2.5rem', { lineHeight: '1.2', fontWeight: '700' }],
-        'heading-2': ['2rem', { lineHeight: '1.25', fontWeight: '600' }],
-        'heading-3': ['1.5rem', { lineHeight: '1.3', fontWeight: '600' }],
-        'heading-4': ['1.25rem', { lineHeight: '1.4', fontWeight: '600' }],
-        'body-lg': ['1.125rem', { lineHeight: '1.6' }],
-        'body': ['1rem', { lineHeight: '1.6' }],
-        'body-sm': ['0.875rem', { lineHeight: '1.5' }],
-        'caption': ['0.75rem', { lineHeight: '1.4' }],
       },
     },
   },

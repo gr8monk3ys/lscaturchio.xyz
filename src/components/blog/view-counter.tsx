@@ -48,7 +48,7 @@ export function ViewCounter({ slug }: ViewCounterProps) {
 
   if (views === null) {
     return (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground tabular-nums">
         <Eye className="h-4 w-4" />
         <span>---</span>
       </div>
@@ -59,7 +59,7 @@ export function ViewCounter({ slug }: ViewCounterProps) {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex items-center gap-2 text-sm text-muted-foreground"
+      className="flex items-center gap-2 text-sm text-muted-foreground tabular-nums"
     >
       <Eye className="h-4 w-4" />
       <span>
