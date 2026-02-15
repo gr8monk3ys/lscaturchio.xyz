@@ -26,6 +26,7 @@ describe('extractBlogMeta', () => {
       updated: '2025-02-14',
       image: '/images/blog/post.webp',
       tags: ['tag-1', 'tag-2'],
+      syndication: undefined,
       series: 'My Series',
       seriesOrder: 3,
     });
@@ -82,6 +83,7 @@ describe('extractBlogMeta', () => {
       updated: undefined,
       image: '/images/blog/static.webp',
       tags: ['ok'],
+      syndication: undefined,
       series: undefined,
       seriesOrder: undefined,
     });

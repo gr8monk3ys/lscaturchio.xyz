@@ -7,6 +7,8 @@ export interface BlogMeta {
   updated?: string;
   image: string;
   tags: string[];
+  /** Links to syndicated copies (e.g. Mastodon / Bluesky). */
+  syndication?: string[];
   series?: string;
   seriesOrder?: number;
 }
@@ -115,8 +117,8 @@ export function extractBlogMeta(content: string): PartialBlogMeta {
     updated: readStringValue(getMetaPropertyExpression(metaObject, "updated")),
     image: readStringValue(getMetaPropertyExpression(metaObject, "image")),
     tags: readStringArray(getMetaPropertyExpression(metaObject, "tags")),
+    syndication: readStringArray(getMetaPropertyExpression(metaObject, "syndication")),
     series: readStringValue(getMetaPropertyExpression(metaObject, "series")),
     seriesOrder: readNumberValue(getMetaPropertyExpression(metaObject, "seriesOrder")),
   };
 }
-
