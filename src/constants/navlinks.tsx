@@ -60,6 +60,7 @@ export const navigationCategories: NavCategory[] = [
     items: [
       { name: 'Blog', href: '/blog', icon: BookOpen, description: 'Articles and thoughts' },
       { name: 'Chat', href: '/chat', icon: MessageSquare, description: 'Talk with AI Lorenzo' },
+      { name: 'Guestbook', href: '/guestbook', icon: MessageSquare, description: 'Leave a note' },
       { name: 'Series', href: '/series', icon: Layers, description: 'Article series' },
       { name: 'Podcast', href: '/podcast', icon: Mic, description: 'Audio episodes' },
       { name: 'Bookmarks', href: '/bookmarks', icon: Bookmark, description: 'Curated resources' },
@@ -107,6 +108,7 @@ export const allPages: NavItem[] = [
   { name: 'Testimonials', href: '/testimonials' },
   { name: 'Blog', href: '/blog' },
   { name: 'Chat', href: '/chat' },
+  { name: 'Guestbook', href: '/guestbook' },
   { name: 'Series', href: '/series' },
   { name: 'Podcast', href: '/podcast' },
   { name: 'Bookmarks', href: '/bookmarks' },
