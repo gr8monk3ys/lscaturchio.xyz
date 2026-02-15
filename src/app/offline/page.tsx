@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function OfflinePage() {
   return (
-    <main className="min-h-screen flex items-center justify-center py-20">
+    <div className="min-h-screen flex items-center justify-center py-20">
       <Container>
         <div className="max-w-md mx-auto text-center">
           <div className="mb-6 flex justify-center">
@@ -48,6 +48,6 @@ export default function OfflinePage() {
           </p>
         </div>
       </Container>
-    </main>
+    </div>
   )
 }

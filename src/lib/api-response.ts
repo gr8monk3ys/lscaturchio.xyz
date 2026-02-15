@@ -8,11 +8,32 @@
 
 import { NextResponse } from "next/server";
 
+interface ApiSuccessOptions {
+  status?: number
+  headers?: Record<string, string>
+}
+
 /**
- * Standard API success response
+ * Standard API success response.
+ *
+ * Accepts either a numeric status code (legacy) or an options object
+ * with status and/or custom headers.
  */
-export function apiSuccess<T>(data: T, status = 200): NextResponse {
-  return NextResponse.json({ data, success: true }, { status });
+export function apiSuccess<T>(
+  data: T,
+  statusOrOptions: number | ApiSuccessOptions = 200,
+): NextResponse {
+  const opts: ApiSuccessOptions =
+    typeof statusOrOptions === 'number'
+      ? { status: statusOrOptions }
+      : statusOrOptions
+  const status = opts.status ?? 200
+  const headers = opts.headers ?? {}
+
+  return NextResponse.json(
+    { data, success: true },
+    { status, headers },
+  )
 }
 
 /**

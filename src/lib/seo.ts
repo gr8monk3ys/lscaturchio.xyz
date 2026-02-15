@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://lscaturchio.xyz";
+import { SITE_URL } from "@/lib/site-url";
 
 export type OgCardType = "default" | "blog" | "project";
 

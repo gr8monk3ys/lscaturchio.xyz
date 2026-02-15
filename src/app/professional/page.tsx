@@ -72,7 +72,7 @@ export default function ProfessionalPage() {
                 "NumPy",
                 "SQL",
                 "PostgreSQL",
-                "Supabase",
+                "Neon PostgreSQL",
                 "Data Visualization",
                 "Statistical Modeling",
                 "A/B Testing",

@@ -114,7 +114,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
         </Link>
       </motion.div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px] gap-10 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-10 items-start">
         <div className="space-y-10">
           {/* Header */}
           <header id="overview" className="space-y-5">

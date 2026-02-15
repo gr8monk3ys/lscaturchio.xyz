@@ -78,9 +78,9 @@ const services: ServiceContent[] = [
       },
       {
         name: "Tech Stack",
-        content: "I work with Supabase pgvector, Pinecone, Weaviate, and Chroma depending on your needs and scale. OpenAI, Anthropic, or open-source models for embeddings and generation. Whatever fits your requirements and budget.",
+        content: "I work with Neon pgvector, Pinecone, Weaviate, and Chroma depending on your needs and scale. OpenAI, Anthropic, or open-source models for embeddings and generation. Whatever fits your requirements and budget.",
         features: [
-          "Supabase / Pinecone / Weaviate",
+          "Neon pgvector / Pinecone / Weaviate",
           "OpenAI / Claude / Open-source",
           "Next.js / Python backends",
           "Vercel / AWS deployment"

@@ -122,6 +122,7 @@ export function NewsletterForm({
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
             required
+            aria-label="Email address"
             disabled={status === 'loading' || status === 'success'}
             className="w-full pl-11 pr-4 py-3 rounded-xl neu-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
           />
