@@ -65,6 +65,21 @@ export type ViewTrackingInput = z.infer<typeof viewTrackingSchema>;
  */
 export const newsletterSubscribeSchema = z.object({
   email: emailSchema,
+  topics: z
+    .array(
+      z
+        .string()
+        .min(1, "Topic is required")
+        .max(64, "Topic is too long")
+        .transform((t) => t.trim())
+    )
+    .max(6, "Too many topics (max 6)")
+    .optional(),
+  source: z
+    .string()
+    .max(300, "Source is too long")
+    .transform((s) => s.trim())
+    .optional(),
 });
 
 export type NewsletterSubscribeInput = z.infer<typeof newsletterSubscribeSchema>;
