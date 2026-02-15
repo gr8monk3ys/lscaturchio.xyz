@@ -4,8 +4,6 @@ import { ArrowUpRight, Star, GitFork, Clock } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { Section, SectionHeader } from "../ui/Section";
-import { useEffect, useState } from "react";
-import { logError } from "@/lib/logger";
 import Image from "next/image";
 import type { PortfolioRepo } from "@/types/github";
 import { Reveal } from "@/components/motion/reveal";
@@ -44,31 +42,18 @@ function formatTimeAgo(dateString: string): string {
   }
 }
 
-export function RecentProjects() {
-  const [repositories, setRepositories] = useState<PortfolioRepo[]>([]);
-  const [loading, setLoading] = useState(true);
+interface RecentProjectsProps {
+  repos: PortfolioRepo[];
+}
 
-  useEffect(() => {
-    const fetchRepositories = async () => {
-      try {
-        const response = await fetch('/api/github');
-        if (!response.ok) {
-          throw new Error('Failed to fetch repositories');
-        }
-        const data: PortfolioRepo[] = await response.json();
-        const sortedRepos = data.sort((a: PortfolioRepo, b: PortfolioRepo) =>
-          new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
-        );
-        setRepositories(sortedRepos.slice(0, 3));
-      } catch (error) {
-        logError('Failed to fetch GitHub repositories', error, { component: 'RecentProjects', action: 'fetchRepositories' });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRepositories();
-  }, []);
+export function RecentProjects({ repos }: RecentProjectsProps) {
+  // Sort by most recently updated and take top 3
+  const repositories = [...repos]
+    .sort(
+      (a, b) =>
+        new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
+    )
+    .slice(0, 3);
 
   return (
     <Section padding="default" size="wide" divider topDivider reveal={false}>
@@ -87,7 +72,7 @@ export function RecentProjects() {
         />
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-6">
-          {loading ? (
+          {repositories.length === 0 ? (
             [...Array(3)].map((_, i) => (
               <div
                 key={i}

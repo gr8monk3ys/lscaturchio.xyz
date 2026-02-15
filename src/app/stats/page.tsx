@@ -1,11 +1,13 @@
 import { Container } from '@/components/Container'
 import { Heading } from '@/components/Heading'
 import { Metadata } from 'next'
-import { StatsOverview } from '@/components/stats/stats-overview'
-import { PopularPosts } from '@/components/stats/popular-posts'
-import { VisitorChart } from '@/components/stats/visitor-chart'
-import { TechStack } from '@/components/stats/tech-stack'
-import { ContributionGraph } from '@/components/github/contribution-graph'
+import dynamic from 'next/dynamic'
+
+const StatsOverview = dynamic(() => import('@/components/stats/stats-overview').then(m => m.StatsOverview))
+const VisitorChart = dynamic(() => import('@/components/stats/visitor-chart').then(m => m.VisitorChart))
+const ContributionGraph = dynamic(() => import('@/components/github/contribution-graph').then(m => m.ContributionGraph))
+const PopularPosts = dynamic(() => import('@/components/stats/popular-posts').then(m => m.PopularPosts))
+const TechStack = dynamic(() => import('@/components/stats/tech-stack').then(m => m.TechStack))
 
 export const metadata: Metadata = {
   title: 'Site Statistics | Lorenzo Scaturchio',
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
 
 export default function StatsPage() {
   return (
-    <main className="py-20">
+    <div className="py-20">
       <Container>
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
@@ -41,6 +43,6 @@ export default function StatsPage() {
           </div>
         </div>
       </Container>
-    </main>
+    </div>
   )
 }

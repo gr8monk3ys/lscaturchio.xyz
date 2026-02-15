@@ -1,77 +1,28 @@
-import { NextResponse } from 'next/server';
-import type { GitHubRepo, GitHubTopicsResponse } from '@/types/github';
-import { logError } from '@/lib/logger';
+import { NextResponse } from 'next/server'
+import { logError } from '@/lib/logger'
+import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit'
+import { getGithubPortfolioRepos } from '@/lib/github-repos'
 
-function normalizeSlug(name: string): string {
-  return name.toLowerCase().replace(/\s+/g, '-');
-}
-
-function getProjectLogoPath(slug: string): string {
-  return `/images/projects/logos/${slug}.svg`;
-}
-
-async function getGithubRepos(): Promise<GitHubRepo[]> {
-  const response = await fetch('https://api.github.com/users/gr8monk3ys/repos', {
-    headers: {
-      'Accept': 'application/vnd.github.v3+json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch repositories');
-  }
-
-  const repos: GitHubRepo[] = await response.json();
-  // Filter out forked repositories
-  return repos.filter((repo) => !repo.fork);
-}
-
-async function getRepoTopics(repoName: string): Promise<string[]> {
-  const response = await fetch(`https://api.github.com/repos/gr8monk3ys/${repoName}/topics`, {
-    headers: {
-      'Accept': 'application/vnd.github.mercy-preview+json',
-    },
-  });
-
-  if (!response.ok) {
-    return []; // Return empty array if topics can't be fetched
-  }
-
-  const data: GitHubTopicsResponse = await response.json();
-  return data.names || [];
-}
-
-export async function GET() {
+const handleGet = async () => {
   try {
-    const repos = await getGithubRepos();
-    
-    // Fetch topics for all repositories in parallel
-    const reposWithTopics = await Promise.all(
-      repos.map(async (repo) => {
-        const topics = await getRepoTopics(repo.name);
-        return {
-          title: repo.name,
-          description: repo.description || 'No description available',
-          href: repo.html_url,
-          slug: normalizeSlug(repo.name),
-          stack: [repo.language, ...topics].filter(Boolean), // Combine language with topics
-          stars: repo.stargazers_count,
-          forks: repo.forks_count,
-          lastUpdated: new Date(repo.updated_at).toLocaleDateString(),
-          logo: getProjectLogoPath(normalizeSlug(repo.name)),
-        };
-      })
-    );
-    
-    // Sort repositories by number of stars (descending)
-    const sortedRepos = reposWithTopics.sort((a, b) => b.stars - a.stars);
-    
-    return NextResponse.json(sortedRepos);
+    const repos = await getGithubPortfolioRepos()
+
+    return NextResponse.json(repos, {
+      headers: {
+        'Cache-Control':
+          'public, s-maxage=3600, stale-while-revalidate=7200',
+      },
+    })
   } catch (error) {
-    logError('GitHub API: Unexpected error', error, { component: 'github', action: 'GET' });
+    logError('GitHub API: Unexpected error', error, {
+      component: 'github',
+      action: 'GET',
+    })
     return NextResponse.json(
       { error: 'Failed to fetch repositories' },
       { status: 500 }
-    );
+    )
   }
 }
+
+export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC)

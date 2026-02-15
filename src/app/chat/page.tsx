@@ -1,5 +1,7 @@
 import { Container } from "@/components/Container";
-import { ChatPageClient } from "@/components/chat/chat-page-client";
+import dynamic from "next/dynamic";
+
+const ChatPageClient = dynamic(() => import("@/components/chat/chat-page-client").then(m => m.ChatPageClient));
 
 export const metadata = {
   title: "Chat | Lorenzo Scaturchio",
