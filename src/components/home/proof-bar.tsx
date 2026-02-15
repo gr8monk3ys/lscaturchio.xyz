@@ -1,30 +1,36 @@
 "use client";
 
+import Link from "next/link";
 import { Section } from "@/components/ui/Section";
-import { Badge } from "@/components/ui/badge";
+import { badgeVariants } from "@/components/ui/badge";
 import { Sparkles, BarChart3, Users, Star } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
+import { cn } from "@/lib/utils";
 
 const proofItems = [
   {
     icon: BarChart3,
     label: "Impact",
     value: "Talker lifted engagement +30% and learning +25%",
+    proofHref: "/projects/talker",
   },
   {
     icon: Star,
     label: "RAG Systems",
     value: "Citations‑first answers with multimodal context",
+    proofHref: "/blog/building-rag-systems",
   },
   {
     icon: Users,
     label: "Automation",
     value: "Trading bot with sentiment + strict risk controls",
+    proofHref: "/projects/ai-powered-trading-bot",
   },
   {
     icon: Sparkles,
     label: "Open Source",
     value: "Public work across RAG and developer tools",
+    proofHref: "https://github.com/gr8monk3ys",
   },
 ];
 
@@ -48,9 +54,17 @@ export function ProofBar() {
                   <div className="text-muted-foreground">{item.label}</div>
                   <div className="font-semibold text-foreground">{item.value}</div>
                 </div>
-                <Badge variant="secondary" className="ml-1 hidden lg:inline-flex">
+                <Link
+                  href={item.proofHref}
+                  target={item.proofHref.startsWith("http") ? "_blank" : undefined}
+                  rel={item.proofHref.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className={cn(
+                    badgeVariants({ variant: "secondary" }),
+                    "ml-1 hidden lg:inline-flex"
+                  )}
+                >
                   Proof
-                </Badge>
+                </Link>
               </Reveal>
             );
           })}
