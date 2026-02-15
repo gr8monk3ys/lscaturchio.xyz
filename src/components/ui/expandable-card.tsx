@@ -48,6 +48,7 @@ export const ExpandableCard = ({ product }: { product: Product }) => {
               href={product.href}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`Visit ${product.title}`}
               className="shrink-0 size-8 flex items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
             >
               <ArrowUpRight className="size-4" />

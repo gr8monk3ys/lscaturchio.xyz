@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import { useRef, ReactNode, useState } from "react";
 
 interface MagneticButtonProps {
@@ -217,13 +217,15 @@ export function BorderBeamButton({
   borderColor = "hsl(var(--primary))",
   onClick,
 }: BorderBeamButtonProps) {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <motion.button
       type="button"
       className={`relative group ${className}`}
       onClick={onClick}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={prefersReducedMotion ? undefined : { scale: 1.02 }}
+      whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
     >
       {/* Animated border beam */}
       <span className="absolute inset-0 rounded-xl overflow-hidden">
@@ -232,12 +234,16 @@ export function BorderBeamButton({
           style={{
             background: `conic-gradient(from 0deg, transparent 0deg, ${borderColor} 60deg, transparent 120deg)`,
           }}
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: 3,
-            ease: "linear" as const,
-            repeat: Infinity,
-          }}
+          animate={prefersReducedMotion ? undefined : { rotate: 360 }}
+          transition={
+            prefersReducedMotion
+              ? undefined
+              : {
+                  duration: 3,
+                  ease: "linear" as const,
+                  repeat: Infinity,
+                }
+          }
         />
       </span>
       {/* Inner content */}

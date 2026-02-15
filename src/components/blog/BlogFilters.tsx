@@ -46,6 +46,7 @@ export function BlogFilters({ allTags, onSearch, onTagsChange }: BlogFiltersProp
           placeholder="Search blogs..."
           value={searchQuery}
           onChange={(e) => handleSearch(e.target.value)}
+          aria-label="Search blog posts"
           className="w-full rounded-lg bg-secondary/50 py-2 pl-10 pr-4 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
       </motion.div>
@@ -63,6 +64,7 @@ export function BlogFilters({ allTags, onSearch, onTagsChange }: BlogFiltersProp
             <button
               key={tag}
               onClick={() => handleTagToggle(tag)}
+              aria-pressed={isSelected}
               className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 isSelected
                   ? "bg-primary text-primary-foreground"

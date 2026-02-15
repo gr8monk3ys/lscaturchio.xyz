@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, KeyboardEvent } from "react";
+import { useState, useEffect, useRef, useCallback, FormEvent, KeyboardEvent } from "react";
 import { Paperclip, Mic, CornerDownLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logError } from "@/lib/logger";
@@ -28,6 +28,56 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-focus the input when the modal opens
+  useEffect(() => {
+    if (isOpen) {
+      // Small delay to ensure the modal is rendered
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  // Focus trap: cycle Tab/Shift+Tab within the modal
+  const handleModalKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      if (e.key !== 'Tab') return;
+
+      const modal = modalRef.current;
+      if (!modal) return;
+
+      const focusableElements = modal.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+
+      if (focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    },
+    [onClose]
+  );
 
   const handleSubmit = async (e?: FormEvent) => {
     e?.preventDefault();
@@ -96,10 +146,17 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
 
   return (
     <div className="fixed inset-0 bg-background z-50">
-      <div className="fixed inset-4 md:inset-x-auto md:inset-y-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-2xl bg-background rounded-lg shadow-lg border flex flex-col">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="chat-modal-title"
+        onKeyDown={handleModalKeyDown}
+        className="fixed inset-4 md:inset-x-auto md:inset-y-4 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-2xl bg-background rounded-lg shadow-lg border flex flex-col"
+      >
         <div className="flex items-center justify-between px-4 py-2 border-b">
-          <h2 className="text-lg font-semibold">Chat with Lorenzo</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <h2 id="chat-modal-title" className="text-lg font-semibold">Chat with Lorenzo</h2>
+          <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close chat">
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -147,10 +204,12 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring p-1"
           >
             <ChatInput
+              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Type your message... (Ctrl + Enter to send)"
+              aria-label="Chat message"
               className="min-h-12 resize-none rounded-lg bg-background border-0 p-3 shadow-none focus-visible:ring-0"
             />
             <div className="flex items-center p-3 pt-0 justify-between">
@@ -159,6 +218,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                   variant="ghost"
                   size="icon"
                   type="button"
+                  aria-label="Attach file"
                   className="hidden md:inline-flex"
                 >
                   <Paperclip className="h-4 w-4" />
@@ -167,6 +227,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
                   variant="ghost"
                   size="icon"
                   type="button"
+                  aria-label="Voice input"
                   className="hidden md:inline-flex"
                 >
                   <Mic className="h-4 w-4" />

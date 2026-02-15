@@ -172,6 +172,7 @@ export function ChatPageClient() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
+            aria-label="Message"
             className="border-0 bg-transparent shadow-none focus:ring-0 focus-visible:ring-0"
           />
           <div className="flex items-center justify-between px-3 pb-3">
