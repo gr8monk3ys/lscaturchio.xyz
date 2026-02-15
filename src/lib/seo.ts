@@ -14,11 +14,14 @@ export function ogCardUrl(params: {
   title: string;
   description?: string;
   type?: OgCardType;
+  /** Optional cover image (typically a blog cover). Prefer a site-relative path (e.g. `/images/...`). */
+  cover?: string;
 }): string {
   const url = new URL("/api/og", SITE_URL);
   url.searchParams.set("title", params.title);
   if (params.description) url.searchParams.set("description", params.description);
   if (params.type) url.searchParams.set("type", params.type);
+  if (params.cover) url.searchParams.set("cover", params.cover);
   return url.toString();
 }
 
@@ -29,7 +32,7 @@ export function buildBlogMetadata(meta: {
 }): Metadata {
   const title = meta.title;
   const description = meta.description;
-  const imageUrl = meta.image ? absoluteUrl(meta.image) : ogCardUrl({ title, description, type: "blog" });
+  const imageUrl = ogCardUrl({ title, description, type: "blog", cover: meta.image });
 
   return {
     title,
@@ -74,4 +77,3 @@ export function buildProjectMetadata(meta: {
     },
   };
 }
-

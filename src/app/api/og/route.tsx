@@ -1,14 +1,34 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
+/* eslint-disable @next/next/no-img-element */
+
 export const runtime = 'edge';
+
+function truncate(s: string, max: number): string {
+  const t = s.trim();
+  return t.length > max ? `${t.slice(0, max - 1)}…` : t;
+}
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
+  const origin = new URL(request.url).origin;
 
   const title = searchParams.get('title') || 'Lorenzo Scaturchio';
   const description = searchParams.get('description') || 'Data Scientist & Developer';
   const type = searchParams.get('type') || 'default'; // 'blog', 'project', 'default'
+  const cover = searchParams.get('cover');
+
+  const coverUrl = cover
+    ? cover.startsWith('http://') || cover.startsWith('https://')
+      ? cover
+      : cover.startsWith('/')
+        ? `${origin}${cover}`
+        : `${origin}/${cover}`
+    : null;
+
+  const label =
+    type === 'blog' ? 'Blog' : type === 'project' ? 'Project' : 'lscaturchio.xyz';
 
   return new ImageResponse(
     (
@@ -17,15 +37,13 @@ export async function GET(request: NextRequest) {
           height: '100%',
           width: '100%',
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          justifyContent: 'flex-end',
-          backgroundColor: '#0a0a0a',
-          padding: '60px',
+          alignItems: 'stretch',
+          justifyContent: 'space-between',
+          backgroundColor: '#f7f4ed',
+          padding: '56px',
           fontFamily: 'system-ui, sans-serif',
         }}
       >
-        {/* Background gradient */}
         <div
           style={{
             position: 'absolute',
@@ -33,113 +51,184 @@ export async function GET(request: NextRequest) {
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 50%, #16213e 100%)',
+            background:
+              'radial-gradient(1200px circle at 8% -12%, rgba(19, 92, 52, 0.18), transparent 60%),' +
+              'radial-gradient(900px circle at 96% -8%, rgba(12, 74, 110, 0.14), transparent 55%),' +
+              'radial-gradient(700px circle at 60% 98%, rgba(234, 88, 12, 0.12), transparent 60%),' +
+              'linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(247, 244, 237, 1))',
           }}
         />
 
-        {/* Decorative elements */}
         <div
           style={{
             position: 'absolute',
-            top: '60px',
-            right: '60px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
+            top: '-120px',
+            right: '-180px',
+            width: '520px',
+            height: '520px',
+            borderRadius: '999px',
+            background: 'rgba(234, 88, 12, 0.14)',
+            filter: 'blur(0px)',
           }}
-        >
-          <div
-            style={{
-              fontSize: '24px',
-              color: '#888',
-              textTransform: 'uppercase',
-              letterSpacing: '2px',
-            }}
-          >
-            {type === 'blog' ? 'Blog Post' : type === 'project' ? 'Project' : 'lscaturchio.xyz'}
-          </div>
-        </div>
+          aria-hidden
+        />
 
-        {/* Main content */}
         <div
           style={{
+            position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-            gap: '20px',
-            zIndex: 1,
-            maxWidth: '900px',
+            gap: '18px',
+            width: '660px',
           }}
         >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                padding: '10px 14px',
+                borderRadius: '999px',
+                backgroundColor: 'rgba(19, 92, 52, 0.10)',
+                border: '1px solid rgba(19, 92, 52, 0.18)',
+                color: '#1f3b2e',
+                fontSize: '16px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '1.6px',
+              }}
+            >
+              {label}
+            </div>
+            <div
+              style={{
+                padding: '10px 14px',
+                borderRadius: '999px',
+                backgroundColor: 'rgba(15, 23, 42, 0.04)',
+                border: '1px solid rgba(15, 23, 42, 0.06)',
+                color: 'rgba(15, 23, 42, 0.65)',
+                fontSize: '16px',
+                fontWeight: 600,
+              }}
+            >
+              {type === 'blog' ? 'Essay' : type === 'project' ? 'Case study' : 'Portfolio'}
+            </div>
+          </div>
+
           <h1
             style={{
-              fontSize: title.length > 50 ? '48px' : '64px',
-              fontWeight: 700,
-              color: '#ffffff',
-              lineHeight: 1.2,
+              fontSize: title.length > 56 ? '54px' : '66px',
+              fontWeight: 800,
+              color: '#0b0f13',
+              lineHeight: 1.05,
               margin: 0,
-              textWrap: 'balance',
             }}
           >
-            {title}
+            {truncate(title, 96)}
           </h1>
 
           {description && (
             <p
               style={{
                 fontSize: '28px',
-                color: '#a0a0a0',
-                lineHeight: 1.4,
+                color: 'rgba(20, 30, 24, 0.68)',
+                lineHeight: 1.35,
                 margin: 0,
-                maxWidth: '800px',
               }}
             >
-              {description.length > 120
-                ? description.substring(0, 120) + '...'
-                : description}
+              {truncate(description, 140)}
             </p>
           )}
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '14px',
+              marginTop: 'auto',
+              paddingTop: '10px',
+            }}
+          >
+            <div
+              style={{
+                width: '54px',
+                height: '54px',
+                borderRadius: '18px',
+                backgroundColor: 'rgba(19, 92, 52, 0.10)',
+                border: '1px solid rgba(19, 92, 52, 0.18)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '22px',
+                fontWeight: 900,
+                color: '#1f3b2e',
+              }}
+            >
+              LS
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: '20px', fontWeight: 800, color: '#0b0f13' }}>
+                Lorenzo Scaturchio
+              </div>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: 'rgba(20, 30, 24, 0.55)' }}>
+                lscaturchio.xyz
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Author signature */}
         <div
           style={{
-            position: 'absolute',
-            bottom: '60px',
-            right: '60px',
+            position: 'relative',
+            width: '420px',
             display: 'flex',
             alignItems: 'center',
-            gap: '16px',
+            justifyContent: 'center',
           }}
         >
           <div
             style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '24px',
-              fontWeight: 700,
-              color: '#fff',
+              position: 'absolute',
+              inset: '-36px',
+              borderRadius: '60px',
+              background: 'rgba(19, 92, 52, 0.06)',
+              border: '1px solid rgba(19, 92, 52, 0.10)',
+              transform: 'rotate(2deg)',
             }}
-          >
-            LS
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <span style={{ fontSize: '20px', color: '#fff', fontWeight: 600 }}>
-              Lorenzo Scaturchio
-            </span>
-            <span style={{ fontSize: '16px', color: '#888' }}>
-              Data Scientist & Developer
-            </span>
-          </div>
+            aria-hidden
+          />
+          {coverUrl ? (
+            <img
+              src={coverUrl}
+              alt=""
+              width={420}
+              height={420}
+              style={{
+                width: '420px',
+                height: '420px',
+                borderRadius: '48px',
+                objectFit: 'cover',
+                border: '1px solid rgba(15, 23, 42, 0.10)',
+                boxShadow: '0 30px 90px rgba(0,0,0,0.12)',
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: '420px',
+                height: '420px',
+                borderRadius: '48px',
+                border: '1px solid rgba(15, 23, 42, 0.10)',
+                background:
+                  'radial-gradient(420px circle at 35% 25%, rgba(19, 92, 52, 0.20), transparent 60%),' +
+                  'radial-gradient(420px circle at 72% 70%, rgba(234, 88, 12, 0.16), transparent 60%),' +
+                  'linear-gradient(135deg, rgba(255,255,255,0.8), rgba(247,244,237,1))',
+                boxShadow: '0 30px 90px rgba(0,0,0,0.10)',
+              }}
+              aria-hidden
+            />
+          )}
         </div>
       </div>
     ),
