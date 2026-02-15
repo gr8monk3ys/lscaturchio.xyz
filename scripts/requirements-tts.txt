@@ -4,4 +4,4 @@ torch>=2.0.0
 torchcodec>=0.1.0
 # Keep this >= the latest Dependabot "first patched" version.
 # (This repo doesn't ship Python to prod, but we still keep the tooling deps clean.)
-transformers>=4.53.0,<5
+transformers>=4.53.0,<6
