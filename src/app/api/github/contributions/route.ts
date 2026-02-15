@@ -3,7 +3,7 @@ import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
 
-const GITHUB_USERNAME = 'lscaturchio'; // Change to your GitHub username
+const GITHUB_USERNAME = 'gr8monk3ys';
 
 const handleGet = async () => {
   try {

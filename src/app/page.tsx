@@ -9,9 +9,17 @@ import { ScrollCaseStudies } from "@/components/home/scroll-case-studies";
 import { ProofBar } from "@/components/home/proof-bar";
 import { FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/structured-data";
 import { getAllBlogs } from "@/lib/getAllBlogs";
+import { getGithubPortfolioRepos } from "@/lib/github-repos";
+import { getPopularPosts } from "@/lib/popular-posts";
 
 export default async function Home() {
-  const allBlogs = await getAllBlogs();
+  // Fetch blog data, GitHub repos, and popular posts in parallel
+  const [allBlogs, githubRepos, popularPostsResult] = await Promise.all([
+    getAllBlogs(),
+    getGithubPortfolioRepos(),
+    getPopularPosts(3),
+  ]);
+
   const now = new Date();
 
   // Avoid showing future-dated posts on the homepage. We'll clean source dates separately,
@@ -46,8 +54,15 @@ export default async function Home() {
       tags: tags || [],
       image: image || "/images/blog/default.webp",
     }));
+
+  const popularPosts = popularPostsResult.posts.map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    views: p.views,
+  }));
+
   return (
-    <main className="relative isolate flex min-h-screen flex-col">
+    <div className="relative isolate flex min-h-screen flex-col">
       <HomeAtmosphere />
       <BreadcrumbStructuredData
         items={[
@@ -79,7 +94,7 @@ export default async function Home() {
       <ProofBar />
 
       {/* New Here Section */}
-      <NewHereSection />
+      <NewHereSection popularPosts={popularPosts} />
 
       {/* How I Work */}
       <HowIWorkSection />
@@ -94,7 +109,7 @@ export default async function Home() {
       <RecentBlogs blogs={recentBlogs} />
 
       {/* Recent GitHub Activity */}
-      <RecentProjects />
-    </main>
+      <RecentProjects repos={githubRepos} />
+    </div>
   );
 }
