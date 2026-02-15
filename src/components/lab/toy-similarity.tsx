@@ -25,16 +25,20 @@ function cosineSimilarity(a: Map<string, number>, b: Map<string, number>): numbe
   let normA = 0;
   let normB = 0;
 
-  for (const [, v] of a) normA += v * v;
-  for (const [, v] of b) normB += v * v;
+  a.forEach((v) => {
+    normA += v * v;
+  });
+  b.forEach((v) => {
+    normB += v * v;
+  });
   if (normA === 0 || normB === 0) return 0;
 
   // Iterate smaller map for dot product.
   const [small, large] = a.size < b.size ? [a, b] : [b, a];
-  for (const [k, v] of small) {
+  small.forEach((v, k) => {
     const w = large.get(k) ?? 0;
     dot += v * w;
-  }
+  });
 
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
@@ -51,9 +55,9 @@ export function ToySimilarity() {
     const s = cosineSimilarity(va, vb);
 
     const shared = new Set<string>();
-    for (const k of va.keys()) {
+    va.forEach((_v, k) => {
       if (vb.has(k)) shared.add(k);
-    }
+    });
     const overlapTokens = Array.from(shared).slice(0, 16);
 
     return { score: s, overlap: overlapTokens };
@@ -122,4 +126,3 @@ export function ToySimilarity() {
     </section>
   );
 }
-

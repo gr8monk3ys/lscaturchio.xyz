@@ -39,7 +39,7 @@ const handleGet = async (req: NextRequest) => {
         "Cache-Control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
       },
     });
-  } catch (error) {
+  } catch {
     // Never hard-fail the UI on webmention outages.
     return NextResponse.json(
       {
@@ -59,4 +59,3 @@ const handleGet = async (req: NextRequest) => {
 };
 
 export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
-

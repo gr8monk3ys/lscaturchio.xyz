@@ -43,7 +43,7 @@ export function SemanticSearchDemo() {
           throw new Error(json?.error || "Search failed");
         }
         setResults((json?.results || []) as SearchResult[]);
-      } catch (e) {
+      } catch {
         if (controller.signal.aborted) return;
         setResults([]);
         setError("Search is unavailable right now.");
@@ -144,4 +144,3 @@ export function SemanticSearchDemo() {
     </section>
   );
 }
-

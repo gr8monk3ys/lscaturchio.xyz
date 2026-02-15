@@ -53,11 +53,9 @@ function tokenize(text: string): string[] {
 }
 
 function score(a: PostIndexEntry, b: PostIndexEntry): { score: number; sharedTags: string[]; sharedKeywords: string[] } {
-  const tagsA = new Set(a.tags);
   const tagsB = new Set(b.tags);
   const sharedTags = a.tags.filter((t) => tagsB.has(t));
 
-  const kwA = new Set(a.keywords);
   const kwB = new Set(b.keywords);
   const sharedKeywords = a.keywords.filter((k) => kwB.has(k));
 
@@ -151,4 +149,3 @@ main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
-
