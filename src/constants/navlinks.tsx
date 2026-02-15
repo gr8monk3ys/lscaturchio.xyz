@@ -18,7 +18,8 @@ import {
   Mic,
   MessageSquare,
   Bookmark,
-  Heart
+  Heart,
+  TrendingUp
 } from 'lucide-react';
 
 export interface NavItem {
@@ -63,6 +64,7 @@ export const navigationCategories: NavCategory[] = [
       { name: 'Guestbook', href: '/guestbook', icon: MessageSquare, description: 'Leave a note' },
       { name: 'Lab', href: '/lab', icon: Sparkles, description: 'Interactive demos' },
       { name: 'API', href: '/api-docs', icon: Wrench, description: 'Public JSON endpoints' },
+      { name: 'Roadmap', href: '/roadmap', icon: TrendingUp, description: 'What I’m shipping' },
       { name: 'Series', href: '/series', icon: Layers, description: 'Article series' },
       { name: 'Podcast', href: '/podcast', icon: Mic, description: 'Audio episodes' },
       { name: 'Bookmarks', href: '/bookmarks', icon: Bookmark, description: 'Curated resources' },
@@ -113,6 +115,7 @@ export const allPages: NavItem[] = [
   { name: 'Guestbook', href: '/guestbook' },
   { name: 'Lab', href: '/lab' },
   { name: 'API Docs', href: '/api-docs' },
+  { name: 'Roadmap', href: '/roadmap' },
   { name: 'Series', href: '/series' },
   { name: 'Podcast', href: '/podcast' },
   { name: 'Bookmarks', href: '/bookmarks' },
