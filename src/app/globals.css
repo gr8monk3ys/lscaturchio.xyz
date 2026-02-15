@@ -293,6 +293,60 @@
       transition: none !important;
     }
   }
+
+  /* Home-only atmospheric background (scroll-synced via CSS variables) */
+  .home-atmosphere {
+    --home-parallax-a: 0px;
+    --home-parallax-b: 0px;
+  }
+
+  .home-atmosphere__layer {
+    position: absolute;
+    inset: -18%;
+    background-repeat: no-repeat;
+    will-change: transform;
+  }
+
+  .home-atmosphere__layer--a {
+    transform: translate3d(0, var(--home-parallax-a), 0);
+    background-image:
+      radial-gradient(1200px circle at 12% -10%, hsl(var(--primary) / 0.16), transparent 60%),
+      radial-gradient(900px circle at 92% 0%, hsl(var(--secondary) / 0.14), transparent 62%),
+      radial-gradient(700px circle at 55% 18%, hsl(var(--accent) / 0.55), transparent 70%);
+    filter: blur(0px);
+    opacity: 0.95;
+  }
+
+  .home-atmosphere__layer--b {
+    transform: translate3d(0, var(--home-parallax-b), 0);
+    background-image:
+      radial-gradient(900px circle at 86% 44%, hsl(var(--primary) / 0.10), transparent 64%),
+      radial-gradient(750px circle at 18% 78%, hsl(var(--secondary) / 0.10), transparent 66%),
+      radial-gradient(900px circle at 52% 104%, hsl(var(--accent) / 0.35), transparent 64%);
+    opacity: 0.7;
+    mix-blend-mode: multiply;
+  }
+
+  .dark .home-atmosphere__layer--b {
+    mix-blend-mode: screen;
+    opacity: 0.45;
+  }
+
+  .home-atmosphere__vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(closest-side at 50% 30%, transparent 60%, hsl(var(--background) / 0.85) 100%);
+    opacity: 0.8;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-atmosphere__layer--a,
+    .home-atmosphere__layer--b {
+      transform: none !important;
+      will-change: auto;
+    }
+  }
 }
 
 @layer components {
