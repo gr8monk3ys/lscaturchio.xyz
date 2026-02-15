@@ -51,6 +51,7 @@ export const navigationCategories: NavCategory[] = [
     icon: Briefcase,
     items: [
       { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
+      { name: 'Work With Me', href: '/work-with-me', icon: Sparkles, description: 'Hire me for AI/RAG work' },
       { name: 'Services', href: '/services', icon: Building2, description: 'What I offer' },
       { name: 'Testimonials', href: '/testimonials', icon: MessageSquare, description: 'Client feedback' },
     ],
@@ -108,6 +109,7 @@ export const allPages: NavItem[] = [
   { name: 'Now', href: '/now' },
   { name: 'Professional', href: '/professional' },
   { name: 'Projects', href: '/projects' },
+  { name: 'Work With Me', href: '/work-with-me' },
   { name: 'Services', href: '/services' },
   { name: 'Testimonials', href: '/testimonials' },
   { name: 'Blog', href: '/blog' },
