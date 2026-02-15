@@ -24,6 +24,7 @@ import { ReadingProgressTracker } from "./reading-progress-tracker";
 import { TextToSpeech } from "./text-to-speech";
 import { BlogJsonLd } from "./blog-json-ld";
 import { Webmentions } from "./webmentions";
+import { SyndicationLinks } from "./syndication-links";
 import Link from "next/link";
 import { getTopicHubsForTags } from "@/constants/topics";
 
@@ -34,6 +35,7 @@ interface BlogMeta {
   updated?: string; // Optional last updated date
   image: string;
   tags: string[];
+  syndication?: string[]; // Optional syndication links (Mastodon/Bluesky/etc.)
   series?: string; // Optional series name
   seriesOrder?: number; // Order within the series
 }
@@ -202,6 +204,11 @@ export function BlogLayout({
                   description={meta.description}
                 />
               </div>
+              {meta.syndication && meta.syndication.length > 0 && (
+                <div className="mb-8">
+                  <SyndicationLinks links={meta.syndication} />
+                </div>
+              )}
               
               <Prose>
                 <div ref={contentRef}>

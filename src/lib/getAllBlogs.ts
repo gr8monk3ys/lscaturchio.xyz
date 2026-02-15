@@ -15,6 +15,7 @@ interface BlogMeta {
   updated?: string;
   image: string;
   tags: string[];
+  syndication?: string[];
   series?: string;
   seriesOrder?: number;
 }
@@ -57,6 +58,7 @@ async function readBlog(fileName: string): Promise<BlogPost | null> {
     updated: updatedDate,
     image: meta.image || "/images/blog/default.webp",
     tags: meta.tags || [],
+    syndication: meta.syndication,
     series: meta.series,
     seriesOrder: meta.seriesOrder,
   };
