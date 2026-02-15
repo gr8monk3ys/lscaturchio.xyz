@@ -18,7 +18,8 @@
     "generate-tts-openai": "tsx scripts/generate-openai-tts.ts",
     "generate-matisse-covers": "node scripts/generate-matisse-covers.mjs",
     "audit-media": "node scripts/audit-media-assets.mjs",
-    "generate-project-logos": "node scripts/generate-project-logos.mjs"
+    "generate-project-logos": "node scripts/generate-project-logos.mjs",
+    "suggest-internal-links": "tsx scripts/suggest-internal-links.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
