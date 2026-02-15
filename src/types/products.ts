@@ -3,10 +3,24 @@ import { StaticImageData } from "next/image";
 export type ProjectStatus = 'active' | 'maintained' | 'archived';
 export type ProjectCategory = 'ai-ml' | 'web-apps' | 'tools' | 'open-source' | 'data-science';
 
+export interface CaseStudyMetric {
+  label: string;
+  value: string;
+  note?: string;
+}
+
+export interface CaseStudyProcessStep {
+  title: string;
+  description: string;
+}
+
 export interface CaseStudy {
   challenge: string;
   solution: string;
   results: string[];
+  metrics?: CaseStudyMetric[];
+  process?: CaseStudyProcessStep[];
+  whatIdDoNext?: string[];
 }
 
 export type Product = {

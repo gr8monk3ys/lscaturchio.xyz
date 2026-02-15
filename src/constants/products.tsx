@@ -36,7 +36,36 @@ export const products: Product[] = [
         "25% improvement in learning efficiency",
         "Multi-modal responses with video timestamps",
         "Open source with community contributions"
-      ]
+      ],
+      metrics: [
+        { label: "Engagement", value: "+30%" },
+        { label: "Learning efficiency", value: "+25%" },
+        { label: "Answer style", value: "Citations-first" },
+        { label: "Modalities", value: "Text + video" },
+      ],
+      process: [
+        {
+          title: "Source corpus",
+          description: "Collected course syllabus, slides, and materials; normalized formats for consistent chunking.",
+        },
+        {
+          title: "Index + retrieval",
+          description: "Chunked content into semantically coherent spans and indexed with FAISS for fast retrieval.",
+        },
+        {
+          title: "Grounded generation",
+          description: "Used retrieved context to generate answers with citations and optional video timestamps when available.",
+        },
+        {
+          title: "Iteration",
+          description: "Measured usage/feedback, tightened prompts/guardrails, and improved citations and fallback behavior.",
+        },
+      ],
+      whatIdDoNext: [
+        "Add an eval harness for retrieval quality (recall@k, faithfulness) and regression tests.",
+        "Introduce caching + rate limiting for peak traffic periods and more robust context selection.",
+        "Improve citation UX: quote snippets, highlight sources, and add per-source confidence.",
+      ],
     },
     content: (
       <div>
@@ -77,7 +106,36 @@ export const products: Product[] = [
         "Sentiment analysis on real-time news",
         "Paper trading for safe strategy testing",
         "Integrated with Alpaca for live trading"
-      ]
+      ],
+      metrics: [
+        { label: "Monitoring", value: "24/7" },
+        { label: "Signals", value: "Sentiment + TA" },
+        { label: "Risk", value: "Portfolio-wide" },
+        { label: "Modes", value: "Paper + live" },
+      ],
+      process: [
+        {
+          title: "Feature design",
+          description: "Selected news + price features; engineered indicators and sentiment scoring for signal generation.",
+        },
+        {
+          title: "Risk layer",
+          description: "Implemented portfolio and position limits, exposure caps, and guardrails for drawdown control.",
+        },
+        {
+          title: "Paper trading",
+          description: "Validated strategies safely with paper trading to iterate on signal thresholds and sizing.",
+        },
+        {
+          title: "Execution + monitoring",
+          description: "Connected to Alpaca execution, added logging, and ensured predictable behavior under market noise.",
+        },
+      ],
+      whatIdDoNext: [
+        "Add a full backtest suite with walk-forward analysis and benchmark comparisons.",
+        "Expand risk analytics: volatility targeting, exposure heatmaps, and post-trade attribution.",
+        "Harden production ops: alerting, retries, and circuit breakers for API outages.",
+      ],
     },
     content: (
       <div>
@@ -113,7 +171,36 @@ export const products: Product[] = [
         "Persistent login state management",
         "Detailed logging for monitoring",
         "Demonstrates AI reasoning capabilities"
-      ]
+      ],
+      metrics: [
+        { label: "Automation", value: "End-to-end" },
+        { label: "Browser", value: "Playwright" },
+        { label: "Selection", value: "Randomized" },
+        { label: "Submission", value: "Automatic" },
+      ],
+      process: [
+        {
+          title: "Browser flow",
+          description: "Automated login and navigation; kept session state stable across runs.",
+        },
+        {
+          title: "Prompting",
+          description: "Parsed constraints and examples; constructed prompts that preserve problem semantics.",
+        },
+        {
+          title: "Generation + verification",
+          description: "Generated solutions, performed quick sanity checks, and logged failures for iteration.",
+        },
+        {
+          title: "Submission loop",
+          description: "Submitted code automatically and stored artifacts (logs, outputs) for debugging.",
+        },
+      ],
+      whatIdDoNext: [
+        "Add unit test generation and a multi-pass 'revise' stage for hard problems.",
+        "Cache problem parsing + embeddings to reduce redundant work and improve stability.",
+        "Add safety controls to avoid accidental submissions or rate-limit issues.",
+      ],
     },
     content: (
       <div>
@@ -149,7 +236,36 @@ export const products: Product[] = [
         "MDX output for static site blogs",
         "DOCX export for book formats",
         "Context-aware writing with memory"
-      ]
+      ],
+      metrics: [
+        { label: "Outputs", value: "MDX + DOCX" },
+        { label: "Workflows", value: "SEO-aware" },
+        { label: "Context", value: "Memory buffer" },
+        { label: "Structure", value: "Sectioned" },
+      ],
+      process: [
+        {
+          title: "Brief → outline",
+          description: "Turned topic + keywords into a stable outline with clear sections and intent.",
+        },
+        {
+          title: "Workflow orchestration",
+          description: "Used LangChain to chain steps and keep context consistent across generations.",
+        },
+        {
+          title: "Draft + refine",
+          description: "Generated drafts with iterative passes for clarity, tone, and SEO constraints.",
+        },
+        {
+          title: "Export + publish",
+          description: "Emitted clean MDX for static sites and DOCX for book-friendly formatting.",
+        },
+      ],
+      whatIdDoNext: [
+        "Add citations + fact checks for claims that require sources.",
+        "Introduce a style guide layer to preserve voice and enforce editorial constraints.",
+        "Add multilingual generation pipelines for international SEO and distribution.",
+      ],
     },
     content: (
       <div>
