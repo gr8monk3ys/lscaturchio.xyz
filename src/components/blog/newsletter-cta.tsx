@@ -4,7 +4,13 @@ import { motion } from "framer-motion";
 import { BookOpen, TrendingUp, Sparkles } from "lucide-react";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 
-export function NewsletterCTA() {
+export function NewsletterCTA({
+  defaultTopics,
+  sourcePath,
+}: {
+  defaultTopics?: string[];
+  sourcePath?: string;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -51,7 +57,7 @@ export function NewsletterCTA() {
           </div>
         </div>
 
-        <NewsletterForm />
+        <NewsletterForm defaultTopics={defaultTopics} sourcePath={sourcePath} />
       </div>
     </motion.div>
   );

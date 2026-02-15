@@ -17,6 +17,7 @@ import { RelatedPosts } from "./related-posts";
 import { GiscusComments } from "./giscus-comments";
 import { BlogSidebar } from "./blog-sidebar";
 import { NewsletterCTA } from "./newsletter-cta";
+import { InlineNewsletterCTA } from "./inline-newsletter-cta";
 import { ViewCounter } from "./view-counter";
 import { SocialShare } from "./social-share";
 import { SeriesNavigation } from "./series-navigation";
@@ -209,6 +210,11 @@ export function BlogLayout({
                   <SyndicationLinks links={meta.syndication} />
                 </div>
               )}
+
+              <InlineNewsletterCTA
+                defaultTopics={relatedHubs.map((hub) => hub.slug)}
+                sourcePath={pathname}
+              />
               
               <Prose>
                 <div ref={contentRef}>
@@ -227,7 +233,10 @@ export function BlogLayout({
             )}
 
             {/* Newsletter CTA */}
-            <NewsletterCTA />
+            <NewsletterCTA
+              defaultTopics={relatedHubs.map((hub) => hub.slug)}
+              sourcePath={pathname}
+            />
 
             {/* Webmentions (likes/reposts/replies from the open web) */}
             <Webmentions path={pathname} />
