@@ -5,7 +5,7 @@ import { HowIWorkSection } from "@/components/home/how-i-work-section";
 import { SelectedWriting } from "@/components/home/selected-writing";
 import { RecentBlogs } from "@/components/home/recent-blogs";
 import { RecentProjects } from "@/components/home/recent-projects";
-import { WorkingOnSection } from "@/components/home/working-on-section";
+import { ScrollCaseStudies } from "@/components/home/scroll-case-studies";
 import { ProofBar } from "@/components/home/proof-bar";
 import { FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/structured-data";
 import { getAllBlogs } from "@/lib/getAllBlogs";
@@ -84,8 +84,8 @@ export default async function Home() {
       {/* How I Work */}
       <HowIWorkSection />
 
-      {/* What I'm Working On */}
-      <WorkingOnSection />
+      {/* Scroll-driven case study reveals */}
+      <ScrollCaseStudies />
 
       {/* Selected Writing */}
       <SelectedWriting posts={selectedWriting} />
