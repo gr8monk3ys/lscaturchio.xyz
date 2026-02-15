@@ -15,7 +15,7 @@ import { ReadingProgress } from "./reading-progress";
 import { ReadingTimeBadge } from "./reading-time-badge";
 import { RelatedPosts } from "./related-posts";
 import { GiscusComments } from "./giscus-comments";
-import { TableOfContents } from "./table-of-contents";
+import { BlogSidebar } from "./blog-sidebar";
 import { NewsletterCTA } from "./newsletter-cta";
 import { ViewCounter } from "./view-counter";
 import { SocialShare } from "./social-share";
@@ -236,8 +236,8 @@ export function BlogLayout({
           </article>
         </div>
 
-        {/* Table of Contents - only visible on xl screens */}
-        <TableOfContents />
+        {/* Sidebar (AI + TOC) - only visible on xl screens */}
+        <BlogSidebar slug={slug} title={meta.title} />
       </div>
     </Container>
     </>

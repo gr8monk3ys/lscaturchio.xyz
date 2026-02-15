@@ -5,6 +5,9 @@ import { logError, logInfo } from '@/lib/logger';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { chatRequestSchema, parseBody } from '@/lib/validations';
+import { extractBlogMeta } from '@/lib/blog-meta';
+import fs from 'fs/promises';
+import path from 'path';
 
 // Determine which chat provider to use
 const USE_OPENAI = !!process.env.OPENAI_API_KEY;
@@ -31,6 +34,71 @@ When introducing yourself, simply say "Hi, I'm Lorenzo" or something similarly n
 
 If asked about specific experiences or project details not covered in the context, you can say something like "I'd be happy to discuss that in more detail over a call" or suggest reaching out directly.`;
 
+const BLOG_DIR = path.join(process.cwd(), 'src', 'app', 'blog');
+
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function stripMdxImportsAndMeta(source: string): string {
+  // Remove import lines
+  let s = source.replace(/^import .+?;?\s*$/gm, '');
+
+  // Remove `export const meta = { ... }` blocks (best-effort).
+  s = s.replace(/export const meta\s*=\s*\{[\s\S]*?\}\s*;?/m, '');
+  return s.trim();
+}
+
+function extractMdxHeadings(source: string): string[] {
+  const headings: string[] = [];
+  const lines = source.split('\n');
+  for (const line of lines) {
+    const m = /^(#{2,3})\s+(.+?)\s*$/.exec(line);
+    if (!m) continue;
+    const text = m[2].replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').trim();
+    if (text) headings.push(text);
+    if (headings.length >= 14) break;
+  }
+  return headings;
+}
+
+async function loadBlogContext(slug: string): Promise<{ title?: string; description?: string; headings: string[]; text: string } | null> {
+  const candidates = [
+    path.join(BLOG_DIR, slug, 'content.mdx'),
+    path.join(BLOG_DIR, `${slug}.mdx`),
+  ];
+
+  let mdx: string | null = null;
+  for (const candidate of candidates) {
+    if (await fileExists(candidate)) {
+      mdx = await fs.readFile(candidate, 'utf-8');
+      break;
+    }
+  }
+
+  if (!mdx) return null;
+
+  const meta = extractBlogMeta(mdx);
+  const cleaned = stripMdxImportsAndMeta(mdx);
+  const headings = extractMdxHeadings(cleaned);
+
+  // Keep context tight to avoid ballooning prompts.
+  const maxChars = 7000;
+  const text = cleaned.length > maxChars ? `${cleaned.slice(0, maxChars)}\n\n[truncated]` : cleaned;
+
+  return {
+    title: meta.title,
+    description: meta.description,
+    headings,
+    text,
+  };
+}
+
 function buildFallbackAnswer(context: string): string {
   if (context.trim().length > 0) {
     const snippet = context.replace(/\s+/g, ' ').trim().slice(0, 500);
@@ -50,6 +118,7 @@ const handlePost = async (req: NextRequest) => {
     }
 
     const { query } = parsed.data;
+    const contextSlug = parsed.data.contextSlug;
 
     // Get relevant context from our embeddings (gracefully degrades if unavailable)
     let context = '';
@@ -73,10 +142,30 @@ const handlePost = async (req: NextRequest) => {
       }
     }
 
+    // Optional: include the full post context when the user came from a specific blog post.
+    let postContext = '';
+    if (contextSlug) {
+      try {
+        const post = await loadBlogContext(contextSlug);
+        if (post) {
+          const headingList = post.headings.length > 0 ? `\n\nSections:\n- ${post.headings.join('\n- ')}` : '';
+          const titleLine = post.title ? `Title: ${post.title}` : `Slug: ${contextSlug}`;
+          const descLine = post.description ? `\nDescription: ${post.description}` : '';
+          postContext = `Blog post context:\n${titleLine}${descLine}${headingList}\n\nPost content:\n${post.text}`;
+        }
+      } catch (error) {
+        logError('Failed to load blog context', error, { component: 'chat', contextSlug });
+      }
+    }
+
     // Prepare the full system prompt with context
-    const systemPrompt = context
-      ? `${SYSTEM_PROMPT}\n\nContext:\n${context}`
-      : SYSTEM_PROMPT;
+    const systemPromptParts = [
+      SYSTEM_PROMPT,
+      postContext ? postContext : null,
+      context ? `Additional context (semantic matches):\n${context}` : null,
+    ].filter(Boolean) as string[];
+
+    const systemPrompt = systemPromptParts.join("\n\n");
 
     let answer: string | null = null;
     let provider: 'openai' | 'ollama' | 'fallback' = 'fallback';

@@ -126,6 +126,7 @@ export const chatRequestSchema = z.object({
     .string()
     .min(1, 'Query is required')
     .max(1000, 'Query too long (max 1000 characters)'),
+  contextSlug: slugSchema.optional(),
   provider: aiProviderSchema.optional(),
   model: z
     .string()
