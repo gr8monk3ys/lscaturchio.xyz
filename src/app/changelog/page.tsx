@@ -2,6 +2,7 @@ import { Container } from '@/components/Container'
 import { Heading } from '@/components/Heading'
 import { Metadata } from 'next'
 import { ChangelogTimeline } from '@/components/changelog/changelog-timeline'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Changelog | Lorenzo Scaturchio',
@@ -25,6 +26,14 @@ export default function ChangelogPage() {
             <p className="text-lg text-muted-foreground">
               A transparent record of all additions, changes, and improvements to this website.
             </p>
+            <div className="mt-4">
+              <Link
+                href="/changelog/rss.xml"
+                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                Subscribe via RSS
+              </Link>
+            </div>
           </div>
 
           <ChangelogTimeline />
