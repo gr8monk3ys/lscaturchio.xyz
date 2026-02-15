@@ -16,8 +16,7 @@ import { HtmlLangSync } from "@/components/i18n/html-lang-sync";
 import { Metadata } from 'next'
 import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Fraunces } from "next/font/google";
-
-const SITE_URL = "https://lscaturchio.xyz";
+import { SITE_URL } from "@/lib/site-url";
 const WEBMENTION_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, "");
 
 const displayFont = Fraunces({

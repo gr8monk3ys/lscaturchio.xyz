@@ -221,7 +221,8 @@
 
   .neu-input:focus {
     box-shadow: var(--neu-shadow-inset);
-    outline: none;
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
   }
 
   /* CTA Style Guide */

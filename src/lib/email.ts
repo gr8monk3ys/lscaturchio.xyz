@@ -7,6 +7,7 @@
 
 import { logError, logInfo } from './logger';
 import { NEWSLETTER_TOPICS } from '@/constants/newsletter';
+import { getSiteUrl } from '@/lib/site-url';
 
 const RESEND_API_URL = 'https://api.resend.com/emails';
 
@@ -66,7 +67,7 @@ async function sendEmail(options: EmailOptions): Promise<boolean> {
  * Send welcome email to new newsletter subscriber
  */
 export async function sendWelcomeEmail(email: string, unsubscribeToken: string): Promise<boolean> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lscaturchio.xyz';
+  const siteUrl = getSiteUrl();
   const unsubscribeUrl = `${siteUrl}/unsubscribe?token=${unsubscribeToken}`;
 
   const html = `
@@ -126,7 +127,7 @@ export async function sendOnboardingEmail(
   step: number,
   options: { topics?: string[] } = {}
 ): Promise<boolean> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lscaturchio.xyz';
+  const siteUrl = getSiteUrl();
   const unsubscribeUrl = `${siteUrl}/unsubscribe?token=${unsubscribeToken}`;
   const topics = (options.topics ?? [])
     .map((t) => String(t).trim())
@@ -250,6 +251,6 @@ export async function sendOnboardingEmail(
  * Generate an unsubscribe URL for a given token
  */
 export function getUnsubscribeUrl(token: string): string {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lscaturchio.xyz';
+  const siteUrl = getSiteUrl();
   return `${siteUrl}/unsubscribe?token=${token}`;
 }

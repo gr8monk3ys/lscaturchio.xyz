@@ -1,3 +1,5 @@
+import { SITE_TECH } from '@/constants/site-tech'
+
 /**
  * Console Easter Egg - Logs fun ASCII art and messages to the browser console
  * for curious developers who open their dev tools.
@@ -25,9 +27,9 @@ const WELCOME_MESSAGE = `
 I see you like to peek under the hood.
 
 Here are some fun facts:
-  - This site is built with Next.js 14 + TypeScript
+  - This site is built with ${SITE_TECH.framework} + ${SITE_TECH.language}
   - AI chat uses RAG with OpenAI embeddings
-  - Engagement data persists via Supabase
+  - Engagement data persists via ${SITE_TECH.database}
 
 Want to see the source? Check out my GitHub!
 Looking for what I use? Visit: lscaturchio.xyz/uses
@@ -77,13 +79,13 @@ export function logConsoleEasterEgg(): void {
   // Add a collapsible group with more info
   console.groupCollapsed("%c More Info", "color: #2c5530; font-weight: bold;");
   console.log("Tech Stack:", {
-    framework: "Next.js 14 (App Router)",
-    language: "TypeScript",
-    styling: "Tailwind CSS",
-    animations: "Framer Motion",
-    database: "Supabase (PostgreSQL)",
-    ai: "OpenAI GPT-4o + RAG",
-    deployment: "Vercel",
+    framework: `${SITE_TECH.framework} (${SITE_TECH.router})`,
+    language: SITE_TECH.language,
+    styling: SITE_TECH.styling,
+    animations: SITE_TECH.animations,
+    database: SITE_TECH.database,
+    ai: `${SITE_TECH.ai} + RAG`,
+    deployment: SITE_TECH.deployment,
   });
   console.log("Site Features:", [
     "MDX-based blog with syntax highlighting",

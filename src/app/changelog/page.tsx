@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function ChangelogPage() {
   return (
-    <main className="py-20">
+    <div className="py-20">
       <Container>
         <div className="max-w-4xl mx-auto">
           <div className="mb-12">
@@ -39,6 +39,6 @@ export default function ChangelogPage() {
           <ChangelogTimeline />
         </div>
       </Container>
-    </main>
+    </div>
   )
 }

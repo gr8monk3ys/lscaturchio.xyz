@@ -1,8 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://lscaturchio.xyz";
+import { SITE_URL } from "@/lib/site-url";
 
 const LOCALES = [
   { locale: "en", hrefLang: "en" },

@@ -18,7 +18,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     changes: [
       { type: "highlight", text: "Major website redesign and feature expansion" },
       { type: "added", text: "Dark/light mode toggle with system preference detection" },
-      { type: "added", text: "Newsletter subscription system with Supabase backend" },
+      { type: "added", text: "Newsletter subscription system with Neon PostgreSQL backend" },
       { type: "added", text: "Semantic search with CMD+K shortcut (OpenAI embeddings)" },
       { type: "added", text: "PWA support with offline functionality" },
       { type: "added", text: "Reading time estimation and scroll progress bar" },

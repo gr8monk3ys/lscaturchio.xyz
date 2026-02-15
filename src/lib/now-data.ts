@@ -6,7 +6,7 @@ export const nowData = {
   },
   workingOn: {
     clientProjects: [
-      "Building production RAG systems with LangChain and Supabase",
+      "Building production RAG systems with LangChain and Neon PostgreSQL",
       "Developing autonomous AI agents for enterprise clients",
       "Consulting on AI integration strategies",
     ],

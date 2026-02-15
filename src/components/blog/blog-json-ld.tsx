@@ -1,4 +1,5 @@
 import Script from "next/script";
+import { SITE_URL } from "@/lib/site-url";
 
 interface BlogJsonLdProps {
   title: string;
@@ -9,8 +10,6 @@ interface BlogJsonLdProps {
   tags: string[];
   url: string;
 }
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lscaturchio.xyz';
 
 export function BlogJsonLd({
   title,
