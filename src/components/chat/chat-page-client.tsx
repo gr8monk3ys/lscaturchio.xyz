@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, KeyboardEvent } from "react";
+import { useEffect, useMemo, useState, FormEvent, KeyboardEvent } from "react";
 import { Paperclip, Mic, CornerDownLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logError } from "@/lib/logger";
@@ -11,6 +11,8 @@ import {
 } from "@/components/chat/chat-bubble";
 import { ChatMessageList } from "@/components/chat/chat-message-list";
 import { ChatInput } from "@/components/chat/chat-input";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 interface ChatMessage {
   id: number;
@@ -19,6 +21,11 @@ interface ChatMessage {
 }
 
 export function ChatPageClient() {
+  const searchParams = useSearchParams();
+  const contextSlug = useMemo(() => searchParams.get("contextSlug") || "", [searchParams]);
+  const contextTitle = useMemo(() => searchParams.get("contextTitle") || "", [searchParams]);
+  const initialQuery = useMemo(() => searchParams.get("q") || "", [searchParams]);
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 1,
@@ -28,6 +35,12 @@ export function ChatPageClient() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Seed the input from URL params (non-destructive)
+  useEffect(() => {
+    if (!initialQuery) return;
+    setInput((prev) => (prev.trim().length > 0 ? prev : initialQuery));
+  }, [initialQuery]);
 
   const handleSubmit = async (e?: FormEvent) => {
     e?.preventDefault();
@@ -50,7 +63,7 @@ export function ChatPageClient() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, contextSlug: contextSlug || undefined }),
       });
 
       const data = await response.json().catch(() => ({}));
@@ -103,6 +116,17 @@ export function ChatPageClient() {
         <p className="text-sm text-muted-foreground mt-1">
           Powered by RAG over blog content. Press Enter to send, Shift+Enter for a new line.
         </p>
+        {contextSlug && (
+          <div className="mt-3 text-xs text-muted-foreground">
+            Context:{" "}
+            <Link
+              href={`/blog/${contextSlug}`}
+              className="text-primary hover:underline"
+            >
+              {contextTitle || contextSlug}
+            </Link>
+          </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-hidden">
