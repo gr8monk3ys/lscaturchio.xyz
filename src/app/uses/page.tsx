@@ -2,6 +2,7 @@ import { Container } from "@/components/Container";
 import { Metadata } from "next";
 import { Monitor, Mouse, Keyboard, Laptop, HardDrive, Globe, Terminal, Code, Palette, LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { RagStatusCard } from "@/components/uses/rag-status-card";
 
 export const metadata: Metadata = {
   title: "Uses | Lorenzo Scaturchio",
@@ -199,6 +200,41 @@ export default function UsesPage() {
             <p className="mt-4">
               For my terminal font, I use <a href="https://github.com/subframe7536/Maple-font" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Maple Mono</strong></a>.
               Of course, I also use <strong>Nerd Font</strong> icons.
+            </p>
+          </Item>
+        </Section>
+
+        <Section title="RAG Stack">
+          <div className="mb-8">
+            <RagStatusCard />
+          </div>
+
+          <Item icon={Code} title="Vector Search">
+            <p>
+              Embeddings are stored in <strong>Postgres</strong> (Neon) with <strong>pgvector</strong>, queried via a server-side
+              similarity function (<code>match_embeddings</code>) for fast retrieval.
+            </p>
+          </Item>
+
+          <Item icon={Terminal} title="Embeddings">
+            <p>
+              I support two providers:
+              <strong> OpenAI</strong> (<code>text-embedding-3-small</code>, 768 dims) when <code>OPENAI_API_KEY</code> is set, or
+              <strong> Ollama</strong> (<code>nomic-embed-text</code>) locally for free, private iteration.
+            </p>
+          </Item>
+
+          <Item icon={Globe} title="Chat">
+            <p>
+              The site chat endpoint uses OpenAI when configured (default <code>gpt-4o-mini</code>) and falls back to Ollama locally.
+              It degrades gracefully if neither is available.
+            </p>
+          </Item>
+
+          <Item icon={HardDrive} title="Ingestion">
+            <p>
+              I keep content ingestion repeatable with scripts like <code>bun run generate-embeddings</code> and <code>bun run generate-tts</code>.
+              That keeps the AI features grounded on real blog content instead of vibes.
             </p>
           </Item>
         </Section>
