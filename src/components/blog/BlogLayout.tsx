@@ -23,6 +23,7 @@ import { SeriesNavigation } from "./series-navigation";
 import { ReadingProgressTracker } from "./reading-progress-tracker";
 import { TextToSpeech } from "./text-to-speech";
 import { BlogJsonLd } from "./blog-json-ld";
+import { Webmentions } from "./webmentions";
 import Link from "next/link";
 import { getTopicHubsForTags } from "@/constants/topics";
 
@@ -220,6 +221,9 @@ export function BlogLayout({
 
             {/* Newsletter CTA */}
             <NewsletterCTA />
+
+            {/* Webmentions (likes/reposts/replies from the open web) */}
+            <Webmentions path={pathname} />
 
             {/* Comments Section */}
             <GiscusComments />
