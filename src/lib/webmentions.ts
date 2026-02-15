@@ -43,7 +43,7 @@ function safeArray<T>(v: unknown): T[] {
   return Array.isArray(v) ? (v as T[]) : [];
 }
 
-function isHttpUrl(url: string | undefined): boolean {
+function isHttpUrl(url: string | undefined): url is string {
   if (!url) return false;
   try {
     const parsed = new URL(url);
@@ -81,46 +81,45 @@ export async function fetchWebmentions(target: string): Promise<WebmentionsRespo
     typeof json === "object" && json !== null ? (json as { children?: unknown }).children : undefined
   );
 
-  const entries: WebmentionEntry[] = children
-    .map((child) => {
-      const url = safeString(child.url);
-      if (!isHttpUrl(url)) return null;
+  const entries: WebmentionEntry[] = [];
+  for (const child of children) {
+    const url = safeString(child.url);
+    if (!isHttpUrl(url)) continue;
 
-      const wmProperty = safeString(child["wm-property"]);
-      const type = toWebmentionType(wmProperty);
-      const published = safeString(child.published);
+    const wmProperty = safeString(child["wm-property"]);
+    const type = toWebmentionType(wmProperty);
+    const published = safeString(child.published);
 
-      const authorRaw =
-        typeof child.author === "object" && child.author !== null
-          ? (child.author as Record<string, unknown>)
-          : undefined;
-
-      const author: WebmentionAuthor | undefined = authorRaw
-        ? {
-            name: safeString(authorRaw.name),
-            photo: safeString(authorRaw.photo),
-            url: safeString(authorRaw.url),
-          }
+    const authorRaw =
+      typeof child.author === "object" && child.author !== null
+        ? (child.author as Record<string, unknown>)
         : undefined;
 
-      const contentRaw =
-        typeof child.content === "object" && child.content !== null
-          ? (child.content as Record<string, unknown>)
-          : undefined;
-      const contentText = safeString(contentRaw?.text ?? contentRaw?.value);
+    const author: WebmentionAuthor | undefined = authorRaw
+      ? {
+          name: safeString(authorRaw.name),
+          photo: safeString(authorRaw.photo),
+          url: safeString(authorRaw.url),
+        }
+      : undefined;
 
-      const id = safeString(child["wm-id"]) ?? url;
+    const contentRaw =
+      typeof child.content === "object" && child.content !== null
+        ? (child.content as Record<string, unknown>)
+        : undefined;
+    const contentText = safeString(contentRaw?.text ?? contentRaw?.value);
 
-      return {
-        id,
-        url,
-        type,
-        published,
-        author,
-        contentText,
-      } satisfies WebmentionEntry;
-    })
-    .filter((e): e is WebmentionEntry => Boolean(e));
+    const id = safeString(child["wm-id"]) ?? url;
+
+    entries.push({
+      id,
+      url,
+      type,
+      published,
+      author,
+      contentText,
+    });
+  }
 
   const counts: Record<WebmentionType, number> = {
     like: 0,
@@ -135,4 +134,3 @@ export async function fetchWebmentions(target: string): Promise<WebmentionsRespo
 
   return { target, counts, entries };
 }
-
