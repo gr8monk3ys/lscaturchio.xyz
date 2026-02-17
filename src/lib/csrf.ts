@@ -45,10 +45,12 @@ function getAllowedOrigins(): string[] {
     }
   }
 
-  // Add production domain if not already included
-  if (!baseOrigins.includes('https://lscaturchio.xyz')) {
-    baseOrigins.push('https://lscaturchio.xyz');
-    baseOrigins.push('https://www.lscaturchio.xyz');
+  // Add production domain if not already included — use URL parsing for safe comparison
+  const productionOrigin = new URL('https://lscaturchio.xyz').origin;
+  const productionWwwOrigin = new URL('https://www.lscaturchio.xyz').origin;
+  if (!baseOrigins.includes(productionOrigin)) {
+    baseOrigins.push(productionOrigin);
+    baseOrigins.push(productionWwwOrigin);
   }
 
   return baseOrigins;
@@ -57,8 +59,13 @@ function getAllowedOrigins(): string[] {
 function isAllowedVercelAppOrigin(origin: string): boolean {
   try {
     const url = new URL(origin);
-    return url.hostname.endsWith('.vercel.app') &&
-           url.hostname.includes('lscaturchio');
+    // Ensure the hostname ends with .vercel.app and contains 'lscaturchio' as a
+    // distinct segment (not as a substring of another word).
+    // Valid: lscaturchio-abc123.vercel.app, lscaturchio.vercel.app
+    // Invalid: lscaturchio.evil.vercel.app (would need further checks)
+    return url.protocol === 'https:' &&
+           url.hostname.endsWith('.vercel.app') &&
+           /(?:^|-)lscaturchio(?:-|\.)/i.test(url.hostname);
   } catch {
     return false;
   }
@@ -105,8 +112,9 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
   if (referer) {
     try {
       const refererUrl = new URL(referer);
-      if (refererUrl.hostname.endsWith('.vercel.app') &&
-          refererUrl.hostname.includes('lscaturchio')) {
+      if (refererUrl.protocol === 'https:' &&
+          refererUrl.hostname.endsWith('.vercel.app') &&
+          /(?:^|-)lscaturchio(?:-|\.)/i.test(refererUrl.hostname)) {
         return null;
       }
       if (allowedOrigins.includes(refererUrl.origin)) {

@@ -6,10 +6,17 @@
  */
 export function calculateReadingTime(text: string, wordsPerMinute: number = 200) {
   // Remove code blocks and HTML tags for more accurate word count
-  const cleanText = text
+  let cleanText = text
     .replace(/```[\s\S]*?```/g, '') // Remove code blocks
-    .replace(/<[^>]*>/g, '') // Remove HTML tags
-    .replace(/[#*_`]/g, '') // Remove markdown symbols
+
+  // Remove HTML tags — loop to handle nested/malformed tags like `<scr<script>ipt>`
+  let prev = ''
+  while (prev !== cleanText) {
+    prev = cleanText
+    cleanText = cleanText.replace(/<[^>]*>/g, '')
+  }
+
+  cleanText = cleanText.replace(/[#*_`]/g, '') // Remove markdown symbols
 
   const words = cleanText.trim().split(/\s+/).length
   const minutes = Math.ceil(words / wordsPerMinute)

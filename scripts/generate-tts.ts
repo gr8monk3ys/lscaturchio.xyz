@@ -37,8 +37,12 @@ function stripMdxToPlainText(mdx: string): string {
   // Remove import statements
   text = text.replace(/^import\s+.*$/gm, '')
 
-  // Remove JSX/HTML tags
-  text = text.replace(/<[^>]+>/g, '')
+  // Remove JSX/HTML tags — loop to handle nested/malformed tags like `<scr<script>ipt>`
+  let prev = ''
+  while (prev !== text) {
+    prev = text
+    text = text.replace(/<[^>]+>/g, '')
+  }
 
   // Remove code blocks (fenced)
   text = text.replace(/```[\s\S]*?```/g, '')

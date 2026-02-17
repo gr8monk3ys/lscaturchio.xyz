@@ -18,7 +18,12 @@ function stripMdxToPlainText(mdx: string): string {
   text = text.replace(/^import\s+.*$/gm, '')
   text = text.replace(/```[\s\S]*?```/g, '')
   text = text.replace(/`[^`]+`/g, '')
-  text = text.replace(/<[^>]+>/g, '')
+  // Loop-based sanitization to handle nested/malformed tags like `<scr<script>ipt>`
+  let prev = ''
+  while (prev !== text) {
+    prev = text
+    text = text.replace(/<[^>]+>/g, '')
+  }
   text = text.replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
   text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
   text = text.replace(/^#{1,6}\s+/gm, '')
