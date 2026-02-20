@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, FormEvent, KeyboardEvent } from "react";
+import { useState, useRef, useCallback, FormEvent, KeyboardEvent } from "react";
 import { Paperclip, Mic, CornerDownLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logError } from "@/lib/logger";
@@ -29,18 +29,11 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-
-  // Auto-focus the input when the modal opens
-  useEffect(() => {
-    if (isOpen) {
-      // Small delay to ensure the modal is rendered
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-      return () => clearTimeout(timer);
+  const setInputRef = useCallback((node: HTMLTextAreaElement | null) => {
+    if (node) {
+      node.focus();
     }
-  }, [isOpen]);
+  }, []);
 
   // Focus trap: cycle Tab/Shift+Tab within the modal
   const handleModalKeyDown = useCallback(
@@ -111,12 +104,20 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
           `Chat request failed with status ${response.status}`
         );
       }
+      const payload = data?.data ?? data;
+      const answer =
+        typeof payload?.answer === "string" && payload.answer.trim().length > 0
+          ? payload.answer
+          : null;
+      if (!answer) {
+        throw new Error("Chat response missing answer");
+      }
       
       setMessages((prev) => [
         ...prev,
         {
           id: prev.length + 1,
-          content: data.answer,
+          content: answer,
           sender: "ai",
         },
       ]);
@@ -204,7 +205,7 @@ export default function ChatModal({ isOpen, onClose }: ChatModalProps) {
             className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring p-1"
           >
             <ChatInput
-              ref={inputRef}
+              ref={setInputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}

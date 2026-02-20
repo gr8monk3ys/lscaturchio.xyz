@@ -2,6 +2,7 @@
 
 import { buttonVariants } from "@/components/ui/button"
 import { navigation } from '@/constants/navlinks';
+import Link from "next/link";
 import {
   Tooltip,
   TooltipContent,
@@ -23,7 +24,7 @@ function Footer() {
           <div className="relative">
             <h2 className="mb-4 text-3xl font-bold tracking-tight">Stay Connected</h2>
             <p className="mb-6 text-muted-foreground">
-              Subscribe to my AI News newsletter for the latest updates in artificial intelligence, machine learning, and tech innovations.
+              Subscribe for updates on AI systems, engineering notes, and new writing.
             </p>
             <div className="flex flex-col gap-3">
               <a
@@ -35,7 +36,7 @@ function Footer() {
                 <Send className="h-4 w-4" />
                 Subscribe to Newsletter
               </a>
-              <a
+              <Link
                 href="/api/rss"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -43,7 +44,7 @@ function Footer() {
               >
                 <Rss className="h-4 w-4" />
                 RSS Feed
-              </a>
+              </Link>
               <a
                 href="https://www.buymeacoffee.com/lorenzoscak"
                 target="_blank"
@@ -59,13 +60,13 @@ function Footer() {
             <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
             <nav className="space-y-2 text-sm">
               {navigation.map((item) => (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
                   className="block transition-colors hover:text-primary"
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>
@@ -74,7 +75,12 @@ function Footer() {
             <address className="space-y-2 text-sm not-italic">
               <p>Los Angeles, California</p>
               <p>United States</p>
-              <p>Email: lorenzosca7@protonmail.ch</p>
+              <p>
+                Email:{" "}
+                <a href="mailto:lorenzo@lscaturchio.xyz" className="hover:text-primary transition-colors">
+                  lorenzo@lscaturchio.xyz
+                </a>
+              </p>
             </address>
           </div>
           <div className="relative">
@@ -108,15 +114,15 @@ function Footer() {
             {new Date().getFullYear()} Lorenzo Scaturchio. All rights reserved.
           </p>
           <nav className="flex gap-4 text-sm">
-            <a href="/stats" className="transition-colors hover:text-primary">
+            <Link href="/stats" className="transition-colors hover:text-primary">
               Stats
-            </a>
-            <a href="/privacy-policy" className="transition-colors hover:text-primary">
+            </Link>
+            <Link href="/privacy-policy" className="transition-colors hover:text-primary">
               Privacy Policy
-            </a>
-            <a href="/terms-of-service" className="transition-colors hover:text-primary">
+            </Link>
+            <Link href="/terms-of-service" className="transition-colors hover:text-primary">
               Terms of Service
-            </a>
+            </Link>
           </nav>
         </div>
       </div>

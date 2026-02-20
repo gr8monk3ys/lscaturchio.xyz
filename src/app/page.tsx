@@ -11,6 +11,42 @@ import { FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/str
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { getGithubPortfolioRepos } from "@/lib/github-repos";
 import { getPopularPosts } from "@/lib/popular-posts";
+import type { Metadata } from "next";
+import { ogCardUrl } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: "Home",
+  description:
+    "Portfolio, writing, and experiments from Lorenzo Scaturchio across AI, machine learning, and web development.",
+  openGraph: {
+    title: "Lorenzo Scaturchio | Data Scientist, Developer & Digital Craftsman",
+    description:
+      "Portfolio, writing, and experiments across AI, machine learning, and web development.",
+    images: [
+      {
+        url: ogCardUrl({
+          title: "Lorenzo Scaturchio",
+          description: "Data Scientist & Developer",
+          type: "default",
+        }),
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lorenzo Scaturchio | Data Scientist & Developer",
+    description: "Portfolio, writing, and experiments across AI and web development.",
+    images: [
+      ogCardUrl({
+        title: "Lorenzo Scaturchio",
+        description: "Data Scientist & Developer",
+        type: "default",
+      }),
+    ],
+  },
+};
 
 export default async function Home() {
   // Fetch blog data, GitHub repos, and popular posts in parallel

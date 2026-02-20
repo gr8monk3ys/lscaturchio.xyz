@@ -2,9 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useReducer, useRef } from "react";
+import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Calendar, ExternalLink, Github, Keyboard, ArrowRight } from "lucide-react";
@@ -38,8 +37,45 @@ function isTypingTarget(target: EventTarget | null): boolean {
   return tag === "input" || tag === "textarea" || tag === "select" || target.isContentEditable;
 }
 
+interface ProjectGalleryState {
+  activeSlug: string;
+  browseMode: boolean;
+}
+
+type ProjectGalleryAction =
+  | { type: "setActiveSlug"; payload: string }
+  | { type: "toggleBrowseMode" }
+  | { type: "setBrowseMode"; payload: boolean };
+
+function projectGalleryReducer(
+  state: ProjectGalleryState,
+  action: ProjectGalleryAction
+): ProjectGalleryState {
+  switch (action.type) {
+    case "setActiveSlug":
+      return state.activeSlug === action.payload ? state : { ...state, activeSlug: action.payload };
+    case "toggleBrowseMode":
+      return { ...state, browseMode: !state.browseMode };
+    case "setBrowseMode":
+      return state.browseMode === action.payload ? state : { ...state, browseMode: action.payload };
+    default:
+      return state;
+  }
+}
+
+function toStableListItems(values: string[], prefix: string): Array<{ key: string; value: string }> {
+  const counts = new Map<string, number>();
+  return values.map((value) => {
+    const count = counts.get(value) ?? 0;
+    counts.set(value, count + 1);
+    return {
+      key: `${prefix}-${value}-${count}`,
+      value,
+    };
+  });
+}
+
 export function ProjectGallery({ projects }: { projects: Product[] }) {
-  const router = useRouter();
   const reduceMotion = useReducedMotion();
 
   const list = useMemo(
@@ -47,14 +83,16 @@ export function ProjectGallery({ projects }: { projects: Product[] }) {
     [projects]
   );
 
-  const [activeSlug, setActiveSlug] = useState<string>(list[0]?.slug ?? "");
-  const [browseMode, setBrowseMode] = useState(false);
+  const [{ activeSlug, browseMode }, dispatch] = useReducer(projectGalleryReducer, {
+    activeSlug: list[0]?.slug ?? "",
+    browseMode: false,
+  });
 
   // Keep selection valid when filters/sorts change.
   useEffect(() => {
     if (list.length === 0) return;
     if (!activeSlug || !list.some((p) => p.slug === activeSlug)) {
-      setActiveSlug(list[0].slug);
+      dispatch({ type: "setActiveSlug", payload: list[0].slug });
     }
   }, [activeSlug, list]);
 
@@ -76,7 +114,7 @@ export function ProjectGallery({ projects }: { projects: Product[] }) {
 
       if (e.key === "b" || e.key === "B") {
         e.preventDefault();
-        setBrowseMode((v) => !v);
+        dispatch({ type: "toggleBrowseMode" });
         return;
       }
 
@@ -85,14 +123,14 @@ export function ProjectGallery({ projects }: { projects: Product[] }) {
 
       if (e.key === "Escape") {
         e.preventDefault();
-        setBrowseMode(false);
+        dispatch({ type: "setBrowseMode", payload: false });
         return;
       }
 
       const index = Math.max(0, list.findIndex((p) => p.slug === activeSlug));
       const nextIndex = (delta: number) => {
         const i = Math.min(list.length - 1, Math.max(0, index + delta));
-        setActiveSlug(list[i].slug);
+        dispatch({ type: "setActiveSlug", payload: list[i].slug });
       };
 
       if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === "j" || e.key === "J") {
@@ -107,13 +145,14 @@ export function ProjectGallery({ projects }: { projects: Product[] }) {
       }
       if (e.key === "Enter") {
         e.preventDefault();
-        if (activeSlug) router.push(`/projects/${activeSlug}`);
+        if (!activeSlug) return;
+        linkRefs.current[activeSlug]?.click();
       }
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeSlug, browseMode, list, router]);
+  }, [activeSlug, browseMode, list]);
 
   if (list.length === 0) {
     return (
@@ -125,66 +164,68 @@ export function ProjectGallery({ projects }: { projects: Product[] }) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-sm text-muted-foreground">
-          Hover a card to preview. Press <span className="font-semibold text-foreground">B</span> for keyboard browse.
-        </div>
-        <button
-          type="button"
-          onClick={() => setBrowseMode((v) => !v)}
-          className={cn(
-            "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors",
-            browseMode
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "bg-muted/60 text-foreground hover:bg-muted"
-          )}
-          aria-pressed={browseMode}
-        >
-          <Keyboard className="h-4 w-4" />
-          Browse mode
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <AnimatePresence mode="popLayout" initial={false}>
-            {list.map((project) => {
-              const isActive = project.slug === activeSlug;
-              return (
-                <motion.div
-                  key={project.slug}
-                  layout
-                  initial={reduceMotion ? undefined : { opacity: 0, y: 10 }}
-                  animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-                  exit={reduceMotion ? undefined : { opacity: 0, y: -10 }}
-                  transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <ProjectGalleryCard
-                    project={project}
-                    isActive={isActive}
-                    onActivate={() => setActiveSlug(project.slug)}
-                    setRef={(el) => {
-                      linkRefs.current[project.slug] = el;
-                    }}
-                  />
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
-
-        <aside className="hidden lg:block">
-          <div className="sticky top-24">
-            <ProjectRail project={active} />
+    <LazyMotion features={domAnimation}>
+      <div className="space-y-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-sm text-muted-foreground">
+            Hover a card to preview. Press <span className="font-semibold text-foreground">B</span> for keyboard browse.
           </div>
-        </aside>
-      </div>
+          <button
+            type="button"
+            onClick={() => dispatch({ type: "toggleBrowseMode" })}
+            className={cn(
+              "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors",
+              browseMode
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "bg-muted/60 text-foreground hover:bg-muted"
+            )}
+            aria-pressed={browseMode}
+          >
+            <Keyboard className="h-4 w-4" />
+            Browse mode
+          </button>
+        </div>
 
-      <div className="lg:hidden">
-        <ProjectRail project={active} compact />
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {list.map((project) => {
+                const isActive = project.slug === activeSlug;
+                return (
+                  <m.div
+                    key={project.slug}
+                    layout
+                    initial={reduceMotion ? undefined : { opacity: 0, y: 10 }}
+                    animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                    exit={reduceMotion ? undefined : { opacity: 0, y: -10 }}
+                    transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <ProjectGalleryCard
+                      project={project}
+                      isActive={isActive}
+                      onActivate={() => dispatch({ type: "setActiveSlug", payload: project.slug })}
+                      setRef={(el) => {
+                        linkRefs.current[project.slug] = el;
+                      }}
+                    />
+                  </m.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+
+          <aside className="hidden lg:block">
+            <div className="sticky top-24">
+              <ProjectRail project={active} />
+            </div>
+          </aside>
+        </div>
+
+        <div className="lg:hidden">
+          <ProjectRail project={active} compact />
+        </div>
       </div>
-    </div>
+    </LazyMotion>
   );
 }
 
@@ -216,7 +257,7 @@ function ProjectGalleryCard({
       aria-current={isActive ? "true" : undefined}
     >
       <div className="relative aspect-[16/10] overflow-hidden">
-        <motion.div
+        <m.div
           layoutId={shared ? `project-cover-${project.slug}` : undefined}
           className="absolute inset-0"
         >
@@ -228,7 +269,7 @@ function ProjectGalleryCard({
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             priority={isActive}
           />
-        </motion.div>
+        </m.div>
         <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
 
         <div className="absolute left-4 right-4 bottom-4 flex items-end justify-between gap-3">
@@ -249,11 +290,11 @@ function ProjectGalleryCard({
                 </span>
               )}
             </div>
-            <motion.div layoutId={shared ? `project-title-${project.slug}` : undefined}>
+            <m.div layoutId={shared ? `project-title-${project.slug}` : undefined}>
               <div className="mt-2 truncate text-lg font-semibold tracking-tight">
                 {project.title}
               </div>
-            </motion.div>
+            </m.div>
           </div>
           <div className="shrink-0 rounded-full bg-primary/10 p-2 text-primary transition-colors group-hover:bg-primary/15">
             <ArrowRight className="h-4 w-4" />
@@ -289,8 +330,13 @@ function ProjectRail({ project, compact = false }: { project: (Product & { slug?
   const title = project.title;
   const description = project.description;
   const tags = (project.categories || []).map((c) => categoryLabels[c]);
+  const highlights = toStableListItems(
+    (project.caseStudy?.results ?? []).slice(0, 3),
+    project.slug ?? project.title
+  );
 
-  const Shell = reduceMotion ? "div" : (motion.div as unknown as "div");
+  const Shell = reduceMotion ? "div" : (m.div as unknown as "div");
+  const shellKey = project.slug ?? project.title;
 
   return (
     <div
@@ -312,9 +358,9 @@ function ProjectRail({ project, compact = false }: { project: (Product & { slug?
 
       <div className="p-5 space-y-4">
         <Shell
+          key={shellKey}
           {...(!reduceMotion
             ? {
-                key: project.slug ?? project.title,
                 initial: { opacity: 0, y: 8 },
                 animate: { opacity: 1, y: 0 },
                 transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] },
@@ -349,16 +395,16 @@ function ProjectRail({ project, compact = false }: { project: (Product & { slug?
             </div>
           )}
 
-          {project.caseStudy?.results && project.caseStudy.results.length > 0 && (
+          {highlights.length > 0 && (
             <div className="rounded-xl border border-primary/15 bg-primary/5 p-4">
               <div className="text-xs font-semibold uppercase tracking-wide text-primary">
                 Highlights
               </div>
               <ul className="mt-2 space-y-1.5 text-sm text-foreground">
-                {project.caseStudy.results.slice(0, 3).map((r, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
+                {highlights.map((result) => (
+                  <li key={result.key} className="flex items-start gap-2">
                     <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary" />
-                    <span>{r}</span>
+                    <span>{result.value}</span>
                   </li>
                 ))}
               </ul>
@@ -401,4 +447,3 @@ function ProjectRail({ project, compact = false }: { project: (Product & { slug?
     </div>
   );
 }
-

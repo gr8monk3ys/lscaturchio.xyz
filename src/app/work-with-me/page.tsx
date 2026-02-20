@@ -4,7 +4,11 @@ import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { PricingSection } from "@/components/services/pricing-section";
+import ServicesSection from "@/components/services/service-section";
+import { FaqSection } from "@/components/services/faq-section";
+import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { pricingTiers } from "@/constants/pricing";
+import { questions } from "@/constants/questions";
 import { ArrowUpRight, CalendarDays, Mail, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -88,6 +92,40 @@ export default function WorkWithMePage() {
           </div>
         </div>
 
+        <section id="services" className="scroll-mt-28 mb-10">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold">Services</h2>
+            <p className="text-sm text-muted-foreground mt-2">
+              Scope, approach, and implementation details for how I ship client work.
+            </p>
+          </div>
+          <div className="neu-card">
+            <ServicesSection />
+          </div>
+        </section>
+
+        <section id="faq" className="scroll-mt-28 mb-10">
+          <FaqSection
+            title="Frequently Asked Questions"
+            description="Answers to common questions about delivery, scope, and communication."
+            items={questions}
+            contactInfo={{
+              title: "Still have questions?",
+              description: "Book a short call and I can tell you exactly what I would do first.",
+              buttonText: "Schedule a Call",
+              contactUrl: "https://calendly.com/gr8monk3ys/30min",
+            }}
+          />
+        </section>
+
+        <section id="testimonials" className="scroll-mt-28 mb-10">
+          <TestimonialsSection
+            showAll
+            title="Testimonials"
+            description="Feedback from people I have built with across AI, product, and software projects."
+          />
+        </section>
+
         <PricingSection
           title="Pricing"
           subtitle="Choose a tier or start with a call. I’ll recommend the smallest thing that gets you real value."
@@ -95,7 +133,7 @@ export default function WorkWithMePage() {
           frequencies={frequencies}
         />
 
-        <div className="mt-10 neu-flat rounded-2xl p-6 text-sm text-muted-foreground">
+        <div id="contact" className="mt-10 scroll-mt-28 neu-flat rounded-2xl p-6 text-sm text-muted-foreground">
           Prefer async-first? Email me a short description of your goal, your data sources, and what “success” looks like.
         </div>
       </div>

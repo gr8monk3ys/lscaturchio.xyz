@@ -14,6 +14,8 @@ import path from 'path';
 // Determine which chat provider to use
 const USE_OPENAI = !!process.env.OPENAI_API_KEY;
 const OPENAI_CHAT_MODEL = process.env.OPENAI_CHAT_MODEL || 'gpt-4o-mini';
+const OPENAI_FALLBACK_CHAT_MODEL =
+  process.env.OPENAI_FALLBACK_CHAT_MODEL || 'gpt-4.1-nano';
 
 // Lazy OpenAI initialization
 let openaiClient: import('openai').default | null = null;
@@ -28,6 +30,14 @@ async function getOpenAI() {
     });
   }
   return openaiClient;
+}
+
+function getOpenAIModelCandidates(): string[] {
+  const candidates = [OPENAI_CHAT_MODEL, OPENAI_FALLBACK_CHAT_MODEL]
+    .map((model) => model.trim())
+    .filter((model) => model.length > 0);
+
+  return Array.from(new Set(candidates));
 }
 
 const SYSTEM_PROMPT = `You are me - Lorenzo Scaturchio, a software engineer and data scientist based in Los Angeles. Respond in first person as if you were me, drawing from the following context about my background, work, and expertise.
@@ -174,6 +184,8 @@ const handlePost = async (req: NextRequest) => {
 
     let answer: string | null = null;
     let provider: 'openai' | 'ollama' | 'fallback' = 'fallback';
+    let usedOpenAIFallbackModel = false;
+    let modelUsed: string | null = null;
 
     // Try OpenAI first when configured
     if (USE_OPENAI) {
@@ -182,20 +194,44 @@ const handlePost = async (req: NextRequest) => {
         if (!client) {
           throw new Error('OpenAI client not initialized');
         }
+        const openaiModels = getOpenAIModelCandidates();
 
-        const completion = await client.chat.completions.create({
-          model: OPENAI_CHAT_MODEL,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: query },
-          ],
-          temperature: 0.4,
-          max_tokens: 1000,
-        });
+        for (let i = 0; i < openaiModels.length; i += 1) {
+          const model = openaiModels[i];
+          try {
+            const completion = await client.chat.completions.create({
+              model,
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: query },
+              ],
+              temperature: 0.4,
+              max_tokens: 1000,
+            });
 
-        answer = completion.choices[0].message?.content || null;
-        if (answer) {
-          provider = 'openai';
+            answer = completion.choices[0].message?.content || null;
+            if (answer) {
+              provider = 'openai';
+              modelUsed = model;
+              usedOpenAIFallbackModel = model !== OPENAI_CHAT_MODEL;
+              if (usedOpenAIFallbackModel) {
+                logInfo('Using OpenAI fallback chat model', {
+                  component: 'chat',
+                  model,
+                });
+              }
+              break;
+            }
+          } catch (error) {
+            const isLastModel = i === openaiModels.length - 1;
+            logError(
+              isLastModel
+                ? 'OpenAI chat failed; falling back'
+                : 'OpenAI chat model failed; trying fallback model',
+              error,
+              { component: 'chat', model }
+            );
+          }
         }
       } catch (error) {
         logError('OpenAI chat failed; falling back', error, { component: 'chat', model: OPENAI_CHAT_MODEL });
@@ -220,6 +256,7 @@ const handlePost = async (req: NextRequest) => {
             { temperature: 0.4, maxTokens: 1000 }
           );
           provider = 'ollama';
+          modelUsed = process.env.OLLAMA_CHAT_MODEL || 'llama3.2';
         } catch (error) {
           logError('Ollama chat failed; using fallback response', error, { component: 'chat' });
         }
@@ -235,7 +272,8 @@ const handlePost = async (req: NextRequest) => {
     return apiSuccess({
       answer,
       provider,
-      degraded: provider === 'fallback',
+      model: modelUsed,
+      degraded: provider === 'fallback' || usedOpenAIFallbackModel,
     });
   } catch (error: unknown) {
     logError('Chat API request failed', error, { endpoint: '/api/chat' });

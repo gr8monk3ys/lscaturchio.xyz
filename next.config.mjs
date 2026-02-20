@@ -13,6 +13,21 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/services',
+        destination: '/work-with-me#services',
+        permanent: true,
+      },
+      {
+        source: '/testimonials',
+        destination: '/work-with-me#testimonials',
+        permanent: true,
+      },
+      {
+        source: '/roadmap',
+        destination: '/changelog#roadmap',
+        permanent: true,
+      },
+      {
         source: '/til',
         destination: '/blog',
         permanent: true,
@@ -114,6 +129,7 @@ const nextConfig = {
       },
     ],
     formats: ['image/avif', 'image/webp'],
+    qualities: [75, 85],
     minimumCacheTTL: 86400,
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
