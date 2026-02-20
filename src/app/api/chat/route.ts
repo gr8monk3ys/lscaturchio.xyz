@@ -13,12 +13,25 @@ import path from 'path';
 
 // Determine which chat provider to use
 const USE_OPENAI = !!process.env.OPENAI_API_KEY;
+const USE_OPENROUTER = !!process.env.OPENROUTER_API_KEY;
 const OPENAI_CHAT_MODEL = process.env.OPENAI_CHAT_MODEL || 'gpt-4o-mini';
 const OPENAI_FALLBACK_CHAT_MODEL =
   process.env.OPENAI_FALLBACK_CHAT_MODEL || 'gpt-4.1-nano';
+const OPENROUTER_BASE_URL =
+  process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
+const OPENROUTER_CHAT_MODEL =
+  process.env.OPENROUTER_CHAT_MODEL || 'openai/gpt-4.1-nano';
+const OPENROUTER_FALLBACK_CHAT_MODEL =
+  process.env.OPENROUTER_FALLBACK_CHAT_MODEL || '';
+const OPENROUTER_SITE_URL =
+  process.env.OPENROUTER_SITE_URL ||
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  'https://lscaturchio.xyz';
+const OPENROUTER_APP_NAME = process.env.OPENROUTER_APP_NAME || 'lscaturchio.xyz';
 
 // Lazy OpenAI initialization
 let openaiClient: import('openai').default | null = null;
+let openrouterClient: import('openai').default | null = null;
 
 async function getOpenAI() {
   if (!openaiClient && USE_OPENAI) {
@@ -32,12 +45,101 @@ async function getOpenAI() {
   return openaiClient;
 }
 
-function getOpenAIModelCandidates(): string[] {
-  const candidates = [OPENAI_CHAT_MODEL, OPENAI_FALLBACK_CHAT_MODEL]
+async function getOpenRouter() {
+  if (!openrouterClient && USE_OPENROUTER) {
+    const OpenAI = (await import('openai')).default;
+
+    const defaultHeaders: Record<string, string> = {};
+    if (OPENROUTER_SITE_URL.trim()) {
+      defaultHeaders['HTTP-Referer'] = OPENROUTER_SITE_URL.trim();
+    }
+    if (OPENROUTER_APP_NAME.trim()) {
+      defaultHeaders['X-Title'] = OPENROUTER_APP_NAME.trim();
+    }
+
+    openrouterClient = new OpenAI({
+      apiKey: process.env.OPENROUTER_API_KEY!,
+      baseURL: OPENROUTER_BASE_URL,
+      timeout: 30000,
+      maxRetries: 1,
+      defaultHeaders,
+    });
+  }
+  return openrouterClient;
+}
+
+function getModelCandidates(primaryModel: string, fallbackModel?: string): string[] {
+  const candidates = [primaryModel, fallbackModel ?? '']
     .map((model) => model.trim())
     .filter((model) => model.length > 0);
 
   return Array.from(new Set(candidates));
+}
+
+type OpenAICompatibleProvider = 'openai' | 'openrouter';
+type ChatProvider = 'openai' | 'openrouter' | 'ollama' | 'fallback';
+
+type ProviderAttemptResult = {
+  answer: string | null;
+  modelUsed: string | null;
+  usedFallbackModel: boolean;
+};
+
+async function tryOpenAICompatibleProvider({
+  provider,
+  client,
+  systemPrompt,
+  query,
+  primaryModel,
+  fallbackModel,
+}: {
+  provider: OpenAICompatibleProvider;
+  client: import('openai').default;
+  systemPrompt: string;
+  query: string;
+  primaryModel: string;
+  fallbackModel?: string;
+}): Promise<ProviderAttemptResult> {
+  const models = getModelCandidates(primaryModel, fallbackModel);
+
+  for (let i = 0; i < models.length; i += 1) {
+    const model = models[i];
+    try {
+      const completion = await client.chat.completions.create({
+        model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: query },
+        ],
+        temperature: 0.4,
+        max_tokens: 1000,
+      });
+
+      const answer = completion.choices[0].message?.content || null;
+      if (answer) {
+        const usedFallbackModel = model !== primaryModel;
+        if (usedFallbackModel) {
+          logInfo(`Using ${provider} fallback chat model`, {
+            component: 'chat',
+            provider,
+            model,
+          });
+        }
+        return { answer, modelUsed: model, usedFallbackModel };
+      }
+    } catch (error) {
+      const isLastModel = i === models.length - 1;
+      logError(
+        isLastModel
+          ? `${provider} chat failed; falling back`
+          : `${provider} chat model failed; trying fallback model`,
+        error,
+        { component: 'chat', provider, model }
+      );
+    }
+  }
+
+  return { answer: null, modelUsed: null, usedFallbackModel: false };
 }
 
 const SYSTEM_PROMPT = `You are me - Lorenzo Scaturchio, a software engineer and data scientist based in Los Angeles. Respond in first person as if you were me, drawing from the following context about my background, work, and expertise.
@@ -183,58 +285,67 @@ const handlePost = async (req: NextRequest) => {
     const systemPrompt = systemPromptParts.join("\n\n");
 
     let answer: string | null = null;
-    let provider: 'openai' | 'ollama' | 'fallback' = 'fallback';
-    let usedOpenAIFallbackModel = false;
+    let provider: ChatProvider = 'fallback';
+    let usedFallbackModel = false;
     let modelUsed: string | null = null;
 
     // Try OpenAI first when configured
-    if (USE_OPENAI) {
+    if (!answer && USE_OPENAI) {
       try {
         const client = await getOpenAI();
         if (!client) {
           throw new Error('OpenAI client not initialized');
         }
-        const openaiModels = getOpenAIModelCandidates();
 
-        for (let i = 0; i < openaiModels.length; i += 1) {
-          const model = openaiModels[i];
-          try {
-            const completion = await client.chat.completions.create({
-              model,
-              messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: query },
-              ],
-              temperature: 0.4,
-              max_tokens: 1000,
-            });
+        const openaiResult = await tryOpenAICompatibleProvider({
+          provider: 'openai',
+          client,
+          systemPrompt,
+          query,
+          primaryModel: OPENAI_CHAT_MODEL,
+          fallbackModel: OPENAI_FALLBACK_CHAT_MODEL,
+        });
 
-            answer = completion.choices[0].message?.content || null;
-            if (answer) {
-              provider = 'openai';
-              modelUsed = model;
-              usedOpenAIFallbackModel = model !== OPENAI_CHAT_MODEL;
-              if (usedOpenAIFallbackModel) {
-                logInfo('Using OpenAI fallback chat model', {
-                  component: 'chat',
-                  model,
-                });
-              }
-              break;
-            }
-          } catch (error) {
-            const isLastModel = i === openaiModels.length - 1;
-            logError(
-              isLastModel
-                ? 'OpenAI chat failed; falling back'
-                : 'OpenAI chat model failed; trying fallback model',
-              error,
-              { component: 'chat', model }
-            );
-          }
+        if (openaiResult.answer) {
+          answer = openaiResult.answer;
+          provider = 'openai';
+          modelUsed = openaiResult.modelUsed;
+          usedFallbackModel = openaiResult.usedFallbackModel;
         }
       } catch (error) {
         logError('OpenAI chat failed; falling back', error, { component: 'chat', model: OPENAI_CHAT_MODEL });
+      }
+    }
+
+    // Fall back to OpenRouter when OpenAI is unavailable/fails
+    if (!answer && USE_OPENROUTER) {
+      try {
+        const client = await getOpenRouter();
+        if (!client) {
+          throw new Error('OpenRouter client not initialized');
+        }
+
+        const openrouterResult = await tryOpenAICompatibleProvider({
+          provider: 'openrouter',
+          client,
+          systemPrompt,
+          query,
+          primaryModel: OPENROUTER_CHAT_MODEL,
+          fallbackModel: OPENROUTER_FALLBACK_CHAT_MODEL,
+        });
+
+        if (openrouterResult.answer) {
+          answer = openrouterResult.answer;
+          provider = 'openrouter';
+          modelUsed = openrouterResult.modelUsed;
+          usedFallbackModel = openrouterResult.usedFallbackModel;
+        }
+      } catch (error) {
+        logError('OpenRouter chat failed; falling back', error, {
+          component: 'chat',
+          model: OPENROUTER_CHAT_MODEL,
+          baseURL: OPENROUTER_BASE_URL,
+        });
       }
     }
 
@@ -273,7 +384,7 @@ const handlePost = async (req: NextRequest) => {
       answer,
       provider,
       model: modelUsed,
-      degraded: provider === 'fallback' || usedOpenAIFallbackModel,
+      degraded: provider === 'fallback' || usedFallbackModel,
     });
   } catch (error: unknown) {
     logError('Chat API request failed', error, { endpoint: '/api/chat' });

@@ -68,7 +68,7 @@ export default async function TopicsPage() {
             <Link
               key={hub.slug}
               href={`/topics/${hub.slug}`}
-              className="group neu-card p-6 hover:-translate-y-0.5 transition-all"
+              className="group neu-card p-6 hover:-translate-y-0.5 transition-[transform,box-shadow,color,background-color]"
             >
               <div className="flex items-start justify-between gap-3">
                 <h2 className="text-xl font-semibold group-hover:text-primary transition-colors">
@@ -91,4 +91,3 @@ export default async function TopicsPage() {
     </Container>
   );
 }
-

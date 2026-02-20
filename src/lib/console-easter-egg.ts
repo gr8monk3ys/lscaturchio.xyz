@@ -41,7 +41,7 @@ const HIRE_MESSAGE = `
 %c Open to new opportunities! %c
 
 If you're interested in collaborating or have an exciting project,
-feel free to reach out: lorenzo@lscaturchio.xyz
+feel free to reach out: lorenzosca7@protonmail.ch
 
 `;
 

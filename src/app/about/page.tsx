@@ -30,7 +30,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
           <Link
             href="/books"
-            className="group p-6 rounded-2xl neu-card hover:scale-[1.02] transition-all"
+            className="group p-6 rounded-2xl neu-card hover:scale-[1.02] transition-[transform,box-shadow]"
           >
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-xl bg-primary/10">
@@ -44,13 +44,13 @@ export default function AboutPage() {
                   Philosophy, psychology, and meaningful reads
                 </p>
               </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-[transform,color]" />
             </div>
           </Link>
 
           <Link
             href="/movies"
-            className="group p-6 rounded-2xl neu-card hover:scale-[1.02] transition-all"
+            className="group p-6 rounded-2xl neu-card hover:scale-[1.02] transition-[transform,box-shadow]"
           >
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-xl bg-primary/10">
@@ -64,7 +64,7 @@ export default function AboutPage() {
                   Cinema that shaped my perspective
                 </p>
               </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-[transform,color]" />
             </div>
           </Link>
         </div>

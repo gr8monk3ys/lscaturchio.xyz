@@ -2,7 +2,7 @@
 
 import { Mail, Calendar, MapPin, Github, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 import { useState } from "react";
 
 const contactMethods = [
@@ -19,7 +19,7 @@ const contactMethods = [
     title: "Send an Email",
     description: "Drop me a line anytime",
     action: "Email Me",
-    href: "mailto:lorenzo@lscaturchio.xyz",
+    href: "mailto:lorenzosca7@protonmail.ch",
     external: true,
   },
   {
@@ -74,15 +74,16 @@ export function ContactForm() {
 
   return (
     <div className="max-w-5xl mx-auto">
+      <LazyMotion features={domAnimation}>
       {/* Contact Methods */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         className="grid md:grid-cols-3 gap-6 mb-16"
       >
         {contactMethods.map((method, index) => (
-          <motion.div
+          <m.div
             key={method.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -106,14 +107,14 @@ export function ContactForm() {
             ) : (
               <span className="text-sm text-muted-foreground">{method.action}</span>
             )}
-          </motion.div>
+          </m.div>
         ))}
-      </motion.div>
+      </m.div>
 
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-2 gap-12">
         {/* Contact Form */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
@@ -193,10 +194,10 @@ export function ContactForm() {
               <p className="text-red-600 text-center">Failed to send. Please try again.</p>
             )}
           </form>
-        </motion.div>
+        </m.div>
 
         {/* Additional Info */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
@@ -247,7 +248,7 @@ export function ContactForm() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="neu-button p-4 rounded-xl hover:text-primary transition-all"
+                  className="neu-button p-4 rounded-xl hover:text-primary transition-colors"
                   aria-label={social.label}
                 >
                   <social.icon className="h-6 w-6" />
@@ -255,8 +256,9 @@ export function ContactForm() {
               ))}
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
+      </LazyMotion>
     </div>
   );
 }

@@ -27,7 +27,7 @@ const handleGet = async () => {
     },
     author: {
       name: "Lorenzo Scaturchio",
-      email: "lorenzo@lscaturchio.xyz",
+      email: "lorenzosca7@protonmail.ch",
       link: siteURL,
     },
   });
@@ -58,7 +58,7 @@ const handleGet = async () => {
       author: [
         {
           name: "Lorenzo Scaturchio",
-          email: "lorenzo@lscaturchio.xyz",
+          email: "lorenzosca7@protonmail.ch",
           link: siteURL,
         },
       ],

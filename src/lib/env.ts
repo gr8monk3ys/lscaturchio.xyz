@@ -37,6 +37,12 @@ export const env = createEnv({
     OPENAI_API_KEY: z.string().optional(),
     OPENAI_CHAT_MODEL: z.string().optional(),
     OPENAI_FALLBACK_CHAT_MODEL: z.string().optional(),
+    OPENROUTER_API_KEY: z.string().optional(),
+    OPENROUTER_BASE_URL: z.string().url().optional(),
+    OPENROUTER_CHAT_MODEL: z.string().optional(),
+    OPENROUTER_FALLBACK_CHAT_MODEL: z.string().optional(),
+    OPENROUTER_SITE_URL: z.string().url().optional(),
+    OPENROUTER_APP_NAME: z.string().optional(),
 
     // Ollama configuration (optional, for local AI)
     OLLAMA_BASE_URL: z.string().url().optional(),
@@ -54,7 +60,7 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().optional(),
 
     // Contact Form Email Configuration
-    CONTACT_EMAIL: z.string().email().optional().default('lorenzo@lscaturchio.xyz'),
+    CONTACT_EMAIL: z.string().email().optional().default('lorenzosca7@protonmail.ch'),
     CONTACT_FROM_EMAIL: z.string().email().optional().default('contact@lscaturchio.xyz'),
     NEWSLETTER_FROM_EMAIL: z.string().email().optional().default('newsletter@lscaturchio.xyz'),
     RESUME_URL: z.string().url().optional(),
@@ -109,6 +115,12 @@ export const env = createEnv({
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     OPENAI_CHAT_MODEL: process.env.OPENAI_CHAT_MODEL,
     OPENAI_FALLBACK_CHAT_MODEL: process.env.OPENAI_FALLBACK_CHAT_MODEL,
+    OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+    OPENROUTER_BASE_URL: process.env.OPENROUTER_BASE_URL,
+    OPENROUTER_CHAT_MODEL: process.env.OPENROUTER_CHAT_MODEL,
+    OPENROUTER_FALLBACK_CHAT_MODEL: process.env.OPENROUTER_FALLBACK_CHAT_MODEL,
+    OPENROUTER_SITE_URL: process.env.OPENROUTER_SITE_URL,
+    OPENROUTER_APP_NAME: process.env.OPENROUTER_APP_NAME,
     OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL,
     OLLAMA_EMBED_MODEL: process.env.OLLAMA_EMBED_MODEL,
     OLLAMA_CHAT_MODEL: process.env.OLLAMA_CHAT_MODEL,
