@@ -2,8 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Navigation', () => {
   test('homepage loads correctly', async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     // Wait for React hydration
     await page.waitForTimeout(2000);
@@ -18,48 +17,42 @@ test.describe('Navigation', () => {
   });
 
   test('can navigate to blog page', async ({ page }) => {
-    await page.goto('/blog');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/blog', { waitUntil: 'domcontentloaded' });
 
     // Verify we're on the blog page
     await expect(page).toHaveURL('/blog');
   });
 
   test('can navigate to about page', async ({ page }) => {
-    await page.goto('/about');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/about', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL('/about');
     await expect(page.locator('main').first()).toBeVisible();
   });
 
   test('can navigate to projects page', async ({ page }) => {
-    await page.goto('/projects');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/projects', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL('/projects');
     await expect(page.locator('main').first()).toBeVisible();
   });
 
   test('can navigate to contact page', async ({ page }) => {
-    await page.goto('/contact');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/contact', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL('/contact');
     await expect(page.locator('main').first()).toBeVisible();
   });
 
   test('404 page shows for invalid routes', async ({ page }) => {
-    await page.goto('/this-page-does-not-exist');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/this-page-does-not-exist', { waitUntil: 'domcontentloaded' });
 
     // Check for 404 content
     await expect(page.getByText('404')).toBeVisible();
   });
 
   test('skip to content link exists', async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     // Check skip link exists in DOM
     const skipLink = page.locator('a[href="#main-content"]');
@@ -69,8 +62,7 @@ test.describe('Navigation', () => {
 
 test.describe('Search', () => {
   test('search button exists', async ({ page, isMobile }) => {
-    await page.goto('/');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1000);
 
     if (isMobile) {

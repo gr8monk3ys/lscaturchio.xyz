@@ -2,16 +2,14 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Blog', () => {
   test('blog listing page loads', async ({ page }) => {
-    await page.goto('/blog');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/blog', { waitUntil: 'domcontentloaded' });
 
     // Check page loaded
     await expect(page.locator('main').first()).toBeVisible();
   });
 
   test('blog page has content', async ({ page }) => {
-    await page.goto('/blog');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/blog', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2000);
 
     // Check for any blog links
@@ -22,16 +20,14 @@ test.describe('Blog', () => {
 
   test('individual blog post loads', async ({ page }) => {
     // Navigate directly to a known blog post
-    await page.goto('/blog/building-rag-systems');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/blog/building-rag-systems', { waitUntil: 'domcontentloaded' });
 
     // Check page has title
     await expect(page.locator('h1').first()).toBeVisible();
   });
 
   test('blog posts have images with alt text', async ({ page }) => {
-    await page.goto('/blog');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/blog', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1000);
 
     const images = page.locator('img');
@@ -56,8 +52,7 @@ test.describe('Blog Performance', () => {
   test('blog page loads within acceptable time', async ({ page }) => {
     const startTime = Date.now();
 
-    await page.goto('/blog');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/blog', { waitUntil: 'domcontentloaded' });
 
     const loadTime = Date.now() - startTime;
 

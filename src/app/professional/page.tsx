@@ -1,6 +1,6 @@
 import { Container } from "@/components/Container";
 import { WorkTimeline } from "@/components/ui/work-timeline";
-import { DownloadButton } from "@/components/ui/download-button";
+import { ResumeDownloadButton } from "@/components/ui/resume-download-button";
 import { Badge } from "@/components/ui/badge";
 import { Metadata } from "next";
 import { Code, Brain, Database, Laptop, LucideIcon } from "lucide-react";
@@ -166,7 +166,7 @@ export default function ProfessionalPage() {
             in challenging problems and opportunities to build things that matter.
           </p>
           <div className="flex flex-wrap gap-4 justify-center mt-4">
-            <DownloadButton href="/Lorenzo_resume_DS.pdf" />
+            <ResumeDownloadButton />
             <a
               href="https://calendly.com/gr8monk3ys/30min"
               target="_blank"

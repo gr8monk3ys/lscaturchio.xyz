@@ -35,6 +35,8 @@ export const env = createEnv({
 
     // OpenAI API Key (optional if using Ollama)
     OPENAI_API_KEY: z.string().optional(),
+    OPENAI_CHAT_MODEL: z.string().optional(),
+    OPENAI_FALLBACK_CHAT_MODEL: z.string().optional(),
 
     // Ollama configuration (optional, for local AI)
     OLLAMA_BASE_URL: z.string().url().optional(),
@@ -55,6 +57,7 @@ export const env = createEnv({
     CONTACT_EMAIL: z.string().email().optional().default('lorenzo@lscaturchio.xyz'),
     CONTACT_FROM_EMAIL: z.string().email().optional().default('contact@lscaturchio.xyz'),
     NEWSLETTER_FROM_EMAIL: z.string().email().optional().default('newsletter@lscaturchio.xyz'),
+    RESUME_URL: z.string().url().optional(),
 
     // Embedding Search Threshold (0-1, higher = stricter matching)
     EMBEDDING_MATCH_THRESHOLD: z
@@ -104,6 +107,8 @@ export const env = createEnv({
     // Server-side variables
     DATABASE_URL: process.env.DATABASE_URL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    OPENAI_CHAT_MODEL: process.env.OPENAI_CHAT_MODEL,
+    OPENAI_FALLBACK_CHAT_MODEL: process.env.OPENAI_FALLBACK_CHAT_MODEL,
     OLLAMA_BASE_URL: process.env.OLLAMA_BASE_URL,
     OLLAMA_EMBED_MODEL: process.env.OLLAMA_EMBED_MODEL,
     OLLAMA_CHAT_MODEL: process.env.OLLAMA_CHAT_MODEL,
@@ -112,6 +117,7 @@ export const env = createEnv({
     CONTACT_EMAIL: process.env.CONTACT_EMAIL,
     CONTACT_FROM_EMAIL: process.env.CONTACT_FROM_EMAIL,
     NEWSLETTER_FROM_EMAIL: process.env.NEWSLETTER_FROM_EMAIL,
+    RESUME_URL: process.env.RESUME_URL,
     EMBEDDING_MATCH_THRESHOLD: process.env.EMBEDDING_MATCH_THRESHOLD,
     ANALYTICS_API_KEY: process.env.ANALYTICS_API_KEY,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,

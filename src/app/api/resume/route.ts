@@ -13,7 +13,7 @@ const LEGACY_FILENAME = "Lorenzo_resume_DS.pdf";
  * GET /api/resume
  * Serves the PDF resume file with proper headers for download
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     // Try the new filename first, then fall back to legacy
     let resumePath = join(process.cwd(), "public", RESUME_FILENAME);
@@ -25,16 +25,31 @@ export async function GET() {
       filename = LEGACY_FILENAME;
 
       if (!existsSync(resumePath)) {
-        logError("Resume: File not found", null, {
+        const externalResumeUrl = process.env.RESUME_URL?.trim();
+        if (externalResumeUrl) {
+          try {
+            new URL(externalResumeUrl);
+            logInfo("Resume: Redirecting to external URL fallback", {
+              component: "resume",
+              action: "GET",
+            });
+            return NextResponse.redirect(externalResumeUrl, 307);
+          } catch (error) {
+            logError("Resume: Invalid RESUME_URL fallback", error, {
+              component: "resume",
+              action: "GET",
+            });
+          }
+        }
+
+        logError("Resume: File not found, redirecting to contact", null, {
           component: "resume",
           action: "GET",
           paths: [RESUME_FILENAME, LEGACY_FILENAME],
         });
 
-        return NextResponse.json(
-          { error: "Resume file not found" },
-          { status: 404 }
-        );
+        const contactFallbackUrl = new URL("/contact?subject=resume", req.url);
+        return NextResponse.redirect(contactFallbackUrl, 307);
       }
     }
 

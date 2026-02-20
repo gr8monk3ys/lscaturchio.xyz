@@ -12,7 +12,7 @@
 
 import { getDb } from './db';
 import { createOllamaEmbedding, isOllamaAvailable, getEmbeddingDimensions } from './ollama';
-import { logError, logInfo } from './logger';
+import { logError, logInfo, logWarn } from './logger';
 
 // Configurable similarity threshold for embedding search (0-1, higher = stricter)
 const EMBEDDING_MATCH_THRESHOLD = parseFloat(
@@ -21,9 +21,13 @@ const EMBEDDING_MATCH_THRESHOLD = parseFloat(
 
 // Determine which provider to use
 const USE_OPENAI = !!process.env.OPENAI_API_KEY;
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 // Lazy OpenAI initialization (only if API key is set)
 let openaiClient: import('openai').default | null = null;
+let openaiEmbeddingsDisabled = false;
+let hasWarnedOpenAIFallback = false;
+let hasWarnedNoProvider = false;
 
 async function getOpenAI() {
   if (!openaiClient && USE_OPENAI) {
@@ -35,6 +39,37 @@ async function getOpenAI() {
     });
   }
   return openaiClient;
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'string') return error;
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
+}
+
+function getErrorStatus(error: unknown): number | undefined {
+  if (!error || typeof error !== 'object') return undefined;
+  const status = (error as { status?: unknown }).status;
+  return typeof status === 'number' ? status : undefined;
+}
+
+function isOpenAIAuthOrConfigError(error: unknown): boolean {
+  const status = getErrorStatus(error);
+  if (status === 401 || status === 403) return true;
+
+  const message = getErrorMessage(error).toLowerCase();
+  return (
+    message.includes('incorrect api key') ||
+    message.includes('invalid api key') ||
+    message.includes('api key not found') ||
+    message.includes('authentication') ||
+    message.includes('unauthorized') ||
+    message.includes('forbidden')
+  );
 }
 
 /**
@@ -68,23 +103,50 @@ export function splitIntoChunks(text: string, maxChunkLength: number = 1500): st
  * Uses OpenAI if API key is set, otherwise Ollama
  */
 export async function createEmbedding(text: string): Promise<number[]> {
-  if (USE_OPENAI) {
+  if (USE_OPENAI && !openaiEmbeddingsDisabled) {
     const client = await getOpenAI();
     if (!client) throw new Error('OpenAI client not initialized');
 
-    const response = await client.embeddings.create({
-      model: 'text-embedding-3-small',
-      input: text,
-      dimensions: 768,
-    });
-    return response.data[0].embedding;
+    try {
+      const response = await client.embeddings.create({
+        model: 'text-embedding-3-small',
+        input: text,
+        dimensions: 768,
+      });
+      return response.data[0].embedding;
+    } catch (error) {
+      // In non-production, avoid repeated noisy invalid-key failures and fall back to Ollama.
+      if (!IS_PRODUCTION && isOpenAIAuthOrConfigError(error)) {
+        openaiEmbeddingsDisabled = true;
+        if (!hasWarnedOpenAIFallback) {
+          hasWarnedOpenAIFallback = true;
+          logWarn('OpenAI embeddings auth/config failed; falling back to Ollama in non-production', {
+            component: 'embeddings',
+            reason: getErrorMessage(error),
+          });
+        }
+      } else {
+        throw error;
+      }
+    }
   }
 
   // Use Ollama
   const available = await isOllamaAvailable();
   if (!available) {
+    if (!IS_PRODUCTION && !hasWarnedNoProvider) {
+      hasWarnedNoProvider = true;
+      logWarn(
+        'No embedding provider available in non-production; semantic search will return empty results',
+        {
+          component: 'embeddings',
+          openaiConfigured: USE_OPENAI,
+          openaiDisabled: openaiEmbeddingsDisabled,
+        }
+      );
+    }
     throw new Error(
-      'No embedding provider available. Either set OPENAI_API_KEY or start Ollama server.'
+      'No embedding provider available. Set a valid OPENAI_API_KEY or start Ollama server.'
     );
   }
 
@@ -95,7 +157,7 @@ export async function createEmbedding(text: string): Promise<number[]> {
  * Get the embedding dimensions for the current provider
  */
 export function getProviderEmbeddingDimensions(): number {
-  if (USE_OPENAI) {
+  if (USE_OPENAI && !openaiEmbeddingsDisabled) {
     return 768; // OpenAI text-embedding-3-small with dimensions=768
   }
   return getEmbeddingDimensions(); // Ollama model dimensions
@@ -105,7 +167,7 @@ export function getProviderEmbeddingDimensions(): number {
  * Get the current embedding provider name
  */
 export function getEmbeddingProvider(): string {
-  return USE_OPENAI ? 'openai' : 'ollama';
+  return USE_OPENAI && !openaiEmbeddingsDisabled ? 'openai' : 'ollama';
 }
 
 /**
@@ -149,6 +211,11 @@ export async function searchSimilarContent(query: string, limit: number = 5) {
 
     return rows;
   } catch (error) {
+    const message = getErrorMessage(error);
+    if (!IS_PRODUCTION && message.includes('No embedding provider available')) {
+      // Already warned once in createEmbedding; keep non-production logs quiet.
+      return [];
+    }
     logError('Search similar content failed', error, { component: 'embeddings' });
     // Return empty array on error to allow graceful degradation
     return [];
@@ -162,7 +229,7 @@ export const searchEmbeddings = searchSimilarContent;
  * Check if embeddings are available (provider is configured)
  */
 export async function isEmbeddingsAvailable(): Promise<boolean> {
-  if (USE_OPENAI) return true;
+  if (USE_OPENAI && !openaiEmbeddingsDisabled) return true;
   return isOllamaAvailable();
 }
 

@@ -91,7 +91,7 @@ export default function PrivacyPolicyPage() {
         <h2>Contact Information</h2>
         <p>
           For any questions about this privacy policy or data handling practices, please contact me at{" "}
-          <a href="mailto:lorenzosca7@protonmail.ch">lorenzosca7@protonmail.ch</a>.
+          <a href="mailto:lorenzo@lscaturchio.xyz">lorenzo@lscaturchio.xyz</a>.
         </p>
 
         <h2>Updates to This Policy</h2>

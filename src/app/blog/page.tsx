@@ -50,6 +50,25 @@ export const revalidate = 3600;
 
 export default async function Blog() {
   const blogs = await getAllBlogs();
+  const totalPosts = blogs.length;
+  const totalReadingTime = blogs.reduce((total, blog) => {
+    const estimatedMinutes = Math.ceil(blog.content.length / 1000) * 5;
+    return total + estimatedMinutes;
+  }, 0);
+  const avgReadingTime = totalPosts > 0 ? Math.round(totalReadingTime / totalPosts) : 0;
+
+  const tagCounts = new Map<string, number>();
+  blogs.forEach((blog) => {
+    blog.tags.forEach((tag) => {
+      tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+    });
+  });
+
+  const topTags = Array.from(tagCounts.entries())
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
   const data = blogs.map((blog) => ({
     slug: blog.slug,
     title: blog.title,
@@ -90,7 +109,14 @@ export default async function Blog() {
         </div>
 
         {/* Blog Statistics */}
-        <BlogStats />
+        <BlogStats
+          stats={{
+            totalPosts,
+            totalReadingTime,
+            avgReadingTime,
+            topTags,
+          }}
+        />
 
         <Suspense fallback={<div className="text-center py-12">Loading...</div>}>
           <BlogGrid blogs={data} />
