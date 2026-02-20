@@ -226,8 +226,8 @@ export default function UsesPage() {
 
           <Item icon={Globe} title="Chat">
             <p>
-              The site chat endpoint uses OpenAI when configured (default <code>gpt-4o-mini</code>) and falls back to Ollama locally.
-              It degrades gracefully if neither is available.
+              The site chat endpoint uses OpenAI when configured (primary <code>OPENAI_CHAT_MODEL</code>, then smaller fallback
+              <code>OPENAI_FALLBACK_CHAT_MODEL</code>), then falls back to Ollama locally. It degrades gracefully if neither is available.
             </p>
           </Item>
 

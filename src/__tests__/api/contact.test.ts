@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Mock dependencies before importing the route
 vi.mock('@/lib/logger', () => ({
@@ -607,7 +607,7 @@ describe('/api/contact', () => {
   describe('CSRF protection', () => {
     it('returns 403 when CSRF validation fails', async () => {
       vi.mocked(validateCsrf).mockReturnValue(
-        new Response(JSON.stringify({ error: 'Invalid origin' }), { status: 403 })
+        NextResponse.json({ error: 'Invalid origin' }, { status: 403 })
       );
 
       const request = createMockRequest({

@@ -62,41 +62,15 @@ export default function Contact() {
                 Email:
               </strong>{" "}
               <Link
-                href="mailto:lorenzosca7@protonmail.ch"
+                href="mailto:lorenzo@lscaturchio.xyz"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
-                lorenzosca7@protonmail.ch
+                lorenzo@lscaturchio.xyz
               </Link>
             </p>
             <p>
-              For sensitive communications, I use PGP encryption. You can
-              download my public key here:
-            </p>
-            <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>
-                <Link
-                  href="/publickey.lorenzosca7@protonmail.ch-394a5d92f69235e6e03b3efeb3d7a1f8c0dffd27.asc"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  PGP Public Key
-                </Link>
-              </li>
-              <li>
-                <strong className="text-neutral-800 dark:text-neutral-200">
-                  Key Fingerprint:
-                </strong>{" "}
-                <code className="bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded text-sm">
-                  394A5D92F69235E6E033EFEB3D7A1F8C0DFFD27
-                </code>
-              </li>
-            </ul>
-            <p>
-              <strong className="text-neutral-800 dark:text-neutral-200">
-                Signal:
-              </strong>{" "}
-              I&apos;m also available on Signal for secure, encrypted messaging.
-              Please mention &quot;Signal&quot; in your initial email if
-              you&apos;d prefer to continue our conversation there.
+              For sensitive communication (PGP or Signal), mention your preference in your first
+              email and I&apos;ll share the right channel details.
             </p>
           </div>
         </div>

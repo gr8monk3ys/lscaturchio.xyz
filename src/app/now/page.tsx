@@ -3,6 +3,7 @@ import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { Clock, BookOpen, Code, Lightbulb, MapPin } from "lucide-react";
 import { Metadata } from "next";
+import Link from "next/link";
 import { nowData } from "@/lib/now-data";
 
 export const metadata: Metadata = {
@@ -153,7 +154,11 @@ export default function NowPage() {
             . It&apos;s a reminder to stay focused on what truly matters right now, rather than maintaining an exhaustive list of everything I could be doing.
           </p>
           <p className="text-sm text-muted-foreground mt-3">
-            Want to collaborate on something? <a href="/contact" className="text-primary hover:underline">Get in touch</a>.
+            Want to collaborate on something?{" "}
+            <Link href="/contact" className="text-primary hover:underline">
+              Get in touch
+            </Link>
+            .
           </p>
         </div>
       </div>

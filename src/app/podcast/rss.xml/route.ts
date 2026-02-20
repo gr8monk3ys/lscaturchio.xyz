@@ -30,7 +30,7 @@ export async function GET() {
     },
     author: {
       name: "Lorenzo Scaturchio",
-      email: "lorenzosca7@protonmail.ch",
+      email: "lorenzo@lscaturchio.xyz",
       link: siteUrl,
     },
     // Enables iTunes + Google Play podcast extensions in `feed`.
@@ -52,7 +52,7 @@ export async function GET() {
       author: [
         {
           name: "Lorenzo Scaturchio",
-          email: "lorenzosca7@protonmail.ch",
+          email: "lorenzo@lscaturchio.xyz",
           link: siteUrl,
         },
       ],
@@ -72,4 +72,3 @@ export async function GET() {
     },
   });
 }
-

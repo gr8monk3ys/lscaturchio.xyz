@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, FormEvent, KeyboardEvent } from "react";
+import { useEffect, useState, FormEvent, KeyboardEvent } from "react";
 import { Paperclip, Mic, CornerDownLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logError } from "@/lib/logger";
@@ -11,7 +11,6 @@ import {
 } from "@/components/chat/chat-bubble";
 import { ChatMessageList } from "@/components/chat/chat-message-list";
 import { ChatInput } from "@/components/chat/chat-input";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 interface ChatMessage {
@@ -20,11 +19,17 @@ interface ChatMessage {
   sender: "user" | "ai";
 }
 
-export function ChatPageClient() {
-  const searchParams = useSearchParams();
-  const contextSlug = useMemo(() => searchParams.get("contextSlug") || "", [searchParams]);
-  const contextTitle = useMemo(() => searchParams.get("contextTitle") || "", [searchParams]);
-  const initialQuery = useMemo(() => searchParams.get("q") || "", [searchParams]);
+interface ChatPageClientProps {
+  contextSlug?: string;
+  contextTitle?: string;
+  initialQuery?: string;
+}
+
+export function ChatPageClient({
+  contextSlug = "",
+  contextTitle = "",
+  initialQuery = "",
+}: ChatPageClientProps) {
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -74,12 +79,20 @@ export function ChatPageClient() {
           `Chat request failed with status ${response.status}`
         );
       }
+      const payload = data?.data ?? data;
+      const answer =
+        typeof payload?.answer === "string" && payload.answer.trim().length > 0
+          ? payload.answer
+          : null;
+      if (!answer) {
+        throw new Error("Chat response missing answer");
+      }
 
       setMessages((prev) => [
         ...prev,
         {
           id: prev.length + 1,
-          content: data.answer ?? "I couldn't generate a response.",
+          content: answer,
           sender: "ai",
         },
       ]);

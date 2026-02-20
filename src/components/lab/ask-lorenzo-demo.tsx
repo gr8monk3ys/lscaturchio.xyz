@@ -1,23 +1,68 @@
 "use client";
 
-import { useState } from "react";
+import { useReducer } from "react";
 import { Loader2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface AskState {
+  question: string;
+  answer: string;
+  provider: string;
+  loading: boolean;
+  error: string;
+}
+
+type AskAction =
+  | { type: "setQuestion"; value: string }
+  | { type: "askStart" }
+  | { type: "askSuccess"; answer: string; provider: string }
+  | { type: "askError"; message: string };
+
+const initialState: AskState = {
+  question: "What kind of work do you do?",
+  answer: "",
+  provider: "",
+  loading: false,
+  error: "",
+};
+
+function askReducer(state: AskState, action: AskAction): AskState {
+  switch (action.type) {
+    case "setQuestion":
+      return { ...state, question: action.value };
+    case "askStart":
+      return {
+        ...state,
+        loading: true,
+        error: "",
+        answer: "",
+        provider: "",
+      };
+    case "askSuccess":
+      return {
+        ...state,
+        loading: false,
+        answer: action.answer,
+        provider: action.provider,
+      };
+    case "askError":
+      return {
+        ...state,
+        loading: false,
+        error: action.message,
+      };
+    default:
+      return state;
+  }
+}
+
 export function AskLorenzoDemo() {
-  const [question, setQuestion] = useState("What kind of work do you do?");
-  const [answer, setAnswer] = useState<string>("");
-  const [provider, setProvider] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>("");
+  const [state, dispatch] = useReducer(askReducer, initialState);
 
   const ask = async () => {
-    const q = question.trim();
-    if (!q || loading) return;
-    setLoading(true);
-    setError("");
-    setAnswer("");
-    setProvider("");
+    const q = state.question.trim();
+    if (!q || state.loading) return;
+    dispatch({ type: "askStart" });
 
     try {
       const res = await fetch("/api/chat", {
@@ -27,12 +72,14 @@ export function AskLorenzoDemo() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json?.error || "Chat failed");
-      setAnswer(json?.answer || "");
-      setProvider(json?.provider || "");
+      const payload = json?.data ?? json;
+      dispatch({
+        type: "askSuccess",
+        answer: payload?.answer || "",
+        provider: payload?.provider || "",
+      });
     } catch {
-      setError("Chat is unavailable right now.");
-    } finally {
-      setLoading(false);
+      dispatch({ type: "askError", message: "Chat is unavailable right now." });
     }
   };
 
@@ -45,8 +92,8 @@ export function AskLorenzoDemo() {
 
       <div className="mt-5 space-y-3">
         <textarea
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
+          value={state.question}
+          onChange={(e) => dispatch({ type: "setQuestion", value: e.target.value })}
           rows={3}
           className={cn(
             "w-full rounded-xl px-3 py-2 text-sm",
@@ -58,25 +105,25 @@ export function AskLorenzoDemo() {
         <button
           type="button"
           onClick={ask}
-          disabled={loading}
+          disabled={state.loading}
           className={cn(
             "cta-primary rounded-xl px-4 py-2 text-sm font-semibold inline-flex items-center gap-2",
-            loading && "opacity-80"
+            state.loading && "opacity-80"
           )}
         >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+          {state.loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
           Generate answer
         </button>
 
-        {error && <div className="text-sm text-red-600">{error}</div>}
+        {state.error && <div className="text-sm text-red-600">{state.error}</div>}
 
-        {answer && (
+        {state.answer && (
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
             <div className="text-xs text-muted-foreground">
-              Provider: <span className="font-mono">{provider || "unknown"}</span>
+              Provider: <span className="font-mono">{state.provider || "unknown"}</span>
             </div>
             <p className="mt-3 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-              {answer}
+              {state.answer}
             </p>
           </div>
         )}
@@ -84,4 +131,3 @@ export function AskLorenzoDemo() {
     </section>
   );
 }
-

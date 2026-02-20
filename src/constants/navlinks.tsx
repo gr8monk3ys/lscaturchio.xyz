@@ -5,7 +5,6 @@ import {
   BookOpen,
   FolderKanban,
   Layers,
-  Tags,
   Clock,
   Link2,
   Wrench,
@@ -17,7 +16,6 @@ import {
   Camera,
   Mic,
   MessageSquare,
-  Bookmark,
   Heart,
   TrendingUp
 } from 'lucide-react';
@@ -52,8 +50,8 @@ export const navigationCategories: NavCategory[] = [
     items: [
       { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
       { name: 'Work With Me', href: '/work-with-me', icon: Sparkles, description: 'Hire me for AI/RAG work' },
-      { name: 'Services', href: '/services', icon: Building2, description: 'What I offer' },
-      { name: 'Testimonials', href: '/testimonials', icon: MessageSquare, description: 'Client feedback' },
+      { name: 'Services', href: '/work-with-me#services', icon: Building2, description: 'What I offer' },
+      { name: 'Testimonials', href: '/work-with-me#testimonials', icon: MessageSquare, description: 'Client feedback' },
     ],
   },
   {
@@ -61,16 +59,13 @@ export const navigationCategories: NavCategory[] = [
     icon: FileText,
     items: [
       { name: 'Blog', href: '/blog', icon: BookOpen, description: 'Articles and thoughts' },
-      { name: 'Chat', href: '/chat', icon: MessageSquare, description: 'Talk with AI Lorenzo' },
-      { name: 'Guestbook', href: '/guestbook', icon: MessageSquare, description: 'Leave a note' },
-      { name: 'Lab', href: '/lab', icon: Sparkles, description: 'Interactive demos' },
-      { name: 'API', href: '/api-docs', icon: Wrench, description: 'Public JSON endpoints' },
-      { name: 'Roadmap', href: '/roadmap', icon: TrendingUp, description: 'What I’m shipping' },
+      { name: 'Topics', href: '/topics', icon: Layers, description: 'Curated topic hubs' },
       { name: 'Series', href: '/series', icon: Layers, description: 'Article series' },
+      { name: 'Changelog', href: '/changelog', icon: TrendingUp, description: 'Roadmap + release notes' },
       { name: 'Podcast', href: '/podcast', icon: Mic, description: 'Audio episodes' },
-      { name: 'Bookmarks', href: '/bookmarks', icon: Bookmark, description: 'Curated resources' },
-      { name: 'Topics', href: '/topics', icon: Layers, description: 'Curated hubs' },
-      { name: 'Tags', href: '/tags', icon: Tags, description: 'Browse by topic' },
+      { name: 'Chat', href: '/chat', icon: MessageSquare, description: 'Talk with AI Lorenzo' },
+      { name: 'Lab', href: '/lab', icon: Sparkles, description: 'Interactive demos' },
+      { name: 'Guestbook', href: '/guestbook', icon: MessageSquare, description: 'Leave a note' },
     ],
   },
   {
@@ -95,11 +90,13 @@ export const contactLink: NavItem = {
 
 // Flat navigation for backward compatibility and mobile
 export const navigation = [
+  { name: 'Home', href: '/' },
   { name: 'About', href: '/about' },
   { name: 'Blog', href: '/blog' },
-  { name: 'Chat', href: '/chat' },
   { name: 'Projects', href: '/projects' },
-  { name: 'Services', href: '/services' },
+  { name: 'Work With Me', href: '/work-with-me' },
+  { name: 'Contact', href: '/contact' },
+  { name: 'Changelog', href: '/changelog' },
 ];
 
 // All pages for search/sitemap
@@ -110,14 +107,14 @@ export const allPages: NavItem[] = [
   { name: 'Professional', href: '/professional' },
   { name: 'Projects', href: '/projects' },
   { name: 'Work With Me', href: '/work-with-me' },
-  { name: 'Services', href: '/services' },
-  { name: 'Testimonials', href: '/testimonials' },
+  { name: 'Services', href: '/work-with-me#services' },
+  { name: 'Testimonials', href: '/work-with-me#testimonials' },
   { name: 'Blog', href: '/blog' },
+  { name: 'Changelog', href: '/changelog' },
   { name: 'Chat', href: '/chat' },
   { name: 'Guestbook', href: '/guestbook' },
   { name: 'Lab', href: '/lab' },
   { name: 'API Docs', href: '/api-docs' },
-  { name: 'Roadmap', href: '/roadmap' },
   { name: 'Series', href: '/series' },
   { name: 'Podcast', href: '/podcast' },
   { name: 'Bookmarks', href: '/bookmarks' },
