@@ -40,7 +40,7 @@ async function handler(req: NextRequest) {
     }
 
     // Send email using Resend
-    const contactEmail = process.env.CONTACT_EMAIL || "lorenzo@lscaturchio.xyz";
+    const contactEmail = process.env.CONTACT_EMAIL || "lorenzosca7@protonmail.ch";
     const fromEmail = process.env.CONTACT_FROM_EMAIL || "contact@lscaturchio.xyz";
 
     const response = await fetch("https://api.resend.com/emails", {

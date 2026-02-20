@@ -89,7 +89,7 @@ export default async function TopicHubPage({ params }: Props) {
                 <Link
                   key={p.slug}
                   href={`/projects/${p.slug}`}
-                  className="neu-flat-sm rounded-xl p-4 hover:shadow-md transition-all"
+                  className="neu-flat-sm rounded-xl p-4 hover:shadow-md transition-shadow"
                 >
                   <div className="font-semibold">{p.title}</div>
                   <div className="mt-1 text-sm text-muted-foreground line-clamp-2">
@@ -132,4 +132,3 @@ export default async function TopicHubPage({ params }: Props) {
     </Container>
   );
 }
-

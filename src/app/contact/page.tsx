@@ -62,10 +62,10 @@ export default function Contact() {
                 Email:
               </strong>{" "}
               <Link
-                href="mailto:lorenzo@lscaturchio.xyz"
+                href="mailto:lorenzosca7@protonmail.ch"
                 className="text-blue-600 dark:text-blue-400 hover:underline"
               >
-                lorenzo@lscaturchio.xyz
+                lorenzosca7@protonmail.ch
               </Link>
             </p>
             <p>
