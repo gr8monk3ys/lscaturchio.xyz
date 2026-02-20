@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { BlogCard } from "@/components/blog/BlogCard";
-import { useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
 import Link from "next/link";
 
@@ -17,35 +16,26 @@ interface Blog {
 
 interface BlogGridProps {
   blogs: Blog[];
+  tagFilter?: string;
 }
 
-export function BlogGrid({ blogs }: BlogGridProps) {
-  const searchParams = useSearchParams();
-  const tagFilter = searchParams?.get("tag");
-  const [filteredBlogs, setFilteredBlogs] = useState(blogs);
-
-  useEffect(() => {
-    if (tagFilter) {
-      setFilteredBlogs(
-        blogs.filter((blog) =>
-          blog.tags.some(
-            (tag) => tag.toLowerCase() === tagFilter.toLowerCase()
-          )
-        )
-      );
-    } else {
-      setFilteredBlogs(blogs);
-    }
-  }, [tagFilter, blogs]);
+export function BlogGrid({ blogs, tagFilter = "" }: BlogGridProps) {
+  const normalizedTag = tagFilter.trim().toLowerCase();
+  const filteredBlogs = useMemo(() => {
+    if (!normalizedTag) return blogs;
+    return blogs.filter((blog) =>
+      blog.tags.some((tag) => tag.toLowerCase() === normalizedTag)
+    );
+  }, [blogs, normalizedTag]);
 
   return (
     <>
-      {tagFilter && (
+      {normalizedTag && (
         <div className="mb-6 p-5 rounded-2xl neu-flat flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-sm font-medium">Filtered by tag:</span>
             <span className="px-4 py-1.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium capitalize shadow-sm">
-              {tagFilter}
+              {normalizedTag}
             </span>
             <span className="text-sm text-muted-foreground">
               ({filteredBlogs.length} {filteredBlogs.length === 1 ? "post" : "posts"})
@@ -64,7 +54,7 @@ export function BlogGrid({ blogs }: BlogGridProps) {
       {filteredBlogs.length === 0 && (
         <div className="text-center py-16 neu-card rounded-2xl">
           <p className="text-lg text-muted-foreground">
-            No blog posts found with the tag &quot;{tagFilter}&quot;.
+            No blog posts found with the tag &quot;{normalizedTag}&quot;.
           </p>
           <Link
             href="/blog"

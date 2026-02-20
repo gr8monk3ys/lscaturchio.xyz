@@ -1,7 +1,7 @@
 "use client";
 
 import { Product } from "@/types/products";
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 import { useMemo } from "react";
 import { EnhancedProjectCard } from "./EnhancedProjectCard";
 import { cn } from "@/lib/utils";

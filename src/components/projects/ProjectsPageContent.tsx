@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useMemo, useCallback } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { products } from "@/constants/products";
 import { ProjectCategory } from "@/types/products";
 import { ProjectFilters } from "./ProjectFilters";
@@ -13,73 +13,118 @@ import { ProjectSortMode, ProjectSortToggle } from "./ProjectSortToggle";
 
 type ViewMode = "gallery" | "grid" | "timeline";
 
-function ProjectsContent() {
-  const searchParams = useSearchParams();
+interface ProjectsPageContentProps {
+  initialCategory: ProjectCategory | "all";
+  initialTech: string;
+  initialSort: ProjectSortMode;
+}
+
+export function ProjectsPageContent({
+  initialCategory,
+  initialTech,
+  initialSort,
+}: ProjectsPageContentProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [viewMode, setViewMode] = useState<ViewMode>("gallery");
+  const category = initialCategory;
+  const tech = initialTech;
+  const sort = initialSort;
 
-  // Get filter values from URL
-  const category = (searchParams?.get("category") as ProjectCategory | "all") || "all";
-  const tech = searchParams?.get("tech") || "";
-  const sort = (searchParams?.get("sort") as ProjectSortMode | null) ?? "featured";
+  const pushFilters = useCallback(
+    (nextCategory: ProjectCategory | "all", nextTech: string, nextSort: ProjectSortMode) => {
+      const params = new URLSearchParams();
 
-  // Filter projects based on current filters
+      if (nextCategory !== "all") params.set("category", nextCategory);
+      if (nextTech) params.set("tech", nextTech);
+      if (nextSort !== "featured") params.set("sort", nextSort);
+
+      const query = params.toString();
+      router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    },
+    [pathname, router]
+  );
+
+  const handleCategoryChange = useCallback(
+    (nextCategory: ProjectCategory | "all") => {
+      pushFilters(nextCategory, tech, sort);
+    },
+    [pushFilters, sort, tech]
+  );
+
+  const handleTechChange = useCallback(
+    (nextTech: string) => {
+      pushFilters(category, nextTech, sort);
+    },
+    [category, pushFilters, sort]
+  );
+
+  const handleSortChange = useCallback(
+    (nextSort: ProjectSortMode) => {
+      pushFilters(category, tech, nextSort);
+    },
+    [category, pushFilters, tech]
+  );
+
+  const handleClearFilters = useCallback(() => {
+    router.push(pathname, { scroll: false });
+  }, [pathname, router]);
+
   const filteredProjects = useMemo(() => {
-    let result = [...products];
-
-    // Filter by category
-    if (category && category !== "all") {
-      result = result.filter((p) => p.categories?.includes(category as ProjectCategory));
-    }
-
-    // Filter by tech
-    if (tech) {
-      result = result.filter((p) => p.stack?.includes(tech));
-    }
-
     const dateValue = (startDate?: string): number => {
       if (!startDate) return 0;
       const value = new Date(`${startDate}-01`).getTime();
       return Number.isFinite(value) ? value : 0;
     };
 
-    // Sort (cinematic layout is handled by the view components)
+    const result = products.filter((project) => {
+      const categoryMatch =
+        category === "all" || project.categories?.includes(category as ProjectCategory);
+      const techMatch = !tech || project.stack?.includes(tech);
+      return categoryMatch && techMatch;
+    });
+
     result.sort((a, b) => {
       if (sort === "name") return a.title.localeCompare(b.title);
       if (sort === "oldest") return dateValue(a.startDate) - dateValue(b.startDate);
       if (sort === "newest") return dateValue(b.startDate) - dateValue(a.startDate);
 
-      // featured (default): featured first, then newest
-      const af = a.featured ? 1 : 0;
-      const bf = b.featured ? 1 : 0;
-      if (bf !== af) return bf - af;
+      const aFeatured = a.featured ? 1 : 0;
+      const bFeatured = b.featured ? 1 : 0;
+      if (bFeatured !== aFeatured) return bFeatured - aFeatured;
       return dateValue(b.startDate) - dateValue(a.startDate);
     });
 
     return result;
   }, [category, tech, sort]);
 
-  // Calculate filter counts for display
   const hasFilters = category !== "all" || !!tech;
 
   return (
     <div className="space-y-8">
-      {/* Filters and View Toggle */}
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-        <ProjectFilters className="flex-1" projects={products} />
+        <ProjectFilters
+          className="flex-1"
+          projects={products}
+          currentCategory={category}
+          currentTech={tech}
+          onCategoryChange={handleCategoryChange}
+          onTechChange={handleTechChange}
+          onClearFilters={handleClearFilters}
+        />
         <div className="flex flex-wrap items-center gap-3">
-          <ProjectSortToggle />
+          <ProjectSortToggle value={sort} onChange={handleSortChange} />
           <ProjectViewToggle mode={viewMode} onModeChange={setViewMode} />
         </div>
       </div>
 
-      {/* Results Count */}
       {hasFilters && (
         <div className="text-sm text-muted-foreground">
           Showing {filteredProjects.length} of {products.length} projects
         </div>
       )}
 
-      {/* Project Display */}
       <ProjectViewWrapper
         mode={viewMode}
         galleryView={<ProjectGallery projects={filteredProjects} />}
@@ -87,20 +132,5 @@ function ProjectsContent() {
         timelineView={<ProjectTimeline projects={filteredProjects} />}
       />
     </div>
-  );
-}
-
-// Wrapper with Suspense for useSearchParams
-export function ProjectsPageContent() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex justify-center items-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary" />
-        </div>
-      }
-    >
-      <ProjectsContent />
-    </Suspense>
   );
 }

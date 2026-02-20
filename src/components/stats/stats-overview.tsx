@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useMemo } from 'react'
+import { LazyMotion, domAnimation, m } from '@/lib/motion'
 import { Eye, FileText, Users, TrendingUp } from 'lucide-react'
-import { logError } from '@/lib/logger'
+import useSWR from 'swr'
+import { fetchJson } from '@/lib/fetcher'
 
 interface Stats {
   totalViews: number
@@ -13,43 +14,24 @@ interface Stats {
 }
 
 export function StatsOverview() {
-  const [stats, setStats] = useState<Stats>({
-    totalViews: 0,
-    totalPosts: 0,
-    newsletterSubscribers: 0,
-    avgReadTime: 0,
-  })
-  const [isLoading, setIsLoading] = useState(true)
+  const { data: newsletterStats, isLoading, error } = useSWR<{ activeSubscribers?: number }>(
+    '/api/newsletter/stats',
+    fetchJson,
+    { shouldRetryOnError: false, revalidateOnFocus: false }
+  )
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        // Fetch from Vercel Analytics API or your own analytics endpoint
-        // For now, using placeholder data
-        await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
-
-        setStats({
-          totalViews: 12543,
-          totalPosts: 14,
-          newsletterSubscribers: 0, // Will be fetched from /api/newsletter/stats
-          avgReadTime: 5,
-        })
-
-        // Fetch newsletter stats
-        const response = await fetch('/api/newsletter/stats')
-        if (response.ok) {
-          const data = await response.json()
-          setStats(prev => ({ ...prev, newsletterSubscribers: data.activeSubscribers || 0 }))
-        }
-      } catch (error) {
-        logError('Failed to fetch stats', error, { component: 'StatsOverview' })
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchStats()
-  }, [])
+  const stats: Stats = useMemo(
+    () => ({
+      totalViews: 12543,
+      totalPosts: 14,
+      newsletterSubscribers:
+        error || typeof newsletterStats?.activeSubscribers !== 'number'
+          ? 0
+          : newsletterStats.activeSubscribers,
+      avgReadTime: 5,
+    }),
+    [newsletterStats, error]
+  )
 
   const cards = [
     {
@@ -84,35 +66,37 @@ export function StatsOverview() {
   ]
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {cards.map((card, index) => (
-        <motion.div
-          key={card.label}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-          className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-colors"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className={`p-3 rounded-lg ${card.bgColor}`}>
-              <card.icon className={`h-6 w-6 ${card.color}`} />
+    <LazyMotion features={domAnimation}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {cards.map((card, index) => (
+          <m.div
+            key={card.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-colors"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className={`p-3 rounded-lg ${card.bgColor}`}>
+                <card.icon className={`h-6 w-6 ${card.color}`} />
+              </div>
             </div>
-          </div>
-          <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">{card.label}</p>
-            <p className="text-3xl font-bold">
-              {isLoading ? (
-                <span className="text-muted-foreground">•••</span>
-              ) : (
-                <>
-                  {card.value.toLocaleString()}
-                  {card.suffix}
-                </>
-              )}
-            </p>
-          </div>
-        </motion.div>
-      ))}
-    </div>
+            <div className="space-y-1">
+              <p className="text-sm text-muted-foreground">{card.label}</p>
+              <p className="text-3xl font-bold">
+                {isLoading ? (
+                  <span className="text-muted-foreground">•••</span>
+                ) : (
+                  <>
+                    {card.value.toLocaleString()}
+                    {card.suffix}
+                  </>
+                )}
+              </p>
+            </div>
+          </m.div>
+        ))}
+      </div>
+    </LazyMotion>
   )
 }

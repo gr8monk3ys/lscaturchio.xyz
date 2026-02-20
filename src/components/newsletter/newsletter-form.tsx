@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '@/lib/motion'
 import { Mail, Loader2, Check, AlertCircle } from 'lucide-react'
 import { NEWSLETTER_TOPICS, type NewsletterTopicId } from '@/constants/newsletter'
 import { cn } from '@/lib/utils'

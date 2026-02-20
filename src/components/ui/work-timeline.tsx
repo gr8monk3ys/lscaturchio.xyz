@@ -3,7 +3,7 @@ import {
   useScroll,
   useTransform,
   motion,
-} from "framer-motion";
+} from '@/lib/motion';
 import React, { useEffect, useRef, useState } from "react";
 import { timeline } from "@/constants/timeline";
 
@@ -33,9 +33,9 @@ export const WorkTimeline = () => {
       ref={containerRef}
     >
       <div ref={ref} className="relative max-w-7xl mx-auto pb-20">
-        {timeline.map((item, index) => (
+        {timeline.map((item) => (
           <div
-            key={index}
+            key={`${item.company}-${item.title}-${item.date}`}
             className="flex justify-start pt-10 md:pt-40 md:gap-10"
           >
             <div className="sticky flex flex-col md:flex-row z-40 items-center top-40 self-start max-w-xs lg:max-w-sm md:w-full">
@@ -62,8 +62,8 @@ export const WorkTimeline = () => {
                   {item.description}
                 </div>
                 <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-                  {item.responsibilities.map((responsibility, idx) => (
-                    <li key={idx}>
+                  {item.responsibilities.map((responsibility) => (
+                    <li key={responsibility}>
                       {responsibility}
                     </li>
                   ))}

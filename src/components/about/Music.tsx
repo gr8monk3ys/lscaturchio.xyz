@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 

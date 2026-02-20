@@ -1,7 +1,7 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 
 export function InlineNewsletterCTA({

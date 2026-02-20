@@ -14,6 +14,7 @@ import { HreflangLinks } from "@/components/layout/hreflang-links";
 import { GoogleTranslateProvider } from "@/components/i18n/google-translate";
 import { HtmlLangSync } from "@/components/i18n/html-lang-sync";
 import { Metadata } from 'next'
+import Script from "next/script";
 import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Fraunces } from "next/font/google";
 import { SITE_URL } from "@/lib/site-url";
@@ -153,10 +154,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://vitals.vercel-insights.com" />
 
         {/* Global JSON-LD structured data (site-wide) */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <Script id="global-structured-data" type="application/ld+json" strategy="beforeInteractive">
+          {JSON.stringify(jsonLd)}
+        </Script>
       </head>
       <body>
         <GoogleTranslateProvider />

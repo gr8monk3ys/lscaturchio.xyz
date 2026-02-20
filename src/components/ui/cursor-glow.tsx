@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, RefObject } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useEffect, useReducer, RefObject } from 'react';
+import { motion, useMotionValue, useSpring } from '@/lib/motion';
 import { useIsClient } from '@/hooks/use-is-client';
 
 // ============================================
@@ -95,7 +95,10 @@ export function CursorGlow({
   zIndex = 0,
 }: CursorGlowProps) {
   const isClient = useIsClient();
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, updateVisibility] = useReducer(
+    (_current: boolean, next: boolean) => next,
+    false
+  );
 
   // Use motion values for smooth animations
   const mouseX = useMotionValue(0);
@@ -129,7 +132,7 @@ export function CursorGlow({
           y >= 0 &&
           y <= rect.height;
 
-        setIsVisible(isInside);
+        updateVisibility(isInside);
 
         if (isInside) {
           mouseX.set(x);
@@ -139,17 +142,17 @@ export function CursorGlow({
         // Track globally
         mouseX.set(e.clientX);
         mouseY.set(e.clientY);
-        setIsVisible(true);
+        updateVisibility(true);
       }
     };
 
     const handleMouseLeave = () => {
-      setIsVisible(false);
+      updateVisibility(false);
     };
 
     const handleMouseEnter = () => {
       if (!container) {
-        setIsVisible(true);
+        updateVisibility(true);
       }
     };
 
@@ -256,7 +259,10 @@ export function GradientCursorGlow({
   zIndex = 0,
 }: GradientCursorGlowProps) {
   const isClient = useIsClient();
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, updateVisibility] = useReducer(
+    (_current: boolean, next: boolean) => next,
+    false
+  );
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -286,7 +292,7 @@ export function GradientCursorGlow({
           y >= 0 &&
           y <= rect.height;
 
-        setIsVisible(isInside);
+        updateVisibility(isInside);
 
         if (isInside) {
           mouseX.set(x);
@@ -295,13 +301,13 @@ export function GradientCursorGlow({
       } else {
         mouseX.set(e.clientX);
         mouseY.set(e.clientY);
-        setIsVisible(true);
+        updateVisibility(true);
       }
     };
 
-    const handleMouseLeave = () => setIsVisible(false);
+    const handleMouseLeave = () => updateVisibility(false);
     const handleMouseEnter = () => {
-      if (!container) setIsVisible(true);
+      if (!container) updateVisibility(true);
     };
 
     const target = container || document;

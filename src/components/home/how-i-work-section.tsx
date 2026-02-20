@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import Link from "next/link";
-import { motion, useScroll } from "framer-motion";
+import { motion, useScroll } from '@/lib/motion';
 import {
   ArrowRight,
   Compass,
@@ -65,8 +65,13 @@ const STEPS: Step[] = [
 export function HowIWorkSection() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const [activeStep, setActiveStep] = useState(0);
-  const [revealedSteps, setRevealedSteps] = useState<Set<number>>(() => new Set());
+  const [progress, setProgress] = useState<{
+    activeStep: number;
+    revealedSteps: Set<number>;
+  }>({
+    activeStep: 0,
+    revealedSteps: new Set(),
+  });
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -79,7 +84,12 @@ export function HowIWorkSection() {
 
     // If IntersectionObserver isn't available, just show everything.
     if (typeof IntersectionObserver === "undefined") {
-      setRevealedSteps(new Set(nodes.map((_, idx) => idx)));
+      setProgress((prev) => {
+        const allRevealed = new Set(nodes.map((_, idx) => idx));
+        const hasChanged = prev.revealedSteps.size !== allRevealed.size;
+        if (!hasChanged) return prev;
+        return { ...prev, revealedSteps: allRevealed };
+      });
       return;
     }
 
@@ -92,12 +102,17 @@ export function HowIWorkSection() {
           const idx = rawIndex ? Number(rawIndex) : NaN;
           if (!Number.isFinite(idx)) return;
 
-          setActiveStep(idx);
-          setRevealedSteps((prev) => {
-            if (prev.has(idx)) return prev;
-            const next = new Set(prev);
-            next.add(idx);
-            return next;
+          setProgress((prev) => {
+            const alreadyRevealed = prev.revealedSteps.has(idx);
+            if (alreadyRevealed && prev.activeStep === idx) return prev;
+
+            const nextRevealed = alreadyRevealed ? prev.revealedSteps : new Set(prev.revealedSteps);
+            if (!alreadyRevealed) nextRevealed.add(idx);
+
+            return {
+              activeStep: idx,
+              revealedSteps: nextRevealed,
+            };
           });
         });
       },
@@ -118,6 +133,9 @@ export function HowIWorkSection() {
     if (!node) return;
     node.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  const activeStep = progress.activeStep;
+  const revealedSteps = progress.revealedSteps;
 
   return (
     <Section padding="large" size="wide" divider topDivider reveal={false}>

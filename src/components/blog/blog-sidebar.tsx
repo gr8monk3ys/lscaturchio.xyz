@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 import { List, Sparkles, MessageSquareText, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -178,24 +178,23 @@ export function BlogSidebar({ slug, title }: { slug: string; title: string }) {
                   key={heading.id}
                   className={cn(heading.level === 3 ? "pl-4" : "", "transition-colors")}
                 >
-                  <a
-                    href={`#${heading.id}`}
-                    onClick={(e) => {
-                      e.preventDefault();
+                  <button
+                    type="button"
+                    onClick={() => {
                       document.getElementById(heading.id)?.scrollIntoView({
                         behavior: "smooth",
                         block: "start",
                       });
                     }}
                     className={cn(
-                      "block py-1 text-left transition-colors hover:text-primary",
+                      "block w-full py-1 text-left transition-colors hover:text-primary",
                       activeId === heading.id
                         ? "text-primary font-medium border-l-2 border-primary pl-3 -ml-3"
                         : "text-muted-foreground hover:border-l-2 hover:border-gray-300 dark:hover:border-gray-700 pl-3 -ml-3"
                     )}
                   >
                     {heading.text}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -205,4 +204,3 @@ export function BlogSidebar({ slug, title }: { slug: string; title: string }) {
     </motion.aside>
   );
 }
-

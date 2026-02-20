@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from 'framer-motion'
+import { motion } from '@/lib/motion'
 import { Plus, Edit, Bug, Sparkles } from 'lucide-react'
 import { CHANGELOG } from '@/constants/changelog'
 

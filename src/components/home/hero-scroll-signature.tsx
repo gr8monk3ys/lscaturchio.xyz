@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from '@/lib/motion';
 import { ArrowRight, Code, Music, Mountain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OptimizedImage } from "@/components/ui/optimized-image";
@@ -118,7 +118,7 @@ export function HeroScrollSignature() {
           <div className="grid grid-cols-12 items-center gap-10">
             <motion.div
               className="col-span-5"
-              style={{ x: portraitX, y: portraitY, scale: portraitScale, willChange: "transform" }}
+              style={{ x: portraitX, y: portraitY, scale: portraitScale }}
             >
               <div className="relative w-60 h-60 rounded-full overflow-hidden border border-border/50 bg-background/40 shadow-sm">
                 <OptimizedImage
@@ -141,7 +141,7 @@ export function HeroScrollSignature() {
               </motion.div>
 
               <motion.div
-                style={{ y: headlineY, scale: headlineScale, transformOrigin: "left center", willChange: "transform" }}
+                style={{ y: headlineY, scale: headlineScale, transformOrigin: "left center" }}
                 className="mt-6"
               >
                 <h2 className="text-6xl font-bold tracking-tight leading-[0.98]">
@@ -214,4 +214,3 @@ export function HeroScrollSignature() {
     </section>
   );
 }
-

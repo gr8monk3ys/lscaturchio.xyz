@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
-import { motion, useScroll, useSpring } from 'framer-motion'
+import { motion, useScroll, useSpring } from '@/lib/motion'
 
 export function ReadingProgress() {
   const [isVisible, setIsVisible] = useState(false)

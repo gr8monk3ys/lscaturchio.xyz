@@ -1,7 +1,7 @@
 "use client";
 
 import { Container } from "@/components/Container";
-import { LazyMotion, domAnimation, m } from "framer-motion";
+import { LazyMotion, domAnimation, m } from '@/lib/motion';
 import { BookOpen, Clock, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { FallbackImage } from "@/components/ui/fallback-image";

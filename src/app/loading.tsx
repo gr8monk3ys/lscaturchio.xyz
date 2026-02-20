@@ -16,8 +16,8 @@ export default function HomeLoading() {
         <div className="my-16 px-4">
           <div className="h-8 w-64 mx-auto animate-pulse rounded-lg bg-muted mb-8" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="neu-card p-6">
+            {[1, 2, 3].map((slot) => (
+              <div key={`home-loading-card-${slot}`} className="neu-card p-6">
                 <div className="h-14 w-14 animate-pulse rounded-xl bg-muted mb-4" />
                 <div className="h-6 w-3/4 animate-pulse rounded bg-muted mb-2" />
                 <div className="h-20 w-full animate-pulse rounded bg-muted mb-4" />

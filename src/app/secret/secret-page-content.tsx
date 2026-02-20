@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 import Link from "next/link";
 
 // Hidden projects/experiments that aren't on the main portfolio
@@ -44,12 +44,12 @@ export function SecretPageContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <motion.div
-            className="text-6xl mb-4"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring" as const, damping: 10 }}
-          >
+        <motion.div
+          className="text-6xl mb-4"
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: "spring" as const, damping: 10 }}
+        >
             🎉
           </motion.div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -124,7 +124,7 @@ export function SecretPageContent() {
             <ul className="space-y-2">
               {EASTER_EGG_HINTS.map((hint, index) => (
                 <motion.li
-                  key={index}
+                  key={hint}
                   className="flex items-center gap-2 text-sm"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}

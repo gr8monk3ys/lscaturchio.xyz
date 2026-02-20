@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Code, Music, Mountain } from "lucide-react";
 import Link from "next/link";
 import { OptimizedImage } from "@/components/ui/optimized-image";
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 import { CursorGlow } from "@/components/ui/cursor-glow";
 import { HeroScrollSignature } from "@/components/home/hero-scroll-signature";
 import {

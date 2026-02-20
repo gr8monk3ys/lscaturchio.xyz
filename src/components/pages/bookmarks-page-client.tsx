@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { AnimatePresence, LazyMotion, domAnimation, m } from "framer-motion";
+import { AnimatePresence, LazyMotion, domAnimation, m } from '@/lib/motion';
 import { Bookmark, Trash2, ExternalLink, ArrowLeft, Download } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/Container";

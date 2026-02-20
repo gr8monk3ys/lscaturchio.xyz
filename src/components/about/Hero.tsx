@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 import Image from "next/image";
 import { SectionHeading } from "@/components/ui/section-heading";
 import {

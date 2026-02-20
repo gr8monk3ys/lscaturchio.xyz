@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { motion, AnimatePresence } from "@/lib/motion";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
@@ -25,12 +25,14 @@ import {
 import { cn } from "@/lib/utils";
 import { safeStorage } from "@/lib/storage";
 
+type CommandCategory = "navigation" | "blog" | "action";
+
 interface CommandItem {
   id: string;
   title: string;
   description?: string;
   icon: React.ReactNode;
-  category: "navigation" | "blog" | "action" | "search";
+  category: CommandCategory;
   action: () => void;
   keywords?: string[];
 }
@@ -48,44 +50,357 @@ interface CommandPaletteProps {
   className?: string;
 }
 
-export function CommandPalette({ className }: CommandPaletteProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [, setRecentSearches] = useState<string[]>([]);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+type CommandGroups = Record<CommandCategory, CommandItem[]>;
+
+type PaletteState = {
+  isOpen: boolean;
+  query: string;
+  selectedIndex: number;
+  recentSearches: string[];
+  searchResults: SearchResult[];
+  isSearching: boolean;
+};
+
+type PaletteAction =
+  | { type: "OPEN" }
+  | { type: "CLOSE" }
+  | { type: "SET_QUERY"; query: string }
+  | { type: "SET_SELECTED_INDEX"; index: number }
+  | { type: "SET_RECENT_SEARCHES"; searches: string[] }
+  | { type: "SET_SEARCH_RESULTS"; results: SearchResult[] }
+  | { type: "SET_SEARCHING"; value: boolean }
+  | { type: "CLEAR_QUERY" }
+  | { type: "CLEAR_RESULTS" };
+
+const INITIAL_STATE: PaletteState = {
+  isOpen: false,
+  query: "",
+  selectedIndex: 0,
+  recentSearches: [],
+  searchResults: [],
+  isSearching: false,
+};
+
+function paletteReducer(state: PaletteState, action: PaletteAction): PaletteState {
+  switch (action.type) {
+    case "OPEN":
+      return { ...state, isOpen: true };
+    case "CLOSE":
+      return {
+        ...state,
+        isOpen: false,
+        query: "",
+        searchResults: [],
+        selectedIndex: 0,
+        isSearching: false,
+      };
+    case "SET_QUERY":
+      return { ...state, query: action.query, selectedIndex: 0 };
+    case "SET_SELECTED_INDEX":
+      return { ...state, selectedIndex: action.index };
+    case "SET_RECENT_SEARCHES":
+      return { ...state, recentSearches: action.searches };
+    case "SET_SEARCH_RESULTS":
+      return { ...state, searchResults: action.results, selectedIndex: 0 };
+    case "SET_SEARCHING":
+      return { ...state, isSearching: action.value };
+    case "CLEAR_QUERY":
+      return {
+        ...state,
+        query: "",
+        searchResults: [],
+        selectedIndex: 0,
+        isSearching: false,
+      };
+    case "CLEAR_RESULTS":
+      return {
+        ...state,
+        searchResults: [],
+        selectedIndex: 0,
+        isSearching: false,
+      };
+    default:
+      return state;
+  }
+}
+
+function groupCommands(commands: CommandItem[]): CommandGroups {
+  const groups: CommandGroups = {
+    navigation: [],
+    action: [],
+    blog: [],
+  };
+
+  commands.forEach((command) => {
+    groups[command.category].push(command);
+  });
+
+  return groups;
+}
+
+function getCategoryLabel(category: CommandCategory): string {
+  switch (category) {
+    case "navigation":
+      return "Pages";
+    case "action":
+      return "Actions";
+    case "blog":
+      return "Blog Posts";
+    default:
+      return category;
+  }
+}
+
+function focusNextFrame(callback: () => void) {
+  if (typeof window === "undefined") return;
+  window.requestAnimationFrame(callback);
+}
+
+type TriggerProps = {
+  className?: string;
+  onOpen: () => void;
+};
+
+function CommandPaletteTrigger({ className, onOpen }: TriggerProps) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className={cn(
+        "flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground",
+        "bg-muted/50 hover:bg-muted rounded-lg border border-border/50 transition-colors",
+        className
+      )}
+      aria-label="Open command palette"
+    >
+      <Search className="h-4 w-4" />
+      <span className="hidden sm:inline">Search</span>
+      <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium">
+        <span className="text-xs">⌘</span>K
+      </kbd>
+    </button>
+  );
+}
+
+type DialogProps = {
+  commandCount: number;
+  groupedCommands: CommandGroups;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  isSearching: boolean;
+  listRef: React.RefObject<HTMLDivElement | null>;
+  onChangeQuery: (value: string) => void;
+  onClearQuery: () => void;
+  onClose: () => void;
+  onHoverIndex: (index: number) => void;
+  onSelectCommand: (command: CommandItem) => void;
+  query: string;
+  selectedIndex: number;
+};
+
+function CommandPaletteDialog({
+  commandCount,
+  groupedCommands,
+  inputRef,
+  isSearching,
+  listRef,
+  onChangeQuery,
+  onClearQuery,
+  onClose,
+  onHoverIndex,
+  onSelectCommand,
+  query,
+  selectedIndex,
+}: DialogProps) {
+  let globalIndex = -1;
+
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
+      />
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -20 }}
+        transition={{ duration: 0.15 }}
+        className="fixed left-1/2 top-[20%] -translate-x-1/2 w-full max-w-xl z-50 px-4"
+      >
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Search and navigate"
+          className="bg-popover border border-border rounded-xl shadow-2xl overflow-hidden"
+        >
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+            <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => onChangeQuery(e.target.value)}
+              placeholder="Search pages, blogs, or actions..."
+              aria-label="Search pages, blogs, or actions"
+              className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
+            />
+            {isSearching && <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />}
+            {query && !isSearching && (
+              <button
+                type="button"
+                onClick={onClearQuery}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Clear search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+            <kbd className="hidden sm:inline-flex h-5 items-center rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+              ESC
+            </kbd>
+          </div>
+
+          <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-2" role="listbox">
+            {commandCount === 0 ? (
+              <div className="py-8 text-center text-muted-foreground">
+                <Sparkles className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p>No results found for &quot;{query}&quot;</p>
+                <p className="text-sm mt-1">Try searching for something else</p>
+              </div>
+            ) : (
+              (Object.entries(groupedCommands) as [CommandCategory, CommandItem[]][]).map(
+                ([category, commands]) => {
+                  if (commands.length === 0) return null;
+
+                  return (
+                    <div key={category} className="mb-2">
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        {getCategoryLabel(category)}
+                      </div>
+                      {commands.map((command) => {
+                        globalIndex += 1;
+                        const isSelected = globalIndex === selectedIndex;
+
+                        return (
+                          <button
+                            key={command.id}
+                            type="button"
+                            data-index={globalIndex}
+                            onClick={() => onSelectCommand(command)}
+                            onMouseEnter={() => onHoverIndex(globalIndex)}
+                            className={cn(
+                              "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors",
+                              isSelected
+                                ? "bg-primary/10 text-foreground"
+                                : "text-muted-foreground hover:bg-muted"
+                            )}
+                            role="option"
+                            aria-selected={isSelected}
+                          >
+                            <div
+                              className={cn(
+                                "shrink-0 p-1.5 rounded-md",
+                                isSelected ? "bg-primary/20" : "bg-muted"
+                              )}
+                            >
+                              {command.icon}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-foreground truncate">{command.title}</div>
+                              {command.description && (
+                                <div className="text-sm text-muted-foreground truncate">
+                                  {command.description}
+                                </div>
+                              )}
+                            </div>
+                            {isSelected && <ArrowRight className="h-4 w-4 shrink-0 text-primary" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+              )
+            )}
+          </div>
+
+          <div className="px-4 py-2 border-t border-border bg-muted/30">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-1">
+                  <kbd className="px-1.5 py-0.5 rounded border bg-muted font-mono">↑↓</kbd>
+                  navigate
+                </span>
+                <span className="flex items-center gap-1">
+                  <kbd className="px-1.5 py-0.5 rounded border bg-muted font-mono">↵</kbd>
+                  select
+                </span>
+              </div>
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 rounded border bg-muted font-mono">esc</kbd>
+                close
+              </span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </>
+  );
+}
+
+type CommandPaletteModel = {
+  activeSelectedIndex: number;
+  clearQuery: () => void;
+  closePalette: () => void;
+  commandCount: number;
+  executeCommand: (command: CommandItem) => void;
+  groupedCommands: CommandGroups;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  isOpen: boolean;
+  isSearching: boolean;
+  listRef: React.RefObject<HTMLDivElement | null>;
+  openPalette: () => void;
+  query: string;
+  setQuery: (value: string) => void;
+  setSelectedIndex: (index: number) => void;
+};
+
+function useCommandPaletteModel(): CommandPaletteModel {
+  const [state, dispatch] = useReducer(paletteReducer, INITIAL_STATE);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { theme, setTheme } = useTheme();
 
-  // Load recent searches from localStorage
+  const { isOpen, isSearching, query, recentSearches, searchResults, selectedIndex } = state;
+
   useEffect(() => {
     const saved = safeStorage.getJSON<string[]>("command-palette-recent");
     if (saved) {
-      setRecentSearches(saved);
+      dispatch({ type: "SET_RECENT_SEARCHES", searches: saved });
     }
   }, []);
 
-  // Save search to recent
-  const saveRecentSearch = useCallback((search: string) => {
-    if (!search.trim()) return;
-    setRecentSearches((prev) => {
-      const updated = [search, ...prev.filter((s) => s !== search)].slice(0, 5);
+  const saveRecentSearch = useCallback(
+    (search: string) => {
+      if (!search.trim()) return;
+      const updated = [search, ...recentSearches.filter((item) => item !== search)].slice(0, 5);
       safeStorage.setJSON("command-palette-recent", updated);
-      return updated;
-    });
-  }, []);
+      dispatch({ type: "SET_RECENT_SEARCHES", searches: updated });
+    },
+    [recentSearches]
+  );
 
-  // Perform API search
   const performSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim() || searchQuery.length < 2) {
-      setSearchResults([]);
+      dispatch({ type: "CLEAR_RESULTS" });
       return;
     }
 
-    setIsSearching(true);
+    dispatch({ type: "SET_SEARCHING", value: true });
     try {
       const response = await fetch("/api/search", {
         method: "POST",
@@ -93,32 +408,51 @@ export function CommandPalette({ className }: CommandPaletteProps) {
         body: JSON.stringify({ query: searchQuery }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setSearchResults(data.results || []);
+      if (!response.ok) {
+        dispatch({ type: "SET_SEARCH_RESULTS", results: [] });
+        return;
       }
+
+      const data = (await response.json()) as { results?: SearchResult[] };
+      dispatch({ type: "SET_SEARCH_RESULTS", results: data.results ?? [] });
     } catch {
-      setSearchResults([]);
+      dispatch({ type: "SET_SEARCH_RESULTS", results: [] });
     } finally {
-      setIsSearching(false);
+      dispatch({ type: "SET_SEARCHING", value: false });
     }
   }, []);
 
-  // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
       if (query.trim().length >= 2) {
-        performSearch(query);
+        void performSearch(query.trim());
       } else {
-        setSearchResults([]);
+        dispatch({ type: "CLEAR_RESULTS" });
       }
     }, 300);
 
     return () => clearTimeout(timer);
   }, [query, performSearch]);
 
-  // Navigation commands
-  const navigationCommands: CommandItem[] = useMemo(
+  const focusInput = useCallback(() => {
+    focusNextFrame(() => inputRef.current?.focus());
+  }, []);
+
+  const openPalette = useCallback(() => {
+    dispatch({ type: "OPEN" });
+    focusInput();
+  }, [focusInput]);
+
+  const closePalette = useCallback(() => {
+    dispatch({ type: "CLOSE" });
+  }, []);
+
+  const clearQuery = useCallback(() => {
+    dispatch({ type: "CLEAR_QUERY" });
+    focusInput();
+  }, [focusInput]);
+
+  const navigationCommands = useMemo<CommandItem[]>(
     () => [
       {
         id: "home",
@@ -196,8 +530,7 @@ export function CommandPalette({ className }: CommandPaletteProps) {
     [router]
   );
 
-  // Action commands
-  const actionCommands: CommandItem[] = useMemo(
+  const actionCommands = useMemo<CommandItem[]>(
     () => [
       {
         id: "toggle-theme",
@@ -205,342 +538,175 @@ export function CommandPalette({ className }: CommandPaletteProps) {
         description: "Toggle theme appearance",
         icon: theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />,
         category: "action",
-        action: () => {
-          setTheme(theme === "dark" ? "light" : "dark");
-          setIsOpen(false);
-        },
+        action: () => setTheme(theme === "dark" ? "light" : "dark"),
         keywords: ["theme", "dark", "light", "mode", "appearance"],
       },
     ],
-    [theme, setTheme]
+    [setTheme, theme]
   );
 
-  // Blog search results as commands
-  const blogCommands: CommandItem[] = useMemo(
+  const blogCommands = useMemo<CommandItem[]>(
     () =>
       searchResults.map((result) => ({
         id: `blog-${result.slug}`,
         title: result.title,
         description: result.description,
         icon: <FileText className="h-4 w-4" />,
-        category: "blog" as const,
+        category: "blog",
         action: () => {
           saveRecentSearch(result.title);
           router.push(`/blog/${result.slug}`);
         },
-        keywords: result.tags || [],
+        keywords: result.tags ?? [],
       })),
-    [searchResults, router, saveRecentSearch]
+    [router, saveRecentSearch, searchResults]
   );
 
-  // Filter commands based on query
   const filteredCommands = useMemo(() => {
     if (!query.trim()) {
-      // Show navigation and actions by default
       return [...navigationCommands, ...actionCommands];
     }
 
     const lowerQuery = query.toLowerCase();
-
-    // Filter navigation and action commands
-    const filteredNav = [...navigationCommands, ...actionCommands].filter((cmd) => {
-      const titleMatch = cmd.title.toLowerCase().includes(lowerQuery);
-      const descMatch = cmd.description?.toLowerCase().includes(lowerQuery);
-      const keywordMatch = cmd.keywords?.some((k) => k.toLowerCase().includes(lowerQuery));
-      return titleMatch || descMatch || keywordMatch;
+    const baseCommands = [...navigationCommands, ...actionCommands].filter((command) => {
+      const titleMatch = command.title.toLowerCase().includes(lowerQuery);
+      const descriptionMatch = command.description?.toLowerCase().includes(lowerQuery);
+      const keywordMatch = command.keywords?.some((keyword) =>
+        keyword.toLowerCase().includes(lowerQuery)
+      );
+      return titleMatch || descriptionMatch || keywordMatch;
     });
 
-    // Add blog search results
-    return [...filteredNav, ...blogCommands];
-  }, [query, navigationCommands, actionCommands, blogCommands]);
+    return [...baseCommands, ...blogCommands];
+  }, [actionCommands, blogCommands, navigationCommands, query]);
 
-  // Keyboard handler
+  const groupedCommands = useMemo(() => groupCommands(filteredCommands), [filteredCommands]);
+  const commandCount = filteredCommands.length;
+  const activeSelectedIndex = commandCount === 0
+    ? 0
+    : Math.min(selectedIndex, commandCount - 1);
+
+  const executeCommand = useCallback(
+    (command: CommandItem) => {
+      command.action();
+      closePalette();
+    },
+    [closePalette]
+  );
+
   const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      // Open with Cmd/Ctrl + K
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setIsOpen((prev) => !prev);
+    (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        if (isOpen) {
+          closePalette();
+        } else {
+          openPalette();
+        }
         return;
       }
 
       if (!isOpen) return;
 
-      switch (e.key) {
+      switch (event.key) {
         case "Escape":
-          setIsOpen(false);
-          setQuery("");
-          setSearchResults([]);
-          break;
+          event.preventDefault();
+          closePalette();
+          return;
         case "ArrowDown":
-          e.preventDefault();
-          setSelectedIndex((prev) =>
-            prev < filteredCommands.length - 1 ? prev + 1 : 0
-          );
-          break;
+          event.preventDefault();
+          if (commandCount === 0) return;
+          dispatch({
+            type: "SET_SELECTED_INDEX",
+            index: activeSelectedIndex < commandCount - 1 ? activeSelectedIndex + 1 : 0,
+          });
+          return;
         case "ArrowUp":
-          e.preventDefault();
-          setSelectedIndex((prev) =>
-            prev > 0 ? prev - 1 : filteredCommands.length - 1
-          );
-          break;
+          event.preventDefault();
+          if (commandCount === 0) return;
+          dispatch({
+            type: "SET_SELECTED_INDEX",
+            index: activeSelectedIndex > 0 ? activeSelectedIndex - 1 : commandCount - 1,
+          });
+          return;
         case "Enter":
-          e.preventDefault();
-          if (filteredCommands[selectedIndex]) {
-            filteredCommands[selectedIndex].action();
-            setIsOpen(false);
-            setQuery("");
-            setSearchResults([]);
-          }
-          break;
+          event.preventDefault();
+          executeCommand(filteredCommands[activeSelectedIndex]);
+          return;
+        default:
+          return;
       }
     },
-    [isOpen, filteredCommands, selectedIndex]
+    [activeSelectedIndex, closePalette, commandCount, executeCommand, filteredCommands, isOpen, openPalette]
   );
 
-  // Add keyboard listener
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Reset selected index when commands change
   useEffect(() => {
-    setSelectedIndex(0);
-  }, [filteredCommands.length]);
+    if (!isOpen || !listRef.current || commandCount === 0) return;
+    const selectedElement = listRef.current.querySelector(`[data-index="${activeSelectedIndex}"]`);
+    selectedElement?.scrollIntoView({ block: "nearest" });
+  }, [activeSelectedIndex, commandCount, isOpen]);
 
-  // Focus input when opened
-  useEffect(() => {
-    if (isOpen) {
-      inputRef.current?.focus();
-    }
-  }, [isOpen]);
-
-  // Reset state when closing
-  useEffect(() => {
-    if (!isOpen) {
-      setQuery("");
-      setSearchResults([]);
-      setSelectedIndex(0);
-    }
-  }, [isOpen]);
-
-  // Scroll selected item into view
-  useEffect(() => {
-    if (listRef.current && filteredCommands.length > 0) {
-      const selectedElement = listRef.current.querySelector(
-        `[data-index="${selectedIndex}"]`
-      );
-      selectedElement?.scrollIntoView({ block: "nearest" });
-    }
-  }, [selectedIndex, filteredCommands.length]);
-
-  // Group commands by category
-  const groupedCommands = useMemo(() => {
-    const groups: Record<string, CommandItem[]> = {
-      navigation: [],
-      action: [],
-      blog: [],
-    };
-
-    filteredCommands.forEach((cmd) => {
-      groups[cmd.category].push(cmd);
-    });
-
-    return groups;
-  }, [filteredCommands]);
-
-  const getCategoryLabel = (category: string) => {
-    switch (category) {
-      case "navigation":
-        return "Pages";
-      case "action":
-        return "Actions";
-      case "blog":
-        return "Blog Posts";
-      default:
-        return category;
-    }
+  return {
+    activeSelectedIndex,
+    clearQuery,
+    closePalette,
+    commandCount,
+    executeCommand,
+    groupedCommands,
+    inputRef,
+    isOpen,
+    isSearching,
+    listRef,
+    openPalette,
+    query,
+    setQuery: (value: string) => dispatch({ type: "SET_QUERY", query: value }),
+    setSelectedIndex: (index: number) => dispatch({ type: "SET_SELECTED_INDEX", index }),
   };
+}
 
-  let globalIndex = -1;
+export function CommandPalette({ className }: CommandPaletteProps) {
+  const {
+    activeSelectedIndex,
+    clearQuery,
+    closePalette,
+    commandCount,
+    executeCommand,
+    groupedCommands,
+    inputRef,
+    isOpen,
+    isSearching,
+    listRef,
+    openPalette,
+    query,
+    setQuery,
+    setSelectedIndex,
+  } = useCommandPaletteModel();
 
   return (
     <>
-      {/* Trigger button */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        className={cn(
-          "flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground",
-          "bg-muted/50 hover:bg-muted rounded-lg border border-border/50 transition-colors",
-          className
-        )}
-        aria-label="Open command palette"
-      >
-        <Search className="h-4 w-4" />
-        <span className="hidden sm:inline">Search</span>
-        <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium">
-          <span className="text-xs">⌘</span>K
-        </kbd>
-      </button>
+      <CommandPaletteTrigger className={className} onOpen={openPalette} />
 
       <AnimatePresence>
         {isOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
-            />
-
-            {/* Command Palette */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              transition={{ duration: 0.15 }}
-              className="fixed left-1/2 top-[20%] -translate-x-1/2 w-full max-w-xl z-50 px-4"
-            >
-              <div
-                role="dialog"
-                aria-modal="true"
-                aria-label="Search and navigate"
-                className="bg-popover border border-border rounded-xl shadow-2xl overflow-hidden"
-              >
-                {/* Search Input */}
-                <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-                  <Search className="h-5 w-5 text-muted-foreground shrink-0" />
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search pages, blogs, or actions..."
-                    aria-label="Search pages, blogs, or actions"
-                    className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
-                  />
-                  {isSearching && (
-                    <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
-                  )}
-                  {query && !isSearching && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setQuery("");
-                        setSearchResults([]);
-                      }}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
-                  <kbd className="hidden sm:inline-flex h-5 items-center rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-                    ESC
-                  </kbd>
-                </div>
-
-                {/* Results */}
-                <div
-                  ref={listRef}
-                  className="max-h-[60vh] overflow-y-auto p-2"
-                  role="listbox"
-                >
-                  {filteredCommands.length === 0 ? (
-                    <div className="py-8 text-center text-muted-foreground">
-                      <Sparkles className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p>No results found for &quot;{query}&quot;</p>
-                      <p className="text-sm mt-1">Try searching for something else</p>
-                    </div>
-                  ) : (
-                    Object.entries(groupedCommands).map(([category, commands]) => {
-                      if (commands.length === 0) return null;
-
-                      return (
-                        <div key={category} className="mb-2">
-                          <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                            {getCategoryLabel(category)}
-                          </div>
-                          {commands.map((cmd) => {
-                            globalIndex++;
-                            const isSelected = globalIndex === selectedIndex;
-
-                            return (
-                              <button
-                                key={cmd.id}
-                                type="button"
-                                data-index={globalIndex}
-                                onClick={() => {
-                                  cmd.action();
-                                  setIsOpen(false);
-                                  setQuery("");
-                                  setSearchResults([]);
-                                }}
-                                onMouseEnter={() => setSelectedIndex(globalIndex)}
-                                className={cn(
-                                  "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors",
-                                  isSelected
-                                    ? "bg-primary/10 text-foreground"
-                                    : "text-muted-foreground hover:bg-muted"
-                                )}
-                                role="option"
-                                aria-selected={isSelected}
-                              >
-                                <div
-                                  className={cn(
-                                    "shrink-0 p-1.5 rounded-md",
-                                    isSelected ? "bg-primary/20" : "bg-muted"
-                                  )}
-                                >
-                                  {cmd.icon}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="font-medium text-foreground truncate">
-                                    {cmd.title}
-                                  </div>
-                                  {cmd.description && (
-                                    <div className="text-sm text-muted-foreground truncate">
-                                      {cmd.description}
-                                    </div>
-                                  )}
-                                </div>
-                                {isSelected && (
-                                  <ArrowRight className="h-4 w-4 shrink-0 text-primary" />
-                                )}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-
-                {/* Footer */}
-                <div className="px-4 py-2 border-t border-border bg-muted/30">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded border bg-muted font-mono">↑↓</kbd>
-                        navigate
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <kbd className="px-1.5 py-0.5 rounded border bg-muted font-mono">↵</kbd>
-                        select
-                      </span>
-                    </div>
-                    <span className="flex items-center gap-1">
-                      <kbd className="px-1.5 py-0.5 rounded border bg-muted font-mono">esc</kbd>
-                      close
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </>
+          <CommandPaletteDialog
+            commandCount={commandCount}
+            groupedCommands={groupedCommands}
+            inputRef={inputRef}
+            isSearching={isSearching}
+            listRef={listRef}
+            onChangeQuery={setQuery}
+            onClearQuery={clearQuery}
+            onClose={closePalette}
+            onHoverIndex={setSelectedIndex}
+            onSelectCommand={executeCommand}
+            query={query}
+            selectedIndex={activeSelectedIndex}
+          />
         )}
       </AnimatePresence>
     </>

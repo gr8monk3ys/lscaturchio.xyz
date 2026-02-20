@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from '@/lib/motion';
 import { useRouter, usePathname } from "next/navigation";
 import { formatDate } from "../../../lib/formatDate";
 import { Container } from "../Container";

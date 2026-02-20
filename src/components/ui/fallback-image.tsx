@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image, { ImageProps } from "next/image";
 
 // Base64 blur placeholder for faster LCP
@@ -21,19 +21,13 @@ export function FallbackImage({
   enableBlur = true,
   ...props
 }: FallbackImageProps) {
-  const [imgSrc, setImgSrc] = useState(src);
-  const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    // Reset error state when src changes
-    setImgSrc(src);
-    setHasError(false);
-  }, [src]);
+  const [failedSources, setFailedSources] = useState<Record<string, true>>({});
+  const hasErrorForSource = Boolean(failedSources[src]);
+  const imgSrc = hasErrorForSource ? fallbackSrc : src;
 
   const handleError = (error: Error) => {
-    if (!hasError) {
-      setImgSrc(fallbackSrc);
-      setHasError(true);
+    if (!hasErrorForSource) {
+      setFailedSources((prev) => ({ ...prev, [src]: true }));
 
       if (onError) {
         onError(error);

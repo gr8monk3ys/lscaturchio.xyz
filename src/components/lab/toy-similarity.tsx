@@ -75,10 +75,11 @@ export function ToySimilarity() {
 
       <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-medium text-muted-foreground mb-2">
+          <label htmlFor="toy-similarity-text-a" className="block text-xs font-medium text-muted-foreground mb-2">
             Text A
           </label>
           <textarea
+            id="toy-similarity-text-a"
             value={a}
             onChange={(e) => setA(e.target.value)}
             rows={5}
@@ -90,10 +91,11 @@ export function ToySimilarity() {
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-muted-foreground mb-2">
+          <label htmlFor="toy-similarity-text-b" className="block text-xs font-medium text-muted-foreground mb-2">
             Text B
           </label>
           <textarea
+            id="toy-similarity-text-b"
             value={b}
             onChange={(e) => setB(e.target.value)}
             rows={5}
