@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from '@/lib/motion';
 import { cn } from "@/lib/utils";
 
 interface SectionProps {

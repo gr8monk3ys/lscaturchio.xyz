@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Twitter, Linkedin, Link2, Check, Share2, Globe, Zap } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from '@/lib/motion';
 import { logError } from "@/lib/logger";
 
 interface SocialShareProps {
@@ -18,7 +18,9 @@ interface SocialShareProps {
  */
 export function SocialShare({ title, description, url }: SocialShareProps) {
   const [copied, setCopied] = useState(false);
-  const [hasNativeShare, setHasNativeShare] = useState(false);
+  const [hasNativeShare] = useState(
+    () => typeof navigator !== "undefined" && typeof navigator.share === "function"
+  );
   const shareUrl = url || (typeof window !== "undefined" ? window.location.href : "");
   const handleTwitterShare = () => {
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
@@ -70,10 +72,6 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
       }
     }
   };
-
-  useEffect(() => {
-    setHasNativeShare(!!navigator.share);
-  }, []);
 
   return (
     <div className="flex flex-wrap items-center gap-2">

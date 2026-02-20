@@ -17,6 +17,17 @@ interface Blog {
   tags: string[];
 }
 
+type SearchParamValue = string | string[] | undefined;
+
+function getSearchParamValue(
+  params: Record<string, SearchParamValue>,
+  key: string
+): string {
+  const value = params[key];
+  if (Array.isArray(value)) return value[0] ?? "";
+  return value ?? "";
+}
+
 export const metadata: Metadata = {
   title: "Blog | Lorenzo Scaturchio",
   description:
@@ -48,7 +59,13 @@ export const metadata: Metadata = {
 // Revalidate the blog listing every hour for fresh content
 export const revalidate = 3600;
 
-export default async function Blog() {
+export default async function Blog({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, SearchParamValue>>;
+}) {
+  const params = (await searchParams) ?? {};
+  const tagFilter = getSearchParamValue(params, "tag");
   const blogs = await getAllBlogs();
   const totalPosts = blogs.length;
   const totalReadingTime = blogs.reduce((total, blog) => {
@@ -119,7 +136,7 @@ export default async function Blog() {
         />
 
         <Suspense fallback={<div className="text-center py-12">Loading...</div>}>
-          <BlogGrid blogs={data} />
+          <BlogGrid blogs={data} tagFilter={tagFilter} />
         </Suspense>
       </div>
     </Container>

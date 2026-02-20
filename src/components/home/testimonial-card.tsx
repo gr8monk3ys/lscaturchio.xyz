@@ -1,7 +1,7 @@
 'use client';
 
 import { Testimonial } from '@/types/testimonial';
-import { motion } from 'framer-motion';
+import { motion } from '@/lib/motion';
 import { Linkedin, Twitter, Quote } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 import { BookOpen, TrendingUp, Sparkles } from "lucide-react";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 

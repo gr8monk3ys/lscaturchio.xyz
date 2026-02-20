@@ -3,7 +3,7 @@
 import { Product, ProjectStatus, ProjectCategory } from "@/types/products";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from '@/lib/motion';
 import { TiltCard } from "@/components/ui/animated-card";
 import { Badge } from "@/components/ui/badge";
 import { Star, ExternalLink, Github, Calendar } from "lucide-react";
@@ -147,9 +147,9 @@ export function EnhancedProjectCard({
               </p>
               {product.caseStudy.results && product.caseStudy.results.length > 0 && (
                 <div className="flex flex-wrap gap-2 pt-1">
-                  {product.caseStudy.results.slice(0, 2).map((result, idx) => (
+                  {product.caseStudy.results.slice(0, 2).map((result) => (
                     <span
-                      key={idx}
+                      key={result}
                       className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full"
                     >
                       {result}

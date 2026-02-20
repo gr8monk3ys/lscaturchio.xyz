@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView } from '@/lib/motion';
 import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRef } from 'react';

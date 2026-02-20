@@ -73,9 +73,9 @@ export function RecentProjects({ repos }: RecentProjectsProps) {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-6">
           {repositories.length === 0 ? (
-            [...Array(3)].map((_, i) => (
+            [...Array(3)].map((_, slot) => (
               <div
-                key={i}
+                key={`recent-project-skeleton-${slot}`}
                 className="h-[260px] animate-pulse rounded-2xl bg-muted/50 md:col-span-2"
               />
             ))

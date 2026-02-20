@@ -1,8 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 import { ArrowDownUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -15,25 +13,15 @@ const options: Array<{ value: ProjectSortMode; label: string }> = [
   { value: "name", label: "A–Z" },
 ];
 
-export function ProjectSortToggle({ className }: { className?: string }) {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const value = (searchParams?.get("sort") as ProjectSortMode | null) ?? "featured";
-
-  const setSort = useCallback(
-    (next: ProjectSortMode) => {
-      const params = new URLSearchParams(searchParams?.toString() || "");
-      if (!next || next === "featured") {
-        params.delete("sort");
-      } else {
-        params.set("sort", next);
-      }
-      const query = params.toString();
-      router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
-    },
-    [pathname, router, searchParams]
-  );
+export function ProjectSortToggle({
+  className,
+  value,
+  onChange,
+}: {
+  className?: string;
+  value: ProjectSortMode;
+  onChange: (next: ProjectSortMode) => void;
+}) {
 
   return (
     <div
@@ -50,11 +38,11 @@ export function ProjectSortToggle({ className }: { className?: string }) {
       {options.map((opt) => {
         const active = opt.value === value;
         return (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => setSort(opt.value)}
-            aria-pressed={active}
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onChange(opt.value)}
+              aria-pressed={active}
             className={cn(
               "relative flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
               active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
@@ -77,4 +65,3 @@ export function ProjectSortToggle({ className }: { className?: string }) {
     </div>
   );
 }
-

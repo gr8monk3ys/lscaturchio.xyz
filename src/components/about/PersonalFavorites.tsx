@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, useInView } from '@/lib/motion';
 import { Music2, Tv, MapPin, Coffee, Camera, Code2, Globe, Church, Music } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useRef } from "react";

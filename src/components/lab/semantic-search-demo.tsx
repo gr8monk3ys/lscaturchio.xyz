@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, Loader2, ArrowUpRight, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
+import useSWR from "swr";
+import { fetchJson, unwrapApiData } from "@/lib/fetcher";
 
 interface SearchResult {
   title: string;
@@ -14,49 +16,44 @@ interface SearchResult {
   snippets: string[];
 }
 
-export function SemanticSearchDemo() {
-  const [query, setQuery] = useState("RAG systems");
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const canSearch = useMemo(() => query.trim().length >= 2, [query]);
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
-    if (!canSearch) {
-      setResults([]);
-      setError("");
-      return;
-    }
-
-    const controller = new AbortController();
-    const timer = setTimeout(async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const res = await fetch(
-          `/api/search?q=${encodeURIComponent(query)}&limit=6`,
-          { signal: controller.signal }
-        );
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          throw new Error(json?.error || "Search failed");
-        }
-        setResults((json?.results || []) as SearchResult[]);
-      } catch {
-        if (controller.signal.aborted) return;
-        setResults([]);
-        setError("Search is unavailable right now.");
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    }, 250);
+    const timer = window.setTimeout(() => {
+      setDebouncedValue(value);
+    }, delayMs);
 
     return () => {
-      controller.abort();
-      clearTimeout(timer);
+      window.clearTimeout(timer);
     };
-  }, [query, canSearch]);
+  }, [value, delayMs]);
+
+  return debouncedValue;
+}
+
+export function SemanticSearchDemo() {
+  const [query, setQuery] = useState("RAG systems");
+  const debouncedQuery = useDebouncedValue(query, 250).trim();
+  const shouldSearch = debouncedQuery.length >= 2;
+  const requestUrl = shouldSearch
+    ? `/api/search?q=${encodeURIComponent(debouncedQuery)}&limit=6`
+    : null;
+
+  const { data, isLoading, error } = useSWR<{ data?: { results?: SearchResult[] }; results?: SearchResult[] }>(
+    requestUrl,
+    fetchJson,
+    {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+    }
+  );
+
+  const results = useMemo(() => {
+    if (!data) return [];
+    const unwrapped = unwrapApiData(data as { results?: SearchResult[] });
+    return Array.isArray(unwrapped.results) ? unwrapped.results : [];
+  }, [data]);
 
   return (
     <section className="neu-card p-6">
@@ -78,7 +75,7 @@ export function SemanticSearchDemo() {
               "focus:outline-none focus:ring-2 focus:ring-primary"
             )}
           />
-          {loading && (
+          {isLoading && (
             <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
           )}
         </div>
@@ -86,11 +83,11 @@ export function SemanticSearchDemo() {
 
       {error && (
         <div className="mt-4 text-sm text-red-600">
-          {error}
+          Search is unavailable right now.
         </div>
       )}
 
-      {!error && !loading && canSearch && results.length === 0 && (
+      {!error && !isLoading && shouldSearch && results.length === 0 && (
         <div className="mt-4 text-sm text-muted-foreground">
           No results yet. (If embeddings aren&apos;t configured, this may return empty.)
         </div>

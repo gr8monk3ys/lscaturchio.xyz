@@ -11,10 +11,12 @@ interface BreadcrumbNavProps {
   customSegments?: { [key: string]: string };
 }
 
+const EMPTY_CUSTOM_SEGMENTS: { [key: string]: string } = {};
+
 export function BreadcrumbNav({
   homeLabel = "Home",
   excludeHome = false,
-  customSegments = {},
+  customSegments = EMPTY_CUSTOM_SEGMENTS,
 }: BreadcrumbNavProps) {
   const pathname = usePathname();
   

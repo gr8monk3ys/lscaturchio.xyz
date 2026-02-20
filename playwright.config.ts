@@ -8,15 +8,19 @@ const parsedWorkerCount = Number(process.env.PLAYWRIGHT_WORKERS ?? '2');
 const localWorkers = Number.isFinite(parsedWorkerCount) && parsedWorkerCount > 0 ? parsedWorkerCount : 2;
 
 export default defineConfig({
+  timeout: 120000,
   testDir: './e2e',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : localWorkers,
   reporter: 'html',
+  expect: {
+    timeout: 15000,
+  },
   use: {
     baseURL: E2E_BASE_URL,
-    navigationTimeout: 45000,
+    navigationTimeout: 90000,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -35,7 +39,7 @@ export default defineConfig({
       : []),
   ],
   webServer: {
-    command: `env -u FORCE_COLOR -u NO_COLOR npm run dev -- --hostname ${E2E_HOST} --port ${E2E_PORT}`,
+    command: `env -u FORCE_COLOR -u NO_COLOR npm run dev -- --webpack --hostname ${E2E_HOST} --port ${E2E_PORT}`,
     url: E2E_BASE_URL,
     reuseExistingServer: false,
     timeout: 180000,

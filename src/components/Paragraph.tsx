@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 
 interface ParagraphProps {
   children: React.ReactNode;

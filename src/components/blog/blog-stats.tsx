@@ -1,7 +1,7 @@
 "use client";
 
 import { BookOpen, Clock, Tag, TrendingUp } from "lucide-react";
-import { LazyMotion, domAnimation, m } from "framer-motion";
+import { LazyMotion, domAnimation, m } from '@/lib/motion';
 
 interface BlogStatsData {
   totalPosts: number;

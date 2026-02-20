@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from '@/lib/motion';
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { FallbackImage } from "@/components/ui/fallback-image";

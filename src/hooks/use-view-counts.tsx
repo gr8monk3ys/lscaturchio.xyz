@@ -1,6 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
+import { createContext, useContext, useCallback, ReactNode } from "react";
+import useSWR from "swr";
+import { fetchJson, unwrapApiData } from "@/lib/fetcher";
 
 interface ViewCountsContextType {
   viewCounts: Record<string, number>;
@@ -11,38 +13,38 @@ interface ViewCountsContextType {
 
 const ViewCountsContext = createContext<ViewCountsContextType | null>(null);
 
+type ViewRow = { slug: string; views: number };
+type ViewsEnvelope = { data?: { views?: ViewRow[] }; views?: ViewRow[] };
+
+function extractViewRows(payload: unknown): ViewRow[] {
+  const data = unwrapApiData(payload as { views?: ViewRow[] });
+  const rows = (data as { views?: ViewRow[] }).views;
+  return Array.isArray(rows) ? rows : [];
+}
+
+function extractSingleViewCount(payload: unknown): number {
+  const data = unwrapApiData(payload as { views?: number });
+  const views = (data as { views?: number }).views;
+  return typeof views === "number" ? views : 0;
+}
+
 /**
  * Provider that batch-fetches all view counts at once to prevent N+1 API calls
  * Use this at the layout level to provide view counts to all blog cards
  */
 export function ViewCountsProvider({ children }: { children: ReactNode }) {
-  const [viewCounts, setViewCounts] = useState<Record<string, number>>({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Batch fetch all view counts on mount
-  useEffect(() => {
-    const fetchAllViews = async () => {
-      try {
-        const response = await fetch("/api/views?all=true");
-        if (response.ok) {
-          const json = await response.json();
-          // apiSuccess wraps as { data: { views: [...] }, success: true }
-          const views = json.data?.views ?? json.views ?? [];
-          const counts: Record<string, number> = {};
-          views.forEach((view: { slug: string; views: number }) => {
-            counts[view.slug] = view.views;
-          });
-          setViewCounts(counts);
-        }
-      } catch {
-        // Silently fail - view counts are non-critical
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAllViews();
-  }, []);
+  const {
+    data: viewCounts = {},
+    isLoading,
+    mutate,
+  } = useSWR<Record<string, number>>("/api/views?all=true", async (url: string) => {
+    const payload = await fetchJson<ViewsEnvelope>(url);
+    const rows = extractViewRows(payload);
+    return rows.reduce<Record<string, number>>((acc, row) => {
+      acc[row.slug] = row.views;
+      return acc;
+    }, {});
+  });
 
   const getViewCount = useCallback(
     (slug: string): number | null => {
@@ -54,23 +56,19 @@ export function ViewCountsProvider({ children }: { children: ReactNode }) {
 
   const trackView = useCallback(async (slug: string) => {
     try {
-      const response = await fetch("/api/views", {
+      const payload = await fetchJson<{ data?: { views?: number }; views?: number }>("/api/views", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug }),
       });
-      if (response.ok) {
-        const json = await response.json();
-        const views = json.data?.views ?? json.views ?? 0;
-        setViewCounts((prev) => ({
-          ...prev,
-          [slug]: views,
-        }));
-      }
+      const views = extractSingleViewCount(payload);
+      await mutate((previous = {}) => ({ ...previous, [slug]: views }), {
+        revalidate: false,
+      });
     } catch {
       // Silently fail
     }
-  }, []);
+  }, [mutate]);
 
   return (
     <ViewCountsContext.Provider value={{ viewCounts, isLoading, getViewCount, trackView }}>
@@ -95,34 +93,31 @@ export function useViewCounts() {
 export function useViewCount(slug: string) {
   const context = useViewCounts();
   const hasContext = context !== null;
-
-  // Always declare state (rules of hooks)
-  const [fallbackCount, setFallbackCount] = useState<number | null>(null);
-  const [fallbackLoading, setFallbackLoading] = useState(true);
-
-  // Always call useEffect, but conditionally execute logic inside
-  useEffect(() => {
-    // Skip if using context provider
-    if (hasContext) {
-      return;
+  const {
+    data: fallbackCount,
+    isLoading: fallbackLoading,
+    mutate: mutateFallbackCount,
+  } = useSWR<number>(
+    hasContext ? null : `/api/views?slug=${encodeURIComponent(slug)}`,
+    async (url: string) => {
+      const payload = await fetchJson<{ data?: { views?: number }; views?: number }>(url);
+      return extractSingleViewCount(payload);
     }
+  );
 
-    const fetchView = async () => {
-      try {
-        const response = await fetch(`/api/views?slug=${encodeURIComponent(slug)}`);
-        if (response.ok) {
-          const data = await response.json();
-          setFallbackCount(data.views);
-        }
-      } catch {
-        // Silently fail
-      } finally {
-        setFallbackLoading(false);
-      }
-    };
-
-    fetchView();
-  }, [slug, hasContext]);
+  const trackFallbackView = useCallback(async () => {
+    try {
+      const payload = await fetchJson<{ data?: { views?: number }; views?: number }>("/api/views", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug }),
+      });
+      const views = extractSingleViewCount(payload);
+      await mutateFallbackCount(views, { revalidate: false });
+    } catch {
+      // Silently fail
+    }
+  }, [slug, mutateFallbackCount]);
 
   // Return context-based values if available
   if (context) {
@@ -135,22 +130,8 @@ export function useViewCount(slug: string) {
 
   // Return fallback values
   return {
-    viewCount: fallbackCount,
+    viewCount: fallbackCount ?? null,
     isLoading: fallbackLoading,
-    trackView: async () => {
-      try {
-        const response = await fetch("/api/views", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ slug }),
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setFallbackCount(data.views);
-        }
-      } catch {
-        // Silently fail
-      }
-    },
+    trackView: trackFallbackView,
   };
 }
