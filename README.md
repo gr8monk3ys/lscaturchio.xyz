@@ -88,6 +88,20 @@ The website is deployed using [Vercel](https://vercel.com/), ensuring rapid and 
 1. Connect your GitHub repository to Vercel.  
 2. Push changes to the `main` branch to trigger an automatic build and deployment.  
 
+### Post-deploy smoke check (chat)
+
+Run this after deploys to verify the production `/api/chat` endpoint is healthy end-to-end:
+
+```bash
+npm run smoke:chat:prod
+```
+
+You can also target any environment:
+
+```bash
+npm run smoke:chat -- --base-url https://your-preview-url.vercel.app
+```
+
 ## 📜 License
 
 This project is open-source and available under the terms of the [MIT License](LICENSE). Contributions and forks are welcome, adhering to the license terms.
