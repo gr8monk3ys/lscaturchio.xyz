@@ -81,7 +81,7 @@ export default function TermsOfServicePage() {
         <h2>Contact</h2>
         <p>
           For questions about these terms, please contact me at{" "}
-          <a href="mailto:lorenzo@lscaturchio.xyz">lorenzo@lscaturchio.xyz</a>.
+          <a href="mailto:lorenzosca7@protonmail.ch">lorenzosca7@protonmail.ch</a>.
         </p>
       </div>
     </Container>

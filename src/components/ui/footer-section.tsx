@@ -77,8 +77,8 @@ function Footer() {
               <p>United States</p>
               <p>
                 Email:{" "}
-                <a href="mailto:lorenzo@lscaturchio.xyz" className="hover:text-primary transition-colors">
-                  lorenzo@lscaturchio.xyz
+                <a href="mailto:lorenzosca7@protonmail.ch" className="hover:text-primary transition-colors">
+                  lorenzosca7@protonmail.ch
                 </a>
               </p>
             </address>

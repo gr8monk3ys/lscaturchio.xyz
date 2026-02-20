@@ -282,7 +282,7 @@ describe('/api/contact', () => {
 
       const fetchCall = mockFetch.mock.calls[0];
       const bodyJson = JSON.parse(fetchCall[1].body);
-      expect(bodyJson.to).toBe('lorenzo@lscaturchio.xyz');
+      expect(bodyJson.to).toBe('lorenzosca7@protonmail.ch');
     });
 
     it('uses default from email when CONTACT_FROM_EMAIL is not set', async () => {
