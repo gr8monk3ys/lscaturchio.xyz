@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { vi, type Mock } from 'vitest';
+import { createElement } from 'react';
 
 // Vitest 4.x compatibility helpers
 // Add vi.mocked if not available (polyfill for older patterns)
@@ -34,8 +35,7 @@ vi.mock('next/navigation', () => ({
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
   default: ({ src, alt, ...props }: { src: string; alt: string }) => {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} {...props} />;
+    return createElement('img', { src, alt, ...props });
   },
 }));
 

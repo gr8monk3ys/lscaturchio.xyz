@@ -39,11 +39,13 @@ interface PersonStructuredDataProps {
   url: string;
 }
 
+const EMPTY_SAME_AS: string[] = [];
+
 export function PersonStructuredData({
   name,
   description,
   image,
-  sameAs = [],
+  sameAs = EMPTY_SAME_AS,
   jobTitle,
   url,
 }: PersonStructuredDataProps) {

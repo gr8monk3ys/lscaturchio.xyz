@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from '@/lib/motion';
 import { ArrowUpRight, Brain, Code, Server } from "lucide-react";
 
 import { Section } from "@/components/ui/Section";

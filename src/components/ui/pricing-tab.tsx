@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { motion } from '@/lib/motion'
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"

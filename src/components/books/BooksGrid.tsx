@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from '@/lib/motion';
 import Link from "next/link";
 import { Star, BookOpen, Clock, Trophy, Book, ListVideo } from "lucide-react";
 import type { GoodreadsBook, GoodreadsStats } from "@/lib/goodreads";

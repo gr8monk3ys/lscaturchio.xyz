@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from '@/lib/motion';
 import { Check, Copy, ChevronDown, ChevronUp, Hash, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -67,7 +67,7 @@ export function CodeBlock({
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showNumbers, setShowNumbers] = useState(showLineNumbers);
+  const [showNumbersOverride, setShowNumbersOverride] = useState<boolean | null>(null);
 
   // Extract language from className
   const language = useMemo(() => {
@@ -92,9 +92,14 @@ export function CodeBlock({
     return getCodeText(children);
   }, [children]);
   const lines = useMemo(() => codeText.split("\n"), [codeText]);
+  const lineNumbers = useMemo(
+    () => Array.from({ length: lines.length }, (_, lineIndex) => lineIndex + 1),
+    [lines.length]
+  );
   const totalLines = lines.length;
   const isLongCode = totalLines > maxLines;
   const shouldCollapse = isLongCode && !isExpanded;
+  const showNumbers = showNumbersOverride ?? showLineNumbers;
 
   // Handle copy
   const handleCopy = useCallback(async () => {
@@ -144,7 +149,9 @@ export function CodeBlock({
         <div className="flex items-center gap-1">
           {/* Line numbers toggle */}
           <Button
-            onClick={() => setShowNumbers(!showNumbers)}
+            onClick={() => {
+              setShowNumbersOverride((prev) => (prev === null ? !showLineNumbers : !prev));
+            }}
             size="sm"
             variant="ghost"
             className="h-7 px-2 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
@@ -165,9 +172,9 @@ export function CodeBlock({
               {copied ? (
                 <motion.div
                   key="check"
-                  initial={{ scale: 0 }}
+                  initial={{ scale: 0.95, opacity: 0 }}
                   animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
                   className="flex items-center gap-1 text-green-400"
                 >
                   <Check className="h-3.5 w-3.5" />
@@ -176,9 +183,9 @@ export function CodeBlock({
               ) : (
                 <motion.div
                   key="copy"
-                  initial={{ scale: 0 }}
+                  initial={{ scale: 0.95, opacity: 0 }}
                   animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
                   className="flex items-center gap-1"
                 >
                   <Copy className="h-3.5 w-3.5" />
@@ -212,9 +219,9 @@ export function CodeBlock({
                 className="select-none pr-4 text-right text-zinc-600 border-r border-zinc-800 mr-4"
                 aria-hidden="true"
               >
-                {lines.map((_, i) => (
-                  <div key={i} className="leading-relaxed">
-                    {i + 1}
+                {lineNumbers.map((lineNumber) => (
+                  <div key={`line-number-${lineNumber}`} className="leading-relaxed">
+                    {lineNumber}
                   </div>
                 ))}
               </div>

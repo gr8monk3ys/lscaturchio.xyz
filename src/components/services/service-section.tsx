@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { LazyMotion, domAnimation, m, useInView, useReducedMotion } from "framer-motion";
+import { LazyMotion, domAnimation, m, useInView, useReducedMotion } from '@/lib/motion';
 import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 

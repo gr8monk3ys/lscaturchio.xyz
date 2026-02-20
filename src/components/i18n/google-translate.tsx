@@ -2,7 +2,7 @@
 
 import { Globe } from "lucide-react";
 import Script from "next/script";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type GoogleTranslateConstructor = new (
@@ -217,12 +217,8 @@ interface LanguageSwitcherProps {
 }
 
 export function LanguageSwitcher({ compact = false, className }: LanguageSwitcherProps) {
-  const [language, setLanguage] = useState<LanguageCode>("en");
-  const ariaLabel = useMemo(() => "Select language", []);
-
-  useEffect(() => {
-    setLanguage(getActiveLanguage());
-  }, []);
+  const [language, setLanguage] = useState<LanguageCode>(() => getActiveLanguage());
+  const ariaLabel = "Select language";
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const nextLanguage = event.target.value as LanguageCode;

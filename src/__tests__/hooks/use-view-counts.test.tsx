@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { ReactNode } from 'react';
+import { SWRConfig } from 'swr';
 import {
   ViewCountsProvider,
   useViewCounts,
@@ -10,6 +11,14 @@ import {
 // Mock fetch globally
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
+
+function createSWRTestWrapper(children: ReactNode) {
+  return (
+    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0, errorRetryCount: 0 }}>
+      {children}
+    </SWRConfig>
+  );
+}
 
 describe('ViewCountsProvider', () => {
   beforeEach(() => {
@@ -21,7 +30,7 @@ describe('ViewCountsProvider', () => {
   });
 
   const wrapper = ({ children }: { children: ReactNode }) => (
-    <ViewCountsProvider>{children}</ViewCountsProvider>
+    createSWRTestWrapper(<ViewCountsProvider>{children}</ViewCountsProvider>)
   );
 
   describe('initial fetch', () => {
@@ -45,7 +54,7 @@ describe('ViewCountsProvider', () => {
         expect(result.current?.isLoading).toBe(false);
       });
 
-      expect(mockFetch).toHaveBeenCalledWith('/api/views?all=true');
+      expect(mockFetch).toHaveBeenCalledWith('/api/views?all=true', undefined);
       expect(result.current?.viewCounts).toEqual({
         'post-1': 100,
         'post-2': 200,
@@ -262,7 +271,11 @@ describe('useViewCount', () => {
   });
 
   const wrapper = ({ children }: { children: ReactNode }) => (
-    <ViewCountsProvider>{children}</ViewCountsProvider>
+    createSWRTestWrapper(<ViewCountsProvider>{children}</ViewCountsProvider>)
+  );
+
+  const swrOnlyWrapper = ({ children }: { children: ReactNode }) => (
+    createSWRTestWrapper(children)
   );
 
   describe('with provider', () => {
@@ -317,7 +330,7 @@ describe('useViewCount', () => {
         json: async () => ({ views: 33 }),
       });
 
-      const { result } = renderHook(() => useViewCount('individual-post'));
+      const { result } = renderHook(() => useViewCount('individual-post'), { wrapper: swrOnlyWrapper });
 
       expect(result.current.isLoading).toBe(true);
 
@@ -326,7 +339,8 @@ describe('useViewCount', () => {
       });
 
       expect(mockFetch).toHaveBeenCalledWith(
-        '/api/views?slug=individual-post'
+        '/api/views?slug=individual-post',
+        undefined
       );
       expect(result.current.viewCount).toBe(33);
     });
@@ -337,7 +351,7 @@ describe('useViewCount', () => {
         status: 500,
       });
 
-      const { result } = renderHook(() => useViewCount('failed-post'));
+      const { result } = renderHook(() => useViewCount('failed-post'), { wrapper: swrOnlyWrapper });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -350,7 +364,7 @@ describe('useViewCount', () => {
     it('handles network error gracefully', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-      const { result } = renderHook(() => useViewCount('error-post'));
+      const { result } = renderHook(() => useViewCount('error-post'), { wrapper: swrOnlyWrapper });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -365,7 +379,7 @@ describe('useViewCount', () => {
         json: async () => ({ views: 5 }),
       });
 
-      const { result } = renderHook(() => useViewCount('track-post'));
+      const { result } = renderHook(() => useViewCount('track-post'), { wrapper: swrOnlyWrapper });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -395,11 +409,12 @@ describe('useViewCount', () => {
         json: async () => ({ views: 1 }),
       });
 
-      renderHook(() => useViewCount('post-with-special&chars'));
+      renderHook(() => useViewCount('post-with-special&chars'), { wrapper: swrOnlyWrapper });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
-          '/api/views?slug=post-with-special%26chars'
+          '/api/views?slug=post-with-special%26chars',
+          undefined
         );
       });
     });
@@ -419,7 +434,7 @@ describe('useViewCount', () => {
 
       const { result, rerender } = renderHook(
         ({ slug }) => useViewCount(slug),
-        { initialProps: { slug: 'first-post' } }
+        { initialProps: { slug: 'first-post' }, wrapper: swrOnlyWrapper }
       );
 
       await waitFor(() => {
@@ -434,8 +449,8 @@ describe('useViewCount', () => {
         expect(result.current.viewCount).toBe(20);
       });
 
-      expect(mockFetch).toHaveBeenCalledWith('/api/views?slug=first-post');
-      expect(mockFetch).toHaveBeenCalledWith('/api/views?slug=second-post');
+      expect(mockFetch).toHaveBeenCalledWith('/api/views?slug=first-post', undefined);
+      expect(mockFetch).toHaveBeenCalledWith('/api/views?slug=second-post', undefined);
     });
   });
 });

@@ -95,11 +95,11 @@ export default function GlobalError({
               >
                 Try again
               </button>
-              {/* eslint-disable-next-line @next/next/no-html-link-for-pages --
-                  global-error.tsx renders outside the Next.js context (has its own html/body),
-                  so next/link cannot be used here */}
-              <a
-                href="/"
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.href = "/";
+                }}
                 className="px-6 py-3 rounded-xl font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2"
                 style={{
                   boxShadow:
@@ -107,7 +107,7 @@ export default function GlobalError({
                 }}
               >
                 Go home
-              </a>
+              </button>
             </div>
           </div>
         </div>

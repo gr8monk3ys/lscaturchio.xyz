@@ -9,8 +9,8 @@ export default function BlogLoading() {
 
       {/* Blog grid skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <article key={i} className="neu-card overflow-hidden">
+        {[1, 2, 3, 4, 5, 6].map((slot) => (
+          <article key={`blog-loading-card-${slot}`} className="neu-card overflow-hidden">
             <div className="h-48 w-full animate-pulse bg-muted" />
             <div className="p-6">
               <div className="flex gap-2 mb-3">

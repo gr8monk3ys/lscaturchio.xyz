@@ -2,7 +2,7 @@
 
 import { Mail, Calendar, MapPin, Github, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
-import { LazyMotion, domAnimation, m } from "framer-motion";
+import { LazyMotion, domAnimation, m } from '@/lib/motion';
 import { useState } from "react";
 
 const contactMethods = [

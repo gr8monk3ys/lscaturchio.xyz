@@ -1,7 +1,7 @@
 "use client";
 
 import { Product, ProjectStatus } from "@/types/products";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from '@/lib/motion';
 import { useRef, useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";

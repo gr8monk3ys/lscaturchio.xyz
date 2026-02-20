@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from '@/lib/motion';
 import { ArrowUp } from "lucide-react";
 import { Button } from "./button";
 
@@ -18,7 +18,7 @@ export function ScrollToTop() {
       }
     };
 
-    window.addEventListener("scroll", toggleVisibility);
+    window.addEventListener("scroll", toggleVisibility, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", toggleVisibility);

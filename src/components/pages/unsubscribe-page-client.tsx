@@ -2,7 +2,7 @@
 
 import { Container } from '@/components/Container'
 import { Heading } from '@/components/Heading'
-import { LazyMotion, domAnimation, m } from 'framer-motion'
+import { LazyMotion, domAnimation, m } from '@/lib/motion'
 import { Check, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 

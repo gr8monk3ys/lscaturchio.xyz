@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
-import { logError } from "@/lib/logger";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from '@/lib/motion';
+import useSWR from "swr";
+import { fetchJson } from "@/lib/fetcher";
 
 interface SeriesPost {
   slug: string;
@@ -29,28 +29,11 @@ export function SeriesNavigation({
   currentSlug,
   currentOrder,
 }: SeriesNavigationProps) {
-  const [seriesPosts, setSeriesPosts] = useState<SeriesPost[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchSeriesPosts() {
-      try {
-        const response = await fetch(
-          `/api/series?name=${encodeURIComponent(seriesName)}`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setSeriesPosts(data.posts);
-        }
-      } catch (error) {
-        logError("Failed to fetch series posts", error, { component: "SeriesNavigation" });
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchSeriesPosts();
-  }, [seriesName]);
+  const requestUrl = `/api/series?name=${encodeURIComponent(seriesName)}`;
+  const { data, isLoading } = useSWR<{ posts?: SeriesPost[] }>(requestUrl, fetchJson, {
+    revalidateOnFocus: false,
+  });
+  const seriesPosts = Array.isArray(data?.posts) ? data.posts : [];
 
   if (isLoading) {
     return (
@@ -72,87 +55,89 @@ export function SeriesNavigation({
       : null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="my-8"
-    >
-      <Card className="border-primary/20 bg-primary/5">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <BookOpen className="h-5 w-5" />
-            {seriesName} Series
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Part {currentOrder} of {seriesPosts.length}
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* All Posts in Series */}
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium text-muted-foreground">
-              All posts in this series:
-            </h4>
-            <ol className="space-y-2">
-              {seriesPosts.map((post) => (
-                <li key={post.slug} className="flex items-start gap-2">
-                  <span className="text-sm text-muted-foreground mt-0.5">
-                    {post.seriesOrder}.
-                  </span>
-                  {post.slug === currentSlug ? (
-                    <span className="text-sm font-medium text-primary">
-                      {post.title} (current)
+    <LazyMotion features={domAnimation}>
+      <m.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="my-8"
+      >
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <BookOpen className="h-5 w-5" />
+              {seriesName} Series
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Part {currentOrder} of {seriesPosts.length}
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* All Posts in Series */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium text-muted-foreground">
+                All posts in this series:
+              </h4>
+              <ol className="space-y-2">
+                {seriesPosts.map((post) => (
+                  <li key={post.slug} className="flex items-start gap-2">
+                    <span className="text-sm text-muted-foreground mt-0.5">
+                      {post.seriesOrder}.
                     </span>
-                  ) : (
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="text-sm hover:underline hover:text-primary transition-colors"
-                    >
-                      {post.title}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </div>
+                    {post.slug === currentSlug ? (
+                      <span className="text-sm font-medium text-primary">
+                        {post.title} (current)
+                      </span>
+                    ) : (
+                      <Link
+                        href={`/blog/${post.slug}`}
+                        className="text-sm hover:underline hover:text-primary transition-colors"
+                      >
+                        {post.title}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex items-center justify-between gap-4 pt-4 border-t">
-            {prevPost ? (
-              <Link href={`/blog/${prevPost.slug}`} className="flex-1">
-                <Button
-                  variant="outline"
-                  className="w-full justify-start gap-2"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  <div className="text-left overflow-hidden">
-                    <div className="text-xs text-muted-foreground">
-                      Previous
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between gap-4 pt-4 border-t">
+              {prevPost ? (
+                <Link href={`/blog/${prevPost.slug}`} className="flex-1">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-2"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <div className="text-left overflow-hidden">
+                      <div className="text-xs text-muted-foreground">
+                        Previous
+                      </div>
+                      <div className="text-sm truncate">{prevPost.title}</div>
                     </div>
-                    <div className="text-sm truncate">{prevPost.title}</div>
-                  </div>
-                </Button>
-              </Link>
-            ) : (
-              <div className="flex-1" />
-            )}
+                  </Button>
+                </Link>
+              ) : (
+                <div className="flex-1" />
+              )}
 
-            {nextPost ? (
-              <Link href={`/blog/${nextPost.slug}`} className="flex-1">
-                <Button variant="outline" className="w-full justify-end gap-2">
-                  <div className="text-right overflow-hidden">
-                    <div className="text-xs text-muted-foreground">Next</div>
-                    <div className="text-sm truncate">{nextPost.title}</div>
-                  </div>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            ) : (
-              <div className="flex-1" />
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+              {nextPost ? (
+                <Link href={`/blog/${nextPost.slug}`} className="flex-1">
+                  <Button variant="outline" className="w-full justify-end gap-2">
+                    <div className="text-right overflow-hidden">
+                      <div className="text-xs text-muted-foreground">Next</div>
+                      <div className="text-sm truncate">{nextPost.title}</div>
+                    </div>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              ) : (
+                <div className="flex-1" />
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </m.div>
+    </LazyMotion>
   );
 }

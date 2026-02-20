@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -30,14 +30,17 @@ export function Reveal({
   threshold = 0.12,
 }: RevealProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [inView, setInView] = useState(false);
+  const [inView, updateInView] = useReducer(
+    (current: boolean, next: boolean) => (current === next ? current : next),
+    false
+  );
 
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
 
     if (typeof IntersectionObserver === "undefined") {
-      setInView(true);
+      updateInView(true);
       return;
     }
 
@@ -47,10 +50,10 @@ export function Reveal({
         if (!entry) return;
 
         if (entry.isIntersecting) {
-          setInView(true);
+          updateInView(true);
           if (once) observer.disconnect();
         } else if (!once) {
-          setInView(false);
+          updateInView(false);
         }
       },
       { root: null, rootMargin: margin, threshold }
@@ -76,4 +79,3 @@ export function Reveal({
     </div>
   );
 }
-

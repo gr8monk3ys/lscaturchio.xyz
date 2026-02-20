@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, Repeat2, MessageCircle, Link2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { WebmentionsResponse, WebmentionEntry, WebmentionType } from "@/lib/webmentions";
+import useSWR from "swr";
+import { fetchJson } from "@/lib/fetcher";
 
 function typeLabel(type: WebmentionType): string {
   switch (type) {
@@ -40,30 +42,11 @@ function sortByPublishedDesc(a: WebmentionEntry, b: WebmentionEntry): number {
 }
 
 export function Webmentions({ path }: { path: string }) {
-  const [data, setData] = useState<WebmentionsResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!path) return;
-    let cancelled = false;
-    setLoading(true);
-
-    fetch(`/api/webmentions?path=${encodeURIComponent(path)}`)
-      .then((r) => r.json())
-      .then((json) => {
-        if (!cancelled) setData(json);
-      })
-      .catch(() => {
-        if (!cancelled) setData(null);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [path]);
+  const requestUrl = path ? `/api/webmentions?path=${encodeURIComponent(path)}` : null;
+  const { data, isLoading } = useSWR<WebmentionsResponse>(requestUrl, fetchJson, {
+    revalidateOnFocus: false,
+  });
+  const loading = isLoading;
 
   const entries = useMemo(() => data?.entries ?? [], [data]);
   const counts = useMemo(

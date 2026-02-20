@@ -1,15 +1,19 @@
 "use client";
 
 import { ProjectCategory, Product } from "@/types/products";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 
 interface ProjectFiltersProps {
   className?: string;
   projects: Product[];
+  currentCategory: ProjectCategory | "all";
+  currentTech: string;
+  onCategoryChange: (category: ProjectCategory | "all") => void;
+  onTechChange: (tech: string) => void;
+  onClearFilters: () => void;
 }
 
 type CategoryOption = {
@@ -26,13 +30,15 @@ const categories: CategoryOption[] = [
   { value: "data-science", label: "Data Science" },
 ];
 
-export function ProjectFilters({ className, projects }: ProjectFiltersProps) {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const currentCategory = (searchParams?.get("category") as ProjectCategory | "all") || "all";
-  const currentTech = searchParams?.get("tech") || "";
+export function ProjectFilters({
+  className,
+  projects,
+  currentCategory,
+  currentTech,
+  onCategoryChange,
+  onTechChange,
+  onClearFilters,
+}: ProjectFiltersProps) {
 
   const hasFilters = currentCategory !== "all" || currentTech;
 
@@ -46,23 +52,6 @@ export function ProjectFilters({ className, projects }: ProjectFiltersProps) {
     });
     return counts;
   }, [projects]);
-
-  const updateFilters = useCallback(
-    (key: string, value: string) => {
-      const params = new URLSearchParams(searchParams?.toString() || "");
-      if (value && value !== "all") {
-        params.set(key, value);
-      } else {
-        params.delete(key);
-      }
-      router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    },
-    [searchParams, router, pathname]
-  );
-
-  const clearFilters = useCallback(() => {
-    router.push(pathname, { scroll: false });
-  }, [router, pathname]);
 
   return (
     <div className={cn("space-y-4", className)}>
@@ -78,7 +67,7 @@ export function ProjectFilters({ className, projects }: ProjectFiltersProps) {
           return (
             <motion.button
               key={category.value}
-              onClick={() => updateFilters("category", category.value)}
+              onClick={() => onCategoryChange(category.value)}
               className={cn(
                 "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
                 isActive
@@ -115,7 +104,7 @@ export function ProjectFilters({ className, projects }: ProjectFiltersProps) {
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
               Tech: {currentTech}
               <button
-                onClick={() => updateFilters("tech", "")}
+                onClick={() => onTechChange("")}
                 className="hover:text-primary/70 transition-colors"
                 aria-label={`Remove ${currentTech} filter`}
               >
@@ -124,7 +113,7 @@ export function ProjectFilters({ className, projects }: ProjectFiltersProps) {
             </span>
           )}
           <button
-            onClick={clearFilters}
+            onClick={onClearFilters}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
           >
             <X className="h-3.5 w-3.5" />
@@ -134,14 +123,4 @@ export function ProjectFilters({ className, projects }: ProjectFiltersProps) {
       )}
     </div>
   );
-}
-
-// Hook for consuming filter state in other components
-export function useProjectFilters() {
-  const searchParams = useSearchParams();
-
-  return {
-    category: (searchParams?.get("category") as ProjectCategory | "all") || "all",
-    tech: searchParams?.get("tech") || "",
-  };
 }

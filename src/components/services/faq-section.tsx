@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { motion } from "framer-motion";
+import { motion } from '@/lib/motion';
 import { FAQStructuredData } from "@/components/ui/structured-data";
 
 interface FaqItem {
@@ -59,7 +59,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
           <dl className="mt-10 space-y-6 divide-y divide-border">
             <Accordion type="single" collapsible className="w-full">
               {items.map((faq, index) => (
-                <AccordionItem key={index} value={`item-${index}`}>
+                <AccordionItem key={faq.question} value={`item-${index}`}>
                   <AccordionTrigger className="text-left group">
                     <motion.span 
                       initial={{ opacity: 0 }}

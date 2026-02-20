@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { BrainCircuit, Database, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { logError } from "@/lib/logger";
+import useSWR from "swr";
+import { fetchJson } from "@/lib/fetcher";
 
 type RagStatus = {
   timestamp: string;
@@ -28,24 +28,9 @@ function Pill({ ok, label }: { ok: boolean; label: string }) {
 }
 
 export function RagStatusCard() {
-  const [status, setStatus] = useState<RagStatus | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const run = async () => {
-      try {
-        const res = await fetch("/api/rag-status", { method: "GET" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = (await res.json()) as RagStatus;
-        setStatus(json);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "Failed to load status";
-        setError(msg);
-        logError("Failed to fetch RAG status", err, { component: "RagStatusCard" });
-      }
-    };
-    run();
-  }, []);
+  const { data: status, error } = useSWR<RagStatus>("/api/rag-status", fetchJson, {
+    revalidateOnFocus: false,
+  });
 
   return (
     <div className="neu-card rounded-2xl p-6">
@@ -67,7 +52,7 @@ export function RagStatusCard() {
 
       {error ? (
         <div className="mt-4 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
+          {error instanceof Error ? error.message : "Failed to load status"}
         </div>
       ) : (
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
@@ -154,4 +139,3 @@ export function RagStatusCard() {
     </div>
   );
 }
-

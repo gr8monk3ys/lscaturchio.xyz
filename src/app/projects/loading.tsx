@@ -9,8 +9,8 @@ export default function ProjectsLoading() {
 
       {/* Projects grid skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="neu-card overflow-hidden">
+        {[1, 2, 3, 4].map((slot) => (
+          <div key={`projects-loading-card-${slot}`} className="neu-card overflow-hidden">
             <div className="h-64 w-full animate-pulse bg-muted" />
             <div className="p-6">
               <div className="h-7 w-3/4 animate-pulse rounded bg-muted mb-3" />

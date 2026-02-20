@@ -14,8 +14,8 @@ export default function AboutLoading() {
 
       {/* Bio sections skeleton */}
       <div className="space-y-8">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="neu-card p-6">
+        {[1, 2, 3].map((slot) => (
+          <div key={`about-loading-section-${slot}`} className="neu-card p-6">
             <div className="h-7 w-48 animate-pulse rounded bg-muted mb-4" />
             <div className="h-4 w-full animate-pulse rounded bg-muted mb-2" />
             <div className="h-4 w-full animate-pulse rounded bg-muted mb-2" />

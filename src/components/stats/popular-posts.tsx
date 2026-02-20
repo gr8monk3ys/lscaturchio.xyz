@@ -1,53 +1,32 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { TrendingUp } from 'lucide-react'
-import { logError } from '@/lib/logger'
-
-interface PopularPost {
-  title: string
-  url: string
-  views: number
-}
+import useSWR from 'swr'
+import { fetchJson, unwrapApiData } from '@/lib/fetcher'
 
 export function PopularPosts() {
-  const [posts, setPosts] = useState<PopularPost[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { data, isLoading, error } = useSWR<{ data?: { views?: Array<{ slug: string; title: string; views: number }> }; views?: Array<{ slug: string; title: string; views: number }> }>(
+    '/api/views?format=detailed',
+    fetchJson,
+    { revalidateOnFocus: false }
+  )
 
-  useEffect(() => {
-    const fetchPopular = async () => {
-      try {
-        // Fetch real views data from our views API
-        const response = await fetch('/api/views?format=detailed');
-        if (!response.ok) {
-          throw new Error('Failed to load popular posts');
-        }
-        const data = await response.json();
-
-        // Sort by views and take top 5
-        const sortedPosts = (data.data?.views ?? data.views)
-          .sort((a: { views: number }, b: { views: number }) => b.views - a.views)
-          .slice(0, 5)
-          .map((post: { slug: string; title: string; views: number }) => ({
-            title: post.title, // Use real title from API
-            url: `/blog/${post.slug}`,
-            views: post.views,
-          }));
-
-        setPosts(sortedPosts);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load popular posts';
-        setError(errorMessage);
-        logError('Failed to fetch popular posts', err, { component: 'PopularPosts' })
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPopular();
-  }, []);
+  const posts = useMemo(() => {
+    if (!data) return []
+    const unwrapped = unwrapApiData(data as { views?: Array<{ slug: string; title: string; views: number }> })
+    const rows = Array.isArray(unwrapped.views) ? unwrapped.views : []
+    return rows
+      .slice()
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 5)
+      .map((post) => ({
+        title: post.title,
+        url: `/blog/${post.slug}`,
+        views: post.views,
+      }))
+  }, [data])
 
   return (
     <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
@@ -58,8 +37,8 @@ export function PopularPosts() {
 
       {isLoading ? (
         <div className="space-y-4" aria-busy="true" aria-label="Loading popular posts">
-          {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="animate-pulse flex items-center justify-between" role="presentation">
+          {[1, 2, 3, 4, 5].map((slot) => (
+            <div key={`popular-skeleton-${slot}`} className="animate-pulse flex items-center justify-between" role="presentation">
               <div className="h-4 bg-muted rounded w-3/4" />
               <div className="h-4 bg-muted rounded w-16" />
             </div>
@@ -67,7 +46,7 @@ export function PopularPosts() {
         </div>
       ) : error ? (
         <div className="text-sm text-red-600 dark:text-red-400 py-4">
-          {error}
+          {error instanceof Error ? error.message : 'Failed to load popular posts'}
         </div>
       ) : (
         <div className="space-y-4">

@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import { Suspense } from 'react'
 import { ContactCTA } from "@/components/ui/contact-cta"
 import { ErrorBoundary } from "@/components/ErrorBoundary"
-import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "framer-motion"
+import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from '@/lib/motion'
 
 const CONTACT_CTA_EXCLUDED_PATHS = new Set<string>([
   "/chat",
@@ -34,7 +34,6 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                  style={{ willChange: "auto" }}
                 >
                   {children}
                 </motion.div>

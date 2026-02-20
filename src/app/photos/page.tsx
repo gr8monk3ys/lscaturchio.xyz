@@ -5,6 +5,7 @@ import { Paragraph } from "@/components/Paragraph";
 import { PhotosGrid } from "@/components/photos/PhotosGrid";
 import { Metadata } from "next";
 import { Camera, Loader2 } from "lucide-react";
+import type { PhotoCategory } from "@/constants/photos";
 
 export const metadata: Metadata = {
   title: "Photography | Lorenzo Scaturchio",
@@ -19,7 +20,30 @@ function PhotosGridSkeleton() {
   );
 }
 
-export default function PhotosPage() {
+type SearchParamValue = string | string[] | undefined;
+
+function getSearchParamValue(
+  params: Record<string, SearchParamValue>,
+  key: string
+): string {
+  const value = params[key];
+  if (Array.isArray(value)) return value[0] ?? "";
+  return value ?? "";
+}
+
+function normalizeCategory(value: string): PhotoCategory {
+  const allowed: PhotoCategory[] = ["all", "travel", "nature"];
+  return allowed.includes(value as PhotoCategory) ? (value as PhotoCategory) : "all";
+}
+
+export default async function PhotosPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, SearchParamValue>>;
+}) {
+  const params = (await searchParams) ?? {};
+  const initialCategory = normalizeCategory(getSearchParamValue(params, "category"));
+
   return (
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-6xl mx-auto">
@@ -38,7 +62,7 @@ export default function PhotosPage() {
         </div>
 
         <Suspense fallback={<PhotosGridSkeleton />}>
-          <PhotosGrid />
+          <PhotosGrid initialCategory={initialCategory} />
         </Suspense>
       </div>
     </Container>
