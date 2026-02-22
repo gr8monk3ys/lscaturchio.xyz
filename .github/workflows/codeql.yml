@@ -14,6 +14,7 @@ jobs:
     name: Analyze
     runs-on: ubuntu-latest
     timeout-minutes: 360
+    continue-on-error: true  # Default CodeQL setup may conflict with advanced config
     permissions:
       security-events: write
       packages: read
