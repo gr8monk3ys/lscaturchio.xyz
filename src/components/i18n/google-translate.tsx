@@ -185,7 +185,15 @@ function initializeGoogleTranslateElement(): void {
 }
 
 export function GoogleTranslateProvider() {
+  const [shouldLoadScript, setShouldLoadScript] = useState(false);
+
   useEffect(() => {
+    setShouldLoadScript(getActiveLanguage() !== "en");
+  }, []);
+
+  useEffect(() => {
+    if (!shouldLoadScript) return;
+
     window.googleTranslateElementInit = () => {
       initializeGoogleTranslateElement();
     };
@@ -197,16 +205,18 @@ export function GoogleTranslateProvider() {
     return () => {
       delete window.googleTranslateElementInit;
     };
-  }, []);
+  }, [shouldLoadScript]);
 
   return (
     <>
       <div id="google_translate_element" className="sr-only" aria-hidden />
-      <Script
-        id="google-translate-script"
-        src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
-        strategy="afterInteractive"
-      />
+      {shouldLoadScript && (
+        <Script
+          id="google-translate-script"
+          src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+          strategy="afterInteractive"
+        />
+      )}
     </>
   );
 }

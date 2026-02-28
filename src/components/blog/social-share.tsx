@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Twitter, Linkedin, Link2, Check, Share2, Globe, Zap } from "lucide-react";
-import { motion, AnimatePresence } from '@/lib/motion';
 import { logError } from "@/lib/logger";
 
 interface SocialShareProps {
@@ -135,31 +134,19 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
         className="flex items-center gap-2 relative"
         aria-label="Copy link"
       >
-        <AnimatePresence mode="wait">
+        <div className="flex items-center gap-2">
           {copied ? (
-            <motion.div
-              key="check"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              className="flex items-center gap-2"
-            >
+            <>
               <Check className="h-4 w-4 text-green-600" />
               <span className="hidden sm:inline text-green-600">Copied!</span>
-            </motion.div>
+            </>
           ) : (
-            <motion.div
-              key="link"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              className="flex items-center gap-2"
-            >
+            <>
               <Link2 className="h-4 w-4" />
               <span className="hidden sm:inline">Copy Link</span>
-            </motion.div>
+            </>
           )}
-        </AnimatePresence>
+        </div>
       </Button>
 
       {/* Native Share (mobile fallback) */}

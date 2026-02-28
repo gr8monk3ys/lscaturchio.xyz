@@ -4,7 +4,7 @@ import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit';
 
 /* eslint-disable @next/next/no-img-element */
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 function truncate(s: string, max: number): string {
   const t = s.trim();

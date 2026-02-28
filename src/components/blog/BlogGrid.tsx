@@ -1,6 +1,3 @@
-"use client";
-
-import { useMemo } from "react";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { X } from "lucide-react";
 import Link from "next/link";
@@ -21,12 +18,11 @@ interface BlogGridProps {
 
 export function BlogGrid({ blogs, tagFilter = "" }: BlogGridProps) {
   const normalizedTag = tagFilter.trim().toLowerCase();
-  const filteredBlogs = useMemo(() => {
-    if (!normalizedTag) return blogs;
-    return blogs.filter((blog) =>
-      blog.tags.some((tag) => tag.toLowerCase() === normalizedTag)
-    );
-  }, [blogs, normalizedTag]);
+  const filteredBlogs = normalizedTag
+    ? blogs.filter((blog) =>
+        blog.tags.some((tag) => tag.toLowerCase() === normalizedTag)
+      )
+    : blogs;
 
   return (
     <>

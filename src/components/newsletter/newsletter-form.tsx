@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from 'react'
-import { motion } from '@/lib/motion'
 import { Mail, Loader2, Check, AlertCircle } from 'lucide-react'
 import { NEWSLETTER_TOPICS, type NewsletterTopicId } from '@/constants/newsletter'
 import { cn } from '@/lib/utils'
@@ -128,12 +127,10 @@ export function NewsletterForm({
           />
         </div>
 
-        <motion.button
+        <button
           type="submit"
           disabled={status === 'loading' || status === 'success'}
-          whileHover={{ scale: status === 'idle' || status === 'error' ? 1.02 : 1 }}
-          whileTap={{ scale: status === 'idle' || status === 'error' ? 0.98 : 1 }}
-        className="w-full px-4 py-3 rounded-xl cta-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full px-4 py-3 rounded-xl cta-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {status === 'loading' && (
             <>
@@ -150,13 +147,11 @@ export function NewsletterForm({
           {(status === 'idle' || status === 'error') && (
             <span>Subscribe</span>
           )}
-        </motion.button>
+        </button>
       </form>
 
       {message && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className={`mt-3 p-3 rounded-xl text-sm flex items-start gap-2 neu-pressed-sm ${
             status === 'success'
               ? 'text-green-700 dark:text-green-300'
@@ -169,7 +164,7 @@ export function NewsletterForm({
             <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
           )}
           <span>{message}</span>
-        </motion.div>
+        </div>
       )}
 
       <p className="mt-3 text-xs text-muted-foreground">

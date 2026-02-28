@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, ReactNode } from "react";
-import { motion, useReducedMotion } from '@/lib/motion';
-import { useRouter, usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { formatDate } from "../../../lib/formatDate";
 import { Container } from "../Container";
 import { Heading } from "../Heading";
@@ -13,22 +13,46 @@ import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { ReadingProgress } from "./reading-progress";
 import { ReadingTimeBadge } from "./reading-time-badge";
-import { RelatedPosts } from "./related-posts";
-import { GiscusComments } from "./giscus-comments";
-import { BlogSidebar } from "./blog-sidebar";
 import { NewsletterCTA } from "./newsletter-cta";
 import { InlineNewsletterCTA } from "./inline-newsletter-cta";
 import { ViewCounter } from "./view-counter";
 import { SocialShare } from "./social-share";
-import { SeriesNavigation } from "./series-navigation";
 import { ReadingProgressTracker } from "./reading-progress-tracker";
-import { TextToSpeech } from "./text-to-speech";
 import { BlogJsonLd } from "./blog-json-ld";
-import { Webmentions } from "./webmentions";
 import { SyndicationLinks } from "./syndication-links";
 import Link from "next/link";
 import { getTopicHubsForTags } from "@/constants/topics";
 import { getSiteUrl } from "@/lib/site-url";
+
+const TextToSpeech = dynamic(
+  () => import("./text-to-speech").then((module) => module.TextToSpeech),
+  { ssr: false, loading: () => null }
+);
+
+const SeriesNavigation = dynamic(
+  () => import("./series-navigation").then((module) => module.SeriesNavigation),
+  { ssr: false, loading: () => null }
+);
+
+const Webmentions = dynamic(
+  () => import("./webmentions").then((module) => module.Webmentions),
+  { ssr: false, loading: () => null }
+);
+
+const GiscusComments = dynamic(
+  () => import("./giscus-comments").then((module) => module.GiscusComments),
+  { ssr: false, loading: () => null }
+);
+
+const RelatedPosts = dynamic(
+  () => import("./related-posts").then((module) => module.RelatedPosts),
+  { ssr: false, loading: () => null }
+);
+
+const BlogSidebar = dynamic(
+  () => import("./blog-sidebar").then((module) => module.BlogSidebar),
+  { ssr: false, loading: () => null }
+);
 
 interface BlogMeta {
   title: string;
@@ -69,9 +93,7 @@ export function BlogLayout({
   previousPathname,
   readingTime = 5,
 }: BlogLayoutProps) {
-  const router = useRouter();
   const pathname = usePathname();
-  const reduceMotion = useReducedMotion();
   const contentRef = useRef<HTMLDivElement>(null);
   const safeDate = clampToToday(meta.date);
   const safeUpdated = meta.updated ? clampToToday(meta.updated) : undefined;
@@ -90,8 +112,6 @@ export function BlogLayout({
     ? window.location.href
     : `${siteUrl}${pathname}`;
 
-  const shared = !reduceMotion && !!slug;
-
   return (
     <>
       <ReadingProgress />
@@ -109,26 +129,20 @@ export function BlogLayout({
       <div className="xl:relative xl:grid xl:grid-cols-[1fr_300px] xl:gap-8 xl:items-start">
         <div className="mx-auto max-w-2xl xl:mx-0">
           <BreadcrumbNav customSegments={{ blog: "Blog" }} />
-          
+
           {previousPathname && (
-            <motion.button
+            <button
               type="button"
-              onClick={() => router.back()}
+              onClick={() => window.history.back()}
               aria-label="Go back to blogs"
               className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               <ArrowLeft className="h-4 w-4 stroke-zinc-500 transition group-hover:stroke-zinc-700 dark:stroke-zinc-500 dark:group-hover:stroke-zinc-400" />
-            </motion.button>
+            </button>
           )}
           <article>
             <header className="flex flex-col">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
+              <div>
                 <div className="flex flex-wrap items-center gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
@@ -160,11 +174,9 @@ export function BlogLayout({
                     </div>
                   </div>
                 </div>
-                <motion.div layoutId={shared ? `blog-title-${slug}` : undefined}>
-                  <Heading className="mt-6 text-4xl font-bold tracking-tight text-stone-800 dark:text-stone-100 sm:text-5xl">
-                    {meta.title}
-                  </Heading>
-                </motion.div>
+                <Heading className="mt-6 text-4xl font-bold tracking-tight text-stone-800 dark:text-stone-100 sm:text-5xl">
+                  {meta.title}
+                </Heading>
                 <Paragraph className="mt-4 text-sm leading-8 text-stone-600 dark:text-stone-400">
                   {meta.description}
                 </Paragraph>
@@ -182,14 +194,8 @@ export function BlogLayout({
                     ))}
                   </div>
                 )}
-              </motion.div>
-              <motion.div
-                layoutId={shared ? `blog-cover-${slug}` : undefined}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="mt-8 aspect-video relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-800"
-              >
+              </div>
+              <div className="mt-8 aspect-video relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-800">
                 <FallbackImage
                   src={meta.image}
                   alt={meta.title}
@@ -198,14 +204,9 @@ export function BlogLayout({
                   className="object-cover"
                   priority
                 />
-              </motion.div>
+              </div>
             </header>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="mt-8"
-            >
+            <div className="mt-8">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                 <TextToSpeech slug={slug} contentRef={contentRef} />
                 <SocialShare
@@ -223,13 +224,13 @@ export function BlogLayout({
                 defaultTopics={relatedHubs.map((hub) => hub.slug)}
                 sourcePath={pathname}
               />
-              
+
               <Prose>
                 <div ref={contentRef}>
                   {children}
                 </div>
               </Prose>
-            </motion.div>
+            </div>
 
             {/* Series Navigation (if part of a series) */}
             {meta.series && meta.seriesOrder && (

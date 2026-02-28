@@ -2,6 +2,7 @@
 
 import { motion } from '@/lib/motion';
 import { ArrowRight, Mail, Github, Linkedin } from "lucide-react";
+import { IconBrandMastodon } from "@tabler/icons-react";
 import Link from "next/link";
 
 export function ContactCTA() {
@@ -61,6 +62,17 @@ export function ContactCTA() {
               >
                 <Linkedin className="h-4 w-4" />
                 LinkedIn
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href="https://social.lscaturchio.xyz/auth/sign_up"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="neu-button inline-flex items-center gap-2 rounded-xl px-4 py-2 hover:text-primary transition-all"
+              >
+                <IconBrandMastodon className="h-4 w-4" />
+                Join Lorenzo Social
               </Link>
             </motion.div>
           </div>

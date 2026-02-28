@@ -1,7 +1,4 @@
-"use client";
-
-import { ReactNode } from "react";
-import { motion, useReducedMotion } from '@/lib/motion';
+import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface SectionProps {
@@ -58,12 +55,10 @@ export function Section({
   reveal = true,
   background = "default",
 }: SectionProps) {
-  const reduceMotion = useReducedMotion();
-  const revealVariants = {
-    // Keep content visible during SSR; only apply subtle motion on reveal.
-    hidden: { opacity: 1, y: reduceMotion ? 0 : 16 },
-    show: { opacity: 1, y: 0 },
-  };
+  const revealStyle = {
+    "--reveal-y": "16px",
+    "--reveal-delay": "0ms",
+  } as CSSProperties;
 
   return (
     <section
@@ -77,20 +72,18 @@ export function Section({
       {topDivider && (
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 max-w-lg h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       )}
-      <motion.div
+      <div
         className={cn(
           "mx-auto px-4 sm:px-6 lg:px-8",
           sizeClasses[size],
-          paddingClasses[padding]
+          paddingClasses[padding],
+          reveal && "reveal"
         )}
-        initial={reveal ? "hidden" : false}
-        whileInView={reveal ? "show" : undefined}
-        viewport={{ once: true, margin: "-80px" }}
-        variants={revealVariants}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        data-reveal-state={reveal ? "in" : undefined}
+        style={reveal ? revealStyle : undefined}
       >
         {children}
-      </motion.div>
+      </div>
       {divider && (
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 max-w-md h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       )}

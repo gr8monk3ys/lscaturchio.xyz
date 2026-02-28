@@ -1,9 +1,9 @@
-import { ViewCountsProvider } from '@/hooks/use-view-counts'
+import type { ReactNode } from "react";
 
 export default function BlogLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: ReactNode;
 }) {
-  return <ViewCountsProvider>{children}</ViewCountsProvider>
+  return children;
 }
