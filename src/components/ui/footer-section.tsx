@@ -94,7 +94,7 @@ function Footer() {
                   key={social.label}
                   href={social.href}
                   target="_blank"
-                  rel={social.relMe ? "me noopener noreferrer" : "noopener noreferrer"}
+                  rel="noopener noreferrer"
                   className={cn(buttonVariants({ variant: "default", size: "icon" }), "rounded-xl")}
                   title={social.label}
                   aria-label={social.label}
