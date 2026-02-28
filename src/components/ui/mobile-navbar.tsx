@@ -2,13 +2,26 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from '@/lib/motion';
 import { navigationCategories, contactLink } from '@/constants/navlinks';
 import { ThemeToggle } from './theme-toggle';
-import { CommandPalette } from './command-palette';
 import { LanguageSwitcher } from "@/components/i18n/google-translate";
+
+const CommandPalette = dynamic(
+  () => import('./command-palette').then((module) => module.CommandPalette),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        aria-hidden
+        className="h-9 w-9 rounded-lg border border-border/50 bg-muted/40"
+      />
+    ),
+  }
+);
 
 export function MobileNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

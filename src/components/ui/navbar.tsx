@@ -2,14 +2,27 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { motion } from '@/lib/motion';
 import Image from "next/image";
 import { navigationCategories, contactLink } from '@/constants/navlinks';
 import { ThemeToggle } from './theme-toggle';
-import { CommandPalette } from './command-palette';
 import { NavDropdown } from './nav-dropdown';
 import { LanguageSwitcher } from "@/components/i18n/google-translate";
+
+const CommandPalette = dynamic(
+  () => import('./command-palette').then((module) => module.CommandPalette),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        aria-hidden
+        className="h-9 w-[88px] rounded-lg border border-border/50 bg-muted/40"
+      />
+    ),
+  }
+);
 
 // Animation variants for nav items
 const navItemVariants = {

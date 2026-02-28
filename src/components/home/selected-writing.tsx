@@ -1,7 +1,3 @@
-"use client";
-
-import type { CSSProperties } from "react";
-import { useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
@@ -24,56 +20,7 @@ type SelectedWritingProps = {
   className?: string;
 };
 
-function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined") return true;
-  return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? true;
-}
-
 export function SelectedWriting({ posts, className }: SelectedWritingProps) {
-  const railRef = useRef<HTMLDivElement | null>(null);
-  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
-
-  useEffect(() => {
-    const rail = railRef.current;
-    if (!rail) return;
-    if (prefersReducedMotion()) return;
-
-    let raf = 0;
-
-    const update = () => {
-      raf = 0;
-      const railRect = rail.getBoundingClientRect();
-      if (!railRect.width) return;
-
-      const railCenter = railRect.left + railRect.width / 2;
-
-      cardRefs.current.forEach((card) => {
-        if (!card) return;
-        const rect = card.getBoundingClientRect();
-        const cardCenter = rect.left + rect.width / 2;
-        const delta = (cardCenter - railCenter) / railRect.width; // roughly -0.5..0.5
-        const clamped = Math.max(-1, Math.min(1, delta * 2));
-        // Translate image a little opposite scroll direction for parallax.
-        card.style.setProperty("--writing-parallax-x", `${Math.round(-18 * clamped)}px`);
-      });
-    };
-
-    const onScroll = () => {
-      if (raf) return;
-      raf = window.requestAnimationFrame(update);
-    };
-
-    update();
-    rail.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-
-    return () => {
-      rail.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (raf) window.cancelAnimationFrame(raf);
-    };
-  }, [posts.length]);
-
   if (!posts.length) return null;
 
   return (
@@ -95,14 +42,13 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
 
         <div className="relative">
           <div
-            ref={railRef}
             className={cn(
               "selected-writing-rail -mx-4 flex gap-4 overflow-x-auto px-4 pb-4",
               "scroll-px-4 snap-x snap-mandatory",
               "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             )}
           >
-            {posts.map((post, index) => (
+            {posts.map((post) => (
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
@@ -112,16 +58,7 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
                 )}
               >
                 <div
-                  ref={(el) => {
-                    cardRefs.current[index] = el;
-                  }}
                   className="neu-card h-full overflow-hidden"
-                  style={
-                    {
-                      // default in case JS is disabled
-                      ["--writing-parallax-x" as never]: "0px",
-                    } as CSSProperties
-                  }
                 >
                   <div className="relative h-56 overflow-hidden">
                     <Image

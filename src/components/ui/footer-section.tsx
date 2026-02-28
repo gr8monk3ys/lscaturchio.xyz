@@ -3,12 +3,6 @@
 import { buttonVariants } from "@/components/ui/button"
 import { navigation } from '@/constants/navlinks';
 import Link from "next/link";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { Send, Rss, Pizza } from "lucide-react"
 import { socials } from "@/constants/socials"
 import { cn } from "@/lib/utils"
@@ -27,6 +21,15 @@ function Footer() {
               Subscribe for updates on AI systems, engineering notes, and new writing.
             </p>
             <div className="flex flex-col gap-3">
+              <a
+                href="https://social.lscaturchio.xyz/auth/sign_up"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ variant: "primary" }), "inline-flex items-center gap-2")}
+              >
+                <Send className="h-4 w-4" />
+                Join Lorenzo Social
+              </a>
               <a
                 href={substackUrl}
                 target="_blank"
@@ -87,24 +90,18 @@ function Footer() {
             <h3 className="mb-4 text-lg font-semibold">Follow Me</h3>
             <div className="mb-6 flex flex-wrap gap-3">
               {socials.map((social) => (
-                <TooltipProvider key={social.label}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <a
-                        href={social.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={cn(buttonVariants({ variant: "default", size: "icon" }), "rounded-xl")}
-                      >
-                        <social.icon className="h-4 w-4" />
-                        <span className="sr-only">{social.label}</span>
-                      </a>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{social.label}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel={social.relMe ? "me noopener noreferrer" : "noopener noreferrer"}
+                  className={cn(buttonVariants({ variant: "default", size: "icon" }), "rounded-xl")}
+                  title={social.label}
+                  aria-label={social.label}
+                >
+                  <social.icon className="h-4 w-4" />
+                  <span className="sr-only">{social.label}</span>
+                </a>
               ))}
             </div>
           </div>
