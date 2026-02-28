@@ -1,4 +1,3 @@
-import Script from "next/script";
 import { SITE_URL } from "@/lib/site-url";
 
 interface BlogJsonLdProps {
@@ -48,8 +47,10 @@ export function BlogJsonLd({
   };
 
   return (
-    <Script id="blog-schema" type="application/ld+json">
-      {JSON.stringify(jsonLd)}
-    </Script>
+    <script
+      id="blog-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
   );
 }

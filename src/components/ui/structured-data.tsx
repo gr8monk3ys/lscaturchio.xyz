@@ -1,7 +1,3 @@
-"use client";
-
-import Script from "next/script";
-
 interface WebsiteStructuredDataProps {
   url: string;
   name: string;
@@ -24,9 +20,11 @@ export function WebsiteStructuredData({
   };
 
   return (
-    <Script id="website-schema" type="application/ld+json">
-      {JSON.stringify(jsonLd)}
-    </Script>
+    <script
+      id="website-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
   );
 }
 
@@ -61,9 +59,11 @@ export function PersonStructuredData({
   };
 
   return (
-    <Script id="person-schema" type="application/ld+json">
-      {JSON.stringify(jsonLd)}
-    </Script>
+    <script
+      id="person-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
   );
 }
 
@@ -89,9 +89,11 @@ export function BreadcrumbStructuredData({
   };
 
   return (
-    <Script id="breadcrumb-schema" type="application/ld+json">
-      {JSON.stringify(jsonLd)}
-    </Script>
+    <script
+      id="breadcrumb-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
   );
 }
 
@@ -117,8 +119,10 @@ export function FAQStructuredData({ questions }: FAQStructuredDataProps) {
   };
 
   return (
-    <Script id="faq-schema" type="application/ld+json">
-      {JSON.stringify(jsonLd)}
-    </Script>
+    <script
+      id="faq-schema"
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
   );
 }

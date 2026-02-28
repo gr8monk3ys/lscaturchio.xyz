@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react'
 import Link from 'next/link'
-import { LazyMotion, domAnimation, m } from '@/lib/motion'
 import { ArrowRight, Calendar } from 'lucide-react'
 import Image from 'next/image'
 import useSWR from 'swr'
@@ -62,57 +61,50 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
   return (
     <div className="mt-12 pt-8">
       <h3 className="text-2xl font-bold mb-6 text-foreground">Related Posts</h3>
-      <LazyMotion features={domAnimation}>
-        <div className="grid gap-6 md:grid-cols-3">
-          {posts.map((post, index) => (
-            <m.div
-              key={post.url}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+      <div className="grid gap-6 md:grid-cols-3">
+        {posts.map((post) => (
+          <div key={post.url}>
+            <Link
+              href={post.url}
+              className="group block h-full rounded-2xl neu-card overflow-hidden"
             >
-              <Link
-                href={post.url}
-                className="group block h-full rounded-2xl neu-card overflow-hidden"
-              >
-                <div className="aspect-video relative overflow-hidden bg-muted rounded-t-xl">
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-4">
-                  <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-2">
-                    {post.title}
-                  </h4>
-                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                    {post.description}
-                  </p>
-                  {post.date && (
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Calendar className="h-3 w-3" />
-                      <span>
-                        {new Date(post.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1 mt-3 text-sm text-primary">
-                    <span>Read more</span>
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              <div className="aspect-video relative overflow-hidden bg-muted rounded-t-xl">
+                <Image
+                  src={post.image}
+                  alt={post.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="p-4">
+                <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-2">
+                  {post.title}
+                </h4>
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                  {post.description}
+                </p>
+                {post.date && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Calendar className="h-3 w-3" />
+                    <span>
+                      {new Date(post.date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </span>
                   </div>
+                )}
+                <div className="flex items-center gap-1 mt-3 text-sm text-primary">
+                  <span>Read more</span>
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </div>
-              </Link>
-            </m.div>
-          ))}
-        </div>
-      </LazyMotion>
+              </div>
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

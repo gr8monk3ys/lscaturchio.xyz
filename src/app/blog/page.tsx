@@ -1,4 +1,3 @@
-import React, { Suspense } from "react";
 import { Container } from "@/components/Container";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
@@ -135,9 +134,7 @@ export default async function Blog({
           }}
         />
 
-        <Suspense fallback={<div className="text-center py-12">Loading...</div>}>
-          <BlogGrid blogs={data} tagFilter={tagFilter} />
-        </Suspense>
+        <BlogGrid blogs={data} tagFilter={tagFilter} />
       </div>
     </Container>
   );

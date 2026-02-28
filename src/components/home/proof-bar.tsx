@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { Section } from "@/components/ui/Section";
 import { badgeVariants } from "@/components/ui/badge";

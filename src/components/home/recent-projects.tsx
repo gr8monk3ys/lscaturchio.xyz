@@ -1,5 +1,3 @@
-"use client";
-
 import { ArrowUpRight, Star, GitFork, Clock } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";

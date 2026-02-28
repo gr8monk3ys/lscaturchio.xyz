@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { motion, AnimatePresence } from '@/lib/motion';
 import { Check, Copy, ChevronDown, ChevronUp, Hash, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -168,31 +167,17 @@ export function CodeBlock({
             className="h-7 px-2 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
             aria-label="Copy code to clipboard"
           >
-            <AnimatePresence mode="wait">
-              {copied ? (
-                <motion.div
-                  key="check"
-                  initial={{ scale: 0.95, opacity: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0.95, opacity: 0 }}
-                  className="flex items-center gap-1 text-green-400"
-                >
-                  <Check className="h-3.5 w-3.5" />
-                  <span className="text-xs">Copied!</span>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="copy"
-                  initial={{ scale: 0.95, opacity: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0.95, opacity: 0 }}
-                  className="flex items-center gap-1"
-                >
-                  <Copy className="h-3.5 w-3.5" />
-                  <span className="text-xs hidden sm:inline">Copy</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {copied ? (
+              <span className="flex items-center gap-1 text-green-400">
+                <Check className="h-3.5 w-3.5" />
+                <span className="text-xs">Copied!</span>
+              </span>
+            ) : (
+              <span className="flex items-center gap-1">
+                <Copy className="h-3.5 w-3.5" />
+                <span className="text-xs hidden sm:inline">Copy</span>
+              </span>
+            )}
           </Button>
         </div>
       </div>

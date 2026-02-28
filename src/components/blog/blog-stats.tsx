@@ -1,7 +1,4 @@
-"use client";
-
 import { BookOpen, Clock, Tag, TrendingUp } from "lucide-react";
-import { LazyMotion, domAnimation, m } from '@/lib/motion';
 
 interface BlogStatsData {
   totalPosts: number;
@@ -47,33 +44,23 @@ export function BlogStats({ stats }: BlogStatsProps) {
   ];
 
   return (
-    <LazyMotion features={domAnimation}>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-        {statCards.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <m.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="rounded-2xl neu-card p-5"
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`rounded-xl neu-flat-sm p-3 ${stat.color}`}
-                >
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-muted-foreground">{stat.label}</p>
-                  <p className="text-lg font-bold truncate">{stat.value}</p>
-                </div>
+    <div className="mb-8 grid grid-cols-2 gap-6 md:grid-cols-4">
+      {statCards.map((stat) => {
+        const Icon = stat.icon;
+        return (
+          <div key={stat.label} className="rounded-2xl neu-card p-5">
+            <div className="flex items-center gap-3">
+              <div className={`rounded-xl neu-flat-sm p-3 ${stat.color}`}>
+                <Icon className="h-5 w-5" />
               </div>
-            </m.div>
-          );
-        })}
-      </div>
-    </LazyMotion>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-muted-foreground">{stat.label}</p>
+                <p className="truncate text-lg font-bold">{stat.value}</p>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from '@/lib/motion';
 import { BookOpen, TrendingUp, Sparkles } from "lucide-react";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 
@@ -12,13 +11,7 @@ export function NewsletterCTA({
   sourcePath?: string;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      className="my-12 p-8 rounded-2xl neu-card relative overflow-hidden"
-    >
+    <div className="my-12 p-8 rounded-2xl neu-card relative overflow-hidden">
 
       <div className="relative z-10">
         <div className="flex items-center gap-2 mb-4">
@@ -59,6 +52,6 @@ export function NewsletterCTA({
 
         <NewsletterForm defaultTopics={defaultTopics} sourcePath={sourcePath} />
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -6,18 +6,13 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { MobileNavbar } from "@/components/ui/mobile-navbar"
 import { Suspense } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
-import { PWARegister } from '@/components/pwa-register'
-import { ScrollToTop } from '@/components/ui/scroll-to-top'
-import { LayoutWrapper } from '@/components/layout/layout-wrapper'
-import { CanonicalLink } from '@/components/layout/canonical-link'
-import { HreflangLinks } from "@/components/layout/hreflang-links";
-import { GoogleTranslateProvider } from "@/components/i18n/google-translate";
-import { HtmlLangSync } from "@/components/i18n/html-lang-sync";
 import { Metadata } from 'next'
 import Script from "next/script";
 import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Fraunces } from "next/font/google";
 import { SITE_URL } from "@/lib/site-url";
+import { ContactCTAGate } from "@/components/layout/contact-cta-gate";
+import { ClientEnhancements } from "@/components/layout/client-enhancements";
 const WEBMENTION_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, "");
 
 const displayFont = Fraunces({
@@ -103,6 +98,7 @@ export default function RootLayout({
         image: `${SITE_URL}/images/portrait.webp`,
         jobTitle: "Data Scientist & Developer",
         sameAs: [
+          "https://social.lscaturchio.xyz/@gr8monk3ys",
           "https://github.com/gr8monk3ys",
           "https://linkedin.com/in/lorenzo-scaturchio",
           "https://www.instagram.com/lorenzo.scaturchio",
@@ -123,11 +119,6 @@ export default function RootLayout({
       className={`${bodyFont.variable} ${displayFont.variable}`}
     >
       <head>
-        {/* Canonical Link - Client Component for dynamic pathname */}
-        <CanonicalLink />
-        {/* Hreflang Links - Client Component for dynamic pathname */}
-        <HreflangLinks />
-
         {/* RSS Feed Autodiscovery */}
         <link rel="alternate" type="application/rss+xml" title="Lorenzo Scaturchio Blog RSS" href="/api/rss" />
         <link rel="alternate" type="application/rss+xml" title="Lorenzo Scaturchio Podcast RSS" href="/podcast/rss.xml" />
@@ -136,6 +127,7 @@ export default function RootLayout({
         {/* Webmention endpoints (IndieWeb) */}
         <link rel="webmention" href={`https://webmention.io/${WEBMENTION_DOMAIN}/webmention`} />
         <link rel="pingback" href={`https://webmention.io/${WEBMENTION_DOMAIN}/xmlrpc`} />
+        <link rel="me" href="https://social.lscaturchio.xyz/@gr8monk3ys" />
 
         {/* Core Meta Tags */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -159,9 +151,6 @@ export default function RootLayout({
         </Script>
       </head>
       <body>
-        <GoogleTranslateProvider />
-        <HtmlLangSync />
-
         {/* Skip to content link for accessibility */}
         <a
           href="#main-content"
@@ -181,11 +170,10 @@ export default function RootLayout({
           <Suspense fallback={<div className="min-h-[64px] md:hidden"></div>}>
             <MobileNavbar />
           </Suspense>
-
-          {/* LayoutWrapper handles pathname-dependent ContactCTA */}
-          <LayoutWrapper>
+          <main id="main-content">
             {children}
-          </LayoutWrapper>
+          </main>
+          <ContactCTAGate />
 
           <Suspense fallback={<div className="min-h-[200px]"></div>}>
             <Footer />
@@ -194,8 +182,7 @@ export default function RootLayout({
           {/* Load analytics with low priority */}
           <Analytics />
           <SpeedInsights />
-          <PWARegister />
-          <ScrollToTop />
+          <ClientEnhancements />
         </ThemeProvider>
       </body>
     </html>

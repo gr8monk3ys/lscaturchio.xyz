@@ -280,18 +280,32 @@
     --reveal-duration: 650ms;
     --reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
+    opacity: 0;
     transform: translate3d(0, var(--reveal-y), 0);
-    transition: transform var(--reveal-duration) var(--reveal-ease);
-    transition-delay: var(--reveal-delay);
   }
 
   .reveal[data-reveal-state="in"] {
-    transform: translate3d(0, 0, 0);
+    animation: reveal-in var(--reveal-duration) var(--reveal-ease) both;
+    animation-delay: var(--reveal-delay);
+  }
+
+  @keyframes reveal-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, var(--reveal-y), 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .reveal {
+    .reveal,
+    .reveal[data-reveal-state="in"] {
+      opacity: 1 !important;
       transform: none !important;
+      animation: none !important;
       transition: none !important;
     }
   }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion } from '@/lib/motion';
 import { List, Sparkles, MessageSquareText, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -96,10 +95,7 @@ export function BlogSidebar({ slug, title }: { slug: string; title: string }) {
   };
 
   return (
-    <motion.aside
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5, delay: 0.6 }}
+    <aside
       className="hidden xl:block xl:sticky xl:top-24 xl:max-h-[calc(100vh-6rem)] xl:overflow-y-auto xl:py-8"
       aria-label="Article sidebar"
     >
@@ -201,6 +197,6 @@ export function BlogSidebar({ slug, title }: { slug: string; title: string }) {
           </nav>
         )}
       </div>
-    </motion.aside>
+    </aside>
   );
 }
