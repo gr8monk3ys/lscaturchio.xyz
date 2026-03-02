@@ -171,7 +171,6 @@ function CommandPaletteTrigger({ className, onOpen }: TriggerProps) {
         "bg-muted/50 hover:bg-muted rounded-lg border border-border/50 transition-colors",
         className
       )}
-      aria-label="Open command palette"
     >
       <Search className="h-4 w-4" />
       <span className="hidden sm:inline">Search</span>

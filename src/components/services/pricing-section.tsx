@@ -23,7 +23,7 @@ export function PricingSection({
     <section className="flex flex-col items-center gap-10 py-10">
       <div className="space-y-7 text-center">
         <div className="space-y-4">
-          <h1 className="text-4xl font-medium md:text-5xl">{title}</h1>
+          <h2 className="text-4xl font-medium md:text-5xl">{title}</h2>
           <p className="text-muted-foreground">{subtitle}</p>
         </div>
         <div className="mx-auto flex w-fit rounded-full bg-muted p-1">

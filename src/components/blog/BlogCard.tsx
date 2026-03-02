@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
@@ -11,9 +11,10 @@ interface BlogCardProps {
   date: string;
   image: string;
   tags: string[];
+  priority?: boolean;
 }
 
-export function BlogCard({ slug, title, description, date, image, tags }: BlogCardProps) {
+export function BlogCard({ slug, title, description, date, image, tags, priority = false }: BlogCardProps) {
   return (
     <Link href={`/blog/${slug}`} className="block h-full">
       <Card className="flex h-full cursor-pointer flex-col overflow-hidden group transition-transform duration-200 hover:-translate-y-1">
@@ -23,6 +24,7 @@ export function BlogCard({ slug, title, description, date, image, tags }: BlogCa
             alt={title}
             fill
             quality={65}
+            priority={priority}
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 30vw"
           />
@@ -35,7 +37,9 @@ export function BlogCard({ slug, title, description, date, image, tags }: BlogCa
               </Badge>
             ))}
           </div>
-          <CardTitle className="line-clamp-2">{title}</CardTitle>
+          <h2 className="line-clamp-2 text-xl font-semibold leading-tight tracking-tight">
+            {title}
+          </h2>
           <CardDescription className="flex items-center gap-3">
             <time dateTime={date}>{formatDate(date)}</time>
           </CardDescription>

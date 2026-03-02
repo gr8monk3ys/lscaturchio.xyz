@@ -56,7 +56,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
           >
             {description}
           </motion.p>
-          <dl className="mt-10 space-y-6 divide-y divide-border">
+          <div className="mt-10 space-y-6 divide-y divide-border">
             <Accordion type="single" collapsible className="w-full">
               {items.map((faq, index) => (
                 <AccordionItem key={faq.question} value={`item-${index}`}>
@@ -83,7 +83,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
                 </AccordionItem>
               ))}
             </Accordion>
-          </dl>
+          </div>
 
           <div className="mt-10 rounded-2xl neu-card p-6">
             <h3 className="text-lg font-semibold">{contactInfo.title}</h3>

@@ -109,9 +109,11 @@ export function RecentProjects({ repos }: RecentProjectsProps) {
                         href={repo.href}
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label={`Open ${repo.title} repository`}
                         className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
                       >
                         <ArrowUpRight className="size-4" />
+                        <span className="sr-only">Open repository</span>
                       </Link>
                     </div>
                     <p className="text-sm text-muted-foreground line-clamp-2">

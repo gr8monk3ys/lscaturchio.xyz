@@ -14,6 +14,7 @@ import { SITE_URL } from "@/lib/site-url";
 import { ContactCTAGate } from "@/components/layout/contact-cta-gate";
 import { ClientEnhancements } from "@/components/layout/client-enhancements";
 const WEBMENTION_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, "");
+const ENABLE_VERCEL_ANALYTICS = process.env.VERCEL === "1";
 
 const displayFont = Fraunces({
   subsets: ["latin"],
@@ -179,9 +180,9 @@ export default function RootLayout({
             <Footer />
           </Suspense>
 
-          {/* Load analytics with low priority */}
-          <Analytics />
-          <SpeedInsights />
+          {/* Load Vercel analytics only when running on Vercel */}
+          {ENABLE_VERCEL_ANALYTICS && <Analytics />}
+          {ENABLE_VERCEL_ANALYTICS && <SpeedInsights />}
           <ClientEnhancements />
         </ThemeProvider>
       </body>
