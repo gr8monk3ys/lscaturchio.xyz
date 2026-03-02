@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { BadgeCheck, ArrowRight } from "lucide-react"
-import NumberFlow from "@number-flow/react"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +21,15 @@ export interface PricingTier {
 interface PricingCardProps {
   tier: PricingTier
   paymentFrequency: string
+}
+
+function formatUsd(price: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price);
 }
 
 export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
@@ -54,22 +62,13 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
       <div className="relative h-12">
         {typeof price === "number" ? (
           <>
-            <NumberFlow
-              format={{
-                style: "currency",
-                currency: "USD",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }}
-              value={price}
-              className="text-4xl font-medium tabular-nums"
-            />
+            <p className="text-4xl font-medium tabular-nums">{formatUsd(price)}</p>
             <p className="-mt-2 text-xs text-muted-foreground">
               Per month/project
             </p>
           </>
         ) : (
-          <h1 className="text-4xl font-medium tabular-nums">{price}</h1>
+          <p className="text-4xl font-medium tabular-nums">{price}</p>
         )}
       </div>
 

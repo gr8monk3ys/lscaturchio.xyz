@@ -62,8 +62,8 @@ export function BlogGrid({ blogs, tagFilter = "" }: BlogGridProps) {
       )}
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredBlogs.map((blog) => (
-          <BlogCard key={blog.slug} {...blog} />
+        {filteredBlogs.map((blog, index) => (
+          <BlogCard key={blog.slug} {...blog} priority={index === 0} />
         ))}
       </div>
     </>

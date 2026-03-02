@@ -74,7 +74,7 @@ export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps
 
           {/* Name and Role */}
           <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-foreground truncate">{name}</h4>
+            <h3 className="font-semibold text-foreground truncate">{name}</h3>
             <p className="text-sm text-muted-foreground truncate">
               {role} at {company}
             </p>
