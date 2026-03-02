@@ -12,6 +12,12 @@ interface TestimonialCardProps {
   index?: number;
 }
 
+const testimonialDateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
 function getInitials(name: string): string {
   return name
     .split(' ')
@@ -116,10 +122,7 @@ export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps
         {/* Date */}
         {date && (
           <p className="text-xs text-muted-foreground/60 mt-3">
-            {new Date(date).toLocaleDateString('en-US', {
-              month: 'long',
-              year: 'numeric',
-            })}
+            {testimonialDateFormatter.format(new Date(date))}
           </p>
         )}
       </div>
