@@ -61,7 +61,7 @@
     "clsx": "^2.0.0",
     "critters": "^0.0.25",
     "fast-glob": "^3.3.3",
-    "fast-xml-parser": "^5.3.6",
+    "fast-xml-parser": "^5.3.8",
     "feed": "^5.2.0",
     "framer-motion": "^12.28.1",
     "glob": "^13.0.6",
