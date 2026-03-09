@@ -19,8 +19,12 @@ const rateLimiters = new Map<string, Ratelimit>();
  * Get or create a rate limiter instance for the given config
  */
 export function getRedisRateLimiter(limit: number, windowMs: number): Ratelimit | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url =
+    process.env.UPSTASH_REDIS_REST_URL ||
+    process.env.KV_REST_API_URL;
+  const token =
+    process.env.UPSTASH_REDIS_REST_TOKEN ||
+    process.env.KV_REST_API_TOKEN;
 
   if (!url || !token) {
     return null;
@@ -51,6 +55,7 @@ export function getRedisRateLimiter(limit: number, windowMs: number): Ratelimit 
  */
 export function isRedisConfigured(): boolean {
   return Boolean(
-    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    (process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL) &&
+      (process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN)
   );
 }

@@ -3,7 +3,7 @@ import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
 import { validateCsrf } from "@/lib/csrf";
 import { escapeHtml, sanitizeForHtmlEmail, sanitizeEmailSubject } from "@/lib/sanitize";
-import { logError, logInfo } from "@/lib/logger";
+import { logError } from "@/lib/logger";
 import { contactFormSchema, parseBody } from "@/lib/validations";
 import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
@@ -26,17 +26,11 @@ async function handler(req: NextRequest) {
     const resendApiKey = process.env.RESEND_API_KEY;
 
     if (!resendApiKey) {
-      // Log for debugging but return success to user
-      logInfo("Contact Form: No RESEND_API_KEY configured", {
+      logError("Contact Form: RESEND_API_KEY is not configured", null, {
         component: 'contact',
-        name,
-        email,
-        messageLength: message.length,
+        action: 'POST',
       });
-
-      return apiSuccess({
-        message: "Message received! (Email not configured - check server logs)",
-      });
+      return ApiErrors.internalError("Contact form is temporarily unavailable. Please try again later.");
     }
 
     // Send email using Resend

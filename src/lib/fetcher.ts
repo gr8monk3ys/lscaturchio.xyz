@@ -53,9 +53,9 @@ export async function fetchJson<T>(input: RequestInfo | URL, init?: RequestInit)
   return payload as T;
 }
 
-export function unwrapApiData<T>(payload: T | { data: T }): T {
+export function unwrapApiData<T>(payload: T | { data?: T }): T {
   if (payload && typeof payload === "object" && "data" in payload) {
-    return (payload as { data: T }).data;
+    return (payload as { data?: T }).data as T;
   }
   return payload as T;
 }

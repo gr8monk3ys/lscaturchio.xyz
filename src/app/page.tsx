@@ -7,6 +7,7 @@ import { RecentBlogs } from "@/components/home/recent-blogs";
 import { RecentProjects } from "@/components/home/recent-projects";
 import { ScrollCaseStudies } from "@/components/home/scroll-case-studies";
 import { ProofBar } from "@/components/home/proof-bar";
+import { FeaturedResults } from "@/components/home/featured-results";
 import { FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/structured-data";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { getGithubPortfolioRepos } from "@/lib/github-repos";
@@ -17,11 +18,11 @@ import { ogCardUrl } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Home",
   description:
-    "Portfolio, writing, and experiments from Lorenzo Scaturchio across AI, machine learning, and web development.",
+    "AI case studies, product builds, and practical writing from Lorenzo Scaturchio across retrieval systems, automation, and web development.",
   openGraph: {
     title: "Lorenzo Scaturchio | Data Scientist, Developer & Digital Craftsman",
     description:
-      "Portfolio, writing, and experiments across AI, machine learning, and web development.",
+      "AI case studies, product builds, and practical writing across retrieval systems, automation, and web development.",
     images: [
       {
         url: ogCardUrl({
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Lorenzo Scaturchio | Data Scientist & Developer",
-    description: "Portfolio, writing, and experiments across AI and web development.",
+    description: "AI case studies, product builds, and practical writing across retrieval systems and web development.",
     images: [
       ogCardUrl({
         title: "Lorenzo Scaturchio",
@@ -129,14 +130,17 @@ export default async function Home() {
       {/* Proof Bar */}
       <ProofBar />
 
-      {/* New Here Section */}
-      <NewHereSection popularPosts={popularPosts} />
+      {/* Featured Results */}
+      <FeaturedResults />
+
+      {/* Scroll-driven case study reveals */}
+      <ScrollCaseStudies />
 
       {/* How I Work */}
       <HowIWorkSection />
 
-      {/* Scroll-driven case study reveals */}
-      <ScrollCaseStudies />
+      {/* New Here Section */}
+      <NewHereSection popularPosts={popularPosts} />
 
       {/* Selected Writing */}
       <SelectedWriting posts={selectedWriting} />

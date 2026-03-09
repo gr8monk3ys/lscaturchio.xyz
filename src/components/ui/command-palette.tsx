@@ -166,9 +166,10 @@ function CommandPaletteTrigger({ className, onOpen }: TriggerProps) {
     <button
       type="button"
       onClick={onOpen}
+      aria-label="Open search"
       className={cn(
-        "flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground",
-        "bg-muted/50 hover:bg-muted rounded-lg border border-border/50 transition-colors",
+        "flex items-center gap-2 rounded-lg border border-border/50 bg-muted/50 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         className
       )}
     >
@@ -233,7 +234,7 @@ function CommandPaletteDialog({
           role="dialog"
           aria-modal="true"
           aria-label="Search and navigate"
-          className="bg-popover border border-border rounded-xl shadow-2xl overflow-hidden"
+          className="overflow-hidden rounded-xl border border-border bg-popover shadow-2xl focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
         >
           <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
             <Search className="h-5 w-5 text-muted-foreground shrink-0" />

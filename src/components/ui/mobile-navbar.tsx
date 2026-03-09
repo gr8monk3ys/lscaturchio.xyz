@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from '@/lib/motion';
-import { navigationCategories, contactLink } from '@/constants/navlinks';
+import { primaryNavigation, secondaryNavigationCategories, contactLink } from '@/constants/navlinks';
 import { ThemeToggle } from './theme-toggle';
 import { LanguageSwitcher } from "@/components/i18n/google-translate";
 
@@ -32,6 +32,8 @@ export function MobileNavbar() {
     setExpandedCategory(expandedCategory === name ? null : name);
   };
 
+  const isPathActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+
   return (
     <>
       {/* Mobile Menu Button */}
@@ -40,7 +42,7 @@ export function MobileNavbar() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl neu-button"
+          className="flex h-10 w-10 items-center justify-center rounded-xl neu-button focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           aria-label="Toggle menu"
           aria-expanded={isMenuOpen}
           aria-controls="mobile-navigation-menu"
@@ -62,11 +64,50 @@ export function MobileNavbar() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             id="mobile-navigation-menu"
-            className="fixed inset-0 z-[400] flex flex-col bg-background/95 backdrop-blur-sm md:hidden overflow-y-auto"
+            className="fixed inset-0 z-[400] flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
           >
             <div className="flex flex-col w-full max-w-md mx-auto p-6 pt-20 space-y-2">
-              {/* Category Sections */}
-              {navigationCategories.map((category, categoryIndex) => {
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {primaryNavigation.map((item, index) => {
+                  const ItemIcon = item.icon;
+                  const isActive = isPathActive(item.href);
+
+                  return (
+                    <motion.div
+                      key={item.href}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05 + index * 0.04 }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                          isActive
+                            ? 'border-primary/30 bg-primary/10 text-primary'
+                            : 'border-border/70 bg-background/80 text-foreground hover:border-primary/30 hover:text-primary'
+                        }`}
+                      >
+                        {ItemIcon && <ItemIcon className="h-4 w-4" />}
+                        <div className="min-w-0">
+                          <div className="text-sm font-semibold">{item.name}</div>
+                          {item.description && (
+                            <div className="truncate text-xs text-muted-foreground">{item.description}</div>
+                          )}
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              <div className="pt-4">
+                <p className="px-1 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  Browse More
+                </p>
+              </div>
+
+              {secondaryNavigationCategories.map((category, categoryIndex) => {
                 const Icon = category.icon;
                 const isExpanded = expandedCategory === category.name;
                 const hasActiveItem = category.items.some(item => pathname === item.href);
@@ -82,7 +123,7 @@ export function MobileNavbar() {
                     {/* Category Header */}
                     <button
                       onClick={() => toggleCategory(category.name)}
-                      className={`flex items-center justify-between w-full rounded-xl px-4 py-3 text-lg font-medium transition-colors ${
+                      className={`flex items-center justify-between w-full rounded-xl px-4 py-3 text-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                         hasActiveItem
                           ? 'text-primary'
                           : 'text-foreground/80 hover:bg-muted/50'
@@ -154,8 +195,8 @@ export function MobileNavbar() {
                 <Link
                   href={contactLink.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center gap-3 w-full rounded-xl px-4 py-3 text-lg font-medium transition-colors ${
-                    pathname === contactLink.href
+                  className={`flex items-center gap-3 w-full rounded-xl px-4 py-3 text-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                    isPathActive(contactLink.href)
                       ? 'neu-pressed bg-primary/10 text-primary'
                       : 'hover:bg-muted/50'
                   }`}

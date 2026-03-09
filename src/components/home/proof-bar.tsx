@@ -8,26 +8,26 @@ import { cn } from "@/lib/utils";
 const proofItems = [
   {
     icon: BarChart3,
-    label: "Impact",
-    value: "Talker lifted engagement +30% and learning +25%",
+    label: "Education",
+    value: "+30% engagement and +25% learning efficiency",
     proofHref: "/projects/talker",
   },
   {
     icon: Star,
-    label: "RAG Systems",
-    value: "Citations‑first answers with multimodal context",
+    label: "Retrieval",
+    value: "Grounded answers with citations and multimodal context",
     proofHref: "/blog/building-rag-systems",
   },
   {
     icon: Users,
     label: "Automation",
-    value: "Trading bot with sentiment + strict risk controls",
+    value: "Trading, publishing, and workflow systems with guardrails",
     proofHref: "/projects/ai-powered-trading-bot",
   },
   {
     icon: Sparkles,
-    label: "Open Source",
-    value: "Public work across RAG and developer tools",
+    label: "Public Proof",
+    value: "Case studies, repos, and writing you can inspect directly",
     proofHref: "https://github.com/gr8monk3ys",
   },
 ];

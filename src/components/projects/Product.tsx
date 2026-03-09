@@ -264,27 +264,40 @@ function CaseStudyOverview({ caseStudy }: { caseStudy: CaseStudy | undefined }) 
   if (!caseStudy) return null;
 
   return (
-    <div className="space-y-8">
-      <Reveal>
+    <Reveal>
+      <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)]">
         <section id="challenge" className="rounded-2xl border border-border/50 bg-card/50 p-6">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="mb-3 flex items-center gap-2">
             <Target className="h-5 w-5 text-orange-500" />
             <h3 className="font-semibold">The Challenge</h3>
           </div>
-          <p className="text-muted-foreground">{caseStudy.challenge}</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">{caseStudy.challenge}</p>
         </section>
-      </Reveal>
 
-      <Reveal delayMs={40}>
         <section id="solution" className="rounded-2xl border border-border/50 bg-card/50 p-6">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="mb-3 flex items-center gap-2">
             <Lightbulb className="h-5 w-5 text-yellow-500" />
-            <h3 className="font-semibold">The Solution</h3>
+            <h3 className="font-semibold">The Approach</h3>
           </div>
-          <p className="text-muted-foreground">{caseStudy.solution}</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">{caseStudy.solution}</p>
         </section>
-      </Reveal>
-    </div>
+
+        <section className="rounded-2xl border border-primary/18 bg-primary/5 p-6">
+          <div className="mb-3 flex items-center gap-2">
+            <CheckCircle2 className="h-5 w-5 text-primary" />
+            <h3 className="font-semibold">What Changed</h3>
+          </div>
+          <ul className="space-y-2">
+            {caseStudy.results.slice(0, 3).map((result) => (
+              <li key={result} className="flex items-start gap-2 text-sm text-foreground">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                <span>{result}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </section>
+    </Reveal>
   );
 }
 
@@ -552,7 +565,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
 
   const pageSections = [
     { id: "overview", label: "Overview" },
-    ...(caseStudy ? [{ id: "challenge", label: "Challenge" }, { id: "solution", label: "Solution" }] : []),
+    ...(caseStudy ? [{ id: "challenge", label: "Challenge" }, { id: "solution", label: "Approach" }] : []),
     { id: "architecture", label: "Architecture" },
     { id: "process", label: "Process" },
     ...(caseStudy ? [{ id: "outcomes", label: "Outcomes" }] : []),

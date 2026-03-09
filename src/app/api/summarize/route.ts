@@ -37,5 +37,5 @@ const handlePost = async (request: NextRequest) => {
   }
 }
 
-// Export with rate limiting (5 requests per minute - expensive GPT-4 calls)
-export const POST = withRateLimit(handlePost, RATE_LIMITS.AI_HEAVY)
+// Export with rate limiting (2 requests per minute - expensive GPT calls)
+export const POST = withRateLimit(handlePost, RATE_LIMITS.SUMMARIZE)

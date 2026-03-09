@@ -81,6 +81,34 @@ export const navigationCategories: NavCategory[] = [
   },
 ];
 
+export const primaryNavigation: NavItem[] = [
+  { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
+  { name: 'Work With Me', href: '/work-with-me', icon: Sparkles, description: 'Hire me for AI/RAG work' },
+  { name: 'Blog', href: '/blog', icon: BookOpen, description: 'Articles and thoughts' },
+];
+
+export const secondaryNavigationCategories: NavCategory[] = navigationCategories
+  .map((category) => {
+    if (category.name === 'Work') {
+      return {
+        ...category,
+        items: category.items.filter(
+          (item) => item.href !== '/projects' && item.href !== '/work-with-me'
+        ),
+      };
+    }
+
+    if (category.name === 'Content') {
+      return {
+        ...category,
+        items: category.items.filter((item) => item.href !== '/blog'),
+      };
+    }
+
+    return category;
+  })
+  .filter((category) => category.items.length > 0);
+
 // Contact link (always visible)
 export const contactLink: NavItem = {
   name: 'Contact',
