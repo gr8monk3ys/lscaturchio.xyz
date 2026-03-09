@@ -7,6 +7,12 @@ import * as Sentry from "@sentry/nextjs";
 
 // Only initialize Sentry if DSN is configured and in production
 const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
+const SENTRY_ENVIRONMENT =
+  process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT ||
+  process.env.NEXT_PUBLIC_VERCEL_ENV ||
+  process.env.VERCEL_ENV ||
+  process.env.NODE_ENV ||
+  "development";
 
 if (SENTRY_DSN && process.env.NODE_ENV === "production") {
   Sentry.init({
@@ -20,7 +26,7 @@ if (SENTRY_DSN && process.env.NODE_ENV === "production") {
     replaysSessionSampleRate: 0, // Don't capture any sessions without errors
 
     // Environment tag
-    environment: process.env.NODE_ENV,
+    environment: SENTRY_ENVIRONMENT,
 
     // Filter out common non-actionable errors
     ignoreErrors: [

@@ -18,6 +18,8 @@ import { logError, logInfo, logWarn } from './logger';
 const EMBEDDING_MATCH_THRESHOLD = parseFloat(
   process.env.EMBEDDING_MATCH_THRESHOLD || '0.5'
 );
+const NO_EMBEDDING_PROVIDER_ERROR =
+  'No embedding provider available. Set a valid OPENAI_API_KEY or start Ollama server.';
 
 // Determine which provider to use
 const USE_OPENAI = !!process.env.OPENAI_API_KEY;
@@ -72,6 +74,10 @@ function isOpenAIAuthOrConfigError(error: unknown): boolean {
   );
 }
 
+function isNoEmbeddingProviderError(error: unknown): boolean {
+  return getErrorMessage(error).includes('No embedding provider available');
+}
+
 /**
  * Split text into chunks for embedding
  */
@@ -115,15 +121,17 @@ export async function createEmbedding(text: string): Promise<number[]> {
       });
       return response.data[0].embedding;
     } catch (error) {
-      // In non-production, avoid repeated noisy invalid-key failures and fall back to Ollama.
-      if (!IS_PRODUCTION && isOpenAIAuthOrConfigError(error)) {
+      // Disable OpenAI embeddings on auth/config failures and fall back to Ollama.
+      if (isOpenAIAuthOrConfigError(error)) {
         openaiEmbeddingsDisabled = true;
         if (!hasWarnedOpenAIFallback) {
           hasWarnedOpenAIFallback = true;
-          logWarn('OpenAI embeddings auth/config failed; falling back to Ollama in non-production', {
-            component: 'embeddings',
-            reason: getErrorMessage(error),
-          });
+          if (!IS_PRODUCTION) {
+            logWarn('OpenAI embeddings auth/config failed; falling back to Ollama', {
+              component: 'embeddings',
+              reason: getErrorMessage(error),
+            });
+          }
         }
       } else {
         throw error;
@@ -145,9 +153,7 @@ export async function createEmbedding(text: string): Promise<number[]> {
         }
       );
     }
-    throw new Error(
-      'No embedding provider available. Set a valid OPENAI_API_KEY or start Ollama server.'
-    );
+    throw new Error(NO_EMBEDDING_PROVIDER_ERROR);
   }
 
   return createOllamaEmbedding(text);
@@ -211,9 +217,8 @@ export async function searchSimilarContent(query: string, limit: number = 5) {
 
     return rows;
   } catch (error) {
-    const message = getErrorMessage(error);
-    if (!IS_PRODUCTION && message.includes('No embedding provider available')) {
-      // Already warned once in createEmbedding; keep non-production logs quiet.
+    if (isNoEmbeddingProviderError(error)) {
+      // Expected when providers are unavailable; degrade gracefully without Sentry noise.
       return [];
     }
     logError('Search similar content failed', error, { component: 'embeddings' });
