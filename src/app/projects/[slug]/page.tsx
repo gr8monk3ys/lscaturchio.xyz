@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: "Projects | Lorenzo Scaturchio",
       description:
-        "Lorenzo Scaturchio is a developer, writer and speaker. He is a digital nomad and travels around the world while working remotely.",
+        "Project case studies, experiments, and product builds across AI systems, automation, and web applications.",
     };
   }
 }

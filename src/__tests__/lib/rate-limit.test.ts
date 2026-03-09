@@ -138,6 +138,27 @@ describe('RATE_LIMITS presets', () => {
     });
   });
 
+  it('has CHAT preset', () => {
+    expect(RATE_LIMITS.CHAT).toEqual({
+      limit: 3,
+      window: 60000,
+    });
+  });
+
+  it('has SUMMARIZE preset', () => {
+    expect(RATE_LIMITS.SUMMARIZE).toEqual({
+      limit: 2,
+      window: 60000,
+    });
+  });
+
+  it('has RELATED_POSTS preset', () => {
+    expect(RATE_LIMITS.RELATED_POSTS).toEqual({
+      limit: 10,
+      window: 60000,
+    });
+  });
+
   it('has STANDARD preset', () => {
     expect(RATE_LIMITS.STANDARD).toEqual({
       limit: 30,
@@ -221,5 +242,16 @@ describe('getClientIp', () => {
     });
 
     expect(getClientIp(request)).toBe('192.168.1.1');
+  });
+
+  it('ignores untrusted client-controlled IP headers', () => {
+    const request = new Request('http://localhost', {
+      headers: {
+        'x-client-ip': '203.0.113.10',
+      },
+    });
+
+    const result = getClientIp(request);
+    expect(result.startsWith('fingerprint:')).toBe(true);
   });
 });

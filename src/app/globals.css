@@ -196,6 +196,11 @@
     transform: scale(0.98);
   }
 
+  .neu-button:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+  }
+
   /* Neumorphic card with hover effect */
   .neu-card {
     box-shadow: var(--neu-shadow);
@@ -240,6 +245,11 @@
     box-shadow: var(--neu-shadow), 0 14px 28px hsl(var(--primary) / 0.24);
   }
 
+  .cta-primary:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+  }
+
   .cta-primary:disabled,
   .cta-primary[aria-disabled="true"] {
     background-color: hsl(var(--muted));
@@ -260,6 +270,11 @@
     color: hsl(var(--foreground));
     border-color: hsl(var(--primary) / 0.35);
     box-shadow: var(--neu-shadow);
+  }
+
+  .cta-secondary:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
   }
 
   .cta-secondary:disabled,

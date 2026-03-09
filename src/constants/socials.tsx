@@ -2,6 +2,8 @@ import {
   IconBrandLinkedin,
   IconBrandGithubFilled,
   IconBrandInstagram,
+  IconBrandMastodon,
+  IconUserPlus,
   IconBook,
   IconMovie,
   IconBrandLeetcode,
@@ -9,6 +11,17 @@ import {
 } from "@tabler/icons-react";
 
 export const socials = [
+  {
+    href: "https://social.lscaturchio.xyz/@gr8monk3ys",
+    label: "Mastodon",
+    icon: IconBrandMastodon,
+    relMe: true,
+  },
+  {
+    href: "https://social.lscaturchio.xyz/auth/sign_up",
+    label: "Join Lorenzo Social",
+    icon: IconUserPlus,
+  },
   {
     href: "https://github.com/gr8monk3ys",
     label: "Github",

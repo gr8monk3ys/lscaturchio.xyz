@@ -63,16 +63,29 @@ function validateQuery(query: string | null): ReturnType<typeof ApiErrors.badReq
   return null;
 }
 
+function parseLimit(raw: unknown): number {
+  const parsed =
+    typeof raw === 'number'
+      ? raw
+      : Number.parseInt(String(raw ?? ''), 10);
+
+  if (!Number.isFinite(parsed)) {
+    return 10;
+  }
+
+  return Math.min(Math.max(parsed, 1), 50);
+}
+
 const handleGet = async (request: NextRequest) => {
   try {
     const searchParams = request.nextUrl.searchParams;
     const query = searchParams.get('q');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const limit = parseLimit(searchParams.get('limit'));
 
     const queryError = validateQuery(query);
     if (queryError) return queryError;
 
-    const results = await searchEmbeddings(query!, Math.min(limit, 50));
+    const results = await searchEmbeddings(query!, limit);
     const grouped = groupEmbeddingResults(results as EmbeddingResult[]);
 
     const searchResults = Object.values(grouped)
@@ -101,12 +114,12 @@ const handlePost = async (request: NextRequest) => {
   try {
     const body = await request.json();
     const query = body.query;
-    const limit = parseInt(body.limit || '10');
+    const limit = parseLimit(body.limit);
 
     const queryError = validateQuery(query);
     if (queryError) return queryError;
 
-    const results = await searchEmbeddings(query, Math.min(limit, 50));
+    const results = await searchEmbeddings(query, limit);
     const grouped = groupEmbeddingResults(results as EmbeddingResult[], {
       includeTags: true,
     });

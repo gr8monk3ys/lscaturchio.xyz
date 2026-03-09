@@ -16,8 +16,15 @@ interface ContributionWeek {
   contributionDays: ContributionDay[]
 }
 
+interface ContributionsResponse {
+  totalContributions: number
+  weeks: ContributionWeek[]
+  degraded: boolean
+  message?: string
+}
+
 export function ContributionGraph() {
-  const { data, isLoading } = useSWR<{ totalContributions: number; weeks: ContributionWeek[] }>(
+  const { data, error, isLoading } = useSWR<ContributionsResponse>(
     '/api/github/contributions',
     fetchJson,
     { revalidateOnFocus: false }
@@ -36,7 +43,35 @@ export function ContributionGraph() {
     )
   }
 
+  if (error) {
+    return (
+      <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
+        <div className="flex items-center gap-2 mb-4">
+          <Github className="h-5 w-5 text-primary" />
+          <h3 className="text-xl font-semibold">GitHub Contributions</h3>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          GitHub contribution data is temporarily unavailable.
+        </p>
+      </div>
+    )
+  }
+
   if (!data) return null
+
+  if (data.degraded || data.weeks.length === 0) {
+    return (
+      <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
+        <div className="flex items-center gap-2 mb-4">
+          <Github className="h-5 w-5 text-primary" />
+          <h3 className="text-xl font-semibold">GitHub Contributions</h3>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          {data.message || 'GitHub contribution data is temporarily unavailable.'}
+        </p>
+      </div>
+    )
+  }
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const currentMonth = new Date().getMonth()

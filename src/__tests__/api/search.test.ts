@@ -193,6 +193,24 @@ describe('Search API Route', () => {
       expect(searchEmbeddings).toHaveBeenCalledWith('test', 50);
     });
 
+    it('clamps GET limit to a minimum of 1', async () => {
+      (searchEmbeddings as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+
+      const request = new NextRequest('http://localhost/api/search?q=test&limit=0');
+      await GET(request);
+
+      expect(searchEmbeddings).toHaveBeenCalledWith('test', 1);
+    });
+
+    it('uses default limit when GET limit is invalid', async () => {
+      (searchEmbeddings as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+
+      const request = new NextRequest('http://localhost/api/search?q=test&limit=abc');
+      await GET(request);
+
+      expect(searchEmbeddings).toHaveBeenCalledWith('test', 10);
+    });
+
     it('uses default limit of 10', async () => {
       (searchEmbeddings as ReturnType<typeof vi.fn>).mockResolvedValue([]);
 
@@ -469,6 +487,23 @@ describe('Search API Route', () => {
       expect(response.status).toBe(200);
       expect(json.data.results).toHaveLength(3);
       expect(searchEmbeddings).toHaveBeenCalledWith('test', 3);
+    });
+
+    it('clamps POST limit to a minimum of 1', async () => {
+      (searchEmbeddings as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+
+      const request = new NextRequest('http://localhost/api/search', {
+        method: 'POST',
+        body: JSON.stringify({ query: 'test', limit: -5 }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Origin': 'http://localhost',
+        },
+      });
+
+      await POST(request);
+
+      expect(searchEmbeddings).toHaveBeenCalledWith('test', 1);
     });
 
     it('extracts slug from URL correctly', async () => {

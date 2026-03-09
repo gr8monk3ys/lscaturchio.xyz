@@ -138,6 +138,30 @@ describe('/api/newsletter/subscribe', () => {
       expect(data.success).toBe(true);
     });
 
+    it('updates active subscriber preferences without restarting onboarding', async () => {
+      mockSql.mockResolvedValueOnce([{ email: 'existing@example.com', is_active: true }]);
+      mockSql.mockResolvedValueOnce([]);
+
+      const request = createMockRequest({
+        email: 'existing@example.com',
+        topics: ['rag-llms', 'systems-craft'],
+        source: '/blog/test-post',
+      });
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.data.alreadySubscribed).toBe(true);
+      expect(mockSql).toHaveBeenCalledTimes(2);
+
+      const updateCall = mockSql.mock.calls[1];
+      const metadataJson = updateCall[1] as string;
+      expect(JSON.parse(metadataJson)).toEqual({
+        topics: ['rag-llms', 'systems-craft'],
+        source: { path: '/blog/test-post' },
+      });
+    });
+
     it('reactivates inactive subscriber', async () => {
       // First call: SELECT returns inactive subscriber
       mockSql.mockResolvedValueOnce([{ email: 'inactive@example.com', is_active: false }]);

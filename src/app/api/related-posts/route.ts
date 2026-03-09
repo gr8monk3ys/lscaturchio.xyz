@@ -19,7 +19,10 @@ const handleGet = async (request: NextRequest) => {
     const searchParams = request.nextUrl.searchParams;
     const title = searchParams.get('title');
     const currentUrl = searchParams.get('url');
-    const limit = parseInt(searchParams.get('limit') || '3');
+    const parsedLimit = Number.parseInt(searchParams.get('limit') || '3', 10);
+    const limit = Number.isNaN(parsedLimit)
+      ? 3
+      : Math.min(Math.max(parsedLimit, 1), 6);
 
     if (!title || typeof title !== 'string') {
       return ApiErrors.badRequest('Post title is required');
@@ -76,30 +79,32 @@ const handleGet = async (request: NextRequest) => {
       });
     }
 
-    // Strategy 3: Embedding similarity (fallback)
-    const embeddingResults = await searchEmbeddings(title, limit + 10);
+    // Strategy 3: Embedding similarity (fallback only when needed)
+    if (relatedPostsMap.size < limit) {
+      const embeddingResults = await searchEmbeddings(title, limit + 10);
 
-    (embeddingResults as EmbeddingResult[]).forEach((result) => {
-      const url = result.metadata?.url;
-      if (!url || url === currentUrl) return;
+      (embeddingResults as EmbeddingResult[]).forEach((result) => {
+        const url = result.metadata?.url;
+        if (!url || url === currentUrl) return;
 
-      const slug = url.split('/').pop() || '';
-      if (relatedPostsMap.has(slug)) {
-        // Boost score with embedding similarity
-        const existing = relatedPostsMap.get(slug)!;
-        existing.score += (result.similarity || 0) * 30;
-      } else {
-        relatedPostsMap.set(slug, {
-          title: result.metadata?.title || 'Untitled',
-          url: result.metadata?.url || '',
-          description: result.metadata?.description || '',
-          date: result.metadata?.date || '',
-          image: result.metadata?.image || '/images/blog/default.webp',
-          similarity: result.similarity,
-          score: (result.similarity || 0) * 30,
-        });
-      }
-    });
+        const slug = url.split('/').pop() || '';
+        if (relatedPostsMap.has(slug)) {
+          // Boost score with embedding similarity
+          const existing = relatedPostsMap.get(slug)!;
+          existing.score += (result.similarity || 0) * 30;
+        } else {
+          relatedPostsMap.set(slug, {
+            title: result.metadata?.title || 'Untitled',
+            url: result.metadata?.url || '',
+            description: result.metadata?.description || '',
+            date: result.metadata?.date || '',
+            image: result.metadata?.image || '/images/blog/default.webp',
+            similarity: result.similarity,
+            score: (result.similarity || 0) * 30,
+          });
+        }
+      });
+    }
 
     // Sort by score and return top N
     const relatedPosts = Array.from(relatedPostsMap.values())
@@ -120,5 +125,5 @@ const handleGet = async (request: NextRequest) => {
   }
 };
 
-// Export with rate limiting (5 requests per minute)
-export const GET = withRateLimit(handleGet, RATE_LIMITS.AI_HEAVY);
+// Export with rate limiting (10 requests per minute)
+export const GET = withRateLimit(handleGet, RATE_LIMITS.RELATED_POSTS);

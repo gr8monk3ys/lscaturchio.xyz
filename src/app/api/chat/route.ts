@@ -32,6 +32,7 @@ const OPENROUTER_APP_NAME = process.env.OPENROUTER_APP_NAME || 'lscaturchio.xyz'
 // Lazy OpenAI initialization
 let openaiClient: import('openai').default | null = null;
 let openrouterClient: import('openai').default | null = null;
+let openaiChatDisabled = false;
 
 async function getOpenAI() {
   if (!openaiClient && USE_OPENAI) {
@@ -66,6 +67,38 @@ async function getOpenRouter() {
     });
   }
   return openrouterClient;
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'string') return error;
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
+}
+
+function getErrorStatus(error: unknown): number | undefined {
+  if (!error || typeof error !== 'object') return undefined;
+  const status = (error as { status?: unknown }).status;
+  return typeof status === 'number' ? status : undefined;
+}
+
+function isOpenAIAuthOrConfigError(error: unknown): boolean {
+  const status = getErrorStatus(error);
+  if (status === 401 || status === 403) return true;
+
+  const message = getErrorMessage(error).toLowerCase();
+  return (
+    message.includes('incorrect api key') ||
+    message.includes('invalid api key') ||
+    message.includes('api key not found') ||
+    message.includes('authentication') ||
+    message.includes('unauthorized') ||
+    message.includes('forbidden') ||
+    message.includes('account associated with this api key has been deactivated')
+  );
 }
 
 function getModelCandidates(primaryModel: string, fallbackModel?: string): string[] {
@@ -128,6 +161,13 @@ async function tryOpenAICompatibleProvider({
         return { answer, modelUsed: model, usedFallbackModel };
       }
     } catch (error) {
+      const authOrConfigError =
+        provider === 'openai' && isOpenAIAuthOrConfigError(error);
+      if (authOrConfigError) {
+        openaiChatDisabled = true;
+        break;
+      }
+
       const isLastModel = i === models.length - 1;
       logError(
         isLastModel
@@ -290,7 +330,7 @@ const handlePost = async (req: NextRequest) => {
     let modelUsed: string | null = null;
 
     // Try OpenAI first when configured
-    if (!answer && USE_OPENAI) {
+    if (!answer && USE_OPENAI && !openaiChatDisabled) {
       try {
         const client = await getOpenAI();
         if (!client) {
@@ -313,7 +353,14 @@ const handlePost = async (req: NextRequest) => {
           usedFallbackModel = openaiResult.usedFallbackModel;
         }
       } catch (error) {
-        logError('OpenAI chat failed; falling back', error, { component: 'chat', model: OPENAI_CHAT_MODEL });
+        if (isOpenAIAuthOrConfigError(error)) {
+          openaiChatDisabled = true;
+        } else {
+          logError('OpenAI chat failed; falling back', error, {
+            component: 'chat',
+            model: OPENAI_CHAT_MODEL,
+          });
+        }
       }
     }
 
@@ -392,5 +439,5 @@ const handlePost = async (req: NextRequest) => {
   }
 };
 
-// Export with rate limiting (5 requests per minute)
-export const POST = withRateLimit(handlePost, RATE_LIMITS.AI_HEAVY);
+// Export with rate limiting (3 requests per minute)
+export const POST = withRateLimit(handlePost, RATE_LIMITS.CHAT);
