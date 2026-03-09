@@ -1,0 +1,27 @@
+# Local dependencies and build outputs
+node_modules
+.next
+out
+build
+
+# Local env/config and VCS metadata
+.git
+.env
+.env.local
+.env*.local
+.vercel
+
+# Test and diagnostics artifacts
+coverage
+playwright-report
+test-results
+.playwright-cli
+.playwright-mcp
+.lighthouseci
+
+# Temp and local-only folders
+tmp
+voice
+scripts/.tts-venv
+__pycache__
+*.tsbuildinfo
