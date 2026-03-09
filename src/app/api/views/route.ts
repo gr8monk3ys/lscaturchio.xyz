@@ -19,7 +19,12 @@ const handleGet = async (req: NextRequest) => {
     // Detailed format: views enriched with blog titles (used by stats page)
     if (formatParam === 'detailed') {
       if (!isDatabaseConfigured()) {
-        return apiSuccess({ views: [], total: 0 });
+        return apiSuccess({
+          views: [],
+          total: 0,
+          available: false,
+          message: 'Public view data is unavailable right now.',
+        });
       }
 
       const sql = getDb();
@@ -34,7 +39,11 @@ const handleGet = async (req: NextRequest) => {
         views: view.count,
       }));
 
-      return apiSuccess({ views: allViews, total: allViews.length });
+      return apiSuccess({
+        views: allViews,
+        total: allViews.length,
+        available: true,
+      });
     }
 
     const allParam = req.nextUrl.searchParams.get('all');
@@ -42,7 +51,11 @@ const handleGet = async (req: NextRequest) => {
     // Batch-fetch all view counts (used by ViewCountsProvider to avoid N+1)
     if (allParam === 'true') {
       if (!isDatabaseConfigured()) {
-        return apiSuccess({ views: [] });
+        return apiSuccess({
+          views: [],
+          available: false,
+          message: 'View tracking is unavailable right now.',
+        });
       }
 
       const sql = getDb();
@@ -53,7 +66,7 @@ const handleGet = async (req: NextRequest) => {
         views: row.count || 0,
       }));
 
-      return apiSuccess({ views });
+      return apiSuccess({ views, available: true });
     }
 
     // Single slug lookup

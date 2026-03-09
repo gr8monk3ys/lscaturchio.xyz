@@ -6,17 +6,24 @@ import { TrendingUp } from 'lucide-react'
 import useSWR from 'swr'
 import { fetchJson, unwrapApiData } from '@/lib/fetcher'
 
+interface PopularPostsPayload {
+  available?: boolean
+  message?: string
+  views?: Array<{ slug: string; title: string; views: number }>
+}
+
 export function PopularPosts() {
-  const { data, isLoading, error } = useSWR<{ data?: { views?: Array<{ slug: string; title: string; views: number }> }; views?: Array<{ slug: string; title: string; views: number }> }>(
+  const { data, isLoading, error } = useSWR<{ data?: PopularPostsPayload } | PopularPostsPayload>(
     '/api/views?format=detailed',
     fetchJson,
     { revalidateOnFocus: false }
   )
 
+  const payload = data ? unwrapApiData(data) : null
+
   const posts = useMemo(() => {
-    if (!data) return []
-    const unwrapped = unwrapApiData(data as { views?: Array<{ slug: string; title: string; views: number }> })
-    const rows = Array.isArray(unwrapped.views) ? unwrapped.views : []
+    if (!payload?.available || !Array.isArray(payload.views)) return []
+    const rows = payload.views
     return rows
       .slice()
       .sort((a, b) => b.views - a.views)
@@ -26,7 +33,7 @@ export function PopularPosts() {
         url: `/blog/${post.slug}`,
         views: post.views,
       }))
-  }, [data])
+  }, [payload])
 
   return (
     <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
@@ -47,6 +54,14 @@ export function PopularPosts() {
       ) : error ? (
         <div className="text-sm text-red-600 dark:text-red-400 py-4">
           {error instanceof Error ? error.message : 'Failed to load popular posts'}
+        </div>
+      ) : !payload?.available ? (
+        <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 px-4 py-4 text-sm text-muted-foreground">
+          {payload?.message || 'Public view data is unavailable right now.'}
+        </div>
+      ) : posts.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 px-4 py-4 text-sm text-muted-foreground">
+          No ranked posts yet.
         </div>
       ) : (
         <div className="space-y-4">
