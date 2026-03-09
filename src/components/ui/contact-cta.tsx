@@ -1,80 +1,91 @@
 "use client";
 
-import { motion } from '@/lib/motion';
-import { ArrowRight, Mail, Github, Linkedin } from "lucide-react";
-import { IconBrandMastodon } from "@tabler/icons-react";
+import { motion } from "@/lib/motion";
+import { ArrowUpRight, CalendarDays, Mail, ShieldCheck, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 export function ContactCTA() {
   return (
     <section className="w-full px-4 md:px-6 py-12 lg:py-20">
-      <div className="w-full max-w-5xl mx-auto neu-card p-8 lg:p-12">
-        {/* Keep this CTA visible during SSR; avoid "hidden until hydration" issues. */}
-        <div className="flex flex-col items-center text-center gap-7">
-          <h2 className="text-display max-w-3xl text-balance">
-            Let&apos;s Create Something{" "}
-            <span className="text-primary">Amazing</span> Together
-          </h2>
-          <p className="text-body-lg text-muted-foreground max-w-2xl text-balance">
-            Whether you have a project in mind or just want to chat, I&apos;m always
-            open to discussing new opportunities and ideas.
-          </p>
+      <div className="mx-auto w-full max-w-6xl neu-card p-8 lg:p-12">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] lg:gap-10">
+          <div className="flex flex-col gap-6">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary">
+              <Sparkles className="h-3.5 w-3.5" />
+              Need help shipping AI?
+            </div>
 
-          <div className="flex flex-wrap justify-center gap-4">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <div className="space-y-4">
+              <h2 className="text-display max-w-3xl text-balance">
+                Send the brief if you need a system that works past the demo.
+              </h2>
+              <p className="max-w-2xl text-lg text-muted-foreground text-balance">
+                Best fit for grounded RAG, ML workflows, architecture reviews, and automation that
+                has to survive real usage. If you can describe the goal, the user, the data, or the
+                main constraint, that is enough to start.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  href="/contact"
+                  className="cta-primary inline-flex h-11 items-center gap-2 rounded-xl px-6 text-base"
+                >
+                  <Mail className="h-4 w-4" />
+                  Send Project Brief
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  href="/work-with-me"
+                  className="cta-secondary inline-flex h-11 items-center gap-2 rounded-xl px-6 text-base"
+                >
+                  See How I Work
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              </motion.div>
+            </div>
+
+            <div className="text-sm text-muted-foreground">
+              Prefer a call?{" "}
               <Link
                 href="https://calendly.com/gr8monk3ys/30min"
-                className="cta-primary h-11 px-6 rounded-xl text-base inline-flex items-center gap-2.5"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-foreground underline decoration-border underline-offset-4 transition-colors hover:text-primary"
               >
-                <Mail className="h-4 w-4" />
-                Let&apos;s Chat
+                Book 30 minutes
               </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Link
-                href="/services"
-                className="cta-secondary h-11 px-6 rounded-xl text-base inline-flex items-center gap-2.5"
-              >
-                Learn More
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </motion.div>
+              .
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                href="https://github.com/gr8monk3ys"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="neu-button inline-flex items-center gap-2 rounded-xl px-4 py-2 hover:text-primary transition-all"
-              >
-                <Github className="h-4 w-4" />
-                GitHub
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                href="https://linkedin.com/in/lorenzo-scaturchio"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="neu-button inline-flex items-center gap-2 rounded-xl px-4 py-2 hover:text-primary transition-all"
-              >
-                <Linkedin className="h-4 w-4" />
-                LinkedIn
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                href="https://social.lscaturchio.xyz/auth/sign_up"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="neu-button inline-flex items-center gap-2 rounded-xl px-4 py-2 hover:text-primary transition-all"
-              >
-                <IconBrandMastodon className="h-4 w-4" />
-                Join Lorenzo Social
-              </Link>
-            </motion.div>
+          <div className="grid gap-4">
+            <div className="rounded-2xl border border-border/60 bg-background/75 p-5">
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                Best for
+              </div>
+              <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+                <li>RAG and search systems that need grounded answers and measurable quality.</li>
+                <li>Architecture reviews for latency, cost, reliability, and rollout risk.</li>
+                <li>Automation and internal tools that need clear ownership after handoff.</li>
+              </ul>
+            </div>
+
+            <div className="rounded-2xl border border-border/60 bg-background/75 p-5">
+              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <CalendarDays className="h-4 w-4 text-primary" />
+                Include in your brief
+              </div>
+              <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+                <li>The outcome you want.</li>
+                <li>The user or team this is for.</li>
+                <li>The data, systems, or constraints that make the problem real.</li>
+                <li>The timeline if there is a real decision deadline.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

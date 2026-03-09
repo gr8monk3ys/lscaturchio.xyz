@@ -9,6 +9,7 @@ const CONTACT_CTA_EXCLUDED_PATHS = new Set<string>([
   "/chat",
   "/contact",
   "/services",
+  "/work-with-me",
 ]);
 
 export function ContactCTAGate() {
