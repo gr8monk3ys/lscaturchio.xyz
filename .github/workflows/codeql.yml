@@ -1,13 +1,7 @@
 name: CodeQL Security Analysis
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  schedule:
-    # Run weekly on Sundays at midnight
-    - cron: '0 0 * * 0'
+  workflow_dispatch:
 
 jobs:
   analyze:
