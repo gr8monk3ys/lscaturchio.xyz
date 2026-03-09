@@ -5,19 +5,28 @@ import { createElement } from 'react';
 // Vitest 4.x compatibility helpers
 // Add vi.mocked if not available (polyfill for older patterns)
 if (typeof vi.mocked !== 'function') {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (vi as any).mocked = function mocked<T>(fn: T): T & Mock {
-    return fn as T & Mock;
-  };
+  Object.defineProperty(vi, 'mocked', {
+    configurable: true,
+    value<T>(fn: T): T & Mock {
+      return fn as T & Mock;
+    },
+    writable: true,
+  });
 }
 
 // Add vi.stubGlobal if not available
 if (typeof vi.stubGlobal !== 'function') {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (vi as any).stubGlobal = function stubGlobal(name: string, value: unknown): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (globalThis as any)[name] = value;
-  };
+  Object.defineProperty(vi, 'stubGlobal', {
+    configurable: true,
+    value(name: string | number | symbol, value: unknown): void {
+      Object.defineProperty(globalThis, name, {
+        configurable: true,
+        value,
+        writable: true,
+      });
+    },
+    writable: true,
+  });
 }
 
 // Mock Next.js router

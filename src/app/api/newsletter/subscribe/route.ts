@@ -10,6 +10,26 @@ import { sendWelcomeEmail } from '@/lib/email';
 import { apiSuccess, ApiErrors } from '@/lib/api-response';
 import { NEWSLETTER_TOPIC_IDS } from '@/constants/newsletter';
 
+function buildMetadataJson(
+  topics: string[],
+  source: string | undefined,
+  includeOnboarding: boolean
+): string {
+  const metadata: Record<string, unknown> = {
+    ...(topics.length > 0 ? { topics } : {}),
+    ...(source ? { source: { path: source } } : {}),
+  };
+
+  if (includeOnboarding) {
+    metadata.onboarding = {
+      step: 0,
+      nextAt: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
+    };
+  }
+
+  return JSON.stringify(metadata);
+}
+
 const handlePost = async (request: NextRequest) => {
   const csrfError = validateCsrf(request);
   if (csrfError) return csrfError;
@@ -32,16 +52,6 @@ const handlePost = async (request: NextRequest) => {
       .slice(0, 6);
     const source = parsed.data.source;
 
-    const onboardingNextAt = new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(); // +24h
-    const metadataJson = JSON.stringify({
-      ...(topics.length > 0 ? { topics } : {}),
-      ...(source ? { source: { path: source } } : {}),
-      onboarding: {
-        step: 0,
-        nextAt: onboardingNextAt,
-      },
-    });
-
     // Generate unsubscribe token
     const unsubscribeToken = crypto.randomBytes(32).toString('hex');
 
@@ -55,6 +65,7 @@ const handlePost = async (request: NextRequest) => {
       if (existing.is_active) {
         // Allow updating topic preferences even when already subscribed.
         if (topics.length > 0 || source) {
+          const metadataJson = buildMetadataJson(topics, source, false);
           await sql`
             UPDATE newsletter_subscribers
             SET metadata = COALESCE(metadata, '{}'::jsonb) || ${metadataJson}::jsonb
@@ -64,6 +75,7 @@ const handlePost = async (request: NextRequest) => {
         return apiSuccess({ message: 'Already subscribed', alreadySubscribed: true });
       } else {
         // Reactivate subscription
+        const metadataJson = buildMetadataJson(topics, source, true);
         await sql`
           UPDATE newsletter_subscribers
           SET
@@ -82,6 +94,7 @@ const handlePost = async (request: NextRequest) => {
     }
 
     // Insert new subscriber (no IP/user-agent for GDPR compliance)
+    const metadataJson = buildMetadataJson(topics, source, true);
     await sql`
       INSERT INTO newsletter_subscribers (email, unsubscribe_token, metadata)
       VALUES (${normalizedEmail}, ${unsubscribeToken}, ${metadataJson}::jsonb)
