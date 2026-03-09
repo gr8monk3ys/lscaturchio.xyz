@@ -8,25 +8,25 @@ import { useState } from "react";
 const contactMethods = [
   {
     icon: Calendar,
-    title: "Schedule a Call",
-    description: "Book a 30-minute call to discuss your project",
-    action: "Book Now",
+    title: "Discovery Call",
+    description: "Best for scoped projects, audits, and fast go or no-go decisions",
+    action: "Book 30 Minutes",
     href: "https://calendly.com/gr8monk3ys/30min",
     external: true,
   },
   {
     icon: Mail,
-    title: "Send an Email",
-    description: "Drop me a line anytime",
-    action: "Email Me",
+    title: "Async Brief",
+    description: "Best if you already have links, context, and constraints to share",
+    action: "Send a Brief",
     href: "mailto:lorenzosca7@protonmail.ch",
     external: true,
   },
   {
     icon: MapPin,
-    title: "Location",
-    description: "Based in Southern California",
-    action: "Available for remote work worldwide",
+    title: "Remote Collaboration",
+    description: "Based in Southern California and available for remote work worldwide",
+    action: "Remote-first delivery",
     href: null,
     external: false,
   },
@@ -80,7 +80,7 @@ export function ContactForm() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="grid md:grid-cols-3 gap-6 mb-16"
+          className="grid md:grid-cols-3 gap-6 mb-16"
       >
         {contactMethods.map((method, index) => (
           <m.div
@@ -129,11 +129,13 @@ export function ContactForm() {
                 <input
                   type="text"
                   id="name"
+                  name="name"
+                  autoComplete="name"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary"
-                  placeholder="Your name"
+                  placeholder="Your name..."
                 />
               </div>
               <div>
@@ -143,11 +145,14 @@ export function ContactForm() {
                 <input
                   type="email"
                   id="email"
+                  name="email"
+                  autoComplete="email"
+                  spellCheck={false}
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary"
-                  placeholder="you@example.com"
+                  placeholder="you@example.com..."
                 />
               </div>
             </div>
@@ -158,11 +163,13 @@ export function ContactForm() {
               <input
                 type="text"
                 id="subject"
+                name="subject"
+                autoComplete="off"
                 required
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary"
-                placeholder="What is this about?"
+                placeholder="What is the decision or project?..."
               />
             </div>
             <div>
@@ -171,12 +178,14 @@ export function ContactForm() {
               </label>
               <textarea
                 id="message"
+                name="message"
                 required
                 rows={5}
+                autoComplete="off"
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary resize-none"
-                placeholder="Tell me about your project..."
+                placeholder="Share the goal, the users, the data, and the constraint that matters most..."
               />
             </div>
             <button
@@ -184,15 +193,26 @@ export function ContactForm() {
               disabled={isSubmitting}
               className="cta-primary w-full px-6 py-3 rounded-xl disabled:opacity-50"
             >
-              {isSubmitting ? "Sending..." : "Send Message"}
+              {isSubmitting ? "Sending..." : "Send Project Details"}
             </button>
 
-            {submitStatus === "success" && (
-              <p className="text-green-600 text-center">Message sent successfully!</p>
-            )}
-            {submitStatus === "error" && (
-              <p className="text-red-600 text-center">Failed to send. Please try again.</p>
-            )}
+            <div aria-live="polite" className="min-h-[1.5rem]">
+              {submitStatus === "success" && (
+                <p className="text-center text-green-600">
+                  Message sent. I&apos;ll follow up by email after I review the brief.
+                </p>
+              )}
+              {submitStatus === "error" && (
+                <p className="text-center text-red-600">
+                  Message failed to send. Please try again or email me directly at
+                  {" "}
+                  <Link href="mailto:lorenzosca7@protonmail.ch" className="underline">
+                    lorenzosca7@protonmail.ch
+                  </Link>
+                  .
+                </p>
+              )}
+            </div>
           </form>
         </m.div>
 
@@ -205,23 +225,23 @@ export function ContactForm() {
         >
           {/* What to Expect */}
           <div className="neu-card p-6">
-            <h3 className="text-subsection mb-4">What to Expect</h3>
+            <h3 className="text-subsection mb-4">What Helps Me Reply Fast</h3>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary mt-1">→</span>
-                <span>I typically respond within 24-48 hours</span>
+                <span>The outcome you want and who the system is for</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary mt-1">→</span>
-                <span>Initial consultations are always free</span>
+                <span>The data sources, tools, or systems already in play</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary mt-1">→</span>
-                <span>I&apos;m available for both short-term and long-term projects</span>
+                <span>The biggest risk, bottleneck, or failure mode you are seeing</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary mt-1">→</span>
-                <span>Remote collaboration with clients worldwide</span>
+                <span>Timing, budget guardrails, or any decision deadline</span>
               </li>
             </ul>
           </div>
@@ -230,11 +250,11 @@ export function ContactForm() {
           <div className="neu-pressed rounded-xl p-6">
             <h3 className="text-subsection mb-2">Current Availability</h3>
             <p className="text-muted-foreground mb-4">
-              I&apos;m currently accepting new projects and consulting engagements.
+              I&apos;m currently accepting new consulting and build engagements.
             </p>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm font-medium text-green-600">Available for work</span>
+              <span className="text-sm font-medium text-green-600">Available for new work</span>
             </div>
           </div>
 
