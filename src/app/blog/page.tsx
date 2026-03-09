@@ -96,8 +96,8 @@ export default async function Blog({
 
   return (
     <Container size="large">
-      <div className="space-y-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="space-y-6">
+        <div className="space-y-4">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
               Blog
@@ -106,25 +106,26 @@ export default async function Blog({
               Thoughts on software development, technology, and life.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/chat"
-              className="flex items-center gap-2 rounded-xl px-4 py-2 cta-secondary hover:text-primary transition-all"
-            >
-              <MessageSquare className="h-4 w-4" />
-              <span className="text-sm font-medium">Chat about posts</span>
-            </Link>
+
+          <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/tags"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl neu-button hover:text-primary transition-all"
+              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <Tag className="h-4 w-4" />
-              <span className="text-sm font-medium">Browse by tag</span>
+              Browse by Tag
+            </Link>
+            <span className="text-sm text-muted-foreground">or</span>
+            <Link
+              href="/chat"
+              className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
+              <MessageSquare className="h-4 w-4" />
+              Ask About a Post
             </Link>
           </div>
         </div>
 
-        {/* Blog Statistics */}
         <BlogStats
           stats={{
             totalPosts,
