@@ -11,10 +11,10 @@ const TechStack = dynamic(() => import('@/components/stats/tech-stack').then(m =
 
 export const metadata: Metadata = {
   title: 'Site Statistics | Lorenzo Scaturchio',
-  description: 'Real-time analytics and insights about this website - visitors, popular posts, and technology stack.',
+  description: 'A public snapshot of site metrics, writing activity, and the technology behind this website.',
   openGraph: {
     title: 'Site Statistics | Lorenzo Scaturchio',
-    description: 'Real-time analytics and insights about this website.',
+    description: 'A public snapshot of site metrics, writing activity, and the technology behind this website.',
     url: 'https://lscaturchio.xyz/stats',
   },
 }
@@ -29,17 +29,21 @@ export default function StatsPage() {
               Site Statistics
             </Heading>
             <p className="text-lg text-muted-foreground">
-              Real-time data about this website. Transparency is important - see exactly
-              what I see.
+              A public snapshot of what this site actually tracks. Aggregate metrics stay visible,
+              and anything private or unavailable is labeled instead of guessed.
             </p>
           </div>
 
           <div className="space-y-8">
             <StatsOverview />
-            <VisitorChart />
+            <div className="grid gap-8 xl:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
+              <VisitorChart />
+              <div className="space-y-8">
+                <PopularPosts />
+                <TechStack />
+              </div>
+            </div>
             <ContributionGraph />
-            <PopularPosts />
-            <TechStack />
           </div>
         </div>
       </Container>

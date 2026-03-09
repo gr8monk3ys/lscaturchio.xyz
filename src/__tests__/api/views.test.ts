@@ -120,6 +120,26 @@ describe('Views API Route', () => {
       expect(data.data.views[0]).toEqual({ slug: 'post-1', title: 'First Post', views: 100 });
       expect(data.data.views[1]).toEqual({ slug: 'post-2', title: 'Second Post', views: 50 });
       expect(data.data.total).toBe(2);
+      expect(data.data.available).toBe(true);
+    });
+
+    it('returns an unavailable detailed payload when the database is not configured', async () => {
+      vi.mocked(isDatabaseConfigured).mockReturnValue(false);
+
+      const request = new NextRequest('http://localhost/api/views?format=detailed');
+      const response = await GET(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data).toEqual({
+        data: {
+          views: [],
+          total: 0,
+          available: false,
+          message: 'Public view data is unavailable right now.',
+        },
+        success: true,
+      });
     });
   });
 

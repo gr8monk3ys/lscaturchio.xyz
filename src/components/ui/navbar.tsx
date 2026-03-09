@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import { motion } from '@/lib/motion';
 import Image from "next/image";
-import { navigationCategories, contactLink } from '@/constants/navlinks';
+import { primaryNavigation, secondaryNavigationCategories, contactLink } from '@/constants/navlinks';
 import { ThemeToggle } from './theme-toggle';
 import { NavDropdown } from './nav-dropdown';
 import { LanguageSwitcher } from "@/components/i18n/google-translate";
@@ -92,7 +92,8 @@ function NavLink({ href, children, isActive = false }: NavLinkProps) {
     >
       <Link
         href={href}
-        className={`relative px-3 py-2 text-sm font-medium transition-colors block ${
+        aria-current={isActive ? 'page' : undefined}
+        className={`relative block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
           isActive
             ? 'text-foreground'
             : 'text-foreground/60 hover:text-foreground/80'
@@ -109,6 +110,11 @@ function NavLink({ href, children, isActive = false }: NavLinkProps) {
       </Link>
     </motion.div>
   );
+}
+
+function isPathActive(pathname: string, href: string) {
+  if (href === '/') return pathname === href;
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function Navbar() {
@@ -180,8 +186,20 @@ export function Navbar() {
             {/* Desktop Navigation Links */}
             <nav className="flex items-center">
               <ul className="flex items-center space-x-2 rounded-full border border-border bg-background/80 px-3 py-2 shadow-[inset_0_1px_0_hsl(var(--border))] backdrop-blur">
-                {/* Category Dropdowns */}
-                {navigationCategories.map((category) => (
+                {primaryNavigation.map((item) => (
+                  <li key={item.href}>
+                    <NavLink
+                      href={item.href}
+                      isActive={isPathActive(pathname, item.href)}
+                    >
+                      {item.name}
+                    </NavLink>
+                  </li>
+                ))}
+
+                <li aria-hidden className="mx-1 h-6 w-px bg-border/70" />
+
+                {secondaryNavigationCategories.map((category) => (
                   <li key={category.name}>
                     <NavDropdown
                       category={category}
@@ -195,7 +213,7 @@ export function Navbar() {
                 <li>
                   <NavLink
                     href={contactLink.href}
-                    isActive={pathname === contactLink.href}
+                    isActive={isPathActive(pathname, contactLink.href)}
                   >
                     {contactLink.name}
                   </NavLink>

@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from 'next/server';
 // Mock dependencies before importing the route
 vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
-  logInfo: vi.fn(),
 }));
 
 vi.mock('@/lib/with-rate-limit', () => ({
@@ -60,7 +59,7 @@ const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
 import { POST } from '@/app/api/contact/route';
-import { logError, logInfo } from '@/lib/logger';
+import { logError } from '@/lib/logger';
 import { validateCsrf } from '@/lib/csrf';
 
 // Helper to create mock request
@@ -224,9 +223,6 @@ describe('/api/contact', () => {
     });
   });
 
-  // Note: CSRF protection was removed from the contact route.
-  // Rate limiting via withRateLimit provides protection against abuse.
-
   describe('successful email send', () => {
     it('sends email successfully with valid data', async () => {
       const request = createMockRequest({
@@ -371,12 +367,12 @@ describe('/api/contact', () => {
     });
   });
 
-  describe('fallback when RESEND_API_KEY is missing', () => {
+  describe('when RESEND_API_KEY is missing', () => {
     beforeEach(() => {
       delete process.env.RESEND_API_KEY;
     });
 
-    it('returns success message when API key is not configured', async () => {
+    it('returns 500 when API key is not configured', async () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
@@ -385,12 +381,12 @@ describe('/api/contact', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
-      expect(data.data.message).toContain('not configured');
+      expect(response.status).toBe(500);
+      expect(data.success).toBe(false);
+      expect(data.error).toContain('temporarily unavailable');
     });
 
-    it('logs contact form data when API key is missing', async () => {
+    it('logs a configuration error when API key is missing', async () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
@@ -398,13 +394,12 @@ describe('/api/contact', () => {
       });
       await POST(request);
 
-      expect(logInfo).toHaveBeenCalledWith(
-        'Contact Form: No RESEND_API_KEY configured',
+      expect(logError).toHaveBeenCalledWith(
+        'Contact Form: RESEND_API_KEY is not configured',
+        null,
         expect.objectContaining({
           component: 'contact',
-          name: 'John Doe',
-          email: 'john@example.com',
-          messageLength: 11,
+          action: 'POST',
         })
       );
     });

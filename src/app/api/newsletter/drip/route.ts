@@ -10,6 +10,7 @@ type OnboardingState = {
   step?: number;
   nextAt?: string | null;
   lastSentAt?: string;
+  processingAt?: string | null;
 };
 
 type NewsletterMetadata = {
@@ -21,6 +22,7 @@ type NewsletterMetadata = {
 
 const MAX_STEP = 2;
 const BATCH_SIZE = 50;
+const PROCESSING_LEASE_MINUTES = 30;
 
 function safeParseMetadata(raw: unknown): NewsletterMetadata {
   if (!raw) return {};
@@ -40,6 +42,16 @@ function nextOnboardingAt(step: number): string | null {
   if (step === 0) return new Date(now + 1000 * 60 * 60 * 24).toISOString(); // +24h
   if (step === 1) return new Date(now + 1000 * 60 * 60 * 24 * 6).toISOString(); // +6d (total ~7d)
   return null;
+}
+
+function buildOnboardingState(
+  current: OnboardingState | undefined,
+  updates: Partial<OnboardingState>
+): OnboardingState {
+  return {
+    ...(current ?? {}),
+    ...updates,
+  };
 }
 
 const handlePost = async (req: NextRequest) => {
@@ -66,6 +78,10 @@ const handlePost = async (req: NextRequest) => {
         AND (metadata->'onboarding'->>'nextAt') IS NOT NULL
         AND (metadata->'onboarding'->>'nextAt')::timestamptz <= NOW()
         AND COALESCE((metadata->'onboarding'->>'step')::int, 0) < ${MAX_STEP}
+        AND (
+          (metadata->'onboarding'->>'processingAt') IS NULL
+          OR (metadata->'onboarding'->>'processingAt')::timestamptz <= NOW() - (${PROCESSING_LEASE_MINUTES} * INTERVAL '1 minute')
+        )
       LIMIT ${BATCH_SIZE}
     `;
 
@@ -96,27 +112,83 @@ const handlePost = async (req: NextRequest) => {
         continue;
       }
 
-      const ok = await sendOnboardingEmail(email, token, nextStep, { topics });
+      const claimRows = await sql`
+        UPDATE newsletter_subscribers
+        SET metadata = jsonb_set(
+          COALESCE(metadata, '{}'::jsonb),
+          '{onboarding}',
+          ${JSON.stringify(
+            buildOnboardingState(metadata.onboarding, {
+              processingAt: new Date().toISOString(),
+            })
+          )}::jsonb,
+          true
+        )
+        WHERE email = ${email}
+          AND is_active = true
+          AND COALESCE((metadata->'onboarding'->>'step')::int, 0) = ${currentStep}
+          AND (metadata->'onboarding'->>'nextAt') IS NOT NULL
+          AND (metadata->'onboarding'->>'nextAt')::timestamptz <= NOW()
+          AND (
+            (metadata->'onboarding'->>'processingAt') IS NULL
+            OR (metadata->'onboarding'->>'processingAt')::timestamptz <= NOW() - (${PROCESSING_LEASE_MINUTES} * INTERVAL '1 minute')
+          )
+        RETURNING email
+      `;
+
+      if (claimRows.length === 0) {
+        skipped++;
+        continue;
+      }
+
+      let ok = false;
+      try {
+        ok = await sendOnboardingEmail(email, token, nextStep, { topics });
+      } catch (error) {
+        logError("Newsletter drip send failed", error, {
+          component: "newsletter/drip",
+          email,
+          step: nextStep,
+        });
+      }
+
       if (!ok) {
         failed++;
+        await sql`
+          UPDATE newsletter_subscribers
+          SET metadata = jsonb_set(
+            COALESCE(metadata, '{}'::jsonb),
+            '{onboarding}',
+            ${JSON.stringify(
+              buildOnboardingState(metadata.onboarding, {
+                processingAt: null,
+              })
+            )}::jsonb,
+            true
+          )
+          WHERE email = ${email}
+        `;
         continue;
       }
 
       sent++;
-
-      const updated: NewsletterMetadata = {
-        ...metadata,
-        onboarding: {
-          ...(metadata.onboarding ?? {}),
-          step: nextStep,
-          lastSentAt: new Date().toISOString(),
-          nextAt: nextOnboardingAt(nextStep),
-        },
-      };
+      const sentAt = new Date().toISOString();
 
       await sql`
         UPDATE newsletter_subscribers
-        SET metadata = ${JSON.stringify(updated)}::jsonb
+        SET metadata = jsonb_set(
+          COALESCE(metadata, '{}'::jsonb),
+          '{onboarding}',
+          ${JSON.stringify(
+            buildOnboardingState(metadata.onboarding, {
+              step: nextStep,
+              lastSentAt: sentAt,
+              nextAt: nextOnboardingAt(nextStep),
+              processingAt: null,
+            })
+          )}::jsonb,
+          true
+        )
         WHERE email = ${email}
       `;
     }
@@ -141,4 +213,3 @@ const handlePost = async (req: NextRequest) => {
 };
 
 export const POST = withRateLimit(handlePost, RATE_LIMITS.PUBLIC);
-

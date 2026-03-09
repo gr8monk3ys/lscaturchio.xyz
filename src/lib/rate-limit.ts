@@ -15,6 +15,44 @@ interface RateLimitEntry {
   resetTime: number;
 }
 
+function isValidIpv4(value: string): boolean {
+  if (!/^\d{1,3}(?:\.\d{1,3}){3}$/.test(value)) {
+    return false;
+  }
+
+  return value.split('.').every((segment) => {
+    const num = Number(segment);
+    return num >= 0 && num <= 255;
+  });
+}
+
+function isValidIpv6(value: string): boolean {
+  return /^[a-f0-9:]+$/i.test(value) && value.includes(':');
+}
+
+function normalizeIpCandidate(value: string): string | null {
+  let candidate = value.trim();
+  if (!candidate) return null;
+
+  if (candidate.toLowerCase().startsWith('for=')) {
+    candidate = candidate.slice(4).trim();
+  }
+
+  candidate = candidate.replace(/^"|"$/g, '');
+
+  if (candidate.startsWith('[') && candidate.includes(']')) {
+    candidate = candidate.slice(1, candidate.indexOf(']'));
+  } else if (/^\d{1,3}(?:\.\d{1,3}){3}:\d+$/.test(candidate)) {
+    candidate = candidate.replace(/:\d+$/, '');
+  }
+
+  if (isValidIpv4(candidate) || isValidIpv6(candidate)) {
+    return candidate;
+  }
+
+  return null;
+}
+
 class RateLimiter {
   private requests: Map<string, RateLimitEntry> = new Map();
   private cleanupInterval: NodeJS.Timeout | null = null;
@@ -118,6 +156,9 @@ export { rateLimiter };
 export const RATE_LIMITS = {
   // Expensive OpenAI operations
   AI_HEAVY: { limit: 5, window: 60000 }, // 5 requests per minute
+  CHAT: { limit: 3, window: 60000 }, // 3 requests per minute
+  SUMMARIZE: { limit: 2, window: 60000 }, // 2 requests per minute
+  RELATED_POSTS: { limit: 10, window: 60000 }, // 10 requests per minute
 
   // Standard API operations
   STANDARD: { limit: 30, window: 60000 }, // 30 requests per minute
@@ -136,23 +177,20 @@ export const RATE_LIMITS = {
 export function getClientIp(request: Request): string {
   const headers = request.headers;
 
-  // Priority order for IP detection (most reliable first)
+  // Trust only platform/proxy headers that are commonly overwritten by the edge.
+  // Do not use generic client-supplied headers like x-client-ip, which let
+  // callers rotate the rate-limit key trivially.
   const ipHeaders = [
     'cf-connecting-ip',      // Cloudflare
     'x-real-ip',             // Nginx, Vercel
     'x-forwarded-for',       // Standard proxy header
-    'x-client-ip',           // Apache
-    'x-cluster-client-ip',   // Load balancers
-    'true-client-ip',        // Akamai, Cloudflare
   ];
 
   for (const header of ipHeaders) {
     const value = headers.get(header);
     if (value) {
-      // x-forwarded-for may contain multiple IPs - take the first (original client)
-      const ip = value.split(',')[0].trim();
-      // Validate it looks like an IP (basic check)
-      if (ip && ip !== 'unknown' && ip.length > 0) {
+      const ip = normalizeIpCandidate(value.split(',')[0] ?? value);
+      if (ip) {
         return ip;
       }
     }

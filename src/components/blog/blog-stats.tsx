@@ -1,4 +1,4 @@
-import { BookOpen, Clock, Tag, TrendingUp } from "lucide-react";
+import { BookOpen, Clock3, Tag, TrendingUp } from "lucide-react";
 
 interface BlogStatsData {
   totalPosts: number;
@@ -11,56 +11,64 @@ interface BlogStatsProps {
   stats: BlogStatsData;
 }
 
-/**
- * Blog statistics component
- * Displays aggregate statistics about the blog content
- */
-export function BlogStats({ stats }: BlogStatsProps) {
-  const statCards = [
-    {
-      icon: BookOpen,
-      label: "Total Posts",
-      value: stats.totalPosts.toString(),
-      color: "text-blue-600 dark:text-blue-400",
-    },
-    {
-      icon: Clock,
-      label: "Total Reading",
-      value: `${stats.totalReadingTime}min`,
-      color: "text-green-600 dark:text-green-400",
-    },
-    {
-      icon: TrendingUp,
-      label: "Avg Reading",
-      value: `${stats.avgReadingTime}min`,
-      color: "text-purple-600 dark:text-purple-400",
-    },
-    {
-      icon: Tag,
-      label: "Top Tag",
-      value: stats.topTags[0]?.tag || "N/A",
-      color: "text-orange-600 dark:text-orange-400",
-    },
-  ];
+const statCards = [
+  {
+    icon: BookOpen,
+    key: "totalPosts",
+    label: "Posts",
+    value: (stats: BlogStatsData) => stats.totalPosts.toString(),
+  },
+  {
+    icon: Clock3,
+    key: "totalReadingTime",
+    label: "Total Reading",
+    value: (stats: BlogStatsData) => `${stats.totalReadingTime} min`,
+  },
+  {
+    icon: TrendingUp,
+    key: "avgReadingTime",
+    label: "Average Read",
+    value: (stats: BlogStatsData) => `${stats.avgReadingTime} min`,
+  },
+  {
+    icon: Tag,
+    key: "topTag",
+    label: "Top Tag",
+    value: (stats: BlogStatsData) => stats.topTags[0]?.tag || "N/A",
+  },
+] as const;
 
+export function BlogStats({ stats }: BlogStatsProps) {
   return (
-    <div className="mb-8 grid grid-cols-2 gap-6 md:grid-cols-4">
-      {statCards.map((stat) => {
-        const Icon = stat.icon;
-        return (
-          <div key={stat.label} className="rounded-2xl neu-card p-5">
-            <div className="flex items-center gap-3">
-              <div className={`rounded-xl neu-flat-sm p-3 ${stat.color}`}>
-                <Icon className="h-5 w-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
-                <p className="truncate text-lg font-bold">{stat.value}</p>
-              </div>
+    <section className="rounded-2xl border border-border/70 bg-muted/20 p-5">
+      <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            Browse at a Glance
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            A quick snapshot before you dive into the archive.
+          </p>
+        </div>
+      </div>
+
+      <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {statCards.map((stat) => {
+          const Icon = stat.icon;
+
+          return (
+            <div key={stat.key} className="rounded-xl bg-background/80 px-4 py-3 shadow-[inset_0_1px_0_hsl(var(--border))]">
+              <dt className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Icon className="h-4 w-4 text-primary" />
+                {stat.label}
+              </dt>
+              <dd className="mt-2 text-lg font-semibold text-foreground">
+                {stat.value(stats)}
+              </dd>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </dl>
+    </section>
   );
 }
