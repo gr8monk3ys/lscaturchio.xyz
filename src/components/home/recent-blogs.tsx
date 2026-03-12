@@ -29,6 +29,7 @@ export function RecentBlogs({ blogs }: RecentBlogsProps) {
           action={
             <Link
               href="/blog"
+              prefetch={false}
               className="group inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               View all blogs
@@ -47,7 +48,11 @@ export function RecentBlogs({ blogs }: RecentBlogsProps) {
               <div
                 className="group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
               >
-                <Link href={`/blog/${post.slug}`} className="flex h-full flex-col">
+                <Link
+                  href={`/blog/${post.slug}`}
+                  prefetch={false}
+                  className="flex h-full flex-col"
+                >
                   <div className="relative h-44 overflow-hidden md:h-52">
                     <Image
                       src={post.image || "/images/blog/default.webp"}

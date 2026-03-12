@@ -36,7 +36,7 @@ export function BlogJsonLd({
       name: "Lorenzo Scaturchio",
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/signature.webp`,
+        url: `${SITE_URL}/signature.png`,
       },
     },
     mainEntityOfPage: {
@@ -47,10 +47,8 @@ export function BlogJsonLd({
   };
 
   return (
-    <script
-      id="blog-schema"
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <script id="blog-schema" type="application/ld+json">
+      {JSON.stringify(jsonLd)}
+    </script>
   );
 }

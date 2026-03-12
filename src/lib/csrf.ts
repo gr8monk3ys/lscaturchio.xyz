@@ -137,27 +137,3 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
     { status: 403 }
   );
 }
-
-/**
- * Higher-order function to wrap API routes with CSRF protection
- *
- * Usage:
- * ```ts
- * const handler = async (request: NextRequest) => {
- *   // Your handler code
- * };
- *
- * export const POST = withCsrf(handler);
- * ```
- */
-export function withCsrf<T extends unknown[]>(
-  handler: (request: NextRequest, ...args: T) => Promise<NextResponse>
-) {
-  return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
-    const csrfError = validateCsrf(request);
-    if (csrfError) {
-      return csrfError;
-    }
-    return handler(request, ...args);
-  };
-}

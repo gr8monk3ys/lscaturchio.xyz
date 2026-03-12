@@ -29,7 +29,7 @@ export function Hero() {
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary">
               Applied ML + RAG Systems
             </div>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+            <h2 className="font-system text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
               Hey, I&apos;m <span className="text-primary">Lorenzo Scaturchio</span>
             </h2>
             <p className="text-lg sm:text-xl text-muted-foreground">
@@ -47,13 +47,13 @@ export function Hero() {
             For teams shipping RAG, applied ML, and production-grade data products.
           </div>
           <Button asChild size="lg" variant="primary" className="text-base sm:text-lg h-11 px-7">
-            <Link href="/projects">
+            <Link href="/projects" prefetch={false}>
               View My Work
               <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="cta-secondary text-base sm:text-lg h-11 px-7">
-            <Link href="/contact">
+            <Link href="/contact" prefetch={false}>
               Contact Me
               <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
             </Link>

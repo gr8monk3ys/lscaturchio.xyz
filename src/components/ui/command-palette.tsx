@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { motion, AnimatePresence } from "@/lib/motion";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
@@ -166,16 +165,19 @@ function CommandPaletteTrigger({ className, onOpen }: TriggerProps) {
     <button
       type="button"
       onClick={onOpen}
-      aria-label="Open search"
       className={cn(
         "flex items-center gap-2 rounded-lg border border-border/50 bg-muted/50 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         className
       )}
     >
-      <Search className="h-4 w-4" />
-      <span className="hidden sm:inline">Search</span>
-      <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium">
+      <Search aria-hidden="true" className="h-4 w-4" />
+      <span className="sr-only">Search</span>
+      <span aria-hidden="true" className="hidden sm:inline">Search</span>
+      <kbd
+        aria-hidden="true"
+        className="hidden sm:inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium"
+      >
         <span className="text-xs">⌘</span>K
       </kbd>
     </button>
@@ -215,20 +217,15 @@ function CommandPaletteDialog({
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+      <button
+        type="button"
         onClick={onClose}
-        className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
+        aria-label="Close search"
+        className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
       />
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: -20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: -20 }}
-        transition={{ duration: 0.15 }}
-        className="fixed left-1/2 top-[20%] -translate-x-1/2 w-full max-w-xl z-50 px-4"
+      <div
+        className="fixed left-1/2 top-[20%] z-50 w-full max-w-xl -translate-x-1/2 px-4"
       >
         <div
           role="dialog"
@@ -346,7 +343,7 @@ function CommandPaletteDialog({
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </>
   );
 }
@@ -691,35 +688,22 @@ export function CommandPalette({ className }: CommandPaletteProps) {
     <>
       <CommandPaletteTrigger className={className} onOpen={openPalette} />
 
-      <AnimatePresence>
-        {isOpen && (
-          <CommandPaletteDialog
-            commandCount={commandCount}
-            groupedCommands={groupedCommands}
-            inputRef={inputRef}
-            isSearching={isSearching}
-            listRef={listRef}
-            onChangeQuery={setQuery}
-            onClearQuery={clearQuery}
-            onClose={closePalette}
-            onHoverIndex={setSelectedIndex}
-            onSelectCommand={executeCommand}
-            query={query}
-            selectedIndex={activeSelectedIndex}
-          />
-        )}
-      </AnimatePresence>
+      {isOpen && (
+        <CommandPaletteDialog
+          commandCount={commandCount}
+          groupedCommands={groupedCommands}
+          inputRef={inputRef}
+          isSearching={isSearching}
+          listRef={listRef}
+          onChangeQuery={setQuery}
+          onClearQuery={clearQuery}
+          onClose={closePalette}
+          onHoverIndex={setSelectedIndex}
+          onSelectCommand={executeCommand}
+          query={query}
+          selectedIndex={activeSelectedIndex}
+        />
+      )}
     </>
   );
-}
-
-// Hook to open command palette programmatically
-export function useCommandPalette() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const open = useCallback(() => setIsOpen(true), []);
-  const close = useCallback(() => setIsOpen(false), []);
-  const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
-
-  return { isOpen, open, close, toggle, setIsOpen };
 }

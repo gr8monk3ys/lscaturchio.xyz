@@ -392,27 +392,3 @@ export const products: Product[] = [
     ),
   },
 ];
-
-// Get featured projects only
-export function getFeaturedProjects(): Product[] {
-  return products.filter((p) => p.featured === true);
-}
-
-// Get active (non-archived) projects
-export function getActiveProjects(): Product[] {
-  return products.filter((p) => p.status !== "archived");
-}
-
-// Get all unique technologies across all products
-export function getAllTechnologies(): string[] {
-  const techSet = new Set<string>();
-  products.forEach((product) => {
-    product.stack?.forEach((tech) => techSet.add(tech));
-  });
-  return Array.from(techSet).sort();
-}
-
-// Get projects by category
-export function getProjectsByCategory(category: string): Product[] {
-  return products.filter((p) => p.categories?.includes(category as never));
-}

@@ -163,6 +163,3 @@ export function getRecentWatches(limit: number = 20): LetterboxdMovie[] {
     })
     .slice(0, limit);
 }
-
-// Legacy export for compatibility
-export const LETTERBOXD_USERNAME = 'gr8monk3ys';

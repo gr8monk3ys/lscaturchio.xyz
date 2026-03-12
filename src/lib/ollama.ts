@@ -9,8 +9,6 @@
  *   ollama pull llama3.2          # For chat (or mistral, gemma2, etc.)
  */
 
-import { logError, logInfo } from './logger';
-
 // Default Ollama server URL (can be overridden via env)
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
 
@@ -107,43 +105,6 @@ export async function createOllamaChatCompletion(
 
   const data: OllamaChatResponse = await response.json();
   return data.message.content;
-}
-
-/**
- * Pull a model if not already available
- */
-export async function pullModel(model: string): Promise<void> {
-  logInfo(`Pulling Ollama model: ${model}`, { component: 'ollama' });
-
-  const response = await fetch(`${OLLAMA_BASE_URL}/api/pull`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: model, stream: false }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    logError(`Failed to pull model ${model}`, new Error(error), { component: 'ollama' });
-    throw new Error(`Failed to pull model: ${error}`);
-  }
-
-  logInfo(`Successfully pulled model: ${model}`, { component: 'ollama' });
-}
-
-/**
- * List available models
- */
-export async function listModels(): Promise<string[]> {
-  const response = await fetch(`${OLLAMA_BASE_URL}/api/tags`, {
-    method: 'GET',
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to list Ollama models');
-  }
-
-  const data = await response.json();
-  return data.models?.map((m: { name: string }) => m.name) || [];
 }
 
 /**

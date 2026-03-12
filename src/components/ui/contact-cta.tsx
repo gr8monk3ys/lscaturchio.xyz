@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "@/lib/motion";
 import { ArrowUpRight, CalendarDays, Mail, ShieldCheck, Sparkles } from "lucide-react";
 import Link from "next/link";
 
@@ -27,24 +26,22 @@ export function ContactCTA() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Link
-                  href="/contact"
-                  className="cta-primary inline-flex h-11 items-center gap-2 rounded-xl px-6 text-base"
-                >
-                  <Mail className="h-4 w-4" />
-                  Send Project Brief
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Link
-                  href="/work-with-me"
-                  className="cta-secondary inline-flex h-11 items-center gap-2 rounded-xl px-6 text-base"
-                >
-                  See How I Work
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </motion.div>
+              <Link
+                href="/contact"
+                prefetch={false}
+                className="cta-primary inline-flex h-11 items-center gap-2 rounded-xl px-6 text-base transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <Mail className="h-4 w-4" />
+                Send Project Brief
+              </Link>
+              <Link
+                href="/work-with-me"
+                prefetch={false}
+                className="cta-secondary inline-flex h-11 items-center gap-2 rounded-xl px-6 text-base transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              >
+                See How I Work
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
             </div>
 
             <div className="text-sm text-muted-foreground">

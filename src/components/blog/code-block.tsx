@@ -249,19 +249,3 @@ export function CodeBlock({
     </div>
   );
 }
-
-// Simple inline code styling
-export function InlineCode({ children, className, ...props }: React.HTMLAttributes<HTMLElement>) {
-  return (
-    <code
-      className={cn(
-        "relative rounded bg-muted px-[0.4rem] py-[0.2rem] font-mono text-sm",
-        "before:content-none after:content-none",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </code>
-  );
-}
