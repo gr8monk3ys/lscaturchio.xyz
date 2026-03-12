@@ -101,12 +101,12 @@ export function HowIWorkSection() {
 
             <div className="mt-5 flex flex-wrap gap-3">
               <Button asChild size="sm" variant="primary">
-                <Link href="/contact">
+                <Link href="/contact" prefetch={false}>
                   Start a project <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
               <Button asChild size="sm" variant="outline" className="cta-secondary">
-                <Link href="/projects">
+                <Link href="/projects" prefetch={false}>
                   See case studies <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>

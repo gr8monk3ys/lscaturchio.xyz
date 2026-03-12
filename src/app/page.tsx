@@ -14,6 +14,7 @@ import { getGithubPortfolioRepos } from "@/lib/github-repos";
 import { getPopularPosts } from "@/lib/popular-posts";
 import type { Metadata } from "next";
 import { ogCardUrl } from "@/lib/seo";
+import { splitHomepageBlogs } from "@/lib/blog-data";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -57,40 +58,7 @@ export default async function Home() {
     getPopularPosts(3),
   ]);
 
-  const now = new Date();
-
-  // Avoid showing future-dated posts on the homepage. We'll clean source dates separately,
-  // but this keeps the landing experience and SEO sane.
-  const sortedBlogs = allBlogs
-    .map((blog) => ({ blog, time: new Date(blog.date).getTime() }))
-    .filter(({ time }) => Number.isFinite(time))
-    .filter(({ time }) => time <= now.getTime() + 1000 * 60 * 60 * 24)
-    .sort((a, b) => b.time - a.time)
-    .map(({ blog }) => blog);
-
-  const recentBlogsRaw = sortedBlogs.slice(0, 3);
-  const recentSlugs = new Set(recentBlogsRaw.map((blog) => blog.slug));
-
-  const recentBlogs = recentBlogsRaw.map(({ title, description, date, slug, tags, image }) => ({
-    title,
-    description,
-    date,
-    slug,
-    tags: tags || [],
-    image: image || "/images/blog/default.webp",
-  }));
-
-  const selectedWriting = sortedBlogs
-    .filter((blog) => !recentSlugs.has(blog.slug))
-    .slice(0, 8)
-    .map(({ title, description, date, slug, tags, image }) => ({
-      title,
-      description,
-      date,
-      slug,
-      tags: tags || [],
-      image: image || "/images/blog/default.webp",
-    }));
+  const { recentBlogs, selectedWriting } = splitHomepageBlogs(allBlogs);
 
   const popularPosts = popularPostsResult.posts.map((p) => ({
     slug: p.slug,

@@ -68,9 +68,9 @@
     --popover: 220 15% 10%;
     --popover-foreground: 0 0% 98%;
     --primary: 152 44% 46%;
-    --primary-foreground: 0 0% 100%;
+    --primary-foreground: 220 15% 8%;
     --secondary: 152 38% 32%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary-foreground: 220 15% 8%;
     --muted: 220 10% 16%;
     --muted-foreground: 220 10% 70%;
     --accent: 210 16% 16%;
@@ -121,6 +121,7 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     line-height: 1.65;
+    overflow-x: clip;
     background-image:
       radial-gradient(1200px circle at 8% -10%, hsl(var(--primary) / 0.15), transparent 60%),
       radial-gradient(900px circle at 95% -5%, hsl(var(--secondary) / 0.2), transparent 55%),
@@ -147,6 +148,10 @@
 }
 
 @layer utilities {
+  .font-system {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+
   /* Neumorphic utility classes */
   .neu-flat {
     box-shadow: var(--neu-shadow);

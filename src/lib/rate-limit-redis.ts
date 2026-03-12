@@ -49,13 +49,3 @@ export function getRedisRateLimiter(limit: number, windowMs: number): Ratelimit 
 
   return rateLimiters.get(key)!;
 }
-
-/**
- * Check if Redis rate limiting is available
- */
-export function isRedisConfigured(): boolean {
-  return Boolean(
-    (process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL) &&
-      (process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN)
-  );
-}

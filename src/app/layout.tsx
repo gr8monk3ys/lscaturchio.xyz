@@ -3,7 +3,6 @@ import { Footer } from "@/components/ui/footer-section";
 import { Navbar } from "@/components/ui/navbar";
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import { MobileNavbar } from "@/components/ui/mobile-navbar"
 import { Suspense } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Metadata } from 'next'
@@ -11,20 +10,21 @@ import Script from "next/script";
 import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Fraunces } from "next/font/google";
 import { SITE_URL } from "@/lib/site-url";
-import { ContactCTAGate } from "@/components/layout/contact-cta-gate";
-import { ClientEnhancements } from "@/components/layout/client-enhancements";
+import { DeferredLayoutExtras } from "@/components/layout/deferred-layout-extras";
+import { MobileNavbarGate } from "@/components/layout/mobile-navbar-gate";
 const WEBMENTION_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, "");
 const ENABLE_VERCEL_ANALYTICS = process.env.VERCEL === "1";
 
 const displayFont = Fraunces({
   subsets: ["latin"],
-  display: "swap",
+  display: "optional",
+  preload: false,
   variable: "--font-display",
 });
 
 const bodyFont = Instrument_Sans({
   subsets: ["latin"],
-  display: "swap",
+  display: "optional",
   variable: "--font-body",
 });
 
@@ -169,12 +169,12 @@ export default function RootLayout({
             <Navbar />
           </Suspense>
           <Suspense fallback={<div className="min-h-[64px] md:hidden"></div>}>
-            <MobileNavbar />
+            <MobileNavbarGate />
           </Suspense>
-          <main id="main-content">
+          <main id="main-content" className="overflow-x-clip">
             {children}
           </main>
-          <ContactCTAGate />
+          <DeferredLayoutExtras />
 
           <Suspense fallback={<div className="min-h-[200px]"></div>}>
             <Footer />
@@ -183,7 +183,6 @@ export default function RootLayout({
           {/* Load Vercel analytics only when running on Vercel */}
           {ENABLE_VERCEL_ANALYTICS && <Analytics />}
           {ENABLE_VERCEL_ANALYTICS && <SpeedInsights />}
-          <ClientEnhancements />
         </ThemeProvider>
       </body>
     </html>

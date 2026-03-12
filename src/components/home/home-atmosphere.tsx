@@ -2,7 +2,7 @@ export function HomeAtmosphere() {
   return (
     <div
       aria-hidden
-      className="home-atmosphere pointer-events-none absolute inset-0 -z-10"
+      className="home-atmosphere pointer-events-none absolute inset-0 -z-10 overflow-hidden"
     >
       <div className="home-atmosphere__layer home-atmosphere__layer--a" />
       <div className="home-atmosphere__layer home-atmosphere__layer--b" />

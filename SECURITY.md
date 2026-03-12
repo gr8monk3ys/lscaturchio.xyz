@@ -1,21 +1,25 @@
 # Security Policy
 
-## Supported Versions
+## Supported Version
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Only the current `main` branch is supported for security fixes.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+## Reporting A Vulnerability
 
-## Reporting a Vulnerability
+Do not open a public issue or public pull request for security problems.
 
-Use this section to tell people how to report a vulnerability.
+Report vulnerabilities by email to `lorenzosca7@protonmail.ch` with a subject line that starts with `[security]`.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+Include:
+
+- a short description of the issue
+- affected route, API, or file path
+- reproduction steps or a proof of concept
+- impact and any known mitigations
+
+Target response expectations:
+
+- acknowledgement within 3 business days
+- follow-up after triage once the report is reproduced or ruled out
+
+If the report is valid, remediation will usually land on `main` first, followed by any additional rotation or cleanup required for exposed credentials or third-party services.

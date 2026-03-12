@@ -12,7 +12,7 @@
 
 import { getDb } from './db';
 import { createOllamaEmbedding, isOllamaAvailable, getEmbeddingDimensions } from './ollama';
-import { logError, logInfo, logWarn } from './logger';
+import { logError, logWarn } from './logger';
 
 // Configurable similarity threshold for embedding search (0-1, higher = stricter)
 const EMBEDDING_MATCH_THRESHOLD = parseFloat(
@@ -228,7 +228,9 @@ export async function searchSimilarContent(query: string, limit: number = 5) {
 }
 
 // Alias for searchSimilarContent (used by some API routes)
-export const searchEmbeddings = searchSimilarContent;
+export async function searchEmbeddings(query: string, limit: number = 5) {
+  return searchSimilarContent(query, limit);
+}
 
 /**
  * Check if embeddings are available (provider is configured)
@@ -236,15 +238,4 @@ export const searchEmbeddings = searchSimilarContent;
 export async function isEmbeddingsAvailable(): Promise<boolean> {
   if (USE_OPENAI && !openaiEmbeddingsDisabled) return true;
   return isOllamaAvailable();
-}
-
-/**
- * Log current embedding configuration
- */
-export function logEmbeddingConfig(): void {
-  logInfo(`Embedding provider: ${getEmbeddingProvider()}`, {
-    component: 'embeddings',
-    dimensions: getProviderEmbeddingDimensions(),
-    threshold: EMBEDDING_MATCH_THRESHOLD,
-  });
 }

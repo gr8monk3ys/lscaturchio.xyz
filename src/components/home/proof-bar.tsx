@@ -54,6 +54,7 @@ export function ProofBar() {
                 </div>
                 <Link
                   href={item.proofHref}
+                  prefetch={item.proofHref.startsWith("/") ? false : undefined}
                   target={item.proofHref.startsWith("http") ? "_blank" : undefined}
                   rel={item.proofHref.startsWith("http") ? "noopener noreferrer" : undefined}
                   className={cn(

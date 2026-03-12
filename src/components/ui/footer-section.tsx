@@ -1,15 +1,18 @@
-"use client"
-
-import { buttonVariants } from "@/components/ui/button"
 import { navigation } from '@/constants/navlinks';
 import Link from "next/link";
 import { Send, Rss, Pizza } from "lucide-react"
 import { socials } from "@/constants/socials"
-import { cn } from "@/lib/utils"
+
+const primaryLinkClass = "cta-primary inline-flex items-center gap-2";
+const secondaryLinkClass =
+  "inline-flex h-10 items-center justify-center gap-2 rounded-xl neu-button px-4 py-2 text-sm font-medium text-foreground transition-all duration-200 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+const iconLinkClass =
+  "inline-flex h-10 w-10 items-center justify-center rounded-xl neu-button text-foreground transition-all duration-200 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
 function Footer() {
 
   const substackUrl = socials.find(social => social.label === "Substack")?.href || "https://substack.com/@gr8monk3ys"
+  const currentYear = new Date().getFullYear()
 
   return (
     <footer className="relative bg-background text-foreground transition-colors duration-300">
@@ -25,7 +28,7 @@ function Footer() {
                 href="https://social.lscaturchio.xyz/auth/sign_up"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: "primary" }), "inline-flex items-center gap-2")}
+                className={primaryLinkClass}
               >
                 <Send className="h-4 w-4" />
                 Join Lorenzo Social
@@ -34,7 +37,7 @@ function Footer() {
                 href={substackUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: "primary" }), "inline-flex items-center gap-2")}
+                className={primaryLinkClass}
               >
                 <Send className="h-4 w-4" />
                 Subscribe to Newsletter
@@ -43,7 +46,7 @@ function Footer() {
                 href="/api/rss"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: "default" }), "inline-flex items-center gap-2")}
+                className={secondaryLinkClass}
               >
                 <Rss className="h-4 w-4" />
                 RSS Feed
@@ -52,7 +55,7 @@ function Footer() {
                 href="https://www.buymeacoffee.com/lorenzoscak"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: "default" }), "inline-flex items-center gap-2")}
+                className={secondaryLinkClass}
               >
                 <Pizza className="h-4 w-4" />
                 Buy me a pizza
@@ -66,6 +69,7 @@ function Footer() {
                 <Link
                   key={item.name}
                   href={item.href}
+                  prefetch={false}
                   className="block transition-colors hover:text-primary"
                 >
                   {item.name}
@@ -95,7 +99,7 @@ function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={cn(buttonVariants({ variant: "default", size: "icon" }), "rounded-xl")}
+                  className={iconLinkClass}
                   title={social.label}
                   aria-label={social.label}
                 >
@@ -108,16 +112,16 @@ function Footer() {
         </div>
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-center md:flex-row">
           <p className="text-sm text-muted-foreground">
-            {new Date().getFullYear()} Lorenzo Scaturchio. All rights reserved.
+            {currentYear} Lorenzo Scaturchio. All rights reserved.
           </p>
           <nav className="flex gap-4 text-sm">
-            <Link href="/stats" className="transition-colors hover:text-primary">
+            <Link href="/stats" prefetch={false} className="transition-colors hover:text-primary">
               Stats
             </Link>
-            <Link href="/privacy-policy" className="transition-colors hover:text-primary">
+            <Link href="/privacy-policy" prefetch={false} className="transition-colors hover:text-primary">
               Privacy Policy
             </Link>
-            <Link href="/terms-of-service" className="transition-colors hover:text-primary">
+            <Link href="/terms-of-service" prefetch={false} className="transition-colors hover:text-primary">
               Terms of Service
             </Link>
           </nav>

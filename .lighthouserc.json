@@ -2,7 +2,7 @@
   "ci": {
     "collect": {
       "numberOfRuns": 1,
-      "startServerCommand": "bun run start -- --hostname 127.0.0.1 --port 4173",
+      "startServerCommand": "npm run start -- --hostname 127.0.0.1 --port 4173",
       "startServerReadyPattern": "Ready in",
       "startServerReadyTimeout": 180000,
       "url": [

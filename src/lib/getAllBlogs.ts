@@ -2,6 +2,10 @@ import glob from "fast-glob";
 import * as path from "path";
 import fs from "fs/promises";
 import { extractBlogMeta } from "@/lib/blog-meta";
+import {
+  clampBlogDateToToday,
+  sortBlogsByDateDescending,
+} from "@/lib/blog-data";
 
 // Module-level cache for getAllBlogs() to avoid repeated disk reads
 let cachedBlogs: BlogPost[] | null = null;
@@ -25,19 +29,6 @@ export interface BlogPost extends BlogMeta {
   content: string;
 }
 
-function getTodayIsoDate(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function clampToToday(date: string): string {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return date;
-  }
-
-  const today = getTodayIsoDate();
-  return date > today ? today : date;
-}
-
 async function readBlog(fileName: string): Promise<BlogPost | null> {
   const blogDir = path.join(process.cwd(), "src/app/blog");
   const filePath = path.join(blogDir, fileName);
@@ -46,8 +37,8 @@ async function readBlog(fileName: string): Promise<BlogPost | null> {
 
   if (!meta.title || !meta.date) return null;
 
-  const publishDate = clampToToday(meta.date);
-  const updatedDate = meta.updated ? clampToToday(meta.updated) : undefined;
+  const publishDate = clampBlogDateToToday(meta.date);
+  const updatedDate = meta.updated ? clampBlogDateToToday(meta.updated) : undefined;
 
   return {
     slug: fileName.replace(/(\/content)?\.mdx$/, ""),
@@ -76,20 +67,12 @@ export async function getAllBlogs(): Promise<BlogPost[]> {
 
   const results = await Promise.all(blogFileNames.map(readBlog));
   const blogs = results.filter((b): b is BlogPost => b !== null);
-  const sortedBlogs = blogs.sort((a, b) => b.date.localeCompare(a.date));
+  const sortedBlogs = sortBlogsByDateDescending(blogs);
 
   cachedBlogs = sortedBlogs;
   cacheTime = now;
 
   return sortedBlogs;
-}
-
-/**
- * Clear the blog cache.
- */
-export function clearBlogCache(): void {
-  cachedBlogs = null;
-  cacheTime = 0;
 }
 
 /**

@@ -3,31 +3,14 @@ import type { MetadataRoute } from "next";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { products } from "@/constants/products";
 import { TOPIC_HUBS } from "@/constants/topics";
-import { SITE_URL } from "@/lib/site-url";
-
-const DEFAULT_LOCALE = "en";
-const LOCALES = ["en", "es", "fr", "hi", "ar", "zh-cn"] as const;
+import { getBlogLastModified } from "@/lib/blog-data";
+import {
+  absoluteSitePath,
+  SITE_LOCALES,
+  withLocalePrefix,
+} from "@/lib/site-locale";
 
 type ChangeFrequency = NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>;
-
-function absolute(path: string): string {
-  const normalized = path.startsWith("/") ? path : `/${path}`;
-  return `${SITE_URL}${normalized}`;
-}
-
-function withLocalePrefix(locale: string, path: string): string {
-  const normalized = path.startsWith("/") ? path : `/${path}`;
-  if (locale === DEFAULT_LOCALE) return normalized;
-  if (normalized === "/") return `/${locale}`;
-  return `/${locale}${normalized}`;
-}
-
-function parseIsoDate(date: string | undefined): Date | undefined {
-  if (!date) return undefined;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return undefined;
-  const parsed = new Date(date);
-  return Number.isNaN(parsed.getTime()) ? undefined : parsed;
-}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
@@ -75,7 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const blogs = await getAllBlogs();
   const blogEntries = blogs.map((blog) => ({
     path: `/blog/${blog.slug}`,
-    lastModified: parseIsoDate(blog.updated) ?? parseIsoDate(blog.date) ?? now,
+    lastModified: getBlogLastModified(blog, now),
     changeFrequency: "yearly" as ChangeFrequency,
     priority: 0.6,
   }));
@@ -122,9 +105,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const localizedEntries: MetadataRoute.Sitemap = [];
   for (const entry of baseEntries) {
-    for (const locale of LOCALES) {
+    for (const { locale } of SITE_LOCALES) {
       localizedEntries.push({
-        url: absolute(withLocalePrefix(locale, entry.path)),
+        url: absoluteSitePath(withLocalePrefix(locale, entry.path)),
         lastModified: entry.lastModified,
         changeFrequency: entry.changeFrequency,
         priority: entry.priority,

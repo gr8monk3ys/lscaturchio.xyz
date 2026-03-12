@@ -32,6 +32,7 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
           action={
             <Link
               href="/blog"
+              prefetch={false}
               className="group inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               View all posts
@@ -52,6 +53,7 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
+                prefetch={false}
                 className={cn(
                   "group selected-writing-card snap-start shrink-0",
                   "w-[86%] sm:w-[420px] md:w-[460px]"

@@ -126,32 +126,3 @@ export const navigation = [
   { name: 'Contact', href: '/contact' },
   { name: 'Changelog', href: '/changelog' },
 ];
-
-// All pages for search/sitemap
-export const allPages: NavItem[] = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
-  { name: 'Now', href: '/now' },
-  { name: 'Professional', href: '/professional' },
-  { name: 'Projects', href: '/projects' },
-  { name: 'Work With Me', href: '/work-with-me' },
-  { name: 'Services', href: '/work-with-me#services' },
-  { name: 'Testimonials', href: '/work-with-me#testimonials' },
-  { name: 'Blog', href: '/blog' },
-  { name: 'Changelog', href: '/changelog' },
-  { name: 'Chat', href: '/chat' },
-  { name: 'Guestbook', href: '/guestbook' },
-  { name: 'Lab', href: '/lab' },
-  { name: 'API Docs', href: '/api-docs' },
-  { name: 'Series', href: '/series' },
-  { name: 'Podcast', href: '/podcast' },
-  { name: 'Bookmarks', href: '/bookmarks' },
-  { name: 'Topics', href: '/topics' },
-  { name: 'Tags', href: '/tags' },
-  { name: 'Books', href: '/books' },
-  { name: 'Movies', href: '/movies' },
-  { name: 'Uses', href: '/uses' },
-  { name: 'Photos', href: '/photos' },
-  { name: 'Links', href: '/links' },
-  { name: 'Contact', href: '/contact' },
-];

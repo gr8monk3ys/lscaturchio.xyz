@@ -1,69 +1,14 @@
-interface WebsiteStructuredDataProps {
-  url: string;
-  name: string;
-  description: string;
-  siteType?: "WebSite" | "Portfolio" | "Blog" | "Person";
-}
-
-export function WebsiteStructuredData({
-  url,
-  name,
-  description,
-  siteType = "WebSite",
-}: WebsiteStructuredDataProps) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": siteType,
-    name,
-    description,
-    url,
-  };
-
+function JsonLdScript({
+  id,
+  data,
+}: {
+  id: string;
+  data: Record<string, unknown>;
+}) {
   return (
-    <script
-      id="website-schema"
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
-  );
-}
-
-interface PersonStructuredDataProps {
-  name: string;
-  description: string;
-  image: string;
-  sameAs?: string[];
-  jobTitle?: string;
-  url: string;
-}
-
-const EMPTY_SAME_AS: string[] = [];
-
-export function PersonStructuredData({
-  name,
-  description,
-  image,
-  sameAs = EMPTY_SAME_AS,
-  jobTitle,
-  url,
-}: PersonStructuredDataProps) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name,
-    description,
-    image,
-    sameAs,
-    jobTitle,
-    url,
-  };
-
-  return (
-    <script
-      id="person-schema"
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
+    <script id={id} type="application/ld+json">
+      {JSON.stringify(data)}
+    </script>
   );
 }
 
@@ -88,13 +33,7 @@ export function BreadcrumbStructuredData({
     })),
   };
 
-  return (
-    <script
-      id="breadcrumb-schema"
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
-  );
+  return <JsonLdScript id="breadcrumb-schema" data={jsonLd} />;
 }
 
 interface FAQStructuredDataProps {
@@ -118,11 +57,5 @@ export function FAQStructuredData({ questions }: FAQStructuredDataProps) {
     })),
   };
 
-  return (
-    <script
-      id="faq-schema"
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
-  );
+  return <JsonLdScript id="faq-schema" data={jsonLd} />;
 }
