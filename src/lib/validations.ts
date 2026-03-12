@@ -49,16 +49,12 @@ export const contactFormSchema = z.object({
     .transform((msg) => msg.trim()),
 });
 
-export type ContactFormInput = z.infer<typeof contactFormSchema>;
-
 /**
  * View tracking - POST body
  */
 export const viewTrackingSchema = z.object({
   slug: slugSchema,
 });
-
-export type ViewTrackingInput = z.infer<typeof viewTrackingSchema>;
 
 /**
  * Newsletter subscription
@@ -81,8 +77,6 @@ export const newsletterSubscribeSchema = z.object({
     .transform((s) => s.trim())
     .optional(),
 });
-
-export type NewsletterSubscribeInput = z.infer<typeof newsletterSubscribeSchema>;
 
 /**
  * Query parameter schemas for GET/DELETE requests
@@ -126,11 +120,9 @@ export function parseQuery<T extends z.ZodSchema>(
 /**
  * AI Provider enum for chat API
  */
-export const aiProviderSchema = z.enum(['openai', 'anthropic', 'google'], {
+const aiProviderSchema = z.enum(['openai', 'anthropic', 'google'], {
   message: "Provider must be 'openai', 'anthropic', or 'google'",
 });
-
-export type AIProviderInput = z.infer<typeof aiProviderSchema>;
 
 /**
  * Chat API request validation
@@ -149,8 +141,6 @@ export const chatRequestSchema = z.object({
     .optional(),
 });
 
-export type ChatRequestInput = z.infer<typeof chatRequestSchema>;
-
 /**
  * Summarize API request validation
  */
@@ -159,13 +149,9 @@ export const summarizeSchema = z.object({
   type: z.enum(['summary', 'takeaways']).default('summary'),
 });
 
-export type SummarizeInput = z.infer<typeof summarizeSchema>;
-
 /**
  * Newsletter unsubscribe token validation
  */
 export const unsubscribeSchema = z.object({
   token: z.string().min(1, 'Unsubscribe token is required').max(256, 'Token is too long'),
 });
-
-export type UnsubscribeInput = z.infer<typeof unsubscribeSchema>;

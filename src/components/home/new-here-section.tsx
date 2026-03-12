@@ -75,7 +75,11 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
 
         <div className="grid sm:grid-cols-3 gap-4">
           <Reveal delayMs={0}>
-            <Link href={returning ? `/blog/${lastRead.slug}` : "/about"} className="group block h-full">
+            <Link
+              href={returning ? `/blog/${lastRead.slug}` : "/about"}
+              prefetch={false}
+              className="group block h-full"
+            >
               <div className="neu-pressed rounded-xl p-4 h-full hover:bg-primary/5 transition-colors">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="neu-flat-sm rounded-lg p-2">
@@ -113,7 +117,11 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
           </Reveal>
 
           <Reveal delayMs={80}>
-            <Link href={returning && recommendedHub ? `/topics/${recommendedHub.slug}` : "/blog"} className="group block h-full">
+            <Link
+              href={returning && recommendedHub ? `/topics/${recommendedHub.slug}` : "/blog"}
+              prefetch={false}
+              className="group block h-full"
+            >
               <div className="neu-pressed rounded-xl p-4 h-full hover:bg-primary/5 transition-colors">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="neu-flat-sm rounded-lg p-2">
@@ -137,7 +145,7 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
           </Reveal>
 
           <Reveal delayMs={160}>
-            <Link href="/chat" className="group block h-full">
+            <Link href="/chat" prefetch={false} className="group block h-full">
               <div className="neu-pressed rounded-xl p-4 h-full hover:bg-primary/5 transition-colors">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="neu-flat-sm rounded-lg p-2">
@@ -169,6 +177,7 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
+                  prefetch={false}
                   className="group rounded-xl border border-border/60 bg-background/70 px-4 py-3 hover:bg-primary/[0.04] transition-colors"
                 >
                   <div className="flex items-center justify-between gap-3">

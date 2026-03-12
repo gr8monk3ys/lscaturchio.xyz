@@ -1,115 +1,112 @@
-# lscaturchio.xyz – Personal Portfolio and Blog
+# lscaturchio.xyz
 
-![Dashboard Preview](public/images/dashboard.webp)
+![Site preview](public/images/dashboard.webp)
 
-Welcome to the repository for my personal website, **lscaturchio.xyz**! This project serves as a dynamic platform where I showcase my professional work, share technical insights through blog posts, and engage with the broader tech community.
+Personal site and publishing platform built with Next.js 16, React 19, TypeScript, and Tailwind CSS. The repo powers a portfolio, long-form MDX blog, AI chat with retrieval over site content, engagement APIs, localized routes, and a set of maintenance scripts for content, audio, and deployment checks.
 
-## 🌟 Key Features
+## What This Repo Includes
 
-- **🚀 Powered by Next.js 14**: Utilizes the App Router and React Server Components for efficient, scalable, and production-ready web applications.
-- **🤖 AI Chat with RAG**: GPT-4o powered chat that answers questions using blog content via retrieval-augmented generation.
-- **📊 Engagement Tracking**: View counts, likes, and bookmarks persisted in Supabase with server-side deduplication.
-- **💅 Styled with Tailwind CSS**: A utility-first CSS framework ensuring rapid and consistent design implementation.
-- **🎨 Interactive Animations**: Smooth, responsive animations created with Framer Motion for an engaging UI.
-- **📝 MDX Integration**: Blog posts with syntax highlighting, series support, and React component flexibility.
-- **📱 Fully Responsive**: Optimized for all devices, from desktop monitors to smartphones.
-- **🎯 SEO-Optimized**: Structured data (JSON-LD), automated sitemap/RSS generation, and Open Graph support.
-- **📄 Dynamic Content**: Modular blog and project pages with bento grid layouts.
-- **📬 Contact Form**: Email integration via Resend API with rate limiting.
-- **📰 Newsletter**: Subscription system with welcome emails and Supabase persistence.
+- Marketing and portfolio pages under the App Router
+- MDX blog posts with shared metadata, tags, series, and JSON-LD
+- AI chat with OpenAI, OpenRouter, and Ollama fallbacks
+- Neon/Postgres-backed engagement and content retrieval features
+- Pre-generated text-to-speech audio and an audio manifest pipeline
+- CI quality gates for linting, type-checking, tests, build, and Lighthouse
 
-## 📂 Project Structure
+## Stack
 
-This repository follows a clean and modular structure for ease of navigation and maintainability:
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS
+- Neon/Postgres
+- OpenAI, OpenRouter, and Ollama
+- Playwright, Vitest, ESLint, Lighthouse CI
+- Vercel deployment
 
-- **`/src/app/*`**: Core application pages and dynamic routing managed by Next.js.  
-- **`/src/components/*`**: Reusable and customizable UI components to ensure consistency and scalability.  
-- **`/public/*`**: Static assets such as images, icons, and fonts accessible by the client.  
-- **`/lib/*`**: Shared utility functions, API integrations, and configuration files.  
-- **`/fonts/*`**: Custom typography resources to ensure a unique and polished look.  
+## Quick Start
 
-## 🛠️ Built With
-
-This project leverages a modern tech stack to deliver exceptional performance and developer experience:
-
-- **[Next.js 14](https://nextjs.org/)**: The React framework for modern web development, with App Router, Server Components, and more.
-- **[Bun](https://bun.sh/)**: Fast all-in-one JavaScript runtime and package manager.
-- **[TypeScript](https://www.typescriptlang.org/)**: Ensures strong typing for improved code quality and maintainability.
-- **[Tailwind CSS](https://tailwindcss.com/)**: Rapid UI design using a utility-first CSS framework.
-- **[Supabase](https://supabase.com/)**: PostgreSQL database with vector search for engagement tracking and AI chat.
-- **[Framer Motion](https://www.framer.com/motion/)**: A powerful animation library for creating stunning motion effects.
-- **[MDX](https://mdxjs.com/)**: Combines Markdown and JSX for flexible, component-driven content.  
-
-## 🚀 Getting Started
-
-Follow these steps to set up and run the project locally:
-
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/lscaturchio/lscaturchio.xyz.git
-   cd lscaturchio.xyz
-   ```
-
-2. **Install Dependencies**:
-   ```bash
-   bun install
-   ```
-
-3. **Run the Development Server**:
-   ```bash
-   bun dev
-   ```
-
-4. **View in Browser**: Open [http://localhost:3000](http://localhost:3000) to preview the site locally.
-
-## 🤖 Content Pipelines
+Examples below use `npm`, but the repo also keeps a Bun lockfile and CI uses Bun.
 
 ```bash
-# Regenerate RAG embeddings (requires DATABASE_URL and OpenAI/Ollama)
-npm run generate-embeddings
-
-# Build Matisse-style blog cover prompts only
-npm run generate-matisse-covers -- --prepare-only
-
-# Generate + apply Matisse-style blog covers (requires OPENAI_API_KEY)
-npm run generate-matisse-covers -- --force
-
-# Generate missing blog audio with OpenAI TTS (requires OPENAI_API_KEY)
-npm run generate-tts-openai
-
-# Audit generated media footprint and coverage
-npm run audit-media
+git clone https://github.com/gr8monk3ys/lscaturchio.xyz.git
+cd lscaturchio.xyz
+cp .env.example .env.local
+npm install
+npm run dev
 ```
 
-## 📈 Deployment
+Open `http://localhost:3000`.
 
-The website is deployed using [Vercel](https://vercel.com/), ensuring rapid and reliable performance with automatic CI/CD pipelines. For production deployment:
+For full local functionality, set `DATABASE_URL` and whichever provider keys you want to use in `.env.local`. The environment file is documented in [`.env.example`](.env.example).
 
-1. Connect your GitHub repository to Vercel.  
-2. Push changes to the `main` branch to trigger an automatic build and deployment.  
+## Common Commands
 
-### Post-deploy smoke check (chat)
+```bash
+# App lifecycle
+npm run dev
+npm run build
+npm run start
 
-Run this after deploys to verify the production `/api/chat` endpoint is healthy end-to-end:
+# Code quality
+npm run lint
+npm run typecheck
+npm test
+npm run test:e2e
+npm run perf:lighthouse
+
+# Content and operations
+npm run generate-embeddings
+npm run generate-tts-openai
+npm run generate-audio-manifest
+npm run audit-media
+npm run suggest-internal-links
+npm run send-webmentions
+npm run smoke:chat
+npm run smoke:chat:prod
+```
+
+## Repository Map
+
+- `src/app`: App Router pages, layouts, route handlers, sitemap, and metadata routes
+- `src/components`: page sections, UI primitives, and client-side behavior
+- `src/lib`: shared data helpers, validation, SEO, chat, DB, and utility modules
+- `src/generated`: generated source such as the audio manifest
+- `public`: static assets, audio output, and `public/my-data` content exports used by retrieval workflows
+- `scripts`: one-off and recurring maintenance scripts
+- `e2e`: Playwright coverage for key user flows
+- `supabase/migrations`: SQL migration history and database setup notes
+- `docs`: repository-specific operating docs and structure notes
+
+## Maintenance Notes
+
+- The canonical sitemap comes from [`src/app/sitemap.ts`](src/app/sitemap.ts), not from a postbuild script.
+- Generated or local-only artifacts such as `.next`, `coverage`, `playwright-report`, `test-results`, `.lighthouseci`, `.playwright-cli`, and `tmp` should stay out of commits.
+- When audio files change, regenerate [`src/generated/audio-manifest.ts`](src/generated/audio-manifest.ts) with `npm run generate-audio-manifest`.
+- When retrieval source content changes in `public/my-data`, rerun `npm run generate-embeddings` if you rely on the chat index.
+
+## Further Docs
+
+- [Repository Guide](docs/repository-guide.md)
+- [Operations Guide](docs/operations.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security Policy](SECURITY.md)
+- [CLAUDE.md](CLAUDE.md)
+
+## Deployment
+
+Production deploys target Vercel from `main`. After a production deploy, the fastest app-level smoke check is:
 
 ```bash
 npm run smoke:chat:prod
 ```
 
-You can also target any environment:
+For preview or other environments:
 
 ```bash
 npm run smoke:chat -- --base-url https://your-preview-url.vercel.app
 ```
 
-## 📜 License
+## License
 
-This project is open-source and available under the terms of the [MIT License](LICENSE). Contributions and forks are welcome, adhering to the license terms.
-
-## 🙌 Acknowledgments
-
-Special thanks to [Aceternity UI](https://ui.aceternity.com/templates) for inspiring the design aesthetics of this website. 
-
----
-
-By contributing to or using this project, you’re joining a journey toward fostering creativity and innovation in the tech community. Feel free to explore, contribute, or reach out for collaboration opportunities! 🚀
+This project is licensed under the [MIT License](LICENSE).

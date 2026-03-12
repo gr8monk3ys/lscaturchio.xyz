@@ -145,12 +145,6 @@ export function getTopRatedBooks(limit: number = 20): GoodreadsBook[] {
   return books.slice(0, limit);
 }
 
-// Get books by custom shelf/tag
-export function getBooksByTag(tag: string): GoodreadsBook[] {
-  const books = getGoodreadsBooks();
-  return books.filter(book => book.bookshelves.includes(tag));
-}
-
 // Calculate stats
 export function getGoodreadsStats(): GoodreadsStats {
   const books = getGoodreadsBooks();
@@ -172,16 +166,3 @@ export function getGoodreadsStats(): GoodreadsStats {
     totalPages,
   };
 }
-
-// Get unique bookshelves/tags
-export function getUniqueBookshelves(): string[] {
-  const books = getGoodreadsBooks();
-  const shelves = new Set<string>();
-  books.forEach(book => {
-    book.bookshelves.forEach(shelf => shelves.add(shelf));
-  });
-  return Array.from(shelves).sort();
-}
-
-// Legacy export for compatibility
-export const GOODREADS_USERNAME = 'gr8monk3ys';

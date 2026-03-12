@@ -136,24 +136,3 @@ export function ProjectGrid({ projects, className, showSectionHeaders = true }: 
     </motion.div>
   );
 }
-
-// Compact grid variant for related projects
-export function ProjectGridCompact({ projects, className }: ProjectGridProps) {
-  if (projects.length === 0) return null;
-
-  return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-50px" }}
-      className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4", className)}
-    >
-      {projects.map((project) => (
-        <motion.div key={project.slug} variants={itemVariants}>
-          <EnhancedProjectCard product={project} variant="default" />
-        </motion.div>
-      ))}
-    </motion.div>
-  );
-}

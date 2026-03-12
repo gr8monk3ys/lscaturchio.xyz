@@ -3,12 +3,6 @@ import { SITE_URL } from "@/lib/site-url";
 
 export type OgCardType = "default" | "blog" | "project";
 
-export function absoluteUrl(path: string): string {
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
-  const normalized = path.startsWith("/") ? path : `/${path}`;
-  return `${SITE_URL}${normalized}`;
-}
-
 export function ogCardUrl(params: {
   title: string;
   description?: string;

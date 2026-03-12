@@ -68,10 +68,3 @@ export const ApiErrors = {
   validationError: (error: string) => apiError(error, 400),
   missingField: (field: string) => apiError(`${field} is required`, 400),
 };
-
-/**
- * Type for API response data
- */
-export type ApiResponse<T> =
-  | { data: T; success: true }
-  | { error: string; success: false };

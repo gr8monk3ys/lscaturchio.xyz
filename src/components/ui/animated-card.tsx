@@ -1,47 +1,7 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform, Variants } from '@/lib/motion';
+import { motion, useMotionValue, useSpring, useTransform } from '@/lib/motion';
 import { ReactNode, useRef, MouseEvent } from "react";
-
-// ============================================
-// HOVER CARD - Simple hover animation with scale and shadow
-// ============================================
-interface HoverCardProps {
-  children: ReactNode;
-  className?: string;
-}
-
-const hoverCardVariants: Variants = {
-  initial: {
-    y: 0,
-    scale: 1,
-  },
-  hover: {
-    y: -4,
-    scale: 1.02,
-    transition: {
-      duration: 0.2,
-      ease: "easeOut",
-    },
-  },
-};
-
-export function HoverCard({ children, className = "" }: HoverCardProps) {
-  return (
-    <motion.div
-      className={className}
-      variants={hoverCardVariants}
-      initial="initial"
-      whileHover="hover"
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-// ============================================
-// TILT CARD - Interactive 3D tilt on hover
-// ============================================
 interface TiltCardProps {
   children: ReactNode;
   className?: string;

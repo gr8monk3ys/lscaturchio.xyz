@@ -1,9 +1,13 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 
-import { ContactCTA } from "@/components/ui/contact-cta";
+const ContactCTA = dynamic(
+  () => import("@/components/ui/contact-cta").then((module) => module.ContactCTA),
+  { ssr: false, loading: () => null }
+);
 
 const CONTACT_CTA_EXCLUDED_PATHS = new Set<string>([
   "/chat",

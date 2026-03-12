@@ -23,6 +23,7 @@ import { SyndicationLinks } from "./syndication-links";
 import Link from "next/link";
 import { getTopicHubsForTags } from "@/constants/topics";
 import { getSiteUrl } from "@/lib/site-url";
+import { clampBlogDateToToday } from "@/lib/blog-data";
 
 const TextToSpeech = dynamic(
   () => import("./text-to-speech").then((module) => module.TextToSpeech),
@@ -66,18 +67,6 @@ interface BlogMeta {
   seriesOrder?: number; // Order within the series
 }
 
-function getTodayIsoDate(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function clampToToday(date: string): string {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return date;
-  }
-  const today = getTodayIsoDate();
-  return date > today ? today : date;
-}
-
 interface BlogLayoutProps {
   children: ReactNode;
   meta: BlogMeta;
@@ -95,8 +84,8 @@ export function BlogLayout({
 }: BlogLayoutProps) {
   const pathname = usePathname();
   const contentRef = useRef<HTMLDivElement>(null);
-  const safeDate = clampToToday(meta.date);
-  const safeUpdated = meta.updated ? clampToToday(meta.updated) : undefined;
+  const safeDate = clampBlogDateToToday(meta.date);
+  const safeUpdated = meta.updated ? clampBlogDateToToday(meta.updated) : undefined;
   const relatedHubs = getTopicHubsForTags(meta.tags);
 
   // Get slug from pathname

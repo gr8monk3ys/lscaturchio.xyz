@@ -14,9 +14,17 @@ interface BlogCardProps {
   priority?: boolean;
 }
 
-export function BlogCard({ slug, title, description, date, image, tags, priority = false }: BlogCardProps) {
+export function BlogCard({
+  slug,
+  title,
+  description,
+  date,
+  image,
+  tags,
+  priority = false,
+}: BlogCardProps) {
   return (
-    <Link href={`/blog/${slug}`} className="block h-full">
+    <Link href={`/blog/${slug}`} prefetch={false} className="block h-full">
       <Card className="flex h-full cursor-pointer flex-col overflow-hidden group transition-transform duration-200 hover:-translate-y-1">
         <div className="relative h-48 w-full overflow-hidden rounded-t-2xl">
           <Image

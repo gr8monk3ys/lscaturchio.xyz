@@ -1,11 +1,13 @@
 import { Container } from "@/components/Container";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
-import { BlogStats } from "@/components/blog/blog-stats";
+import { BlogArchiveStats } from "@/components/blog/blog-archive-stats";
 import Link from "next/link";
 import { MessageSquare, Tag } from "lucide-react";
 import type { Metadata } from "next";
 import { ogCardUrl } from "@/lib/seo";
+import { toBlogPreview } from "@/lib/blog-data";
+import { Suspense } from "react";
 
 interface Blog {
   slug: string;
@@ -17,6 +19,7 @@ interface Blog {
 }
 
 type SearchParamValue = string | string[] | undefined;
+const BLOGS_PER_PAGE = 12;
 
 function getSearchParamValue(
   params: Record<string, SearchParamValue>,
@@ -25,6 +28,11 @@ function getSearchParamValue(
   const value = params[key];
   if (Array.isArray(value)) return value[0] ?? "";
   return value ?? "";
+}
+
+function getPageParamValue(value: string): number {
+  const page = Number.parseInt(value, 10);
+  return Number.isFinite(page) && page > 0 ? page : 1;
 }
 
 export const metadata: Metadata = {
@@ -65,52 +73,42 @@ export default async function Blog({
 }) {
   const params = (await searchParams) ?? {};
   const tagFilter = getSearchParamValue(params, "tag");
+  const requestedPage = getPageParamValue(getSearchParamValue(params, "page"));
   const blogs = await getAllBlogs();
-  const totalPosts = blogs.length;
-  const totalReadingTime = blogs.reduce((total, blog) => {
-    const estimatedMinutes = Math.ceil(blog.content.length / 1000) * 5;
-    return total + estimatedMinutes;
-  }, 0);
-  const avgReadingTime = totalPosts > 0 ? Math.round(totalReadingTime / totalPosts) : 0;
-
-  const tagCounts = new Map<string, number>();
-  blogs.forEach((blog) => {
-    blog.tags.forEach((tag) => {
-      tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
-    });
-  });
-
-  const topTags = Array.from(tagCounts.entries())
-    .map(([tag, count]) => ({ tag, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
-
-  const data = blogs.map((blog) => ({
-    slug: blog.slug,
-    title: blog.title,
-    description: blog.description,
-    date: blog.date,
-    image: blog.image,
-    tags: blog.tags,
-  }));
+  const normalizedTag = tagFilter.trim().toLowerCase();
+  const filteredBlogs = normalizedTag
+    ? blogs.filter((blog) =>
+        blog.tags.some((tag) => tag.toLowerCase() === normalizedTag)
+      )
+    : blogs;
+  const totalPages = Math.max(1, Math.ceil(filteredBlogs.length / BLOGS_PER_PAGE));
+  const currentPage = Math.min(requestedPage, totalPages);
+  const pageStart = (currentPage - 1) * BLOGS_PER_PAGE;
+  const visibleBlogs = filteredBlogs
+    .slice(pageStart, pageStart + BLOGS_PER_PAGE)
+    .map(toBlogPreview);
 
   return (
     <Container size="large">
       <div className="space-y-6">
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
-              Blog
+        <section className="rounded-[1.5rem] border border-border/60 bg-background/80 px-6 py-7 sm:px-8 md:px-10 md:py-8">
+          <div className="max-w-[44rem] space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+              Essays, Notes, and Experiments
+            </p>
+            <h1 className="font-system text-[2.7rem] font-semibold leading-[1.02] tracking-tight text-foreground sm:text-[3rem] md:text-[3.15rem]">
+              Writing about AI, software, and the ways real systems fail.
             </h1>
-            <p className="text-muted-foreground">
-              Thoughts on software development, technology, and life.
+            <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+              Practical notes on shipping RAG, working with product constraints, and building software
+              that stays legible after the prototype phase.
             </p>
           </div>
-
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
             <Link
               href="/tags"
-              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              prefetch={false}
+              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <Tag className="h-4 w-4" />
               Browse by Tag
@@ -118,24 +116,27 @@ export default async function Blog({
             <span className="text-sm text-muted-foreground">or</span>
             <Link
               href="/chat"
+              prefetch={false}
               className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <MessageSquare className="h-4 w-4" />
               Ask About a Post
             </Link>
           </div>
-        </div>
+        </section>
 
-        <BlogStats
-          stats={{
-            totalPosts,
-            totalReadingTime,
-            avgReadingTime,
-            topTags,
-          }}
+        <BlogGrid
+          blogs={visibleBlogs}
+          currentPage={currentPage}
+          pageStart={pageStart}
+          tagFilter={tagFilter}
+          totalBlogs={filteredBlogs.length}
+          totalPages={totalPages}
         />
 
-        <BlogGrid blogs={data} tagFilter={tagFilter} />
+        <Suspense fallback={<div className="min-h-[260px]" />}>
+          <BlogArchiveStats />
+        </Suspense>
       </div>
     </Container>
   );

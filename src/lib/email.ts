@@ -246,11 +246,3 @@ export async function sendOnboardingEmail(
   // Unknown step: no-op.
   return false;
 }
-
-/**
- * Generate an unsubscribe URL for a given token
- */
-export function getUnsubscribeUrl(token: string): string {
-  const siteUrl = getSiteUrl();
-  return `${siteUrl}/unsubscribe?token=${token}`;
-}

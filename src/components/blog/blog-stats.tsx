@@ -40,7 +40,10 @@ const statCards = [
 
 export function BlogStats({ stats }: BlogStatsProps) {
   return (
-    <section className="rounded-2xl border border-border/70 bg-muted/20 p-5">
+    <section
+      className="rounded-2xl border border-border/70 bg-muted/20 p-5"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "1px 260px" }}
+    >
       <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
