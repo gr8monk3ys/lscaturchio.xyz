@@ -92,7 +92,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: pagead2.googlesyndication.com googleads.g.doubleclick.net www.googletagservices.com tpc.googlesyndication.com js.sentry-cdn.com giscus.app static.cloudflareinsights.com va.vercel-scripts.com",
+              "script-src 'self' 'unsafe-inline' blob: pagead2.googlesyndication.com googleads.g.doubleclick.net www.googletagservices.com tpc.googlesyndication.com js.sentry-cdn.com giscus.app static.cloudflareinsights.com va.vercel-scripts.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https:",
               "font-src 'self' data:",

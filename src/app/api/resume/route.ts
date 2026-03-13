@@ -13,7 +13,7 @@ const LEGACY_FILENAME = "Lorenzo_resume_DS.pdf";
  * GET /api/resume
  * Serves the PDF resume file with proper headers for download
  */
-export async function GET(req: NextRequest) {
+const handleGet = async (req: NextRequest) => {
   try {
     // Try the new filename first, then fall back to legacy
     let resumePath = join(process.cwd(), "public", RESUME_FILENAME);
@@ -79,6 +79,8 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC)
 
 /**
  * POST /api/resume

@@ -1,9 +1,7 @@
 import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [react()],
   test: {
     environment: 'happy-dom',
     globals: true,
@@ -19,6 +17,12 @@ export default defineConfig({
         '**/*.config.*',
         '.next/',
       ],
+      thresholds: {
+        statements: 70,
+        branches: 65,
+        functions: 65,
+        lines: 70,
+      },
     },
   },
   resolve: {
