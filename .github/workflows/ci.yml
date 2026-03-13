@@ -114,9 +114,8 @@ jobs:
       - name: Build
         run: bun run build
         env:
-          # Required for build
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          # Required for build - Neon PostgreSQL
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           # Optional - AI providers (set dummy values if not using)
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -161,8 +160,7 @@ jobs:
       - name: Build for Lighthouse
         run: bun run build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OLLAMA_BASE_URL: http://localhost:11434
