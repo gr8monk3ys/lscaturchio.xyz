@@ -6,6 +6,13 @@ const DEFAULT_ATTEMPTS = Number(process.env.SMOKE_ATTEMPTS || "20");
 const DEFAULT_INTERVAL_MS = Number(process.env.SMOKE_INTERVAL_MS || "15000");
 const DEFAULT_TIMEOUT_MS = Number(process.env.SMOKE_TIMEOUT_MS || "15000");
 
+class EdgeProtectionError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "EdgeProtectionError";
+  }
+}
+
 function printUsage() {
   console.log(`Usage: node scripts/smoke-chat.mjs [options]
 
@@ -16,6 +23,7 @@ Options:
   --interval-ms <ms>        Delay between attempts (default: ${DEFAULT_INTERVAL_MS})
   --timeout-ms <ms>         Per-request timeout (default: ${DEFAULT_TIMEOUT_MS})
   --skip-health             Skip /api/health check
+  --allow-edge-block        Treat Cloudflare/edge challenge blocks as a skip
   --require-non-fallback    Fail if provider is "fallback"
   --help                    Show this help
 `);
@@ -29,6 +37,7 @@ function parseArgs(argv) {
     intervalMs: DEFAULT_INTERVAL_MS,
     timeoutMs: DEFAULT_TIMEOUT_MS,
     skipHealth: false,
+    allowEdgeBlock: false,
     requireNonFallback: false,
   };
 
@@ -42,6 +51,11 @@ function parseArgs(argv) {
 
     if (arg === "--skip-health") {
       config.skipHealth = true;
+      continue;
+    }
+
+    if (arg === "--allow-edge-block") {
+      config.allowEdgeBlock = true;
       continue;
     }
 
@@ -137,12 +151,36 @@ function unwrapDataEnvelope(payload) {
   return payload;
 }
 
+function getEdgeProtectionMessage(url, status, payload) {
+  if (status !== 403 || typeof payload !== "string") {
+    return null;
+  }
+
+  const lowered = payload.toLowerCase();
+  const challengeMarkers = [
+    "just a moment...",
+    "cf_chl_opt",
+    "/cdn-cgi/challenge-platform/",
+    "enable javascript and cookies to continue",
+  ];
+
+  if (!challengeMarkers.some((marker) => lowered.includes(marker))) {
+    return null;
+  }
+
+  return `Edge protection blocked ${url} with ${status} (Cloudflare challenge)`;
+}
+
 async function checkHealth(baseUrl, timeoutMs) {
   const url = `${baseUrl}/api/health`;
   const response = await requestWithTimeout(url, { method: "GET" }, timeoutMs);
 
   if (!response.ok) {
     const payload = await readJsonOrText(response);
+    const edgeProtectionMessage = getEdgeProtectionMessage(url, response.status, payload);
+    if (edgeProtectionMessage) {
+      throw new EdgeProtectionError(edgeProtectionMessage);
+    }
     throw new Error(`Health check failed with ${response.status}: ${JSON.stringify(payload)}`);
   }
 
@@ -175,6 +213,10 @@ async function checkChat(baseUrl, query, timeoutMs, requireNonFallback) {
   const payload = await readJsonOrText(response);
 
   if (!response.ok) {
+    const edgeProtectionMessage = getEdgeProtectionMessage(endpoint, response.status, payload);
+    if (edgeProtectionMessage) {
+      throw new EdgeProtectionError(edgeProtectionMessage);
+    }
     throw new Error(`Chat request failed with ${response.status}: ${JSON.stringify(payload)}`);
   }
 
@@ -226,6 +268,11 @@ async function run() {
       );
       return;
     } catch (error) {
+      if (config.allowEdgeBlock && error instanceof EdgeProtectionError) {
+        console.warn(`[smoke-chat] skipped: ${error.message}`);
+        return;
+      }
+
       lastError = error;
       const message = formatError(error);
       console.warn(`[smoke-chat] attempt ${attempt}/${config.attempts} failed: ${message}`);

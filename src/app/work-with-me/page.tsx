@@ -119,10 +119,7 @@ export default function WorkWithMePage() {
             </div>
           </section>
 
-          <div
-            className="grid gap-3 md:grid-cols-3"
-            style={{ contentVisibility: "auto", containIntrinsicSize: "1px 220px" }}
-          >
+          <div className="grid gap-3 md:grid-cols-3">
             {proofBlocks.map((block) => (
               <div
                 key={block.title}
@@ -134,10 +131,7 @@ export default function WorkWithMePage() {
             ))}
           </div>
 
-          <div
-            className="grid gap-6 lg:grid-cols-3"
-            style={{ contentVisibility: "auto", containIntrinsicSize: "1px 520px" }}
-          >
+          <div className="grid gap-6 lg:grid-cols-3">
             <div className="neu-flat rounded-2xl p-6">
               <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Best Fit
@@ -176,10 +170,7 @@ export default function WorkWithMePage() {
           </div>
         </div>
 
-        <div
-          className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-3"
-          style={{ contentVisibility: "auto", containIntrinsicSize: "1px 620px" }}
-        >
+        <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
           {deliveryCards.map((card) => (
             <div key={card.title} className="neu-card p-6">
               <h2 className="text-lg font-semibold">{card.title}</h2>
@@ -195,7 +186,6 @@ export default function WorkWithMePage() {
         <section
           id="services"
           className="scroll-mt-28 mb-10"
-          style={{ contentVisibility: "auto", containIntrinsicSize: "1px 960px" }}
         >
           <div className="mb-6">
             <h2 className="text-2xl font-bold">Services</h2>
@@ -211,7 +201,6 @@ export default function WorkWithMePage() {
         <section
           id="faq"
           className="scroll-mt-28 mb-10"
-          style={{ contentVisibility: "auto", containIntrinsicSize: "1px 1100px" }}
         >
           <FaqSection
             title="Frequently Asked Questions"
@@ -229,7 +218,6 @@ export default function WorkWithMePage() {
         <section
           id="testimonials"
           className="scroll-mt-28 mb-10"
-          style={{ contentVisibility: "auto", containIntrinsicSize: "1px 880px" }}
         >
           <TestimonialsSection
             showAll
@@ -238,7 +226,7 @@ export default function WorkWithMePage() {
           />
         </section>
 
-        <div style={{ contentVisibility: "auto", containIntrinsicSize: "1px 960px" }}>
+        <div>
           <PricingSection
             title="Pricing"
             subtitle="Choose a tier or start with a call. I’ll recommend the smallest thing that gets you real value."
@@ -250,7 +238,6 @@ export default function WorkWithMePage() {
         <div
           id="contact"
           className="mt-10 scroll-mt-28 neu-flat rounded-2xl p-6 text-sm text-muted-foreground"
-          style={{ contentVisibility: "auto", containIntrinsicSize: "1px 180px" }}
         >
           Prefer async-first? Send the goal, the user, the data sources, and the constraint that matters most.
           I&apos;ll tell you what I would de-risk first and whether the scope makes sense.
