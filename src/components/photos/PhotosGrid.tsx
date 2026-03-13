@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { motion, AnimatePresence } from "@/lib/motion";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useCallback, useMemo } from 'react'
+import { m, AnimatePresence } from '@/lib/motion'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import {
   X,
   MapPin,
@@ -14,27 +14,28 @@ import {
   ChevronLeft,
   ChevronRight,
   Palette,
-} from "lucide-react";
+} from 'lucide-react'
 import {
   photos,
   photoCategories,
   placeholderImages,
   type Photo,
   type PhotoCategory,
-} from "@/constants/photos";
-import { logError } from "@/lib/logger";
+} from '@/constants/photos'
+import { logError } from '@/lib/logger'
+import { useLightbox } from '@/hooks/use-lightbox'
 
 type PhotosGridProps = {
-  initialCategory?: PhotoCategory;
-};
+  initialCategory?: PhotoCategory
+}
 
 type CategoryTabsProps = {
-  selectedCategory: PhotoCategory;
-  photoCount: number;
-  onSelectCategory: (category: PhotoCategory) => void;
-};
+  selectedCategory: PhotoCategory
+  photoCount: number
+  onSelectCategory: (category: PhotoCategory) => void
+}
 
-function CategoryTabs({ selectedCategory, photoCount, onSelectCategory }: CategoryTabsProps) {
+function CategoryTabs({ selectedCategory, photoCount, onSelectCategory }: CategoryTabsProps): React.ReactNode {
   return (
     <div className="mb-8">
       <div className="flex flex-wrap gap-2">
@@ -45,8 +46,8 @@ function CategoryTabs({ selectedCategory, photoCount, onSelectCategory }: Catego
             onClick={() => onSelectCategory(category.value)}
             className={`px-4 py-2 rounded-lg font-medium transition-all ${
               selectedCategory === category.value
-                ? "bg-primary text-primary-foreground"
-                : "neu-flat-sm hover:bg-primary/10"
+                ? 'bg-primary text-primary-foreground'
+                : 'neu-flat-sm hover:bg-primary/10'
             }`}
           >
             {category.label}
@@ -54,22 +55,22 @@ function CategoryTabs({ selectedCategory, photoCount, onSelectCategory }: Catego
         ))}
       </div>
       <p className="mt-3 text-sm text-muted-foreground">
-        Showing {photoCount} photo{photoCount !== 1 ? "s" : ""}
+        Showing {photoCount} photo{photoCount !== 1 ? 's' : ''}
       </p>
     </div>
-  );
+  )
 }
 
 type PhotoMasonryGridProps = {
-  photosWithPlaceholders: Photo[];
-  onOpen: (photo: Photo, index: number) => void;
-};
+  photosWithPlaceholders: Photo[]
+  onOpen: (photo: Photo, index: number) => void
+}
 
-function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridProps) {
+function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridProps): React.ReactNode {
   return (
     <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
       {photosWithPlaceholders.map((photo, index) => (
-        <motion.button
+        <m.button
           key={photo.id}
           type="button"
           initial={{ opacity: 0, y: 20 }}
@@ -81,11 +82,11 @@ function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridPr
           <div className="relative overflow-hidden rounded-xl neu-card p-1">
             <div
               className={`relative ${
-                photo.aspectRatio === "portrait"
-                  ? "aspect-3/4"
-                  : photo.aspectRatio === "landscape"
-                    ? "aspect-4/3"
-                    : "aspect-square"
+                photo.aspectRatio === 'portrait'
+                  ? 'aspect-3/4'
+                  : photo.aspectRatio === 'landscape'
+                    ? 'aspect-4/3'
+                    : 'aspect-square'
               }`}
             >
               <Image
@@ -108,35 +109,35 @@ function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridPr
               </div>
             </div>
           </div>
-        </motion.button>
+        </m.button>
       ))}
     </div>
-  );
+  )
 }
 
 type PhotoLightboxProps = {
-  currentPhoto: Photo | null;
-  currentIndex: number;
-  photosWithPlaceholders: Photo[];
-  onClose: () => void;
-  onPrevious: () => void;
-  onNext: () => void;
-  onDownload: (photo: Photo) => void;
-};
+  currentPhoto: Photo | null
+  currentIndex: number
+  totalCount: number
+  onClose: () => void
+  onPrevious: () => void
+  onNext: () => void
+  onDownload: (photo: Photo) => void
+}
 
 function PhotoLightbox({
   currentPhoto,
   currentIndex,
-  photosWithPlaceholders,
+  totalCount,
   onClose,
   onPrevious,
   onNext,
   onDownload,
-}: PhotoLightboxProps) {
+}: PhotoLightboxProps): React.ReactNode {
   return (
     <AnimatePresence>
       {currentPhoto && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -157,8 +158,8 @@ function PhotoLightbox({
               type="button"
               className="absolute left-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors z-10"
               onClick={(event) => {
-                event.stopPropagation();
-                onPrevious();
+                event.stopPropagation()
+                onPrevious()
               }}
               aria-label="Previous photo"
             >
@@ -166,13 +167,13 @@ function PhotoLightbox({
             </button>
           )}
 
-          {currentIndex < photosWithPlaceholders.length - 1 && (
+          {currentIndex < totalCount - 1 && (
             <button
               type="button"
               className="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors z-10"
               onClick={(event) => {
-                event.stopPropagation();
-                onNext();
+                event.stopPropagation()
+                onNext()
               }}
               aria-label="Next photo"
             >
@@ -180,7 +181,7 @@ function PhotoLightbox({
             </button>
           )}
 
-          <motion.div
+          <m.div
             key={currentPhoto.id}
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -190,13 +191,13 @@ function PhotoLightbox({
           >
             <div
               className={`relative ${
-                currentPhoto.aspectRatio === "portrait"
-                  ? "aspect-3/4 max-h-[75vh]"
-                  : currentPhoto.aspectRatio === "landscape"
-                    ? "aspect-4/3"
-                    : "aspect-square"
+                currentPhoto.aspectRatio === 'portrait'
+                  ? 'aspect-3/4 max-h-[75vh]'
+                  : currentPhoto.aspectRatio === 'landscape'
+                    ? 'aspect-4/3'
+                    : 'aspect-square'
               } mx-auto`}
-              style={{ maxHeight: "75vh" }}
+              style={{ maxHeight: '75vh' }}
             >
               <Image
                 src={currentPhoto.src}
@@ -222,10 +223,10 @@ function PhotoLightbox({
                     {currentPhoto.date && (
                       <span className="flex items-center gap-1.5">
                         <Calendar className="h-4 w-4" />
-                        {new Date(currentPhoto.date).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
+                        {new Date(currentPhoto.date).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
                         })}
                       </span>
                     )}
@@ -253,7 +254,7 @@ function PhotoLightbox({
 
               <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
                 <span className="text-white/50 text-sm">
-                  {currentIndex + 1} of {photosWithPlaceholders.length}
+                  {currentIndex + 1} of {totalCount}
                 </span>
                 <button
                   type="button"
@@ -265,7 +266,7 @@ function PhotoLightbox({
                 </button>
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4 text-white/40 text-xs">
             <span>
@@ -276,13 +277,13 @@ function PhotoLightbox({
               <kbd className="px-1.5 py-0.5 bg-white/10 rounded">Esc</kbd> close
             </span>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
-  );
+  )
 }
 
-function PhotosInstructions() {
+function PhotosInstructions(): React.ReactNode {
   return (
     <div className="mt-12 neu-pressed rounded-xl p-6 text-center">
       <p className="text-muted-foreground text-sm">
@@ -294,113 +295,67 @@ function PhotosInstructions() {
         <code className="text-primary px-1 py-0.5 bg-primary/10 rounded"> src/constants/photos.ts</code>
       </p>
     </div>
-  );
+  )
 }
 
-export function PhotosGrid({ initialCategory = "all" }: PhotosGridProps) {
-  const router = useRouter();
-  const selectedCategory = initialCategory;
-  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
+export function PhotosGrid({ initialCategory = 'all' }: PhotosGridProps): React.ReactNode {
+  const router = useRouter()
+  const selectedCategory = initialCategory
 
   const filteredPhotos = useMemo(
-    () => (selectedCategory === "all" ? photos : photos.filter((photo) => photo.category === selectedCategory)),
+    () => (selectedCategory === 'all' ? photos : photos.filter((photo) => photo.category === selectedCategory)),
     [selectedCategory]
-  );
+  )
 
   const photosWithPlaceholders = useMemo(
     () =>
       filteredPhotos.map((photo, index) => {
-        const categoryPlaceholders = placeholderImages[photo.category] || placeholderImages.travel;
+        const categoryPlaceholders = placeholderImages[photo.category] || placeholderImages.travel
         return {
           ...photo,
           src: categoryPlaceholders[index % categoryPlaceholders.length],
-        };
+        }
       }),
     [filteredPhotos]
-  );
+  )
+
+  const { currentItem, currentIndex, open, close, goToPrevious, goToNext } = useLightbox(photosWithPlaceholders)
 
   const handleCategoryChange = useCallback(
     (category: PhotoCategory) => {
       const params = new URLSearchParams(
-        typeof window !== "undefined" ? window.location.search : ""
-      );
+        typeof window !== 'undefined' ? window.location.search : ''
+      )
 
-      if (category === "all") {
-        params.delete("category");
+      if (category === 'all') {
+        params.delete('category')
       } else {
-        params.set("category", category);
+        params.set('category', category)
       }
 
-      router.push(`/photos${params.toString() ? `?${params.toString()}` : ""}`, {
+      router.push(`/photos${params.toString() ? `?${params.toString()}` : ''}`, {
         scroll: false,
-      });
+      })
     },
     [router]
-  );
-
-  const openLightbox = useCallback((photo: Photo, index: number) => {
-    setSelectedPhoto(photo);
-    setSelectedIndex(index);
-  }, []);
-
-  const closeLightbox = useCallback(() => {
-    setSelectedPhoto(null);
-    setSelectedIndex(-1);
-  }, []);
-
-  const goToPrevious = useCallback(() => {
-    if (selectedIndex <= 0) return;
-    const nextIndex = selectedIndex - 1;
-    setSelectedIndex(nextIndex);
-    setSelectedPhoto(photosWithPlaceholders[nextIndex] ?? null);
-  }, [photosWithPlaceholders, selectedIndex]);
-
-  const goToNext = useCallback(() => {
-    if (selectedIndex >= photosWithPlaceholders.length - 1) return;
-    const nextIndex = selectedIndex + 1;
-    setSelectedIndex(nextIndex);
-    setSelectedPhoto(photosWithPlaceholders[nextIndex] ?? null);
-  }, [photosWithPlaceholders, selectedIndex]);
+  )
 
   const handleDownload = useCallback(async (photo: Photo) => {
     try {
-      const response = await fetch(photo.src);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${photo.alt.replace(/\s+/g, "-").toLowerCase()}.webp`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const response = await fetch(photo.src)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${photo.alt.replace(/\s+/g, '-').toLowerCase()}.webp`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
     } catch (error) {
-      logError("Photo download failed", error, { component: "PhotosGrid" });
+      logError('Photo download failed', error, { component: 'PhotosGrid' })
     }
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!selectedPhoto) return;
-      switch (event.key) {
-        case "Escape":
-          closeLightbox();
-          return;
-        case "ArrowLeft":
-          goToPrevious();
-          return;
-        case "ArrowRight":
-          goToNext();
-          return;
-        default:
-          return;
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [closeLightbox, goToNext, goToPrevious, selectedPhoto]);
+  }, [])
 
   return (
     <>
@@ -410,7 +365,7 @@ export function PhotosGrid({ initialCategory = "all" }: PhotosGridProps) {
         onSelectCategory={handleCategoryChange}
       />
 
-      <PhotoMasonryGrid photosWithPlaceholders={photosWithPlaceholders} onOpen={openLightbox} />
+      <PhotoMasonryGrid photosWithPlaceholders={photosWithPlaceholders} onOpen={open} />
 
       {photosWithPlaceholders.length === 0 && (
         <div className="text-center py-16">
@@ -420,10 +375,10 @@ export function PhotosGrid({ initialCategory = "all" }: PhotosGridProps) {
       )}
 
       <PhotoLightbox
-        currentPhoto={selectedPhoto}
-        currentIndex={selectedIndex}
-        photosWithPlaceholders={photosWithPlaceholders}
-        onClose={closeLightbox}
+        currentPhoto={currentItem}
+        currentIndex={currentIndex}
+        totalCount={photosWithPlaceholders.length}
+        onClose={close}
         onPrevious={goToPrevious}
         onNext={goToNext}
         onDownload={handleDownload}
@@ -431,5 +386,5 @@ export function PhotosGrid({ initialCategory = "all" }: PhotosGridProps) {
 
       <PhotosInstructions />
     </>
-  );
+  )
 }

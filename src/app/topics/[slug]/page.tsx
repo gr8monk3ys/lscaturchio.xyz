@@ -10,11 +10,15 @@ import { BlogCard } from "@/components/blog/BlogCard";
 import { products } from "@/constants/products";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { ogCardUrl } from "@/lib/seo";
-import { findTopicHub } from "@/constants/topics";
+import { findTopicHub, TOPIC_HUBS } from "@/constants/topics";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+export function generateStaticParams(): Array<{ slug: string }> {
+  return TOPIC_HUBS.map((hub) => ({ slug: hub.slug }))
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;

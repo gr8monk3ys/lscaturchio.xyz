@@ -10,6 +10,12 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+export function generateStaticParams(): Array<{ slug: string }> {
+  return products
+    .filter((p): p is Product & { slug: string } => typeof p.slug === 'string')
+    .map((p) => ({ slug: p.slug }))
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = products.find((p) => p.slug === slug) as Product | undefined;

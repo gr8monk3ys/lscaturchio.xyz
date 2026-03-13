@@ -1,4 +1,4 @@
-import type { GitHubRepo, GitHubTopicsResponse } from '@/types/github'
+import type { GitHubRepo } from '@/types/github'
 import type { PortfolioRepo } from '@/types/github'
 import { logError } from '@/lib/logger'
 
@@ -14,7 +14,7 @@ function getProjectLogoPath(slug: string): string {
 
 function getAuthHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
-    Accept: 'application/vnd.github.v3+json',
+    Accept: 'application/vnd.github.mercy-preview+json',
   }
 
   const token = process.env.GITHUB_TOKEN
@@ -25,13 +25,6 @@ function getAuthHeaders(): Record<string, string> {
   return headers
 }
 
-/**
- * Fetch GitHub repos and transform them into PortfolioRepo format.
- * Shared between the API route and server-side callers (e.g. page.tsx).
- *
- * Uses Next.js fetch caching with a 1-hour revalidation window when called
- * from a Server Component, so repeated renders don't hit GitHub again.
- */
 export async function getGithubPortfolioRepos(): Promise<PortfolioRepo[]> {
   try {
     const response = await fetch(
@@ -49,38 +42,8 @@ export async function getGithubPortfolioRepos(): Promise<PortfolioRepo[]> {
     const allRepos: GitHubRepo[] = await response.json()
     const repos = allRepos.filter((repo) => !repo.fork)
 
-    // Fetch all topics in parallel (single batch)
-    const topicsResults = await Promise.allSettled(
-      repos.map(async (repo) => {
-        const topicsResponse = await fetch(
-          `https://api.github.com/repos/${GITHUB_USERNAME}/${repo.name}/topics`,
-          {
-            headers: {
-              ...getAuthHeaders(),
-              Accept: 'application/vnd.github.mercy-preview+json',
-            },
-            next: { revalidate: 3600 },
-          }
-        )
-
-        if (!topicsResponse.ok) {
-          return { name: repo.name, topics: [] as string[] }
-        }
-
-        const data: GitHubTopicsResponse = await topicsResponse.json()
-        return { name: repo.name, topics: data.names || [] }
-      })
-    )
-
-    const topicsMap = new Map<string, string[]>()
-    for (const result of topicsResults) {
-      if (result.status === 'fulfilled') {
-        topicsMap.set(result.value.name, result.value.topics)
-      }
-    }
-
     const portfolioRepos: PortfolioRepo[] = repos.map((repo) => {
-      const topics = topicsMap.get(repo.name) || []
+      const topics = repo.topics ?? []
       return {
         title: repo.name,
         description: repo.description || 'No description available',

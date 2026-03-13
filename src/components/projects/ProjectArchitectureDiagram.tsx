@@ -257,20 +257,26 @@ function BlogAIDiagram() {
   );
 }
 
-export function ProjectArchitectureDiagram({ slug, className }: DiagramProps) {
-  const diagram =
-    slug === "talker"
-      ? <TalkerDiagram />
-      : slug === "ai-powered-trading-bot"
-        ? <TradingBotDiagram />
-        : slug === "leetcode-solver-bot"
-          ? <LeetCodeSolverDiagram />
-          : slug === "blog-ai"
-            ? <BlogAIDiagram />
-            : null;
+function getDiagramForSlug(slug: string): React.ReactNode {
+  switch (slug) {
+    case 'talker':
+      return <TalkerDiagram />
+    case 'ai-powered-trading-bot':
+      return <TradingBotDiagram />
+    case 'leetcode-solver-bot':
+      return <LeetCodeSolverDiagram />
+    case 'blog-ai':
+      return <BlogAIDiagram />
+    default:
+      return null
+  }
+}
 
-  if (!diagram) return null;
+export function ProjectArchitectureDiagram({ slug, className }: DiagramProps): React.ReactNode {
+  const diagram = getDiagramForSlug(slug)
 
-  return <div className={className}>{diagram}</div>;
+  if (!diagram) return null
+
+  return <div className={className}>{diagram}</div>
 }
 

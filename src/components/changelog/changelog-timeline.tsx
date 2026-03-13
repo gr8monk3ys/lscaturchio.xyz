@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from '@/lib/motion'
+import { m } from '@/lib/motion'
 import { Plus, Edit, Bug, Sparkles } from 'lucide-react'
 import { CHANGELOG } from '@/constants/changelog'
 
@@ -15,7 +15,7 @@ export function ChangelogTimeline() {
   return (
     <div className="space-y-12">
       {CHANGELOG.map((entry, index) => (
-        <motion.div
+        <m.div
           key={entry.version}
           id={`v-${entry.version.replace(/\./g, "-")}`}
           initial={{ opacity: 0, y: 20 }}
@@ -68,7 +68,7 @@ export function ChangelogTimeline() {
               )
             })}
           </div>
-        </motion.div>
+        </m.div>
       ))}
     </div>
   )

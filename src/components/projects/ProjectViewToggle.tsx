@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from '@/lib/motion';
+import { m, AnimatePresence } from '@/lib/motion';
 import { LayoutDashboard, LayoutGrid, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +56,7 @@ function ToggleButton({ isActive, onClick, icon, label }: ToggleButtonProps) {
       )}
     >
       {isActive && (
-        <motion.div
+        <m.div
           layoutId="activeViewToggle"
           className="absolute inset-0 bg-primary rounded-md"
           transition={{ type: "spring" as const, bounce: 0.2, duration: 0.4 }}
@@ -90,7 +90,7 @@ export function ProjectViewWrapper({
     <div className={cn("relative min-h-[400px]", className)}>
       <AnimatePresence mode="wait">
         {mode === "gallery" ? (
-          <motion.div
+          <m.div
             key="gallery"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -98,9 +98,9 @@ export function ProjectViewWrapper({
             transition={{ duration: 0.2 }}
           >
             {galleryView}
-          </motion.div>
+          </m.div>
         ) : mode === "grid" ? (
-          <motion.div
+          <m.div
             key="grid"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -108,9 +108,9 @@ export function ProjectViewWrapper({
             transition={{ duration: 0.2 }}
           >
             {gridView}
-          </motion.div>
+          </m.div>
         ) : (
-          <motion.div
+          <m.div
             key="timeline"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -118,7 +118,7 @@ export function ProjectViewWrapper({
             transition={{ duration: 0.2 }}
           >
             {timelineView}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

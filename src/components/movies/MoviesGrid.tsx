@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from '@/lib/motion';
+import { m, AnimatePresence } from '@/lib/motion';
 import Link from "next/link";
 import { Star, Calendar, Clock, Trophy, Film, ListVideo } from "lucide-react";
 import type { LetterboxdMovie, LetterboxdStats } from "@/lib/letterboxd";
@@ -43,7 +43,7 @@ function RatingStars({ rating }: { rating: number }) {
 
 function MovieCard({ movie, index }: { movie: LetterboxdMovie; index: number }) {
   return (
-    <motion.div
+    <m.div
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -80,7 +80,7 @@ function MovieCard({ movie, index }: { movie: LetterboxdMovie; index: number }) 
           </div>
         </div>
       </Link>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -145,7 +145,7 @@ export function MoviesGrid({ stats, topRated, recentWatches, watchlist }: Movies
 
       {/* Movies Grid */}
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           key={activeTab}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -155,7 +155,7 @@ export function MoviesGrid({ stats, topRated, recentWatches, watchlist }: Movies
           {getActiveMovies().map((movie, index) => (
             <MovieCard key={`${movie.title}-${movie.year}`} movie={movie} index={index} />
           ))}
-        </motion.div>
+        </m.div>
       </AnimatePresence>
 
       {/* Empty state */}

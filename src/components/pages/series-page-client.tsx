@@ -1,7 +1,7 @@
 "use client";
 
 import { Container } from "@/components/Container";
-import { LazyMotion, domAnimation, m } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import { BookOpen, Clock, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { FallbackImage } from "@/components/ui/fallback-image";
@@ -57,8 +57,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
 
   return (
     <Container size="large">
-      <LazyMotion features={domAnimation}>
-        <div className="space-y-8">
+      <div className="space-y-8">
           {/* Header */}
           <div>
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
@@ -159,7 +158,6 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
             ))}
           </div>
         </div>
-      </LazyMotion>
     </Container>
   );
 }

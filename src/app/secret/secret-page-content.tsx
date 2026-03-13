@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import Link from "next/link";
 
 // Hidden projects/experiments that aren't on the main portfolio
@@ -38,20 +38,20 @@ export function SecretPageContent() {
     <div className="min-h-screen py-24 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <motion.div
+        <m.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-        <motion.div
+        <m.div
           className="text-6xl mb-4"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring" as const, damping: 10 }}
         >
             🎉
-          </motion.div>
+          </m.div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             You Found the Secret Page!
           </h1>
@@ -59,10 +59,10 @@ export function SecretPageContent() {
             Welcome to the hidden corner of my website. Here are some things that
             didn&apos;t quite make it to the main pages.
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Hidden Projects */}
-        <motion.section
+        <m.section
           className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -73,7 +73,7 @@ export function SecretPageContent() {
           </h2>
           <div className="grid gap-4">
             {HIDDEN_PROJECTS.map((project, index) => (
-              <motion.div
+              <m.div
                 key={project.name}
                 className="bg-muted/30 border border-border rounded-xl p-5"
                 initial={{ opacity: 0, x: -20 }}
@@ -101,13 +101,13 @@ export function SecretPageContent() {
                     {project.status}
                   </span>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
-        </motion.section>
+        </m.section>
 
         {/* Easter Egg Hints */}
-        <motion.section
+        <m.section
           className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -123,7 +123,7 @@ export function SecretPageContent() {
             </p>
             <ul className="space-y-2">
               {EASTER_EGG_HINTS.map((hint, index) => (
-                <motion.li
+                <m.li
                   key={hint}
                   className="flex items-center gap-2 text-sm"
                   initial={{ opacity: 0, x: -10 }}
@@ -132,14 +132,14 @@ export function SecretPageContent() {
                 >
                   <span className="text-primary">→</span>
                   <span>{hint}</span>
-                </motion.li>
+                </m.li>
               ))}
             </ul>
           </div>
-        </motion.section>
+        </m.section>
 
         {/* Back to home */}
-        <motion.div
+        <m.div
           className="text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -152,7 +152,7 @@ export function SecretPageContent() {
             <span>←</span>
             <span>Back to the regular website</span>
           </Link>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

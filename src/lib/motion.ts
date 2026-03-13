@@ -3,10 +3,7 @@ export {
   LayoutGroup,
   LazyMotion,
   MotionConfig,
-  domAnimation,
-  domMax,
   m,
-  motion,
   useInView,
   useMotionTemplate,
   useMotionValue,
@@ -15,4 +12,7 @@ export {
   useSpring,
   useTransform,
   type Variants,
-} from "framer-motion";
+} from 'framer-motion'
+
+export const loadMotionFeatures = (): Promise<typeof import('framer-motion')['domAnimation']> =>
+  import('framer-motion').then((mod) => mod.domAnimation)

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import { ArrowDownUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +49,7 @@ export function ProjectSortToggle({
             )}
           >
             {active && (
-              <motion.div
+              <m.div
                 layoutId="activeProjectSort"
                 className="absolute inset-0 rounded-md bg-primary"
                 transition={{ type: "spring" as const, bounce: 0.2, duration: 0.45 }}

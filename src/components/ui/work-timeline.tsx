@@ -2,7 +2,7 @@
 import {
   useScroll,
   useTransform,
-  motion,
+  m,
 } from '@/lib/motion';
 import React, { useEffect, useRef, useState } from "react";
 import { timeline } from "@/constants/timeline";
@@ -78,7 +78,7 @@ export const WorkTimeline = () => {
           }}
           className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-[linear-gradient(to_bottom,var(--tw-gradient-stops))] from-transparent from-0% via-border to-transparent to-99% mask-[linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
         >
-          <motion.div
+          <m.div
             style={{
               height: heightTransform,
               opacity: opacityTransform,

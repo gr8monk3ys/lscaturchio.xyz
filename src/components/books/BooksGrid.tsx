@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from '@/lib/motion';
+import { m, AnimatePresence } from '@/lib/motion';
 import Link from "next/link";
 import { Star, BookOpen, Clock, Trophy, Book, ListVideo } from "lucide-react";
 import type { GoodreadsBook, GoodreadsStats } from "@/lib/goodreads";
@@ -38,7 +38,7 @@ function RatingStars({ rating }: { rating: number }) {
 
 function BookCard({ book, index }: { book: GoodreadsBook; index: number }) {
   return (
-    <motion.div
+    <m.div
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -76,7 +76,7 @@ function BookCard({ book, index }: { book: GoodreadsBook; index: number }) {
           </div>
         </div>
       </Link>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -143,7 +143,7 @@ export function BooksGrid({ stats, currentlyReading, recentlyRead, toRead, topRa
 
       {/* Books Grid */}
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           key={activeTab}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -153,7 +153,7 @@ export function BooksGrid({ stats, currentlyReading, recentlyRead, toRead, topRa
           {getActiveBooks().map((book, index) => (
             <BookCard key={`${book.id}-${book.title}`} book={book} index={index} />
           ))}
-        </motion.div>
+        </m.div>
       </AnimatePresence>
 
       {/* Empty state */}

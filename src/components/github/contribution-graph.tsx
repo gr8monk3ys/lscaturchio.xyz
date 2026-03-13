@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { LazyMotion, domAnimation, m } from '@/lib/motion'
+import { m } from '@/lib/motion'
 import { Github } from 'lucide-react'
 import useSWR from 'swr'
 import { fetchJson } from '@/lib/fetcher'
@@ -93,8 +93,7 @@ export function ContributionGraph() {
         </p>
       </div>
 
-      <LazyMotion features={domAnimation}>
-        <div className="overflow-x-auto pb-2">
+      <div className="overflow-x-auto pb-2">
           <div className="inline-block min-w-full">
             {/* Month labels */}
             <div className="flex gap-1 mb-2 ml-8">
@@ -167,7 +166,6 @@ export function ContributionGraph() {
             </div>
           </div>
         </div>
-      </LazyMotion>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { AnimatePresence, LazyMotion, domAnimation, m } from '@/lib/motion';
+import { AnimatePresence, m } from '@/lib/motion';
 import { Bookmark, Trash2, ExternalLink, ArrowLeft, Download } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/Container";
@@ -126,8 +126,7 @@ export function BookmarksPageClient() {
 
   return (
     <Container>
-      <LazyMotion features={domAnimation}>
-        <div className="py-10">
+      <div className="py-10">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
@@ -279,7 +278,6 @@ export function BookmarksPageClient() {
             </m.div>
           )}
         </div>
-      </LazyMotion>
     </Container>
   );
 }

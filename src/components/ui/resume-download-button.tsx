@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import { Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +29,7 @@ export function ResumeDownloadButton({
   };
 
   return (
-    <motion.a
+    <m.a
       href="/api/resume"
       download="Lorenzo_Scaturchio_Resume.pdf"
       onClick={handleDownload}
@@ -59,6 +59,6 @@ export function ResumeDownloadButton({
           size === "small" && "h-4 w-4"
         )}
       />
-    </motion.a>
+    </m.a>
   );
 }

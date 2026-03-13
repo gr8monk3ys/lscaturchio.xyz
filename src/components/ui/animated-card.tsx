@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue, useSpring, useTransform } from '@/lib/motion';
+import { m, useMotionValue, useSpring, useTransform } from '@/lib/motion';
 import { ReactNode, useRef, MouseEvent } from "react";
 interface TiltCardProps {
   children: ReactNode;
@@ -55,7 +55,7 @@ export function TiltCard({
   };
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       className={`relative ${className}`}
       style={{
@@ -70,7 +70,7 @@ export function TiltCard({
       onMouseLeave={handleMouseLeave}
     >
       {/* Glare effect */}
-      <motion.div
+      <m.div
         className="absolute inset-0 rounded-inherit pointer-events-none overflow-hidden"
         style={{
           background: `radial-gradient(circle at ${glareX}% ${glareY}%, white, transparent 50%)`,
@@ -78,6 +78,6 @@ export function TiltCard({
         }}
       />
       {children}
-    </motion.div>
+    </m.div>
   );
 }
