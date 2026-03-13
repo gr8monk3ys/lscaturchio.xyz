@@ -28,7 +28,7 @@ export function SyndicationLinks({ links }: { links?: string[] }) {
             href={href}
             target="_blank"
             rel="syndication noopener noreferrer"
-            className="group inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/70 px-3 py-1 hover:bg-primary/[0.04] transition-colors"
+            className="group inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/70 px-3 py-1 hover:bg-primary/4 transition-colors"
           >
             {Icon ? <Icon className="size-3.5" /> : null}
             <span className="font-semibold text-foreground/80">{label}</span>

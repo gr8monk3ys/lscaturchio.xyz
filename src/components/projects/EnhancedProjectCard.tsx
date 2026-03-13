@@ -59,7 +59,7 @@ export function EnhancedProjectCard({
       <div
         className={cn(
           "relative h-full overflow-hidden rounded-2xl border border-border/50",
-          "bg-card/50 backdrop-blur-sm",
+          "bg-card/50 backdrop-blur-xs",
           "transition-all duration-300",
           "hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
         )}
@@ -67,7 +67,7 @@ export function EnhancedProjectCard({
         {/* Featured Star */}
         {product.featured && (
           <div className="absolute top-3 right-3 z-10">
-            <div className="p-1.5 rounded-full bg-primary/20 backdrop-blur-sm">
+            <div className="p-1.5 rounded-full bg-primary/20 backdrop-blur-xs">
               <Star className="h-4 w-4 text-primary fill-primary" />
             </div>
           </div>
@@ -79,7 +79,7 @@ export function EnhancedProjectCard({
             layoutId={shared ? `project-cover-${product.slug}` : undefined}
             className={cn(
               "relative overflow-hidden",
-              isFeatured ? "aspect-[2/1]" : "aspect-video"
+              isFeatured ? "aspect-2/1" : "aspect-video"
             )}
           >
             <Image
@@ -89,7 +89,7 @@ export function EnhancedProjectCard({
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes={isFeatured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/20 to-transparent" />
           </motion.div>
         </Link>
 

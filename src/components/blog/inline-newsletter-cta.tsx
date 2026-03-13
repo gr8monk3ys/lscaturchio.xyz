@@ -11,7 +11,7 @@ export function InlineNewsletterCTA({
   sourcePath?: string;
 }) {
   return (
-    <div className="mb-8 rounded-2xl border border-border/60 bg-background/80 p-5 shadow-sm">
+    <div className="mb-8 rounded-2xl border border-border/60 bg-background/80 p-5 shadow-xs">
       <div className="flex items-center gap-2">
         <div className="neu-flat-sm rounded-xl p-2">
           <Sparkles className="size-4 text-primary" />

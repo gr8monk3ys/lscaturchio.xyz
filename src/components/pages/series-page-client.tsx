@@ -78,7 +78,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+                className="rounded-xl border bg-card shadow-xs hover:shadow-md transition-shadow overflow-hidden"
               >
                 {/* Series Header */}
                 <div className="p-6 border-b bg-secondary/30">
@@ -113,14 +113,14 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
                       className="group flex items-start gap-4 p-6 hover:bg-secondary/20 transition-colors"
                     >
                       {/* Post Number Badge */}
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary font-bold text-lg group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                           {post.seriesOrder}
                         </div>
                       </div>
 
                       {/* Post Image */}
-                      <div className="relative flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-muted">
+                      <div className="relative shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-muted">
                         <FallbackImage
                           src={post.image}
                           alt={post.title}
@@ -149,7 +149,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
                       </div>
 
                       {/* Arrow Icon */}
-                      <div className="flex-shrink-0 self-center">
+                      <div className="shrink-0 self-center">
                         <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-[transform,color]" />
                       </div>
                     </Link>

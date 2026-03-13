@@ -58,7 +58,7 @@ export function ChangelogTimeline() {
                     change.type === 'highlight' ? 'border-2 border-primary' : ''
                   }`}
                 >
-                  <div className={`p-1.5 rounded ${config.bg} flex-shrink-0`}>
+                  <div className={`p-1.5 rounded ${config.bg} shrink-0`}>
                     <Icon className={`h-4 w-4 ${config.color}`} />
                   </div>
                   <p className={`text-sm ${change.type === 'highlight' ? 'font-semibold' : ''}`}>

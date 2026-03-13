@@ -178,7 +178,7 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
                   key={post.slug}
                   href={`/blog/${post.slug}`}
                   prefetch={false}
-                  className="group rounded-xl border border-border/60 bg-background/70 px-4 py-3 hover:bg-primary/[0.04] transition-colors"
+                  className="group rounded-xl border border-border/60 bg-background/70 px-4 py-3 hover:bg-primary/4 transition-colors"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">

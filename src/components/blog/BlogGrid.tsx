@@ -53,7 +53,7 @@ export function BlogGrid({
         <div className="mb-6 p-5 rounded-2xl neu-flat flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-sm font-medium">Filtered by tag:</span>
-            <span className="px-4 py-1.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium capitalize shadow-sm">
+            <span className="px-4 py-1.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium capitalize shadow-xs">
               {normalizedTag}
             </span>
             <span className="text-sm text-muted-foreground">

@@ -200,7 +200,7 @@ export function StatsOverview() {
                   <p className="text-3xl font-bold tabular-nums">
                     {formatMetricValue(card.metric, 'suffix' in card ? card.suffix : undefined)}
                   </p>
-                  <p className="min-h-[1.25rem] text-sm text-muted-foreground">
+                  <p className="min-h-5 text-sm text-muted-foreground">
                     {card.metric.available
                       ? 'Public aggregate data'
                       : card.metric.note || 'This metric is not public yet.'}
