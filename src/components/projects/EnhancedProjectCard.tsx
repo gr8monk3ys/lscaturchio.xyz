@@ -3,7 +3,7 @@
 import { Product, ProjectStatus, ProjectCategory } from "@/types/products";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from '@/lib/motion';
+import { m, useReducedMotion } from '@/lib/motion';
 import { TiltCard } from "@/components/ui/animated-card";
 import { Badge } from "@/components/ui/badge";
 import { Star, ExternalLink, Github, Calendar } from "lucide-react";
@@ -42,7 +42,7 @@ export function EnhancedProjectCard({
   const reduceMotion = useReducedMotion();
   const shared = !reduceMotion && !!product.slug;
 
-  const CardWrapper = isFeatured ? TiltCard : motion.div;
+  const CardWrapper = isFeatured ? TiltCard : m.div;
   const cardProps = isFeatured
     ? { tiltAmount: 8, scale: 1.02, glareOpacity: 0.05 }
     : { whileHover: { y: -4, transition: { duration: 0.2 } } };
@@ -75,7 +75,7 @@ export function EnhancedProjectCard({
 
         {/* Image Section */}
         <Link href={`/projects/${product.slug}`} className="block">
-          <motion.div
+          <m.div
             layoutId={shared ? `project-cover-${product.slug}` : undefined}
             className={cn(
               "relative overflow-hidden",
@@ -90,7 +90,7 @@ export function EnhancedProjectCard({
               sizes={isFeatured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
             />
             <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/20 to-transparent" />
-          </motion.div>
+          </m.div>
         </Link>
 
         {/* Content Section */}
@@ -116,7 +116,7 @@ export function EnhancedProjectCard({
 
           {/* Title & Description */}
           <Link href={`/projects/${product.slug}`} className="block space-y-2">
-            <motion.div layoutId={shared ? `project-title-${product.slug}` : undefined}>
+            <m.div layoutId={shared ? `project-title-${product.slug}` : undefined}>
               <h3
                 className={cn(
                   "font-bold tracking-tight transition-colors group-hover:text-primary",
@@ -125,7 +125,7 @@ export function EnhancedProjectCard({
               >
                 {product.title}
               </h3>
-            </motion.div>
+            </m.div>
             <p
               className={cn(
                 "text-muted-foreground leading-relaxed",

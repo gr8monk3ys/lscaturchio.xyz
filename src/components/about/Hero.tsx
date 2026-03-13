@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import Image from "next/image";
 import { SectionHeading } from "@/components/ui/section-heading";
 import {
@@ -10,20 +10,20 @@ import {
 
 export function AboutHero() {
   return (
-    <motion.div
+    <m.div
       variants={staggerContainerVariants}
       initial="hidden"
       animate="visible"
       className="grid grid-cols-1 gap-8 md:grid-cols-2 items-center"
     >
-      <motion.div
+      <m.div
         variants={staggerItemVariants}
         className="space-y-6"
       >
         <SectionHeading>
           I&apos;m Lorenzo Scaturchio, just another person with too many things to say and too little time to say it.
         </SectionHeading>
-        <motion.p
+        <m.p
           variants={staggerItemVariants}
           className="text-lg"
         >
@@ -31,8 +31,8 @@ export function AboutHero() {
           My dad had Age of Empires II running in the background, and even at a really young age,
           I would try to play it. My story is one of many blessings - two loving parents still together,
           a balanced lifestyle where we truly prioritize time spent together as a family unit.
-        </motion.p>
-        <motion.p
+        </m.p>
+        <m.p
           variants={staggerItemVariants}
           className="text-lg"
         >
@@ -40,9 +40,9 @@ export function AboutHero() {
           to learn outside of traditional education. Was most of it useless? Absolutely. But there
           are hidden gems that shaped my philosophy towards life. When I&apos;m not coding, you&apos;ll
           find me rock climbing, running, surfing, or producing indie/folk music with industrial textures.
-        </motion.p>
-      </motion.div>
-      <motion.div
+        </m.p>
+      </m.div>
+      <m.div
         variants={staggerItemVariants}
         className="relative aspect-square"
       >
@@ -56,7 +56,7 @@ export function AboutHero() {
             priority
           />
         </div>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   );
 }

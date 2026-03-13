@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { motion } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 
@@ -80,13 +80,13 @@ export function Music() {
   return (
     <section className="w-full px-4 md:px-6 py-12 lg:py-24">
       <div className="w-full max-w-7xl mx-auto">
-        <motion.div
+        <m.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="flex flex-col gap-10"
         >
-          <motion.div variants={cardVariants} className="flex gap-4 flex-col items-start">
+          <m.div variants={cardVariants} className="flex gap-4 flex-col items-start">
             <Badge variant="secondary">Soundscapes</Badge>
             <div className="flex gap-2 flex-col">
               <h2 className="text-3xl md:text-5xl tracking-tighter font-bold text-stone-600 dark:text-stone-300">
@@ -96,13 +96,13 @@ export function Music() {
                 A selection of albums that showcase the boundless creativity and emotional depth of music.
               </p>
             </div>
-          </motion.div>
+          </m.div>
 
-          <motion.div 
+          <m.div 
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
             {favoriteAlbums.map((album) => (
-              <motion.div
+              <m.div
                 key={album.title}
                 variants={cardVariants}
                 whileHover="hover"
@@ -127,10 +127,10 @@ export function Music() {
                     <p className="text-muted-foreground">{album.description}</p>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </m.div>
             ))}
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </div>
     </section>
   );

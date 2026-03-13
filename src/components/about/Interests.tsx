@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView } from '@/lib/motion';
+import { m, useInView } from '@/lib/motion';
 import { Crown, Music, Mountain, Film, Coffee, Plane } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useRef } from "react";
@@ -106,13 +106,13 @@ export function Interests() {
   return (
     <section className="w-full px-4 md:px-6 py-12 lg:py-24">
       <div className="w-full max-w-7xl mx-auto" ref={containerRef}>
-        <motion.div
+        <m.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "show" : "hidden"}
           className="flex flex-col gap-10"
         >
-          <motion.div variants={itemVariants} className="flex gap-4 flex-col items-start">
+          <m.div variants={itemVariants} className="flex gap-4 flex-col items-start">
             <Badge variant="secondary">What I Love</Badge>
             <div className="flex gap-2 flex-col">
               <h2 className="text-3xl md:text-5xl tracking-tighter font-bold">
@@ -122,11 +122,11 @@ export function Interests() {
                 A glimpse into what keeps me curious and motivated beyond the code.
               </p>
             </div>
-          </motion.div>
+          </m.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {interests.map((interest) => (
-              <motion.div
+              <m.div
                 key={interest.title}
                 variants={itemVariants}
                 whileHover={{ 
@@ -138,32 +138,32 @@ export function Interests() {
                 <div className="neu-card rounded-xl p-6">
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-4">
-                      <motion.div
+                      <m.div
                         variants={iconVariants}
                         className="neu-flat-sm shrink-0 size-12 flex items-center justify-center rounded-xl text-primary"
                       >
                         <interest.icon className="size-6" />
-                      </motion.div>
-                      <motion.h3 
+                      </m.div>
+                      <m.h3 
                         variants={itemVariants}
                         className="text-xl font-semibold tracking-tight"
                       >
                         {interest.title}
-                      </motion.h3>
-                      <motion.p 
+                      </m.h3>
+                      <m.p 
                         variants={itemVariants}
                         className="text-lg"
                       >
                         {interest.description}
-                      </motion.p>
+                      </m.p>
                     </div>
                   </div>
-                  <motion.div 
+                  <m.div 
                     variants={itemVariants}
                     className="flex flex-wrap gap-2 mt-4"
                   >
                     {interest.tags.map((tag) => (
-                      <motion.div
+                      <m.div
                         key={tag}
                         variants={tagVariants}
                         whileHover={{ scale: 1.1 }}
@@ -172,14 +172,14 @@ export function Interests() {
                         <Badge variant="outline" className="text-xs">
                           {tag}
                         </Badge>
-                      </motion.div>
+                      </m.div>
                     ))}
-                  </motion.div>
+                  </m.div>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

@@ -12,6 +12,7 @@ import { Instrument_Sans, Fraunces } from "next/font/google";
 import { SITE_URL } from "@/lib/site-url";
 import { DeferredLayoutExtras } from "@/components/layout/deferred-layout-extras";
 import { MobileNavbarGate } from "@/components/layout/mobile-navbar-gate";
+import { MotionProvider } from "@/components/layout/motion-provider";
 const WEBMENTION_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, "");
 const ENABLE_VERCEL_ANALYTICS = process.env.VERCEL === "1";
 
@@ -165,24 +166,25 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Suspense fallback={<div className="min-h-[64px]" />}>
-            <Navbar />
-          </Suspense>
-          <Suspense fallback={<div className="min-h-[64px] md:hidden" />}>
-            <MobileNavbarGate />
-          </Suspense>
-          <main id="main-content" className="overflow-x-clip">
-            {children}
-          </main>
-          <DeferredLayoutExtras />
+          <MotionProvider>
+            <Suspense fallback={<div className="min-h-[64px]" />}>
+              <Navbar />
+            </Suspense>
+            <Suspense fallback={<div className="min-h-[64px] md:hidden" />}>
+              <MobileNavbarGate />
+            </Suspense>
+            <main id="main-content" className="overflow-x-clip">
+              {children}
+            </main>
+            <DeferredLayoutExtras />
 
-          <Suspense fallback={<div className="min-h-[200px]"></div>}>
-            <Footer />
-          </Suspense>
+            <Suspense fallback={<div className="min-h-[200px]"></div>}>
+              <Footer />
+            </Suspense>
 
-          {/* Load Vercel analytics only when running on Vercel */}
-          {ENABLE_VERCEL_ANALYTICS && <Analytics />}
-          {ENABLE_VERCEL_ANALYTICS && <SpeedInsights />}
+            {ENABLE_VERCEL_ANALYTICS && <Analytics />}
+            {ENABLE_VERCEL_ANALYTICS && <SpeedInsights />}
+          </MotionProvider>
         </ThemeProvider>
       </body>
     </html>

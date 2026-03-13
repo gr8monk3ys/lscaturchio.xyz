@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView } from '@/lib/motion';
+import { m, useInView } from '@/lib/motion';
 import { Music2, Tv, MapPin, Coffee, Camera, Code2, Globe, Church, Music } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useRef } from "react";
@@ -92,13 +92,13 @@ export function PersonalFavorites() {
   return (
     <section className="w-full px-4 md:px-6 py-12 lg:py-24">
       <div className="w-full max-w-7xl mx-auto" ref={containerRef}>
-        <motion.div
+        <m.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "show" : "hidden"}
           className="flex flex-col gap-10"
         >
-          <motion.div variants={itemVariants} className="flex gap-4 flex-col items-start">
+          <m.div variants={itemVariants} className="flex gap-4 flex-col items-start">
             <Badge variant="secondary">The Essentials</Badge>
             <div className="flex gap-2 flex-col">
               <h2 className="text-3xl md:text-5xl tracking-tighter font-bold">
@@ -108,11 +108,11 @@ export function PersonalFavorites() {
                 The small things that make me who I am.
               </p>
             </div>
-          </motion.div>
+          </m.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {favorites.map((favorite) => (
-              <motion.div
+              <m.div
                 key={favorite.label}
                 variants={itemVariants}
                 whileHover={{
@@ -132,16 +132,16 @@ export function PersonalFavorites() {
                     {favorite.value}
                   </p>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
 
-          <motion.div variants={itemVariants} className="mt-4">
+          <m.div variants={itemVariants} className="mt-4">
             <p className="text-lg text-muted-foreground italic">
               &quot;What are some of the topics I write about as well as enjoy reading? Generally you&apos;ll see me covering: Mindfulness, the state of media (Indie Art, Sci-Fi), consumerism and privacy, and anything else that strikes my fancy.&quot;
             </p>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </div>
     </section>
   );

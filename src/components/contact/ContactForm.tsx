@@ -2,7 +2,7 @@
 
 import { Mail, Calendar, MapPin, Github, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
-import { LazyMotion, domAnimation, m } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import { useState } from "react";
 
 const contactMethods = [
@@ -74,7 +74,6 @@ export function ContactForm() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <LazyMotion features={domAnimation}>
       {/* Contact Methods */}
       <m.div
         initial={{ opacity: 0, y: 20 }}
@@ -278,7 +277,6 @@ export function ContactForm() {
           </div>
         </m.div>
       </div>
-      </LazyMotion>
     </div>
   );
 }

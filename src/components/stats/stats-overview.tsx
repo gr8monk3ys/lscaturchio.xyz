@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from 'react'
-import { LazyMotion, domAnimation, m } from '@/lib/motion'
+import { m } from '@/lib/motion'
 import { Clock3, Eye, FileText, Users } from 'lucide-react'
 import useSWR from 'swr'
 import { fetchJson, unwrapApiData } from '@/lib/fetcher'
@@ -150,8 +150,7 @@ export function StatsOverview() {
   const hasUnavailableMetrics = cards.some((card) => !card.metric.available)
 
   return (
-    <LazyMotion features={domAnimation}>
-      <div className="space-y-4">
+    <div className="space-y-4">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           {(isLoading ? Array.from({ length: 4 }, (_, index) => index) : cards).map((card, index) => {
             if (typeof card === 'number') {
@@ -218,6 +217,5 @@ export function StatsOverview() {
           </p>
         )}
       </div>
-    </LazyMotion>
   )
 }

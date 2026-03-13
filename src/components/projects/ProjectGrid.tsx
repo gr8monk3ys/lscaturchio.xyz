@@ -1,7 +1,7 @@
 "use client";
 
 import { Product } from "@/types/products";
-import { motion } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import { useMemo } from "react";
 import { EnhancedProjectCard } from "./EnhancedProjectCard";
 import { cn } from "@/lib/utils";
@@ -71,7 +71,7 @@ export function ProjectGrid({ projects, className, showSectionHeaders = true }: 
   }
 
   return (
-    <motion.div
+    <m.div
       variants={containerVariants}
       initial="hidden"
       whileInView="show"
@@ -92,7 +92,7 @@ export function ProjectGrid({ projects, className, showSectionHeaders = true }: 
           {/* Bento Grid: First project large (2 cols), rest in 2-col grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredProjects.map((project, index) => (
-              <motion.div
+              <m.div
                 key={project.slug}
                 variants={itemVariants}
                 className={cn(
@@ -107,7 +107,7 @@ export function ProjectGrid({ projects, className, showSectionHeaders = true }: 
                   variant={index === 0 ? "featured" : "default"}
                   showCaseStudyPreview={index === 0}
                 />
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </section>
@@ -126,13 +126,13 @@ export function ProjectGrid({ projects, className, showSectionHeaders = true }: 
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {regularProjects.map((project) => (
-              <motion.div key={project.slug} variants={itemVariants}>
+              <m.div key={project.slug} variants={itemVariants}>
                 <EnhancedProjectCard product={project} variant="default" />
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </section>
       )}
-    </motion.div>
+    </m.div>
   );
 }

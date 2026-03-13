@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from '@/lib/motion'
+import { m } from '@/lib/motion'
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -30,7 +30,7 @@ export function Tab({
     >
       <span className="relative z-10">{text}</span>
       {selected && (
-        <motion.span
+        <m.span
           layoutId="tab"
           transition={{ type: "spring" as const, duration: 0.4 }}
           className="absolute inset-0 z-0 rounded-full bg-background shadow-xs"

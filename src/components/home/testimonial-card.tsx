@@ -1,7 +1,7 @@
 'use client';
 
 import { Testimonial } from '@/types/testimonial';
-import { motion } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import { Linkedin, Twitter, Quote } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -31,7 +31,7 @@ export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps
   const { name, role, company, avatar, content, linkedinUrl, twitterUrl, date } = testimonial;
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
@@ -126,6 +126,6 @@ export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps
           </p>
         )}
       </div>
-    </motion.div>
+    </m.div>
   );
 }
