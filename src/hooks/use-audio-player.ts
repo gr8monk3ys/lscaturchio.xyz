@@ -21,6 +21,7 @@ import {
   type Chapter,
   type PlayerState,
 } from "@/components/blog/text-to-speech-types"
+import { getAudioUrl } from "@/lib/audio-url"
 
 interface UseAudioPlayerArgs {
   slug: string
@@ -49,7 +50,7 @@ export function useAudioPlayer({ slug, contentRef }: UseAudioPlayerArgs): UseAud
   const [state, dispatch] = useReducer(playerReducer, INITIAL_STATE)
 
   useEffect(() => {
-    const audioUrl = `/audio/${slug}.mp3`
+    const audioUrl = getAudioUrl(slug)
     const audio = new Audio()
 
     const handleCanPlay = (): void => {

@@ -6,6 +6,7 @@ import { Mic, Rss } from "lucide-react";
 import Link from "next/link";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { hasAudioForSlug } from "@/lib/audio";
+import { getAudioUrl } from "@/lib/audio-url";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
@@ -111,7 +112,7 @@ async function Episodes() {
               <audio
                 controls
                 preload="none"
-                src={`/audio/${post.slug}.mp3`}
+                src={getAudioUrl(post.slug)}
                 className="w-full"
               />
             </div>
