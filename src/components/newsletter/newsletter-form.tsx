@@ -99,7 +99,7 @@ export function NewsletterForm({
                   onClick={() => toggleTopic(t.id)}
                   className={cn(
                     "rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
-                    "bg-background/70 border-border/60 hover:bg-primary/[0.04]",
+                    "bg-background/70 border-border/60 hover:bg-primary/4",
                     active && "border-primary/30 bg-primary/10 text-primary",
                     compact && "px-2.5 py-0.5 text-[11px]"
                   )}
@@ -123,7 +123,7 @@ export function NewsletterForm({
             required
             aria-label="Email address"
             disabled={status === 'loading' || status === 'success'}
-            className="w-full pl-11 pr-4 py-3 rounded-xl neu-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full pl-11 pr-4 py-3 rounded-xl neu-input text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -159,9 +159,9 @@ export function NewsletterForm({
           }`}
         >
           {status === 'success' ? (
-            <Check className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            <Check className="h-4 w-4 mt-0.5 shrink-0" />
           ) : (
-            <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
           )}
           <span>{message}</span>
         </div>

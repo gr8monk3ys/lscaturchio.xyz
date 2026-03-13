@@ -53,7 +53,7 @@ export function FeaturedResults() {
       <div className="grid gap-6 lg:grid-cols-3">
         {featuredResults.map((project, index) => (
           <Reveal key={project.slug} delayMs={index * 80}>
-            <article className="group relative h-full overflow-hidden rounded-3xl border border-border/60 bg-background/90 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <article className="group relative h-full overflow-hidden rounded-3xl border border-border/60 bg-background/90 p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
               <div
                 className="pointer-events-none absolute -right-10 -top-10 size-36 rounded-full blur-3xl"
                 style={{ background: "hsl(var(--primary) / 0.12)" }}

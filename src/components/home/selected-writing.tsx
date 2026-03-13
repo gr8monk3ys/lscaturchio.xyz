@@ -70,7 +70,7 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
                       className="selected-writing-media object-cover transition-transform duration-500 ease-out"
                       sizes="(max-width: 768px) 100vw, 460px"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/15 to-transparent" />
                     <div className="absolute left-4 top-4 flex flex-wrap gap-1.5">
                       {(post.tags || []).slice(0, 2).map((tag) => (
                         <div
@@ -114,11 +114,11 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
           </div>
 
           <div
-            className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-background to-transparent"
+            className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-linear-to-r from-background to-transparent"
             aria-hidden
           />
           <div
-            className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-background to-transparent"
+            className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-background to-transparent"
             aria-hidden
           />
         </div>

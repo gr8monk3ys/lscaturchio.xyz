@@ -12,12 +12,12 @@ import { NavDropdown } from "./nav-dropdown";
 import { NavbarControlsGate } from "./navbar-controls-gate";
 
 const navLinkBaseClass =
-  "relative block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-left after:rounded-full after:bg-gradient-to-r after:from-primary after:to-secondary after:transition-transform after:duration-200";
+  "relative block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-left after:rounded-full after:bg-linear-to-r after:from-primary after:to-secondary after:transition-transform after:duration-200";
 
 export function Navbar() {
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-[50] hidden border-b border-border/40 bg-background/90 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md md:block">
+      <header className="fixed inset-x-0 top-0 z-50 hidden border-b border-border/40 bg-background/90 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md md:block">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-20 items-center justify-between">
             <div className="w-[200px]">
@@ -33,7 +33,7 @@ export function Navbar() {
             </div>
 
             <nav aria-label="Primary" className="flex items-center">
-              <ul className="flex items-center space-x-2 rounded-full border border-border bg-background/80 px-3 py-2 shadow-[inset_0_1px_0_hsl(var(--border))] backdrop-blur">
+              <ul className="flex items-center space-x-2 rounded-full border border-border bg-background/80 px-3 py-2 shadow-[inset_0_1px_0_hsl(var(--border))] backdrop-blur-sm">
                 {primaryNavigation.map((item) => (
                   <li key={item.href}>
                     <ActiveNavLink

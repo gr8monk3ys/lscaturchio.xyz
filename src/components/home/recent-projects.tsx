@@ -84,7 +84,7 @@ export function RecentProjects({ repos }: RecentProjectsProps) {
                 delayMs={index * 80}
                 className={index === 1 ? "md:col-span-4" : "md:col-span-2"}
               >
-                <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl">
+                <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-xs transition-all duration-500 hover:-translate-y-1 hover:shadow-xl">
                   <div className="relative h-36 overflow-hidden">
                     <Image
                       src={getRepoCover(repo.title)}
@@ -94,8 +94,8 @@ export function RecentProjects({ repos }: RecentProjectsProps) {
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                    <div className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-2xl border border-white/20 bg-gradient-to-br from-indigo-500/70 to-violet-500/70 text-sm font-semibold text-white backdrop-blur-md">
+                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
+                    <div className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-2xl border border-white/20 bg-linear-to-br from-indigo-500/70 to-violet-500/70 text-sm font-semibold text-white backdrop-blur-md">
                       {getInitials(repo.title)}
                     </div>
                   </div>

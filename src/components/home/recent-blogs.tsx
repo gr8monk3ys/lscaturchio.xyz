@@ -46,7 +46,7 @@ export function RecentBlogs({ blogs }: RecentBlogsProps) {
               className={`${index === 0 ? "md:col-span-4" : "md:col-span-2"}`}
             >
               <div
-                className="group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
+                className="group relative overflow-hidden rounded-2xl border border-border/60 bg-background/95 shadow-xs transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
               >
                 <Link
                   href={`/blog/${post.slug}`}
@@ -61,7 +61,7 @@ export function RecentBlogs({ blogs }: RecentBlogsProps) {
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 66vw, 40vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/65 via-black/20 to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs text-white/90">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="size-3.5" />

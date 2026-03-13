@@ -216,8 +216,8 @@ function HeroSection({ activeImage, onSelectImage, product, shared }: HeroSectio
         <motion.div
           layoutId={shared ? `project-cover-${product.slug}` : undefined}
           className={cn(
-            "relative aspect-[16/9] overflow-hidden",
-            "bg-gradient-to-br from-accent/70 via-background to-secondary/10"
+            "relative aspect-video overflow-hidden",
+            "bg-linear-to-br from-accent/70 via-background to-secondary/10"
           )}
         >
           <div className="pointer-events-none absolute -top-16 -right-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
@@ -364,7 +364,7 @@ function OutcomesSection({ caseStudy }: { caseStudy: CaseStudy | undefined }) {
         <ul className="space-y-2">
           {caseStudy.results.map((result) => (
             <li key={result} className="flex items-start gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+              <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 shrink-0" />
               <span className="text-foreground">{result}</span>
             </li>
           ))}

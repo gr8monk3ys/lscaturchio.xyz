@@ -91,8 +91,8 @@ export default async function Blog({
   return (
     <Container size="large">
       <div className="space-y-6">
-        <section className="rounded-[1.5rem] border border-border/60 bg-background/80 px-6 py-7 sm:px-8 md:px-10 md:py-8">
-          <div className="max-w-[44rem] space-y-3">
+        <section className="rounded-3xl border border-border/60 bg-background/80 px-6 py-7 sm:px-8 md:px-10 md:py-8">
+          <div className="max-w-176 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
               Essays, Notes, and Experiments
             </p>
@@ -108,7 +108,7 @@ export default async function Blog({
             <Link
               href="/tags"
               prefetch={false}
-              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <Tag className="h-4 w-4" />
               Browse by Tag
@@ -117,7 +117,7 @@ export default async function Blog({
             <Link
               href="/chat"
               prefetch={false}
-              className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <MessageSquare className="h-4 w-4" />
               Ask About a Post

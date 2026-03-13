@@ -220,7 +220,7 @@ export function CodeBlock({
 
         {/* Collapse gradient */}
         {shouldCollapse && (
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-zinc-950 dark:from-zinc-900 to-transparent pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-linear-to-t from-zinc-950 dark:from-zinc-900 to-transparent pointer-events-none" />
         )}
       </div>
 

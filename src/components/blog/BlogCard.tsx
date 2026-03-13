@@ -52,7 +52,7 @@ export function BlogCard({
             <time dateTime={date}>{formatDate(date)}</time>
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-grow">
+        <CardContent className="grow">
           <p className="line-clamp-3 text-muted-foreground">{description}</p>
         </CardContent>
       </Card>

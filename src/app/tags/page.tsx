@@ -58,7 +58,7 @@ export default async function TagsPage() {
             <Link
               key={tag.name}
               href={`/tag/${encodeURIComponent(tag.name)}`}
-              className="group p-6 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-all hover:shadow-lg bg-white/50 dark:bg-gray-950/50 backdrop-blur-sm"
+              className="group p-6 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-all hover:shadow-lg bg-white/50 dark:bg-gray-950/50 backdrop-blur-xs"
             >
               <div className="flex items-start justify-between mb-3">
                 <h3 className="text-xl font-semibold capitalize group-hover:text-primary transition-colors">

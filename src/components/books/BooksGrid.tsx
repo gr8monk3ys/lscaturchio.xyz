@@ -52,7 +52,7 @@ function BookCard({ book, index }: { book: GoodreadsBook; index: number }) {
         className="group block"
       >
         <div className="neu-card p-3 h-full hover:shadow-lg transition-shadow">
-          <div className="relative aspect-[2/3] mb-3 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
+          <div className="relative aspect-2/3 mb-3 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
             <Book className="h-12 w-12 text-muted-foreground/30" />
             {book.shelf === "currently-reading" && (
               <span className="absolute top-2 right-2 bg-primary/90 text-primary-foreground text-xs px-2 py-0.5 rounded">

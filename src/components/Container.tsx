@@ -23,7 +23,7 @@ export const Container = ({ children, className, size = "default" }: ContainerPr
           "mx-auto w-full",
           size === "small" && "max-w-4xl",
           size === "default" && "max-w-7xl",
-          size === "large" && "max-w-[100rem]"
+          size === "large" && "max-w-400"
         )}
       >
         {children}

@@ -42,7 +42,7 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
       className={cn(
         "relative flex flex-col gap-8 overflow-hidden p-8",
         isHighlighted
-          ? "bg-foreground text-background shadow-[var(--neu-shadow-lg)]"
+          ? "bg-foreground text-background shadow-(--neu-shadow-lg)"
           : "",
         isPopular && "neu-flat-lg"
       )}
@@ -104,7 +104,7 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
 }
 
 const HighlightedBackground = () => (
-  <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:45px_45px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+  <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[45px_45px] mask-[radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
 )
 
 const PopularBackground = () => (
