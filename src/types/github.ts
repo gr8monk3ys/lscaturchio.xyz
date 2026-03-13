@@ -11,10 +11,7 @@ export interface GitHubRepo {
   forks_count: number;
   updated_at: string;
   fork: boolean;
-}
-
-export interface GitHubTopicsResponse {
-  names: string[];
+  topics: string[];
 }
 
 export interface PortfolioRepo {

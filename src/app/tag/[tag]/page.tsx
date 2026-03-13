@@ -11,6 +11,12 @@ type Props = {
   params: Promise<{ tag: string }>;
 };
 
+export async function generateStaticParams(): Promise<Array<{ tag: string }>> {
+  const blogs = await getAllBlogs()
+  const tags = new Set(blogs.flatMap((blog) => blog.tags))
+  return Array.from(tags).map((tag) => ({ tag }))
+}
+
 function safeDecodeURIComponent(value: string): string {
   try {
     return decodeURIComponent(value);

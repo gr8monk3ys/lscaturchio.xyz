@@ -1,7 +1,7 @@
 "use client";
 
 import { ProjectCategory, Product } from "@/types/products";
-import { motion } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { useMemo } from "react";
@@ -65,7 +65,7 @@ export function ProjectFilters({
           if (count === 0 && category.value !== "all") return null;
 
           return (
-            <motion.button
+            <m.button
               key={category.value}
               onClick={() => onCategoryChange(category.value)}
               className={cn(
@@ -88,14 +88,14 @@ export function ProjectFilters({
               >
                 {count}
               </span>
-            </motion.button>
+            </m.button>
           );
         })}
       </div>
 
       {/* Active Tech Filter & Clear Button */}
       {hasFilters && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-wrap items-center gap-2"
@@ -119,7 +119,7 @@ export function ProjectFilters({
             <X className="h-3.5 w-3.5" />
             Clear all
           </button>
-        </motion.div>
+        </m.div>
       )}
     </div>
   );

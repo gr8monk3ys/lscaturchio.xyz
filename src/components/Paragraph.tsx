@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion } from '@/lib/motion';
+import { m } from '@/lib/motion';
 
 interface ParagraphProps {
   children: React.ReactNode;
@@ -25,7 +25,7 @@ const paragraphVariants = {
 
 export function Paragraph({ children, className }: ParagraphProps) {
   return (
-    <motion.p
+    <m.p
       variants={paragraphVariants}
       initial="initial"
       whileInView="animate"
@@ -37,6 +37,6 @@ export function Paragraph({ children, className }: ParagraphProps) {
       )}
     >
       {children}
-    </motion.p>
+    </m.p>
   );
 }

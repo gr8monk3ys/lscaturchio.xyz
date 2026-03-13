@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useInView } from '@/lib/motion';
+import { m, useInView } from '@/lib/motion';
 import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRef } from 'react';
@@ -60,7 +60,7 @@ export function TestimonialsSection({
         </div>
 
         {/* Testimonials Grid */}
-        <motion.div
+        <m.div
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'show' : 'hidden'}
@@ -73,7 +73,7 @@ export function TestimonialsSection({
               index={index}
             />
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

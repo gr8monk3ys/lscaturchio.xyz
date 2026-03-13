@@ -1,7 +1,7 @@
 "use client";
 
 import { Product, ProjectStatus } from "@/types/products";
-import { motion, useScroll, useTransform } from '@/lib/motion';
+import { m, useScroll, useTransform } from '@/lib/motion';
 import { useRef, useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -103,7 +103,7 @@ export function ProjectTimeline({ projects, className }: ProjectTimelineProps) {
             {/* Projects for this year */}
             <div className="space-y-8 pl-16 md:pl-20">
               {projectsByYear[year].map((project, index) => (
-                <motion.div
+                <m.div
                   key={project.slug}
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -229,7 +229,7 @@ export function ProjectTimeline({ projects, className }: ProjectTimelineProps) {
                       </div>
                     </div>
                   </Link>
-                </motion.div>
+                </m.div>
               ))}
             </div>
           </div>
@@ -242,7 +242,7 @@ export function ProjectTimeline({ projects, className }: ProjectTimelineProps) {
           }}
           className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-[linear-gradient(to_bottom,var(--tw-gradient-stops))] from-transparent from-0% via-border to-transparent to-99% mask-[linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
         >
-          <motion.div
+          <m.div
             style={{
               height: heightTransform,
               opacity: opacityTransform,

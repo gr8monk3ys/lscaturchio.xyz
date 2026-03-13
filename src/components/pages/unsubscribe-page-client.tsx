@@ -2,7 +2,7 @@
 
 import { Container } from '@/components/Container'
 import { Heading } from '@/components/Heading'
-import { LazyMotion, domAnimation, m } from '@/lib/motion'
+import { m } from '@/lib/motion'
 import { Check, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -13,8 +13,7 @@ export function UnsubscribePageClient({ status, message }: { status: Unsubscribe
     <div className="min-h-screen flex items-center justify-center py-20">
       <Container>
         <div className="max-w-md mx-auto text-center">
-          <LazyMotion features={domAnimation}>
-            <m.div
+          <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -63,8 +62,7 @@ export function UnsubscribePageClient({ status, message }: { status: Unsubscribe
                   </Link>
                 )}
               </div>
-            </m.div>
-          </LazyMotion>
+          </m.div>
         </div>
       </Container>
     </div>

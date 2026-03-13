@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { motion } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import { FAQStructuredData } from "@/components/ui/structured-data";
 
 interface FaqItem {
@@ -31,7 +31,7 @@ interface FaqSectionProps {
 
 export function FaqSection({ title, description, items, contactInfo }: FaqSectionProps) {
   return (
-    <motion.div 
+    <m.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -40,45 +40,45 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
       <FAQStructuredData questions={items} />
       <div className="px-6 lg:px-8">
         <div className="mx-auto max-w-4xl divide-y divide-border">
-          <motion.h2 
+          <m.h2 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-2xl font-bold leading-10 tracking-tight"
           >
             {title}
-          </motion.h2>
-          <motion.p 
+          </m.h2>
+          <m.p 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="mt-4 text-base leading-7 text-muted-foreground"
           >
             {description}
-          </motion.p>
+          </m.p>
           <div className="mt-10 space-y-6 divide-y divide-border">
             <Accordion type="single" collapsible className="w-full">
               {items.map((faq, index) => (
                 <AccordionItem key={faq.question} value={`item-${index}`}>
                   <AccordionTrigger className="text-left group">
-                    <motion.span 
+                    <m.span 
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: index * 0.1 + 0.4 }}
                       className="group-hover:text-primary transition-colors"
                     >
                       {faq.question}
-                    </motion.span>
+                    </m.span>
                   </AccordionTrigger>
                   <AccordionContent>
-                    <motion.div
+                    <m.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
                       className="text-muted-foreground"
                     >
                       {faq.answer}
-                    </motion.div>
+                    </m.div>
                   </AccordionContent>
                 </AccordionItem>
               ))}
@@ -96,6 +96,6 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
           </div>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
