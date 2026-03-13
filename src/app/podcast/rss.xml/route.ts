@@ -1,6 +1,7 @@
 import { Feed } from "feed";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { getAudioByteLength, hasAudioForSlug } from "@/lib/audio";
+import { getAbsoluteAudioUrl } from "@/lib/audio-url";
 import { getSiteUrl } from "@/lib/site-url";
 
 export async function GET() {
@@ -40,7 +41,7 @@ export async function GET() {
 
   for (const post of audioPosts) {
     const postUrl = `${siteUrl}/blog/${post.slug}`;
-    const audioUrl = `${siteUrl}/audio/${post.slug}.mp3`;
+    const audioUrl = getAbsoluteAudioUrl(post.slug, siteUrl);
     const length = getAudioByteLength(post.slug) ?? 0;
 
     feed.addItem({

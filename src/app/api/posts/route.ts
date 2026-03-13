@@ -4,6 +4,7 @@ import { RATE_LIMITS } from "@/lib/rate-limit";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { calculateReadingTime } from "@/lib/reading-time";
 import { hasAudioForSlug } from "@/lib/audio";
+import { getAbsoluteAudioUrl } from "@/lib/audio-url";
 import { getSiteUrl } from "@/lib/site-url";
 
 const handleGet = async (req: NextRequest) => {
@@ -31,7 +32,7 @@ const handleGet = async (req: NextRequest) => {
       readingTimeMinutes: reading.minutes,
       words: reading.words,
       hasAudio,
-      audioUrl: hasAudio ? `${siteUrl}/audio/${p.slug}.mp3` : null,
+      audioUrl: hasAudio ? getAbsoluteAudioUrl(p.slug, siteUrl) : null,
       series: p.series ?? null,
       seriesOrder: p.seriesOrder ?? null,
     };
