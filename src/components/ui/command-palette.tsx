@@ -167,7 +167,7 @@ function CommandPaletteTrigger({ className, onOpen }: TriggerProps) {
       onClick={onOpen}
       className={cn(
         "flex items-center gap-2 rounded-lg border border-border/50 bg-muted/50 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+        "focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         className
       )}
     >
@@ -221,7 +221,7 @@ function CommandPaletteDialog({
         type="button"
         onClick={onClose}
         aria-label="Close search"
-        className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
+        className="fixed inset-0 z-50 bg-background/80 backdrop-blur-xs"
       />
 
       <div
@@ -242,7 +242,7 @@ function CommandPaletteDialog({
               onChange={(e) => onChangeQuery(e.target.value)}
               placeholder="Search pages, blogs, or actions..."
               aria-label="Search pages, blogs, or actions"
-              className="flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
+              className="flex-1 bg-transparent text-base outline-hidden placeholder:text-muted-foreground"
             />
             {isSearching && <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />}
             {query && !isSearching && (

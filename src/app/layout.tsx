@@ -19,13 +19,13 @@ const displayFont = Fraunces({
   subsets: ["latin"],
   display: "optional",
   preload: false,
-  variable: "--font-display",
+  variable: "--site-font-display",
 });
 
 const bodyFont = Instrument_Sans({
   subsets: ["latin"],
   display: "optional",
-  variable: "--font-body",
+  variable: "--site-font-body",
 });
 
 export const metadata: Metadata = {
@@ -155,7 +155,7 @@ export default function RootLayout({
         {/* Skip to content link for accessibility */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-hidden"
         >
           Skip to content
         </a>
@@ -165,10 +165,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Suspense fallback={<div className="min-h-[64px]"></div>}>
+          <Suspense fallback={<div className="min-h-[64px]" />}>
             <Navbar />
           </Suspense>
-          <Suspense fallback={<div className="min-h-[64px] md:hidden"></div>}>
+          <Suspense fallback={<div className="min-h-[64px] md:hidden" />}>
             <MobileNavbarGate />
           </Suspense>
           <main id="main-content" className="overflow-x-clip">

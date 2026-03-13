@@ -245,8 +245,8 @@ export const products: Product[] = [
       ],
       process: [
         {
-          title: "Brief → outline",
-          description: "Turned topic + keywords into a stable outline with clear sections and intent.",
+          title: "Brief → outline-solid",
+          description: "Turned topic + keywords into a stable outline-solid with clear sections and intent.",
         },
         {
           title: "Workflow orchestration",

@@ -82,9 +82,9 @@ function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridPr
             <div
               className={`relative ${
                 photo.aspectRatio === "portrait"
-                  ? "aspect-[3/4]"
+                  ? "aspect-3/4"
                   : photo.aspectRatio === "landscape"
-                    ? "aspect-[4/3]"
+                    ? "aspect-4/3"
                     : "aspect-square"
               }`}
             >
@@ -95,7 +95,7 @@ function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridPr
                 className="object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
+              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                   <p className="font-medium text-sm truncate">{photo.alt}</p>
                   {photo.location && (
@@ -191,9 +191,9 @@ function PhotoLightbox({
             <div
               className={`relative ${
                 currentPhoto.aspectRatio === "portrait"
-                  ? "aspect-[3/4] max-h-[75vh]"
+                  ? "aspect-3/4 max-h-[75vh]"
                   : currentPhoto.aspectRatio === "landscape"
-                    ? "aspect-[4/3]"
+                    ? "aspect-4/3"
                     : "aspect-square"
               } mx-auto`}
               style={{ maxHeight: "75vh" }}
@@ -208,7 +208,7 @@ function PhotoLightbox({
               />
             </div>
 
-            <div className="mt-4 bg-white/5 backdrop-blur-sm rounded-xl p-4 md:p-6">
+            <div className="mt-4 bg-white/5 backdrop-blur-xs rounded-xl p-4 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
                   <h3 className="text-white text-lg font-medium mb-2">{currentPhoto.alt}</h3>

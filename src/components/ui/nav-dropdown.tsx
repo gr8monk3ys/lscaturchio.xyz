@@ -163,7 +163,7 @@ export function NavDropdown({ categoryName }: NavDropdownProps) {
         aria-expanded={isOpen}
         aria-haspopup="menu"
         className={cn(
-          "relative flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+          "relative flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
           hasActiveItem
             ? "text-foreground"
             : "text-foreground/60 hover:text-foreground/80"
@@ -179,7 +179,7 @@ export function NavDropdown({ categoryName }: NavDropdownProps) {
         <span
           aria-hidden
           className={cn(
-            "absolute bottom-0 left-3 right-3 h-0.5 origin-left rounded-full bg-gradient-to-r from-primary to-secondary transition-transform duration-200",
+            "absolute bottom-0 left-3 right-3 h-0.5 origin-left rounded-full bg-linear-to-r from-primary to-secondary transition-transform duration-200",
             hasActiveItem || isOpen ? "scale-x-100" : "scale-x-0"
           )}
         />
@@ -192,7 +192,7 @@ export function NavDropdown({ categoryName }: NavDropdownProps) {
           className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3"
         >
           <div
-            className="neu-card min-w-[220px] rounded-2xl border border-border/60 bg-background/95 p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)] backdrop-blur"
+            className="neu-card min-w-[220px] rounded-2xl border border-border/60 bg-background/95 p-2 shadow-[0_16px_40px_rgba(0,0,0,0.12)] backdrop-blur-sm"
             role="menu"
             aria-orientation="vertical"
             onKeyDown={handleKeyDown}
@@ -214,7 +214,7 @@ export function NavDropdown({ categoryName }: NavDropdownProps) {
                     role="menuitem"
                     tabIndex={isFocused ? 0 : -1}
                     className={cn(
-                      "flex items-center gap-3 rounded-xl px-3 py-2.5 transition-[transform,background-color,color] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset",
+                      "flex items-center gap-3 rounded-xl px-3 py-2.5 transition-[transform,background-color,color] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset",
                       isActive
                         ? "neu-pressed bg-primary/10 text-primary"
                         : "hover:translate-x-1 hover:bg-muted/40",

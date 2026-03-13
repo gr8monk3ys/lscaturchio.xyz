@@ -72,7 +72,7 @@ export function HowIWorkSection() {
             description="A simple, repeatable process for shipping reliable ML/RAG systems and clean web products."
           />
 
-          <div className="rounded-2xl border border-border/60 bg-background/80 p-5 shadow-sm">
+          <div className="rounded-2xl border border-border/60 bg-background/80 p-5 shadow-xs">
             <div className="text-sm font-semibold text-foreground">Principles</div>
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li>Ship thin slices, fast.</li>
@@ -81,14 +81,14 @@ export function HowIWorkSection() {
             </ul>
           </div>
 
-          <div className="rounded-2xl border border-border/60 bg-background/80 p-5 shadow-sm">
+          <div className="rounded-2xl border border-border/60 bg-background/80 p-5 shadow-xs">
             <div className="text-sm font-semibold text-foreground">Steps</div>
             <ol className="mt-4 space-y-2 text-sm">
               {STEPS.map((step, index) => (
                 <li key={step.id}>
                   <a
                     href={`#how-i-work-${step.id}`}
-                    className="flex items-center gap-3 rounded-xl border border-border/50 bg-background/70 px-3 py-2 text-muted-foreground transition-colors hover:bg-primary/[0.04] hover:text-foreground"
+                    className="flex items-center gap-3 rounded-xl border border-border/50 bg-background/70 px-3 py-2 text-muted-foreground transition-colors hover:bg-primary/4 hover:text-foreground"
                   >
                     <span className="inline-flex size-5 items-center justify-center rounded-full border border-border bg-background text-xs font-semibold tabular-nums">
                       {index + 1}
@@ -121,7 +121,7 @@ export function HowIWorkSection() {
               <li
                 key={step.id}
                 id={`how-i-work-${step.id}`}
-                className="scroll-mt-28 rounded-2xl border border-border/60 bg-background/85 p-6 shadow-sm transition-colors hover:bg-primary/[0.03]"
+                className="scroll-mt-28 rounded-2xl border border-border/60 bg-background/85 p-6 shadow-xs transition-colors hover:bg-primary/3"
               >
                 <div className="flex items-start gap-4">
                   <div className="neu-flat-sm rounded-2xl p-3">

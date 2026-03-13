@@ -42,7 +42,7 @@ export function LanguageSwitcher({
       <select
         aria-label="Select language"
         className={cn(
-          "bg-transparent pr-1 text-foreground outline-none",
+          "bg-transparent pr-1 text-foreground outline-hidden",
           compact ? "text-xs" : "text-sm"
         )}
         value={language}

@@ -176,7 +176,7 @@ export function ProjectGallery({ projects }: { projects: Product[] }) {
             className={cn(
               "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors",
               browseMode
-                ? "bg-primary text-primary-foreground shadow-sm"
+                ? "bg-primary text-primary-foreground shadow-xs"
                 : "bg-muted/60 text-foreground hover:bg-muted"
             )}
             aria-pressed={browseMode}
@@ -250,13 +250,13 @@ function ProjectGalleryCard({
       onMouseEnter={onActivate}
       onFocus={onActivate}
       className={cn(
-        "group block overflow-hidden rounded-2xl border bg-card/60 backdrop-blur-sm transition-all",
+        "group block overflow-hidden rounded-2xl border bg-card/60 backdrop-blur-xs transition-all",
         "hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/5",
         isActive ? "border-primary/40 ring-1 ring-primary/20" : "border-border/50 hover:border-primary/25"
       )}
       aria-current={isActive ? "true" : undefined}
     >
-      <div className="relative aspect-[16/10] overflow-hidden">
+      <div className="relative aspect-16/10 overflow-hidden">
         <m.div
           layoutId={shared ? `project-cover-${project.slug}` : undefined}
           className="absolute inset-0"
@@ -270,7 +270,7 @@ function ProjectGalleryCard({
             priority={isActive}
           />
         </m.div>
-        <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-background/95 via-background/30 to-transparent" />
 
         <div className="absolute left-4 right-4 bottom-4 flex items-end justify-between gap-3">
           <div className="min-w-0">
@@ -341,11 +341,11 @@ function ProjectRail({ project, compact = false }: { project: (Product & { slug?
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm",
-        compact ? "" : "shadow-sm"
+        "overflow-hidden rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xs",
+        compact ? "" : "shadow-xs"
       )}
     >
-      <div className={cn("relative", compact ? "aspect-[16/9]" : "aspect-[16/10]")}>
+      <div className={cn("relative", compact ? "aspect-video" : "aspect-16/10")}>
         <Image
           src={project.thumbnail}
           alt={`${title} preview`}
@@ -353,7 +353,7 @@ function ProjectRail({ project, compact = false }: { project: (Product & { slug?
           className="object-cover"
           sizes={compact ? "100vw" : "380px"}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-background/95 via-background/30 to-transparent" />
       </div>
 
       <div className="p-5 space-y-4">

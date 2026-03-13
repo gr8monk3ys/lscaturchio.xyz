@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 interface ResumeDownloadButtonProps {
   className?: string;
-  variant?: "default" | "outline";
+  variant?: "default" | "outline-solid";
   size?: "default" | "small";
 }
 
@@ -36,12 +36,12 @@ export function ResumeDownloadButton({
       className={cn(
         "group relative inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all",
         variant === "default" && [
-          "border border-zinc-200 bg-white/50 text-zinc-900 backdrop-blur-sm",
+          "border border-zinc-200 bg-white/50 text-zinc-900 backdrop-blur-xs",
           "hover:border-zinc-300 hover:bg-white/80",
           "dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100",
           "dark:hover:border-zinc-700 dark:hover:bg-zinc-900/80",
         ],
-        variant === "outline" && [
+        variant === "outline-solid" && [
           "neu-button text-foreground hover:text-primary",
         ],
         size === "default" && "px-6 py-3 text-base",

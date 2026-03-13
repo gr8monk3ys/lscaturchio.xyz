@@ -126,14 +126,14 @@ export function ProjectTimeline({ projects, className }: ProjectTimelineProps) {
                     <div
                       className={cn(
                         "relative overflow-hidden rounded-xl border border-border/50",
-                        "bg-card/50 backdrop-blur-sm",
+                        "bg-card/50 backdrop-blur-xs",
                         "transition-all duration-300",
                         "hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
                       )}
                     >
                       <div className="flex flex-col md:flex-row">
                         {/* Image */}
-                        <div className="relative w-full md:w-48 h-32 md:h-auto flex-shrink-0">
+                        <div className="relative w-full md:w-48 h-32 md:h-auto shrink-0">
                           <Image
                             src={project.thumbnail}
                             alt={project.title}
@@ -240,14 +240,14 @@ export function ProjectTimeline({ projects, className }: ProjectTimelineProps) {
           style={{
             height: height + "px",
           }}
-          className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-[linear-gradient(to_bottom,var(--tw-gradient-stops))] from-transparent from-[0%] via-border to-transparent to-[99%] [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
+          className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-[linear-gradient(to_bottom,var(--tw-gradient-stops))] from-transparent from-0% via-border to-transparent to-99% mask-[linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
         >
           <motion.div
             style={{
               height: heightTransform,
               opacity: opacityTransform,
             }}
-            className="absolute inset-x-0 top-0 w-[2px] bg-gradient-to-t from-primary via-primary/50 to-transparent from-[0%] via-[10%] rounded-full"
+            className="absolute inset-x-0 top-0 w-[2px] bg-linear-to-t from-primary via-primary/50 to-transparent from-0% via-10% rounded-full"
           />
         </div>
       </div>

@@ -5,9 +5,9 @@ import { socials } from "@/constants/socials"
 
 const primaryLinkClass = "cta-primary inline-flex items-center gap-2";
 const secondaryLinkClass =
-  "inline-flex h-10 items-center justify-center gap-2 rounded-xl neu-button px-4 py-2 text-sm font-medium text-foreground transition-all duration-200 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  "inline-flex h-10 items-center justify-center gap-2 rounded-xl neu-button px-4 py-2 text-sm font-medium text-foreground transition-all duration-200 hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 const iconLinkClass =
-  "inline-flex h-10 w-10 items-center justify-center rounded-xl neu-button text-foreground transition-all duration-200 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  "inline-flex h-10 w-10 items-center justify-center rounded-xl neu-button text-foreground transition-all duration-200 hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
 function Footer() {
 

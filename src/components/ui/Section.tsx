@@ -70,7 +70,7 @@ export function Section({
       )}
     >
       {topDivider && (
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 max-w-lg h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 max-w-lg h-px bg-linear-to-r from-transparent via-border to-transparent" />
       )}
       <div
         className={cn(
@@ -85,7 +85,7 @@ export function Section({
         {children}
       </div>
       {divider && (
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 max-w-md h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 max-w-md h-px bg-linear-to-r from-transparent via-border to-transparent" />
       )}
     </section>
   );
@@ -128,7 +128,7 @@ export function SectionHeader({
           </p>
         )}
       </div>
-      {action && <div className="flex-shrink-0">{action}</div>}
+      {action && <div className="shrink-0">{action}</div>}
     </div>
   );
 }

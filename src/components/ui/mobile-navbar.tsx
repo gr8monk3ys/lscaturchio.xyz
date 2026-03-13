@@ -40,11 +40,11 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
 
   return (
     <>
-      <div className="fixed right-0 top-0 z-[450] p-4 md:hidden">
+      <div className="fixed right-0 top-0 z-450 p-4 md:hidden">
         <button
           type="button"
           onClick={() => setIsMenuOpen((current) => !current)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl neu-button transition-transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          className="flex h-10 w-10 items-center justify-center rounded-xl neu-button transition-transform hover:scale-[1.02] active:scale-[0.98] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           aria-label="Toggle menu"
           aria-expanded={isMenuOpen}
           aria-controls="mobile-navigation-menu"
@@ -56,7 +56,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
       {isMenuOpen && (
         <div
           id="mobile-navigation-menu"
-          className="fixed inset-0 z-[400] flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
+          className="fixed inset-0 z-400 flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
         >
           <div className="mx-auto flex w-full max-w-md flex-col space-y-2 p-6 pt-20">
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -70,7 +70,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
                     href={item.href}
                     prefetch={false}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                    className={`flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       isActive
                         ? "border-primary/30 bg-primary/10 text-primary"
                         : "border-border/70 bg-background/80 text-foreground hover:border-primary/30 hover:text-primary"
@@ -108,7 +108,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
                   <button
                     type="button"
                     onClick={() => toggleCategory(category.name)}
-                    className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                    className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-lg font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       hasActiveItem
                         ? "text-primary"
                         : "text-foreground/80 hover:bg-muted/50"
@@ -177,7 +177,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
               href={contactLink.href}
               prefetch={false}
               onClick={() => setIsMenuOpen(false)}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-lg font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                 isPathActive(pathname, contactLink.href)
                   ? "neu-pressed bg-primary/10 text-primary"
                   : "hover:bg-muted/50"

@@ -282,7 +282,7 @@ function ProgressBar({
           style={{ width: `${progress}%` }}
         />
         <div
-          className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-stone-700 opacity-0 shadow-sm transition-opacity group-hover:opacity-100 dark:bg-stone-300"
+          className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-stone-700 opacity-0 shadow-xs transition-opacity group-hover:opacity-100 dark:bg-stone-300"
           style={{ left: `calc(${progress}% - 8px)` }}
         />
       </div>
@@ -358,7 +358,7 @@ function TransportControls({
       <div className="flex items-center gap-1">
         <button
           onClick={onChangeSpeed}
-          className="min-w-[3rem] rounded-lg px-2 py-1 text-center font-mono text-xs font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+          className="min-w-12 rounded-lg px-2 py-1 text-center font-mono text-xs font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
           aria-label={`Playback speed: ${speed}x. Click to change.`}
           title="Change playback speed"
         >

@@ -81,7 +81,7 @@ export function ScrollCaseStudies() {
     <Section padding="large" size="wide" divider topDivider reveal={false}>
       <div className="grid gap-10 lg:grid-cols-[minmax(300px,420px)_1fr] items-start">
         <div className="space-y-6 lg:sticky lg:top-28">
-          <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-background/80 p-7 shadow-sm">
+          <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-background/80 p-7 shadow-xs">
             <div
               className="pointer-events-none absolute -top-20 -right-20 size-72 rounded-full blur-3xl"
               style={{ background: "hsl(var(--primary) / 0.2)", opacity: 0.22 }}
@@ -103,7 +103,7 @@ export function ScrollCaseStudies() {
                 <li key={item.id}>
                   <a
                     href={`#case-study-${item.id}`}
-                    className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/60 px-4 py-3 text-left transition-colors hover:bg-primary/[0.04]"
+                    className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/60 px-4 py-3 text-left transition-colors hover:bg-primary/4"
                   >
                     <div className="min-w-0">
                       <div className="text-xs font-semibold text-muted-foreground tabular-nums">
@@ -131,7 +131,7 @@ export function ScrollCaseStudies() {
               >
                 <div
                   className={cn(
-                    "w-full rounded-3xl border border-border/60 bg-background/85 shadow-sm overflow-hidden",
+                    "w-full rounded-3xl border border-border/60 bg-background/85 shadow-xs overflow-hidden",
                     "transition-shadow duration-300 hover:shadow-lg"
                   )}
                 >
@@ -176,7 +176,7 @@ export function ScrollCaseStudies() {
                       <div className="mt-7">
                         <Link
                           href={item.href}
-                          className="group inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all"
+                          className="group inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground shadow-xs hover:-translate-y-0.5 hover:shadow-md transition-all"
                         >
                           Read the case study
                           <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

@@ -85,7 +85,7 @@ export default function GlobalError({
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={() => reset()}
-                className="px-6 py-3 rounded-xl font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2"
+                className="px-6 py-3 rounded-xl font-medium transition-all focus:outline-hidden focus:ring-2 focus:ring-offset-2"
                 style={{
                   backgroundColor: 'hsl(82, 32%, 16%)',
                   color: 'white',
@@ -100,7 +100,7 @@ export default function GlobalError({
                 onClick={() => {
                   window.location.href = "/";
                 }}
-                className="px-6 py-3 rounded-xl font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2"
+                className="px-6 py-3 rounded-xl font-medium transition-all focus:outline-hidden focus:ring-2 focus:ring-offset-2"
                 style={{
                   boxShadow:
                     '3px 3px 5px -1px rgba(200, 200, 210, 0.2), -2px -2px 5px rgba(255, 255, 255, 0.85)',
