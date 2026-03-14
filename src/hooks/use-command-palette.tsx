@@ -18,7 +18,6 @@ import {
 } from 'lucide-react'
 import { safeStorage } from '@/lib/storage'
 import type {
-  CommandCategory,
   CommandGroups,
   CommandItem,
   PaletteAction,
