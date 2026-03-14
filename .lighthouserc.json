@@ -1,7 +1,7 @@
 {
   "ci": {
     "collect": {
-      "numberOfRuns": 1,
+      "numberOfRuns": 3,
       "startServerCommand": "npm run start -- --hostname 127.0.0.1 --port 4173",
       "startServerReadyPattern": "Ready in",
       "startServerReadyTimeout": 180000,
