@@ -26,7 +26,10 @@ export function useGalleryKeyboard({
   onExitBrowse,
 }: UseGalleryKeyboardOptions): void {
   const slugsRef = useRef(slugs)
-  slugsRef.current = slugs
+
+  useEffect(() => {
+    slugsRef.current = slugs
+  })
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
