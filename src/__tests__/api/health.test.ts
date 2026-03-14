@@ -16,7 +16,7 @@ vi.mock('@/lib/logger', () => ({
 
 // Mock rate limiting to pass through for tests
 vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: Function) => handler,
+  withRateLimit: (handler: (...args: unknown[]) => unknown) => handler,
   RATE_LIMITS: {
     STANDARD: { limit: 60, window: 60000 },
     PUBLIC: { limit: 100, window: 60000 },
@@ -27,7 +27,6 @@ vi.mock('@/lib/with-rate-limit', () => ({
 import { GET } from '@/app/api/health/route'
 import { isDatabaseConfigured } from '@/lib/db'
 import { logError } from '@/lib/logger'
-import { NextRequest } from 'next/server'
 
 // The handler takes no args but withRateLimit wraps it expecting NextRequest
 const callGet = () => (GET as unknown as () => Promise<Response>)()
