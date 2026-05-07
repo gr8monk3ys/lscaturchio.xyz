@@ -15,7 +15,6 @@ const eslintConfig = defineConfig([
     'test-results/**',
     'tmp/**',
     'public/audio/.tmp/**',
-    'scripts/.tts-venv/**',
   ]),
   {
     files: ['scripts/**/*.{js,cjs}'],
