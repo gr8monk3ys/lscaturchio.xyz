@@ -196,12 +196,11 @@ export function HeaderSection({ metrics, product, shared, statusConfig }: Header
 
 type HeroSectionProps = {
   activeImage: StaticImageData | string
-  onSelectImage: (image: StaticImageData | string) => void
   product: Product
   shared: boolean
 }
 
-export function HeroSection({ activeImage, onSelectImage, product, shared }: HeroSectionProps): React.ReactNode {
+export function HeroSection({ activeImage, product, shared }: HeroSectionProps): React.ReactNode {
   return (
     <Reveal>
       <m.div
@@ -228,30 +227,6 @@ export function HeroSection({ activeImage, onSelectImage, product, shared }: Her
             priority
           />
         </m.div>
-
-        {product.images.length > 1 && (
-          <div className="flex flex-row justify-center my-4 flex-wrap gap-2 px-6 pb-6">
-            {product.images.map((image, index) => (
-              <button
-                key={`image-thumbnail-${image}`}
-                type="button"
-                onClick={() => onSelectImage(image)}
-                className={cn(
-                  'relative rounded-lg overflow-hidden border-2 transition-all bg-background',
-                  activeImage === image ? 'border-primary' : 'border-border hover:border-primary/50'
-                )}
-              >
-                <Image
-                  src={image}
-                  alt={`${product.title} thumbnail ${index + 1}`}
-                  width={80}
-                  height={60}
-                  className="object-cover"
-                />
-              </button>
-            ))}
-          </div>
-        )}
       </m.div>
     </Reveal>
   )

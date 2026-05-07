@@ -27,11 +27,9 @@ export type Product = {
   title: string;
   description: string;
   thumbnail: StaticImageData;
-  images: StaticImageData[] | string[];
   href: string;
   slug?: string;
   stack?: string[];
-  content?: React.ReactNode | string;
   details?: string[];
   // New fields for enhanced projects page
   categories?: ProjectCategory[];
