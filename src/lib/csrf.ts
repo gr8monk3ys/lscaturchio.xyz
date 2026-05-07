@@ -59,13 +59,12 @@ function getAllowedOrigins(): string[] {
 function isAllowedVercelAppOrigin(origin: string): boolean {
   try {
     const url = new URL(origin);
-    // Ensure the hostname ends with .vercel.app and contains 'lscaturchio' as a
-    // distinct segment (not as a substring of another word).
-    // Valid: lscaturchio-abc123.vercel.app, lscaturchio.vercel.app
-    // Invalid: lscaturchio.evil.vercel.app (would need further checks)
+    // Hostname must START with `lscaturchio` followed by a hyphen or dot,
+    // and end with `.vercel.app`. Rejects `evil-lscaturchio-x.vercel.app`,
+    // forks, and any deployment whose project name merely contains the substring.
     return url.protocol === 'https:' &&
            url.hostname.endsWith('.vercel.app') &&
-           /(?:^|-)lscaturchio(?:-|\.)/i.test(url.hostname);
+           /^lscaturchio(?:-|\.)/i.test(url.hostname);
   } catch {
     return false;
   }
