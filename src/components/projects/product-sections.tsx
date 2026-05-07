@@ -370,8 +370,8 @@ export function DetailsSection({ details }: { details: string[] | undefined }): 
       <section id="details" className="rounded-2xl border border-border/50 bg-card/50 p-6">
         <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-4">Details</div>
         <div className="prose prose-sm md:prose-base max-w-none text-muted-foreground prose-headings:text-foreground prose-p:text-muted-foreground">
-          {details.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+          {details.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
           ))}
         </div>
       </section>
