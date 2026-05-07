@@ -3,7 +3,7 @@
 import { useRef, ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { formatDate } from "../../../lib/formatDate";
+import { formatDate } from "@/lib/formatDate";
 import { Container } from "../Container";
 import { Heading } from "../Heading";
 import { Paragraph } from "../Paragraph";
