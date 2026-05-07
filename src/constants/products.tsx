@@ -19,7 +19,6 @@ export const products: Product[] = [
     description:
       "An open source teaching assistant RAG leveraging OLlama2 with a FAISS knowledge base. Increased student engagement by 30% and learning efficiency by 25%.",
     thumbnail: TAlker,
-    images: [TAlker],
     stack: ["Python", "FAISS", "OLlama2", "RAG"],
     slug: "talker",
     // Enhanced fields
@@ -67,21 +66,6 @@ export const products: Product[] = [
         "Improve citation UX: quote snippets, highlight sources, and add per-source confidence.",
       ],
     },
-    content: (
-      <div>
-        <p>
-          Implemented and collaborated on an open source teaching assistant RAG
-          leveraging OLlama2 with a FAISS knowledge base, answering students&apos;
-          questions based on class criteria, syllabus, and slides, increasing
-          student engagement by 30%.
-        </p>
-        <p>
-          Included features of providing multi-modal results to queries from
-          classrooms such as YouTube videos with video time queues based on
-          question context, enhancing learning efficiency by 25%.
-        </p>
-      </div>
-    ),
     details: [
       "Implemented and collaborated on an open source teaching assistant RAG leveraging OLlama2 with a FAISS knowledge base, answering students' questions based on class criteria, syllabus, and slides, increasing student engagement by 30%.",
       "Included features of providing multi-modal results to queries from classrooms such as YouTube videos with video time queues based on question context, enhancing learning efficiency by 25%.",
@@ -93,7 +77,6 @@ export const products: Product[] = [
     description:
       "An advanced AI-driven stock trading bot leveraging FinBERT sentiment analysis, technical indicators, and sophisticated risk management for automated intelligent trading.",
     thumbnail: tradingBot,
-    images: [tradingBot],
     stack: ["Python", "FinBERT", "Alpaca Trading API", "Pandas"],
     slug: "ai-powered-trading-bot",
     // Enhanced fields
@@ -141,16 +124,6 @@ export const products: Product[] = [
         "Harden production ops: alerting, retries, and circuit breakers for API outages.",
       ],
     },
-    content: (
-      <div>
-        <p>
-          Engineered an AI-powered trading bot that automates stock trading by analyzing market sentiment using FinBERT and integrating key technical indicators such as SMA and RSI. The bot employs strict risk management strategies, including portfolio-wide and individual position risk limits.
-        </p>
-        <p>
-          Integrated with the Alpaca Trading API, enabling real-time trading and paper trading for safe strategy testing before live deployment.
-        </p>
-      </div>
-    ),
     details: [
       "Engineered an AI-powered trading bot that automates stock trading by analyzing market sentiment using FinBERT and integrating key technical indicators such as SMA and RSI. The bot employs strict risk management strategies, including portfolio-wide and individual position risk limits.",
       "Integrated with the Alpaca Trading API, enabling real-time trading and paper trading for safe strategy testing before live deployment.",
@@ -162,7 +135,6 @@ export const products: Product[] = [
     description:
       "An automated bot that solves LeetCode problems using GPT-4 and browser automation. Features intelligent solution generation and automatic code submission.",
     thumbnail: leetcodeSolver,
-    images: [leetcodeSolver],
     stack: ["Python", "Playwright", "AgentQL", "GPT-4"],
     slug: "leetcode-solver-bot",
     // Enhanced fields
@@ -210,16 +182,6 @@ export const products: Product[] = [
         "Add safety controls to avoid accidental submissions or rate-limit issues.",
       ],
     },
-    content: (
-      <div>
-        <p>
-          Developed an automated bot that integrates GPT-4 with browser automation to solve LeetCode problems. The bot features automated login, random problem selection, intelligent solution generation, and automatic code submission, enhancing coding practice efficiency.
-        </p>
-        <p>
-          Implemented persistent login state management and a detailed logging system to monitor activities and outcomes, ensuring reliability and ease of use.
-        </p>
-      </div>
-    ),
     details: [
       "Developed an automated bot that integrates GPT-4 with browser automation to solve LeetCode problems. The bot features automated login, random problem selection, intelligent solution generation, and automatic code submission, enhancing coding practice efficiency.",
       "Implemented persistent login state management and a detailed logging system to monitor activities and outcomes, ensuring reliability and ease of use.",
@@ -231,7 +193,6 @@ export const products: Product[] = [
     description:
       "An AI content generation tool using GPT-4 and LangChain to create SEO-optimized blog posts and structured books. Outputs clean MDX for blogs and DOCX for books.",
     thumbnail: blogAI,
-    images: [blogAI],
     stack: ["Python", "OpenAI GPT-4", "LangChain", "MDX"],
     slug: "blog-ai",
     // Enhanced fields
@@ -279,22 +240,6 @@ export const products: Product[] = [
         "Add multilingual generation pipelines for international SEO and distribution.",
       ],
     },
-    content: (
-      <div>
-        <p>
-          Constructed an automated blog content generation system using OpenAI&apos;s
-          GPT-4 model and LangChain.
-        </p>
-        <p>
-          Accomplished workflows for generating SEO-optimized blog titles,
-          descriptions, and detailed sections.
-        </p>
-        <p>
-          Used Python and ConversationBufferMemory for maintaining context
-          and orchestrating tasks.
-        </p>
-      </div>
-    ),
     details: [
       "Constructed an automated blog content generation system using OpenAI's GPT-4 model and LangChain.",
       "Accomplished workflows for generating SEO-optimized blog titles, descriptions, and detailed sections.",
@@ -310,7 +255,6 @@ export const products: Product[] = [
     description:
       "A web application utilizing machine learning visual image recognition to help users find lost dogs by comparing photos to a database of dog images.",
     thumbnail: findMyDoggo,
-    images: [findMyDoggo],
     stack: ["JavaScript", "Machine Learning", "Image Recognition"],
     slug: "find-my-doggo",
     // Enhanced fields
@@ -319,16 +263,6 @@ export const products: Product[] = [
     status: "archived",
     startDate: "2019-03",
     sourceUrl: "https://github.com/gr8monk3ys/find-my-doggo",
-    content: (
-      <div>
-        <p>
-          Collaborated on developing a web application for the 2019 Hack Merced event that assists users in finding lost dogs. The application allows users to upload a photo of a dog, which is then compared to a database using machine learning-based image recognition to identify potential matches.
-        </p>
-        <p>
-          Used machine learning to improve the accuracy of image comparisons, providing a valuable tool for pet owners and shelters in reuniting lost dogs with their families.
-        </p>
-      </div>
-    ),
     details: [
       "Collaborated on developing a web application for the 2019 Hack Merced event that assists users in finding lost dogs. The application allows users to upload a photo of a dog, which is then compared to a database using machine learning-based image recognition to identify potential matches.",
       "Used machine learning to improve the accuracy of image comparisons, providing a valuable tool for pet owners and shelters in reuniting lost dogs with their families.",
@@ -340,7 +274,6 @@ export const products: Product[] = [
     description:
       "An application that enables users to control an e-book reader by tracking their eyes, allowing for hands-free navigation and enhanced accessibility.",
     thumbnail: eyebookReader,
-    images: [eyebookReader],
     stack: ["JavaScript", "Eye Tracking", "Web Development"],
     slug: "eyebook-pdf-reader",
     // Enhanced fields
@@ -349,16 +282,6 @@ export const products: Product[] = [
     status: "archived",
     startDate: "2018-09",
     sourceUrl: "https://github.com/gr8monk3ys/eyebook-pdf-reader",
-    content: (
-      <div>
-        <p>
-          Built an e-book reader application that uses eye-tracking technology to provide hands-free control. Features include automatic scrolling when the user&apos;s gaze reaches the bottom of the page and navigation to the main menu when focusing on a button for a specified duration.
-        </p>
-        <p>
-          Implemented using JavaScript and web technologies, this application enhances accessibility and offers a novel reading experience by reducing the need for manual interactions.
-        </p>
-      </div>
-    ),
     details: [
       "Built an e-book reader application that uses eye-tracking technology to provide hands-free control. Features include automatic scrolling when the user's gaze reaches the bottom of the page and navigation to the main menu when focusing on a button for a specified duration.",
       "Implemented using JavaScript and web technologies, this application enhances accessibility and offers a novel reading experience by reducing the need for manual interactions.",
@@ -370,7 +293,6 @@ export const products: Product[] = [
     description:
       "A powerful link management tool designed to simplify and enhance your digital marketing strategies.",
     thumbnail: linkFlame,
-    images: [linkFlame],
     stack: ["React", "Node.js", "MongoDB"],
     slug: "linkflame",
     // Enhanced fields
@@ -379,16 +301,6 @@ export const products: Product[] = [
     status: "archived",
     startDate: "2020-06",
     sourceUrl: "https://github.com/gr8monk3ys/LinkFlame",
-    content: (
-      <div>
-        <p>
-          LinkFlame is a link management tool for creating, managing, and tracking links. It provides detailed analytics and customizable link appearance.
-        </p>
-        <p>
-          Built with React, Node.js, and MongoDB. Integrates with various marketing platforms.
-        </p>
-      </div>
-    ),
     details: [
       "LinkFlame is a link management tool for creating, managing, and tracking links. It provides detailed analytics and customizable link appearance.",
       "Built with React, Node.js, and MongoDB. Integrates with various marketing platforms.",
@@ -400,7 +312,6 @@ export const products: Product[] = [
     description:
       "A tool for summarizing academic papers using advanced NLP techniques.",
     thumbnail: paperSummarizer,
-    images: [paperSummarizer],
     stack: ["Python", "NLP", "Transformers"],
     slug: "paper-summarizer",
     // Enhanced fields
@@ -409,16 +320,6 @@ export const products: Product[] = [
     status: "archived",
     startDate: "2021-02",
     sourceUrl: "https://github.com/gr8monk3ys/Paper-Summarizer",
-    content: (
-      <div>
-        <p>
-          A tool for summarizing academic papers using NLP techniques. Extracts key points and generates concise summaries from research documents.
-        </p>
-        <p>
-          Built with transformers for accurate extraction. Accepts papers from various sources.
-        </p>
-      </div>
-    ),
     details: [
       "A tool for summarizing academic papers using NLP techniques. Extracts key points and generates concise summaries from research documents.",
       "Built with transformers for accurate extraction. Accepts papers from various sources.",
