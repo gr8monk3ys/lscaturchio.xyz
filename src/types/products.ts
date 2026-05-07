@@ -32,6 +32,7 @@ export type Product = {
   slug?: string;
   stack?: string[];
   content?: React.ReactNode | string;
+  details?: string[];
   // New fields for enhanced projects page
   categories?: ProjectCategory[];
   featured?: boolean;

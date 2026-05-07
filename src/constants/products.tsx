@@ -82,6 +82,10 @@ export const products: Product[] = [
         </p>
       </div>
     ),
+    details: [
+      "Implemented and collaborated on an open source teaching assistant RAG leveraging OLlama2 with a FAISS knowledge base, answering students' questions based on class criteria, syllabus, and slides, increasing student engagement by 30%.",
+      "Included features of providing multi-modal results to queries from classrooms such as YouTube videos with video time queues based on question context, enhancing learning efficiency by 25%.",
+    ],
   },
   {
     href: "https://github.com/gr8monk3ys/trading-bot",
@@ -147,6 +151,10 @@ export const products: Product[] = [
         </p>
       </div>
     ),
+    details: [
+      "Engineered an AI-powered trading bot that automates stock trading by analyzing market sentiment using FinBERT and integrating key technical indicators such as SMA and RSI. The bot employs strict risk management strategies, including portfolio-wide and individual position risk limits.",
+      "Integrated with the Alpaca Trading API, enabling real-time trading and paper trading for safe strategy testing before live deployment.",
+    ],
   },
   {
     href: "https://github.com/gr8monk3ys/leetcode-solver",
@@ -212,6 +220,10 @@ export const products: Product[] = [
         </p>
       </div>
     ),
+    details: [
+      "Developed an automated bot that integrates GPT-4 with browser automation to solve LeetCode problems. The bot features automated login, random problem selection, intelligent solution generation, and automatic code submission, enhancing coding practice efficiency.",
+      "Implemented persistent login state management and a detailed logging system to monitor activities and outcomes, ensuring reliability and ease of use.",
+    ],
   },
   {
     href: "https://github.com/gr8monk3ys/blog-AI",
@@ -283,6 +295,11 @@ export const products: Product[] = [
         </p>
       </div>
     ),
+    details: [
+      "Constructed an automated blog content generation system using OpenAI's GPT-4 model and LangChain.",
+      "Accomplished workflows for generating SEO-optimized blog titles, descriptions, and detailed sections.",
+      "Used Python and ConversationBufferMemory for maintaining context and orchestrating tasks.",
+    ],
   },
   // ============================================
   // ARCHIVED PROJECTS (4)
@@ -312,6 +329,10 @@ export const products: Product[] = [
         </p>
       </div>
     ),
+    details: [
+      "Collaborated on developing a web application for the 2019 Hack Merced event that assists users in finding lost dogs. The application allows users to upload a photo of a dog, which is then compared to a database using machine learning-based image recognition to identify potential matches.",
+      "Used machine learning to improve the accuracy of image comparisons, providing a valuable tool for pet owners and shelters in reuniting lost dogs with their families.",
+    ],
   },
   {
     href: "https://github.com/gr8monk3ys/eyebook-pdf-reader",
@@ -338,6 +359,10 @@ export const products: Product[] = [
         </p>
       </div>
     ),
+    details: [
+      "Built an e-book reader application that uses eye-tracking technology to provide hands-free control. Features include automatic scrolling when the user's gaze reaches the bottom of the page and navigation to the main menu when focusing on a button for a specified duration.",
+      "Implemented using JavaScript and web technologies, this application enhances accessibility and offers a novel reading experience by reducing the need for manual interactions.",
+    ],
   },
   {
     href: "https://github.com/gr8monk3ys/LinkFlame",
@@ -364,6 +389,10 @@ export const products: Product[] = [
         </p>
       </div>
     ),
+    details: [
+      "LinkFlame is a link management tool for creating, managing, and tracking links. It provides detailed analytics and customizable link appearance.",
+      "Built with React, Node.js, and MongoDB. Integrates with various marketing platforms.",
+    ],
   },
   {
     href: "https://github.com/gr8monk3ys/Paper-Summarizer",
@@ -390,5 +419,9 @@ export const products: Product[] = [
         </p>
       </div>
     ),
+    details: [
+      "A tool for summarizing academic papers using NLP techniques. Extracts key points and generates concise summaries from research documents.",
+      "Built with transformers for accurate extraction. Accepts papers from various sources.",
+    ],
   },
 ];
