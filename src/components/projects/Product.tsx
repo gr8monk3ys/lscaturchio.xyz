@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { StaticImageData } from 'next/image'
 import Link from 'next/link'
 import { m, useReducedMotion } from '@/lib/motion'
@@ -24,7 +24,7 @@ import {
 } from './product-sections'
 
 export const SingleProduct = ({ product }: { product: Product }) => {
-  const [activeImage, setActiveImage] = useState<StaticImageData | string>(product.thumbnail)
+  const activeImage: StaticImageData | string = product.thumbnail
 
   const status = product.status || 'active'
   const statusConfig = statusColors[status]
@@ -89,7 +89,6 @@ export const SingleProduct = ({ product }: { product: Product }) => {
           />
           <HeroSection
             activeImage={activeImage}
-            onSelectImage={setActiveImage}
             product={product}
             shared={shared}
           />
