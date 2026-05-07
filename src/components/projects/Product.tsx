@@ -59,7 +59,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
     { id: 'architecture', label: 'Architecture' },
     { id: 'process', label: 'Process' },
     ...(caseStudy ? [{ id: 'outcomes', label: 'Outcomes' }] : []),
-    ...(product.content ? [{ id: 'details', label: 'Details' }] : []),
+    ...(product.details && product.details.length > 0 ? [{ id: 'details', label: 'Details' }] : []),
   ]
 
   return (
@@ -97,7 +97,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
           <ArchitectureSection slug={product.slug} />
           <ProcessSection processSteps={processSteps} />
           <OutcomesSection caseStudy={caseStudy} />
-          <DetailsSection content={product.content} />
+          <DetailsSection details={product.details} />
           <RelatedProjectsSection relatedProjects={relatedProjects} />
         </div>
 

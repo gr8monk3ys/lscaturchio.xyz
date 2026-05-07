@@ -387,15 +387,17 @@ export function OutcomesSection({ caseStudy }: { caseStudy: CaseStudy | undefine
   )
 }
 
-export function DetailsSection({ content }: { content: Product['content'] }): React.ReactNode {
-  if (!content) return null
+export function DetailsSection({ details }: { details: string[] | undefined }): React.ReactNode {
+  if (!details || details.length === 0) return null
 
   return (
     <Reveal>
       <section id="details" className="rounded-2xl border border-border/50 bg-card/50 p-6">
         <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-4">Details</div>
         <div className="prose prose-sm md:prose-base max-w-none text-muted-foreground prose-headings:text-foreground prose-p:text-muted-foreground">
-          {content}
+          {details.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
         </div>
       </section>
     </Reveal>
