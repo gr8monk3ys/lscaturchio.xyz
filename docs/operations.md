@@ -61,6 +61,24 @@ Additional maintenance helpers:
 - `npm run smoke:chat`: smoke-test a target deployment
 - `npm run smoke:chat:prod`: smoke-test production chat
 
+## Database (Neon)
+
+Engagement data, embeddings, and newsletter state live in a single
+Neon Postgres database. The directory is `supabase/migrations/` for
+historical reasons — Supabase was the original provider; the SQL is
+provider-agnostic Postgres.
+
+```bash
+# Apply the combined baseline to a fresh database
+DATABASE_URL='postgres://...' bun run scripts/run-neon-migration.ts
+```
+
+For incremental migrations against an existing database, see
+[`supabase/migrations/README.md`](../supabase/migrations/README.md)
+— in short, paste the new SQL into the Neon SQL editor or run via
+`psql`, then fold it into `neon_combined_migration.sql` so the
+baseline stays current.
+
 ## Deployment Notes
 
 - Production deploys target Vercel from `main`

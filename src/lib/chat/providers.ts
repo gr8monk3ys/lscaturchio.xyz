@@ -24,10 +24,6 @@ let openaiClient: import('openai').default | null = null;
 let openrouterClient: import('openai').default | null = null;
 let openaiChatDisabled = false;
 
-export function isOpenAIChatDisabled(): boolean {
-  return openaiChatDisabled;
-}
-
 async function getOpenAI() {
   if (!openaiClient && USE_OPENAI) {
     const OpenAI = (await import('openai')).default;
