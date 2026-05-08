@@ -1,6 +1,6 @@
 "use client";
 
-import { m, useMotionPreset } from '@/lib/motion';
+import { m, useMotionPreset, useReducedMotion } from '@/lib/motion';
 import Link from "next/link";
 
 // Hidden projects/experiments that aren't on the main portfolio
@@ -35,6 +35,7 @@ const EASTER_EGG_HINTS = [
 
 export function SecretPageContent() {
   const slowTransition = useMotionPreset('slow');
+  const reduce = useReducedMotion();
   return (
     <div className="min-h-screen py-24 px-4">
       <div className="max-w-4xl mx-auto">
@@ -49,7 +50,7 @@ export function SecretPageContent() {
           className="text-6xl mb-4"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring" as const, damping: 10 }}
+          transition={reduce ? { duration: 0 } : { delay: 0.2, type: 'spring' as const, damping: 10 }}
         >
             🎉
           </m.div>

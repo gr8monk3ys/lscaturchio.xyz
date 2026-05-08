@@ -1,6 +1,6 @@
 "use client";
 
-import { m } from '@/lib/motion';
+import { m, useReducedMotion } from '@/lib/motion';
 import { ArrowDownUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +22,7 @@ export function ProjectSortToggle({
   value: ProjectSortMode;
   onChange: (next: ProjectSortMode) => void;
 }) {
+  const reduce = useReducedMotion();
 
   return (
     <div
@@ -52,7 +53,7 @@ export function ProjectSortToggle({
               <m.div
                 layoutId="activeProjectSort"
                 className="absolute inset-0 rounded-md bg-primary"
-                transition={{ type: "spring" as const, bounce: 0.2, duration: 0.45 }}
+                transition={reduce ? { duration: 0 } : { type: 'spring' as const, bounce: 0.2, duration: 0.45 }}
               />
             )}
             <span className="relative">

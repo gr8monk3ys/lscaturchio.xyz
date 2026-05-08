@@ -1,6 +1,6 @@
 "use client";
 
-import { m, AnimatePresence, useMotionPreset } from '@/lib/motion';
+import { m, AnimatePresence, useMotionPreset, useReducedMotion } from '@/lib/motion';
 import { LayoutDashboard, LayoutGrid, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +45,7 @@ interface ToggleButtonProps {
 }
 
 function ToggleButton({ isActive, onClick, icon, label }: ToggleButtonProps) {
+  const reduce = useReducedMotion();
   return (
     <button
       onClick={onClick}
@@ -59,7 +60,7 @@ function ToggleButton({ isActive, onClick, icon, label }: ToggleButtonProps) {
         <m.div
           layoutId="activeViewToggle"
           className="absolute inset-0 bg-primary rounded-md"
-          transition={{ type: "spring" as const, bounce: 0.2, duration: 0.4 }}
+          transition={reduce ? { duration: 0 } : { type: 'spring' as const, bounce: 0.2, duration: 0.4 }}
         />
       )}
       <span className="relative flex items-center gap-2">
