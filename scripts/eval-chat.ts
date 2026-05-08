@@ -47,6 +47,17 @@ type RetrievedRow = {
   metadata: { source?: string; slug?: string; title?: string } & Record<string, unknown>
 }
 
+type ChatData = {
+  answer: string
+  provider: string | null
+  model: string | null
+  degraded: boolean
+}
+
+type ChatResult = ChatData | { error: string }
+
+type ChatPayload = { data?: ChatData; error?: string }
+
 function printUsage(): void {
   console.log(`Usage: tsx scripts/eval-chat.ts [options]
 
@@ -100,6 +111,31 @@ async function probeRetrieval(query: string): Promise<RetrievedRow[]> {
   return rows as RetrievedRow[]
 }
 
+async function probeGeneration(args: Args, query: string): Promise<ChatResult> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), args.timeoutMs)
+  try {
+    const response = await fetch(`${args.baseUrl}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        origin: new URL(args.baseUrl).origin,
+      },
+      body: JSON.stringify({ query }),
+      signal: controller.signal,
+    })
+    const payload = (await response.json()) as ChatPayload
+    if (!response.ok || !payload.data) {
+      return { error: `HTTP ${response.status}: ${payload.error ?? 'no data'}` }
+    }
+    return payload.data
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? error.message : String(error) }
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 async function main(): Promise<void> {
   const args = parseArgs(process.argv)
   const queries = await loadQueries()
@@ -131,6 +167,14 @@ async function main(): Promise<void> {
         .map((r) => `${r.metadata.source}@${r.similarity.toFixed(3)}`)
         .join(', ')}`
     )
+    const generated = await probeGeneration(args, q.query)
+    if ('error' in generated) {
+      console.log(`  generation: ERROR ${generated.error}`)
+    } else {
+      console.log(
+        `  generation: provider=${generated.provider} degraded=${generated.degraded} answer-length=${generated.answer.length}`
+      )
+    }
   }
 }
 
