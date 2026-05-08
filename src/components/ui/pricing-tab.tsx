@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { m } from '@/lib/motion'
+import { m, useReducedMotion } from '@/lib/motion'
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -19,6 +19,7 @@ export function Tab({
   setSelected,
   discount = false,
 }: TabProps) {
+  const reduce = useReducedMotion()
   return (
     <button
       onClick={() => setSelected(text)}
@@ -32,7 +33,7 @@ export function Tab({
       {selected && (
         <m.span
           layoutId="tab"
-          transition={{ type: "spring" as const, duration: 0.4 }}
+          transition={reduce ? { duration: 0 } : { type: 'spring' as const, duration: 0.4 }}
           className="absolute inset-0 z-0 rounded-full bg-background shadow-xs"
         />
       )}
