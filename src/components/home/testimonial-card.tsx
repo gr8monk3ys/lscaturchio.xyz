@@ -1,7 +1,7 @@
 'use client';
 
 import { Testimonial } from '@/types/testimonial';
-import { m } from '@/lib/motion';
+import { m, useMotionPreset } from '@/lib/motion';
 import { Linkedin, Twitter, Quote } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -29,6 +29,7 @@ function getInitials(name: string): string {
 
 export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps) {
   const { name, role, company, avatar, content, linkedinUrl, twitterUrl, date } = testimonial;
+  const fastTransition = useMotionPreset('fast');
 
   return (
     <m.div
@@ -42,7 +43,7 @@ export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps
       }}
       whileHover={{
         y: -4,
-        transition: { duration: 0.2, ease: 'easeOut' as const },
+        transition: fastTransition,
       }}
       className="group relative h-full"
     >

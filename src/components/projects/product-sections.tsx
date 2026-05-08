@@ -2,7 +2,7 @@
 
 import Image, { StaticImageData } from 'next/image'
 import Link from 'next/link'
-import { m } from '@/lib/motion'
+import { m, useMotionPreset } from '@/lib/motion'
 import {
   ExternalLink,
   Github,
@@ -207,7 +207,7 @@ export function HeroSection({ activeImage, product, shared }: HeroSectionProps):
         className="rounded-2xl border border-border/50 overflow-hidden"
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        transition={useMotionPreset('default')}
       >
         <m.div
           layoutId={shared ? `project-cover-${product.slug}` : undefined}
@@ -380,13 +380,14 @@ export function DetailsSection({ details }: { details: string[] | undefined }): 
 }
 
 export function RelatedProjectsSection({ relatedProjects }: { relatedProjects: Product[] }): React.ReactNode {
+  const slowTransition = useMotionPreset('slow')
   if (relatedProjects.length === 0) return null
 
   return (
     <m.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
+      transition={{ ...slowTransition, delay: 0.3 }}
       className="border-t border-border/50 pt-12"
     >
       <h3 className="text-xl font-semibold mb-6">Related Projects</h3>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useRef, useState } from 'react'
-import { m, useInView, useReducedMotion } from '@/lib/motion'
+import { m, useInView, useMotionPreset, useReducedMotion } from '@/lib/motion'
 import { ArrowUpRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SERVICES } from '@/constants/services'
@@ -29,7 +29,7 @@ export default function ServicesSection(): React.ReactNode {
               ? { opacity: 1, y: 0 }
               : { opacity: 0, y: 20 }
         }
-        transition={{ duration: 0.5 }}
+        transition={useMotionPreset('slow')}
         className="max-w-7xl mx-auto space-y-16"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -69,7 +69,7 @@ export default function ServicesSection(): React.ReactNode {
         <m.div
           initial={reduceMotion ? undefined : { opacity: 0 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={useMotionPreset('slow')}
           className="space-y-8"
         >
           <div className="flex flex-wrap gap-3 justify-start">
@@ -93,7 +93,7 @@ export default function ServicesSection(): React.ReactNode {
             key={`${selectedService}-${selectedTab}`}
             initial={reduceMotion ? undefined : { opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={useMotionPreset('default')}
             className="neu-card rounded-xl p-8"
           >
             <div className="max-w-3xl">

@@ -29,16 +29,16 @@ export const DURATIONS = {
 } as const;
 
 export const EASINGS = {
-  standard: [0.22, 1, 0.36, 1] as const,
+  standard: [0.22, 1, 0.36, 1] as [number, number, number, number],
 } as const;
 
 export function useMotionPreset(
   duration: keyof typeof DURATIONS = 'default',
   easing: keyof typeof EASINGS = 'standard',
-): { duration: number; ease: readonly number[] } {
+): { duration: number; ease: [number, number, number, number] } {
   const reduce = useReducedMotion();
   return {
     duration: reduce ? 0 : DURATIONS[duration],
-    ease: EASINGS[easing],
+    ease: [...EASINGS[easing]] as [number, number, number, number],
   };
 }

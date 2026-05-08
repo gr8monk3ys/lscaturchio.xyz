@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { m, useReducedMotion } from '@/lib/motion'
+import { m, useMotionPreset, useReducedMotion } from '@/lib/motion'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { Calendar, ExternalLink, Github, ArrowRight } from 'lucide-react'
@@ -43,6 +43,7 @@ type ProjectRailProps = {
 
 export function ProjectRail({ project, compact = false }: ProjectRailProps): React.ReactNode {
   const reduceMotion = useReducedMotion()
+  const fastTransition = useMotionPreset('fast')
 
   if (!project) return null
 
@@ -83,7 +84,7 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
             ? {
                 initial: { opacity: 0, y: 8 },
                 animate: { opacity: 1, y: 0 },
-                transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] },
+                transition: fastTransition,
               }
             : {})}
         >

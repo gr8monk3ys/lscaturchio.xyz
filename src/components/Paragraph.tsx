@@ -1,29 +1,19 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { m } from '@/lib/motion';
+import { m, useMotionPreset } from '@/lib/motion';
 
 interface ParagraphProps {
   children: React.ReactNode;
   className?: string;
 }
 
-const paragraphVariants = {
-  initial: {
-    opacity: 0,
-    y: 20
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.22, 1, 0.36, 1] as [number, number, number, number]
-    }
-  }
-};
-
 export function Paragraph({ children, className }: ParagraphProps) {
+  const transition = useMotionPreset('slow');
+  const paragraphVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition },
+  };
   return (
     <m.p
       variants={paragraphVariants}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Product, ProjectStatus } from "@/types/products";
-import { m, useScroll, useTransform } from '@/lib/motion';
+import { m, useMotionPreset, useScroll, useTransform } from '@/lib/motion';
 import { useRef, useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,6 +24,7 @@ export function ProjectTimeline({ projects, className }: ProjectTimelineProps) {
   const ref = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+  const defaultTransition = useMotionPreset('default');
 
   // Group projects by year
   const projectsByYear = useMemo(() => {
@@ -108,7 +109,7 @@ export function ProjectTimeline({ projects, className }: ProjectTimelineProps) {
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  transition={{ ...defaultTransition, delay: index * 0.1 }}
                   className="group relative"
                 >
                   {/* Timeline dot */}
