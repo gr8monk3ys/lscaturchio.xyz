@@ -16,6 +16,12 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import {
+  searchSimilarContent,
+  getEmbeddingProvider,
+  isEmbeddingsAvailable,
+} from '../src/lib/embeddings'
+
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '..')
 const QUERIES_PATH = path.join(SCRIPT_DIR, 'eval-chat-queries.json')
@@ -32,6 +38,13 @@ type Args = {
   baseUrl: string
   outputPath: string
   timeoutMs: number
+}
+
+type RetrievedRow = {
+  id: number
+  content: string
+  similarity: number
+  metadata: { source?: string; slug?: string; title?: string } & Record<string, unknown>
 }
 
 function printUsage(): void {
@@ -82,12 +95,42 @@ async function loadQueries(): Promise<Query[]> {
   return parsed
 }
 
+async function probeRetrieval(query: string): Promise<RetrievedRow[]> {
+  const rows = await searchSimilarContent(query, 5)
+  return rows as RetrievedRow[]
+}
+
 async function main(): Promise<void> {
   const args = parseArgs(process.argv)
   const queries = await loadQueries()
-  console.log(`[eval-chat] base=${args.baseUrl} output=${args.outputPath} queries=${queries.length}`)
-  for (const q of queries) {
-    console.log(`  - [${q.intent}] ${q.query}`)
+
+  const available = await isEmbeddingsAvailable()
+  if (!available) {
+    console.error(
+      'Embeddings provider unavailable. Set OPENAI_API_KEY or start Ollama before running this eval.'
+    )
+    process.exit(1)
+  }
+  const provider = getEmbeddingProvider()
+
+  console.log(
+    `[eval-chat] base=${args.baseUrl} embedding-provider=${provider} queries=${queries.length}`
+  )
+
+  for (let i = 0; i < queries.length; i++) {
+    const q = queries[i]
+    console.log(`[eval-chat] (${i + 1}/${queries.length}) [${q.intent}] ${q.query}`)
+    const retrieved = await probeRetrieval(q.query).catch((error: unknown) => {
+      console.warn(
+        `  retrieval failed: ${error instanceof Error ? error.message : String(error)}`
+      )
+      return [] as RetrievedRow[]
+    })
+    console.log(
+      `  retrieved=${retrieved.length} sources=${retrieved
+        .map((r) => `${r.metadata.source}@${r.similarity.toFixed(3)}`)
+        .join(', ')}`
+    )
   }
 }
 
