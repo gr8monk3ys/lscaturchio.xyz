@@ -136,6 +136,56 @@ async function probeGeneration(args: Args, query: string): Promise<ChatResult> {
   }
 }
 
+function bucketLabel(intent: Bucket): string {
+  return intent.charAt(0).toUpperCase() + intent.slice(1)
+}
+
+function formatRow(
+  query: Query,
+  retrieved: RetrievedRow[],
+  generated: ChatResult,
+  index: number
+): string {
+  const isAdversarial = query.intent === 'adversarial'
+
+  const sourcesBlock =
+    retrieved.length === 0
+      ? '  - _(no chunks above threshold)_'
+      : retrieved
+          .map(
+            (r) =>
+              `  - \`${r.metadata.source ?? 'unknown'}\` (sim=${r.similarity.toFixed(3)})`
+          )
+          .join('\n')
+
+  const topSnippet =
+    retrieved[0]?.content?.slice(0, 200).replace(/\s+/g, ' ').trim() ?? '_n/a_'
+
+  const generationBlock =
+    'error' in generated
+      ? `\n  > **ERROR:** ${generated.error}`
+      : `\n  > **Provider:** ${generated.provider ?? '?'} (degraded=${generated.degraded})\n  >\n  > ${generated.answer.replace(/\n/g, '\n  > ')}`
+
+  const adversarialCheckbox = isAdversarial
+    ? '\n  - [ ] Adversarial: refused gracefully?'
+    : ''
+
+  return `### Query ${index + 1}: "${query.query}"
+- **Intent:** ${query.intent}
+- **Expected:** ${query.expected}
+- **Retrieved (top ${retrieved.length}):**
+${sourcesBlock}
+- **Top chunk snippet:** ${topSnippet}
+- **Generated answer:**${generationBlock}
+
+- **Judgment:**
+  - [ ] Retrieval relevant?
+  - [ ] Answer on-topic?
+  - [ ] Answer grounded (not hallucinated)?${adversarialCheckbox}
+- **Notes:** _____
+`
+}
+
 async function main(): Promise<void> {
   const args = parseArgs(process.argv)
   const queries = await loadQueries()
@@ -153,6 +203,13 @@ async function main(): Promise<void> {
     `[eval-chat] base=${args.baseUrl} embedding-provider=${provider} queries=${queries.length}`
   )
 
+  const sections: Record<Bucket, string[]> = {
+    biographical: [],
+    synthesis: [],
+    recall: [],
+    adversarial: [],
+  }
+
   for (let i = 0; i < queries.length; i++) {
     const q = queries[i]
     console.log(`[eval-chat] (${i + 1}/${queries.length}) [${q.intent}] ${q.query}`)
@@ -162,20 +219,28 @@ async function main(): Promise<void> {
       )
       return [] as RetrievedRow[]
     })
-    console.log(
-      `  retrieved=${retrieved.length} sources=${retrieved
-        .map((r) => `${r.metadata.source}@${r.similarity.toFixed(3)}`)
-        .join(', ')}`
-    )
     const generated = await probeGeneration(args, q.query)
-    if ('error' in generated) {
-      console.log(`  generation: ERROR ${generated.error}`)
-    } else {
-      console.log(
-        `  generation: provider=${generated.provider} degraded=${generated.degraded} answer-length=${generated.answer.length}`
-      )
-    }
+    sections[q.intent].push(formatRow(q, retrieved, generated, i))
   }
+
+  const header = `# Chat Eval — ${new Date().toISOString()}
+
+- **Target:** ${args.baseUrl}
+- **Embedding provider:** ${provider}
+- **Total queries:** ${queries.length}
+
+---
+
+`
+  const buckets: Bucket[] = ['biographical', 'synthesis', 'recall', 'adversarial']
+  const body = buckets
+    .filter((b) => sections[b].length > 0)
+    .map((b) => `## ${bucketLabel(b)}\n\n${sections[b].join('\n')}`)
+    .join('\n')
+
+  await fs.mkdir(path.dirname(args.outputPath), { recursive: true })
+  await fs.writeFile(args.outputPath, header + body, 'utf-8')
+  console.log(`[eval-chat] wrote ${args.outputPath}`)
 }
 
 main().catch((error: unknown) => {
