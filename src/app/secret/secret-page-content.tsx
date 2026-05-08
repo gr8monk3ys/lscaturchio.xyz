@@ -1,6 +1,6 @@
 "use client";
 
-import { m } from '@/lib/motion';
+import { m, useMotionPreset } from '@/lib/motion';
 import Link from "next/link";
 
 // Hidden projects/experiments that aren't on the main portfolio
@@ -34,6 +34,7 @@ const EASTER_EGG_HINTS = [
 ];
 
 export function SecretPageContent() {
+  const slowTransition = useMotionPreset('slow');
   return (
     <div className="min-h-screen py-24 px-4">
       <div className="max-w-4xl mx-auto">
@@ -42,7 +43,7 @@ export function SecretPageContent() {
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={slowTransition}
         >
         <m.div
           className="text-6xl mb-4"

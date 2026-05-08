@@ -3,7 +3,7 @@
 import { Product, ProjectStatus, ProjectCategory } from "@/types/products";
 import Image from "next/image";
 import Link from "next/link";
-import { m, useReducedMotion } from '@/lib/motion';
+import { m, useMotionPreset, useReducedMotion } from '@/lib/motion';
 import { TiltCard } from "@/components/ui/animated-card";
 import { Badge } from "@/components/ui/badge";
 import { Star, ExternalLink, Github, Calendar } from "lucide-react";
@@ -41,11 +41,12 @@ export function EnhancedProjectCard({
   const statusConfig = statusColors[status];
   const reduceMotion = useReducedMotion();
   const shared = !reduceMotion && !!product.slug;
+  const fastTransition = useMotionPreset('fast');
 
   const CardWrapper = isFeatured ? TiltCard : m.div;
   const cardProps = isFeatured
     ? { tiltAmount: 8, scale: 1.02, glareOpacity: 0.05 }
-    : { whileHover: { y: -4, transition: { duration: 0.2 } } };
+    : { whileHover: { y: -4, transition: fastTransition } };
 
   return (
     <CardWrapper

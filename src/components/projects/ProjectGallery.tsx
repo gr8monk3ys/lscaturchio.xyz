@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
-import { AnimatePresence, m, useReducedMotion } from '@/lib/motion'
+import { AnimatePresence, m, useMotionPreset, useReducedMotion } from '@/lib/motion'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { Keyboard, ArrowRight } from 'lucide-react'
@@ -53,6 +53,7 @@ function projectGalleryReducer(
 
 export function ProjectGallery({ projects }: { projects: Product[] }): React.ReactNode {
   const reduceMotion = useReducedMotion()
+  const fastTransition = useMotionPreset('fast')
 
   const list = useMemo(
     () => projects.filter((p) => typeof p.slug === 'string' && p.slug.length > 0) as Array<Product & { slug: string }>,
@@ -148,7 +149,7 @@ export function ProjectGallery({ projects }: { projects: Product[] }): React.Rea
                   initial={reduceMotion ? undefined : { opacity: 0, y: 10 }}
                   animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
                   exit={reduceMotion ? undefined : { opacity: 0, y: -10 }}
-                  transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                  transition={fastTransition}
                 >
                   <ProjectGalleryCard
                     project={project}
