@@ -1,6 +1,6 @@
 "use client";
 
-import { m, AnimatePresence } from '@/lib/motion';
+import { m, AnimatePresence, useMotionPreset } from '@/lib/motion';
 import { LayoutDashboard, LayoutGrid, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -86,6 +86,7 @@ export function ProjectViewWrapper({
   timelineView,
   className,
 }: ProjectViewWrapperProps) {
+  const fastTransition = useMotionPreset('fast');
   return (
     <div className={cn("relative min-h-[400px]", className)}>
       <AnimatePresence mode="wait">
@@ -95,7 +96,7 @@ export function ProjectViewWrapper({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            transition={fastTransition}
           >
             {galleryView}
           </m.div>
@@ -105,7 +106,7 @@ export function ProjectViewWrapper({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            transition={fastTransition}
           >
             {gridView}
           </m.div>
@@ -115,7 +116,7 @@ export function ProjectViewWrapper({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+            transition={fastTransition}
           >
             {timelineView}
           </m.div>

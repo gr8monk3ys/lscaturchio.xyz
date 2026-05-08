@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { StaticImageData } from 'next/image'
 import Link from 'next/link'
-import { m, useReducedMotion } from '@/lib/motion'
+import { m, useMotionPreset, useReducedMotion } from '@/lib/motion'
 import { ArrowLeft } from 'lucide-react'
 
 import { Product } from '@/types/products'
@@ -67,7 +67,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
       <m.div
         initial={{ opacity: 0, x: -14 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.25 }}
+        transition={useMotionPreset('fast')}
         className="mb-8"
       >
         <Link

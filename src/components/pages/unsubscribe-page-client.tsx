@@ -2,7 +2,7 @@
 
 import { Container } from '@/components/Container'
 import { Heading } from '@/components/Heading'
-import { m } from '@/lib/motion'
+import { m, useMotionPreset } from '@/lib/motion'
 import { Check, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -16,7 +16,7 @@ export function UnsubscribePageClient({ status, message }: { status: Unsubscribe
           <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={useMotionPreset('slow')}
             >
               <div className="mb-6 flex justify-center">
                 {status === 'success' && (

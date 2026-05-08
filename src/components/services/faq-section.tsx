@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { m } from '@/lib/motion';
+import { m, useMotionPreset } from '@/lib/motion';
 import { FAQStructuredData } from "@/components/ui/structured-data";
 
 interface FaqItem {
@@ -30,11 +30,12 @@ interface FaqSectionProps {
 }
 
 export function FaqSection({ title, description, items, contactInfo }: FaqSectionProps) {
+  const defaultTransition = useMotionPreset('default');
   return (
     <m.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={useMotionPreset('slow')}
       className="mx-auto max-w-5xl py-16 sm:py-24"
     >
       <FAQStructuredData questions={items} />
@@ -43,7 +44,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
           <m.h2 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ ...useMotionPreset('slow'), delay: 0.2 }}
             className="text-2xl font-bold leading-10 tracking-tight"
           >
             {title}
@@ -51,7 +52,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
           <m.p 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ ...useMotionPreset('slow'), delay: 0.3 }}
             className="mt-4 text-base leading-7 text-muted-foreground"
           >
             {description}
@@ -74,7 +75,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
                     <m.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={defaultTransition}
                       className="text-muted-foreground"
                     >
                       {faq.answer}
