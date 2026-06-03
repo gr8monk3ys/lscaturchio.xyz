@@ -79,29 +79,120 @@ function isNoEmbeddingProviderError(error: unknown): boolean {
 }
 
 /**
- * Split text into chunks for embedding
+ * Break text into segments on line boundaries first (so markdown structure —
+ * headings, list items, blank lines — becomes a natural break point) and then
+ * into sentences within each line. Unlike a bare /[^.!?]+[.!?]+/g match, this
+ * retains trailing content that lacks terminal punctuation (headings, list
+ * items), which otherwise never makes it into the index.
  */
-export function splitIntoChunks(text: string, maxChunkLength: number = 1500): string[] {
-  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
-  const chunks: string[] = [];
-  let currentChunk = '';
+function splitIntoSegments(text: string): string[] {
+  const segments: string[] = [];
 
-  for (const sentence of sentences) {
-    if (currentChunk.length + sentence.length > maxChunkLength) {
-      if (currentChunk) {
-        chunks.push(currentChunk.trim());
-      }
-      currentChunk = sentence;
+  for (const line of text.split(/\n+/)) {
+    const trimmedLine = line.trim();
+    if (!trimmedLine) continue;
+
+    const sentenceRegex = /[^.!?]+[.!?]+/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+    while ((match = sentenceRegex.exec(trimmedLine)) !== null) {
+      const sentence = match[0].trim();
+      if (sentence) segments.push(sentence);
+      lastIndex = sentenceRegex.lastIndex;
+    }
+
+    // Preserve any remainder after the last terminal punctuation (or the whole
+    // line when it has none, e.g. a markdown heading or list item).
+    const remainder = trimmedLine.slice(lastIndex).trim();
+    if (remainder) segments.push(remainder);
+  }
+
+  return segments;
+}
+
+/**
+ * Hard-split a segment that on its own exceeds maxChunkLength (e.g. a very long
+ * unpunctuated line) on word boundaries, so no single chunk grossly overruns.
+ */
+function splitOversizedSegment(segment: string, maxChunkLength: number): string[] {
+  if (segment.length <= maxChunkLength) return [segment];
+
+  const pieces: string[] = [];
+  let current = '';
+  for (const word of segment.split(/\s+/)) {
+    if (current && current.length + word.length + 1 > maxChunkLength) {
+      pieces.push(current);
+      current = word;
     } else {
-      currentChunk += ' ' + sentence;
+      current = current ? `${current} ${word}` : word;
     }
   }
+  if (current) pieces.push(current);
+  return pieces;
+}
 
-  if (currentChunk) {
-    chunks.push(currentChunk.trim());
+/**
+ * Split text into overlapping chunks for embedding.
+ *
+ * - Splits on line then sentence boundaries, retaining unpunctuated trailing
+ *   content (markdown headings/lists) that the previous regex-only approach
+ *   silently dropped.
+ * - Adds ~overlapRatio of trailing context to the start of each new chunk so a
+ *   fact straddling a chunk boundary stays retrievable from both sides.
+ */
+export function splitIntoChunks(
+  text: string,
+  maxChunkLength: number = 1500,
+  overlapRatio: number = 0.12,
+): string[] {
+  const normalized = text.trim();
+  if (!normalized) return [];
+
+  const segments = splitIntoSegments(normalized).flatMap((segment) =>
+    splitOversizedSegment(segment, maxChunkLength),
+  );
+  if (segments.length === 0) return [];
+
+  const overlapBudget = Math.max(0, Math.floor(maxChunkLength * overlapRatio));
+  const chunks: string[] = [];
+  let current: string[] = [];
+  let currentLength = 0;
+
+  for (const segment of segments) {
+    const segmentCost = segment.length + 1; // account for the joining space
+
+    if (currentLength + segmentCost > maxChunkLength && current.length > 0) {
+      chunks.push(current.join(' ').trim());
+
+      // Seed the next chunk with trailing segments from this one so
+      // boundary-straddling content appears in both chunks. Always carry at
+      // least the final segment (the actual boundary), then add earlier ones
+      // while they fit the overlap budget.
+      const overlap: string[] = [];
+      let overlapLength = 0;
+      if (overlapBudget > 0) {
+        for (let i = current.length - 1; i >= 0; i -= 1) {
+          const candidate = current[i];
+          const exceedsBudget = overlapLength + candidate.length + 1 > overlapBudget;
+          if (overlap.length > 0 && exceedsBudget) break;
+          overlap.unshift(candidate);
+          overlapLength += candidate.length + 1;
+          if (exceedsBudget) break;
+        }
+      }
+      current = overlap;
+      currentLength = overlapLength;
+    }
+
+    current.push(segment);
+    currentLength += segmentCost;
   }
 
-  return chunks;
+  if (current.length > 0) {
+    chunks.push(current.join(' ').trim());
+  }
+
+  return chunks.filter((chunk) => chunk.length > 0);
 }
 
 /**
