@@ -222,7 +222,22 @@ describe('getClientIp', () => {
     expect(result.startsWith('fingerprint:')).toBe(true);
   });
 
-  it('prefers cf-connecting-ip over all other headers', () => {
+  it('prefers x-vercel-forwarded-for (platform-set) over other headers', () => {
+    const request = new Request('http://localhost', {
+      headers: {
+        'x-vercel-forwarded-for': '203.0.113.5',
+        'x-real-ip': '192.168.1.2',
+        'x-forwarded-for': '192.168.1.1',
+      },
+    });
+
+    // The platform-set header is the spoof-resistant source of truth.
+    expect(getClientIp(request)).toBe('203.0.113.5');
+  });
+
+  it('does not trust cf-connecting-ip (app is not behind Cloudflare)', () => {
+    // cf-connecting-ip is fully client-controlled when not behind Cloudflare,
+    // so it must NOT win over the platform-set x-real-ip / x-forwarded-for.
     const request = new Request('http://localhost', {
       headers: {
         'cf-connecting-ip': '10.0.0.1',
@@ -231,7 +246,21 @@ describe('getClientIp', () => {
       },
     });
 
-    expect(getClientIp(request)).toBe('10.0.0.1');
+    const result = getClientIp(request);
+    expect(result).not.toBe('10.0.0.1');
+    expect(result).toBe('192.168.1.2');
+  });
+
+  it('treats a lone cf-connecting-ip as untrusted and falls back to fingerprint', () => {
+    const request = new Request('http://localhost', {
+      headers: {
+        'cf-connecting-ip': '10.0.0.1',
+      },
+    });
+
+    const result = getClientIp(request);
+    expect(result).not.toBe('10.0.0.1');
+    expect(result.startsWith('fingerprint:')).toBe(true);
   });
 
   it('trims whitespace from forwarded IPs', () => {
