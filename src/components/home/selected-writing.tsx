@@ -28,7 +28,7 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
       <div>
         <SectionHeader
           title="Selected Writing"
-          description="A few pieces worth starting with."
+          description={`${posts.length} pieces worth starting with — swipe or scroll the rail sideways.`}
           action={
             <Link
               href="/blog"
