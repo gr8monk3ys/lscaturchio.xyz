@@ -5,6 +5,7 @@ import { PricingSection } from "@/components/services/pricing-section";
 import ServicesSection from "@/components/services/service-section";
 import { FaqSection } from "@/components/services/faq-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
+import { testimonials } from "@/constants/testimonials";
 import { pricingTiers } from "@/constants/pricing";
 import { questions } from "@/constants/questions";
 import { ArrowUpRight, CalendarDays, CheckCircle2, Mail, Sparkles } from "lucide-react";
@@ -215,16 +216,18 @@ export default function WorkWithMePage() {
           />
         </section>
 
-        <section
-          id="testimonials"
-          className="scroll-mt-28 mb-10"
-        >
-          <TestimonialsSection
-            showAll
-            title="Testimonials"
-            description="Feedback from people I have built with across AI, product, and software projects."
-          />
-        </section>
+        {testimonials.length > 0 && (
+          <section
+            id="testimonials"
+            className="scroll-mt-28 mb-10"
+          >
+            <TestimonialsSection
+              showAll
+              title="Testimonials"
+              description="Feedback from people I have built with across AI, product, and software projects."
+            />
+          </section>
+        )}
 
         <div>
           <PricingSection
