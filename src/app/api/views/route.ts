@@ -96,7 +96,26 @@ const handleGet = async (req: NextRequest) => {
     return apiSuccess({ slug, views });
   } catch (error) {
     logError("View Counter: Unexpected error", error, { component: 'views', action: 'GET' });
-    return ApiErrors.internalError("Failed to fetch views");
+    // View counts are decoration. A reachable-but-failing database degrades to
+    // the same "unavailable" shapes as the unconfigured case (the error is
+    // already reported above) instead of surfacing 500s on every blog page.
+    const formatParam = req.nextUrl.searchParams.get('format');
+    if (formatParam === 'detailed') {
+      return apiSuccess({
+        views: [],
+        total: 0,
+        available: false,
+        message: 'Public view data is unavailable right now.',
+      });
+    }
+    if (req.nextUrl.searchParams.get('all') === 'true') {
+      return apiSuccess({
+        views: [],
+        available: false,
+        message: 'View tracking is unavailable right now.',
+      });
+    }
+    return apiSuccess({ slug: req.nextUrl.searchParams.get('slug') ?? '', views: 0 });
   }
 };
 

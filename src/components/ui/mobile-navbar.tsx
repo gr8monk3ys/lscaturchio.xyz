@@ -40,7 +40,9 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
 
   return (
     <>
-      <div className="fixed right-0 top-0 z-450 p-4 md:hidden">
+      {/* z-60: above the menu overlay (z-55) so this button can close it,
+          below the photo lightbox (z-70). Site chrome otherwise lives at z-40/50. */}
+      <div className="fixed right-0 top-0 z-60 p-4 md:hidden">
         <button
           type="button"
           onClick={() => setIsMenuOpen((current) => !current)}
@@ -56,7 +58,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
       {isMenuOpen && (
         <div
           id="mobile-navigation-menu"
-          className="fixed inset-0 z-400 flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
+          className="fixed inset-0 z-55 flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
         >
           <div className="mx-auto flex w-full max-w-md flex-col space-y-2 p-6 pt-20">
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
