@@ -11,15 +11,10 @@
     var(--site-font-body), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji';
 
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 48px;
-  --spacing-3xl: 64px;
-  --spacing-4xl: 96px;
-
+  /* NOTE: do not define --spacing-xs/sm/md/lg/xl/2xl/... tokens here. In
+   * Tailwind v4 they generate spacing-suffixed utilities (max-w-2xl, w-lg, …)
+   * that shadow the standard container scale — a previous --spacing-2xl: 48px
+   * silently collapsed every `max-w-2xl` on the site to 48px. */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -774,6 +769,12 @@
   &:hover::after {
     transform: scaleX(1);
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::after {
+      transition: none;
+    }
+  }
 }
 
 @utility nav-underline-active {
@@ -926,6 +927,13 @@
     letter-spacing: -0.02em;
     line-height: 1.1;
     font-optical-sizing: auto;
+  }
+
+  /* Owned accent: selecting text anywhere on the site tints it with the
+   * site's forest-green primary — a small signature every reader touches. */
+  ::selection {
+    background: hsl(var(--primary) / 0.22);
+    color: hsl(var(--foreground));
   }
 }
 

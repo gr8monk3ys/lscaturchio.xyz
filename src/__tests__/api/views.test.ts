@@ -87,16 +87,29 @@ describe('Views API Route', () => {
       expect(data.success).toBe(false);
     });
 
-    it('returns 500 on database error', async () => {
+    it('degrades to zero views on database error instead of failing', async () => {
       mockSql.mockRejectedValue(new Error('Connection failed'));
 
       const request = new NextRequest('http://localhost/api/views?slug=test-post');
       const response = await GET(request);
       const data = await response.json();
 
-      expect(response.status).toBe(500);
-      expect(data.error).toBe('Failed to fetch views');
-      expect(data.success).toBe(false);
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.data).toEqual({ slug: 'test-post', views: 0 });
+    });
+
+    it('degrades batch fetch to unavailable on database error', async () => {
+      mockSql.mockRejectedValue(new Error('Connection failed'));
+
+      const request = new NextRequest('http://localhost/api/views?all=true');
+      const response = await GET(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.data.available).toBe(false);
+      expect(data.data.views).toEqual([]);
     });
 
     it('returns all views with titles via format=detailed', async () => {
