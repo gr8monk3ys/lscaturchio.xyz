@@ -96,12 +96,13 @@ export default async function Blog({
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
               Essays, Notes, and Experiments
             </p>
-            <h1 className="font-system text-[2.7rem] font-semibold leading-[1.02] tracking-tight text-foreground sm:text-[3rem] md:text-[3.15rem]">
-              Writing about AI, software, and the ways real systems fail.
+            <h1 className="text-[2.7rem] font-semibold leading-[1.02] tracking-tight text-foreground sm:text-[3rem] md:text-[3.15rem]">
+              Essays on AI, software, and the world they&apos;re reshaping.
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-              Practical notes on shipping RAG, working with product constraints, and building software
-              that stays legible after the prototype phase.
+              Half of this is practical notes on shipping RAG and production systems. The other half
+              argues about politics, philosophy, and culture — because the systems we build land in a
+              world, and pretending otherwise is its own ideology.
             </p>
           </div>
           <div className="mt-5 flex flex-wrap items-center gap-3">
