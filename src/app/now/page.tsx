@@ -1,17 +1,23 @@
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
-import { Clock, BookOpen, Code, Lightbulb, MapPin } from "lucide-react";
+import { Clock, BookOpen, Code, Lightbulb, MapPin, AlertTriangle } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
-import { nowData } from "@/lib/now-data";
+import { nowData, getNowFreshness } from "@/lib/now-data";
 
 export const metadata: Metadata = {
   title: "Now - Lorenzo Scaturchio",
   description: "What I'm currently working on, learning, and focusing on. Updated regularly.",
 };
 
+// Re-evaluate the staleness banner at least daily without a rebuild.
+export const revalidate = 86400;
+
 export default function NowPage() {
+  const { isStale, daysSinceUpdate } = getNowFreshness();
+  const monthsSinceUpdate = Math.floor(daysSinceUpdate / 30);
+
   return (
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-3xl mx-auto">
@@ -35,6 +41,19 @@ export default function NowPage() {
             </a>
             . Last updated: <span className="font-medium">{nowData.lastUpdatedLabel}</span>
           </Paragraph>
+          {isStale && (
+            <div
+              role="status"
+              className="mt-4 flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300"
+            >
+              <AlertTriangle className="h-5 w-5 shrink-0" aria-hidden="true" />
+              <span>
+                Heads up: this snapshot is about {monthsSinceUpdate} month
+                {monthsSinceUpdate === 1 ? "" : "s"} old, so some of it may be out
+                of date. I keep this honest rather than pretending otherwise.
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Current Location */}
