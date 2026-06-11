@@ -2,7 +2,7 @@ import { Container } from "@/components/Container";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Lorenzo Scaturchio",
+  title: "Terms of Service",
   description: "Terms and conditions for using Lorenzo Scaturchio's data science and AI services.",
 };
 

@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { MessageSquare } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Guestbook | Lorenzo Scaturchio",
+  title: "Guestbook",
   description: "Leave a note, ask a question, or just say hi.",
 };
 

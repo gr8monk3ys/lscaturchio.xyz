@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { RagStatusCard } from "@/components/uses/rag-status-card";
 
 export const metadata: Metadata = {
-  title: "Uses | Lorenzo Scaturchio",
+  title: "Uses",
   description:
     "Tools, software, and hardware Lorenzo Scaturchio uses daily. From Arch Linux and Neovim to ProtonMail and Bitwarden. Focused on FOSS, privacy, and minimal bloat.",
 };

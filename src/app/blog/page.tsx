@@ -36,7 +36,7 @@ function getPageParamValue(value: string): number {
 }
 
 export const metadata: Metadata = {
-  title: "Blog | Lorenzo Scaturchio",
+  title: "Blog",
   description:
     "Lorenzo Scaturchio is a developer, writer and speaker. He is a digital nomad and travels around the world while working remotely.",
   openGraph: {

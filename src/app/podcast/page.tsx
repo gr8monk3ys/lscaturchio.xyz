@@ -10,7 +10,7 @@ import { getAudioUrl } from "@/lib/audio-url";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
-  title: "Podcast | Lorenzo Scaturchio",
+  title: "Podcast",
   description: "Audio versions of my writing. Subscribe via RSS.",
 };
 

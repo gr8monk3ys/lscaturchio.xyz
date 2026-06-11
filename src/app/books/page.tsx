@@ -13,7 +13,7 @@ import {
 } from "@/lib/goodreads";
 
 export const metadata: Metadata = {
-  title: "Books | Lorenzo Scaturchio",
+  title: "Books",
   description: "Books I'm reading, have read, and want to read. Synced from my Goodreads profile.",
 };
 

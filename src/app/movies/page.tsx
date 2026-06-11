@@ -12,7 +12,7 @@ import {
 } from "@/lib/letterboxd";
 
 export const metadata: Metadata = {
-  title: "Movies | Lorenzo Scaturchio",
+  title: "Movies",
   description: "Films I've watched and loved. Synced from my Letterboxd profile.",
 };
 

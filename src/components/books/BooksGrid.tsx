@@ -36,6 +36,29 @@ function RatingStars({ rating }: { rating: number }) {
   );
 }
 
+function BookCover({ book }: { book: GoodreadsBook }) {
+  // OpenLibrary serves covers by ISBN; `default=false` makes it 404 when no
+  // cover exists, so onError falls back to the placeholder instead of a blank.
+  const [failed, setFailed] = useState(false);
+  const coverUrl = book.isbn
+    ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg?default=false`
+    : null;
+
+  if (!coverUrl || failed) {
+    return <Book className="h-12 w-12 text-muted-foreground/30" />;
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- external covers, no loader benefit
+    <img
+      src={coverUrl}
+      alt={`Cover of ${book.title}`}
+      loading="lazy"
+      onError={() => setFailed(true)}
+      className="h-full w-full object-cover"
+    />
+  );
+}
+
 function BookCard({ book, index }: { book: GoodreadsBook; index: number }) {
   return (
     <m.div
@@ -53,7 +76,7 @@ function BookCard({ book, index }: { book: GoodreadsBook; index: number }) {
       >
         <div className="neu-card p-3 h-full hover:shadow-lg transition-shadow">
           <div className="relative aspect-2/3 mb-3 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-            <Book className="h-12 w-12 text-muted-foreground/30" />
+            <BookCover book={book} />
             {book.shelf === "currently-reading" && (
               <span className="absolute top-2 right-2 bg-primary/90 text-primary-foreground text-xs px-2 py-0.5 rounded">
                 Reading

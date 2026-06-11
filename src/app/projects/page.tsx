@@ -11,7 +11,7 @@ import { ProjectCategory } from "@/types/products";
 import { ProjectSortMode } from "@/components/projects/ProjectSortToggle";
 
 export const metadata: Metadata = {
-  title: "Projects | Lorenzo Scaturchio",
+  title: "Projects",
   description:
     "A collection of AI/ML, web development, and open source projects. Full case studies with technical details, challenges, and results.",
   openGraph: {
