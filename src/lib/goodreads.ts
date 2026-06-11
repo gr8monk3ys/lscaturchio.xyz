@@ -15,6 +15,16 @@ export interface GoodreadsBook {
   bookshelves: string[];
   pages: number | null;
   yearPublished: number | null;
+  isbn: string | null;
+}
+
+// Goodreads exports ISBNs wrapped as ="9780374528379"; pull out a clean 10/13-digit value.
+function cleanIsbn(raw13: string | undefined, raw10: string | undefined): string | null {
+  for (const raw of [raw13, raw10]) {
+    const v = (raw ?? '').replace(/[^0-9Xx]/g, '');
+    if (v.length === 13 || v.length === 10) return v;
+  }
+  return null;
 }
 
 export interface GoodreadsStats {
@@ -94,6 +104,7 @@ export function getGoodreadsBooks(): GoodreadsBook[] {
         bookshelves,
         pages: row['Number of Pages'] ? parseInt(row['Number of Pages'], 10) : null,
         yearPublished: row['Original Publication Year'] ? parseInt(row['Original Publication Year'], 10) : null,
+        isbn: cleanIsbn(row['ISBN13'], row['ISBN']),
       };
     }).filter(book => book.title);
   } catch (error) {

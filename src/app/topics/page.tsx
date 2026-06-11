@@ -10,7 +10,7 @@ import { ogCardUrl } from "@/lib/seo";
 import { TOPIC_HUBS } from "@/constants/topics";
 
 export const metadata: Metadata = {
-  title: "Topics | Lorenzo Scaturchio",
+  title: "Topics",
   description: "Topic hubs that organize posts and projects into bigger themes.",
   openGraph: {
     title: "Topics | Lorenzo Scaturchio",

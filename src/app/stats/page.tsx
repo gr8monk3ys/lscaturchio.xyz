@@ -10,7 +10,7 @@ const PopularPosts = dynamic(() => import('@/components/stats/popular-posts').th
 const TechStack = dynamic(() => import('@/components/stats/tech-stack').then(m => m.TechStack))
 
 export const metadata: Metadata = {
-  title: 'Site Statistics | Lorenzo Scaturchio',
+  title: 'Site Statistics',
   description: 'A public snapshot of site metrics, writing activity, and the technology behind this website.',
   openGraph: {
     title: 'Site Statistics | Lorenzo Scaturchio',

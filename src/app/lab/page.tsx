@@ -8,7 +8,7 @@ import { ToySimilarity } from "@/components/lab/toy-similarity";
 import { AskLorenzoDemo } from "@/components/lab/ask-lorenzo-demo";
 
 export const metadata: Metadata = {
-  title: "Lab | Lorenzo Scaturchio",
+  title: "Lab",
   description: "Interactive demos: semantic search, RAG, and how the pieces fit together.",
 };
 

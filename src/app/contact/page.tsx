@@ -7,7 +7,7 @@ import Link from "next/link";
 import { ArrowUpRight, BrainCircuit, CalendarDays, Mail, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact | Lorenzo Scaturchio",
+  title: "Contact",
   description:
     "Get in touch with Lorenzo Scaturchio for consulting, collaboration, or contributions. Available via encrypted email (PGP) and Signal for secure communications.",
 };

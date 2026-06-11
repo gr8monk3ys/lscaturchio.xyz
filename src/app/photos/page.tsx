@@ -8,7 +8,7 @@ import { Camera, Loader2 } from "lucide-react";
 import type { PhotoCategory } from "@/constants/photos";
 
 export const metadata: Metadata = {
-  title: "Photography | Lorenzo Scaturchio",
+  title: "Photography",
   description: "A collection of travel, landscape, and nature photography. Shot on Fuji X-T30 II with various film simulation recipes.",
 };
 

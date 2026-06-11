@@ -11,7 +11,7 @@ import { questions } from "@/constants/questions";
 import { ArrowUpRight, CalendarDays, CheckCircle2, Mail, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Work With Me | Lorenzo Scaturchio",
+  title: "Work With Me",
   description: "AI engineering, RAG systems, and practical automation. Clear scope, fast iteration, production-ready delivery.",
 };
 
