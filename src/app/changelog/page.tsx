@@ -7,7 +7,7 @@ import { ROADMAP, type RoadmapStatus } from '@/constants/roadmap'
 import { Badge } from '@/components/ui/badge'
 
 export const metadata: Metadata = {
-  title: 'Changelog | Lorenzo Scaturchio',
+  title: 'Changelog',
   description: 'See what&apos;s new, what&apos;s changed, and what&apos;s been fixed on this website.',
   openGraph: {
     title: 'Changelog | Lorenzo Scaturchio',

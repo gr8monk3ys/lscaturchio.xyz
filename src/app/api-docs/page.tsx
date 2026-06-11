@@ -6,7 +6,7 @@ import { Paragraph } from "@/components/Paragraph";
 import { Code2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "API Docs | Lorenzo Scaturchio",
+  title: "API Docs",
   description: "Public JSON endpoints for posts, projects, and now page data.",
 };
 

@@ -11,7 +11,7 @@ import Link from "next/link";
 import { Book, Film, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About | Lorenzo Scaturchio",
+  title: "About",
   description:
     "Data Scientist from Southern California who loves Arctic Monkeys, plays Scottish bagpipes, produces music, and explores the intersection of technology and human consciousness.",
 };

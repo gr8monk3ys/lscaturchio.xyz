@@ -6,7 +6,7 @@ import { Metadata } from "next";
 import { Code, Brain, Database, Laptop, LucideIcon } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Professional | Lorenzo Scaturchio",
+  title: "Professional",
   description:
     "Lorenzo Scaturchio's professional experience, technical skills, and work history in data science, machine learning, and web development.",
 };

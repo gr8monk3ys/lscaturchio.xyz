@@ -4,7 +4,7 @@ import { ExternalLink, Shield, BookOpen, Globe, Code, Youtube, Rss, LucideIcon }
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
-  title: "Links | Lorenzo Scaturchio",
+  title: "Links",
   description:
     "Curated collection of bookmarks, documentation, indie blogs, and YouTube channels that have shaped my thinking on AI, privacy, and technology.",
 };

@@ -2,7 +2,7 @@ import { permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Roadmap | Lorenzo Scaturchio",
+  title: "Roadmap",
   description: "Current priorities and shipping roadmap for lscaturchio.xyz.",
 };
 
