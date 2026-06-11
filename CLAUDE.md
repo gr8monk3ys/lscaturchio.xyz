@@ -7,6 +7,7 @@ This file is a short operator guide for Claude-style agents working in this repo
 - [README.md](README.md)
 - [docs/repository-guide.md](docs/repository-guide.md)
 - [docs/operations.md](docs/operations.md)
+- [docs/writing-style.md](docs/writing-style.md) — required before writing or editing any blog post
 
 ## Project Summary
 
