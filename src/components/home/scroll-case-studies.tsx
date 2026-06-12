@@ -184,7 +184,7 @@ export function ScrollCaseStudies() {
                       </div>
                     </div>
 
-                    <div className="relative min-h-[240px] md:min-h-[unset] border-t md:border-t-0 md:border-l border-border/60 bg-[linear-gradient(135deg,hsl(var(--background)),hsl(var(--accent)))]">
+                    <div className="relative min-h-[240px] md:min-h-[unset] border-t md:border-t-0 md:border-l border-border/60 bg-accent/40">
                       <div className="absolute inset-0">
                         <div className="absolute inset-0 opacity-70">
                           <div

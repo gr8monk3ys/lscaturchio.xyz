@@ -72,12 +72,6 @@
   --z-index-tooltip: var(--z-tooltip);
 }
 
-@property --border-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -284,89 +278,6 @@
   }
 }
 
-@utility home-atmosphere {
-  /* Home-only atmospheric background (scroll-synced via CSS variables) */
-  --home-parallax-a: 0px;
-  --home-parallax-b: 0px;
-}
-
-@utility home-atmosphere__layer {
-  position: absolute;
-  inset: -18%;
-  background-repeat: no-repeat;
-  will-change: transform;
-}
-
-@utility home-atmosphere__layer--a {
-  transform: translate3d(0, var(--home-parallax-a), 0);
-  background-image:
-    radial-gradient(
-      1200px circle at 12% -10%,
-      hsl(var(--primary) / 0.16),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px circle at 92% 0%,
-      hsl(var(--secondary) / 0.14),
-      transparent 62%
-    ),
-    radial-gradient(
-      700px circle at 55% 18%,
-      hsl(var(--accent) / 0.55),
-      transparent 70%
-    );
-  filter: blur(0px);
-  opacity: 0.95;
-
-  @media (prefers-reduced-motion: reduce) {
-    transform: none !important;
-    will-change: auto;
-  }
-}
-
-@utility home-atmosphere__layer--b {
-  transform: translate3d(0, var(--home-parallax-b), 0);
-  background-image:
-    radial-gradient(
-      900px circle at 86% 44%,
-      hsl(var(--primary) / 0.1),
-      transparent 64%
-    ),
-    radial-gradient(
-      750px circle at 18% 78%,
-      hsl(var(--secondary) / 0.1),
-      transparent 66%
-    ),
-    radial-gradient(
-      900px circle at 52% 104%,
-      hsl(var(--accent) / 0.35),
-      transparent 64%
-    );
-  opacity: 0.7;
-  mix-blend-mode: multiply;
-
-  .dark & {
-    mix-blend-mode: screen;
-    opacity: 0.45;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transform: none !important;
-    will-change: auto;
-  }
-}
-
-@utility home-atmosphere__vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    closest-side at 50% 30%,
-    transparent 60%,
-    hsl(var(--background) / 0.85) 100%
-  );
-  opacity: 0.8;
-}
-
 @utility selected-writing-media {
   /* Selected writing rail */
   transform: translate3d(var(--writing-parallax-x, 0px), 0, 0) scale(1.12);
@@ -552,141 +463,6 @@
   }
 }
 
-@utility gradient-text {
-  /* ============================================
-   * GRADIENT TEXT CLASSES
-   * Animated and static gradient text effects
-   * ============================================ */
-  background: linear-gradient(
-    135deg,
-    hsl(var(--primary)) 0%,
-    hsl(var(--secondary)) 25%,
-    hsl(280 60% 50%) 50%,
-    hsl(var(--secondary)) 75%,
-    hsl(var(--primary)) 100%
-  );
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 8s ease infinite;
-}
-
-@utility gradient-text-primary {
-  background: linear-gradient(
-    135deg,
-    hsl(82 40% 30%) 0%,
-    hsl(82 32% 40%) 33%,
-    hsl(90 35% 35%) 66%,
-    hsl(82 40% 30%) 100%
-  );
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 6s ease infinite;
-
-  .dark & {
-    background: linear-gradient(
-      135deg,
-      hsl(82 35% 50%) 0%,
-      hsl(82 40% 60%) 33%,
-      hsl(90 38% 55%) 66%,
-      hsl(82 35% 50%) 100%
-    );
-    background-size: 200% 200%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-}
-
-@utility gradient-text-rainbow {
-  background: linear-gradient(
-    135deg,
-    #ff6b6b 0%,
-    #feca57 16%,
-    #48dbfb 33%,
-    #ff9ff3 50%,
-    #54a0ff 66%,
-    #5f27cd 83%,
-    #ff6b6b 100%
-  );
-  background-size: 300% 300%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 10s ease infinite;
-}
-
-@utility gradient-text-static {
-  /* Static gradient variants (no animation) */
-  background: linear-gradient(
-    135deg,
-    hsl(var(--primary)) 0%,
-    hsl(var(--secondary)) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-@utility animated-border {
-  /* ============================================
-   * ANIMATED BORDER CLASSES
-   * Moving gradient border effect
-   * ============================================ */
-  position: relative;
-  background: hsl(var(--background));
-  border-radius: var(--radius);
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 2px;
-    background: linear-gradient(
-      var(--border-angle, 0deg),
-      hsl(var(--primary)),
-      hsl(var(--secondary)),
-      hsl(280 60% 50%),
-      hsl(var(--primary))
-    );
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: border-rotate 4s linear infinite;
-  }
-}
-
-@utility animated-border-slow {
-  &::before {
-    animation: border-rotate 8s linear infinite;
-  }
-}
-
-@utility animated-border-fast {
-  &::before {
-    animation: border-rotate 2s linear infinite;
-  }
-}
-
-@utility animated-border-hover {
-  /* Hover-only animated border */
-  &::before {
-    animation-play-state: paused;
-  }
-
-  &:hover::before {
-    animation-play-state: running;
-  }
-}
 
 @utility glass {
   /* Register the custom property for animation */
@@ -745,11 +521,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(
-      90deg,
-      hsl(var(--primary)),
-      hsl(var(--secondary))
-    );
+    background: hsl(var(--primary));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -894,11 +666,6 @@
     color: hsl(var(--foreground));
     line-height: 1.65;
     overflow-x: clip;
-    background-image:
-      radial-gradient(1200px circle at 8% -10%, hsl(var(--primary) / 0.15), transparent 60%),
-      radial-gradient(900px circle at 95% -5%, hsl(var(--secondary) / 0.2), transparent 55%),
-      radial-gradient(600px circle at 50% 0%, hsl(var(--accent) / 0.6), transparent 60%);
-    background-attachment: fixed;
   }
 
   h1,
@@ -957,24 +724,6 @@
   @keyframes shimmer {
     100% {
       transform: translateX(100%);
-    }
-  }
-
-  @keyframes gradient-shift {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-
-  @keyframes border-rotate {
-    to {
-      --border-angle: 360deg;
     }
   }
 }
