@@ -97,8 +97,8 @@ export function Hero() {
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="cta-secondary text-base h-11 px-7">
-            <Link href="/work-with-me" prefetch={false}>
-              Work With Me
+            <Link href="/contact" prefetch={false}>
+              Contact Me
               <ArrowUpRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
