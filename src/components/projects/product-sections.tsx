@@ -213,7 +213,7 @@ export function HeroSection({ activeImage, product, shared }: HeroSectionProps):
           layoutId={shared ? `project-cover-${product.slug}` : undefined}
           className={cn(
             'relative aspect-video overflow-hidden',
-            'bg-linear-to-br from-accent/70 via-background to-secondary/10'
+            'bg-accent/40'
           )}
         >
           <div className="pointer-events-none absolute -top-16 -right-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
