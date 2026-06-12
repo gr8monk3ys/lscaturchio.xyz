@@ -1,18 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import {
-  contactLink,
-  primaryNavigation,
-  secondaryNavigationCategories,
-} from "@/constants/navlinks";
+import { primaryNavigation } from "@/constants/navlinks";
 
 import { ActiveNavLink } from "./active-nav-link";
-import { NavDropdown } from "./nav-dropdown";
 import { NavbarControlsGate } from "./navbar-controls-gate";
 
 const navLinkBaseClass =
   "relative block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-left after:rounded-full after:bg-linear-to-r after:from-primary after:to-secondary after:transition-transform after:duration-200";
+
+// The one accent action in the header — hiring is the commercial CTA, so it
+// gets the filled treatment while everything else stays quiet. Breadth lives
+// in the footer site map and ⌘K search, not in dropdowns.
+const ACCENT_HREF = "/work-with-me";
+const accentLinkClass =
+  "block whitespace-nowrap rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
 
 export function Navbar() {
   return (
@@ -34,37 +36,26 @@ export function Navbar() {
 
             <nav aria-label="Primary" className="flex items-center">
               <ul className="flex items-center space-x-2 rounded-full border border-border bg-background/80 px-3 py-2 shadow-[inset_0_1px_0_hsl(var(--border))] backdrop-blur-sm">
-                {primaryNavigation.map((item) => (
-                  <li key={item.href}>
-                    <ActiveNavLink
-                      href={item.href}
-                      className={navLinkBaseClass}
-                      activeClassName="text-foreground after:scale-x-100"
-                      inactiveClassName="text-foreground/60 hover:text-foreground/80 after:scale-x-0 hover:after:scale-x-100"
-                    >
-                      {item.name}
-                    </ActiveNavLink>
-                  </li>
-                ))}
-
-                <li aria-hidden className="mx-1 h-6 w-px bg-border/70" />
-
-                {secondaryNavigationCategories.map((category) => (
-                  <li key={category.name}>
-                    <NavDropdown categoryName={category.name} />
-                  </li>
-                ))}
-
-                <li>
-                  <ActiveNavLink
-                    href={contactLink.href}
-                    className={navLinkBaseClass}
-                    activeClassName="text-foreground after:scale-x-100"
-                    inactiveClassName="text-foreground/60 hover:text-foreground/80 after:scale-x-0 hover:after:scale-x-100"
-                  >
-                    {contactLink.name}
-                  </ActiveNavLink>
-                </li>
+                {primaryNavigation.map((item) =>
+                  item.href === ACCENT_HREF ? (
+                    <li key={item.href}>
+                      <Link href={item.href} prefetch={false} className={accentLinkClass}>
+                        {item.name}
+                      </Link>
+                    </li>
+                  ) : (
+                    <li key={item.href}>
+                      <ActiveNavLink
+                        href={item.href}
+                        className={navLinkBaseClass}
+                        activeClassName="text-foreground after:scale-x-100"
+                        inactiveClassName="text-foreground/60 hover:text-foreground/80 after:scale-x-0 hover:after:scale-x-100"
+                      >
+                        {item.name}
+                      </ActiveNavLink>
+                    </li>
+                  )
+                )}
               </ul>
             </nav>
 
