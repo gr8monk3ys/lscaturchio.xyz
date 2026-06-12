@@ -12,12 +12,6 @@ const SUGGESTED_QUESTIONS = [
 export function Hero() {
   return (
     <section className="relative min-h-[55vh] sm:min-h-[60vh] w-full flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-8">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-24 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-primary/12 blur-3xl" />
-        <div className="absolute top-8 right-10 h-64 w-64 rounded-full bg-secondary/10 blur-3xl" />
-        <div className="absolute bottom-6 left-10 h-48 w-48 rounded-full bg-accent/35 blur-2xl" />
-      </div>
-
       <div className="relative z-10 w-full max-w-6xl mx-auto space-y-8 py-12">
         <div className="flex flex-col md:flex-row items-center justify-center gap-8">
           <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-52 md:h-52 shrink-0 rounded-full overflow-hidden">

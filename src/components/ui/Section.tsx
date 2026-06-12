@@ -121,6 +121,15 @@ export function SectionHeader({
       )}
     >
       <div className={cn(align === "center" && "mx-auto")}>
+        {/* Editorial mark: a short ink rule above every section title, the
+            magazine equivalent of a chapter tick. */}
+        <span
+          aria-hidden
+          className={cn(
+            "mb-3 block h-0.5 w-8 rounded-full bg-primary",
+            align === "center" && "mx-auto"
+          )}
+        />
         <h2 className="text-section-title">{title}</h2>
         {description && (
           <p className="mt-2 text-muted-foreground max-w-2xl">
