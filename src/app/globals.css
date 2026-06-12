@@ -15,11 +15,11 @@
    * Tailwind v4 they generate spacing-suffixed utilities (max-w-2xl, w-lg, …)
    * that shadow the standard container scale — a previous --spacing-2xl: 48px
    * silently collapsed every `max-w-2xl` on the site to 48px. */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-2xl: 32px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
 
   --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
   --background-image-gradient-conic: conic-gradient(
@@ -100,55 +100,55 @@
   font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ============================================================
+ * EDITORIAL SURFACES
+ * The neu-* names are kept (45+ files use them) but the language
+ * is now flat ink-on-paper: hairline rules, tint shifts, and a
+ * single hover lift — no neumorphic shadow blooms. The blooms
+ * were the single biggest "AI template" signal on the site.
+ * ============================================================ */
+
 @utility neu-flat {
-  /* Neumorphic utility classes */
-  box-shadow: var(--neu-shadow);
-  background: hsl(var(--background));
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
 }
 
 @utility neu-flat-sm {
-  box-shadow: var(--neu-shadow-sm);
-  background: hsl(var(--background));
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
 }
 
 @utility neu-flat-lg {
-  box-shadow: var(--neu-shadow-lg);
-  background: hsl(var(--background));
-  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border) / 0.9);
 }
 
 @utility neu-pressed {
-  box-shadow: var(--neu-shadow-inset);
-  background: hsl(var(--background));
-  border: 1px solid hsl(var(--border));
+  /* Recessed surface = tinted paper, not an inset shadow */
+  background: hsl(var(--muted) / 0.55);
+  border: 1px solid hsl(var(--border) / 0.7);
 }
 
 @utility neu-pressed-sm {
-  box-shadow: var(--neu-shadow-inset-sm);
-  background: hsl(var(--background));
-  border: 1px solid hsl(var(--border));
+  background: hsl(var(--muted) / 0.55);
+  border: 1px solid hsl(var(--border) / 0.7);
 }
 
 @utility neu-button {
-  /* Neumorphic button styles */
-  box-shadow: var(--neu-shadow-sm);
-  background: hsl(var(--background));
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   transition:
-    box-shadow 0.2s ease,
-    transform 0.1s ease,
-    border-color 0.2s ease;
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
 
   &:hover {
-    box-shadow: var(--neu-shadow);
-    border-color: hsl(var(--primary) / 0.35);
+    background: hsl(var(--primary) / 0.06);
+    border-color: hsl(var(--primary) / 0.45);
   }
 
   &:active {
-    box-shadow: var(--neu-shadow-inset-sm);
-    transform: scale(0.98);
+    transform: translateY(1px);
   }
 
   &:focus-visible {
@@ -158,32 +158,27 @@
 }
 
 @utility neu-card {
-  /* Neumorphic card with hover effect */
-  box-shadow: var(--neu-shadow);
-  background: hsl(var(--background));
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   transition:
-    box-shadow 0.3s ease,
-    transform 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
 
   &:hover {
-    box-shadow: var(--neu-shadow-lg);
-    transform: translateY(-3px);
-    border-color: hsl(var(--primary) / 0.35);
+    border-color: hsl(var(--primary) / 0.45);
+    transform: translateY(-2px);
   }
 }
 
 @utility neu-input {
-  /* Neumorphic input fields */
-  box-shadow: var(--neu-shadow-inset-sm);
-  background: hsl(var(--background));
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
-  transition: box-shadow 0.2s ease;
+  transition: border-color 0.15s ease;
 
   &:focus {
-    box-shadow: var(--neu-shadow-inset);
+    border-color: hsl(var(--primary) / 0.5);
     outline: 2px solid hsl(var(--primary));
     outline-offset: 2px;
   }
@@ -195,16 +190,15 @@
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border: 1px solid hsl(var(--primary) / 0.42);
-  box-shadow:
-    var(--neu-shadow-sm),
-    0 10px 24px hsl(var(--primary) / 0.18);
+  box-shadow: 0 1px 0 hsl(var(--primary) / 0.25);
 
   &:hover {
     color: hsl(var(--primary-foreground));
-    filter: brightness(1.03);
-    box-shadow:
-      var(--neu-shadow),
-      0 14px 28px hsl(var(--primary) / 0.24);
+    filter: brightness(1.05);
+  }
+
+  &:active {
+    transform: translateY(1px);
   }
 
   &:focus-visible {
@@ -230,18 +224,13 @@
 @utility cta-secondary {
   @apply inline-flex items-center justify-center font-medium transition-all;
   color: hsl(var(--foreground));
-  background: linear-gradient(
-    135deg,
-    hsl(var(--background)),
-    hsl(var(--accent))
-  );
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
-  box-shadow: var(--neu-shadow-sm);
 
   &:hover {
     color: hsl(var(--foreground));
-    border-color: hsl(var(--primary) / 0.35);
-    box-shadow: var(--neu-shadow);
+    border-color: hsl(var(--primary) / 0.45);
+    background: hsl(var(--primary) / 0.05);
   }
 
   &:focus-visible {
@@ -806,7 +795,7 @@
     --border: 30 18% 86%;
     --input: 30 18% 86%;
     --ring: 152 52% 20%;
-    --radius: 1.1rem;
+    --radius: 0.75rem;
 
     /* Status colors - for badges, alerts, notifications */
     --success: 142 76% 36%;
@@ -934,6 +923,18 @@
   ::selection {
     background: hsl(var(--primary) / 0.22);
     color: hsl(var(--foreground));
+  }
+
+  /* Paper grain: a fixed, near-invisible noise field that keeps large flat
+   * areas from reading as sterile screen-white. Pure CSS, no asset request. */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 }
 
