@@ -29,9 +29,9 @@ const sizeClasses = {
 
 const paddingClasses = {
   none: "py-0",
-  compact: "py-8 md:py-12",
-  default: "py-12 md:py-16",
-  large: "py-16 md:py-24",
+  compact: "py-10 md:py-16",
+  default: "py-16 md:py-28",
+  large: "py-24 md:py-36",
 };
 
 const backgroundClasses = {
@@ -102,42 +102,50 @@ interface SectionHeaderProps {
   align?: "left" | "center";
   /** Optional action element (e.g., "View All" link) */
   action?: ReactNode;
+  /** Catalogue index, e.g. "01" — rendered as a mono wall-label prefix. */
+  index?: string;
+  /** Mono kicker / eyebrow shown above the title (e.g. "WRITING"). */
+  eyebrow?: string;
 }
 
+/**
+ * Museum wall-label header: a mono kicker line (catalogue index + eyebrow),
+ * the Fraunces title, an optional description, then a full-width hairline
+ * rule — the architectural line under a gallery placard.
+ */
 export function SectionHeader({
   title,
   description,
   className,
   align = "left",
   action,
+  index,
+  eyebrow,
 }: SectionHeaderProps) {
+  const kicker = [index, eyebrow].filter(Boolean).join(" — ");
+
   return (
-    <div
-      className={cn(
-        "mb-8",
-        align === "center" && "text-center",
-        action && "flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4",
-        className
-      )}
-    >
-      <div className={cn(align === "center" && "mx-auto")}>
-        {/* Editorial mark: a short ink rule above every section title, the
-            magazine equivalent of a chapter tick. */}
-        <span
-          aria-hidden
-          className={cn(
-            "mb-3 block h-0.5 w-8 rounded-full bg-primary",
-            align === "center" && "mx-auto"
-          )}
-        />
-        <h2 className="text-section-title">{title}</h2>
-        {description && (
-          <p className="mt-2 text-muted-foreground max-w-2xl">
-            {description}
-          </p>
+    <div className={cn("mb-10", className)}>
+      <div
+        className={cn(
+          align === "center" && "text-center",
+          action && "flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
         )}
+      >
+        <div className={cn(align === "center" && "mx-auto")}>
+          {kicker && (
+            <span className={cn("label-mono mb-3 block", align === "center" && "mx-auto")}>
+              {kicker}
+            </span>
+          )}
+          <h2 className="text-section-title">{title}</h2>
+          {description && (
+            <p className="mt-3 max-w-2xl text-muted-foreground">{description}</p>
+          )}
+        </div>
+        {action && <div className="shrink-0 sm:pb-1">{action}</div>}
       </div>
-      {action && <div className="shrink-0">{action}</div>}
+      <hr className="gallery-rule mt-6" />
     </div>
   );
 }

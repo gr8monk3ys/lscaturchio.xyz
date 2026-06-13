@@ -10,6 +10,8 @@
   --font-body:
     var(--site-font-body), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji';
+  --font-mono:
+    var(--site-font-mono), ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
 
   /* NOTE: do not define --spacing-xs/sm/md/lg/xl/2xl/... tokens here. In
    * Tailwind v4 they generate spacing-suffixed utilities (max-w-2xl, w-lg, …)
@@ -92,6 +94,37 @@
 
 @utility font-system {
   font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ============================================================
+ * GALLERY LANGUAGE
+ * Monospace "wall-label" metadata + architectural hairline rules.
+ * The museum register: content on open paper, divided by space
+ * and thin lines instead of card chrome.
+ * ============================================================ */
+
+@utility font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Wall label: the small mono caption beside the work — kickers,
+ * dates, tags, catalogue numbers. */
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Full-width architectural divider between gallery sections. */
+@utility gallery-rule {
+  border: 0;
+  border-top: 1px solid hsl(var(--border));
+  width: 100%;
+  margin: 0;
 }
 
 /* ============================================================

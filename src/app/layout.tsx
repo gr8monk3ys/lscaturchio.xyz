@@ -8,7 +8,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Metadata } from 'next'
 import Script from "next/script";
 import { ogCardUrl } from "@/lib/seo";
-import { Instrument_Sans, Fraunces } from "next/font/google";
+import { Instrument_Sans, Fraunces, IBM_Plex_Mono } from "next/font/google";
 import { SITE_URL } from "@/lib/site-url";
 import { DeferredLayoutExtras } from "@/components/layout/deferred-layout-extras";
 import { MobileNavbarGate } from "@/components/layout/mobile-navbar-gate";
@@ -27,6 +27,15 @@ const bodyFont = Instrument_Sans({
   subsets: ["latin"],
   display: "optional",
   variable: "--site-font-body",
+});
+
+// Wall-label monospace — metadata, kickers, catalogue numbers.
+const monoFont = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "optional",
+  preload: false,
+  variable: "--site-font-mono",
 });
 
 export const metadata: Metadata = {
@@ -118,7 +127,7 @@ export default function RootLayout({
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${bodyFont.variable} ${displayFont.variable}`}
+      className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable}`}
     >
       <head>
         {/* RSS Feed Autodiscovery */}
