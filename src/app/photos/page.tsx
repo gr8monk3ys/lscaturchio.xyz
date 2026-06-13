@@ -1,16 +1,17 @@
 import { Suspense } from "react";
+import { buildPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { PhotosGrid } from "@/components/photos/PhotosGrid";
-import { Metadata } from "next";
 import { Camera, Loader2 } from "lucide-react";
 import type { PhotoCategory } from "@/constants/photos";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Photography",
   description: "A collection of travel, landscape, and nature photography. Shot on Fuji X-T30 II with various film simulation recipes.",
-};
+  path: "/photos",
+});
 
 function PhotosGridSkeleton() {
   return (

@@ -1,8 +1,8 @@
 import { Container } from "@/components/Container";
+import { buildPageMetadata } from "@/lib/seo";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { MoviesGrid } from "@/components/movies/MoviesGrid";
-import { Metadata } from "next";
 import { Film } from "lucide-react";
 import {
   getLetterboxdStats,
@@ -11,10 +11,11 @@ import {
   getLetterboxdWatchlist,
 } from "@/lib/letterboxd";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Movies",
   description: "Films I've watched and loved. Synced from my Letterboxd profile.",
-};
+  path: "/movies",
+});
 
 export default function MoviesPage() {
   // Fetch data server-side

@@ -1,13 +1,13 @@
 import { Container } from "@/components/Container";
-import { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
 import { ExternalLink, Shield, BookOpen, Globe, Code, Youtube, Rss, LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Links",
-  description:
-    "Curated collection of bookmarks, documentation, indie blogs, and YouTube channels that have shaped my thinking on AI, privacy, and technology.",
-};
+  description: "Curated collection of bookmarks, documentation, indie blogs, and YouTube channels that have shaped my thinking on AI, privacy, and technology.",
+  path: "/links",
+});
 
 interface LinkData {
   title: string;

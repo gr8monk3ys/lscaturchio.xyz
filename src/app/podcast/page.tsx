@@ -1,7 +1,7 @@
 import { Container } from "@/components/Container";
+import { buildPageMetadata } from "@/lib/seo";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
-import { Metadata } from "next";
 import { Mic, Rss } from "lucide-react";
 import Link from "next/link";
 import { getAllBlogs } from "@/lib/getAllBlogs";
@@ -9,10 +9,11 @@ import { hasAudioForSlug } from "@/lib/audio";
 import { getAudioUrl } from "@/lib/audio-url";
 import { Badge } from "@/components/ui/badge";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Podcast",
   description: "Audio versions of my writing. Subscribe via RSS.",
-};
+  path: "/podcast",
+});
 
 export default function PodcastPage() {
   const rssUrl = "/podcast/rss.xml";

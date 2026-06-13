@@ -1,15 +1,15 @@
 import { Container } from "@/components/Container";
+import { buildPageMetadata } from "@/lib/seo";
 import { WorkTimeline } from "@/components/ui/work-timeline";
 import { ResumeDownloadButton } from "@/components/ui/resume-download-button";
 import { Badge } from "@/components/ui/badge";
-import { Metadata } from "next";
 import { Code, Brain, Database, Laptop, LucideIcon } from "lucide-react";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Professional",
-  description:
-    "Lorenzo Scaturchio's professional experience, technical skills, and work history in data science, machine learning, and web development.",
-};
+  description: "Lorenzo Scaturchio's professional experience, technical skills, and work history in data science, machine learning, and web development.",
+  path: "/professional",
+});
 
 const SkillCategory = ({ icon: Icon, title, skills }: { icon: LucideIcon; title: string; skills: string[] }) => (
   <div className="space-y-4">

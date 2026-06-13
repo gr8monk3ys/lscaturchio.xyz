@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
@@ -7,10 +7,11 @@ import { SemanticSearchDemo } from "@/components/lab/semantic-search-demo";
 import { ToySimilarity } from "@/components/lab/toy-similarity";
 import { AskLorenzoDemo } from "@/components/lab/ask-lorenzo-demo";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Lab",
   description: "Interactive demos: semantic search, RAG, and how the pieces fit together.",
-};
+  path: "/lab",
+});
 
 export default function LabPage() {
   return (
