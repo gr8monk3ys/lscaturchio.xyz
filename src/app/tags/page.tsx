@@ -1,15 +1,16 @@
 import { getAllBlogs } from "@/lib/getAllBlogs";
+import { buildPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { Tag } from "lucide-react";
 import Link from "next/link";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Blog Tags - Lorenzo Scaturchio",
   description: "Browse blog posts by topic. Explore articles on AI, data science, web development, and technology philosophy.",
-};
+  path: "/tags",
+});
 
 interface TagWithCount {
   name: string;

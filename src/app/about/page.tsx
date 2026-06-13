@@ -1,20 +1,20 @@
 import { Container } from "@/components/Container";
+import { buildPageMetadata } from "@/lib/seo";
 import { AboutHero } from "@/components/about/Hero";
 import { AboutJourney } from "@/components/about/Journey";
 import { PersonalFavorites } from "@/components/about/PersonalFavorites";
 import { Interests } from "@/components/about/Interests";
 import { ResumeDownloadButton } from "@/components/ui/resume-download-button";
 import { Music } from "@/components/about/Music";
-import { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { Book, Film, ArrowRight } from "lucide-react";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "About",
-  description:
-    "Data Scientist from Southern California who loves Arctic Monkeys, plays Scottish bagpipes, produces music, and explores the intersection of technology and human consciousness.",
-};
+  description: "Data Scientist from Southern California who loves Arctic Monkeys, plays Scottish bagpipes, produces music, and explores the intersection of technology and human consciousness.",
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (

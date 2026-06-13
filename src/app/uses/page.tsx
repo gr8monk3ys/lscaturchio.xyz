@@ -1,14 +1,14 @@
 import { Container } from "@/components/Container";
-import { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/seo";
 import { Monitor, Mouse, Keyboard, Laptop, HardDrive, Globe, Terminal, Code, Palette, LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { RagStatusCard } from "@/components/uses/rag-status-card";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Uses",
-  description:
-    "Tools, software, and hardware Lorenzo Scaturchio uses daily. From Arch Linux and Neovim to ProtonMail and Bitwarden. Focused on FOSS, privacy, and minimal bloat.",
-};
+  description: "Tools, software, and hardware Lorenzo Scaturchio uses daily. From Arch Linux and Neovim to ProtonMail and Bitwarden. Focused on FOSS, privacy, and minimal bloat.",
+  path: "/uses",
+});
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <section className="mb-12">
