@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, MessageCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const SUGGESTED_QUESTIONS = [
@@ -11,91 +11,85 @@ const SUGGESTED_QUESTIONS = [
 
 export function Hero() {
   return (
-    <section className="relative min-h-[55vh] sm:min-h-[60vh] w-full flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-8">
-      <div className="relative z-10 w-full max-w-6xl mx-auto space-y-8 py-12">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-          <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-52 md:h-52 shrink-0 rounded-full overflow-hidden">
+    <section className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-6xl gap-12 py-16 md:grid-cols-[1fr_minmax(0,300px)] md:items-end md:py-24 lg:py-28">
+        {/* The name is the work; everything else is the wall label. */}
+        <div className="min-w-0 space-y-6">
+          <span className="label-mono block">Applied ML · RAG Systems · Essays</span>
+
+          <h2 className="text-balance text-5xl font-semibold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
+            Hey, I&apos;m <span className="text-primary">Lorenzo Scaturchio</span>
+          </h2>
+
+          <p className="max-w-xl text-lg text-muted-foreground sm:text-xl">
+            I build AI systems by day and write about the world they&apos;re being
+            built into. Real systems, not demos — and essays with opinions.
+          </p>
+        </div>
+
+        {/* Framed portrait plate with a mono caption, like a gallery placard. */}
+        <figure className="mx-auto w-44 sm:w-52 md:mx-0 md:w-full md:max-w-[300px]">
+          <div className="relative aspect-square overflow-hidden border border-border">
             <Image
               src="/images/portrait.webp"
               alt="Lorenzo Scaturchio"
               fill
               priority
-              sizes="(max-width: 640px) 160px, (max-width: 768px) 192px, 208px"
-              className="rounded-full object-cover"
+              sizes="(max-width: 768px) 208px, 300px"
+              className="object-cover"
             />
           </div>
+          <figcaption className="label-mono mt-3">Lorenzo Scaturchio · Los Angeles</figcaption>
+        </figure>
+      </div>
 
-          <div className="text-center md:text-left space-y-4 max-w-2xl min-w-0 md:flex-1">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary">
-              Applied ML + RAG Systems
-            </div>
-            <h2 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              Hey, I&apos;m <span className="text-primary">Lorenzo Scaturchio</span>
-            </h2>
-            <p className="text-lg sm:text-xl text-muted-foreground">
-              I build AI systems by day and write about the world they&apos;re being
-              built into. Real systems, not demos — and essays with opinions.
-            </p>
-          </div>
-        </div>
-
-        {/* Ask-my-site-anything: a plain GET form so this stays a zero-JS server
-            component. /chat reads ?q= and prefills the conversation. */}
-        <div className="mx-auto w-full max-w-2xl space-y-3">
-          <form action="/chat" method="get" className="group relative">
+      {/* Ask band — sits below the masthead with its own air. Plain GET form
+          so this stays a zero-JS server component; /chat reads ?q=. */}
+      <div className="mx-auto max-w-6xl border-t border-border py-10">
+        <div className="flex flex-col gap-4">
+          <span className="label-mono">Ask the site anything</span>
+          <form action="/chat" method="get" className="relative max-w-2xl">
             <label htmlFor="hero-ask" className="sr-only">
               Ask my site anything
             </label>
-            <MessageCircle
-              aria-hidden="true"
-              className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary"
-            />
             <input
               id="hero-ask"
               name="q"
               type="text"
               required
-              placeholder="Ask my site anything — it's read everything I've written"
+              placeholder="It's read everything I've written…"
               autoComplete="off"
-              className="h-14 w-full rounded-full border border-border bg-background/80 pl-13 pr-32 text-base text-foreground shadow-sm backdrop-blur placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="h-14 w-full rounded-none border-0 border-b border-border bg-transparent pr-28 text-lg text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-0"
             />
             <Button
               type="submit"
               size="lg"
               variant="primary"
-              className="absolute right-2 top-1/2 h-10 -translate-y-1/2 rounded-full px-5"
+              className="absolute right-0 top-1/2 h-10 -translate-y-1/2 rounded-full px-5"
             >
               Ask
               <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
           </form>
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
             {SUGGESTED_QUESTIONS.map((question) => (
               <Link
                 key={question}
                 href={`/chat?q=${encodeURIComponent(question)}`}
                 prefetch={false}
-                className="rounded-full border border-border bg-background/60 px-3.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                className="label-mono normal-case tracking-normal text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
               >
                 {question}
               </Link>
             ))}
+            <Link
+              href="/projects"
+              prefetch={false}
+              className="label-mono ml-auto text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            >
+              View work →
+            </Link>
           </div>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-5">
-          <Button asChild size="lg" variant="outline" className="cta-secondary text-base h-11 px-7">
-            <Link href="/projects" prefetch={false}>
-              View My Work
-              <ArrowUpRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-          <Button asChild size="lg" variant="outline" className="cta-secondary text-base h-11 px-7">
-            <Link href="/contact" prefetch={false}>
-              Contact Me
-              <ArrowUpRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
         </div>
       </div>
     </section>

@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +26,8 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
     <Section padding="default" size="wide" divider topDivider reveal={false} className={className}>
       <div>
         <SectionHeader
+          index="01"
+          eyebrow="Writing"
           title="Selected Writing"
           description={`${posts.length} pieces worth starting with — swipe or scroll the rail sideways.`}
           action={
@@ -71,15 +72,10 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
                       sizes="(max-width: 768px) 100vw, 460px"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/15 to-transparent" />
-                    <div className="absolute left-4 top-4 flex flex-wrap gap-1.5">
-                      {(post.tags || []).slice(0, 2).map((tag) => (
-                        <div
-                          key={tag}
-                          className="rounded-full border border-white/20 bg-black/35 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur-md"
-                        >
-                          {tag}
-                        </div>
-                      ))}
+                    <div className="absolute left-4 top-4">
+                      <span className="label-mono text-white/90 [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
+                        {(post.tags || []).slice(0, 2).join(" · ")}
+                      </span>
                     </div>
                   </div>
 
@@ -91,17 +87,9 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
                       {post.description}
                     </p>
                     <div className="mt-1 flex items-center justify-between gap-4">
-                      <div className="flex flex-wrap gap-1.5">
-                        {(post.tags || []).slice(2, 5).map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="secondary"
-                            className="border border-border/50 bg-muted/60 px-2 py-0.5 text-xs font-medium"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
+                      <span className="label-mono truncate">
+                        {(post.tags || []).slice(2, 5).join(" · ")}
+                      </span>
                       <div className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
                         Read
                         <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
