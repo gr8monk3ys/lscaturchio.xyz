@@ -50,44 +50,38 @@ export function BlogGrid({
   return (
     <>
       {normalizedTag && (
-        <div className="mb-6 p-5 rounded-2xl neu-flat flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-sm font-medium">Filtered by tag:</span>
-            <span className="px-4 py-1.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium capitalize shadow-xs">
-              {normalizedTag}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              ({totalBlogs} {totalBlogs === 1 ? "post" : "posts"})
-            </span>
-          </div>
+        <div className="mb-8 flex flex-col items-start justify-between gap-3 border-b border-border pb-4 sm:flex-row sm:items-center">
+          <span className="label-mono">
+            Filtered — {normalizedTag} · {totalBlogs} {totalBlogs === 1 ? "post" : "posts"}
+          </span>
           <Link
             href="/blog"
             prefetch={false}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl neu-button text-sm text-muted-foreground hover:text-foreground transition-all"
+            className="label-mono inline-flex items-center gap-1.5 text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
-            <X className="h-4 w-4" />
+            <X className="h-3.5 w-3.5" />
             Clear filter
           </Link>
         </div>
       )}
 
       {totalBlogs === 0 && (
-        <div className="text-center py-16 neu-card rounded-2xl">
+        <div className="border-y border-border py-20 text-center">
           <p className="text-lg text-muted-foreground">
             No blog posts found with the tag &quot;{normalizedTag}&quot;.
           </p>
           <Link
             href="/blog"
             prefetch={false}
-            className="mt-4 inline-block px-6 py-2 rounded-xl cta-secondary"
+            className="label-mono mt-4 inline-block text-primary underline-offset-4 hover:underline"
           >
-            View all posts
+            View all posts →
           </Link>
         </div>
       )}
 
       <div
-        className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3"
         style={{ contentVisibility: "auto", containIntrinsicSize: "1px 1600px" }}
       >
         {blogs.map((blog, index) => (
@@ -102,43 +96,39 @@ export function BlogGrid({
       {totalPages > 1 && (
         <nav
           aria-label="Blog archive pagination"
-          className="mt-8 flex flex-col gap-4 rounded-2xl border border-border/70 bg-muted/20 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+          className="mt-12 flex flex-col gap-4 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between"
         >
-          <p className="text-sm text-muted-foreground">
-            Showing {firstVisiblePost}-{lastVisiblePost} of {totalBlogs} posts
-          </p>
+          <span className="label-mono">
+            Showing {firstVisiblePost}–{lastVisiblePost} of {totalBlogs}
+          </span>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-6">
             {currentPage > 1 ? (
               <Link
                 href={getBlogArchiveHref(currentPage - 1, normalizedTag)}
                 prefetch={false}
-                className="inline-flex items-center rounded-full border border-border/70 bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                className="label-mono text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
               >
-                Previous
+                ← Prev
               </Link>
             ) : (
-              <span className="inline-flex items-center rounded-full border border-border/50 bg-background/60 px-4 py-2 text-sm text-muted-foreground">
-                Previous
-              </span>
+              <span className="label-mono text-foreground/30">← Prev</span>
             )}
 
-            <span className="text-sm font-medium text-foreground">
-              Page {currentPage} of {totalPages}
+            <span className="label-mono">
+              {currentPage} / {totalPages}
             </span>
 
             {currentPage < totalPages ? (
               <Link
                 href={getBlogArchiveHref(currentPage + 1, normalizedTag)}
                 prefetch={false}
-                className="inline-flex items-center rounded-full border border-border/70 bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                className="label-mono text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
               >
-                Next
+                Next →
               </Link>
             ) : (
-              <span className="inline-flex items-center rounded-full border border-border/50 bg-background/60 px-4 py-2 text-sm text-muted-foreground">
-                Next
-              </span>
+              <span className="label-mono text-foreground/30">Next →</span>
             )}
           </div>
         </nav>
