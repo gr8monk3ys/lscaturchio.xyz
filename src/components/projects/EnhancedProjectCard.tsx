@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { m, useMotionPreset, useReducedMotion } from '@/lib/motion';
 import { TiltCard } from "@/components/ui/animated-card";
-import { Badge } from "@/components/ui/badge";
 import { Star, ExternalLink, Github, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -59,10 +58,9 @@ export function EnhancedProjectCard({
     >
       <div
         className={cn(
-          "relative h-full overflow-hidden rounded-2xl border border-border/50",
-          "bg-card/50 backdrop-blur-xs",
-          "transition-all duration-300",
-          "hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+          "relative h-full overflow-hidden border border-border",
+          "transition-colors duration-200",
+          "hover:border-primary/45"
         )}
       >
         {/* Featured Star */}
@@ -96,23 +94,12 @@ export function EnhancedProjectCard({
 
         {/* Content Section */}
         <div className="relative p-5 space-y-4">
-          {/* Status & Categories Row */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div
-              className={cn(
-                "inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium",
-                statusConfig.bg,
-                statusConfig.text
-              )}
-            >
-              <span className={cn("h-1.5 w-1.5 rounded-full", statusConfig.text.replace("text-", "bg-"))} />
-              {statusConfig.label}
-            </div>
-            {product.categories?.slice(0, 2).map((category) => (
-              <Badge key={category} variant="secondary" className="text-xs">
-                {categoryLabels[category]}
-              </Badge>
-            ))}
+          {/* Status & categories — single mono wall-label line. */}
+          <div className="label-mono flex items-center gap-2">
+            <span className={cn("h-1.5 w-1.5 rounded-full", statusConfig.text.replace("text-", "bg-"))} />
+            <span>
+              {[statusConfig.label, ...(product.categories?.slice(0, 2).map((c) => categoryLabels[c]) ?? [])].join("  ·  ")}
+            </span>
           </div>
 
           {/* Title & Description */}
@@ -151,7 +138,7 @@ export function EnhancedProjectCard({
                   {product.caseStudy.results.slice(0, 2).map((result) => (
                     <span
                       key={result}
-                      className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded-full"
+                      className="label-mono normal-case tracking-normal text-primary"
                     >
                       {result}
                     </span>
@@ -161,23 +148,13 @@ export function EnhancedProjectCard({
             </div>
           )}
 
-          {/* Tech Stack */}
+          {/* Tech stack — mono middot line. */}
           {product.stack && product.stack.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {product.stack.slice(0, isFeatured ? 5 : 3).map((tech) => (
-                <span
-                  key={tech}
-                  className="px-2 py-1 text-xs bg-muted rounded-md text-muted-foreground"
-                >
-                  {tech}
-                </span>
-              ))}
-              {product.stack.length > (isFeatured ? 5 : 3) && (
-                <span className="px-2 py-1 text-xs bg-muted rounded-md text-muted-foreground">
-                  +{product.stack.length - (isFeatured ? 5 : 3)}
-                </span>
-              )}
-            </div>
+            <p className="label-mono normal-case tracking-normal text-muted-foreground">
+              {product.stack.slice(0, isFeatured ? 5 : 3).join("  ·  ")}
+              {product.stack.length > (isFeatured ? 5 : 3) &&
+                `  ·  +${product.stack.length - (isFeatured ? 5 : 3)}`}
+            </p>
           )}
 
           {/* Start Date */}
