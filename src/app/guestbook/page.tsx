@@ -1,14 +1,15 @@
 import { Container } from "@/components/Container";
+import { buildPageMetadata } from "@/lib/seo";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { GiscusComments } from "@/components/blog/giscus-comments";
-import type { Metadata } from "next";
 import { MessageSquare } from "lucide-react";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Guestbook",
   description: "Leave a note, ask a question, or just say hi.",
-};
+  path: "/guestbook",
+});
 
 export default function GuestbookPage() {
   return (

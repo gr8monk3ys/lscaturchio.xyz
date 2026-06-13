@@ -1,16 +1,16 @@
 import { Container } from "@/components/Container";
+import { buildPageMetadata } from "@/lib/seo";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { ContactForm } from "@/components/contact/ContactForm";
-import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, BrainCircuit, CalendarDays, Mail, ShieldCheck } from "lucide-react";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Contact",
-  description:
-    "Get in touch with Lorenzo Scaturchio for consulting, collaboration, or contributions. Available via encrypted email (PGP) and Signal for secure communications.",
-};
+  description: "Get in touch with Lorenzo Scaturchio for consulting, collaboration, or contributions. Available via encrypted email (PGP) and Signal for secure communications.",
+  path: "/contact",
+});
 
 export default function Contact() {
   return (

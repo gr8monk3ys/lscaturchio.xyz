@@ -1,8 +1,8 @@
 import { Container } from "@/components/Container";
+import { buildPageMetadata } from "@/lib/seo";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { BooksGrid } from "@/components/books/BooksGrid";
-import { Metadata } from "next";
 import { Book } from "lucide-react";
 import {
   getGoodreadsStats,
@@ -12,10 +12,11 @@ import {
   getTopRatedBooks,
 } from "@/lib/goodreads";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Books",
   description: "Books I'm reading, have read, and want to read. Synced from my Goodreads profile.",
-};
+  path: "/books",
+});
 
 export default function BooksPage() {
   // Fetch data server-side

@@ -1,15 +1,16 @@
 import { Container } from "@/components/Container";
+import { buildPageMetadata } from "@/lib/seo";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { Clock, BookOpen, Code, Lightbulb, MapPin, AlertTriangle } from "lucide-react";
-import { Metadata } from "next";
 import Link from "next/link";
 import { nowData, getNowFreshness } from "@/lib/now-data";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Now - Lorenzo Scaturchio",
   description: "What I'm currently working on, learning, and focusing on. Updated regularly.",
-};
+  path: "/now",
+});
 
 // Re-evaluate the staleness banner at least daily without a rebuild.
 export const revalidate = 86400;
