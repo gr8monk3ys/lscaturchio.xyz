@@ -84,8 +84,8 @@ export function AskLorenzoDemo() {
   };
 
   return (
-    <section className="neu-card p-6">
-      <h3 className="text-xl font-semibold">Ask Lorenzo (RAG)</h3>
+    <section className="border border-border p-6">
+      <h3 className="font-display text-xl font-semibold">Ask Lorenzo (RAG)</h3>
       <p className="text-sm text-muted-foreground mt-1">
         This calls the live chat endpoint. It may use OpenAI or a local model depending on your deployment config.
       </p>

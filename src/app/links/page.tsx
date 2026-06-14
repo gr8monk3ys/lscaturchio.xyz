@@ -1,7 +1,6 @@
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
-import { ExternalLink, Shield, BookOpen, Globe, Code, Youtube, Rss, LucideIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { ExternalLink, Rss } from "lucide-react";
 
 export const metadata = buildPageMetadata({
   title: "Links",
@@ -207,46 +206,31 @@ const linksData: Record<string, SectionData> = {
   }
 };
 
-const iconMap: Record<string, LucideIcon> = {
-  privacy: Shield,
-  docs: BookOpen,
-  indie: Globe,
-  webdev: Code,
-  youtube: Youtube
-};
-
-const Section = ({ id, data }: { id: string; data: SectionData }) => {
-  const Icon = iconMap[id] || Globe;
-
+const Section = ({ data }: { data: SectionData }) => {
   if (data.links.length === 0) return null;
 
   return (
     <section className="mb-16">
-      <div className="flex items-center gap-3 mb-3">
-        <div className="size-10 rounded-xl neu-flat flex items-center justify-center">
-          <Icon className="size-5 text-primary" />
-        </div>
-        <h2 className="text-2xl font-bold">{data.title}</h2>
-      </div>
-      <p className="text-muted-foreground mb-6 ml-[52px]">{data.description}</p>
+      <h2 className="text-2xl font-bold">{data.title}</h2>
+      <p className="mt-2 text-muted-foreground">{data.description}</p>
 
-      <div className="grid gap-3">
+      <div className="mt-6 border-t border-border">
         {data.links.map((link) => (
           <a
             key={link.link}
             href={link.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="group block p-4 rounded-xl neu-card hover:shadow-lg transition-all"
+            className="group block border-b border-border py-4 transition-colors"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors flex items-center gap-2">
+                <h3 className="mb-1 flex items-center gap-2 text-lg font-semibold transition-colors group-hover:text-primary">
                   {link.title}
-                  <ExternalLink className="size-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ExternalLink className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
                   {link.rss && (
                     <span title="RSS Feed Available">
-                      <Rss className="size-4 text-orange-500" aria-label="RSS Feed Available" />
+                      <Rss className="size-4 text-primary" aria-label="RSS Feed Available" />
                     </span>
                   )}
                 </h3>
@@ -264,24 +248,25 @@ export default function LinksPage() {
   return (
     <Container size="large">
       <div className="max-w-4xl mx-auto py-12">
-        <div className="mb-12">
-          <Badge variant="secondary" className="mb-4">Bookmarks</Badge>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            Links & Resources
+        <header className="mb-12">
+          <span className="label-mono block">Garden · Bookmarks</span>
+          <h1 className="mt-4 text-4xl md:text-5xl font-bold tracking-tight">
+            Links &amp; Resources
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
             A curated collection of documentation, indie blogs, and YouTube channels that have shaped
             my thinking. Consider this my digital bookshelf.
           </p>
-        </div>
+          <hr className="gallery-rule mt-8" />
+        </header>
 
         {Object.entries(linksData).map(([id, data]) => (
-          <Section key={id} id={id} data={data} />
+          <Section key={id} data={data} />
         ))}
 
-        <div className="mt-8 p-6 rounded-xl neu-flat">
-          <h3 className="text-xl font-semibold mb-2">About This Page</h3>
-          <p className="text-muted-foreground">
+        <div className="mt-8 border-t border-border pt-6">
+          <span className="label-mono block">About This Page</span>
+          <p className="mt-3 text-muted-foreground">
             This list is constantly evolving. I add things as I discover them and remove things that no longer
             resonate. If you have suggestions for resources I should check out, feel free to reach out. I&apos;m
             always looking for new rabbit holes to fall into.
