@@ -102,24 +102,19 @@ export function MoviesGrid({ stats, topRated, recentWatches, watchlist }: Movies
 
   return (
     <div className="space-y-8">
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.totalRated.toLocaleString()}</p>
-          <p className="text-sm text-muted-foreground">Films Rated</p>
-        </div>
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.fiveStarFilms}</p>
-          <p className="text-sm text-muted-foreground">5-Star Films</p>
-        </div>
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.averageRating}</p>
-          <p className="text-sm text-muted-foreground">Avg Rating</p>
-        </div>
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.totalFilms}</p>
-          <p className="text-sm text-muted-foreground">Diary Entries</p>
-        </div>
+      {/* Stats — hairline-divided wall-label panel */}
+      <div className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-4 sm:divide-x">
+        {[
+          { value: stats.totalRated.toLocaleString(), label: "Films Rated" },
+          { value: stats.fiveStarFilms, label: "5-Star Films" },
+          { value: stats.averageRating, label: "Avg Rating" },
+          { value: stats.totalFilms, label: "Diary Entries" },
+        ].map((stat) => (
+          <div key={stat.label} className="px-5 py-6">
+            <p className="font-display text-3xl font-semibold tracking-tight">{stat.value}</p>
+            <p className="label-mono mt-2">{stat.label}</p>
+          </div>
+        ))}
       </div>
 
       {/* Tabs */}
