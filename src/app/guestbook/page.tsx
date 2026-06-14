@@ -3,7 +3,6 @@ import { buildPageMetadata } from "@/lib/seo";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { GiscusComments } from "@/components/blog/giscus-comments";
-import { MessageSquare } from "lucide-react";
 
 export const metadata = buildPageMetadata({
   title: "Guestbook",
@@ -15,18 +14,15 @@ export default function GuestbookPage() {
   return (
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-10 neu-card p-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="neu-flat-sm rounded-xl p-3">
-              <MessageSquare className="h-7 w-7 text-primary" />
-            </div>
-            <Heading className="text-4xl font-bold">Guestbook</Heading>
-          </div>
-          <Paragraph className="text-lg text-muted-foreground">
+        <header className="mb-12">
+          <span className="label-mono block">Garden · Guestbook</span>
+          <Heading className="mt-4 text-4xl font-bold md:text-5xl">Guestbook</Heading>
+          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
             Leave a note, share feedback, or ask me something. If you&apos;re logged
             into GitHub, you can post directly below.
           </Paragraph>
-        </div>
+          <hr className="gallery-rule mt-8" />
+        </header>
 
         <GiscusComments showFallback />
       </div>

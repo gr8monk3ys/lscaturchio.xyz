@@ -8,7 +8,7 @@ import { ResumeDownloadButton } from "@/components/ui/resume-download-button";
 import { Music } from "@/components/about/Music";
 import { Suspense } from "react";
 import Link from "next/link";
-import { Book, Film, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export const metadata = buildPageMetadata({
   title: "About",
@@ -26,46 +26,38 @@ export default function AboutPage() {
         <Interests />
         <Music />
 
-        {/* Teaser links to dedicated pages */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+        {/* Teaser links to dedicated pages — de-carded hairline rows */}
+        <div className="mt-12 grid grid-cols-1 divide-border border-y border-border md:grid-cols-2 md:divide-x">
           <Link
             href="/books"
-            className="group p-6 rounded-2xl neu-card hover:scale-[1.02] transition-[transform,box-shadow]"
+            className="group flex items-center gap-4 py-6 md:pr-8"
           >
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-primary/10">
-                <Book className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors">
-                  Books I Love
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Philosophy, psychology, and meaningful reads
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-[transform,color]" />
+            <div className="flex-1">
+              <span className="label-mono block">Garden · Reading</span>
+              <h3 className="mt-2 font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                Books I Love
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Philosophy, psychology, and meaningful reads
+              </p>
             </div>
+            <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-[transform,color]" />
           </Link>
 
           <Link
             href="/movies"
-            className="group p-6 rounded-2xl neu-card hover:scale-[1.02] transition-[transform,box-shadow]"
+            className="group flex items-center gap-4 py-6 md:pl-8"
           >
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-primary/10">
-                <Film className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors">
-                  Films I Cherish
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Cinema that shaped my perspective
-                </p>
-              </div>
-              <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-[transform,color]" />
+            <div className="flex-1">
+              <span className="label-mono block">Garden · Cinema</span>
+              <h3 className="mt-2 font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                Films I Cherish
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Cinema that shaped my perspective
+              </p>
             </div>
+            <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-[transform,color]" />
           </Link>
         </div>
         <Suspense fallback={<div className="flex justify-center mt-16"><span className="text-muted-foreground">Loading...</span></div>}>

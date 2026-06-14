@@ -24,15 +24,17 @@ export default function StatsPage() {
     <div className="py-20">
       <Container>
         <div className="max-w-6xl mx-auto">
-          <div className="mb-12">
-            <Heading as="h1" className="mb-4">
+          <header className="mb-12">
+            <span className="label-mono block">Garden · Metrics</span>
+            <Heading as="h1" className="mt-4 text-4xl font-bold md:text-5xl">
               Site Statistics
             </Heading>
-            <p className="text-lg text-muted-foreground">
+            <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
               A public snapshot of what this site actually tracks. Aggregate metrics stay visible,
               and anything private or unavailable is labeled instead of guessed.
             </p>
-          </div>
+            <hr className="gallery-rule mt-8" />
+          </header>
 
           <div className="space-y-8">
             <StatsOverview />
