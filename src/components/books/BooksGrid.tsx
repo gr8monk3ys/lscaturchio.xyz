@@ -139,20 +139,20 @@ export function BooksGrid({ stats, currentlyReading, recentlyRead, toRead, topRa
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex flex-wrap gap-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`neu-button px-4 py-2 flex items-center gap-2 transition-all ${
+              className={`label-mono flex items-center gap-2 border px-4 py-2 transition-colors ${
                 activeTab === tab.id
-                  ? "neu-pressed text-primary"
-                  : "hover:text-primary"
+                  ? "border-primary text-primary"
+                  : "border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className="h-3.5 w-3.5" />
               {tab.label}
             </button>
           );
