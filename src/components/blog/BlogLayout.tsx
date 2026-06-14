@@ -6,13 +6,11 @@ import { usePathname } from "next/navigation";
 import { formatDate } from "@/lib/formatDate";
 import { Container } from "../Container";
 import { Heading } from "../Heading";
-import { Paragraph } from "../Paragraph";
 import { Prose } from "@/components/blog/Prose";
-import { ArrowLeft, Calendar, Tag } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { ReadingProgress } from "./reading-progress";
-import { ReadingTimeBadge } from "./reading-time-badge";
 import { NewsletterCTA } from "./newsletter-cta";
 import { InlineNewsletterCTA } from "./inline-newsletter-cta";
 import { ViewCounter } from "./view-counter";
@@ -131,60 +129,58 @@ export function BlogLayout({
           )}
           <article>
             <header className="flex flex-col">
-              <div>
-                <div className="flex flex-wrap items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    <div className="flex flex-col">
-                      <time dateTime={safeDate} className="text-stone-600 dark:text-stone-400">
-                        {formatDate(safeDate)}
-                      </time>
-                      {safeUpdated && (
-                        <span className="text-xs text-stone-500 dark:text-stone-400">
-                          Updated: {formatDate(safeUpdated)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <ReadingTimeBadge minutes={readingTime} />
-                  <ViewCounter slug={slug} />
-                  <div className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
-                    <div className="flex gap-2">
-                      {meta.tags.map((tag) => (
-                        <Link
-                          key={tag}
-                          href={`/tag/${encodeURIComponent(tag)}`}
-                          className="text-stone-600 hover:text-primary dark:text-stone-400 dark:hover:text-primary transition-colors"
-                        >
-                          {tag}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <Heading className="mt-6 text-4xl font-bold tracking-tight text-stone-800 dark:text-stone-100 sm:text-5xl">
-                  {meta.title}
-                </Heading>
-                <Paragraph className="mt-4 text-sm leading-8 text-stone-600 dark:text-stone-400">
-                  {meta.description}
-                </Paragraph>
-                {relatedHubs.length > 0 && (
-                  <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
-                    <span className="text-stone-500 dark:text-stone-400">Explore:</span>
-                    {relatedHubs.map((hub) => (
+              {/* Wall-label meta line: date · reading time · tags · views */}
+              <div className="label-mono flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                <time dateTime={safeDate}>{formatDate(safeDate)}</time>
+                <span aria-hidden className="text-foreground/25">·</span>
+                <span>{readingTime} min</span>
+                {meta.tags.length > 0 && (
+                  <>
+                    <span aria-hidden className="text-foreground/25">·</span>
+                    {meta.tags.map((tag) => (
                       <Link
-                        key={hub.slug}
-                        href={`/topics/${hub.slug}`}
-                        className="rounded-full bg-primary/10 px-3 py-1 text-primary hover:bg-primary/15 transition-colors"
+                        key={tag}
+                        href={`/tag/${encodeURIComponent(tag)}`}
+                        className="transition-colors hover:text-primary"
                       >
-                        {hub.title}
+                        {tag}
                       </Link>
                     ))}
-                  </div>
+                  </>
                 )}
+                <ViewCounter slug={slug} />
               </div>
-              <div className="mt-8 aspect-video relative overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-800">
+
+              <Heading className="mt-5 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
+                {meta.title}
+              </Heading>
+
+              <p className="mt-5 max-w-2xl text-xl leading-relaxed text-muted-foreground">
+                {meta.description}
+              </p>
+
+              {safeUpdated && (
+                <p className="label-mono mt-3">Updated {formatDate(safeUpdated)}</p>
+              )}
+
+              {relatedHubs.length > 0 && (
+                <p className="label-mono mt-5 flex flex-wrap items-center gap-x-4 gap-y-1">
+                  <span className="text-foreground/45">Explore</span>
+                  {relatedHubs.map((hub) => (
+                    <Link
+                      key={hub.slug}
+                      href={`/topics/${hub.slug}`}
+                      className="text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                    >
+                      {hub.title}
+                    </Link>
+                  ))}
+                </p>
+              )}
+
+              <hr className="gallery-rule mt-8" />
+
+              <div className="relative mt-8 aspect-video overflow-hidden border border-border bg-muted">
                 <FallbackImage
                   src={meta.image}
                   alt={meta.title}
