@@ -3,41 +3,42 @@ import { Container } from "@/components/Container";
 
 export default function NotFound() {
   return (
-    <Container className="min-h-[70vh] flex items-center justify-center">
-      <div className="text-center space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-8xl font-bold text-primary">404</h1>
-          <h2 className="text-2xl font-semibold text-foreground">
-            Page not found
-          </h2>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            The page you&apos;re looking for doesn&apos;t exist or has been moved.
-          </p>
-        </div>
+    <Container className="flex min-h-[72vh] items-center">
+      <div className="w-full max-w-2xl">
+        <span className="label-mono block">Gallery · Error 404</span>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.02] tracking-tight sm:text-6xl">
+          This room is empty.
+        </h1>
+
+        <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+          The piece you came for was moved, renamed, or never hung here in the
+          first place. It happens in a garden — things get pruned, paths get
+          re-laid. Nothing&apos;s broken; you&apos;ve just wandered into a wall.
+        </p>
+
+        <hr className="gallery-rule my-8" />
+
+        <nav className="flex flex-wrap items-center gap-x-8 gap-y-3" aria-label="Recover from 404">
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
+            className="label-mono text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
-            Go Home
+            ← Back to the entrance
           </Link>
           <Link
             href="/blog"
-            className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-border text-foreground font-medium hover:bg-accent transition-colors"
+            className="label-mono text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
-            Read Blog
+            Browse the writing
           </Link>
-        </div>
-
-        <div className="pt-8">
-          <p className="text-sm text-muted-foreground">
-            Looking for something specific?{" "}
-            <Link href="/contact" className="text-primary hover:underline">
-              Get in touch
-            </Link>
-          </p>
-        </div>
+          <Link
+            href="/chat"
+            className="label-mono text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            Ask the site where it went
+          </Link>
+        </nav>
       </div>
     </Container>
   );

@@ -27,12 +27,12 @@ export function ProjectSortToggle({
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-1 rounded-lg bg-muted/50 p-1",
+        "inline-flex items-center border-b border-border",
         className
       )}
       aria-label="Sort projects"
     >
-      <span className="hidden md:inline-flex items-center gap-2 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <span className="label-mono hidden items-center gap-2 px-2 text-muted-foreground md:inline-flex">
         <ArrowDownUp className="h-3.5 w-3.5" />
         Sort
       </span>
@@ -45,14 +45,14 @@ export function ProjectSortToggle({
               onClick={() => onChange(opt.value)}
               aria-pressed={active}
             className={cn(
-              "relative flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-              active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              "label-mono relative flex items-center gap-2 px-3 py-2.5 transition-colors",
+              active ? "text-primary" : "text-muted-foreground hover:text-foreground"
             )}
           >
             {active && (
               <m.div
                 layoutId="activeProjectSort"
-                className="absolute inset-0 rounded-md bg-primary"
+                className="absolute inset-x-0 -bottom-px h-0.5 bg-primary"
                 transition={reduce ? { duration: 0 } : { type: 'spring' as const, bounce: 0.2, duration: 0.45 }}
               />
             )}

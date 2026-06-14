@@ -14,7 +14,7 @@ interface ProjectViewToggleProps {
 
 export function ProjectViewToggle({ mode, onModeChange, className }: ProjectViewToggleProps) {
   return (
-    <div className={cn("flex items-center gap-1 p-1 rounded-lg bg-muted/50", className)}>
+    <div className={cn("flex items-center border-b border-border", className)}>
       <ToggleButton
         isActive={mode === "gallery"}
         onClick={() => onModeChange("gallery")}
@@ -52,14 +52,14 @@ function ToggleButton({ isActive, onClick, icon, label }: ToggleButtonProps) {
       aria-pressed={isActive}
       aria-label={`View as ${label.toLowerCase()}`}
       className={cn(
-        "relative flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-        isActive ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+        "label-mono relative flex items-center gap-2 px-3 py-2.5 transition-colors",
+        isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
       )}
     >
       {isActive && (
         <m.div
           layoutId="activeViewToggle"
-          className="absolute inset-0 bg-primary rounded-md"
+          className="absolute inset-x-0 -bottom-px h-0.5 bg-primary"
           transition={reduce ? { duration: 0 } : { type: 'spring' as const, bounce: 0.2, duration: 0.4 }}
         />
       )}
