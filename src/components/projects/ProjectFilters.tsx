@@ -76,7 +76,7 @@ export function ProjectFilters({
               )}
             >
               {category.label}
-              <span className={isActive ? "text-primary/70" : "text-foreground/40"}>{count}</span>
+              <span className={isActive ? "text-primary" : "text-muted-foreground"}>{count}</span>
             </button>
           );
         })}
