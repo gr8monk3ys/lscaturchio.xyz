@@ -112,7 +112,7 @@ export function BlogGrid({
                 ← Prev
               </Link>
             ) : (
-              <span className="label-mono text-foreground/30">← Prev</span>
+              <span className="label-mono text-muted-foreground/60" aria-disabled="true">← Prev</span>
             )}
 
             <span className="label-mono">
@@ -128,7 +128,7 @@ export function BlogGrid({
                 Next →
               </Link>
             ) : (
-              <span className="label-mono text-foreground/30">Next →</span>
+              <span className="label-mono text-muted-foreground/60" aria-disabled="true">Next →</span>
             )}
           </div>
         </nav>

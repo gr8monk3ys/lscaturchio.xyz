@@ -105,7 +105,7 @@ export default async function Blog({
             <Link
               href="/tags"
               prefetch={false}
-              className="label-mono inline-flex items-center gap-2 text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+              className="label-mono inline-flex items-center gap-2 text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <Tag className="h-3.5 w-3.5" />
               Browse by tag
@@ -113,7 +113,7 @@ export default async function Blog({
             <Link
               href="/chat"
               prefetch={false}
-              className="label-mono inline-flex items-center gap-2 text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+              className="label-mono inline-flex items-center gap-2 text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <MessageSquare className="h-3.5 w-3.5" />
               Ask about a post

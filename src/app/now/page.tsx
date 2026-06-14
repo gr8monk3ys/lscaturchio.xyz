@@ -45,9 +45,9 @@ export default function NowPage() {
             >
               <AlertTriangle className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
               <span>
-                Heads up: this snapshot is about {monthsSinceUpdate} month
-                {monthsSinceUpdate === 1 ? "" : "s"} old, so some of it may be out
-                of date. I keep this honest rather than pretending otherwise.
+                Heads up: this snapshot is about {monthsSinceUpdate} months old, so
+                some of it may be out of date. I keep this honest rather than
+                pretending otherwise.
               </span>
             </div>
           )}
