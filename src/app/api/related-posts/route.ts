@@ -8,11 +8,13 @@ import { getAllBlogs } from '@/lib/getAllBlogs';
 import { apiSuccess, ApiErrors } from '@/lib/api-response';
 
 /**
- * Enhanced related posts algorithm:
- * 1. Prioritize posts from the same series
- * 2. Find posts with matching tags
- * 3. Fallback to embedding similarity search
- * 4. Combine and rank by relevance
+ * Related posts, semantic-first. The point of a garden is non-obvious
+ * connections, so embedding similarity is the primary signal — not shared
+ * tags. Order of influence:
+ * 1. Same series (kept together by design)
+ * 2. Semantic similarity over the post's title + description (primary)
+ * 3. Shared tags — only a small tiebreak, and a fallback when embeddings are
+ *    unavailable (no DB), so the section still works everywhere.
  */
 const handleGet = async (request: NextRequest) => {
   try {
@@ -34,73 +36,79 @@ const handleGet = async (request: NextRequest) => {
 
     const relatedPostsMap = new Map<string, RelatedPost & { score: number }>();
 
-    // Strategy 1: Same series (highest priority)
+    // Strategy 1: Same series — these belong together regardless of similarity.
     if (currentPost?.series) {
-      const seriesPosts = allBlogs.filter(
-        (blog) => blog.series === currentPost.series && blog.slug !== currentSlug
-      );
-
-      seriesPosts.forEach((post) => {
-        relatedPostsMap.set(post.slug, {
-          title: post.title,
-          url: `/blog/${post.slug}`,
-          description: post.description,
-          date: post.date,
-          image: post.image,
-          similarity: 1.0,
-          score: 100, // Highest score for same series
+      allBlogs
+        .filter((blog) => blog.series === currentPost.series && blog.slug !== currentSlug)
+        .forEach((post) => {
+          relatedPostsMap.set(post.slug, {
+            title: post.title,
+            url: `/blog/${post.slug}`,
+            description: post.description,
+            date: post.date,
+            image: post.image,
+            similarity: 1.0,
+            score: 200,
+          });
         });
+    }
+
+    // Strategy 2: Semantic similarity (primary signal). Query on title +
+    // description for a richer match than the title alone. Results are
+    // chunk-level, so collapse to the best similarity per post.
+    const query = currentPost
+      ? `${currentPost.title}. ${currentPost.description}`
+      : title;
+    const embeddingResults = (await searchEmbeddings(query, limit + 20)) as EmbeddingResult[];
+
+    const bestBySlug = new Map<string, number>();
+    for (const result of embeddingResults) {
+      const url = result.metadata?.url;
+      if (!url || url === currentUrl) continue;
+      const slug = url.split('/').pop() || '';
+      if (!slug || slug === currentSlug) continue;
+      const sim = result.similarity ?? 0;
+      if (sim > (bestBySlug.get(slug) ?? -1)) bestBySlug.set(slug, sim);
+    }
+
+    for (const [slug, sim] of Array.from(bestBySlug)) {
+      if (relatedPostsMap.has(slug)) {
+        relatedPostsMap.get(slug)!.score += sim * 100;
+        continue;
+      }
+      const blog = allBlogs.find((b) => b.slug === slug);
+      relatedPostsMap.set(slug, {
+        title: blog?.title ?? 'Untitled',
+        url: `/blog/${slug}`,
+        description: blog?.description ?? '',
+        date: blog?.date ?? '',
+        image: blog?.image ?? '/images/blog/default.webp',
+        similarity: sim,
+        score: sim * 100,
       });
     }
 
-    // Strategy 2: Matching tags (high priority)
+    // Strategy 3: Shared tags — a small tiebreak on semantic candidates, and a
+    // fallback that fills the section when embeddings returned nothing.
     if (currentPost?.tags && currentPost.tags.length > 0) {
+      const semanticAvailable = relatedPostsMap.size > 0;
       allBlogs.forEach((blog) => {
-        if (blog.slug === currentSlug || relatedPostsMap.has(blog.slug)) {
-          return;
-        }
+        if (blog.slug === currentSlug) return;
+        const matchingTags = blog.tags.filter((tag) => currentPost.tags.includes(tag));
+        if (matchingTags.length === 0) return;
+        const tagRatio = matchingTags.length / currentPost.tags.length;
 
-        const matchingTags = blog.tags.filter((tag) =>
-          currentPost.tags.includes(tag)
-        );
-
-        if (matchingTags.length > 0) {
-          const tagScore = (matchingTags.length / currentPost.tags.length) * 50;
+        if (relatedPostsMap.has(blog.slug)) {
+          relatedPostsMap.get(blog.slug)!.score += tagRatio * 12; // tiebreak
+        } else if (!semanticAvailable) {
           relatedPostsMap.set(blog.slug, {
             title: blog.title,
             url: `/blog/${blog.slug}`,
             description: blog.description,
             date: blog.date,
             image: blog.image,
-            similarity: tagScore / 50,
-            score: tagScore,
-          });
-        }
-      });
-    }
-
-    // Strategy 3: Embedding similarity (fallback only when needed)
-    if (relatedPostsMap.size < limit) {
-      const embeddingResults = await searchEmbeddings(title, limit + 10);
-
-      (embeddingResults as EmbeddingResult[]).forEach((result) => {
-        const url = result.metadata?.url;
-        if (!url || url === currentUrl) return;
-
-        const slug = url.split('/').pop() || '';
-        if (relatedPostsMap.has(slug)) {
-          // Boost score with embedding similarity
-          const existing = relatedPostsMap.get(slug)!;
-          existing.score += (result.similarity || 0) * 30;
-        } else {
-          relatedPostsMap.set(slug, {
-            title: result.metadata?.title || 'Untitled',
-            url: result.metadata?.url || '',
-            description: result.metadata?.description || '',
-            date: result.metadata?.date || '',
-            image: result.metadata?.image || '/images/blog/default.webp',
-            similarity: result.similarity,
-            score: (result.similarity || 0) * 30,
+            similarity: tagRatio,
+            score: tagRatio * 40,
           });
         }
       });
