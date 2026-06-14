@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BookOpen, Clapperboard, PenLine, Wrench } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { getCurrentlyReading } from "@/lib/goodreads";
-import { getRecentWatches } from "@/lib/letterboxd";
+import { getRecentWatches, getLiveLastWatch } from "@/lib/letterboxd";
 
 interface CurrentlyStripProps {
   latestPost?: { slug: string; title: string } | null;
@@ -19,14 +19,15 @@ interface StripItem {
 }
 
 /**
- * A thin, live "what I'm up to" row sourced from the same data that powers the
- * garden pages (Goodreads CSV, Letterboxd CSV, blog, GitHub). Every item is
- * optional — missing data just drops the cell — so the strip degrades to
- * nothing rather than showing placeholders.
+ * A thin, live "what I'm up to" row. The last film is fetched live from
+ * Letterboxd's RSS (hourly), falling back to the committed CSV; reading,
+ * latest essay, and latest repo come from the same sources as the garden
+ * pages. Every item is optional — missing data drops the cell — so the strip
+ * degrades to nothing rather than showing placeholders.
  */
-export function CurrentlyStrip({ latestPost, latestRepo }: CurrentlyStripProps) {
+export async function CurrentlyStrip({ latestPost, latestRepo }: CurrentlyStripProps) {
   const reading = getCurrentlyReading()[0];
-  const lastWatch = getRecentWatches(1)[0];
+  const lastWatch = (await getLiveLastWatch()) ?? getRecentWatches(1)[0];
 
   const items: StripItem[] = [];
 

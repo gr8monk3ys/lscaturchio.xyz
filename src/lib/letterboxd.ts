@@ -19,6 +19,58 @@ export interface LetterboxdStats {
   thisYearFilms: number;
 }
 
+const LETTERBOXD_USER = 'gr8monk3ys';
+
+function firstTag(block: string, tag: string): string | null {
+  const m = block.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`));
+  if (!m) return null;
+  return m[1]
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .trim();
+}
+
+/**
+ * The most recently watched film, fetched live from Letterboxd's public RSS
+ * feed (no API key required) and revalidated hourly. Returns null on any
+ * failure so callers can fall back to the committed CSV snapshot — the feed is
+ * a nicety, not a dependency.
+ */
+export async function getLiveLastWatch(): Promise<{
+  title: string;
+  year: string;
+  rating: number | null;
+} | null> {
+  try {
+    const res = await fetch(`https://letterboxd.com/${LETTERBOXD_USER}/rss/`, {
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!res.ok) return null;
+    const xml = await res.text();
+
+    // Walk items in order; the first diary entry (has a filmTitle) is the
+    // latest watch. Reviews/lists without a filmTitle are skipped.
+    const items = xml.split('<item>').slice(1);
+    for (const item of items) {
+      const title = firstTag(item, 'letterboxd:filmTitle');
+      if (!title) continue;
+      const year = firstTag(item, 'letterboxd:filmYear') ?? '';
+      const ratingRaw = firstTag(item, 'letterboxd:memberRating');
+      const rating = ratingRaw ? Number.parseFloat(ratingRaw) : null;
+      return { title, year, rating: Number.isFinite(rating) ? rating : null };
+    }
+    return null;
+  } catch (error) {
+    logError('Letterboxd RSS fetch failed', error, { module: 'letterboxd' });
+    return null;
+  }
+}
+
 // Parse CSV data
 function parseCSV(csvText: string): Record<string, string>[] {
   const lines = csvText.trim().split('\n');
