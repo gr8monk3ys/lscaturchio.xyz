@@ -765,6 +765,24 @@
   }
 }
 
+/* Editorial drop cap: the first letter of an essay set large in Fraunces,
+   like the opening initial of a printed article. Scoped to the article body. */
+.prose-gallery > div > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 3.4em;
+  line-height: 0.78;
+  margin: 0.05em 0.09em 0 0;
+  color: hsl(var(--primary));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .prose-gallery :is(h2, h3) {
+    scroll-margin-top: 6rem;
+  }
+}
+
 /* Google Translate integration hardening */
 .goog-te-banner-frame.skiptranslate,
 iframe.goog-te-banner-frame {
