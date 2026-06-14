@@ -3,7 +3,7 @@ import { buildPageMetadata } from "@/lib/seo";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { MoviesGrid } from "@/components/movies/MoviesGrid";
-import { Film } from "lucide-react";
+
 import {
   getLetterboxdStats,
   getTopRatedMovies,
@@ -27,28 +27,25 @@ export default function MoviesPage() {
   return (
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="mb-12 neu-card p-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="neu-flat-sm rounded-xl p-3">
-              <Film className="h-8 w-8 text-primary" />
-            </div>
-            <Heading className="text-4xl font-bold">Movies</Heading>
-          </div>
-          <Paragraph className="text-lg text-muted-foreground">
+        {/* Header — gallery masthead */}
+        <header className="mb-12">
+          <span className="label-mono block">Garden · Watching</span>
+          <Heading className="mt-4 text-4xl font-bold md:text-5xl">Movies</Heading>
+          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
             A collection of films that have inspired me, made me think, or just thoroughly entertained.
             Heavy on sci-fi and thought-provoking cinema. Synced from my{" "}
             <a
               href="https://letterboxd.com/gr8monk3ys/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:underline"
+              className="text-primary underline-offset-4 hover:underline"
             >
               Letterboxd profile
             </a>
             .
           </Paragraph>
-        </div>
+          <hr className="gallery-rule mt-8" />
+        </header>
 
         <MoviesGrid
           stats={stats}

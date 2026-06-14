@@ -123,24 +123,19 @@ export function BooksGrid({ stats, currentlyReading, recentlyRead, toRead, topRa
 
   return (
     <div className="space-y-8">
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.booksRead}</p>
-          <p className="text-sm text-muted-foreground">Books Read</p>
-        </div>
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.currentlyReading}</p>
-          <p className="text-sm text-muted-foreground">Currently Reading</p>
-        </div>
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.fiveStarBooks}</p>
-          <p className="text-sm text-muted-foreground">5-Star Books</p>
-        </div>
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.totalPages.toLocaleString()}</p>
-          <p className="text-sm text-muted-foreground">Pages Read</p>
-        </div>
+      {/* Stats — hairline-divided wall-label panel */}
+      <div className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-4 sm:divide-x">
+        {[
+          { value: stats.booksRead, label: "Books Read" },
+          { value: stats.currentlyReading, label: "Currently Reading" },
+          { value: stats.fiveStarBooks, label: "5-Star Books" },
+          { value: stats.totalPages.toLocaleString(), label: "Pages Read" },
+        ].map((stat) => (
+          <div key={stat.label} className="px-5 py-6">
+            <p className="font-display text-3xl font-semibold tracking-tight">{stat.value}</p>
+            <p className="label-mono mt-2">{stat.label}</p>
+          </div>
+        ))}
       </div>
 
       {/* Tabs */}
