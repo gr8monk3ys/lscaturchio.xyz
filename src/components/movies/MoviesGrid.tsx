@@ -30,9 +30,9 @@ function RatingStars({ rating }: { rating: number }) {
           key={star}
           className={`h-3 w-3 ${
             star <= fullStars
-              ? "text-orange-500 fill-orange-500"
+              ? "text-primary fill-primary"
               : star === fullStars + 1 && hasHalfStar
-              ? "text-orange-500 fill-orange-500/50"
+              ? "text-primary fill-primary/50"
               : "text-muted-foreground"
           }`}
         />
@@ -56,28 +56,26 @@ function MovieCard({ movie, index }: { movie: LetterboxdMovie; index: number }) 
         rel="noopener noreferrer"
         className="group block"
       >
-        <div className="neu-card p-3 h-full hover:shadow-lg transition-shadow">
-          <div className="relative aspect-2/3 mb-3 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-            <Film className="h-12 w-12 text-muted-foreground/30" />
-            {movie.isRewatch && (
-              <span className="absolute top-2 right-2 bg-primary/90 text-primary-foreground text-xs px-2 py-0.5 rounded">
-                Rewatch
-              </span>
-            )}
-          </div>
-          <h3 className="font-medium text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
-            {movie.title}
-          </h3>
-          <p className="text-xs text-muted-foreground mb-2">{movie.year}</p>
-          <div className="flex items-center justify-between flex-wrap gap-1">
-            {movie.rating && <RatingStars rating={movie.rating} />}
-            {movie.dateWatched && (
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {new Date(movie.dateWatched).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-              </span>
-            )}
-          </div>
+        <div className="relative mb-3 flex aspect-2/3 items-center justify-center overflow-hidden border border-border bg-muted">
+          <Film className="h-12 w-12 text-muted-foreground/30" />
+          {movie.isRewatch && (
+            <span className="label-mono absolute top-2 right-2 text-white/90 [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
+              Rewatch
+            </span>
+          )}
+        </div>
+        <h3 className="mb-1 line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">
+          {movie.title}
+        </h3>
+        <p className="mb-2 text-xs text-muted-foreground">{movie.year}</p>
+        <div className="flex flex-wrap items-center justify-between gap-1">
+          {movie.rating && <RatingStars rating={movie.rating} />}
+          {movie.dateWatched && (
+            <span className="label-mono flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {new Date(movie.dateWatched).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+            </span>
+          )}
         </div>
       </Link>
     </m.div>

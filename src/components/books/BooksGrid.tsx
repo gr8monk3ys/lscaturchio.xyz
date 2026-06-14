@@ -28,7 +28,7 @@ function RatingStars({ rating }: { rating: number }) {
         <Star
           key={star}
           className={`h-3 w-3 ${
-            star <= rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"
+            star <= rating ? "text-primary fill-primary" : "text-muted-foreground"
           }`}
         />
       ))}
@@ -74,29 +74,25 @@ function BookCard({ book, index }: { book: GoodreadsBook; index: number }) {
         rel="noopener noreferrer"
         className="group block"
       >
-        <div className="neu-card p-3 h-full hover:shadow-lg transition-shadow">
-          <div className="relative aspect-2/3 mb-3 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-            <BookCover book={book} />
-            {book.shelf === "currently-reading" && (
-              <span className="absolute top-2 right-2 bg-primary/90 text-primary-foreground text-xs px-2 py-0.5 rounded">
-                Reading
-              </span>
-            )}
-          </div>
-          <h3 className="font-medium text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
-            {book.title}
-          </h3>
-          <p className="text-xs text-muted-foreground line-clamp-1 mb-2">
-            {book.author}
-          </p>
-          <div className="flex items-center justify-between flex-wrap gap-1">
-            {book.rating && <RatingStars rating={book.rating} />}
-            {book.yearPublished && (
-              <span className="text-xs text-muted-foreground">
-                {book.yearPublished}
-              </span>
-            )}
-          </div>
+        <div className="relative mb-3 flex aspect-2/3 items-center justify-center overflow-hidden border border-border bg-muted">
+          <BookCover book={book} />
+          {book.shelf === "currently-reading" && (
+            <span className="label-mono absolute top-2 right-2 text-white/90 [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
+              Reading
+            </span>
+          )}
+        </div>
+        <h3 className="mb-1 line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">
+          {book.title}
+        </h3>
+        <p className="mb-2 line-clamp-1 text-xs text-muted-foreground">
+          {book.author}
+        </p>
+        <div className="flex flex-wrap items-center justify-between gap-1">
+          {book.rating && <RatingStars rating={book.rating} />}
+          {book.yearPublished && (
+            <span className="label-mono">{book.yearPublished}</span>
+          )}
         </div>
       </Link>
     </m.div>

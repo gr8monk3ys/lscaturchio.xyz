@@ -39,9 +39,17 @@ export function Navbar() {
                 {primaryNavigation.map((item) =>
                   item.href === ACCENT_HREF ? (
                     <li key={item.href}>
-                      <Link href={item.href} prefetch={false} className={accentLinkClass}>
+                      {/* Route through ActiveNavLink so the accent item still
+                          emits aria-current="page"; it stays filled in both
+                          states (active/inactive class identical). */}
+                      <ActiveNavLink
+                        href={item.href}
+                        className={accentLinkClass}
+                        activeClassName=""
+                        inactiveClassName=""
+                      >
                         {item.name}
-                      </Link>
+                      </ActiveNavLink>
                     </li>
                   ) : (
                     <li key={item.href}>

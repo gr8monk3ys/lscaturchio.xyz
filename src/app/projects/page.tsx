@@ -108,16 +108,18 @@ export default async function Projects({
             </Link>
           </div>
 
-          {/* Catalogue stats — wall-label numerals divided by hairlines. */}
+          {/* Catalogue stats — wall-label numerals divided by hairlines. dt
+              precedes dd for valid <dl> semantics; flex-col-reverse keeps the
+              numeral visually on top. */}
           <dl className="mt-10 grid grid-cols-3 divide-x divide-border border-y border-border">
             {[
               { label: "Projects", value: projectCount },
               { label: "Featured", value: featuredCount },
               { label: "Categories", value: categoryCount },
             ].map((stat) => (
-              <div key={stat.label} className="px-5 py-6 first:pl-0">
-                <dd className="font-display text-4xl font-semibold tracking-tight">{stat.value}</dd>
+              <div key={stat.label} className="flex flex-col-reverse px-5 py-6 first:pl-0">
                 <dt className="label-mono mt-2">{stat.label}</dt>
+                <dd className="font-display text-4xl font-semibold tracking-tight">{stat.value}</dd>
               </div>
             ))}
           </dl>

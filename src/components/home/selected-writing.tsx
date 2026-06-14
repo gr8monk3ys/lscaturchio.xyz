@@ -61,7 +61,7 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
                 )}
               >
                 <div
-                  className="neu-card h-full overflow-hidden"
+                  className="h-full overflow-hidden border border-border transition-colors group-hover:border-primary/45"
                 >
                   <div className="relative h-56 overflow-hidden">
                     <Image

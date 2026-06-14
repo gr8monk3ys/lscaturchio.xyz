@@ -291,6 +291,10 @@
 
   opacity: 0;
   transform: translate3d(0, var(--reveal-y), 0);
+  /* Ease the in→out flip that happens on hydration for below-fold elements
+     (server renders 'in'; the observer then resets them) so it reads as a
+     soft settle rather than a hard pop. */
+  transition: opacity 220ms ease;
 
   &[data-reveal-state='in'] {
     animation: reveal-in var(--reveal-duration) var(--reveal-ease) both;
