@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { m, useMotionPreset, useReducedMotion } from '@/lib/motion'
-import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { Calendar, ExternalLink, Github, ArrowRight } from 'lucide-react'
 import type { Product, ProjectCategory } from '@/types/products'
@@ -61,10 +60,7 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
 
   return (
     <div
-      className={cn(
-        'overflow-hidden rounded-2xl border border-border/50 bg-card/60 backdrop-blur-xs',
-        compact ? '' : 'shadow-xs'
-      )}
+      className="overflow-hidden border border-border"
     >
       <div className={cn('relative', compact ? 'aspect-video' : 'aspect-16/10')}>
         <Image
@@ -89,31 +85,26 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
             : {})}
         >
           <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
+            <span className="label-mono flex items-center gap-2">
               {project.status && (
-                <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-foreground">
-                  {project.status === 'active' ? 'Active' : project.status === 'maintained' ? 'Maintained' : 'Archived'}
-                </span>
+                <span>{project.status === 'active' ? 'Active' : project.status === 'maintained' ? 'Maintained' : 'Archived'}</span>
               )}
+              {project.status && when && <span aria-hidden>·</span>}
               {when && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
                   <Calendar className="h-3.5 w-3.5" />
                   {when}
                 </span>
               )}
-            </div>
-            <div className="text-xl font-semibold tracking-tight">{title}</div>
+            </span>
+            <div className="font-display text-xl font-semibold tracking-tight">{title}</div>
             <p className="text-sm text-muted-foreground">{description}</p>
           </div>
 
           {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 pt-1">
-              {tags.slice(0, 3).map((t) => (
-                <Badge key={t} variant="secondary" className="text-xs">
-                  {t}
-                </Badge>
-              ))}
-            </div>
+            <p className="label-mono normal-case tracking-normal text-muted-foreground">
+              {tags.slice(0, 3).join('  ·  ')}
+            </p>
           )}
 
           {highlights.length > 0 && (
