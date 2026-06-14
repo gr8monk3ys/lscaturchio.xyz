@@ -11,6 +11,7 @@ import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Fraunces, IBM_Plex_Mono } from "next/font/google";
 import { SITE_URL } from "@/lib/site-url";
 import { DeferredLayoutExtras } from "@/components/layout/deferred-layout-extras";
+import { ConsoleGreeting } from "@/components/layout/console-greeting";
 import { MobileNavbarGate } from "@/components/layout/mobile-navbar-gate";
 import { MotionProvider } from "@/components/layout/motion-provider";
 const WEBMENTION_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, "");
@@ -186,6 +187,7 @@ export default function RootLayout({
               {children}
             </main>
             <DeferredLayoutExtras />
+            <ConsoleGreeting />
 
             <Suspense fallback={<div className="min-h-[200px]"></div>}>
               <Footer />

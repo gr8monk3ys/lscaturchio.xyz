@@ -102,19 +102,19 @@ function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-center md:flex-row">
-          <p className="text-sm text-muted-foreground">
-            {currentYear} Lorenzo Scaturchio. All rights reserved.
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-center md:flex-row">
+          <p className="label-mono">
+            © {currentYear} · Los Angeles · A garden, not a homepage
           </p>
-          <nav className="flex gap-4 text-sm">
-            <Link href="/stats" prefetch={false} className="transition-colors hover:text-primary">
+          <nav className="flex gap-5">
+            <Link href="/stats" prefetch={false} className="label-mono transition-colors hover:text-primary">
               Stats
             </Link>
-            <Link href="/privacy-policy" prefetch={false} className="transition-colors hover:text-primary">
-              Privacy Policy
+            <Link href="/privacy-policy" prefetch={false} className="label-mono transition-colors hover:text-primary">
+              Privacy
             </Link>
-            <Link href="/terms-of-service" prefetch={false} className="transition-colors hover:text-primary">
-              Terms of Service
+            <Link href="/terms-of-service" prefetch={false} className="label-mono transition-colors hover:text-primary">
+              Terms
             </Link>
           </nav>
         </div>
