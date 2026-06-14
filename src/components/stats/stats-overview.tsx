@@ -1,8 +1,6 @@
 "use client"
 
 import { useMemo } from 'react'
-import { m } from '@/lib/motion'
-import { Clock3, Eye, FileText, Users } from 'lucide-react'
 import useSWR from 'swr'
 import { fetchJson, unwrapApiData } from '@/lib/fetcher'
 
@@ -40,28 +38,16 @@ const numberFormatter = new Intl.NumberFormat('en-US')
 
 const cardStyles = {
   avgReadTime: {
-    bgColor: 'bg-orange-100 dark:bg-orange-900/20',
-    color: 'text-orange-600 dark:text-orange-400',
-    icon: Clock3,
     label: 'Avg. Read Time',
     suffix: ' min',
   },
   newsletterSubscribers: {
-    bgColor: 'bg-purple-100 dark:bg-purple-900/20',
-    color: 'text-purple-600 dark:text-purple-400',
-    icon: Users,
     label: 'Newsletter Subscribers',
   },
   totalPosts: {
-    bgColor: 'bg-green-100 dark:bg-green-900/20',
-    color: 'text-green-600 dark:text-green-400',
-    icon: FileText,
     label: 'Blog Posts',
   },
   totalViews: {
-    bgColor: 'bg-blue-100 dark:bg-blue-900/20',
-    color: 'text-blue-600 dark:text-blue-400',
-    icon: Eye,
     label: 'Total Views',
   },
 } as const
@@ -151,67 +137,33 @@ export function StatsOverview() {
 
   return (
     <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {(isLoading ? Array.from({ length: 4 }, (_, index) => index) : cards).map((card, index) => {
+        <div className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-4 sm:divide-x">
+          {(isLoading ? Array.from({ length: 4 }, (_, index) => index) : cards).map((card) => {
             if (typeof card === 'number') {
               return (
-                <div
-                  key={`stats-skeleton-${card}`}
-                  className="rounded-2xl border border-gray-200 p-6 dark:border-gray-800"
-                  aria-hidden="true"
-                >
-                  <div className="mb-5 h-12 w-12 animate-pulse rounded-xl bg-muted" />
-                  <div className="space-y-3">
-                    <div className="h-4 w-24 animate-pulse rounded bg-muted" />
-                    <div className="h-8 w-32 animate-pulse rounded bg-muted" />
-                    <div className="h-3 w-40 animate-pulse rounded bg-muted" />
-                  </div>
+                <div key={`stats-skeleton-${card}`} className="px-5 py-6" aria-hidden="true">
+                  <div className="h-8 w-24 animate-pulse rounded bg-muted" />
+                  <div className="mt-2 h-3 w-28 animate-pulse rounded bg-muted" />
                 </div>
               )
             }
 
-            const Icon = card.icon
-
             return (
-              <m.div
-                key={card.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.06 }}
-                className="rounded-2xl border border-gray-200 p-6 dark:border-gray-800"
-              >
-                <div className="mb-5 flex items-center justify-between gap-4">
-                  <div className={`rounded-xl p-3 ${card.bgColor}`}>
-                    <Icon className={`h-6 w-6 ${card.color}`} />
-                  </div>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${
-                      card.metric.available
-                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
-                        : 'bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {card.metric.available ? 'Live' : 'Unavailable'}
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">{card.label}</p>
-                  <p className="text-3xl font-bold tabular-nums">
-                    {formatMetricValue(card.metric, 'suffix' in card ? card.suffix : undefined)}
-                  </p>
-                  <p className="min-h-5 text-sm text-muted-foreground">
-                    {card.metric.available
-                      ? 'Public aggregate data'
-                      : card.metric.note || 'This metric is not public yet.'}
-                  </p>
-                </div>
-              </m.div>
+              <div key={card.label} className="px-5 py-6">
+                <p className="font-display text-3xl font-semibold tracking-tight tabular-nums">
+                  {formatMetricValue(card.metric, 'suffix' in card ? card.suffix : undefined)}
+                </p>
+                <p className="label-mono mt-2">{card.label}</p>
+                <p className="label-mono mt-1 text-muted-foreground">
+                  {card.metric.available ? 'Live' : 'Unavailable'}
+                </p>
+              </div>
             )
           })}
         </div>
 
         {hasUnavailableMetrics && (
-          <p className="rounded-2xl border border-dashed border-border/70 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Only public, aggregate metrics are shown here. When a source is private or unavailable, the UI
             labels it instead of estimating.
           </p>

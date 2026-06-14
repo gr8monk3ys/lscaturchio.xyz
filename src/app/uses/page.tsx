@@ -1,7 +1,7 @@
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
-import { Monitor, Mouse, Keyboard, Laptop, HardDrive, Globe, Terminal, Code, Palette, LucideIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Heading } from "@/components/Heading";
+import { Paragraph } from "@/components/Paragraph";
 import { RagStatusCard } from "@/components/uses/rag-status-card";
 
 export const metadata = buildPageMetadata({
@@ -11,24 +11,17 @@ export const metadata = buildPageMetadata({
 });
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <section className="mb-12">
-    <h2 className="text-3xl font-bold mb-6 text-primary">{title}</h2>
+  <section className="mb-16">
+    <h2 className="font-display text-2xl font-semibold tracking-tight mb-6">{title}</h2>
     {children}
   </section>
 );
 
-const Item = ({ icon: Icon, title, children }: { icon: LucideIcon; title: string; children: React.ReactNode }) => (
-  <div className="mb-6 flex gap-4">
-    <div className="shrink-0 mt-1">
-      <div className="size-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-        <Icon className="size-5" />
-      </div>
-    </div>
-    <div className="flex-1">
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <div className="text-muted-foreground space-y-2">
-        {children}
-      </div>
+const Item = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div className="mb-8 border-b border-border pb-8 last:mb-0 last:border-b-0 last:pb-0">
+    <h3 className="font-display text-lg font-semibold mb-2">{title}</h3>
+    <div className="text-muted-foreground space-y-2">
+      {children}
     </div>
   </div>
 );
@@ -37,33 +30,32 @@ export default function UsesPage() {
   return (
     <Container size="large">
       <div className="max-w-4xl mx-auto py-12">
-        <div className="mb-12">
-          <Badge variant="secondary" className="mb-4">My Setup</Badge>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            What I Use
-          </h1>
-          <p className="text-xl text-muted-foreground mb-6">
+        <header className="mb-12">
+          <span className="label-mono block">Garden · Setup</span>
+          <Heading className="mt-4 text-4xl font-bold md:text-5xl">What I Use</Heading>
+          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
             The following is the way in which I am currently using my setup. My philosophy is usually
             associated with it being <a href="https://suckless.org/rocks/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">FOSS</a> (Free
             and open source software) since this is ideally how the internet is supposed to be used.
             Typically, the less bloat that exists the better.
-          </p>
-          <div className="bg-accent/50 border border-border rounded-lg p-4">
-            <p className="text-sm font-medium mb-1">Disclosure</p>
-            <p className="text-sm text-muted-foreground">
+          </Paragraph>
+          <hr className="gallery-rule mt-8" />
+          <div className="mt-8 border-l-2 border-border pl-4">
+            <p className="label-mono">Disclosure</p>
+            <p className="mt-2 text-sm text-muted-foreground">
               Many of the links here are affiliate links to services and products I use. I would never use affiliate links for products that I don&apos;t personally use.
             </p>
           </div>
-        </div>
+        </header>
 
         <Section title="Hardware">
-          <Item icon={Laptop} title="Laptop">
+          <Item title="Laptop">
             <p>
               For my laptop, I use a <a href="https://amzn.to/3V3lKhL" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Macbook Pro 15&quot;</a>.
             </p>
           </Item>
 
-          <Item icon={Mouse} title="Mouse">
+          <Item title="Mouse">
             <p>
               For my mouse, I use a <a href="https://amzn.to/48PmLgl" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Razer Viper Pro (White)</a>.
               I found this mouse to be the most lightweight from what I researched but honestly more for gaming (which I
@@ -71,14 +63,14 @@ export default function UsesPage() {
             </p>
           </Item>
 
-          <Item icon={Keyboard} title="Keyboard">
+          <Item title="Keyboard">
             <p>
               For my keyboard, I use a <strong>Custom Keyboard</strong>. As of right now the custom build uses a Glorious keyboard
               base but I think eventually I am going to give in on the split keyboard hype as it seems overall more ergonomic.
             </p>
           </Item>
 
-          <Item icon={Monitor} title="Laptop Stand">
+          <Item title="Laptop Stand">
             <p>
               For my laptop stand, I use a <a href="https://www.amazon.co.uk/dp/B07DL3Q3J7/ref=twister_B08FZBMBGW?_encoding=UTF8&th=1" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Rain Design,
               Inc. 10084 mBar Pro+ Foldable Laptop Stand - Silver</a>. This is essential if you want to avoid <a href="https://www.youtube.com/watch?v=Rc8ZQeIZn40" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">the
@@ -89,7 +81,7 @@ export default function UsesPage() {
         </Section>
 
         <Section title="Software">
-          <Item icon={Terminal} title="Operating System & Terminal">
+          <Item title="Operating System & Terminal">
             <p>
               Of course like many others, I use <a href="https://archlinux.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Arch Linux</strong></a> (btw).
               Yes, it is a pain in the ass to set up but yes this was absolutely worth the time. Why? Because of:
@@ -106,7 +98,7 @@ export default function UsesPage() {
             </p>
           </Item>
 
-          <Item icon={Globe} title="Browser">
+          <Item title="Browser">
             <p>
               For my <strong>browser</strong>, I use <a href="https://www.mozilla.org/en-US/firefox/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Firefox</strong></a> with
               a user.js file (based on <a href="https://github.com/yokoffing/BetterFox" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Betterfox</a>) to
@@ -127,14 +119,14 @@ export default function UsesPage() {
             </ul>
           </Item>
 
-          <Item icon={Code} title="Text Editor">
+          <Item title="Text Editor">
             <p>
               I use <a href="https://neovim.io/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>neovim</strong></a> for
               text editing as it in my opinion although difficult at first is absolutely worth it.
             </p>
           </Item>
 
-          <Item icon={HardDrive} title="Document Processing">
+          <Item title="Document Processing">
             <p>
               I use primarily <a href="https://www.latex-project.org/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">LaTeX</a> which
               the first document I had ever finished writing was my resume back in 2019.
@@ -143,14 +135,14 @@ export default function UsesPage() {
         </Section>
 
         <Section title="Services">
-          <Item icon={Globe} title="Email">
+          <Item title="Email">
             <p>
               For email, I use <a href="https://pr.tn/ref/Y8M5X5MSTJ9G" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>ProtonMail</strong></a>.
               Yes I know this isn&apos;t like being as based as hosting your own email client like <a href="https://muttwizard.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Mutt Wizard</a>.
             </p>
           </Item>
 
-          <Item icon={HardDrive} title="Password Manager">
+          <Item title="Password Manager">
             <p>
               <a href="https://bitwarden.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Bitwarden</strong></a> is
               the best password manager. It does everything you could need a password manager to do, and the premium subscription if you
@@ -158,7 +150,7 @@ export default function UsesPage() {
             </p>
           </Item>
 
-          <Item icon={Globe} title="Hosting">
+          <Item title="Hosting">
             <p>
               This site is currently hosted by <strong>Vercel</strong>. Previously, I used <a href="https://www.vultr.com/?ref=9005580-8H" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Vultr</a> with
               a cheap Debian VPS to host all my projects. Having your own VPS gives you a lot more freedom in hosting your own website
@@ -166,7 +158,7 @@ export default function UsesPage() {
             </p>
           </Item>
 
-          <Item icon={Globe} title="Domain Registrar">
+          <Item title="Domain Registrar">
             <p>
               I use <a href="https://www.epik.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Epik</strong></a> to
               purchase my domains which isn&apos;t anything special or particular, this just happens to be what I use.
@@ -192,7 +184,7 @@ export default function UsesPage() {
         </Section>
 
         <Section title="Theme">
-          <Item icon={Palette} title="Color Scheme & Fonts">
+          <Item title="Color Scheme & Fonts">
             <p>
               I use the <a href="https://github.com/catppuccin/catppuccin" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Catppuccin</strong></a> color
               scheme for just about everything.
@@ -209,14 +201,14 @@ export default function UsesPage() {
             <RagStatusCard />
           </div>
 
-          <Item icon={Code} title="Vector Search">
+          <Item title="Vector Search">
             <p>
               Embeddings are stored in <strong>Postgres</strong> (Neon) with <strong>pgvector</strong>, queried via a server-side
               similarity function (<code>match_embeddings</code>) for fast retrieval.
             </p>
           </Item>
 
-          <Item icon={Terminal} title="Embeddings">
+          <Item title="Embeddings">
             <p>
               I support two providers:
               <strong> OpenAI</strong> (<code>text-embedding-3-small</code>, 768 dims) when <code>OPENAI_API_KEY</code> is set, or
@@ -224,7 +216,7 @@ export default function UsesPage() {
             </p>
           </Item>
 
-          <Item icon={Globe} title="Chat">
+          <Item title="Chat">
             <p>
               The site chat endpoint uses OpenAI when configured (primary <code>OPENAI_CHAT_MODEL</code>, then smaller fallback
               <code>OPENAI_FALLBACK_CHAT_MODEL</code>), then OpenRouter when configured, then falls back to Ollama locally.
@@ -232,7 +224,7 @@ export default function UsesPage() {
             </p>
           </Item>
 
-          <Item icon={HardDrive} title="Ingestion">
+          <Item title="Ingestion">
             <p>
               I keep content ingestion repeatable with scripts like <code>bun run generate-embeddings</code> and <code>bun run generate-tts</code>.
               That keeps the AI features grounded on real blog content instead of vibes.
@@ -241,9 +233,9 @@ export default function UsesPage() {
         </Section>
 
         <Section title="This Website">
-          <div className="bg-accent/30 border border-border rounded-lg p-6">
-            <p className="mb-4">
-              This site is built with <strong>Next.js</strong>, a React framework that outputs HTML and CSS. The only Javascript in
+          <div className="space-y-4 text-muted-foreground">
+            <p>
+              This site is built with <strong className="text-foreground">Next.js</strong>, a React framework that outputs HTML and CSS. The only Javascript in
               this entire page is for interactive components and navigation. Previously, I used <a href="https://gohugo.io/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Hugo</a>,
               a static site generator.
             </p>

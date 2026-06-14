@@ -4,7 +4,7 @@ import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { PhotosGrid } from "@/components/photos/PhotosGrid";
-import { Camera, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import type { PhotoCategory } from "@/constants/photos";
 
 export const metadata = buildPageMetadata({
@@ -48,19 +48,16 @@ export default async function PhotosPage({
   return (
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-12 neu-card p-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="neu-flat-sm rounded-xl p-3">
-              <Camera className="h-8 w-8 text-primary" />
-            </div>
-            <Heading className="text-4xl font-bold">Photography</Heading>
-          </div>
-          <Paragraph className="text-lg text-muted-foreground">
+        {/* Header — gallery masthead */}
+        <header className="mb-12">
+          <span className="label-mono block">Garden · Photography</span>
+          <Heading className="mt-4 text-4xl font-bold md:text-5xl">Photography</Heading>
+          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
             Moments captured through my lens. A collection of travel, landscape, and nature
             photography shot on my Fuji X-T30 II with custom film simulation recipes.
           </Paragraph>
-        </div>
+          <hr className="gallery-rule mt-8" />
+        </header>
 
         <Suspense fallback={<PhotosGridSkeleton />}>
           <PhotosGrid initialCategory={initialCategory} />

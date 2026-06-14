@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Layers } from "lucide-react";
 
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
@@ -49,41 +48,40 @@ export default async function TopicsPage() {
 
   return (
     <Container className="mt-16 lg:mt-32" size="large">
-      <div className="max-w-5xl mx-auto space-y-10">
-        <div className="flex items-center gap-3">
-          <Layers className="h-8 w-8 text-primary" />
-          <Heading className="text-4xl font-bold">Topics</Heading>
-        </div>
+      <div className="max-w-5xl mx-auto">
+        {/* Header — gallery masthead */}
+        <header className="mb-12">
+          <span className="label-mono block">Garden · Topics</span>
+          <Heading className="mt-4 text-4xl font-bold md:text-5xl">Topics</Heading>
+          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
+            A small set of curated hubs that link related posts and projects. If you prefer raw tags, you can browse{" "}
+            <Link href="/tags" className="text-primary underline-offset-4 hover:underline">
+              all tags
+            </Link>
+            .
+          </Paragraph>
+          <hr className="gallery-rule mt-8" />
+        </header>
 
-        <Paragraph className="text-lg text-muted-foreground">
-          A small set of curated hubs that link related posts and projects. If you prefer raw tags, you can browse{" "}
-          <Link href="/tags" className="text-primary hover:underline">
-            all tags
-          </Link>
-          .
-        </Paragraph>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
           {hubsWithCounts.map((hub) => (
             <Link
               key={hub.slug}
               href={`/topics/${hub.slug}`}
-              className="group neu-card p-6 hover:-translate-y-0.5 transition-[transform,box-shadow,color,background-color]"
+              className="group border-t border-border py-6 transition-colors"
             >
-              <div className="flex items-start justify-between gap-3">
+              <div className="flex items-baseline justify-between gap-3">
                 <h2 className="text-xl font-semibold group-hover:text-primary transition-colors">
                   {hub.title}
                 </h2>
-                <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                  {hub.count}
-                </span>
+                <span className="label-mono shrink-0">{hub.count}</span>
               </div>
               <p className="mt-3 text-sm text-muted-foreground">
                 {hub.description}
               </p>
-              <div className="mt-4 text-xs text-muted-foreground">
-                Includes tags: {hub.tags.slice(0, 4).join(", ")}{hub.tags.length > 4 ? ", ..." : ""}
-              </div>
+              <p className="label-mono mt-4">
+                {hub.tags.slice(0, 4).join("  ·  ")}{hub.tags.length > 4 ? "  ·  …" : ""}
+              </p>
             </Link>
           ))}
         </div>
