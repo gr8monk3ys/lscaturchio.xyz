@@ -126,6 +126,7 @@ export const footerColumns: NavCategory[] = [
     name: 'Writing',
     items: [
       { name: 'Blog', href: '/blog' },
+      { name: 'Map', href: '/map' },
       { name: 'Topics', href: '/topics' },
       { name: 'Series', href: '/series' },
       { name: 'Podcast', href: '/podcast' },
