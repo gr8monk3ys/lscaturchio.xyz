@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import { CodeBlock } from "@/components/blog/code-block";
+import { Sidenote } from "@/components/blog/sidenote";
 
 // This file allows you to provide custom React components
 // to be used in MDX files. You can import and use any
@@ -10,6 +11,8 @@ import { CodeBlock } from "@/components/blog/code-block";
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     pre: CodeBlock,
+    // <Sidenote>…</Sidenote> — Tufte-style margin note, usable in any essay MDX.
+    Sidenote,
     ...components,
   };
 }
