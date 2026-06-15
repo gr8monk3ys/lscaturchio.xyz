@@ -1,6 +1,5 @@
 "use client";
 
-import { BookOpen, TrendingUp, Sparkles } from "lucide-react";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 
 export function NewsletterCTA({
@@ -11,47 +10,18 @@ export function NewsletterCTA({
   sourcePath?: string;
 }) {
   return (
-    <div className="my-12 p-8 rounded-2xl neu-card relative overflow-hidden">
-
-      <div className="relative z-10">
-        <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="h-5 w-5 text-primary" />
-          <h3 className="text-2xl font-bold">Enjoyed this article?</h3>
-        </div>
-
-        <p className="text-muted-foreground mb-6 leading-relaxed">
-          Join my newsletter to get notified when I publish new articles on AI, technology, and philosophy.
-          I share in-depth insights, practical tutorials, and thought-provoking ideas.
-        </p>
-
-        <div className="grid md:grid-cols-2 gap-6 mb-6">
-          <div className="flex items-start gap-3">
-            <div className="mt-1 p-2 rounded-xl neu-flat-sm">
-              <BookOpen className="h-4 w-4 text-primary" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-sm mb-1">Deep Dives</h4>
-              <p className="text-xs text-muted-foreground">
-                Technical tutorials and detailed guides
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3">
-            <div className="mt-1 p-2 rounded-xl neu-flat-sm">
-              <TrendingUp className="h-4 w-4 text-primary" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-sm mb-1">Latest Trends</h4>
-              <p className="text-xs text-muted-foreground">
-                The latest in AI and tech
-              </p>
-            </div>
-          </div>
-        </div>
-
+    <section className="my-16 border-t border-border pt-8">
+      <span className="label-mono block">Newsletter</span>
+      <h3 className="mt-2 font-display text-2xl font-semibold tracking-tight">
+        Enjoyed this?
+      </h3>
+      <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
+        Get notified when I publish — new essays on AI, systems, and the world
+        they land in. No spam, just the writing.
+      </p>
+      <div className="mt-6">
         <NewsletterForm defaultTopics={defaultTopics} sourcePath={sourcePath} />
       </div>
-    </div>
+    </section>
   );
 }
