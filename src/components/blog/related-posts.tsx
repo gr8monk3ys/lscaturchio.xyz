@@ -2,10 +2,10 @@
 
 import { useMemo } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Calendar } from 'lucide-react'
 import Image from 'next/image'
 import useSWR from 'swr'
 import { fetchJson, unwrapApiData } from '@/lib/fetcher'
+import { formatDate } from '@/lib/formatDate'
 
 interface RelatedPost {
   title: string
@@ -18,6 +18,20 @@ interface RelatedPost {
 interface RelatedPostsProps {
   currentTitle: string
   currentUrl: string
+}
+
+function GallerySection({ children }: { children: React.ReactNode }) {
+  return (
+    <section className="mt-16 border-t border-border pt-10">
+      <span className="label-mono block">Related</span>
+      <h3 className="mt-2 font-display text-2xl font-semibold tracking-tight">
+        Connected by idea, not tag
+      </h3>
+      <div className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        {children}
+      </div>
+    </section>
+  )
 }
 
 export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
@@ -39,18 +53,15 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
 
   if (isLoading) {
     return (
-      <div className="mt-12 pt-8">
-        <h3 className="text-2xl font-bold mb-6">Related Posts</h3>
-        <div className="grid gap-6 md:grid-cols-3">
-          {[1, 2, 3].map((slot) => (
-            <div key={`related-skeleton-${slot}`} className="animate-pulse neu-flat rounded-2xl p-4">
-              <div className="aspect-video bg-muted rounded-xl mb-3" />
-              <div className="h-4 bg-muted rounded w-3/4 mb-2" />
-              <div className="h-3 bg-muted rounded w-full" />
-            </div>
-          ))}
-        </div>
-      </div>
+      <GallerySection>
+        {[1, 2, 3].map((slot) => (
+          <div key={`related-skeleton-${slot}`} className="animate-pulse">
+            <div className="aspect-[3/2] border border-border bg-muted" />
+            <div className="mt-4 h-3 w-1/3 bg-muted" />
+            <div className="mt-2 h-5 w-3/4 bg-muted" />
+          </div>
+        ))}
+      </GallerySection>
     )
   }
 
@@ -59,52 +70,27 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
   }
 
   return (
-    <div className="mt-12 pt-8">
-      <h3 className="text-2xl font-bold mb-6 text-foreground">Related Posts</h3>
-      <div className="grid gap-6 md:grid-cols-3">
-        {posts.map((post) => (
-          <div key={post.url}>
-            <Link
-              href={post.url}
-              className="group block h-full rounded-2xl neu-card overflow-hidden"
-            >
-              <div className="aspect-video relative overflow-hidden bg-muted rounded-t-xl">
-                <Image
-                  src={post.image}
-                  alt={post.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <div className="p-4">
-                <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-2">
-                  {post.title}
-                </h4>
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                  {post.description}
-                </p>
-                {post.date && (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="h-3 w-3" />
-                    <span>
-                      {new Date(post.date).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </span>
-                  </div>
-                )}
-                <div className="flex items-center gap-1 mt-3 text-sm text-primary">
-                  <span>Read more</span>
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </Link>
+    <GallerySection>
+      {posts.map((post) => (
+        <Link key={post.url} href={post.url} className="group block">
+          <div className="relative aspect-[3/2] overflow-hidden border border-border bg-muted">
+            <Image
+              src={post.image}
+              alt={post.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            />
           </div>
-        ))}
-      </div>
-    </div>
+          {post.date && <span className="label-mono mt-4 block">{formatDate(post.date)}</span>}
+          <h4 className="mt-2 line-clamp-2 text-lg font-semibold leading-tight tracking-tight transition-colors group-hover:text-primary">
+            {post.title}
+          </h4>
+          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+            {post.description}
+          </p>
+        </Link>
+      ))}
+    </GallerySection>
   )
 }

@@ -19,6 +19,15 @@ interface ChatMessage {
   sender: "user" | "ai";
 }
 
+// POV-forward openers — the chat is an interactive version of Lorenzo's
+// thinking, not a search box. Lead with provocation, not "how can I help".
+const STARTER_PROMPTS = [
+  "What's your most contrarian take?",
+  "Argue with me: isn't meritocracy basically fair?",
+  "What did you used to believe that you've since changed your mind on?",
+  "Pick a fight with Silicon Valley for me.",
+];
+
 interface ChatPageClientProps {
   contextSlug?: string;
   contextTitle?: string;
@@ -34,7 +43,8 @@ export function ChatPageClient({
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 1,
-      content: "Hi! I'm Lorenzo. Ask me anything about my work, projects, or writing.",
+      content:
+        "I'm an AI trained on everything Lorenzo has written — the essays, the code notes, the opinions. Ask what he thinks. Or push back and argue.",
       sender: "ai",
     },
   ]);
@@ -47,9 +57,8 @@ export function ChatPageClient({
     setInput((prev) => (prev.trim().length > 0 ? prev : initialQuery));
   }, [initialQuery]);
 
-  const handleSubmit = async (e?: FormEvent) => {
-    e?.preventDefault();
-    const query = input.trim();
+  const sendMessage = async (raw: string) => {
+    const query = raw.trim();
     if (!query || isLoading) return;
 
     const userMessage: ChatMessage = {
@@ -115,6 +124,11 @@ export function ChatPageClient({
     }
   };
 
+  const handleSubmit = (e?: FormEvent) => {
+    e?.preventDefault();
+    void sendMessage(input);
+  };
+
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -161,6 +175,24 @@ export function ChatPageClient({
               </ChatBubbleMessage>
             </ChatBubble>
           ))}
+
+          {messages.length === 1 && !isLoading && (
+            <div className="px-2 pt-2">
+              <span className="label-mono mb-3 block">Try arguing</span>
+              <div className="flex flex-col items-start gap-2">
+                {STARTER_PROMPTS.map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => void sendMessage(prompt)}
+                    className="border border-border px-3 py-2 text-left text-sm text-foreground transition-colors hover:border-primary/45 hover:text-primary focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {isLoading && (
             <ChatBubble variant="received">

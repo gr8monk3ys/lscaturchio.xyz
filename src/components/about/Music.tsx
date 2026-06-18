@@ -1,9 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { m } from '@/lib/motion';
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 
 interface Album {
   title: string;
@@ -87,9 +85,9 @@ export function Music() {
           className="flex flex-col gap-10"
         >
           <m.div variants={cardVariants} className="flex gap-4 flex-col items-start">
-            <Badge variant="secondary">Soundscapes</Badge>
+            <span className="label-mono block">Soundscapes</span>
             <div className="flex gap-2 flex-col">
-              <h2 className="text-3xl md:text-5xl tracking-tighter font-bold text-stone-600 dark:text-stone-300">
+              <h2 className="font-display text-3xl md:text-5xl tracking-tight font-bold text-foreground">
                 Favorite Albums
               </h2>
               <p className="text-lg max-w-prose">
@@ -98,35 +96,31 @@ export function Music() {
             </div>
           </m.div>
 
-          <m.div 
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          <m.div
+            className="grid grid-cols-1 md:grid-cols-2 gap-8"
           >
             {favoriteAlbums.map((album) => (
               <m.div
                 key={album.title}
                 variants={cardVariants}
-                whileHover="hover"
+                className="group flex flex-col"
               >
-                <Card className="flex flex-col h-full overflow-hidden group">
-                  <div className="relative w-full h-64">
-                    <Image
-                      src={album.imageUrl}
-                      alt={`${album.title} album cover`}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                  </div>
-                  <CardHeader>
-                    <CardTitle>{album.title}</CardTitle>
-                    <CardDescription>
-                      {album.artist} • {album.year}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="grow">
-                    <p className="text-muted-foreground">{album.description}</p>
-                  </CardContent>
-                </Card>
+                <div className="relative w-full h-64 overflow-hidden border border-border bg-muted">
+                  <Image
+                    src={album.imageUrl}
+                    alt={`${album.title} album cover`}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
+                <h3 className="mt-4 font-display text-xl font-semibold tracking-tight text-foreground">
+                  {album.title}
+                </h3>
+                <p className="label-mono mt-2">
+                  {album.artist} · {album.year}
+                </p>
+                <p className="mt-3 text-muted-foreground">{album.description}</p>
               </m.div>
             ))}
           </m.div>

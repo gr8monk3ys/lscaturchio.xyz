@@ -37,6 +37,12 @@ export function TestimonialsSection({
     ? testimonials
     : featuredTestimonials;
 
+  // Render nothing rather than an empty "What People Say" header when there are
+  // no testimonials to show.
+  if (displayedTestimonials.length === 0) {
+    return null;
+  }
+
   return (
     <section ref={containerRef} className="py-16">
       <div className="container px-4 md:px-6">

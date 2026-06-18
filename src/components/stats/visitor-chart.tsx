@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo } from 'react'
-import { BarChart3 } from 'lucide-react'
 import useSWR from 'swr'
 import { fetchJson, unwrapApiData } from '@/lib/fetcher'
 
@@ -43,17 +42,12 @@ export function VisitorChart() {
   )
 
   return (
-    <div className="rounded-2xl border border-gray-200 p-6 dark:border-gray-800">
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-primary" />
-            <h3 className="text-xl font-semibold">Most Viewed Posts</h3>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Aggregate public post views, ranked by total reads.
-          </p>
-        </div>
+    <div>
+      <div className="mb-6">
+        <h3 className="label-mono">Most Viewed Posts</h3>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Aggregate public post views, ranked by total reads.
+        </p>
       </div>
 
       {isLoading ? (
@@ -66,11 +60,11 @@ export function VisitorChart() {
           ))}
         </div>
       ) : !payload?.available ? (
-        <div className="rounded-2xl border border-dashed border-border/70 bg-muted/20 px-4 py-5 text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground">
           {payload?.message || 'Public view data is unavailable right now.'}
         </div>
       ) : rows.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border/70 bg-muted/20 px-4 py-5 text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground">
           Public view tracking is enabled, but there are no ranked posts yet.
         </div>
       ) : (

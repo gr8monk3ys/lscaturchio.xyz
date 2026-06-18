@@ -66,8 +66,8 @@ export function ToySimilarity() {
   const pct = Math.round(score * 100);
 
   return (
-    <section className="neu-card p-6">
-      <h3 className="text-xl font-semibold">Toy Text Similarity</h3>
+    <section className="border border-border p-6">
+      <h3 className="font-display text-xl font-semibold">Toy Text Similarity</h3>
       <p className="text-sm text-muted-foreground mt-1">
         A tiny cosine-similarity demo (word-frequency based). This is not embeddings, but it helps explain
         why retrieval works.

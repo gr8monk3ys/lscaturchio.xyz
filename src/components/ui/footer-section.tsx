@@ -1,104 +1,52 @@
-import { navigation } from '@/constants/navlinks';
 import Link from "next/link";
-import { Send, Rss, Pizza } from "lucide-react"
-import { socials } from "@/constants/socials"
+import { Rss, Send, Pizza } from "lucide-react";
 
-const primaryLinkClass = "cta-primary inline-flex items-center gap-2";
-const secondaryLinkClass =
-  "inline-flex h-10 items-center justify-center gap-2 rounded-xl neu-button px-4 py-2 text-sm font-medium text-foreground transition-all duration-200 hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+import { footerColumns } from "@/constants/navlinks";
+import { socials } from "@/constants/socials";
+
 const iconLinkClass =
   "inline-flex h-10 w-10 items-center justify-center rounded-xl neu-button text-foreground transition-all duration-200 hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+const utilityLinkClass =
+  "inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary";
 
+/**
+ * The footer is the site map: the header stays slim, so every page in the
+ * garden gets its doorway here instead (see
+ * docs/superpowers/specs/2026-06-11-nav-footer-redesign-design.md).
+ */
 function Footer() {
-
-  const substackUrl = socials.find(social => social.label === "Substack")?.href || "https://substack.com/@gr8monk3ys"
-  const currentYear = new Date().getFullYear()
+  const substackUrl =
+    socials.find((social) => social.label === "Substack")?.href ||
+    "https://substack.com/@gr8monk3ys";
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-background text-foreground transition-colors duration-300">
+    <footer className="relative border-t border-border/60 bg-background text-foreground transition-colors duration-300">
       <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-          <div className="relative">
-            <h2 className="mb-4 text-3xl font-bold tracking-tight">Stay Connected</h2>
-            <p className="mb-6 text-muted-foreground">
-              Subscribe for updates on AI systems, engineering notes, and new writing.
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_2fr]">
+          {/* Colophon */}
+          <div className="max-w-sm space-y-5">
+            <h2 className="text-2xl font-bold tracking-tight">Lorenzo Scaturchio</h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              AI systems by day, essays about the world they land in the rest of
+              the time. Built with Next.js and Neon — a garden that keeps
+              growing.
             </p>
-            <div className="flex flex-col gap-3">
+            <p className="text-sm">
               <a
-                href="https://social.lscaturchio.xyz/auth/sign_up"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={primaryLinkClass}
+                href="mailto:lorenzosca7@protonmail.ch"
+                className="text-muted-foreground transition-colors hover:text-primary"
               >
-                <Send className="h-4 w-4" />
-                Join Lorenzo Social
+                lorenzosca7@protonmail.ch
               </a>
-              <a
-                href={substackUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={primaryLinkClass}
-              >
-                <Send className="h-4 w-4" />
-                Subscribe to Newsletter
-              </a>
-              <Link
-                href="/api/rss"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={secondaryLinkClass}
-              >
-                <Rss className="h-4 w-4" />
-                RSS Feed
-              </Link>
-              <a
-                href="https://www.buymeacoffee.com/lorenzoscak"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={secondaryLinkClass}
-              >
-                <Pizza className="h-4 w-4" />
-                Buy me a pizza
-              </a>
-            </div>
-          </div>
-          <div>
-            <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
-            <nav className="space-y-2 text-sm">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  prefetch={false}
-                  className="block transition-colors hover:text-primary"
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
-          </div>
-          <div>
-            <h3 className="mb-4 text-lg font-semibold">Contact</h3>
-            <address className="space-y-2 text-sm not-italic">
-              <p>Los Angeles, California</p>
-              <p>United States</p>
-              <p>
-                Email:{" "}
-                <a href="mailto:lorenzosca7@protonmail.ch" className="hover:text-primary transition-colors">
-                  lorenzosca7@protonmail.ch
-                </a>
-              </p>
-            </address>
-          </div>
-          <div className="relative">
-            <h3 className="mb-4 text-lg font-semibold">Follow Me</h3>
-            <div className="mb-6 flex flex-wrap gap-3">
+            </p>
+            <div className="flex flex-wrap gap-3">
               {socials.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel={"relMe" in social && social.relMe ? "me noopener noreferrer" : "noopener noreferrer"}
                   className={iconLinkClass}
                   title={social.label}
                   aria-label={social.label}
@@ -108,27 +56,71 @@ function Footer() {
                 </a>
               ))}
             </div>
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              <Link href="/api/rss" target="_blank" rel="noopener noreferrer" className={utilityLinkClass}>
+                <Rss className="h-4 w-4" />
+                RSS
+              </Link>
+              <a href={substackUrl} target="_blank" rel="noopener noreferrer" className={utilityLinkClass}>
+                <Send className="h-4 w-4" />
+                Newsletter
+              </a>
+              <a
+                href="https://www.buymeacoffee.com/lorenzoscak"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={utilityLinkClass}
+              >
+                <Pizza className="h-4 w-4" />
+                Buy me a pizza
+              </a>
+            </div>
+          </div>
+
+          {/* Site map */}
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+            {footerColumns.map((column) => (
+              <nav key={column.name} aria-label={column.name}>
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                  {column.name}
+                </h3>
+                <ul className="space-y-2 text-sm">
+                  {column.items.map((item) => (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        prefetch={false}
+                        className="transition-colors hover:text-primary"
+                      >
+                        {item.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
           </div>
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-center md:flex-row">
-          <p className="text-sm text-muted-foreground">
-            {currentYear} Lorenzo Scaturchio. All rights reserved.
+
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-center md:flex-row">
+          <p className="label-mono">
+            © {currentYear} · Los Angeles · A garden, not a homepage
           </p>
-          <nav className="flex gap-4 text-sm">
-            <Link href="/stats" prefetch={false} className="transition-colors hover:text-primary">
+          <nav className="flex gap-5">
+            <Link href="/stats" prefetch={false} className="label-mono transition-colors hover:text-primary">
               Stats
             </Link>
-            <Link href="/privacy-policy" prefetch={false} className="transition-colors hover:text-primary">
-              Privacy Policy
+            <Link href="/privacy-policy" prefetch={false} className="label-mono transition-colors hover:text-primary">
+              Privacy
             </Link>
-            <Link href="/terms-of-service" prefetch={false} className="transition-colors hover:text-primary">
-              Terms of Service
+            <Link href="/terms-of-service" prefetch={false} className="label-mono transition-colors hover:text-primary">
+              Terms
             </Link>
           </nav>
         </div>
       </div>
     </footer>
-  )
+  );
 }
 
-export { Footer }
+export { Footer };

@@ -45,6 +45,16 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
   const label =
     type === 'blog' ? 'Blog' : type === 'project' ? 'Project' : 'lscaturchio.xyz';
 
+  // Flat editorial palette — matches the site: warm ivory paper, forest-green
+  // ink accent, near-black text, hairline borders. No gradients, no orange.
+  const INK = '#1b1b17';
+  const MUTED = '#5c574c';
+  const GREEN = '#135c34';
+  const HAIRLINE = 'rgba(27, 27, 23, 0.14)';
+  const PAPER = '#f7f4ed';
+  const SERIF = "'Fraunces', Georgia, 'Times New Roman', serif";
+  const SANS = "ui-sans-serif, system-ui, sans-serif";
+
   return new ImageResponse(
     (
       <div
@@ -54,60 +64,33 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
           display: 'flex',
           alignItems: 'stretch',
           justifyContent: 'space-between',
-          backgroundColor: '#f7f4ed',
-          padding: '56px',
-          fontFamily: 'system-ui, sans-serif',
+          backgroundColor: PAPER,
+          padding: '64px',
+          fontFamily: SANS,
+          borderTop: `6px solid ${GREEN}`,
         }}
       >
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background:
-              'radial-gradient(1200px circle at 8% -12%, rgba(19, 92, 52, 0.18), transparent 60%),' +
-              'radial-gradient(900px circle at 96% -8%, rgba(12, 74, 110, 0.14), transparent 55%),' +
-              'radial-gradient(700px circle at 60% 98%, rgba(234, 88, 12, 0.12), transparent 60%),' +
-              'linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(247, 244, 237, 1))',
-          }}
-        />
-
-        <div
-          style={{
-            position: 'absolute',
-            top: '-120px',
-            right: '-180px',
-            width: '520px',
-            height: '520px',
-            borderRadius: '999px',
-            background: 'rgba(234, 88, 12, 0.14)',
-            filter: 'blur(0px)',
-          }}
-          aria-hidden
-        />
-
         <div
           style={{
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-            gap: '18px',
+            gap: '20px',
             width: '660px',
           }}
         >
+          {/* Editorial mark — the same green tick that sits above section titles */}
+          <div style={{ display: 'flex', width: '44px', height: '4px', borderRadius: '2px', backgroundColor: GREEN }} />
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                padding: '10px 14px',
+                padding: '8px 14px',
                 borderRadius: '999px',
-                backgroundColor: 'rgba(19, 92, 52, 0.10)',
-                border: '1px solid rgba(19, 92, 52, 0.18)',
-                color: '#1f3b2e',
+                border: `1px solid ${GREEN}`,
+                color: GREEN,
                 fontSize: '16px',
                 fontWeight: 700,
                 textTransform: 'uppercase',
@@ -118,11 +101,10 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
             </div>
             <div
               style={{
-                padding: '10px 14px',
+                padding: '8px 14px',
                 borderRadius: '999px',
-                backgroundColor: 'rgba(15, 23, 42, 0.04)',
-                border: '1px solid rgba(15, 23, 42, 0.06)',
-                color: 'rgba(15, 23, 42, 0.65)',
+                border: `1px solid ${HAIRLINE}`,
+                color: MUTED,
                 fontSize: '16px',
                 fontWeight: 600,
               }}
@@ -133,10 +115,12 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
 
           <h1
             style={{
-              fontSize: title.length > 56 ? '54px' : '66px',
-              fontWeight: 800,
-              color: '#0b0f13',
-              lineHeight: 1.05,
+              fontFamily: SERIF,
+              fontSize: title.length > 56 ? '56px' : '68px',
+              fontWeight: 600,
+              color: INK,
+              lineHeight: 1.04,
+              letterSpacing: '-0.02em',
               margin: 0,
             }}
           >
@@ -147,7 +131,7 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
             <p
               style={{
                 fontSize: '28px',
-                color: 'rgba(20, 30, 24, 0.68)',
+                color: MUTED,
                 lineHeight: 1.35,
                 margin: 0,
               }}
@@ -169,24 +153,24 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
               style={{
                 width: '54px',
                 height: '54px',
-                borderRadius: '18px',
-                backgroundColor: 'rgba(19, 92, 52, 0.10)',
-                border: '1px solid rgba(19, 92, 52, 0.18)',
+                borderRadius: '12px',
+                border: `1px solid ${GREEN}`,
+                color: GREEN,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                fontFamily: SERIF,
                 fontSize: '22px',
-                fontWeight: 900,
-                color: '#1f3b2e',
+                fontWeight: 700,
               }}
             >
               LS
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: '20px', fontWeight: 800, color: '#0b0f13' }}>
+              <div style={{ fontSize: '20px', fontWeight: 700, color: INK }}>
                 Lorenzo Scaturchio
               </div>
-              <div style={{ fontSize: '16px', fontWeight: 600, color: 'rgba(20, 30, 24, 0.55)' }}>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: MUTED }}>
                 lscaturchio.xyz
               </div>
             </div>
@@ -202,47 +186,40 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
             justifyContent: 'center',
           }}
         >
-          <div
-            style={{
-              position: 'absolute',
-              inset: '-36px',
-              borderRadius: '60px',
-              background: 'rgba(19, 92, 52, 0.06)',
-              border: '1px solid rgba(19, 92, 52, 0.10)',
-              transform: 'rotate(2deg)',
-            }}
-            aria-hidden
-          />
           {coverUrl ? (
             <img
               src={coverUrl}
               alt=""
-              width={420}
-              height={420}
+              width={400}
+              height={400}
               style={{
-                width: '420px',
-                height: '420px',
-                borderRadius: '48px',
+                width: '400px',
+                height: '400px',
+                borderRadius: '16px',
                 objectFit: 'cover',
-                border: '1px solid rgba(15, 23, 42, 0.10)',
-                boxShadow: '0 30px 90px rgba(0,0,0,0.12)',
+                border: `1px solid ${HAIRLINE}`,
               }}
             />
           ) : (
             <div
               style={{
-                width: '420px',
-                height: '420px',
-                borderRadius: '48px',
-                border: '1px solid rgba(15, 23, 42, 0.10)',
-                background:
-                  'radial-gradient(420px circle at 35% 25%, rgba(19, 92, 52, 0.20), transparent 60%),' +
-                  'radial-gradient(420px circle at 72% 70%, rgba(234, 88, 12, 0.16), transparent 60%),' +
-                  'linear-gradient(135deg, rgba(255,255,255,0.8), rgba(247,244,237,1))',
-                boxShadow: '0 30px 90px rgba(0,0,0,0.10)',
+                width: '400px',
+                height: '400px',
+                borderRadius: '16px',
+                border: `1px solid ${HAIRLINE}`,
+                backgroundColor: 'rgba(19, 92, 52, 0.05)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: SERIF,
+                fontSize: '120px',
+                fontWeight: 600,
+                color: 'rgba(19, 92, 52, 0.22)',
               }}
               aria-hidden
-            />
+            >
+              LS
+            </div>
           )}
         </div>
       </div>

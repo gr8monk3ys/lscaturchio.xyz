@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Compass, User, BookOpen, MessageSquare, TrendingUp } from "lucide-react";
+import { ArrowRight, Compass, User, BookOpen, Clock, TrendingUp } from "lucide-react";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { Reveal } from "@/components/motion/reveal";
 import { getTopicHubsForTags } from "@/constants/topics";
@@ -68,9 +68,10 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
     <Section padding="compact" size="wide" divider topDivider reveal={false}>
       <div className="max-w-4xl mx-auto">
         <SectionHeader
+          index="03"
+          eyebrow="Start here"
           title="New here? Start with these"
           description="A quick path to get the most out of this site."
-          align="center"
         />
 
         <div className="grid sm:grid-cols-3 gap-4">
@@ -80,9 +81,9 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
               prefetch={false}
               className="group block h-full"
             >
-              <div className="neu-pressed rounded-xl p-4 h-full hover:bg-primary/5 transition-colors">
+              <div className="h-full border border-border p-5 transition-colors hover:border-primary/45">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="neu-flat-sm rounded-lg p-2">
+                  <div className="pb-1">
                     <Compass className="h-4 w-4 text-primary" />
                   </div>
                   {returning ? <BookOpen className="h-4 w-4 text-primary" /> : <User className="h-4 w-4 text-primary" />}
@@ -122,9 +123,9 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
               prefetch={false}
               className="group block h-full"
             >
-              <div className="neu-pressed rounded-xl p-4 h-full hover:bg-primary/5 transition-colors">
+              <div className="h-full border border-border p-5 transition-colors hover:border-primary/45">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="neu-flat-sm rounded-lg p-2">
+                  <div className="pb-1">
                     <Compass className="h-4 w-4 text-primary" />
                   </div>
                   <BookOpen className="h-4 w-4 text-primary" />
@@ -145,20 +146,22 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
           </Reveal>
 
           <Reveal delayMs={160}>
-            <Link href="/chat" prefetch={false} className="group block h-full">
-              <div className="neu-pressed rounded-xl p-4 h-full hover:bg-primary/5 transition-colors">
+            {/* The hero already owns the AI-chat entry point; this slot surfaces
+                /now instead so the garden's pulse page gets homepage wayfinding. */}
+            <Link href="/now" prefetch={false} className="group block h-full">
+              <div className="h-full border border-border p-5 transition-colors hover:border-primary/45">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="neu-flat-sm rounded-lg p-2">
+                  <div className="pb-1">
                     <Compass className="h-4 w-4 text-primary" />
                   </div>
-                  <MessageSquare className="h-4 w-4 text-primary" />
+                  <Clock className="h-4 w-4 text-primary" />
                 </div>
-                <h3 className="font-semibold text-sm mb-1">AI Chat</h3>
+                <h3 className="font-semibold text-sm mb-1">What I&apos;m Doing Now</h3>
                 <p className="text-xs text-muted-foreground mb-2">
-                  Ask me anything.
+                  Current focus, honestly dated.
                 </p>
                 <span className="text-primary text-xs group-hover:underline inline-flex items-center gap-1">
-                  Chat <ArrowRight className="h-3 w-3" />
+                  See now <ArrowRight className="h-3 w-3" />
                 </span>
               </div>
             </Link>
@@ -166,7 +169,7 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
         </div>
 
         {popularPosts.length > 0 && (
-          <div className="mt-6 neu-card rounded-2xl p-5">
+          <div className="mt-10 border-t border-border pt-6">
             <div className="flex items-center gap-2">
               <TrendingUp className="size-4 text-primary" />
               <div className="text-sm font-semibold">Popular Posts</div>

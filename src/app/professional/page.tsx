@@ -1,56 +1,45 @@
 import { Container } from "@/components/Container";
+import { buildPageMetadata } from "@/lib/seo";
+import { Heading } from "@/components/Heading";
+import { Paragraph } from "@/components/Paragraph";
 import { WorkTimeline } from "@/components/ui/work-timeline";
 import { ResumeDownloadButton } from "@/components/ui/resume-download-button";
-import { Badge } from "@/components/ui/badge";
-import { Metadata } from "next";
-import { Code, Brain, Database, Laptop, LucideIcon } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Professional | Lorenzo Scaturchio",
-  description:
-    "Lorenzo Scaturchio's professional experience, technical skills, and work history in data science, machine learning, and web development.",
-};
+export const metadata = buildPageMetadata({
+  title: "Professional",
+  description: "Lorenzo Scaturchio's professional experience, technical skills, and work history in data science, machine learning, and web development.",
+  path: "/professional",
+});
 
-const SkillCategory = ({ icon: Icon, title, skills }: { icon: LucideIcon; title: string; skills: string[] }) => (
-  <div className="space-y-4">
-    <div className="flex items-center gap-3">
-      <div className="size-10 rounded-lg neu-pressed-sm text-primary flex items-center justify-center">
-        <Icon className="size-5" />
-      </div>
-      <h3 className="text-xl font-semibold">{title}</h3>
-    </div>
-    <div className="flex flex-wrap gap-2">
-      {skills.map((skill) => (
-        <Badge key={skill} variant="secondary" className="text-sm">
-          {skill}
-        </Badge>
-      ))}
-    </div>
+const SkillCategory = ({ title, skills }: { title: string; skills: string[] }) => (
+  <div className="space-y-3">
+    <h3 className="label-mono">{title}</h3>
+    <p className="text-lg text-foreground">{skills.join("  ·  ")}</p>
   </div>
 );
 
 export default function ProfessionalPage() {
   return (
     <Container size="large">
-      <div className="max-w-4xl mx-auto py-12 space-y-16">
-        {/* Header */}
-        <div>
-          <Badge variant="secondary" className="mb-4">Professional Experience</Badge>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            Work & Skills
-          </h1>
-          <p className="text-xl text-muted-foreground">
+      <div className="max-w-4xl mx-auto py-12 space-y-20">
+        {/* Header — gallery masthead */}
+        <header>
+          <span className="label-mono block">Professional</span>
+          <Heading className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+            Work &amp; Skills
+          </Heading>
+          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
             My professional journey in data science, machine learning, and web development.
             Building things that make data science more accessible.
-          </p>
-        </div>
+          </Paragraph>
+          <hr className="gallery-rule mt-8" />
+        </header>
 
         {/* Skills Section */}
         <section>
-          <h2 className="text-3xl font-bold mb-8">Technical Skills</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <h2 className="font-display text-3xl font-bold tracking-tight mb-8">Technical Skills</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <SkillCategory
-              icon={Brain}
               title="Machine Learning & AI"
               skills={[
                 "Python",
@@ -65,7 +54,6 @@ export default function ProfessionalPage() {
               ]}
             />
             <SkillCategory
-              icon={Database}
               title="Data Science & Analytics"
               skills={[
                 "Pandas",
@@ -79,7 +67,6 @@ export default function ProfessionalPage() {
               ]}
             />
             <SkillCategory
-              icon={Code}
               title="Web Development"
               skills={[
                 "TypeScript",
@@ -93,7 +80,6 @@ export default function ProfessionalPage() {
               ]}
             />
             <SkillCategory
-              icon={Laptop}
               title="Tools & Infrastructure"
               skills={[
                 "Git",
@@ -111,13 +97,13 @@ export default function ProfessionalPage() {
 
         {/* Work Experience */}
         <section>
-          <h2 className="text-3xl font-bold mb-8">Work Experience</h2>
+          <h2 className="font-display text-3xl font-bold tracking-tight mb-8">Work Experience</h2>
           <WorkTimeline />
         </section>
 
         {/* Philosophy & Approach */}
-        <section className="rounded-xl p-8 neu-pressed">
-          <h2 className="text-2xl font-bold mb-4">My Approach</h2>
+        <section className="border-y border-border py-10">
+          <h2 className="font-display text-2xl font-bold tracking-tight mb-4">My Approach</h2>
           <div className="space-y-4 text-muted-foreground">
             <p>
               I particularly enjoy creating solutions that make data science problems into open-source,
@@ -139,18 +125,18 @@ export default function ProfessionalPage() {
 
         {/* Current Focus */}
         <section>
-          <h2 className="text-3xl font-bold mb-6">Current Focus</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-xl neu-card">
-              <h3 className="text-xl font-semibold mb-2">RAG Systems</h3>
-              <p className="text-muted-foreground">
+          <h2 className="font-display text-3xl font-bold tracking-tight mb-6">Current Focus</h2>
+          <div className="grid grid-cols-1 divide-border border-y border-border md:grid-cols-2 md:divide-x">
+            <div className="px-0 py-6 md:pr-8">
+              <h3 className="label-mono">RAG Systems</h3>
+              <p className="mt-3 text-muted-foreground">
                 Exploring different use cases for retrieval-augmented generation and making them more
                 marketable. Basically trying to get paid for doing cool stuff.
               </p>
             </div>
-            <div className="p-6 rounded-xl neu-card">
-              <h3 className="text-xl font-semibold mb-2">Open Source</h3>
-              <p className="text-muted-foreground">
+            <div className="px-0 py-6 md:pl-8">
+              <h3 className="label-mono">Open Source</h3>
+              <p className="mt-3 text-muted-foreground">
                 Contributing to open-source projects and building tools that make data science more
                 accessible. FOSS is how the internet should work.
               </p>
@@ -160,7 +146,7 @@ export default function ProfessionalPage() {
 
         {/* Download Resume */}
         <section className="flex flex-col items-center gap-4 py-8">
-          <h2 className="text-2xl font-bold">Want to work together?</h2>
+          <h2 className="font-display text-2xl font-bold tracking-tight">Want to work together?</h2>
           <p className="text-muted-foreground text-center max-w-2xl">
             Download my resume or schedule a call to discuss your project. I&apos;m always interested
             in challenging problems and opportunities to build things that matter.

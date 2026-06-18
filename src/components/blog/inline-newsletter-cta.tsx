@@ -1,6 +1,5 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 
 export function InlineNewsletterCTA({
@@ -11,18 +10,11 @@ export function InlineNewsletterCTA({
   sourcePath?: string;
 }) {
   return (
-    <div className="mb-8 rounded-2xl border border-border/60 bg-background/80 p-5 shadow-xs">
-      <div className="flex items-center gap-2">
-        <div className="neu-flat-sm rounded-xl p-2">
-          <Sparkles className="size-4 text-primary" />
-        </div>
-        <div className="text-sm font-semibold text-foreground">
-          Want more like this?
-        </div>
-        <div className="text-xs text-muted-foreground">
-          Pick topics and get new posts by email.
-        </div>
-      </div>
+    <div className="mb-8 border border-border p-5">
+      <span className="label-mono block">Want more like this?</span>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Pick topics and get new essays by email.
+      </p>
       <div className="mt-4">
         <NewsletterForm defaultTopics={defaultTopics} sourcePath={sourcePath} compact />
       </div>
