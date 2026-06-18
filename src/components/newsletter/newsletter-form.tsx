@@ -82,12 +82,8 @@ export function NewsletterForm({
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <div className="text-xs font-semibold text-muted-foreground">
-              Topics (optional)
-            </div>
-            <div className="text-[11px] text-muted-foreground tabular-nums">
-              {topics.length}/6
-            </div>
+            <span className="label-mono">Topics (optional)</span>
+            <span className="label-mono">{topics.length}/6</span>
           </div>
           <div className={cn("flex flex-wrap gap-2", compact && "gap-1.5")}>
             {NEWSLETTER_TOPICS.map((t) => {
@@ -98,10 +94,11 @@ export function NewsletterForm({
                   type="button"
                   onClick={() => toggleTopic(t.id)}
                   className={cn(
-                    "rounded-full border px-3 py-1 text-xs font-semibold transition-colors",
-                    "bg-background/70 border-border/60 hover:bg-primary/4",
-                    active && "border-primary/30 bg-primary/10 text-primary",
-                    compact && "px-2.5 py-0.5 text-[11px]"
+                    "label-mono border px-3 py-1.5 transition-colors",
+                    active
+                      ? "border-primary text-primary"
+                      : "border-border text-muted-foreground hover:text-foreground",
+                    compact && "px-2.5 py-1"
                   )}
                   aria-pressed={active}
                   title={t.description}

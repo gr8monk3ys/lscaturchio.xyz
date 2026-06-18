@@ -36,7 +36,7 @@ function getPageParamValue(value: string): number {
 }
 
 export const metadata: Metadata = {
-  title: "Blog | Lorenzo Scaturchio",
+  title: "Blog",
   description:
     "Lorenzo Scaturchio is a developer, writer and speaker. He is a digital nomad and travels around the world while working remotely.",
   openGraph: {
@@ -90,40 +90,37 @@ export default async function Blog({
 
   return (
     <Container size="large">
-      <div className="space-y-6">
-        <section className="rounded-3xl border border-border/60 bg-background/80 px-6 py-7 sm:px-8 md:px-10 md:py-8">
-          <div className="max-w-176 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-              Essays, Notes, and Experiments
-            </p>
-            <h1 className="font-system text-[2.7rem] font-semibold leading-[1.02] tracking-tight text-foreground sm:text-[3rem] md:text-[3.15rem]">
-              Writing about AI, software, and the ways real systems fail.
-            </h1>
-            <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
-              Practical notes on shipping RAG, working with product constraints, and building software
-              that stays legible after the prototype phase.
-            </p>
-          </div>
-          <div className="mt-5 flex flex-wrap items-center gap-3">
+      <div className="space-y-10">
+        <header className="pt-4">
+          <span className="label-mono block">Essays, Notes &amp; Experiments</span>
+          <h1 className="mt-4 max-w-3xl text-[2.7rem] font-semibold leading-[1.02] tracking-tight text-foreground sm:text-[3rem] md:text-[3.15rem]">
+            Essays on AI, software, and the world they&apos;re reshaping.
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
+            Half of this is practical notes on shipping RAG and production systems. The other half
+            argues about politics, philosophy, and culture — because the systems we build land in a
+            world, and pretending otherwise is its own ideology.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
             <Link
               href="/tags"
               prefetch={false}
-              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:text-primary focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="label-mono inline-flex items-center gap-2 text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
-              <Tag className="h-4 w-4" />
-              Browse by Tag
+              <Tag className="h-3.5 w-3.5" />
+              Browse by tag
             </Link>
-            <span className="text-sm text-muted-foreground">or</span>
             <Link
               href="/chat"
               prefetch={false}
-              className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="label-mono inline-flex items-center gap-2 text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
-              <MessageSquare className="h-4 w-4" />
-              Ask About a Post
+              <MessageSquare className="h-3.5 w-3.5" />
+              Ask about a post
             </Link>
           </div>
-        </section>
+          <hr className="gallery-rule mt-8" />
+        </header>
 
         <BlogGrid
           blogs={visibleBlogs}

@@ -1,13 +1,12 @@
 "use client";
 
-import { Mail, Calendar, MapPin, Github, Linkedin, Twitter } from "lucide-react";
+import { Github, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
 import { m } from '@/lib/motion';
 import { useState } from "react";
 
 const contactMethods = [
   {
-    icon: Calendar,
     title: "Discovery Call",
     description: "Best for scoped projects, audits, and fast go or no-go decisions",
     action: "Book 30 Minutes",
@@ -15,7 +14,6 @@ const contactMethods = [
     external: true,
   },
   {
-    icon: Mail,
     title: "Async Brief",
     description: "Best if you already have links, context, and constraints to share",
     action: "Send a Brief",
@@ -23,7 +21,6 @@ const contactMethods = [
     external: true,
   },
   {
-    icon: MapPin,
     title: "Remote Collaboration",
     description: "Based in Southern California and available for remote work worldwide",
     action: "Remote-first delivery",
@@ -79,34 +76,25 @@ export function ContactForm() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-          className="grid md:grid-cols-3 gap-6 mb-16"
+        className="grid md:grid-cols-3 divide-border border-y border-border md:divide-x mb-16"
       >
-        {contactMethods.map((method, index) => (
-          <m.div
-            key={method.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + index * 0.1 }}
-            className="neu-card p-6 text-center"
-          >
-            <div className="neu-flat-sm rounded-xl p-3 w-fit mx-auto mb-4">
-              <method.icon className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="text-card-title mb-2">{method.title}</h3>
-            <p className="text-muted-foreground text-sm mb-4">{method.description}</p>
+        {contactMethods.map((method) => (
+          <div key={method.title} className="px-5 py-6">
+            <h3 className="label-mono">{method.title}</h3>
+            <p className="text-muted-foreground text-sm mt-2 mb-4">{method.description}</p>
             {method.href ? (
               <Link
                 href={method.href}
                 target={method.external ? "_blank" : undefined}
                 rel={method.external ? "noopener noreferrer" : undefined}
-                className="cta-secondary px-4 py-2 rounded-lg text-sm inline-block"
+                className="text-sm font-medium text-primary underline-offset-4 hover:underline"
               >
                 {method.action}
               </Link>
             ) : (
               <span className="text-sm text-muted-foreground">{method.action}</span>
             )}
-          </m.div>
+          </div>
         ))}
       </m.div>
 
@@ -118,7 +106,7 @@ export function ContactForm() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h2 className="text-section-title mb-6">Send a Message</h2>
+          <h2 className="label-mono mb-6">Send a Message</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
@@ -197,7 +185,7 @@ export function ContactForm() {
 
             <div aria-live="polite" className="min-h-6">
               {submitStatus === "success" && (
-                <p className="text-center text-green-600">
+                <p className="text-center text-primary">
                   Message sent. I&apos;ll follow up by email after I review the brief.
                 </p>
               )}
@@ -223,8 +211,8 @@ export function ContactForm() {
           className="space-y-8"
         >
           {/* What to Expect */}
-          <div className="neu-card p-6">
-            <h3 className="text-subsection mb-4">What Helps Me Reply Fast</h3>
+          <div>
+            <h3 className="label-mono mb-4">What Helps Me Reply Fast</h3>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary mt-1">→</span>
@@ -246,31 +234,31 @@ export function ContactForm() {
           </div>
 
           {/* Current Availability */}
-          <div className="neu-pressed rounded-xl p-6">
-            <h3 className="text-subsection mb-2">Current Availability</h3>
+          <div className="border-t border-border pt-8">
+            <h3 className="label-mono mb-2">Current Availability</h3>
             <p className="text-muted-foreground mb-4">
               I&apos;m currently accepting new consulting and build engagements.
             </p>
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm font-medium text-green-600">Available for new work</span>
+              <span className="w-2.5 h-2.5 bg-primary rounded-full animate-pulse" />
+              <span className="text-sm font-medium text-primary">Available for new work</span>
             </div>
           </div>
 
           {/* Social Links */}
-          <div>
-            <h3 className="text-subsection mb-4">Connect on Social</h3>
-            <div className="flex gap-4">
+          <div className="border-t border-border pt-8">
+            <h3 className="label-mono mb-4">Connect on Social</h3>
+            <div className="flex gap-3">
               {socialLinks.map((social) => (
                 <Link
                   key={social.label}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="neu-button p-4 rounded-xl hover:text-primary transition-colors"
+                  className="border border-border rounded-lg p-3 hover:text-primary hover:border-primary transition-colors"
                   aria-label={social.label}
                 >
-                  <social.icon className="h-6 w-6" />
+                  <social.icon className="h-5 w-5" />
                 </Link>
               ))}
             </div>

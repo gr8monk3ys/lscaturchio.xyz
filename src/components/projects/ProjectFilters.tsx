@@ -65,30 +65,19 @@ export function ProjectFilters({
           if (count === 0 && category.value !== "all") return null;
 
           return (
-            <m.button
+            <button
               key={category.value}
               onClick={() => onCategoryChange(category.value)}
               className={cn(
-                "px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2",
+                "label-mono flex items-center gap-1.5 border px-3.5 py-2 transition-colors",
                 isActive
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "border-primary text-primary"
+                  : "border-border text-muted-foreground hover:text-foreground"
               )}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
             >
               {category.label}
-              <span
-                className={cn(
-                  "text-xs px-1.5 py-0.5 rounded-full",
-                  isActive
-                    ? "bg-primary-foreground/20 text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
-                )}
-              >
-                {count}
-              </span>
-            </m.button>
+              <span className={isActive ? "text-primary" : "text-muted-foreground"}>{count}</span>
+            </button>
           );
         })}
       </div>
@@ -101,7 +90,7 @@ export function ProjectFilters({
           className="flex flex-wrap items-center gap-2"
         >
           {currentTech && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
+            <span className="label-mono inline-flex items-center gap-1.5 text-primary">
               Tech: {currentTech}
               <button
                 onClick={() => onTechChange("")}
@@ -114,7 +103,7 @@ export function ProjectFilters({
           )}
           <button
             onClick={onClearFilters}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            className="label-mono inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
           >
             <X className="h-3.5 w-3.5" />
             Clear all

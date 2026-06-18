@@ -177,22 +177,35 @@ export const RATE_LIMITS = {
 export function getClientIp(request: Request): string {
   const headers = request.headers;
 
-  // Trust only platform/proxy headers that are commonly overwritten by the edge.
-  // Do not use generic client-supplied headers like x-client-ip, which let
-  // callers rotate the rate-limit key trivially.
-  const ipHeaders = [
-    'cf-connecting-ip',      // Cloudflare
-    'x-real-ip',             // Nginx, Vercel
-    'x-forwarded-for',       // Standard proxy header
+  // Trust only headers the hosting platform (Vercel) sets and overwrites on
+  // every request, so a client cannot rotate its rate-limit bucket by forging
+  // them. We deliberately do NOT trust cf-connecting-ip: this app is not behind
+  // Cloudflare, so that header is fully client-controlled here and would let a
+  // caller bypass the limits protecting the OpenAI-backed endpoints.
+  const trustedIpHeaders = [
+    'x-vercel-forwarded-for', // Vercel: real client IP, single value, spoof-resistant
+    'x-real-ip',              // Vercel/Nginx: real client IP, single value
   ];
 
-  for (const header of ipHeaders) {
+  for (const header of trustedIpHeaders) {
     const value = headers.get(header);
     if (value) {
       const ip = normalizeIpCandidate(value.split(',')[0] ?? value);
       if (ip) {
         return ip;
       }
+    }
+  }
+
+  // Lower-trust fallback for non-Vercel/local environments. On Vercel the
+  // trusted headers above are always present, so this branch is not reached in
+  // production. The leftmost x-forwarded-for entry is the originating client per
+  // convention but is spoofable, which is why it ranks below the platform headers.
+  const forwardedFor = headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    const ip = normalizeIpCandidate(forwardedFor.split(',')[0] ?? forwardedFor);
+    if (ip) {
+      return ip;
     }
   }
 

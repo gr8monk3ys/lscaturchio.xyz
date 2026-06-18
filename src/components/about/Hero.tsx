@@ -46,7 +46,7 @@ export function AboutHero() {
         variants={staggerItemVariants}
         className="relative aspect-square"
       >
-        <div className="relative h-full w-full overflow-hidden rounded-3xl bg-zinc-100 dark:bg-zinc-800 ring-1 ring-zinc-900/10 dark:ring-white/10">
+        <div className="relative h-full w-full overflow-hidden border border-border bg-muted">
           <Image
             src="/images/coachella.webp"
             alt="Lorenzo Scaturchio at Coachella"

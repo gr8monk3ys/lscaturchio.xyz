@@ -1,29 +1,32 @@
 import { Container } from "@/components/Container";
+import { buildPageMetadata } from "@/lib/seo";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
-import { Clock, BookOpen, Code, Lightbulb, MapPin } from "lucide-react";
-import { Metadata } from "next";
+import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
-import { nowData } from "@/lib/now-data";
+import { nowData, getNowFreshness } from "@/lib/now-data";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Now - Lorenzo Scaturchio",
   description: "What I'm currently working on, learning, and focusing on. Updated regularly.",
-};
+  path: "/now",
+});
+
+// Re-evaluate the staleness banner at least daily without a rebuild.
+export const revalidate = 86400;
 
 export default function NowPage() {
+  const { isStale, daysSinceUpdate } = getNowFreshness();
+  const monthsSinceUpdate = Math.floor(daysSinceUpdate / 30);
+
   return (
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="mb-12 neu-card p-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="neu-flat-sm rounded-xl p-3">
-              <Clock className="h-8 w-8 text-primary" />
-            </div>
-            <Heading className="text-4xl font-bold">What I&apos;m Doing Now</Heading>
-          </div>
-          <Paragraph className="text-lg text-muted-foreground">
+        {/* Header — gallery masthead */}
+        <header className="mb-12">
+          <span className="label-mono block">Garden · Now</span>
+          <Heading className="mt-4 text-4xl font-bold md:text-5xl">What I&apos;m Doing Now</Heading>
+          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
             A regularly updated snapshot of my current focus, inspired by{" "}
             <a
               href="https://nownownow.com/about"
@@ -33,18 +36,27 @@ export default function NowPage() {
             >
               nownownow.com
             </a>
-            . Last updated: <span className="font-medium">{nowData.lastUpdatedLabel}</span>
+            . Last updated: <span className="font-medium text-foreground">{nowData.lastUpdatedLabel}</span>
           </Paragraph>
-        </div>
+          {isStale && (
+            <div
+              role="status"
+              className="mt-6 flex items-start gap-3 border-l-2 border-primary pl-4 text-sm text-muted-foreground"
+            >
+              <AlertTriangle className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+              <span>
+                Heads up: this snapshot is about {monthsSinceUpdate} months old, so
+                some of it may be out of date. I keep this honest rather than
+                pretending otherwise.
+              </span>
+            </div>
+          )}
+          <hr className="gallery-rule mt-8" />
+        </header>
 
         {/* Current Location */}
-        <section className="mb-12 neu-card p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="neu-flat-sm rounded-xl p-2">
-              <MapPin className="h-6 w-6 text-primary" />
-            </div>
-            <h2 className="text-2xl font-bold">Location</h2>
-          </div>
+        <section className="mb-16">
+          <h2 className="font-display text-2xl font-semibold tracking-tight mb-4">Location</h2>
           <p className="text-muted-foreground leading-relaxed">
             Currently based in{" "}
             <span className="font-medium text-foreground">{nowData.location.label}</span>,{" "}
@@ -53,16 +65,11 @@ export default function NowPage() {
         </section>
 
         {/* Working On */}
-        <section className="mb-12">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="neu-flat-sm rounded-xl p-2">
-              <Code className="h-6 w-6 text-primary" />
-            </div>
-            <h2 className="text-2xl font-bold">Working On</h2>
-          </div>
-          <div className="space-y-4">
-            <div className="neu-card p-5">
-              <h3 className="font-semibold text-lg mb-2">Client Projects</h3>
+        <section className="mb-16">
+          <h2 className="font-display text-2xl font-semibold tracking-tight mb-6">Working On</h2>
+          <div className="divide-y divide-border border-y border-border">
+            <div className="py-6">
+              <h3 className="label-mono mb-3">Client Projects</h3>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                 {nowData.workingOn.clientProjects.map((item) => (
                   <li key={item}>{item}</li>
@@ -70,8 +77,8 @@ export default function NowPage() {
               </ul>
             </div>
 
-            <div className="neu-card p-5">
-              <h3 className="font-semibold text-lg mb-2">Personal Projects</h3>
+            <div className="py-6">
+              <h3 className="label-mono mb-3">Personal Projects</h3>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                 {nowData.workingOn.personalProjects.map((item) => (
                   <li key={item}>{item}</li>
@@ -82,16 +89,11 @@ export default function NowPage() {
         </section>
 
         {/* Learning */}
-        <section className="mb-12">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="neu-flat-sm rounded-xl p-2">
-              <BookOpen className="h-6 w-6 text-primary" />
-            </div>
-            <h2 className="text-2xl font-bold">Learning</h2>
-          </div>
-          <div className="space-y-4">
-            <div className="neu-pressed rounded-xl p-5">
-              <h3 className="font-semibold mb-2">Technical Skills</h3>
+        <section className="mb-16">
+          <h2 className="font-display text-2xl font-semibold tracking-tight mb-6">Learning</h2>
+          <div className="divide-y divide-border border-y border-border">
+            <div className="py-6">
+              <h3 className="label-mono mb-3">Technical Skills</h3>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground text-sm">
                 {nowData.learning.technicalSkills.map((item) => (
                   <li key={item}>{item}</li>
@@ -99,8 +101,8 @@ export default function NowPage() {
               </ul>
             </div>
 
-            <div className="neu-pressed rounded-xl p-5">
-              <h3 className="font-semibold mb-2">Reading</h3>
+            <div className="py-6">
+              <h3 className="label-mono mb-3">Reading</h3>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground text-sm">
                 {nowData.learning.reading.map((item) => (
                   <li key={item}>{item}</li>
@@ -108,8 +110,8 @@ export default function NowPage() {
               </ul>
             </div>
 
-            <div className="neu-pressed rounded-xl p-5">
-              <h3 className="font-semibold mb-2">Courses</h3>
+            <div className="py-6">
+              <h3 className="label-mono mb-3">Courses</h3>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground text-sm">
                 {nowData.learning.courses.map((item) => (
                   <li key={item}>{item}</li>
@@ -120,27 +122,20 @@ export default function NowPage() {
         </section>
 
         {/* Thinking About */}
-        <section className="mb-12">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="neu-flat-sm rounded-xl p-2">
-              <Lightbulb className="h-6 w-6 text-primary" />
-            </div>
-            <h2 className="text-2xl font-bold">Thinking About</h2>
-          </div>
-          <div className="neu-card p-5">
-            <ul className="space-y-3 text-muted-foreground">
-              {nowData.thinkingAbout.map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="text-primary mt-1">→</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <section className="mb-16">
+          <h2 className="font-display text-2xl font-semibold tracking-tight mb-6">Thinking About</h2>
+          <ul className="space-y-3 text-muted-foreground">
+            {nowData.thinkingAbout.map((item) => (
+              <li key={item} className="flex items-start gap-2">
+                <span className="text-primary mt-1">→</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* Footer */}
-        <div className="neu-pressed rounded-2xl p-6">
+        <div className="border-t border-border pt-8">
           <p className="text-sm text-muted-foreground">
             This page is inspired by Derek Sivers&apos;{" "}
             <a

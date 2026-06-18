@@ -82,9 +82,10 @@ export const navigationCategories: NavCategory[] = [
 ];
 
 export const primaryNavigation: NavItem[] = [
+  { name: 'Writing', href: '/blog', icon: BookOpen, description: 'Essays and engineering notes' },
   { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
+  { name: 'About', href: '/about', icon: User, description: 'Who I am' },
   { name: 'Work With Me', href: '/work-with-me', icon: Sparkles, description: 'Hire me for AI/RAG work' },
-  { name: 'Blog', href: '/blog', icon: BookOpen, description: 'Articles and thoughts' },
 ];
 
 export const secondaryNavigationCategories: NavCategory[] = navigationCategories
@@ -116,13 +117,50 @@ export const contactLink: NavItem = {
   icon: Mail
 };
 
-// Flat navigation for backward compatibility and mobile
-export const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
-  { name: 'Blog', href: '/blog' },
-  { name: 'Projects', href: '/projects' },
-  { name: 'Work With Me', href: '/work-with-me' },
-  { name: 'Contact', href: '/contact' },
-  { name: 'Changelog', href: '/changelog' },
+// Footer site map. The header stays slim (primaryNavigation); the footer
+// carries the full breadth of the garden so no page loses a doorway.
+// Curated separately from navigationCategories because the groupings differ
+// (Content → Writing, Personal → Garden, Uses lives under Work, etc.).
+export const footerColumns: NavCategory[] = [
+  {
+    name: 'Writing',
+    items: [
+      { name: 'Blog', href: '/blog' },
+      { name: 'Map', href: '/map' },
+      { name: 'Topics', href: '/topics' },
+      { name: 'Series', href: '/series' },
+      { name: 'Podcast', href: '/podcast' },
+      { name: 'Changelog', href: '/changelog' },
+    ],
+  },
+  {
+    name: 'Work',
+    items: [
+      { name: 'Projects', href: '/projects' },
+      { name: 'Work With Me', href: '/work-with-me' },
+      { name: 'Services', href: '/work-with-me#services' },
+      { name: 'Uses', href: '/uses' },
+    ],
+  },
+  {
+    name: 'Garden',
+    items: [
+      { name: 'Books', href: '/books' },
+      { name: 'Movies', href: '/movies' },
+      { name: 'Photos', href: '/photos' },
+      { name: 'Now', href: '/now' },
+      { name: 'Lab', href: '/lab' },
+      { name: 'Guestbook', href: '/guestbook' },
+      { name: 'Links', href: '/links' },
+    ],
+  },
+  {
+    name: 'About',
+    items: [
+      { name: 'About Me', href: '/about' },
+      { name: 'Professional', href: '/professional' },
+      { name: 'Chat', href: '/chat' },
+      { name: 'Contact', href: '/contact' },
+    ],
+  },
 ];

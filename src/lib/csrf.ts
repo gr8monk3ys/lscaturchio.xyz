@@ -111,9 +111,9 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
   if (referer) {
     try {
       const refererUrl = new URL(referer);
-      if (refererUrl.protocol === 'https:' &&
-          refererUrl.hostname.endsWith('.vercel.app') &&
-          /(?:^|-)lscaturchio(?:-|\.)/i.test(refererUrl.hostname)) {
+      // Use the same anchored allowlist as the Origin check so the two paths
+      // can never drift — `isAllowedVercelAppOrigin` rejects `evil-lscaturchio.vercel.app`.
+      if (isAllowedVercelAppOrigin(refererUrl.origin)) {
         return null;
       }
       if (allowedOrigins.includes(refererUrl.origin)) {

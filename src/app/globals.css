@@ -10,21 +10,18 @@
   --font-body:
     var(--site-font-body), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji';
+  --font-mono:
+    var(--site-font-mono), ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
 
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 48px;
-  --spacing-3xl: 64px;
-  --spacing-4xl: 96px;
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-2xl: 32px;
+  /* NOTE: do not define --spacing-xs/sm/md/lg/xl/2xl/... tokens here. In
+   * Tailwind v4 they generate spacing-suffixed utilities (max-w-2xl, w-lg, …)
+   * that shadow the standard container scale — a previous --spacing-2xl: 48px
+   * silently collapsed every `max-w-2xl` on the site to 48px. */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
 
   --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
   --background-image-gradient-conic: conic-gradient(
@@ -77,12 +74,6 @@
   --z-index-tooltip: var(--z-tooltip);
 }
 
-@property --border-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -105,55 +96,86 @@
   font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ============================================================
+ * GALLERY LANGUAGE
+ * Monospace "wall-label" metadata + architectural hairline rules.
+ * The museum register: content on open paper, divided by space
+ * and thin lines instead of card chrome.
+ * ============================================================ */
+
+@utility font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Wall label: the small mono caption beside the work — kickers,
+ * dates, tags, catalogue numbers. */
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Full-width architectural divider between gallery sections. */
+@utility gallery-rule {
+  border: 0;
+  border-top: 1px solid hsl(var(--border));
+  width: 100%;
+  margin: 0;
+}
+
+/* ============================================================
+ * EDITORIAL SURFACES
+ * The neu-* names are kept (45+ files use them) but the language
+ * is now flat ink-on-paper: hairline rules, tint shifts, and a
+ * single hover lift — no neumorphic shadow blooms. The blooms
+ * were the single biggest "AI template" signal on the site.
+ * ============================================================ */
+
 @utility neu-flat {
-  /* Neumorphic utility classes */
-  box-shadow: var(--neu-shadow);
-  background: hsl(var(--background));
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
 }
 
 @utility neu-flat-sm {
-  box-shadow: var(--neu-shadow-sm);
-  background: hsl(var(--background));
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
 }
 
 @utility neu-flat-lg {
-  box-shadow: var(--neu-shadow-lg);
-  background: hsl(var(--background));
-  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border) / 0.9);
 }
 
 @utility neu-pressed {
-  box-shadow: var(--neu-shadow-inset);
-  background: hsl(var(--background));
-  border: 1px solid hsl(var(--border));
+  /* Recessed surface = tinted paper, not an inset shadow */
+  background: hsl(var(--muted) / 0.55);
+  border: 1px solid hsl(var(--border) / 0.7);
 }
 
 @utility neu-pressed-sm {
-  box-shadow: var(--neu-shadow-inset-sm);
-  background: hsl(var(--background));
-  border: 1px solid hsl(var(--border));
+  background: hsl(var(--muted) / 0.55);
+  border: 1px solid hsl(var(--border) / 0.7);
 }
 
 @utility neu-button {
-  /* Neumorphic button styles */
-  box-shadow: var(--neu-shadow-sm);
-  background: hsl(var(--background));
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   transition:
-    box-shadow 0.2s ease,
-    transform 0.1s ease,
-    border-color 0.2s ease;
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
 
   &:hover {
-    box-shadow: var(--neu-shadow);
-    border-color: hsl(var(--primary) / 0.35);
+    background: hsl(var(--primary) / 0.06);
+    border-color: hsl(var(--primary) / 0.45);
   }
 
   &:active {
-    box-shadow: var(--neu-shadow-inset-sm);
-    transform: scale(0.98);
+    transform: translateY(1px);
   }
 
   &:focus-visible {
@@ -163,32 +185,27 @@
 }
 
 @utility neu-card {
-  /* Neumorphic card with hover effect */
-  box-shadow: var(--neu-shadow);
-  background: hsl(var(--background));
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   transition:
-    box-shadow 0.3s ease,
-    transform 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
 
   &:hover {
-    box-shadow: var(--neu-shadow-lg);
-    transform: translateY(-3px);
-    border-color: hsl(var(--primary) / 0.35);
+    border-color: hsl(var(--primary) / 0.45);
+    transform: translateY(-2px);
   }
 }
 
 @utility neu-input {
-  /* Neumorphic input fields */
-  box-shadow: var(--neu-shadow-inset-sm);
-  background: hsl(var(--background));
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
-  transition: box-shadow 0.2s ease;
+  transition: border-color 0.15s ease;
 
   &:focus {
-    box-shadow: var(--neu-shadow-inset);
+    border-color: hsl(var(--primary) / 0.5);
     outline: 2px solid hsl(var(--primary));
     outline-offset: 2px;
   }
@@ -200,16 +217,15 @@
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border: 1px solid hsl(var(--primary) / 0.42);
-  box-shadow:
-    var(--neu-shadow-sm),
-    0 10px 24px hsl(var(--primary) / 0.18);
+  box-shadow: 0 1px 0 hsl(var(--primary) / 0.25);
 
   &:hover {
     color: hsl(var(--primary-foreground));
-    filter: brightness(1.03);
-    box-shadow:
-      var(--neu-shadow),
-      0 14px 28px hsl(var(--primary) / 0.24);
+    filter: brightness(1.05);
+  }
+
+  &:active {
+    transform: translateY(1px);
   }
 
   &:focus-visible {
@@ -235,18 +251,13 @@
 @utility cta-secondary {
   @apply inline-flex items-center justify-center font-medium transition-all;
   color: hsl(var(--foreground));
-  background: linear-gradient(
-    135deg,
-    hsl(var(--background)),
-    hsl(var(--accent))
-  );
+  background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
-  box-shadow: var(--neu-shadow-sm);
 
   &:hover {
     color: hsl(var(--foreground));
-    border-color: hsl(var(--primary) / 0.35);
-    box-shadow: var(--neu-shadow);
+    border-color: hsl(var(--primary) / 0.45);
+    background: hsl(var(--primary) / 0.05);
   }
 
   &:focus-visible {
@@ -280,6 +291,10 @@
 
   opacity: 0;
   transform: translate3d(0, var(--reveal-y), 0);
+  /* Ease the in→out flip that happens on hydration for below-fold elements
+     (server renders 'in'; the observer then resets them) so it reads as a
+     soft settle rather than a hard pop. */
+  transition: opacity 220ms ease;
 
   &[data-reveal-state='in'] {
     animation: reveal-in var(--reveal-duration) var(--reveal-ease) both;
@@ -298,89 +313,6 @@
       transition: none !important;
     }
   }
-}
-
-@utility home-atmosphere {
-  /* Home-only atmospheric background (scroll-synced via CSS variables) */
-  --home-parallax-a: 0px;
-  --home-parallax-b: 0px;
-}
-
-@utility home-atmosphere__layer {
-  position: absolute;
-  inset: -18%;
-  background-repeat: no-repeat;
-  will-change: transform;
-}
-
-@utility home-atmosphere__layer--a {
-  transform: translate3d(0, var(--home-parallax-a), 0);
-  background-image:
-    radial-gradient(
-      1200px circle at 12% -10%,
-      hsl(var(--primary) / 0.16),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px circle at 92% 0%,
-      hsl(var(--secondary) / 0.14),
-      transparent 62%
-    ),
-    radial-gradient(
-      700px circle at 55% 18%,
-      hsl(var(--accent) / 0.55),
-      transparent 70%
-    );
-  filter: blur(0px);
-  opacity: 0.95;
-
-  @media (prefers-reduced-motion: reduce) {
-    transform: none !important;
-    will-change: auto;
-  }
-}
-
-@utility home-atmosphere__layer--b {
-  transform: translate3d(0, var(--home-parallax-b), 0);
-  background-image:
-    radial-gradient(
-      900px circle at 86% 44%,
-      hsl(var(--primary) / 0.1),
-      transparent 64%
-    ),
-    radial-gradient(
-      750px circle at 18% 78%,
-      hsl(var(--secondary) / 0.1),
-      transparent 66%
-    ),
-    radial-gradient(
-      900px circle at 52% 104%,
-      hsl(var(--accent) / 0.35),
-      transparent 64%
-    );
-  opacity: 0.7;
-  mix-blend-mode: multiply;
-
-  .dark & {
-    mix-blend-mode: screen;
-    opacity: 0.45;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transform: none !important;
-    will-change: auto;
-  }
-}
-
-@utility home-atmosphere__vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    closest-side at 50% 30%,
-    transparent 60%,
-    hsl(var(--background) / 0.85) 100%
-  );
-  opacity: 0.8;
 }
 
 @utility selected-writing-media {
@@ -568,141 +500,6 @@
   }
 }
 
-@utility gradient-text {
-  /* ============================================
-   * GRADIENT TEXT CLASSES
-   * Animated and static gradient text effects
-   * ============================================ */
-  background: linear-gradient(
-    135deg,
-    hsl(var(--primary)) 0%,
-    hsl(var(--secondary)) 25%,
-    hsl(280 60% 50%) 50%,
-    hsl(var(--secondary)) 75%,
-    hsl(var(--primary)) 100%
-  );
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 8s ease infinite;
-}
-
-@utility gradient-text-primary {
-  background: linear-gradient(
-    135deg,
-    hsl(82 40% 30%) 0%,
-    hsl(82 32% 40%) 33%,
-    hsl(90 35% 35%) 66%,
-    hsl(82 40% 30%) 100%
-  );
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 6s ease infinite;
-
-  .dark & {
-    background: linear-gradient(
-      135deg,
-      hsl(82 35% 50%) 0%,
-      hsl(82 40% 60%) 33%,
-      hsl(90 38% 55%) 66%,
-      hsl(82 35% 50%) 100%
-    );
-    background-size: 200% 200%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-}
-
-@utility gradient-text-rainbow {
-  background: linear-gradient(
-    135deg,
-    #ff6b6b 0%,
-    #feca57 16%,
-    #48dbfb 33%,
-    #ff9ff3 50%,
-    #54a0ff 66%,
-    #5f27cd 83%,
-    #ff6b6b 100%
-  );
-  background-size: 300% 300%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 10s ease infinite;
-}
-
-@utility gradient-text-static {
-  /* Static gradient variants (no animation) */
-  background: linear-gradient(
-    135deg,
-    hsl(var(--primary)) 0%,
-    hsl(var(--secondary)) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-@utility animated-border {
-  /* ============================================
-   * ANIMATED BORDER CLASSES
-   * Moving gradient border effect
-   * ============================================ */
-  position: relative;
-  background: hsl(var(--background));
-  border-radius: var(--radius);
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 2px;
-    background: linear-gradient(
-      var(--border-angle, 0deg),
-      hsl(var(--primary)),
-      hsl(var(--secondary)),
-      hsl(280 60% 50%),
-      hsl(var(--primary))
-    );
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: border-rotate 4s linear infinite;
-  }
-}
-
-@utility animated-border-slow {
-  &::before {
-    animation: border-rotate 8s linear infinite;
-  }
-}
-
-@utility animated-border-fast {
-  &::before {
-    animation: border-rotate 2s linear infinite;
-  }
-}
-
-@utility animated-border-hover {
-  /* Hover-only animated border */
-  &::before {
-    animation-play-state: paused;
-  }
-
-  &:hover::before {
-    animation-play-state: running;
-  }
-}
 
 @utility glass {
   /* Register the custom property for animation */
@@ -761,11 +558,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(
-      90deg,
-      hsl(var(--primary)),
-      hsl(var(--secondary))
-    );
+    background: hsl(var(--primary));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -773,6 +566,12 @@
 
   &:hover::after {
     transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::after {
+      transition: none;
+    }
   }
 }
 
@@ -805,7 +604,7 @@
     --border: 30 18% 86%;
     --input: 30 18% 86%;
     --ring: 152 52% 20%;
-    --radius: 1.1rem;
+    --radius: 0.75rem;
 
     /* Status colors - for badges, alerts, notifications */
     --success: 142 76% 36%;
@@ -904,11 +703,6 @@
     color: hsl(var(--foreground));
     line-height: 1.65;
     overflow-x: clip;
-    background-image:
-      radial-gradient(1200px circle at 8% -10%, hsl(var(--primary) / 0.15), transparent 60%),
-      radial-gradient(900px circle at 95% -5%, hsl(var(--secondary) / 0.2), transparent 55%),
-      radial-gradient(600px circle at 50% 0%, hsl(var(--accent) / 0.6), transparent 60%);
-    background-attachment: fixed;
   }
 
   h1,
@@ -926,6 +720,25 @@
     letter-spacing: -0.02em;
     line-height: 1.1;
     font-optical-sizing: auto;
+  }
+
+  /* Owned accent: selecting text anywhere on the site tints it with the
+   * site's forest-green primary — a small signature every reader touches. */
+  ::selection {
+    background: hsl(var(--primary) / 0.22);
+    color: hsl(var(--foreground));
+  }
+
+  /* Paper grain: a fixed, near-invisible noise field that keeps large flat
+   * areas from reading as sterile screen-white. Pure CSS, no asset request. */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 }
 
@@ -950,23 +763,23 @@
       transform: translateX(100%);
     }
   }
+}
 
-  @keyframes gradient-shift {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
+/* Editorial drop cap: the first letter of an essay set large in Fraunces,
+   like the opening initial of a printed article. Scoped to the article body. */
+.prose-gallery > div > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 3.4em;
+  line-height: 0.78;
+  margin: 0.05em 0.09em 0 0;
+  color: hsl(var(--primary));
+}
 
-  @keyframes border-rotate {
-    to {
-      --border-angle: 360deg;
-    }
+@media (prefers-reduced-motion: no-preference) {
+  .prose-gallery :is(h2, h3) {
+    scroll-margin-top: 6rem;
   }
 }
 

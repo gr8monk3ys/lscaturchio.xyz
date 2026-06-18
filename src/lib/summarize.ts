@@ -3,6 +3,11 @@ import { logError } from './logger'
 
 let openaiClient: OpenAI | null = null
 
+// Hard cap on how much content we ever forward to the model. The request
+// schema already limits input to 50k chars, but clamping here protects every
+// caller (and bounds cost) regardless of how the function is invoked.
+const MAX_INPUT_CHARS = 12000
+
 function getOpenAI(): OpenAI {
   if (!openaiClient) {
     openaiClient = new OpenAI({
@@ -34,7 +39,7 @@ export async function summarizeContent(
         },
         {
           role: 'user',
-          content: `Summarize this blog post in ${maxLength} words or less:\n\n${content}`,
+          content: `Summarize this blog post in ${maxLength} words or less:\n\n${content.slice(0, MAX_INPUT_CHARS)}`,
         },
       ],
       temperature: 0.3,
@@ -68,10 +73,11 @@ export async function generateKeyTakeaways(
         },
         {
           role: 'user',
-          content: `Extract ${numTakeaways} key takeaways from this blog post:\n\n${content}`,
+          content: `Extract ${numTakeaways} key takeaways from this blog post:\n\n${content.slice(0, MAX_INPUT_CHARS)}`,
         },
       ],
       temperature: 0.3,
+      max_tokens: Math.max(256, numTakeaways * 120),
       response_format: { type: 'json_object' },
     })
 

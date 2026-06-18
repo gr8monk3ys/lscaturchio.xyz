@@ -10,7 +10,7 @@ const PopularPosts = dynamic(() => import('@/components/stats/popular-posts').th
 const TechStack = dynamic(() => import('@/components/stats/tech-stack').then(m => m.TechStack))
 
 export const metadata: Metadata = {
-  title: 'Site Statistics | Lorenzo Scaturchio',
+  title: 'Site Statistics',
   description: 'A public snapshot of site metrics, writing activity, and the technology behind this website.',
   openGraph: {
     title: 'Site Statistics | Lorenzo Scaturchio',
@@ -24,15 +24,17 @@ export default function StatsPage() {
     <div className="py-20">
       <Container>
         <div className="max-w-6xl mx-auto">
-          <div className="mb-12">
-            <Heading as="h1" className="mb-4">
+          <header className="mb-12">
+            <span className="label-mono block">Garden · Metrics</span>
+            <Heading as="h1" className="mt-4 text-4xl font-bold md:text-5xl">
               Site Statistics
             </Heading>
-            <p className="text-lg text-muted-foreground">
+            <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
               A public snapshot of what this site actually tracks. Aggregate metrics stay visible,
               and anything private or unavailable is labeled instead of guessed.
             </p>
-          </div>
+            <hr className="gallery-rule mt-8" />
+          </header>
 
           <div className="space-y-8">
             <StatsOverview />

@@ -4,7 +4,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import { AnimatePresence, m, useMotionPreset, useReducedMotion } from '@/lib/motion'
-import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { Keyboard, ArrowRight } from 'lucide-react'
 import type { Product, ProjectCategory, ProjectStatus } from '@/types/products'
@@ -108,7 +107,7 @@ export function ProjectGallery({ projects }: { projects: Product[] }): React.Rea
 
   if (list.length === 0) {
     return (
-      <div className="rounded-2xl border border-border/50 bg-card/50 p-10 text-center">
+      <div className="border-y border-border py-16 text-center">
         <p className="text-lg font-medium">No projects match your filters.</p>
         <p className="mt-1 text-sm text-muted-foreground">Try a different category or clear filters.</p>
       </div>
@@ -118,17 +117,17 @@ export function ProjectGallery({ projects }: { projects: Product[] }): React.Rea
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-sm text-muted-foreground">
-          Hover a card to preview. Press <span className="font-semibold text-foreground">B</span> for keyboard browse.
+        <div className="label-mono">
+          Hover to preview · press <span className="text-foreground">B</span> to keyboard-browse
         </div>
         <button
           type="button"
           onClick={handleToggleBrowse}
           className={cn(
-            'inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors',
+            'label-mono inline-flex items-center justify-center gap-2 border px-4 py-2 transition-colors',
             browseMode
-              ? 'bg-primary text-primary-foreground shadow-xs'
-              : 'bg-muted/60 text-foreground hover:bg-muted'
+              ? 'border-primary text-primary'
+              : 'border-border text-muted-foreground hover:text-foreground'
           )}
           aria-pressed={browseMode}
         >
@@ -200,9 +199,8 @@ function ProjectGalleryCard({
       onMouseEnter={onActivate}
       onFocus={onActivate}
       className={cn(
-        'group block overflow-hidden rounded-2xl border bg-card/60 backdrop-blur-xs transition-all',
-        'hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/5',
-        isActive ? 'border-primary/40 ring-1 ring-primary/20' : 'border-border/50 hover:border-primary/25'
+        'group block overflow-hidden border transition-colors',
+        isActive ? 'border-primary' : 'border-border hover:border-primary/45'
       )}
       aria-current={isActive ? 'true' : undefined}
     >
@@ -224,48 +222,30 @@ function ProjectGalleryCard({
 
         <div className="absolute left-4 right-4 bottom-4 flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              {(project.categories || []).slice(0, 2).map((c) => (
-                <Badge
-                  key={c}
-                  variant="secondary"
-                  className="border border-border/50 bg-background/70 px-2 py-0.5 text-[11px] font-medium"
-                >
-                  {categoryLabels[c]}
-                </Badge>
-              ))}
-              {project.status && (
-                <span className="rounded-full bg-background/70 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                  {statusLabels[project.status]}
-                </span>
-              )}
-            </div>
+            <span className="label-mono block truncate">
+              {[
+                ...(project.categories || []).slice(0, 2).map((c) => categoryLabels[c]),
+                ...(project.status ? [statusLabels[project.status]] : []),
+              ].join("  ·  ")}
+            </span>
             <m.div layoutId={shared ? `project-title-${project.slug}` : undefined}>
-              <div className="mt-2 truncate text-lg font-semibold tracking-tight">
+              <div className="mt-1.5 truncate text-lg font-semibold tracking-tight">
                 {project.title}
               </div>
             </m.div>
           </div>
-          <div className="shrink-0 rounded-full bg-primary/10 p-2 text-primary transition-colors group-hover:bg-primary/15">
-            <ArrowRight className="h-4 w-4" />
-          </div>
+          <ArrowRight className="h-4 w-4 shrink-0 text-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
         </div>
       </div>
 
       <div className="p-4">
         <p className="text-sm text-muted-foreground line-clamp-2">{project.description}</p>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          {project.stack?.slice(0, 4).map((t) => (
-            <span key={t} className="rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
-              {t}
-            </span>
-          ))}
-          {project.stack && project.stack.length > 4 && (
-            <span className="rounded-md bg-muted px-2 py-1 text-xs text-muted-foreground">
-              +{project.stack.length - 4}
-            </span>
-          )}
-        </div>
+        {project.stack && project.stack.length > 0 && (
+          <p className="label-mono mt-3 normal-case tracking-normal text-muted-foreground">
+            {project.stack.slice(0, 4).join("  ·  ")}
+            {project.stack.length > 4 && `  ·  +${project.stack.length - 4}`}
+          </p>
+        )}
       </div>
     </Link>
   )
