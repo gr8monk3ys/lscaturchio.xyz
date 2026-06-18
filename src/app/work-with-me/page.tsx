@@ -5,12 +5,13 @@ import { PricingSection } from "@/components/services/pricing-section";
 import ServicesSection from "@/components/services/service-section";
 import { FaqSection } from "@/components/services/faq-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
+import { testimonials } from "@/constants/testimonials";
 import { pricingTiers } from "@/constants/pricing";
 import { questions } from "@/constants/questions";
 import { ArrowUpRight, CalendarDays, CheckCircle2, Mail, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Work With Me | Lorenzo Scaturchio",
+  title: "Work With Me",
   description: "AI engineering, RAG systems, and practical automation. Clear scope, fast iteration, production-ready delivery.",
 };
 
@@ -89,10 +90,10 @@ export default function WorkWithMePage() {
               <Sparkles className="h-3.5 w-3.5" />
               AI Engineering + RAG Delivery
             </div>
-            <h1 className="font-system text-page-title mt-6 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+            <h1 className="text-page-title mt-6 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
               Ship the smallest reliable version first.
             </h1>
-            <p className="font-system mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground selection:bg-primary/20 selection:text-primary md:text-lg">
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground selection:bg-primary/20 selection:text-primary md:text-lg">
               I help teams turn vague AI ideas into working systems with clear scope, measured quality,
               and production-minded delivery. The goal is not a demo. The goal is something a team can
               trust, evaluate, and keep improving.
@@ -215,16 +216,18 @@ export default function WorkWithMePage() {
           />
         </section>
 
-        <section
-          id="testimonials"
-          className="scroll-mt-28 mb-10"
-        >
-          <TestimonialsSection
-            showAll
-            title="Testimonials"
-            description="Feedback from people I have built with across AI, product, and software projects."
-          />
-        </section>
+        {testimonials.length > 0 && (
+          <section
+            id="testimonials"
+            className="scroll-mt-28 mb-10"
+          >
+            <TestimonialsSection
+              showAll
+              title="Testimonials"
+              description="Feedback from people I have built with across AI, product, and software projects."
+            />
+          </section>
+        )}
 
         <div>
           <PricingSection

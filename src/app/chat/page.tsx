@@ -13,7 +13,7 @@ function getSearchParamValue(params: Record<string, SearchParamValue>, key: stri
 }
 
 export const metadata = {
-  title: "Chat | Lorenzo Scaturchio",
+  title: "Chat",
   description: "Chat with an AI version of Lorenzo, grounded in blog and site content.",
 };
 

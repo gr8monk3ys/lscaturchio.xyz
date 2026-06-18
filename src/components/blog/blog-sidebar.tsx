@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { List, Sparkles, MessageSquareText, ArrowRight } from "lucide-react";
+import { MessageSquareText, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -101,14 +101,13 @@ export function BlogSidebar({ slug, title }: { slug: string; title: string }) {
     >
       <div className="space-y-4">
         {/* Ask about this post */}
-        <div className="rounded-2xl neu-flat p-6">
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold">Ask about this post</h2>
-          </div>
-
-          <p className="text-sm text-muted-foreground">
-            Ask me a question grounded in this article.
+        <div className="border border-border p-5">
+          <span className="label-mono block">Ask · RAG</span>
+          <h2 className="mt-2 font-display text-lg font-semibold tracking-tight">
+            Ask about this post
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            A question grounded in this article — or argue with it.
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -120,7 +119,7 @@ export function BlogSidebar({ slug, title }: { slug: string; title: string }) {
                   const next = p.prompt(title, headingTexts);
                   setQuestion(next);
                 }}
-                className="neu-button rounded-xl px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
+                className="label-mono border border-border px-3 py-1.5 text-muted-foreground transition-colors hover:border-primary/45 hover:text-primary"
               >
                 {p.label}
               </button>
@@ -138,9 +137,9 @@ export function BlogSidebar({ slug, title }: { slug: string; title: string }) {
               placeholder="e.g., What’s the strongest argument against this?"
               rows={3}
               className={cn(
-                "w-full resize-none rounded-xl px-3 py-2 text-sm",
-                "neu-input text-foreground placeholder:text-muted-foreground",
-                "focus:outline-hidden focus:ring-2 focus:ring-primary"
+                "w-full resize-none border border-border bg-transparent px-3 py-2 text-sm",
+                "text-foreground placeholder:text-muted-foreground",
+                "focus:border-primary/50 focus:outline-hidden focus:ring-2 focus:ring-primary"
               )}
             />
           </div>
@@ -149,25 +148,20 @@ export function BlogSidebar({ slug, title }: { slug: string; title: string }) {
             <button
               type="button"
               onClick={() => goToChat(question.trim() || `What is my post \"${title}\" about?`)}
-              className="cta-primary rounded-xl px-4 py-2 text-sm gap-2 inline-flex items-center"
+              className="cta-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm"
             >
               <MessageSquareText className="h-4 w-4" />
               Ask in Chat
               <ArrowRight className="h-4 w-4" />
             </button>
-            <span className="text-xs text-muted-foreground">
-              Uses RAG
-            </span>
+            <span className="label-mono">Uses RAG</span>
           </div>
         </div>
 
         {/* Table of contents */}
         {headings.length > 0 && (
-          <nav className="rounded-2xl neu-flat p-6" aria-label="Table of contents">
-            <div className="flex items-center gap-2 mb-4">
-              <List className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-semibold">On this page</h2>
-            </div>
+          <nav className="border border-border p-5" aria-label="Table of contents">
+            <span className="label-mono mb-4 block">On this page</span>
             <ul className="space-y-2 text-sm">
               {headings.map((heading) => (
                 <li

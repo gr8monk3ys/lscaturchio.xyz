@@ -44,17 +44,17 @@ function CategoryTabs({ selectedCategory, photoCount, onSelectCategory }: Catego
             key={category.value}
             type="button"
             onClick={() => onSelectCategory(category.value)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+            className={`label-mono border px-4 py-2 transition-colors ${
               selectedCategory === category.value
-                ? 'bg-primary text-primary-foreground'
-                : 'neu-flat-sm hover:bg-primary/10'
+                ? 'border-primary text-primary'
+                : 'border-border text-muted-foreground hover:text-foreground'
             }`}
           >
             {category.label}
           </button>
         ))}
       </div>
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="label-mono mt-4">
         Showing {photoCount} photo{photoCount !== 1 ? 's' : ''}
       </p>
     </div>
@@ -79,7 +79,7 @@ function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridPr
           className="break-inside-avoid w-full text-left cursor-pointer group"
           onClick={() => onOpen(photo, index)}
         >
-          <div className="relative overflow-hidden rounded-xl neu-card p-1">
+          <div className="relative overflow-hidden border border-border">
             <div
               className={`relative ${
                 photo.aspectRatio === 'portrait'
@@ -93,14 +93,14 @@ function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridPr
                 src={photo.src}
                 alt={photo.alt}
                 fill
-                className="object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               />
-              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
+              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                   <p className="font-medium text-sm truncate">{photo.alt}</p>
                   {photo.location && (
-                    <p className="text-xs text-white/80 flex items-center gap-1 mt-1">
+                    <p className="label-mono mt-1 flex items-center gap-1 text-white/80">
                       <MapPin className="h-3 w-3" />
                       {photo.location}
                     </p>
@@ -141,7 +141,7 @@ function PhotoLightbox({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-70 bg-black/95 flex items-center justify-center"
           onClick={onClose}
         >
           <button
@@ -285,14 +285,14 @@ function PhotoLightbox({
 
 function PhotosInstructions(): React.ReactNode {
   return (
-    <div className="mt-12 neu-pressed rounded-xl p-6 text-center">
+    <div className="mt-16 border-t border-border pt-6 text-center">
       <p className="text-muted-foreground text-sm">
         Add your photos to
-        <code className="text-primary px-1 py-0.5 bg-primary/10 rounded"> /public/images/photos/travel/</code>
+        <code className="px-1 font-mono text-foreground"> /public/images/photos/travel/</code>
         or
-        <code className="text-primary px-1 py-0.5 bg-primary/10 rounded"> /public/images/photos/nature/</code>
+        <code className="px-1 font-mono text-foreground"> /public/images/photos/nature/</code>
         and update
-        <code className="text-primary px-1 py-0.5 bg-primary/10 rounded"> src/constants/photos.ts</code>
+        <code className="px-1 font-mono text-foreground"> src/constants/photos.ts</code>
       </p>
     </div>
   )

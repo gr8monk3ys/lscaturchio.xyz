@@ -20,10 +20,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = products.find((p) => p.slug === slug) as Product | undefined;
   if (product) {
-    return buildProjectMetadata({
-      title: product.title,
-      description: product.description,
-    });
+    return buildProjectMetadata(
+      {
+        title: product.title,
+        description: product.description,
+      },
+      `/projects/${slug}`,
+    );
   } else {
     return {
       title: "Projects | Lorenzo Scaturchio",

@@ -1,15 +1,15 @@
 import { getAllBlogs } from "@/lib/getAllBlogs";
+import { buildPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
-import { Tag } from "lucide-react";
 import Link from "next/link";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
   title: "Blog Tags - Lorenzo Scaturchio",
   description: "Browse blog posts by topic. Explore articles on AI, data science, web development, and technology philosophy.",
-};
+  path: "/tags",
+});
 
 interface TagWithCount {
   name: string;
@@ -44,42 +44,41 @@ export default async function TagsPage() {
   return (
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-3 mb-4">
-          <Tag className="h-8 w-8 text-primary" />
-          <Heading className="text-4xl font-bold">Blog Tags</Heading>
-        </div>
+        {/* Header — gallery masthead */}
+        <header className="mb-12">
+          <span className="label-mono block">Garden · Tags</span>
+          <Heading className="mt-4 text-4xl font-bold md:text-5xl">Blog Tags</Heading>
+          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
+            Browse {blogs.length} blog posts organized by {tags.length} topics. Click any tag to see related articles.
+          </Paragraph>
+          <hr className="gallery-rule mt-8" />
+        </header>
 
-        <Paragraph className="text-lg text-muted-foreground mb-12">
-          Browse {blogs.length} blog posts organized by {tags.length} topics. Click any tag to see related articles.
-        </Paragraph>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
           {tags.map((tag) => (
             <Link
               key={tag.name}
               href={`/tag/${encodeURIComponent(tag.name)}`}
-              className="group p-6 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary transition-all hover:shadow-lg bg-white/50 dark:bg-gray-950/50 backdrop-blur-xs"
+              className="group border-t border-border py-6 transition-colors"
             >
-              <div className="flex items-start justify-between mb-3">
+              <div className="flex items-baseline justify-between gap-3">
                 <h3 className="text-xl font-semibold capitalize group-hover:text-primary transition-colors">
                   {tag.name}
                 </h3>
-                <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                  {tag.count}
-                </span>
+                <span className="label-mono shrink-0">{tag.count}</span>
               </div>
 
-              <div className="space-y-2">
+              <div className="mt-3 space-y-1">
                 {tag.posts.slice(0, 3).map((post) => (
                   <div
                     key={post.slug}
                     className="text-sm text-muted-foreground group-hover:text-foreground transition-colors truncate"
                   >
-                    • {post.title}
+                    {post.title}
                   </div>
                 ))}
                 {tag.posts.length > 3 && (
-                  <div className="text-sm text-muted-foreground italic">
+                  <div className="text-sm text-muted-foreground/70 italic">
                     +{tag.posts.length - 3} more
                   </div>
                 )}
@@ -88,16 +87,18 @@ export default async function TagsPage() {
           ))}
         </div>
 
-        <div className="mt-12 p-6 rounded-2xl bg-muted/50 border border-gray-200 dark:border-gray-800">
-          <h3 className="text-lg font-semibold mb-2">All Tags</h3>
-          <div className="flex flex-wrap gap-2">
+        <div className="mt-16">
+          <h3 className="label-mono">All Tags</h3>
+          <hr className="gallery-rule mt-4" />
+          <div className="mt-6 flex flex-wrap gap-x-4 gap-y-2">
             {tags.map((tag) => (
               <Link
                 key={tag.name}
                 href={`/tag/${encodeURIComponent(tag.name)}`}
-                className="px-3 py-1 rounded-full bg-background border border-gray-200 dark:border-gray-800 hover:border-primary dark:hover:border-primary text-sm capitalize transition-colors"
+                className="text-sm capitalize text-muted-foreground hover:text-primary transition-colors"
               >
-                {tag.name} ({tag.count})
+                {tag.name}{" "}
+                <span className="text-muted-foreground/60">({tag.count})</span>
               </Link>
             ))}
           </div>

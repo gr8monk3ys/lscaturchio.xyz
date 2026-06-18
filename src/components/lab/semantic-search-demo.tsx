@@ -56,8 +56,8 @@ export function SemanticSearchDemo() {
   }, [data]);
 
   return (
-    <section className="neu-card p-6">
-      <h3 className="text-xl font-semibold">Semantic Search Demo</h3>
+    <section className="border border-border p-6">
+      <h3 className="font-display text-xl font-semibold">Semantic Search Demo</h3>
       <p className="text-sm text-muted-foreground mt-1">
         Try a query. Results come from my blog via vector similarity.
       </p>

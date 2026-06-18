@@ -4,7 +4,7 @@ import { WifiOff } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Offline | Lorenzo Scaturchio',
+  title: 'Offline',
   description: 'You are currently offline',
 }
 

@@ -2,10 +2,9 @@
 
 import { Container } from "@/components/Container";
 import { m } from '@/lib/motion';
-import { BookOpen, Clock, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { FallbackImage } from "@/components/ui/fallback-image";
-import { Badge } from "@/components/ui/badge";
 
 interface SeriesPost {
   slug: string;
@@ -28,24 +27,26 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
   if (allSeries.length === 0) {
     return (
       <Container size="large">
-        <div className="space-y-8">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
+        <div className="max-w-5xl mx-auto">
+          {/* Header — gallery masthead */}
+          <header className="mb-12">
+            <span className="label-mono block">Garden · Series</span>
+            <h1 className="mt-4 font-display text-4xl font-bold tracking-tight text-foreground md:text-5xl">
               Blog Series
             </h1>
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
               Multi-part deep dives into complex topics.
             </p>
-          </div>
+            <hr className="gallery-rule mt-8" />
+          </header>
 
-          <div className="rounded-xl border border-dashed border-border p-12 text-center">
-            <BookOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <div className="border border-dashed border-border p-12 text-center">
             <p className="text-lg text-muted-foreground">
               No blog series yet. Check back soon!
             </p>
             <Link
               href="/blog"
-              className="mt-4 inline-block text-primary hover:underline"
+              className="mt-4 inline-block text-primary underline-offset-4 hover:underline"
             >
               Browse all posts
             </Link>
@@ -57,69 +58,57 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
 
   return (
     <Container size="large">
-      <div className="space-y-8">
-          {/* Header */}
-          <div>
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
+      <div className="max-w-5xl mx-auto">
+          {/* Header — gallery masthead */}
+          <header className="mb-12">
+            <span className="label-mono block">Garden · Series</span>
+            <h1 className="mt-4 font-display text-4xl font-bold tracking-tight text-foreground md:text-5xl">
               Blog Series
             </h1>
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
               Multi-part deep dives into complex topics. Follow along as we
               explore ideas in depth.
             </p>
-          </div>
+            <hr className="gallery-rule mt-8" />
+          </header>
 
           {/* Series Grid */}
-          <div className="grid gap-8">
+          <div className="space-y-16">
             {allSeries.map((series, index) => (
               <m.div
                 key={series.name}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="rounded-xl border bg-card shadow-xs hover:shadow-md transition-shadow overflow-hidden"
               >
                 {/* Series Header */}
-                <div className="p-6 border-b bg-secondary/30">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <BookOpen className="h-5 w-5 text-primary" />
-                        <h2 className="text-2xl font-bold">{series.name}</h2>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Badge variant="secondary">
-                            {series.totalPosts}{" "}
-                            {series.totalPosts === 1 ? "part" : "parts"}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          <span>{series.totalReadingTime} min total</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div>
+                  <h2 className="font-display text-2xl font-bold">{series.name}</h2>
+                  <p className="label-mono mt-2">
+                    {series.totalPosts}{" "}
+                    {series.totalPosts === 1 ? "part" : "parts"}
+                    {"  ·  "}
+                    {series.totalReadingTime} min total
+                  </p>
                 </div>
 
                 {/* Series Posts */}
-                <div className="divide-y">
+                <div className="mt-6 divide-y divide-border border-y border-border">
                   {series.posts.map((post) => (
                     <Link
                       key={post.slug}
                       href={`/blog/${post.slug}`}
-                      className="group flex items-start gap-4 p-6 hover:bg-secondary/20 transition-colors"
+                      className="group flex items-start gap-4 py-6"
                     >
-                      {/* Post Number Badge */}
+                      {/* Post Number */}
                       <div className="shrink-0">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary font-bold text-lg group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                          {post.seriesOrder}
-                        </div>
+                        <span className="font-display text-2xl font-semibold tabular-nums text-muted-foreground group-hover:text-primary transition-colors">
+                          {String(post.seriesOrder).padStart(2, "0")}
+                        </span>
                       </div>
 
                       {/* Post Image */}
-                      <div className="relative shrink-0 w-24 h-24 rounded-lg overflow-hidden bg-muted">
+                      <div className="relative shrink-0 w-24 h-24 overflow-hidden border border-border bg-muted">
                         <FallbackImage
                           src={post.image}
                           alt={post.title}
@@ -136,15 +125,13 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
                         <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
                           {post.description}
                         </p>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <time dateTime={post.date}>
-                            {new Date(post.date).toLocaleDateString("en-US", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
-                          </time>
-                        </div>
+                        <time dateTime={post.date} className="label-mono">
+                          {new Date(post.date).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </time>
                       </div>
 
                       {/* Arrow Icon */}

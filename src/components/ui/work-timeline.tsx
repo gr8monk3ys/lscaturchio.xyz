@@ -29,7 +29,7 @@ export const WorkTimeline = () => {
 
   return (
     <div
-      className="w-full bg-background font-sans md:px-10 rounded-xl neu-flat"
+      className="w-full bg-background font-sans"
       ref={containerRef}
     >
       <div ref={ref} className="relative max-w-7xl mx-auto pb-20">
@@ -39,23 +39,23 @@ export const WorkTimeline = () => {
             className="flex justify-start pt-10 md:pt-40 md:gap-10"
           >
             <div className="sticky flex flex-col md:flex-row z-40 items-center top-40 self-start max-w-xs lg:max-w-sm md:w-full">
-              <div className="h-10 absolute left-3 md:left-3 w-10 rounded-full bg-background neu-flat-sm flex items-center justify-center">
-                <div className="h-4 w-4 rounded-full neu-pressed-sm p-2" />
+              <div className="h-10 absolute left-3 md:left-3 w-10 rounded-full bg-background border border-border flex items-center justify-center">
+                <div className="h-2.5 w-2.5 rounded-full bg-primary" />
               </div>
-              <h3 className="hidden md:block text-xl md:pl-20 md:text-5xl font-bold text-muted-foreground">
+              <h3 className="hidden md:block md:pl-20 font-display text-xl md:text-5xl font-bold text-muted-foreground">
                 {item.company}
               </h3>
             </div>
 
             <div className="relative pl-20 pr-4 md:pl-4 w-full">
-              <h3 className="md:hidden block text-2xl mb-4 text-left font-bold text-muted-foreground">
+              <h3 className="md:hidden block font-display text-2xl mb-4 text-left font-bold text-muted-foreground">
                 {item.company}
               </h3>
               <div className="space-y-4">
                 <div className="text-lg font-semibold text-foreground">
                   {item.title}
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="label-mono">
                   {item.date}
                 </div>
                 <div className="text-sm text-foreground/80">
@@ -76,14 +76,14 @@ export const WorkTimeline = () => {
           style={{
             height: height + "px",
           }}
-          className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-[linear-gradient(to_bottom,var(--tw-gradient-stops))] from-transparent from-0% via-border to-transparent to-99% mask-[linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
+          className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-border mask-[linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
         >
           <m.div
             style={{
               height: heightTransform,
               opacity: opacityTransform,
             }}
-            className="absolute inset-x-0 top-0 w-[2px] bg-linear-to-t from-primary via-primary/50 to-transparent from-0% via-10% rounded-full"
+            className="absolute inset-x-0 top-0 w-[2px] bg-primary rounded-full"
           />
         </div>
       </div>

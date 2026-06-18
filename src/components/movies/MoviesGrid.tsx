@@ -30,9 +30,9 @@ function RatingStars({ rating }: { rating: number }) {
           key={star}
           className={`h-3 w-3 ${
             star <= fullStars
-              ? "text-orange-500 fill-orange-500"
+              ? "text-primary fill-primary"
               : star === fullStars + 1 && hasHalfStar
-              ? "text-orange-500 fill-orange-500/50"
+              ? "text-primary fill-primary/50"
               : "text-muted-foreground"
           }`}
         />
@@ -56,28 +56,26 @@ function MovieCard({ movie, index }: { movie: LetterboxdMovie; index: number }) 
         rel="noopener noreferrer"
         className="group block"
       >
-        <div className="neu-card p-3 h-full hover:shadow-lg transition-shadow">
-          <div className="relative aspect-2/3 mb-3 rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-            <Film className="h-12 w-12 text-muted-foreground/30" />
-            {movie.isRewatch && (
-              <span className="absolute top-2 right-2 bg-primary/90 text-primary-foreground text-xs px-2 py-0.5 rounded">
-                Rewatch
-              </span>
-            )}
-          </div>
-          <h3 className="font-medium text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
-            {movie.title}
-          </h3>
-          <p className="text-xs text-muted-foreground mb-2">{movie.year}</p>
-          <div className="flex items-center justify-between flex-wrap gap-1">
-            {movie.rating && <RatingStars rating={movie.rating} />}
-            {movie.dateWatched && (
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {new Date(movie.dateWatched).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-              </span>
-            )}
-          </div>
+        <div className="relative mb-3 flex aspect-2/3 items-center justify-center overflow-hidden border border-border bg-muted">
+          <Film className="h-12 w-12 text-muted-foreground/30" />
+          {movie.isRewatch && (
+            <span className="label-mono absolute top-2 right-2 text-white/90 [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
+              Rewatch
+            </span>
+          )}
+        </div>
+        <h3 className="mb-1 line-clamp-2 text-sm font-medium transition-colors group-hover:text-primary">
+          {movie.title}
+        </h3>
+        <p className="mb-2 text-xs text-muted-foreground">{movie.year}</p>
+        <div className="flex flex-wrap items-center justify-between gap-1">
+          {movie.rating && <RatingStars rating={movie.rating} />}
+          {movie.dateWatched && (
+            <span className="label-mono flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {new Date(movie.dateWatched).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+            </span>
+          )}
         </div>
       </Link>
     </m.div>
@@ -102,24 +100,19 @@ export function MoviesGrid({ stats, topRated, recentWatches, watchlist }: Movies
 
   return (
     <div className="space-y-8">
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.totalRated.toLocaleString()}</p>
-          <p className="text-sm text-muted-foreground">Films Rated</p>
-        </div>
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.fiveStarFilms}</p>
-          <p className="text-sm text-muted-foreground">5-Star Films</p>
-        </div>
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.averageRating}</p>
-          <p className="text-sm text-muted-foreground">Avg Rating</p>
-        </div>
-        <div className="neu-card p-4 text-center">
-          <p className="text-2xl font-bold text-primary">{stats.totalFilms}</p>
-          <p className="text-sm text-muted-foreground">Diary Entries</p>
-        </div>
+      {/* Stats — hairline-divided wall-label panel */}
+      <div className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-4 sm:divide-x">
+        {[
+          { value: stats.totalRated.toLocaleString(), label: "Films Rated" },
+          { value: stats.fiveStarFilms, label: "5-Star Films" },
+          { value: stats.averageRating, label: "Avg Rating" },
+          { value: stats.totalFilms, label: "Diary Entries" },
+        ].map((stat) => (
+          <div key={stat.label} className="px-5 py-6">
+            <p className="font-display text-3xl font-semibold tracking-tight">{stat.value}</p>
+            <p className="label-mono mt-2">{stat.label}</p>
+          </div>
+        ))}
       </div>
 
       {/* Tabs */}
@@ -130,13 +123,13 @@ export function MoviesGrid({ stats, topRated, recentWatches, watchlist }: Movies
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`neu-button px-4 py-2 flex items-center gap-2 transition-all ${
+              className={`label-mono flex items-center gap-2 border px-4 py-2 transition-colors ${
                 activeTab === tab.id
-                  ? "neu-pressed text-primary"
-                  : "hover:text-primary"
+                  ? "border-primary text-primary"
+                  : "border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className="h-3.5 w-3.5" />
               {tab.label}
             </button>
           );

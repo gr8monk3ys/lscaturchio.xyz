@@ -15,6 +15,12 @@ const eslintConfig = defineConfig([
     'test-results/**',
     'tmp/**',
     'public/audio/.tmp/**',
+    // Vendored Python virtualenv for the local TTS scripts (gitignored).
+    // ESLint flat config does not read .gitignore, so without this it walks
+    // into scripts/.tts-venv and lints thousands of site-packages JS files.
+    'scripts/.tts-venv/**',
+    '**/*venv*/**',
+    '**/__pycache__/**',
   ]),
   {
     files: ['scripts/**/*.{js,cjs}'],
