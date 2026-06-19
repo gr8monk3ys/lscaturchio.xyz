@@ -108,6 +108,22 @@ describe('splitIntoChunks', () => {
     }
   });
 
+  it('keeps chunks bounded even with a pathological overlap ratio', () => {
+    // The chunk-size bound must be structural, not an accident of the default
+    // overlapRatio: a caller passing a large ratio must not blow up chunk size.
+    const text = Array.from(
+      { length: 80 },
+      (_, i) => `Sentence ${i} padded out with several extra words for length.`,
+    ).join(' ');
+    const max = 300;
+    for (const ratio of [0.5, 0.9, 1.5, 5]) {
+      const chunks = splitIntoChunks(text, max, ratio);
+      for (const chunk of chunks) {
+        expect(chunk.length).toBeLessThanOrEqual(max * 2 + 1);
+      }
+    }
+  });
+
   it('keeps chunk sizes within a reasonable bound of maxChunkLength', () => {
     const text = Array.from(
       { length: 60 },

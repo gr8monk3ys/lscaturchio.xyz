@@ -165,7 +165,11 @@ export function splitIntoChunks(
   );
   if (segments.length === 0) return [];
 
-  const overlapBudget = Math.max(0, Math.floor(maxChunkLength * overlapRatio));
+  // Overlap beyond half a chunk is meaningless and would let a chunk grow well
+  // past ~2x maxChunkLength; clamp so the size bound holds for any caller, not
+  // just the default ratio.
+  const clampedOverlapRatio = Math.min(Math.max(overlapRatio, 0), 0.5);
+  const overlapBudget = Math.max(0, Math.floor(maxChunkLength * clampedOverlapRatio));
   const chunks: string[] = [];
   let current: string[] = [];
   let currentLength = 0;
