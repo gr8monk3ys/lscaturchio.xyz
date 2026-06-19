@@ -96,7 +96,8 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
     try {
       candidate = new URL(origin).origin;
     } catch {
-      candidate = origin;
+      // Opaque origin (e.g. "null") — keep the raw value; it won't match the
+      // allowlist and falls through to reject.
     }
     if (allowedOrigins.includes(candidate)) {
       return null;
