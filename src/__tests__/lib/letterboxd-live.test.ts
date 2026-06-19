@@ -34,6 +34,17 @@ describe('getLiveLastWatch', () => {
     expect(result).toMatchObject({ title: 'Disclosure Day', rating: null });
   });
 
+  it('rejects an out-of-range rating from a malformed feed', async () => {
+    // Letterboxd ratings are 0.5–5.0; a junk value must not render as "999★".
+    const bad = RSS.replace(
+      '<letterboxd:memberRating>2.5</letterboxd:memberRating>',
+      '<letterboxd:memberRating>999</letterboxd:memberRating>',
+    );
+    mockFetch(() => new Response(bad, { status: 200 }));
+    const result = await getLiveLastWatch();
+    expect(result).toMatchObject({ title: 'Disclosure Day', rating: null });
+  });
+
   it('returns null on a non-OK response (caller falls back to CSV)', async () => {
     mockFetch(() => new Response('nope', { status: 503 }));
     expect(await getLiveLastWatch()).toBeNull();
