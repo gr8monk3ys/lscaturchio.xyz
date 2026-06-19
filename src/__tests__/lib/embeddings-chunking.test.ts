@@ -98,8 +98,9 @@ describe('splitIntoChunks', () => {
 
     expect(chunks.length).toBeGreaterThan(1); // not kept as one giant chunk
     const longest = Math.max(...chunks.map((c) => c.length));
-    // Bounded like any normal chunk: at most the chunk body plus one carried
-    // overlap segment (+1 for the joining space). Far below the 2000-char token.
+    // Bounded like any normal chunk: at most a near-full body and one carried
+    // overlap segment, each <= max, plus the joining space — never the whole
+    // 2000-char token.
     expect(longest).toBeLessThanOrEqual(max * 2 + 1);
     // No character is lost — every max-sized slice of the token survives intact.
     const joined = chunks.join(' ');
@@ -132,9 +133,10 @@ describe('splitIntoChunks', () => {
 
     const max = 300;
     const chunks = splitIntoChunks(text, max);
-    // Allow modest slack for overlap + a boundary-straddling sentence.
+    // Same structural bound as the hard-split/pathological-ratio cases: a body
+    // plus one carried overlap segment (each <= max) and the joining space.
     for (const chunk of chunks) {
-      expect(chunk.length).toBeLessThanOrEqual(max * 2);
+      expect(chunk.length).toBeLessThanOrEqual(max * 2 + 1);
     }
   });
 });

@@ -42,7 +42,7 @@ describe('getLiveLastWatch', () => {
     );
     mockFetch(() => new Response(bad, { status: 200 }));
     const result = await getLiveLastWatch();
-    expect(result).toMatchObject({ title: 'Disclosure Day', rating: null });
+    expect(result).toMatchObject({ title: 'Disclosure Day', year: '2026', rating: null });
   });
 
   it('returns null on a non-OK response (caller falls back to CSV)', async () => {
