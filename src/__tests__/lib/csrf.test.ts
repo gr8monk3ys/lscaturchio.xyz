@@ -19,6 +19,21 @@ function createMockRequest(
   return req;
 }
 
+// Set an env var for the duration of fn and restore it afterwards. Deletes the
+// key when it was originally unset, so we never leave the literal string
+// "undefined" behind for later tests (Node coerces `env[x] = undefined`).
+function withEnv(name: string, value: string, fn: () => void) {
+  const had = Object.prototype.hasOwnProperty.call(process.env, name);
+  const prev = process.env[name];
+  process.env[name] = value;
+  try {
+    fn();
+  } finally {
+    if (had) process.env[name] = prev as string;
+    else delete process.env[name];
+  }
+}
+
 describe('validateCsrf', () => {
   describe('safe methods are always allowed', () => {
     it('allows GET requests without origin header', () => {
@@ -118,7 +133,7 @@ describe('validateCsrf', () => {
   });
 
   describe('Vercel preview deployments', () => {
-    it('rejects a look-alike *.vercel.app origin that merely starts with the project name', async () => {
+    it('rejects a look-alike *.vercel.app origin that merely starts with the project name', () => {
       // An attacker can claim `lscaturchio-evil.vercel.app` on Vercel's global
       // namespace. A prefix match must not treat it as a trusted deployment.
       const request = createMockRequest('POST', {
@@ -129,7 +144,7 @@ describe('validateCsrf', () => {
       expect(result!.status).toBe(403);
     });
 
-    it('rejects an unrelated *.vercel.app origin', async () => {
+    it('rejects an unrelated *.vercel.app origin not in any env var', () => {
       const request = createMockRequest('POST', {
         origin: 'https://totally-unrelated.vercel.app',
       });
@@ -138,30 +153,25 @@ describe('validateCsrf', () => {
       expect(result!.status).toBe(403);
     });
 
-    it('allows the active deployment URL injected via VERCEL_URL', () => {
-      const prev = process.env.VERCEL_URL;
-      process.env.VERCEL_URL = 'lscaturchio-git-main-team.vercel.app';
-      try {
+    it('allows the deployment URL from VERCEL_URL (host not name-prefixed)', () => {
+      // Host does NOT start with the project name, so the old prefix regex
+      // would have rejected it — this proves the allowlist comes from the env
+      // var, not from a name match.
+      withEnv('VERCEL_URL', 'deploy-7x9q2-team.vercel.app', () => {
         const request = createMockRequest('POST', {
-          origin: 'https://lscaturchio-git-main-team.vercel.app',
+          origin: 'https://deploy-7x9q2-team.vercel.app',
         });
         expect(validateCsrf(request)).toBeNull();
-      } finally {
-        process.env.VERCEL_URL = prev;
-      }
+      });
     });
 
-    it('allows the stable branch alias injected via VERCEL_BRANCH_URL', () => {
-      const prev = process.env.VERCEL_BRANCH_URL;
-      process.env.VERCEL_BRANCH_URL = 'lscaturchio-git-feature-team.vercel.app';
-      try {
+    it('allows the branch alias from VERCEL_BRANCH_URL (host not name-prefixed)', () => {
+      withEnv('VERCEL_BRANCH_URL', 'feature-login-x9.vercel.app', () => {
         const request = createMockRequest('POST', {
-          origin: 'https://lscaturchio-git-feature-team.vercel.app',
+          origin: 'https://feature-login-x9.vercel.app',
         });
         expect(validateCsrf(request)).toBeNull();
-      } finally {
-        process.env.VERCEL_BRANCH_URL = prev;
-      }
+      });
     });
   });
 
