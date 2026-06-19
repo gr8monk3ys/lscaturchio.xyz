@@ -80,6 +80,23 @@ describe('validateCsrf', () => {
       const result = validateCsrf(request);
       expect(result).toBeNull();
     });
+
+    it('canonicalizes the Origin before comparing (uppercase host)', () => {
+      // A non-canonical but equivalent origin (uppercase host) represents the
+      // same allowed origin; it should match, like the Referer path which
+      // already compares the URL-parsed origin.
+      const request = createMockRequest('POST', {
+        origin: 'https://LSCATURCHIO.XYZ',
+      });
+      expect(validateCsrf(request)).toBeNull();
+    });
+
+    it('rejects a garbage/opaque Origin value', () => {
+      const request = createMockRequest('POST', { origin: 'null' });
+      const result = validateCsrf(request);
+      expect(result).not.toBeNull();
+      expect(result!.status).toBe(403);
+    });
   });
 
   describe('referer fallback', () => {
