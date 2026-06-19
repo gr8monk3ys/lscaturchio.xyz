@@ -15,13 +15,14 @@ export function Sidenote({ children, className }: { children: ReactNode; classNa
   return (
     <aside
       role="note"
+      aria-label="Sidenote"
       className={cn(
         "not-prose my-6 border-l-2 border-primary/40 pl-4 text-sm leading-relaxed text-muted-foreground",
         "lg:float-right lg:clear-right lg:my-1 lg:ml-8 lg:mb-4 lg:w-44",
         className
       )}
     >
-      <span className="label-mono mb-1 block">Note</span>
+      <span className="label-mono mb-1 block" aria-hidden="true">Note</span>
       {children}
     </aside>
   );
