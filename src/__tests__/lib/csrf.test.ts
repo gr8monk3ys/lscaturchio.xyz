@@ -100,6 +100,54 @@ describe('validateCsrf', () => {
     });
   });
 
+  describe('Vercel preview deployments', () => {
+    it('rejects a look-alike *.vercel.app origin that merely starts with the project name', async () => {
+      // An attacker can claim `lscaturchio-evil.vercel.app` on Vercel's global
+      // namespace. A prefix match must not treat it as a trusted deployment.
+      const request = createMockRequest('POST', {
+        origin: 'https://lscaturchio-evil.vercel.app',
+      });
+      const result = validateCsrf(request);
+      expect(result).not.toBeNull();
+      expect(result!.status).toBe(403);
+    });
+
+    it('rejects an unrelated *.vercel.app origin', async () => {
+      const request = createMockRequest('POST', {
+        origin: 'https://totally-unrelated.vercel.app',
+      });
+      const result = validateCsrf(request);
+      expect(result).not.toBeNull();
+      expect(result!.status).toBe(403);
+    });
+
+    it('allows the active deployment URL injected via VERCEL_URL', () => {
+      const prev = process.env.VERCEL_URL;
+      process.env.VERCEL_URL = 'lscaturchio-git-main-team.vercel.app';
+      try {
+        const request = createMockRequest('POST', {
+          origin: 'https://lscaturchio-git-main-team.vercel.app',
+        });
+        expect(validateCsrf(request)).toBeNull();
+      } finally {
+        process.env.VERCEL_URL = prev;
+      }
+    });
+
+    it('allows the stable branch alias injected via VERCEL_BRANCH_URL', () => {
+      const prev = process.env.VERCEL_BRANCH_URL;
+      process.env.VERCEL_BRANCH_URL = 'lscaturchio-git-feature-team.vercel.app';
+      try {
+        const request = createMockRequest('POST', {
+          origin: 'https://lscaturchio-git-feature-team.vercel.app',
+        });
+        expect(validateCsrf(request)).toBeNull();
+      } finally {
+        process.env.VERCEL_BRANCH_URL = prev;
+      }
+    });
+  });
+
   describe('requests without origin or referer', () => {
     it('rejects POST requests without origin or referer headers', async () => {
       const request = createMockRequest('POST');

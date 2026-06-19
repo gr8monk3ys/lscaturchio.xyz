@@ -84,6 +84,30 @@ describe('splitIntoChunks', () => {
     }
   });
 
+  it('hard-splits a single unbroken token longer than maxChunkLength', () => {
+    // A long run with no whitespace — a data URI, a minified blob, a giant URL —
+    // used to pass through whole as one chunk far larger than maxChunkLength,
+    // risking the embedding model's token limit. It must be broken up.
+    const max = 300;
+    // Heterogeneous (cycling a–z) so a dropped slice is actually detectable —
+    // a uniform run would mask any loss of distinct characters.
+    const token = Array.from({ length: 2000 }, (_, i) =>
+      String.fromCharCode(97 + (i % 26)),
+    ).join('');
+    const chunks = splitIntoChunks(token, max);
+
+    expect(chunks.length).toBeGreaterThan(1); // not kept as one giant chunk
+    const longest = Math.max(...chunks.map((c) => c.length));
+    // Bounded like any normal chunk: at most the chunk body plus one carried
+    // overlap segment (+1 for the joining space). Far below the 2000-char token.
+    expect(longest).toBeLessThanOrEqual(max * 2 + 1);
+    // No character is lost — every max-sized slice of the token survives intact.
+    const joined = chunks.join(' ');
+    for (let i = 0; i < token.length; i += max) {
+      expect(joined).toContain(token.slice(i, i + max));
+    }
+  });
+
   it('keeps chunk sizes within a reasonable bound of maxChunkLength', () => {
     const text = Array.from(
       { length: 60 },
