@@ -62,7 +62,13 @@ export async function getLiveLastWatch(): Promise<{
       const year = firstTag(item, 'letterboxd:filmYear') ?? '';
       const ratingRaw = firstTag(item, 'letterboxd:memberRating');
       const rating = ratingRaw ? Number.parseFloat(ratingRaw) : null;
-      return { title, year, rating: Number.isFinite(rating) ? rating : null };
+      // Letterboxd ratings are 0.5–5.0; reject anything outside so a malformed
+      // feed can't render as e.g. "999★".
+      const validRating =
+        rating !== null && Number.isFinite(rating) && rating >= 0.5 && rating <= 5
+          ? rating
+          : null;
+      return { title, year, rating: validRating };
     }
     return null;
   } catch (error) {
