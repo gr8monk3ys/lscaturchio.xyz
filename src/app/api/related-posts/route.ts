@@ -30,6 +30,13 @@ const handleGet = async (request: NextRequest) => {
       return ApiErrors.badRequest('Post title is required');
     }
 
+    // A title past any real essay length is almost certainly junk, and when the
+    // post isn't found locally it gets embedded verbatim — cap it before any
+    // provider call to bound cost and avoid oversized-input errors.
+    if (title.length > 300) {
+      return ApiErrors.badRequest('Post title is too long');
+    }
+
     const allBlogs = await getAllBlogs();
     const currentSlug = currentUrl?.split('/').pop() || '';
     const currentPost = allBlogs.find((blog) => blog.slug === currentSlug);

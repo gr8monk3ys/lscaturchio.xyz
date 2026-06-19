@@ -120,6 +120,18 @@ function splitOversizedSegment(segment: string, maxChunkLength: number): string[
   const pieces: string[] = [];
   let current = '';
   for (const word of segment.split(/\s+/)) {
+    // A single word longer than the whole budget can never fit on a line, so
+    // hard-split it on character boundaries (e.g. a data URI or minified blob).
+    if (word.length > maxChunkLength) {
+      if (current) {
+        pieces.push(current);
+        current = '';
+      }
+      for (let i = 0; i < word.length; i += maxChunkLength) {
+        pieces.push(word.slice(i, i + maxChunkLength));
+      }
+      continue;
+    }
     if (current && current.length + word.length + 1 > maxChunkLength) {
       pieces.push(current);
       current = word;
