@@ -17,7 +17,6 @@ import { NextRequest, NextResponse } from 'next/server';
 // Get allowed origins from environment or use defaults
 function getAllowedOrigins(): string[] {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  const vercelUrl = process.env.VERCEL_URL;
   const baseOrigins = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
@@ -36,12 +35,23 @@ function getAllowedOrigins(): string[] {
     }
   }
 
-  // Allow the active Vercel deployment URL (preview + production *.vercel.app)
+  // Trust only the exact hostnames Vercel injects for THIS deployment — never a
+  // name *prefix*. An attacker can register `lscaturchio-<anything>.vercel.app`
+  // on Vercel's global project namespace, so the previous `^lscaturchio(?:-|\.)`
+  // prefix match accepted attacker-controlled origins (a CSRF bypass).
+  // VERCEL_URL is the per-deploy URL, VERCEL_BRANCH_URL the stable branch alias,
+  // VERCEL_PROJECT_PRODUCTION_URL the production domain.
   // See: https://vercel.com/docs/projects/environment-variables/system-environment-variables
-  if (vercelUrl) {
-    baseOrigins.push(`https://${vercelUrl}`);
-    if (!vercelUrl.startsWith('www.')) {
-      baseOrigins.push(`https://www.${vercelUrl}`);
+  const vercelHosts = [
+    process.env.VERCEL_URL,
+    process.env.VERCEL_BRANCH_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+  ];
+  for (const host of vercelHosts) {
+    if (!host) continue;
+    baseOrigins.push(`https://${host}`);
+    if (!host.startsWith('www.')) {
+      baseOrigins.push(`https://www.${host}`);
     }
   }
 
@@ -54,20 +64,6 @@ function getAllowedOrigins(): string[] {
   }
 
   return baseOrigins;
-}
-
-function isAllowedVercelAppOrigin(origin: string): boolean {
-  try {
-    const url = new URL(origin);
-    // Hostname must START with `lscaturchio` followed by a hyphen or dot,
-    // and end with `.vercel.app`. Rejects `evil-lscaturchio-x.vercel.app`,
-    // forks, and any deployment whose project name merely contains the substring.
-    return url.protocol === 'https:' &&
-           url.hostname.endsWith('.vercel.app') &&
-           /^lscaturchio(?:-|\.)/i.test(url.hostname);
-  } catch {
-    return false;
-  }
 }
 
 /**
@@ -93,11 +89,6 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
 
   // Check Origin header first (most reliable)
   if (origin) {
-    // Vercel deployments can be accessed via multiple *.vercel.app hostnames,
-    // which may not match the single VERCEL_URL env var.
-    if (isAllowedVercelAppOrigin(origin)) {
-      return null;
-    }
     if (allowedOrigins.includes(origin)) {
       return null;
     }
@@ -111,11 +102,7 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
   if (referer) {
     try {
       const refererUrl = new URL(referer);
-      // Use the same anchored allowlist as the Origin check so the two paths
-      // can never drift — `isAllowedVercelAppOrigin` rejects `evil-lscaturchio.vercel.app`.
-      if (isAllowedVercelAppOrigin(refererUrl.origin)) {
-        return null;
-      }
+      // Same allowlist as the Origin check so the two paths can never drift.
       if (allowedOrigins.includes(refererUrl.origin)) {
         return null;
       }
