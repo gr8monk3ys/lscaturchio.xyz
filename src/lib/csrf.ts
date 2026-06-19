@@ -89,7 +89,16 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
 
   // Check Origin header first (most reliable)
   if (origin) {
-    if (allowedOrigins.includes(origin)) {
+    // Canonicalize before comparing so this path and the Referer path agree.
+    // Browsers send a canonical Origin, but normalize defensively; an opaque
+    // origin (e.g. "null") fails to parse and falls through to reject.
+    let candidate = origin;
+    try {
+      candidate = new URL(origin).origin;
+    } catch {
+      candidate = origin;
+    }
+    if (allowedOrigins.includes(candidate)) {
       return null;
     }
     return NextResponse.json(
