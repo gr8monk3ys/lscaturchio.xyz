@@ -3,7 +3,7 @@ import { searchEmbeddings } from '@/lib/embeddings';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
-import type { EmbeddingResult, RelatedPost } from '@/types/embeddings';
+import type { RelatedPost } from '@/types/embeddings';
 import { getAllBlogs } from '@/lib/getAllBlogs';
 import { apiSuccess, ApiErrors } from '@/lib/api-response';
 
@@ -66,7 +66,7 @@ const handleGet = async (request: NextRequest) => {
     const query = currentPost
       ? `${currentPost.title}. ${currentPost.description}`
       : title;
-    const embeddingResults = (await searchEmbeddings(query, limit + 20)) as EmbeddingResult[];
+    const embeddingResults = await searchEmbeddings(query, limit + 20);
 
     const bestBySlug = new Map<string, number>();
     for (const result of embeddingResults) {

@@ -133,8 +133,8 @@ describe('/api/chat', () => {
 
     it('includes context from embeddings in AI prompt', async () => {
       vi.mocked(searchSimilarContent).mockResolvedValue([
-        { content: 'I am a software engineer' },
-        { content: 'I work on web applications' },
+        { id: 1, content: 'I am a software engineer', metadata: {}, similarity: 0.8, score: 0.5 },
+        { id: 2, content: 'I work on web applications', metadata: {}, similarity: 0.7, score: 0.4 },
       ]);
 
       const request = createMockRequest({ query: 'Tell me about yourself' });
