@@ -67,4 +67,15 @@ describe('Related Posts API (semantic-first)', () => {
     const res = await GET(new NextRequest('http://localhost/api/related-posts?url=/blog/carceral'));
     expect(res.status).toBe(400);
   });
+
+  it('400s when the title is unreasonably long (would be embedded verbatim)', async () => {
+    // When the post is not found locally the raw title is sent to the embedding
+    // provider, so an oversized title would burn quota / risk a provider error.
+    const longTitle = 'a'.repeat(1000);
+    const res = await GET(
+      new NextRequest(`http://localhost/api/related-posts?title=${encodeURIComponent(longTitle)}`)
+    );
+    expect(res.status).toBe(400);
+    expect(searchEmbeddings).not.toHaveBeenCalled();
+  });
 });
