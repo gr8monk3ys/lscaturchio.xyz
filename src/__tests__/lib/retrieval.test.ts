@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   reciprocalRankFusion,
+  reciprocalRankFusionScored,
   assessConfidence,
   buildEmbeddingInput,
   sourceContentHash,
@@ -38,6 +39,21 @@ describe('reciprocalRankFusion', () => {
       { key, k: 60 },
     );
     expect(fused.map(key)).toEqual(['l', 'v']);
+  });
+
+  it('scored variant returns descending fused scores with representatives', () => {
+    const scored = reciprocalRankFusionScored(
+      [
+        { items: [{ id: 'a' }, { id: 'b' }] },
+        { items: [{ id: 'a' }] },
+      ],
+      { key, k: 60 },
+    );
+    expect(scored.map((s) => s.item.id)).toEqual(['a', 'b']);
+    expect(scored[0].score).toBeGreaterThan(scored[1].score);
+    // a is in both lists (rank 0 + rank 0), b only in the first (rank 1)
+    expect(scored[0].score).toBeCloseTo(1 / 60 + 1 / 60, 6);
+    expect(scored[1].score).toBeCloseTo(1 / 61, 6);
   });
 
   it('keeps the first-list instance as the representative for a duplicated key', () => {

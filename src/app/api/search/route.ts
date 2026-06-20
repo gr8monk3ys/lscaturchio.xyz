@@ -1,10 +1,10 @@
 import { NextRequest } from 'next/server';
-import { searchEmbeddings } from '@/lib/embeddings';
+import { searchEmbeddings, type HybridRow } from '@/lib/embeddings';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { validateCsrf } from '@/lib/csrf';
 import { logError } from '@/lib/logger';
-import type { EmbeddingResult, SearchResult } from '@/types/embeddings';
+import type { SearchResult } from '@/types/embeddings';
 import { apiSuccess, ApiErrors } from '@/lib/api-response';
 
 /**
@@ -13,14 +13,21 @@ import { apiSuccess, ApiErrors } from '@/lib/api-response';
  *
  * Used by both GET and POST handlers to avoid duplicating the reduce logic.
  */
+type GroupedResult = SearchResult & { tags?: string[]; score: number };
+
 function groupEmbeddingResults(
-  results: EmbeddingResult[],
+  results: HybridRow[],
   options?: { includeTags?: boolean },
-): Record<string, SearchResult & { tags?: string[] }> {
+): Record<string, GroupedResult> {
   return results.reduce(
     (acc, result) => {
       const blogUrl = result.metadata?.url || '';
       if (!blogUrl) return acc;
+
+      // Lexical-only hits have a null cosine similarity; show 0 for display and
+      // rank groups by the fused score instead.
+      const sim = result.similarity ?? 0;
+      const score = result.score ?? 0;
 
       if (!acc[blogUrl]) {
         acc[blogUrl] = {
@@ -29,7 +36,8 @@ function groupEmbeddingResults(
           description: result.metadata?.description || '',
           date: result.metadata?.date || '',
           ...(options?.includeTags ? { tags: result.metadata?.tags || [] } : {}),
-          similarity: result.similarity,
+          similarity: sim,
+          score,
           snippets: [],
         };
       }
@@ -39,14 +47,13 @@ function groupEmbeddingResults(
         acc[blogUrl].snippets.push(result.content);
       }
 
-      // Update similarity to the highest match
-      if (result.similarity > acc[blogUrl].similarity) {
-        acc[blogUrl].similarity = result.similarity;
-      }
+      // Track the highest cosine (display) and fused score (ranking) per post.
+      if (sim > acc[blogUrl].similarity) acc[blogUrl].similarity = sim;
+      if (score > acc[blogUrl].score) acc[blogUrl].score = score;
 
       return acc;
     },
-    {} as Record<string, SearchResult & { tags?: string[] }>,
+    {} as Record<string, GroupedResult>,
   );
 }
 
@@ -86,13 +93,17 @@ const handleGet = async (request: NextRequest) => {
     if (queryError) return queryError;
 
     const results = await searchEmbeddings(query!, limit);
-    const grouped = groupEmbeddingResults(results as EmbeddingResult[]);
+    const grouped = groupEmbeddingResults(results);
 
     const searchResults = Object.values(grouped)
-      .sort((a, b) => b.similarity - a.similarity)
+      .sort((a, b) => b.score - a.score)
       .slice(0, limit)
       .map((result) => ({
-        ...result,
+        title: result.title,
+        url: result.url,
+        description: result.description,
+        date: result.date,
+        similarity: result.similarity,
         snippets: result.snippets.slice(0, 2),
       }));
 
@@ -120,12 +131,10 @@ const handlePost = async (request: NextRequest) => {
     if (queryError) return queryError;
 
     const results = await searchEmbeddings(query, limit);
-    const grouped = groupEmbeddingResults(results as EmbeddingResult[], {
-      includeTags: true,
-    });
+    const grouped = groupEmbeddingResults(results, { includeTags: true });
 
     const searchResults = Object.values(grouped)
-      .sort((a, b) => b.similarity - a.similarity)
+      .sort((a, b) => b.score - a.score)
       .slice(0, limit)
       .map((result) => {
         const slug = result.url.split('/').pop() || '';

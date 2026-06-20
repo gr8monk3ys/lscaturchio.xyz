@@ -33,10 +33,10 @@ interface RrfList<T> {
  * in which a key appears supplies the representative object (so callers should
  * pass the richer list — e.g. the vector hits that carry `similarity` — first).
  */
-export function reciprocalRankFusion<T>(
+export function reciprocalRankFusionScored<T>(
   lists: Array<RrfList<T>>,
   opts: { key: (item: T) => string; k?: number },
-): T[] {
+): Array<{ item: T; score: number }> {
   const k = opts.k ?? RRF_K;
   const scores = new Map<string, number>();
   const representatives = new Map<string, T>();
@@ -49,9 +49,16 @@ export function reciprocalRankFusion<T>(
     });
   }
 
-  return [...representatives.entries()]
-    .sort((a, b) => (scores.get(b[0]) ?? 0) - (scores.get(a[0]) ?? 0))
-    .map(([, item]) => item);
+  return Array.from(representatives.entries())
+    .map(([id, item]) => ({ item, score: scores.get(id) ?? 0 }))
+    .sort((a, b) => b.score - a.score);
+}
+
+export function reciprocalRankFusion<T>(
+  lists: Array<RrfList<T>>,
+  opts: { key: (item: T) => string; k?: number },
+): T[] {
+  return reciprocalRankFusionScored(lists, opts).map(({ item }) => item);
 }
 
 /**
