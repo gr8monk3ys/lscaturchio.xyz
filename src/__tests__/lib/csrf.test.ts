@@ -19,6 +19,21 @@ function createMockRequest(
   return req;
 }
 
+// Set an env var for the duration of fn and restore it afterwards. Deletes the
+// key when it was originally unset, so we never leave the literal string
+// "undefined" behind for later tests (Node coerces `env[x] = undefined`).
+function withEnv(name: string, value: string, fn: () => void) {
+  const had = Object.prototype.hasOwnProperty.call(process.env, name);
+  const prev = process.env[name];
+  process.env[name] = value;
+  try {
+    fn();
+  } finally {
+    if (had) process.env[name] = prev as string;
+    else delete process.env[name];
+  }
+}
+
 describe('validateCsrf', () => {
   describe('safe methods are always allowed', () => {
     it('allows GET requests without origin header', () => {
@@ -80,6 +95,23 @@ describe('validateCsrf', () => {
       const result = validateCsrf(request);
       expect(result).toBeNull();
     });
+
+    it('canonicalizes the Origin before comparing (uppercase host)', () => {
+      // A non-canonical but equivalent origin (uppercase host) represents the
+      // same allowed origin; it should match, like the Referer path which
+      // already compares the URL-parsed origin.
+      const request = createMockRequest('POST', {
+        origin: 'https://LSCATURCHIO.XYZ',
+      });
+      expect(validateCsrf(request)).toBeNull();
+    });
+
+    it('rejects a garbage/opaque Origin value', () => {
+      const request = createMockRequest('POST', { origin: 'null' });
+      const result = validateCsrf(request);
+      expect(result).not.toBeNull();
+      expect(result!.status).toBe(403);
+    });
   });
 
   describe('referer fallback', () => {
@@ -97,6 +129,49 @@ describe('validateCsrf', () => {
       });
       const result = validateCsrf(request);
       expect(result).toBeNull();
+    });
+  });
+
+  describe('Vercel preview deployments', () => {
+    it('rejects a look-alike *.vercel.app origin that merely starts with the project name', () => {
+      // An attacker can claim `lscaturchio-evil.vercel.app` on Vercel's global
+      // namespace. A prefix match must not treat it as a trusted deployment.
+      const request = createMockRequest('POST', {
+        origin: 'https://lscaturchio-evil.vercel.app',
+      });
+      const result = validateCsrf(request);
+      expect(result).not.toBeNull();
+      expect(result!.status).toBe(403);
+    });
+
+    it('rejects an unrelated *.vercel.app origin not in any env var', () => {
+      const request = createMockRequest('POST', {
+        origin: 'https://totally-unrelated.vercel.app',
+      });
+      const result = validateCsrf(request);
+      expect(result).not.toBeNull();
+      expect(result!.status).toBe(403);
+    });
+
+    it('allows the deployment URL from VERCEL_URL (host not name-prefixed)', () => {
+      // Host does NOT start with the project name, so the old prefix regex
+      // would have rejected it — this proves the allowlist comes from the env
+      // var, not from a name match.
+      withEnv('VERCEL_URL', 'deploy-7x9q2-team.vercel.app', () => {
+        const request = createMockRequest('POST', {
+          origin: 'https://deploy-7x9q2-team.vercel.app',
+        });
+        expect(validateCsrf(request)).toBeNull();
+      });
+    });
+
+    it('allows the branch alias from VERCEL_BRANCH_URL (host not name-prefixed)', () => {
+      withEnv('VERCEL_BRANCH_URL', 'feature-login-x9.vercel.app', () => {
+        const request = createMockRequest('POST', {
+          origin: 'https://feature-login-x9.vercel.app',
+        });
+        expect(validateCsrf(request)).toBeNull();
+      });
     });
   });
 

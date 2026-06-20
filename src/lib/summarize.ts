@@ -82,7 +82,12 @@ export async function generateKeyTakeaways(
     })
 
     const result = JSON.parse(response.choices[0]?.message?.content || '{"takeaways":[]}')
-    return result.takeaways || []
+    // The model is asked for a JSON array of strings but can return a wrong
+    // shape (a bare string, mixed types). Keep only string entries so the
+    // string[] return contract always holds.
+    return Array.isArray(result?.takeaways)
+      ? result.takeaways.filter((t: unknown): t is string => typeof t === 'string')
+      : []
   } catch (error) {
     logError('Takeaways generation error', error, { component: 'summarize', action: 'generateKeyTakeaways' })
     throw new Error('Failed to generate takeaways')
