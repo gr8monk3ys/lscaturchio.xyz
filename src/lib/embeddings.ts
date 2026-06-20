@@ -305,7 +305,8 @@ export function getEmbeddingProvider(): string {
 export async function storeEmbedding(
   text: string,
   embedding: number[],
-  metadata: Record<string, unknown> = {}
+  metadata: Record<string, unknown> = {},
+  contentHash: string | null = null,
 ) {
   const sql = getDb();
   const embeddingStr = `[${embedding.join(',')}]`;
@@ -314,7 +315,7 @@ export async function storeEmbedding(
     provider: getEmbeddingProvider(),
     dimensions: embedding.length,
   });
-  await sql`INSERT INTO embeddings (content, embedding, metadata) VALUES (${text}, ${embeddingStr}::vector, ${metadataJson}::jsonb)`;
+  await sql`INSERT INTO embeddings (content, embedding, metadata, content_hash) VALUES (${text}, ${embeddingStr}::vector, ${metadataJson}::jsonb, ${contentHash})`;
 }
 
 /**
@@ -325,6 +326,18 @@ export async function deleteEmbeddingsBySource(source: string): Promise<number> 
   const sql = getDb();
   const rows = await sql`DELETE FROM embeddings WHERE metadata->>'source' = ${source} RETURNING id`;
   return rows.length;
+}
+
+/**
+ * Content hashes already stored for a source, for incremental re-embedding.
+ * Empty when the source was never indexed (or predates content_hash).
+ */
+export async function getSourceContentHashes(source: string): Promise<string[]> {
+  const sql = getDb();
+  const rows = await sql`SELECT content_hash FROM embeddings WHERE metadata->>'source' = ${source} AND content_hash IS NOT NULL`;
+  return (rows as Array<Record<string, unknown>>)
+    .map((r) => (typeof r.content_hash === 'string' ? r.content_hash : ''))
+    .filter(Boolean);
 }
 
 export interface HybridRow {

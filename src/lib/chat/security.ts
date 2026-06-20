@@ -34,10 +34,17 @@ export function sanitizeChatInput(query: string): string {
   return cleaned;
 }
 
-export function buildFallbackAnswer(context: string): string {
+export function buildFallbackAnswer(
+  context: string,
+  closest: Array<{ title: string; url: string }> = [],
+): string {
   if (context.trim().length > 0) {
     const snippet = context.replace(/\s+/g, ' ').trim().slice(0, 500);
     return `I can’t reach my AI backend right now, but here’s relevant context from my writing: ${snippet}${snippet.length >= 500 ? '…' : ''}`;
+  }
+  if (closest.length > 0) {
+    const list = closest.map((c) => `“${c.title}” (${c.url})`).join(', ');
+    return `I haven’t written directly about that. The closest things I’ve written: ${list}.`;
   }
   return "I’m temporarily unable to run full AI responses right now. Please try again shortly or reach out through the contact page.";
 }

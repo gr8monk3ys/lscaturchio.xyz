@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { isEmbeddingsAvailable, searchSimilarContent } from '@/lib/embeddings';
+import { hybridSearch } from '@/lib/embeddings';
 import { logError } from '@/lib/logger';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
@@ -10,6 +10,7 @@ import { generateChatAnswer } from '@/lib/chat/providers';
 import {
   buildSystemPromptWithContext,
   loadBlogContext,
+  type SemanticRetrieval,
 } from '@/lib/chat/context';
 import {
   SYSTEM_PROMPT,
@@ -17,22 +18,28 @@ import {
   sanitizeChatInput,
 } from '@/lib/chat/security';
 
-async function loadSemanticContext(query: string): Promise<string> {
-  let available = false;
+async function loadSemanticRetrieval(query: string): Promise<SemanticRetrieval> {
   try {
-    available = await isEmbeddingsAvailable();
-  } catch (error) {
-    logError('Embeddings availability check failed', error, { component: 'chat' });
-    return '';
-  }
-  if (!available) return '';
+    // hybridSearch degrades to lexical-only when no embedding provider is
+    // configured, so there is no separate availability gate to check.
+    const { results, confidence } = await hybridSearch(query);
+    const context = results.map((r) => r.content).join('\n\n');
 
-  try {
-    const matches = await searchSimilarContent(query);
-    return (matches as Array<{ content: string }>).map((item) => item.content).join('\n\n');
+    const seen = new Set<string>();
+    const closest: Array<{ title: string; url: string }> = [];
+    for (const r of results) {
+      const url = typeof r.metadata?.url === 'string' ? r.metadata.url : '';
+      if (!url || seen.has(url)) continue;
+      seen.add(url);
+      const title = typeof r.metadata?.title === 'string' ? r.metadata.title : url;
+      closest.push({ title, url });
+      if (closest.length >= 3) break;
+    }
+
+    return { context, confidence, closest };
   } catch (error) {
-    logError('Failed to search embeddings', error, { component: 'chat' });
-    return '';
+    logError('Hybrid retrieval failed', error, { component: 'chat' });
+    return { context: '', confidence: 'none', closest: [] };
   }
 }
 
@@ -50,7 +57,7 @@ const handlePost = async (req: NextRequest) => {
     const query = sanitizeChatInput(parsed.data.query);
     const { contextSlug } = parsed.data;
 
-    const semanticContext = await loadSemanticContext(query);
+    const retrieval = await loadSemanticRetrieval(query);
 
     let postContext = null;
     if (contextSlug) {
@@ -64,7 +71,7 @@ const handlePost = async (req: NextRequest) => {
     const systemPrompt = buildSystemPromptWithContext(
       SYSTEM_PROMPT,
       postContext,
-      semanticContext,
+      retrieval,
     );
 
     const result = await generateChatAnswer(systemPrompt, query);
@@ -79,7 +86,7 @@ const handlePost = async (req: NextRequest) => {
     }
 
     return apiSuccess({
-      answer: buildFallbackAnswer(semanticContext),
+      answer: buildFallbackAnswer(retrieval.context, retrieval.closest),
       provider: 'fallback' as const,
       model: null,
       degraded: true,
