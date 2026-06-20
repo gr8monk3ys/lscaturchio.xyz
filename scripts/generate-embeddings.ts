@@ -5,10 +5,16 @@ import {
   splitIntoChunks,
   storeEmbedding,
   deleteEmbeddingsBySource,
+  getSourceContentHashes,
   getEmbeddingProvider,
   getProviderEmbeddingDimensions,
   isEmbeddingsAvailable,
 } from '../src/lib/embeddings';
+import {
+  buildEmbeddingInput,
+  sourceContentHash,
+  shouldSkipSource,
+} from '../src/lib/retrieval';
 import { extractBlogMeta } from '../src/lib/blog-meta';
 
 const DATA_DIR = path.join(process.cwd(), 'public', 'my-data');
@@ -59,16 +65,27 @@ async function processFile(filePath: string, appendMode: boolean) {
   const content = fs.readFileSync(filePath, 'utf-8');
   const fileName = path.basename(filePath);
   const sourceMetadata = getSourceMetadata(fileName);
+  const fileHash = sourceContentHash(content);
 
   // Split content into chunks
   const chunks = splitIntoChunks(content);
 
   if (!appendMode) {
+    // Incremental: skip a source already fully embedded at this content hash.
+    const existingHashes = await getSourceContentHashes(fileName);
+    if (shouldSkipSource(existingHashes, fileHash)) {
+      console.log(`↷ Skipping ${fileName} (unchanged, ${existingHashes.length} chunks)`);
+      return;
+    }
     const removed = await deleteEmbeddingsBySource(fileName);
     if (removed > 0) {
       console.log(`Removed ${removed} existing embedding chunks for ${fileName}`);
     }
   }
+
+  const type = fileName.startsWith('blog-') ? 'blog' : 'page';
+  const title = typeof sourceMetadata.title === 'string' ? sourceMetadata.title : '';
+  const url = typeof sourceMetadata.url === 'string' ? sourceMetadata.url : '';
 
   console.log(`Processing ${fileName}: ${chunks.length} chunks`);
 
@@ -76,15 +93,16 @@ async function processFile(filePath: string, appendMode: boolean) {
   for (let i = 0; i < chunks.length; i++) {
     const chunk = chunks[i];
     try {
-      // Create embedding
-      const embedding = await createEmbedding(chunk);
+      // Embed the chunk with a Title/Type/URL preamble for topical context, but
+      // store the raw chunk as content so FTS and snippets stay clean.
+      const embedding = await createEmbedding(buildEmbeddingInput({ title, type, url }, chunk));
 
-      // Store in database
-      await storeEmbedding(chunk, embedding, {
-        ...sourceMetadata,
-        chunk_index: i,
-        chunk_total: chunks.length,
-      });
+      await storeEmbedding(
+        chunk,
+        embedding,
+        { ...sourceMetadata, chunk_index: i, chunk_total: chunks.length },
+        fileHash,
+      );
 
       console.log(`✓ Processed chunk ${i + 1}/${chunks.length} of ${fileName}`);
     } catch (error) {
