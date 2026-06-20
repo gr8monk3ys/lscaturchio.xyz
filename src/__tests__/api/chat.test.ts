@@ -22,8 +22,7 @@ vi.mock('@/lib/ollama', () => ({
 
 // Mock embeddings module
 vi.mock('@/lib/embeddings', () => ({
-  searchSimilarContent: vi.fn(),
-  isEmbeddingsAvailable: vi.fn(),
+  hybridSearch: vi.fn(),
 }));
 
 // Mock other dependencies
@@ -47,7 +46,7 @@ vi.mock('@/lib/csrf', () => ({
 }));
 
 import { POST } from '@/app/api/chat/route';
-import { searchSimilarContent, isEmbeddingsAvailable } from '@/lib/embeddings';
+import { hybridSearch } from '@/lib/embeddings';
 import { isOllamaAvailable, createOllamaChatCompletion } from '@/lib/ollama';
 import { validateCsrf } from '@/lib/csrf';
 
@@ -68,9 +67,8 @@ describe('/api/chat', () => {
     vi.clearAllMocks();
     // Default: CSRF passes
     vi.mocked(validateCsrf).mockReturnValue(null);
-    // Default: embeddings available and return empty
-    vi.mocked(isEmbeddingsAvailable).mockResolvedValue(true);
-    vi.mocked(searchSimilarContent).mockResolvedValue([]);
+    // Default: hybrid retrieval finds nothing (confidence "none")
+    vi.mocked(hybridSearch).mockResolvedValue({ results: [], confidence: 'none' });
     // Default: Ollama available and returns response
     vi.mocked(isOllamaAvailable).mockResolvedValue(true);
     vi.mocked(createOllamaChatCompletion).mockResolvedValue('Test response from Ollama');
@@ -132,16 +130,19 @@ describe('/api/chat', () => {
     });
 
     it('includes context from embeddings in AI prompt', async () => {
-      vi.mocked(searchSimilarContent).mockResolvedValue([
-        { id: 1, content: 'I am a software engineer', metadata: {}, similarity: 0.8, score: 0.5 },
-        { id: 2, content: 'I work on web applications', metadata: {}, similarity: 0.7, score: 0.4 },
-      ]);
+      vi.mocked(hybridSearch).mockResolvedValue({
+        results: [
+          { id: 1, content: 'I am a software engineer', metadata: {}, similarity: 0.8, score: 0.5 },
+          { id: 2, content: 'I work on web applications', metadata: {}, similarity: 0.7, score: 0.4 },
+        ],
+        confidence: 'strong',
+      });
 
       const request = createMockRequest({ query: 'Tell me about yourself' });
       await POST(request);
 
-      // Verify embeddings were searched
-      expect(searchSimilarContent).toHaveBeenCalledWith('Tell me about yourself');
+      // Verify hybrid retrieval ran for the query
+      expect(hybridSearch).toHaveBeenCalledWith('Tell me about yourself');
 
       // Verify Ollama was called with context in the system prompt
       expect(createOllamaChatCompletion).toHaveBeenCalled();
@@ -152,7 +153,7 @@ describe('/api/chat', () => {
     });
 
     it('works without embeddings context', async () => {
-      vi.mocked(isEmbeddingsAvailable).mockResolvedValue(false);
+      vi.mocked(hybridSearch).mockResolvedValue({ results: [], confidence: 'none' });
 
       const request = createMockRequest({ query: 'Hello' });
       const response = await POST(request);
@@ -161,7 +162,7 @@ describe('/api/chat', () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.data.answer).toBe('Test response from Ollama');
-      expect(searchSimilarContent).not.toHaveBeenCalled();
+      expect(hybridSearch).toHaveBeenCalled();
     });
   });
 
@@ -194,7 +195,7 @@ describe('/api/chat', () => {
     });
 
     it('continues without context when embeddings search fails', async () => {
-      vi.mocked(searchSimilarContent).mockRejectedValue(new Error('Search error'));
+      vi.mocked(hybridSearch).mockRejectedValue(new Error('Search error'));
 
       const request = createMockRequest({ query: 'test query' });
       const response = await POST(request);

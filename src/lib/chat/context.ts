@@ -1,6 +1,20 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { extractBlogMeta } from '@/lib/blog-meta';
+import type { Confidence } from '@/lib/retrieval';
+
+export interface SemanticRetrieval {
+  /** Joined chunk text from the best-matching notes. */
+  context: string;
+  /** How well the corpus grounds the question. */
+  confidence: Confidence;
+  /** Closest related notes to point at (deduped by url). */
+  closest: Array<{ title: string; url: string }>;
+}
+
+// Strictly-grounded: the assistant is a guide to Lorenzo's writing, not a
+// general chatbot. It must not answer from the model's own knowledge.
+const GROUNDING_DIRECTIVE = `Grounding rules (these override any urge to be generally helpful): answer ONLY from the context below, which is my own writing. Do not use outside or general knowledge to fill gaps or speculate. If the context does not actually cover the question, say plainly and briefly — in first person — that I haven't written about that, and point the reader to any closest related notes listed. A short honest "I haven't written about that" beats a confident guess.`;
 
 const BLOG_DIR = path.join(process.cwd(), 'src', 'app', 'blog');
 const MAX_CONTEXT_CHARS = 7000;
@@ -72,20 +86,41 @@ export async function loadBlogContext(slug: string): Promise<BlogContext | null>
   };
 }
 
+function formatClosest(closest: Array<{ title: string; url: string }>): string | null {
+  if (closest.length === 0) return null;
+  const list = closest.map((c) => `- ${c.title} (${c.url})`).join('\n');
+  return `Closest related notes:\n${list}`;
+}
+
 export function buildSystemPromptWithContext(
   systemPrompt: string,
   postContext: BlogContext | null,
-  semanticContext: string,
+  retrieval: SemanticRetrieval,
 ): string {
-  const postBlock = postContext
-    ? formatBlogContextBlock(postContext)
-    : null;
+  const postBlock = postContext ? formatBlogContextBlock(postContext) : null;
 
-  const semanticBlock = semanticContext
-    ? `Additional context (semantic matches):\n${semanticContext}`
-    : null;
+  const semanticBlock =
+    retrieval.confidence !== 'none' && retrieval.context
+      ? `Context from my writing (semantic + keyword matches):\n${retrieval.context}`
+      : null;
 
-  return [systemPrompt, postBlock, semanticBlock].filter(Boolean).join('\n\n');
+  const noMatchBlock =
+    retrieval.confidence === 'none'
+      ? "No matching notes were found for this question — I haven't written about this yet."
+      : null;
+
+  const closestBlock = formatClosest(retrieval.closest);
+
+  return [
+    systemPrompt,
+    GROUNDING_DIRECTIVE,
+    postBlock,
+    semanticBlock,
+    noMatchBlock,
+    closestBlock,
+  ]
+    .filter(Boolean)
+    .join('\n\n');
 }
 
 function formatBlogContextBlock(post: BlogContext): string {
