@@ -13,11 +13,27 @@
 import { getDb } from './db';
 import { createOllamaEmbedding, isOllamaAvailable, getEmbeddingDimensions } from './ollama';
 import { logError, logWarn } from './logger';
+import {
+  reciprocalRankFusionScored,
+  assessConfidence,
+  DEFAULT_RRF_WEIGHTS,
+  STRONG_SIM,
+  type Confidence,
+} from './retrieval';
+import type { EmbeddingMetadata } from '@/types/embeddings';
 
-// Configurable similarity threshold for embedding search (0-1, higher = stricter)
+// Grounding floor (0-1, higher = stricter): the top cosine similarity at/above
+// which retrieval is considered "weak" grounding rather than "none". Also the
+// established knob for "what counts as a match".
 const EMBEDDING_MATCH_THRESHOLD = parseFloat(
   process.env.EMBEDDING_MATCH_THRESHOLD || '0.5'
 );
+// Vector candidates are fetched below the grounding floor so fusion + confidence
+// gating have a wider pool to work with; weak/none is decided afterwards.
+const RETRIEVAL_CANDIDATE_THRESHOLD = parseFloat(
+  process.env.RETRIEVAL_CANDIDATE_THRESHOLD || '0.25'
+);
+const HYBRID_CANDIDATE_LIMIT = 12;
 const NO_EMBEDDING_PROVIDER_ERROR =
   'No embedding provider available. Set a valid OPENAI_API_KEY or start Ollama server.';
 
@@ -311,25 +327,107 @@ export async function deleteEmbeddingsBySource(source: string): Promise<number> 
   return rows.length;
 }
 
+export interface HybridRow {
+  id: number;
+  content: string;
+  metadata: EmbeddingMetadata;
+  /** Cosine similarity (0-1) for vector hits; null for lexical-only hits. */
+  similarity: number | null;
+  /** Fused Reciprocal Rank Fusion score, for ranking. */
+  score: number;
+}
+
+type Candidate = Omit<HybridRow, 'score'>;
+
+function toCandidates(rows: unknown, withSimilarity: boolean): Candidate[] {
+  return (rows as Array<Record<string, unknown>>).map((r) => ({
+    id: Number(r.id),
+    content: typeof r.content === 'string' ? r.content : '',
+    metadata: (r.metadata ?? {}) as EmbeddingMetadata,
+    similarity:
+      withSimilarity && typeof r.similarity === 'number' ? r.similarity : null,
+  }));
+}
+
+async function vectorCandidates(query: string, limit: number): Promise<Candidate[]> {
+  const embedding = await createEmbedding(query); // throws if no provider
+  const sql = getDb();
+  const embeddingStr = `[${embedding.join(',')}]`;
+  const rows = await sql`SELECT * FROM match_embeddings(${embeddingStr}::vector, ${RETRIEVAL_CANDIDATE_THRESHOLD}, ${limit})`;
+  return toCandidates(rows, true);
+}
+
+async function lexicalCandidates(query: string, limit: number): Promise<Candidate[]> {
+  const sql = getDb();
+  const rows = await sql`
+    SELECT id, content, metadata
+    FROM embeddings
+    WHERE content_tsv @@ websearch_to_tsquery('english', ${query})
+    ORDER BY ts_rank(content_tsv, websearch_to_tsquery('english', ${query})) DESC
+    LIMIT ${limit}`;
+  return toCandidates(rows, false);
+}
+
 /**
- * Search for similar content using vector similarity
+ * Hybrid retrieval: fuse vector (semantic) and Postgres full-text (lexical)
+ * candidates with Reciprocal Rank Fusion, and gauge grounding confidence.
+ * Lexical search needs no embedding provider, so retrieval degrades to
+ * keyword-only when no provider is configured rather than returning nothing.
+ */
+export async function hybridSearch(
+  query: string,
+  limit: number = 5,
+): Promise<{ results: HybridRow[]; confidence: Confidence }> {
+  const candidateLimit = Math.max(limit, HYBRID_CANDIDATE_LIMIT);
+
+  const [vector, lexical] = await Promise.all([
+    vectorCandidates(query, candidateLimit).catch((error) => {
+      if (!isNoEmbeddingProviderError(error)) {
+        logError('Vector search failed', error, { component: 'embeddings' });
+      }
+      return [] as Candidate[];
+    }),
+    lexicalCandidates(query, candidateLimit).catch((error) => {
+      logError('Lexical search failed', error, { component: 'embeddings' });
+      return [] as Candidate[];
+    }),
+  ]);
+
+  const fused = reciprocalRankFusionScored<Candidate>(
+    [
+      { items: vector, weight: DEFAULT_RRF_WEIGHTS.vector },
+      { items: lexical, weight: DEFAULT_RRF_WEIGHTS.lexical },
+    ],
+    { key: (r) => String(r.id) },
+  );
+
+  const results: HybridRow[] = fused
+    .slice(0, limit)
+    .map(({ item, score }) => ({ ...item, score }));
+
+  return {
+    results,
+    confidence: assessConfidence(results, {
+      weak: EMBEDDING_MATCH_THRESHOLD,
+      strong: STRONG_SIM,
+    }),
+  };
+}
+
+/**
+ * Search for similar content (hybrid vector + lexical). Returns chunk-level rows
+ * ranked by fused score; callers group by url/source as needed. Degrades to an
+ * empty array on any failure, matching prior behavior.
  */
 export async function searchSimilarContent(query: string, limit: number = 5) {
   try {
-    const embedding = await createEmbedding(query);
-    const sql = getDb();
-    const embeddingStr = `[${embedding.join(',')}]`;
-
-    const rows = await sql`SELECT * FROM match_embeddings(${embeddingStr}::vector, ${EMBEDDING_MATCH_THRESHOLD}, ${limit})`;
-
-    return rows;
+    const { results } = await hybridSearch(query, limit);
+    return results;
   } catch (error) {
     if (isNoEmbeddingProviderError(error)) {
-      // Expected when providers are unavailable; degrade gracefully without Sentry noise.
       return [];
     }
     logError('Search similar content failed', error, { component: 'embeddings' });
-    // Return empty array on error to allow graceful degradation
     return [];
   }
 }

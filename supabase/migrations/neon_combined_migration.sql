@@ -352,3 +352,18 @@ BEGIN
   RETURN v_deleted;
 END;
 $$;
+
+-- ============================================================================
+-- HYBRID SEARCH (from 20260619_hybrid_search.sql)
+-- Full-text search alongside pgvector + per-source content hash for incremental
+-- re-embedding. See docs/superpowers/specs/2026-06-19-hybrid-retrieval-design.md
+-- ============================================================================
+ALTER TABLE embeddings
+  ADD COLUMN IF NOT EXISTS content_tsv tsvector
+  GENERATED ALWAYS AS (to_tsvector('english', content)) STORED;
+
+CREATE INDEX IF NOT EXISTS embeddings_content_tsv_idx
+  ON embeddings USING gin (content_tsv);
+
+ALTER TABLE embeddings
+  ADD COLUMN IF NOT EXISTS content_hash text;

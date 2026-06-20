@@ -39,21 +39,27 @@ describe('Search API Route', () => {
   });
 
   // Helper to create mock embedding results
-  const createMockEmbeddingResult = (overrides: Record<string, unknown> = {}) => ({
-    id: 'embed-1',
-    content: 'This is sample content from the blog post.',
-    embedding: [0.1, 0.2, 0.3],
-    similarity: 0.85,
-    metadata: {
-      title: 'Test Blog Post',
-      url: '/blog/test-post',
-      description: 'A description of the test post',
-      date: '2024-01-15',
-      tags: ['typescript', 'testing'],
+  const createMockEmbeddingResult = (overrides: Record<string, unknown> = {}) => {
+    const base = {
+      id: 'embed-1',
+      content: 'This is sample content from the blog post.',
+      embedding: [0.1, 0.2, 0.3],
+      similarity: 0.85,
+      metadata: {
+        title: 'Test Blog Post',
+        url: '/blog/test-post',
+        description: 'A description of the test post',
+        date: '2024-01-15',
+        tags: ['typescript', 'testing'],
+        ...overrides,
+      },
       ...overrides,
-    },
-    ...overrides,
-  });
+    };
+    // Hybrid rows carry a fused `score` used for ranking. For these
+    // vector-dominant fixtures it tracks cosine similarity, so ranking-by-score
+    // stays consistent with the similarity-based expectations below.
+    return { score: base.similarity, ...base };
+  };
 
   describe('GET /api/search', () => {
     it('returns grouped results for a valid query', async () => {
