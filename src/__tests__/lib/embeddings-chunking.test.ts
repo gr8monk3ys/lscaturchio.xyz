@@ -84,6 +84,47 @@ describe('splitIntoChunks', () => {
     }
   });
 
+  it('hard-splits a single unbroken token longer than maxChunkLength', () => {
+    // A long run with no whitespace — a data URI, a minified blob, a giant URL —
+    // used to pass through whole as one chunk far larger than maxChunkLength,
+    // risking the embedding model's token limit. It must be broken up.
+    const max = 300;
+    // Heterogeneous (cycling a–z) so a dropped slice is actually detectable —
+    // a uniform run would mask any loss of distinct characters.
+    const token = Array.from({ length: 2000 }, (_, i) =>
+      String.fromCharCode(97 + (i % 26)),
+    ).join('');
+    const chunks = splitIntoChunks(token, max);
+
+    expect(chunks.length).toBeGreaterThan(1); // not kept as one giant chunk
+    const longest = Math.max(...chunks.map((c) => c.length));
+    // Bounded like any normal chunk: at most a near-full body and one carried
+    // overlap segment, each <= max, plus the joining space — never the whole
+    // 2000-char token.
+    expect(longest).toBeLessThanOrEqual(max * 2 + 1);
+    // No character is lost — every max-sized slice of the token survives intact.
+    const joined = chunks.join(' ');
+    for (let i = 0; i < token.length; i += max) {
+      expect(joined).toContain(token.slice(i, i + max));
+    }
+  });
+
+  it('keeps chunks bounded even with a pathological overlap ratio', () => {
+    // The chunk-size bound must be structural, not an accident of the default
+    // overlapRatio: a caller passing a large ratio must not blow up chunk size.
+    const text = Array.from(
+      { length: 80 },
+      (_, i) => `Sentence ${i} padded out with several extra words for length.`,
+    ).join(' ');
+    const max = 300;
+    for (const ratio of [0.5, 0.9, 1.5, 5]) {
+      const chunks = splitIntoChunks(text, max, ratio);
+      for (const chunk of chunks) {
+        expect(chunk.length).toBeLessThanOrEqual(max * 2 + 1);
+      }
+    }
+  });
+
   it('keeps chunk sizes within a reasonable bound of maxChunkLength', () => {
     const text = Array.from(
       { length: 60 },
@@ -92,9 +133,10 @@ describe('splitIntoChunks', () => {
 
     const max = 300;
     const chunks = splitIntoChunks(text, max);
-    // Allow modest slack for overlap + a boundary-straddling sentence.
+    // Same structural bound as the hard-split/pathological-ratio cases: a body
+    // plus one carried overlap segment (each <= max) and the joining space.
     for (const chunk of chunks) {
-      expect(chunk.length).toBeLessThanOrEqual(max * 2);
+      expect(chunk.length).toBeLessThanOrEqual(max * 2 + 1);
     }
   });
 });

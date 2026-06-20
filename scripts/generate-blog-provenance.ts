@@ -27,7 +27,15 @@ function gitDates(relPath: string): string[] {
       { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] }
     );
     return out.split('\n').map((l) => l.trim()).filter(Boolean);
-  } catch {
+  } catch (err) {
+    // git missing, or a shallow clone (CI default: actions/checkout uses
+    // fetch-depth 1) where `--follow` history isn't present. Surface it under
+    // CI so we don't deploy empty colophons unnoticed.
+    if (process.env.CI) {
+      console.warn(
+        `⚠️  git history unavailable for ${relPath}: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
     return [];
   }
 }
@@ -50,6 +58,16 @@ function main() {
       lastRevised: dates[0], // newest commit
       revisions: dates.length,
     };
+  }
+
+  // A non-empty set of essays that produced zero provenance almost always means
+  // git history is missing (shallow clone), not that every post is uncommitted.
+  if (slugs.length > 0 && Object.keys(provenance).length === 0) {
+    console.warn(
+      `⚠️  No provenance generated for ${slugs.length} essays — git history is ` +
+        `unavailable (shallow clone?); article colophons will be empty. ` +
+        `Ensure full history (e.g. actions/checkout with fetch-depth: 0).`,
+    );
   }
 
   const body =

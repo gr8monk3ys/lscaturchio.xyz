@@ -18,6 +18,11 @@ describe('Sidenote', () => {
     expect(screen.getByRole('note').className).toContain('lg:float-right');
   });
 
+  it('exposes an accessible name so screen readers can distinguish it', () => {
+    render(<Sidenote>A caveat in the margin.</Sidenote>);
+    expect(screen.getByRole('note')).toHaveAccessibleName('Sidenote');
+  });
+
   it('is registered as an MDX component so essays can use <Sidenote>', () => {
     const components = useMDXComponents({});
     expect(components.Sidenote).toBe(Sidenote);
