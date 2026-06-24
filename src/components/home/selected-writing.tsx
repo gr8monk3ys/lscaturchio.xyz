@@ -26,7 +26,7 @@ export function SelectedWriting({ posts, className }: SelectedWritingProps) {
     <Section padding="default" size="wide" divider topDivider reveal={false} className={className}>
       <div>
         <SectionHeader
-          index="01"
+          index="03"
           eyebrow="Writing"
           title="Selected Writing"
           description={`${posts.length} pieces worth starting with — swipe or scroll the rail sideways.`}
