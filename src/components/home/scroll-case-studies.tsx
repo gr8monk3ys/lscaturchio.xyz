@@ -57,7 +57,7 @@ export function ScrollCaseStudies() {
       <div className="grid items-start gap-12 lg:grid-cols-[minmax(280px,360px)_1fr]">
         {/* Catalogue index — no card, just a labelled list on the paper. */}
         <div className="lg:sticky lg:top-28">
-          <span className="label-mono mb-3 block">04 — Case Studies</span>
+          <span className="label-mono mb-3 block">01 — Case Studies</span>
           <h2 className="text-section-title">Builds that prove the process.</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             Three projects that show how I build: thin slices, grounded retrieval, and
