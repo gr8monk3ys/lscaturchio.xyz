@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest, NextResponse } from 'next/server';
 import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit';
+import { IDENTITY } from '@/constants/identity';
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -16,7 +17,7 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
   const origin = new URL(request.url).origin;
 
   const title = searchParams.get('title') || 'Lorenzo Scaturchio';
-  const description = searchParams.get('description') || 'Data Scientist & Developer';
+  const description = searchParams.get('description') || IDENTITY.role;
   const type = searchParams.get('type') || 'default'; // 'blog', 'project', 'default'
   let cover = searchParams.get('cover');
 

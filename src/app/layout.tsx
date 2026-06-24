@@ -10,6 +10,7 @@ import Script from "next/script";
 import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Fraunces, IBM_Plex_Mono } from "next/font/google";
 import { SITE_URL } from "@/lib/site-url";
+import { IDENTITY } from "@/constants/identity";
 import { DeferredLayoutExtras } from "@/components/layout/deferred-layout-extras";
 import { ConsoleGreeting } from "@/components/layout/console-greeting";
 import { MobileNavbarGate } from "@/components/layout/mobile-navbar-gate";
@@ -41,37 +42,37 @@ const monoFont = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Lorenzo Scaturchio | Data Scientist, Developer & Digital Craftsman',
+    default: IDENTITY.titleDefault,
     template: '%s | Lorenzo Scaturchio'
   },
-  description: 'Explore Lorenzo Scaturchio\'s portfolio featuring innovative data science projects, web development solutions, and creative digital experiences. Specializing in machine learning, data analysis, and responsive web applications.',
+  description: IDENTITY.tagline,
   metadataBase: new URL(SITE_URL),
-  keywords: ['data scientist', 'developer', 'portfolio', 'machine learning', 'data analysis', 'web development', 'digital solutions', 'AI', 'programmer', 'creative technologist'],
+  keywords: ['AI engineer', 'applied machine learning', 'RAG systems', 'retrieval', 'essays', 'technology criticism', 'political economy', 'web development', 'Lorenzo Scaturchio'],
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: SITE_URL,
     siteName: 'Lorenzo Scaturchio Portfolio',
-    title: 'Lorenzo Scaturchio | Data Scientist, Developer & Digital Craftsman',
-    description: 'Explore Lorenzo Scaturchio\'s portfolio featuring innovative data science projects, web development solutions, and creative digital experiences.',
+    title: IDENTITY.titleDefault,
+    description: IDENTITY.tagline,
     images: [
       {
         url: ogCardUrl({
           title: "Lorenzo Scaturchio",
-          description: "Data Scientist & Developer",
+          description: IDENTITY.role,
           type: "default",
         }),
         width: 1200,
         height: 630,
-        alt: 'Lorenzo Scaturchio - Data Scientist and Developer'
+        alt: `${IDENTITY.name} — ${IDENTITY.role}`
       }
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Lorenzo Scaturchio | Data Scientist & Developer',
-    description: 'Explore Lorenzo Scaturchio\'s portfolio featuring innovative data science projects, web development solutions, and creative digital experiences.',
-    images: [ogCardUrl({ title: "Lorenzo Scaturchio", description: "Data Scientist & Developer", type: "default" })],
+    title: IDENTITY.titleDefault,
+    description: IDENTITY.tagline,
+    images: [ogCardUrl({ title: "Lorenzo Scaturchio", description: IDENTITY.role, type: "default" })],
     creator: '@lscaturchio'
   },
   robots: {
@@ -108,7 +109,7 @@ export default function RootLayout({
         name: "Lorenzo Scaturchio",
         url: SITE_URL,
         image: `${SITE_URL}/images/portrait.webp`,
-        jobTitle: "Data Scientist & Developer",
+        jobTitle: IDENTITY.role,
         sameAs: [
           "https://social.lscaturchio.xyz/@gr8monk3ys",
           "https://github.com/gr8monk3ys",
