@@ -29,6 +29,7 @@ describe('extractBlogMeta', () => {
       syndication: undefined,
       series: 'My Series',
       seriesOrder: 3,
+      stage: undefined,
     });
   });
 
@@ -86,6 +87,36 @@ describe('extractBlogMeta', () => {
       syndication: undefined,
       series: undefined,
       seriesOrder: undefined,
+      stage: undefined,
     });
+  });
+
+  it('reads a valid stage literal', () => {
+    const source = `
+      export const meta = {
+        title: "T",
+        date: "2025-02-13",
+        stage: "evergreen",
+      };
+    `;
+    expect(extractBlogMeta(source).stage).toBe('evergreen');
+  });
+
+  it('drops an unrecognized stage value', () => {
+    const source = `
+      export const meta = {
+        title: "T",
+        date: "2025-02-13",
+        stage: "evergeen",
+      };
+    `;
+    expect(extractBlogMeta(source).stage).toBeUndefined();
+  });
+
+  it('omits stage when absent', () => {
+    const source = `
+      export const meta = { title: "T", date: "2025-02-13" };
+    `;
+    expect(extractBlogMeta(source).stage).toBeUndefined();
   });
 });

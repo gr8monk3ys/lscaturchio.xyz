@@ -1,4 +1,5 @@
 import * as ts from "typescript";
+import { BlogStage, isBlogStage } from "@/lib/blog-stage";
 
 export interface BlogMeta {
   title: string;
@@ -11,6 +12,8 @@ export interface BlogMeta {
   syndication?: string[];
   series?: string;
   seriesOrder?: number;
+  /** Digital-garden maturity stage. */
+  stage?: BlogStage;
 }
 
 type PartialBlogMeta = Partial<BlogMeta>;
@@ -89,6 +92,11 @@ function readNumberValue(expr: ts.Expression | undefined): number | undefined {
   return undefined;
 }
 
+function readStageValue(expr: ts.Expression | undefined): BlogStage | undefined {
+  const value = readStringValue(expr);
+  return isBlogStage(value) ? value : undefined;
+}
+
 function readStringArray(expr: ts.Expression | undefined): string[] | undefined {
   if (!expr || !ts.isArrayLiteralExpression(expr)) return undefined;
 
@@ -120,5 +128,6 @@ export function extractBlogMeta(content: string): PartialBlogMeta {
     syndication: readStringArray(getMetaPropertyExpression(metaObject, "syndication")),
     series: readStringValue(getMetaPropertyExpression(metaObject, "series")),
     seriesOrder: readNumberValue(getMetaPropertyExpression(metaObject, "seriesOrder")),
+    stage: readStageValue(getMetaPropertyExpression(metaObject, "stage")),
   };
 }
