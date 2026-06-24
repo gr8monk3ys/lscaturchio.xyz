@@ -8,6 +8,7 @@
       "url": [
         "http://127.0.0.1:4173/",
         "http://127.0.0.1:4173/blog",
+        "http://127.0.0.1:4173/blog/building-rag-systems",
         "http://127.0.0.1:4173/work-with-me"
       ],
       "settings": {
