@@ -21,6 +21,7 @@ import {
   type Confidence,
 } from './retrieval';
 import type { EmbeddingMetadata } from '@/types/embeddings';
+import { getErrorMessage, isOpenAIAuthOrConfigError } from './openai-errors';
 
 // Grounding floor (0-1, higher = stricter): the top cosine similarity at/above
 // which retrieval is considered "weak" grounding rather than "none". Also the
@@ -57,37 +58,6 @@ async function getOpenAI() {
     });
   }
   return openaiClient;
-}
-
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  if (typeof error === 'string') return error;
-  try {
-    return JSON.stringify(error);
-  } catch {
-    return String(error);
-  }
-}
-
-function getErrorStatus(error: unknown): number | undefined {
-  if (!error || typeof error !== 'object') return undefined;
-  const status = (error as { status?: unknown }).status;
-  return typeof status === 'number' ? status : undefined;
-}
-
-function isOpenAIAuthOrConfigError(error: unknown): boolean {
-  const status = getErrorStatus(error);
-  if (status === 401 || status === 403) return true;
-
-  const message = getErrorMessage(error).toLowerCase();
-  return (
-    message.includes('incorrect api key') ||
-    message.includes('invalid api key') ||
-    message.includes('api key not found') ||
-    message.includes('authentication') ||
-    message.includes('unauthorized') ||
-    message.includes('forbidden')
-  );
 }
 
 function isNoEmbeddingProviderError(error: unknown): boolean {
