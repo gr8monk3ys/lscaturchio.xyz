@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, FormEvent, KeyboardEvent } from "react";
-import { Paperclip, Mic, CornerDownLeft } from "lucide-react";
+import { CornerDownLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logError } from "@/lib/logger";
 import {
@@ -220,33 +220,11 @@ export function ChatPageClient({
             aria-label="Message"
             className="border-0 bg-transparent shadow-none focus:ring-0 focus-visible:ring-0"
           />
-          <div className="flex items-center justify-between px-3 pb-3">
-            <div className="flex">
-              <Button
-                variant="ghost"
-                size="icon"
-                type="button"
-                className="hidden md:inline-flex"
-                disabled
-                aria-label="Attachment disabled"
-              >
-                <Paperclip className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                type="button"
-                className="hidden md:inline-flex"
-                disabled
-                aria-label="Voice input disabled"
-              >
-                <Mic className="h-4 w-4" />
-              </Button>
-            </div>
+          <div className="flex items-center justify-end px-3 pb-3">
             <Button
               type="submit"
               size="sm"
-              className="ml-auto gap-1.5"
+              className="gap-1.5"
               disabled={isLoading}
               aria-label="Send message"
             >
