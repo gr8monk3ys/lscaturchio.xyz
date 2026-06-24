@@ -135,7 +135,9 @@ const nextConfig = {
   compress: true,
   reactStrictMode: true,
   experimental: {
-    optimizeCss: true,
+    // optimizeCss removed: it needs the `critters`/`beasties` package (not a
+    // dependency here), so Next silently ignores it — a no-op that implied
+    // critical-CSS inlining that never happened.
     scrollRestoration: true,
   },
   compiler: {

@@ -20,14 +20,14 @@ const ENABLE_VERCEL_ANALYTICS = process.env.VERCEL === "1";
 
 const displayFont = Fraunces({
   subsets: ["latin"],
-  display: "optional",
+  display: "swap",
   preload: false,
   variable: "--site-font-display",
 });
 
 const bodyFont = Instrument_Sans({
   subsets: ["latin"],
-  display: "optional",
+  display: "swap",
   variable: "--site-font-body",
 });
 
@@ -35,7 +35,7 @@ const bodyFont = Instrument_Sans({
 const monoFont = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  display: "optional",
+  display: "swap",
   preload: false,
   variable: "--site-font-mono",
 });
