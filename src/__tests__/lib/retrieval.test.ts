@@ -6,6 +6,9 @@ import {
   buildEmbeddingInput,
   sourceContentHash,
   shouldSkipSource,
+  RRF_K,
+  STRONG_SIM,
+  WEAK_SIM,
 } from '@/lib/retrieval';
 
 const key = (x: { id: string }) => x.id;
@@ -66,6 +69,51 @@ describe('reciprocalRankFusion', () => {
     );
     expect(fused).toHaveLength(1);
     expect(fused[0].src).toBe('vector');
+  });
+
+  it('uses the RRF_K default when k is omitted', () => {
+    // The real callers rely on the default k; lock the scoring to RRF_K.
+    const scored = reciprocalRankFusionScored([{ items: [{ id: 'a' }] }], { key });
+    expect(scored[0].score).toBeCloseTo(1 / RRF_K, 10);
+  });
+
+  it('sums contributions additively across three lists', () => {
+    // 'a' appears top of all three; 'b' only in one. 'a' must outrank 'b'.
+    const scored = reciprocalRankFusionScored(
+      [
+        { items: [{ id: 'a' }, { id: 'b' }] },
+        { items: [{ id: 'a' }] },
+        { items: [{ id: 'a' }] },
+      ],
+      { key, k: 60 },
+    );
+    expect(scored.map((s) => s.item.id)).toEqual(['a', 'b']);
+    expect(scored[0].score).toBeCloseTo(1 / 60 + 1 / 60 + 1 / 60, 10);
+    expect(scored[1].score).toBeCloseTo(1 / 61, 10);
+  });
+});
+
+describe('assessConfidence at production thresholds', () => {
+  // Guards the values actually used at runtime: the bare defaults
+  // (STRONG_SIM / WEAK_SIM) and the hybridSearch caller's override
+  // ({ strong: STRONG_SIM, weak: EMBEDDING_MATCH_THRESHOLD = 0.5 }).
+  it('classifies against the bare STRONG_SIM / WEAK_SIM defaults', () => {
+    expect(STRONG_SIM).toBe(0.55);
+    expect(WEAK_SIM).toBe(0.4);
+    expect(assessConfidence([{ similarity: STRONG_SIM }])).toBe('strong');
+    expect(assessConfidence([{ similarity: 0.5 }])).toBe('weak');
+    expect(assessConfidence([{ similarity: WEAK_SIM }])).toBe('weak');
+    expect(assessConfidence([{ similarity: 0.39 }])).toBe('none');
+  });
+
+  it('honors the hybridSearch override { strong: 0.55, weak: 0.5 }', () => {
+    const prod = { strong: STRONG_SIM, weak: 0.5 };
+    expect(assessConfidence([{ similarity: 0.55 }], prod)).toBe('strong');
+    expect(assessConfidence([{ similarity: 0.54 }], prod)).toBe('weak');
+    expect(assessConfidence([{ similarity: 0.5 }], prod)).toBe('weak');
+    expect(assessConfidence([{ similarity: 0.49 }], prod)).toBe('none');
+    // A lexical-only hit still grounds weakly even when its cosine is absent.
+    expect(assessConfidence([{ similarity: null }], prod)).toBe('weak');
   });
 });
 
