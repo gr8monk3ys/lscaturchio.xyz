@@ -1,3 +1,5 @@
+import type { BlogStage } from "@/lib/blog-stage";
+
 const BLOG_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const FUTURE_BLOG_GRACE_PERIOD_MS = 1000 * 60 * 60 * 24;
 const DEFAULT_BLOG_IMAGE = "/images/blog/default.webp";
@@ -21,6 +23,7 @@ export interface BlogPreviewSource extends BlogDateFields, BlogTagFields {
   title: string;
   description: string;
   image?: string;
+  stage?: BlogStage;
 }
 
 export interface BlogPreview extends BlogDateFields, BlogTagFields {
@@ -28,6 +31,7 @@ export interface BlogPreview extends BlogDateFields, BlogTagFields {
   title: string;
   description: string;
   image: string;
+  stage?: BlogStage;
 }
 
 export interface BlogTagCount {
@@ -133,6 +137,7 @@ export function toBlogPreview<T extends BlogPreviewSource>(blog: T): BlogPreview
     date: blog.date,
     tags: blog.tags,
     image: blog.image || DEFAULT_BLOG_IMAGE,
+    stage: blog.stage,
   };
 }
 
