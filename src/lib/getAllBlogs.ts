@@ -6,6 +6,7 @@ import {
   clampBlogDateToToday,
   sortBlogsByDateDescending,
 } from "@/lib/blog-data";
+import type { BlogStage } from "@/lib/blog-stage";
 
 // Module-level cache for getAllBlogs() to avoid repeated disk reads
 let cachedBlogs: BlogPost[] | null = null;
@@ -22,6 +23,7 @@ interface BlogMeta {
   syndication?: string[];
   series?: string;
   seriesOrder?: number;
+  stage?: BlogStage;
 }
 
 export interface BlogPost extends BlogMeta {
@@ -52,6 +54,7 @@ async function readBlog(fileName: string): Promise<BlogPost | null> {
     syndication: meta.syndication,
     series: meta.series,
     seriesOrder: meta.seriesOrder,
+    stage: meta.stage,
   };
 }
 
