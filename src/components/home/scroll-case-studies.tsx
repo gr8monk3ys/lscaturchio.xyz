@@ -71,7 +71,7 @@ export function ScrollCaseStudies() {
                   href={`#case-study-${item.id}`}
                   className="group flex items-baseline gap-4 border-b border-border py-4 transition-colors hover:text-primary"
                 >
-                  <span className="label-mono shrink-0 text-foreground/50">
+                  <span className="label-mono shrink-0 text-foreground/70">
                     {formatIndex(index)}
                   </span>
                   <span className="min-w-0 flex-1">

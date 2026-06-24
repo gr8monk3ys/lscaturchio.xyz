@@ -97,7 +97,7 @@ export function HowIWorkSection() {
               className="scroll-mt-28 border-b border-border py-8"
             >
               <div className="grid gap-x-6 gap-y-2 sm:grid-cols-[auto_1fr]">
-                <span className="label-mono text-2xl leading-none tracking-normal text-foreground/40">
+                <span className="label-mono text-2xl leading-none tracking-normal text-foreground/60">
                   {formatIndex(index)}
                 </span>
                 <div>
