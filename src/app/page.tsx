@@ -93,8 +93,6 @@ export default async function Home() {
         ]}
       />
 
-      <h1 className="sr-only">Lorenzo Scaturchio - Data Scientist and Developer Portfolio</h1>
-
       {/* Hero: thesis + ask-my-site-anything */}
       <Hero />
 

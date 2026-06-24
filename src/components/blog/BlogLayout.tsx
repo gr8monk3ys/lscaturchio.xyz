@@ -173,7 +173,7 @@ export function BlogLayout({
 
               {relatedHubs.length > 0 && (
                 <p className="label-mono mt-5 flex flex-wrap items-center gap-x-4 gap-y-1">
-                  <span className="text-foreground/45">Explore</span>
+                  <span className="text-foreground/70">Explore</span>
                   {relatedHubs.map((hub) => (
                     <Link
                       key={hub.slug}

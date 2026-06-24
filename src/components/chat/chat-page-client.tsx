@@ -166,6 +166,7 @@ export function ChatPageClient({
               <ChatBubbleAvatar
                 className="h-8 w-8 shrink-0"
                 src={message.sender === "user" ? undefined : "/images/portrait.webp"}
+                alt="Lorenzo"
                 fallback={message.sender === "user" ? "Y" : "LS"}
               />
               <ChatBubbleMessage
@@ -199,6 +200,7 @@ export function ChatPageClient({
               <ChatBubbleAvatar
                 className="h-8 w-8 shrink-0"
                 src="/images/portrait.webp"
+                alt="Lorenzo"
                 fallback="LS"
               />
               <ChatBubbleMessage isLoading />

@@ -56,8 +56,9 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
       </div>
 
       {isMenuOpen && (
-        <div
+        <nav
           id="mobile-navigation-menu"
+          aria-label="Mobile"
           className="fixed inset-0 z-55 flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
         >
           <div className="mx-auto flex w-full max-w-md flex-col space-y-2 p-6 pt-20">
@@ -195,7 +196,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
               <ThemeToggle />
             </div>
           </div>
-        </div>
+        </nav>
       )}
     </>
   );

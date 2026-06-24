@@ -66,18 +66,20 @@ export function ChatBubbleMessage({
 
 interface ChatBubbleAvatarProps {
   src?: string
+  alt?: string
   fallback?: string
   className?: string
 }
 
 export function ChatBubbleAvatar({
   src,
+  alt = "",
   fallback = "AI",
   className,
 }: ChatBubbleAvatarProps) {
   return (
     <Avatar className={cn("h-8 w-8", className)}>
-      {src && <AvatarImage src={src} />}
+      {src && <AvatarImage src={src} alt={alt} />}
       <AvatarFallback>{fallback}</AvatarFallback>
     </Avatar>
   )
