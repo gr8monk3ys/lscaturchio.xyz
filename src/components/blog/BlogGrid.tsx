@@ -1,6 +1,7 @@
 import { BlogCard } from "@/components/blog/BlogCard";
 import { X } from "lucide-react";
 import Link from "next/link";
+import { BLOG_STAGES, STAGE_LABELS, isBlogStage } from "@/lib/blog-stage";
 
 interface Blog {
   slug: string;
@@ -14,17 +15,26 @@ interface Blog {
 interface BlogGridProps {
   blogs: Blog[];
   tagFilter?: string;
+  stageFilter?: string;
   totalBlogs: number;
   currentPage: number;
   pageStart: number;
   totalPages: number;
 }
 
-function getBlogArchiveHref(page: number, tagFilter: string): string {
+function getBlogArchiveHref(
+  page: number,
+  tagFilter: string,
+  stageFilter: string
+): string {
   const params = new URLSearchParams();
 
   if (tagFilter) {
     params.set("tag", tagFilter);
+  }
+
+  if (stageFilter) {
+    params.set("stage", stageFilter);
   }
 
   if (page > 1) {
@@ -38,6 +48,7 @@ function getBlogArchiveHref(page: number, tagFilter: string): string {
 export function BlogGrid({
   blogs,
   tagFilter = "",
+  stageFilter = "",
   totalBlogs,
   currentPage,
   pageStart,
@@ -49,6 +60,40 @@ export function BlogGrid({
 
   return (
     <>
+      <nav
+        aria-label="Filter by growth stage"
+        className="mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border pb-4"
+      >
+        <span className="label-mono text-foreground/70">Stage</span>
+        <Link
+          href={getBlogArchiveHref(1, normalizedTag, "")}
+          prefetch={false}
+          aria-current={isBlogStage(stageFilter) ? undefined : "true"}
+          className={`label-mono underline-offset-4 transition-colors hover:text-primary hover:underline ${
+            isBlogStage(stageFilter) ? "text-muted-foreground" : "text-foreground"
+          }`}
+        >
+          All
+        </Link>
+        {BLOG_STAGES.map((stage) => {
+          const active = stageFilter === stage;
+          return (
+            <Link
+              key={stage}
+              href={getBlogArchiveHref(1, normalizedTag, stage)}
+              prefetch={false}
+              aria-current={active ? "true" : undefined}
+              title={STAGE_LABELS[stage].blurb}
+              className={`label-mono underline-offset-4 transition-colors hover:text-primary hover:underline ${
+                active ? "text-foreground" : "text-muted-foreground"
+              }`}
+            >
+              {STAGE_LABELS[stage].label}
+            </Link>
+          );
+        })}
+      </nav>
+
       {normalizedTag && (
         <div className="mb-8 flex flex-col items-start justify-between gap-3 border-b border-border pb-4 sm:flex-row sm:items-center">
           <span className="label-mono">
@@ -105,7 +150,7 @@ export function BlogGrid({
           <div className="flex items-center gap-6">
             {currentPage > 1 ? (
               <Link
-                href={getBlogArchiveHref(currentPage - 1, normalizedTag)}
+                href={getBlogArchiveHref(currentPage - 1, normalizedTag, stageFilter)}
                 prefetch={false}
                 className="label-mono text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
               >
@@ -121,7 +166,7 @@ export function BlogGrid({
 
             {currentPage < totalPages ? (
               <Link
-                href={getBlogArchiveHref(currentPage + 1, normalizedTag)}
+                href={getBlogArchiveHref(currentPage + 1, normalizedTag, stageFilter)}
                 prefetch={false}
                 className="label-mono text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
               >

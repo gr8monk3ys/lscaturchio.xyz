@@ -1,6 +1,7 @@
 import { Container } from "@/components/Container";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
+import { filterByStage } from "@/lib/blog-stage";
 import { BlogArchiveStats } from "@/components/blog/blog-archive-stats";
 import Link from "next/link";
 import { MessageSquare, Tag } from "lucide-react";
@@ -73,14 +74,16 @@ export default async function Blog({
 }) {
   const params = (await searchParams) ?? {};
   const tagFilter = getSearchParamValue(params, "tag");
+  const stageFilter = getSearchParamValue(params, "stage");
   const requestedPage = getPageParamValue(getSearchParamValue(params, "page"));
   const blogs = await getAllBlogs();
   const normalizedTag = tagFilter.trim().toLowerCase();
-  const filteredBlogs = normalizedTag
+  const tagFilteredBlogs = normalizedTag
     ? blogs.filter((blog) =>
         blog.tags.some((tag) => tag.toLowerCase() === normalizedTag)
       )
     : blogs;
+  const filteredBlogs = filterByStage(tagFilteredBlogs, stageFilter);
   const totalPages = Math.max(1, Math.ceil(filteredBlogs.length / BLOGS_PER_PAGE));
   const currentPage = Math.min(requestedPage, totalPages);
   const pageStart = (currentPage - 1) * BLOGS_PER_PAGE;
@@ -127,6 +130,7 @@ export default async function Blog({
           currentPage={currentPage}
           pageStart={pageStart}
           tagFilter={tagFilter}
+          stageFilter={stageFilter}
           totalBlogs={filteredBlogs.length}
           totalPages={totalPages}
         />
