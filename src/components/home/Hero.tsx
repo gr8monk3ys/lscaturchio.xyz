@@ -17,9 +17,9 @@ export function Hero() {
         <div className="min-w-0 space-y-6">
           <span className="label-mono block">Applied ML · RAG Systems · Essays</span>
 
-          <h2 className="text-balance text-5xl font-semibold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
+          <h1 className="text-balance text-5xl font-semibold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
             Hey, I&apos;m <span className="text-primary">Lorenzo Scaturchio</span>
-          </h2>
+          </h1>
 
           <p className="max-w-xl text-lg text-muted-foreground sm:text-xl">
             I build AI systems by day and write about the world they&apos;re being

@@ -57,7 +57,7 @@ export function Navbar() {
                         href={item.href}
                         className={navLinkBaseClass}
                         activeClassName="text-foreground after:scale-x-100"
-                        inactiveClassName="text-foreground/60 hover:text-foreground/80 after:scale-x-0 hover:after:scale-x-100"
+                        inactiveClassName="text-foreground/70 hover:text-foreground/90 after:scale-x-0 hover:after:scale-x-100"
                       >
                         {item.name}
                       </ActiveNavLink>
