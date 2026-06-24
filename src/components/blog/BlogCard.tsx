@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { formatDate } from "@/lib/formatDate";
+import type { BlogStage } from "@/lib/blog-stage";
+import { StageBadge } from "@/components/blog/stage-badge";
 
 interface BlogCardProps {
   slug: string;
@@ -10,6 +12,7 @@ interface BlogCardProps {
   image: string;
   tags: string[];
   priority?: boolean;
+  stage?: BlogStage;
 }
 
 /**
@@ -25,6 +28,7 @@ export function BlogCard({
   image,
   tags,
   priority = false,
+  stage,
 }: BlogCardProps) {
   const label = [formatDate(date), ...tags.slice(0, 2)].join("  ·  ");
 
@@ -42,7 +46,15 @@ export function BlogCard({
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 30vw"
           />
         </div>
-        <span className="label-mono mt-4 block">{label}</span>
+        <span className="label-mono mt-4 block">
+          {label}
+          {stage ? (
+            <>
+              {"  ·  "}
+              <StageBadge stage={stage} />
+            </>
+          ) : null}
+        </span>
         <h2 className="mt-2 line-clamp-2 text-xl font-semibold leading-tight tracking-tight transition-colors group-hover:text-primary">
           {title}
         </h2>
