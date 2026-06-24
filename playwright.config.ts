@@ -39,9 +39,11 @@ export default defineConfig({
       : []),
   ],
   webServer: {
-    command: `env -u FORCE_COLOR -u NO_COLOR npm run dev -- --webpack --hostname ${E2E_HOST} --port ${E2E_PORT}`,
+    // `next start` serves a prebuilt .next, so build first; the timeout covers a
+    // cold production build plus boot (dev mode hid this by compiling on demand).
+    command: `env -u FORCE_COLOR -u NO_COLOR npm run build && npm run start -- --hostname ${E2E_HOST} --port ${E2E_PORT}`,
     url: E2E_BASE_URL,
     reuseExistingServer: false,
-    timeout: 180000,
+    timeout: 300000,
   },
 });
