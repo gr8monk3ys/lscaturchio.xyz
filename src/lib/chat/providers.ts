@@ -1,5 +1,6 @@
 import { logError, logInfo } from '@/lib/logger';
 import { createOllamaChatCompletion, isOllamaAvailable } from '@/lib/ollama';
+import { isOpenAIAuthOrConfigError } from '@/lib/openai-errors';
 
 export const USE_OPENAI = !!process.env.OPENAI_API_KEY;
 export const USE_OPENROUTER = !!process.env.OPENROUTER_API_KEY;
@@ -57,38 +58,6 @@ async function getOpenRouter() {
     });
   }
   return openrouterClient;
-}
-
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  if (typeof error === 'string') return error;
-  try {
-    return JSON.stringify(error);
-  } catch {
-    return String(error);
-  }
-}
-
-function getErrorStatus(error: unknown): number | undefined {
-  if (!error || typeof error !== 'object') return undefined;
-  const status = (error as { status?: unknown }).status;
-  return typeof status === 'number' ? status : undefined;
-}
-
-function isOpenAIAuthOrConfigError(error: unknown): boolean {
-  const status = getErrorStatus(error);
-  if (status === 401 || status === 403) return true;
-
-  const message = getErrorMessage(error).toLowerCase();
-  return (
-    message.includes('incorrect api key') ||
-    message.includes('invalid api key') ||
-    message.includes('api key not found') ||
-    message.includes('authentication') ||
-    message.includes('unauthorized') ||
-    message.includes('forbidden') ||
-    message.includes('account associated with this api key has been deactivated')
-  );
 }
 
 function uniqueModelCandidates(primary: string, fallback?: string): string[] {
