@@ -23,6 +23,8 @@ import { getTopicHubsForTags } from "@/constants/topics";
 import { getSiteUrl } from "@/lib/site-url";
 import { clampBlogDateToToday } from "@/lib/blog-data";
 import { BLOG_PROVENANCE } from "@/generated/blog-provenance";
+import type { BlogStage } from "@/lib/blog-stage";
+import { StageBadge } from "@/components/blog/stage-badge";
 
 function monthYear(iso: string): string {
   const d = new Date(`${iso}T00:00:00Z`);
@@ -71,6 +73,7 @@ interface BlogMeta {
   syndication?: string[]; // Optional syndication links (Mastodon/Bluesky/etc.)
   series?: string; // Optional series name
   seriesOrder?: number; // Order within the series
+  stage?: BlogStage;
 }
 
 interface BlogLayoutProps {
@@ -154,6 +157,12 @@ export function BlogLayout({
                         {tag}
                       </Link>
                     ))}
+                  </>
+                )}
+                {meta.stage && (
+                  <>
+                    <span aria-hidden className="text-foreground/25">·</span>
+                    <StageBadge stage={meta.stage} />
                   </>
                 )}
                 <ViewCounter slug={slug} />
