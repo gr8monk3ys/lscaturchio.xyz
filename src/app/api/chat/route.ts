@@ -86,7 +86,7 @@ const handlePost = async (req: NextRequest) => {
     }
 
     return apiSuccess({
-      answer: buildFallbackAnswer(retrieval.context, retrieval.closest),
+      answer: buildFallbackAnswer(retrieval.context, retrieval.closest, retrieval.confidence),
       provider: 'fallback' as const,
       model: null,
       degraded: true,
