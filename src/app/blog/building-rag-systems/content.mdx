@@ -9,6 +9,12 @@ export const meta = {
   seriesOrder: 1,
 };
 
+<AssumedAudience>
+  People who've shipped a RAG prototype and watched it quietly get worse with
+  real traffic. Assumes you know what embeddings and vector search are; it won't
+  re-explain them.
+</AssumedAudience>
+
 The chat on this site runs on RAG. So did Talker, a teaching assistant I built that answered course questions from lecture materials. Both taught me the same lesson: the tutorial version of RAG — embed your documents, do a similarity search, stuff the results into a prompt — works in a demo and quietly falls apart with real users. The failures don't announce themselves. The system keeps returning answers. They're just subtly wrong, or grounded in the wrong chunk, and you only find out when someone tells you.
 
 These are my notes on what the research says, what the production systems do, and what I'd actually reach for. Long, because the subject is. Skim the tables, read the parts where I editorialize.
