@@ -10,6 +10,7 @@ import { getGithubPortfolioRepos } from "@/lib/github-repos";
 import { getPopularPosts } from "@/lib/popular-posts";
 import type { Metadata } from "next";
 import { ogCardUrl } from "@/lib/seo";
+import { IDENTITY } from "@/constants/identity";
 import { splitHomepageBlogs } from "@/lib/blog-data";
 
 export const metadata: Metadata = {
@@ -17,14 +18,14 @@ export const metadata: Metadata = {
   description:
     "AI case studies, product builds, and practical writing from Lorenzo Scaturchio across retrieval systems, automation, and web development.",
   openGraph: {
-    title: "Lorenzo Scaturchio | Data Scientist, Developer & Digital Craftsman",
+    title: IDENTITY.titleDefault,
     description:
       "AI case studies, product builds, and practical writing across retrieval systems, automation, and web development.",
     images: [
       {
         url: ogCardUrl({
           title: "Lorenzo Scaturchio",
-          description: "Data Scientist & Developer",
+          description: IDENTITY.role,
           type: "default",
         }),
         width: 1200,
@@ -34,12 +35,12 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lorenzo Scaturchio | Data Scientist & Developer",
+    title: IDENTITY.titleDefault,
     description: "AI case studies, product builds, and practical writing across retrieval systems and web development.",
     images: [
       ogCardUrl({
         title: "Lorenzo Scaturchio",
-        description: "Data Scientist & Developer",
+        description: IDENTITY.role,
         type: "default",
       }),
     ],
