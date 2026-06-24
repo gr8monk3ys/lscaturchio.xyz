@@ -68,7 +68,7 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
     <Section padding="compact" size="wide" divider topDivider reveal={false}>
       <div className="max-w-4xl mx-auto">
         <SectionHeader
-          index="03"
+          index="04"
           eyebrow="Start here"
           title="New here? Start with these"
           description="A quick path to get the most out of this site."
