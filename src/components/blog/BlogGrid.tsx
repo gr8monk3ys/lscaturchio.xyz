@@ -100,7 +100,7 @@ export function BlogGrid({
             Filtered — {normalizedTag} · {totalBlogs} {totalBlogs === 1 ? "post" : "posts"}
           </span>
           <Link
-            href="/blog"
+            href={getBlogArchiveHref(1, "", stageFilter)}
             prefetch={false}
             className="label-mono inline-flex items-center gap-1.5 text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
