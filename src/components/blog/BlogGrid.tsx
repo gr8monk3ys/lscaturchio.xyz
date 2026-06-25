@@ -68,7 +68,7 @@ export function BlogGrid({
         <Link
           href={getBlogArchiveHref(1, normalizedTag, "")}
           prefetch={false}
-          aria-current={isBlogStage(stageFilter) ? undefined : "true"}
+          aria-current={isBlogStage(stageFilter) ? undefined : "page"}
           className={`label-mono underline-offset-4 transition-colors hover:text-primary hover:underline ${
             isBlogStage(stageFilter) ? "text-muted-foreground" : "text-foreground"
           }`}
@@ -82,7 +82,7 @@ export function BlogGrid({
               key={stage}
               href={getBlogArchiveHref(1, normalizedTag, stage)}
               prefetch={false}
-              aria-current={active ? "true" : undefined}
+              aria-current={active ? "page" : undefined}
               title={STAGE_LABELS[stage].blurb}
               className={`label-mono underline-offset-4 transition-colors hover:text-primary hover:underline ${
                 active ? "text-foreground" : "text-muted-foreground"
