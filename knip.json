@@ -1,11 +1,15 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignoreExportsUsedInFile": true,
   "ignoreDependencies": [
     "sharp"
   ],
-  "ignoreFiles": [
-    "public/sw.js",
-    "scripts/**"
+  "ignoreBinaries": [
+    "uv",
+    "which",
+    "ffmpeg"
+  ],
+  "ignore": [
+    "public/sw.js"
   ]
 }

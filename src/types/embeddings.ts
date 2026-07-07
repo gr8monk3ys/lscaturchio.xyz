@@ -12,14 +12,6 @@ export interface EmbeddingMetadata {
   [key: string]: unknown;
 }
 
-export interface EmbeddingResult {
-  id: string;
-  content: string;
-  embedding: number[];
-  metadata: EmbeddingMetadata;
-  similarity: number;
-}
-
 export interface SearchResult {
   title: string;
   url: string;

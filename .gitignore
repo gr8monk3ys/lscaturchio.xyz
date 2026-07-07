@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 
+# bun.lock is the canonical lockfile; don't let a stray npm install re-add this
+package-lock.json
+
 # testing
 /coverage
 /playwright-report

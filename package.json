@@ -17,7 +17,9 @@
     "smoke:chat": "node scripts/smoke-chat.mjs",
     "smoke:chat:prod": "node scripts/smoke-chat.mjs --base-url https://lscaturchio.xyz --attempts 30 --interval-ms 20000",
     "eval:chat": "tsx scripts/eval-chat.ts",
-    "predeploy": "npm run lint && npm run typecheck && npm test && npm run build && npm run test:e2e",
+    "predeploy": "bun run lint && bun run typecheck && bun run test && bun run build && bun run test:e2e",
+    "knip": "knip",
+    "db:migrate": "tsx scripts/run-neon-migration.ts",
     "generate-embeddings": "tsx scripts/generate-embeddings.ts",
     "generate-tts-openai": "tsx scripts/generate-openai-tts.ts",
     "generate-audio-manifest": "tsx scripts/generate-audio-manifest.ts",
@@ -80,6 +82,7 @@
     "eslint": "9.39.2",
     "eslint-config-next": "^16.1.6",
     "happy-dom": "^20.8.4",
+    "knip": "^6.24.0",
     "tsx": "^4.20.6",
     "vitest": "^4.1.0"
   }

@@ -1,6 +1,11 @@
 name: CodeQL Security Analysis
 
 on:
+  push:
+    branches: [main]
+  schedule:
+    # Weekly scan (Mondays 09:30 UTC) so new CodeQL queries run even without pushes
+    - cron: '30 9 * * 1'
   workflow_dispatch:
 
 jobs:
