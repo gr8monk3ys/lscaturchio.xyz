@@ -82,9 +82,12 @@ Path alias: `@/*` → `src/*`.
 
 - Unit/integration tests live in `src/__tests__/` (`*.test.ts(x)`), e2e in
   `e2e/` (`*.spec.ts`).
-- Coverage thresholds (`vitest.config.ts`): statements 75 / branches 66 /
-  functions 72 / lines 76. API and lib code is well covered; component coverage
-  is thin — new components should add at least basic tests.
+- Coverage thresholds (`vitest.config.ts`) are a ratchet set just below actual
+  coverage and enforced in CI via `test:coverage`; raise them as coverage
+  improves, never lower them. API and lib code is well covered; component
+  coverage is thin — new components should add at least basic tests.
+- `knip` runs in CI (lint job) to catch dead files, unused exports, and unused
+  dependencies; config in `knip.json`.
 - Mock Neon by mocking `@/lib/db` (`getDb` → a `vi.fn()` returning row arrays).
 
 ## Security
