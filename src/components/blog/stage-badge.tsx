@@ -9,5 +9,7 @@ import { STAGE_LABELS } from "@/lib/blog-stage";
  */
 export function StageBadge({ stage }: { stage?: BlogStage }) {
   if (!stage) return null;
-  return <span className="text-primary/70">{STAGE_LABELS[stage].label}</span>;
+  // 80% opacity keeps the tint but stays above the 4.5:1 WCAG AA contrast
+  // floor for small text (70% composited to ~4.1:1 on the cream background).
+  return <span className="text-primary/80">{STAGE_LABELS[stage].label}</span>;
 }
