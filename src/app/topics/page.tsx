@@ -54,11 +54,7 @@ export default async function TopicsPage() {
           <span className="label-mono block">Garden · Topics</span>
           <Heading className="mt-4 text-4xl font-bold md:text-5xl">Topics</Heading>
           <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            A small set of curated hubs that link related posts and projects. If you prefer raw tags, you can browse{" "}
-            <Link href="/tags" className="text-primary underline-offset-4 hover:underline">
-              all tags
-            </Link>
-            .
+            A small set of curated hubs that link related posts and projects.
           </Paragraph>
           <hr className="gallery-rule mt-8" />
         </header>

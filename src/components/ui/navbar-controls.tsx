@@ -2,8 +2,6 @@
 
 import dynamic from "next/dynamic";
 
-import { LanguageSwitcher } from "@/components/i18n/language-switcher";
-
 import { ThemeToggle } from "./theme-toggle";
 
 const CommandPalette = dynamic(
@@ -21,8 +19,7 @@ const CommandPalette = dynamic(
 
 export function NavbarControls() {
   return (
-    <div className="flex w-[290px] items-center justify-end gap-2">
-      <LanguageSwitcher />
+    <div className="flex w-[150px] items-center justify-end gap-2">
       <CommandPalette />
       <ThemeToggle />
     </div>
