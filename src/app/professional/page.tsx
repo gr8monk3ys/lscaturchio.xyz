@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
 import { Heading } from "@/components/Heading";
@@ -162,6 +164,13 @@ export default function ProfessionalPage() {
               Schedule a Call
             </a>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Hiring for a project?{" "}
+            <Link href="/work-with-me" className="text-primary underline-offset-4 hover:underline">
+              See how I work with clients
+            </Link>
+            .
+          </p>
         </section>
       </div>
     </Container>

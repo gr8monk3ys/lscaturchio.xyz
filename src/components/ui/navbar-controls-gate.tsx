@@ -23,11 +23,7 @@ function scheduleIdleWork(callback: () => void, timeout = 1200) {
 
 function NavbarControlsSkeleton() {
   return (
-    <div className="flex w-[290px] items-center justify-end gap-2">
-      <div
-        aria-hidden
-        className="h-10 w-[104px] rounded-xl border border-border/50 bg-muted/40"
-      />
+    <div className="flex w-[150px] items-center justify-end gap-2">
       <div
         aria-hidden
         className="h-10 w-[88px] rounded-xl border border-border/50 bg-muted/40"

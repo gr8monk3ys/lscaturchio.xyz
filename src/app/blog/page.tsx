@@ -106,12 +106,12 @@ export default async function Blog({
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
             <Link
-              href="/tags"
+              href="/topics"
               prefetch={false}
               className="label-mono inline-flex items-center gap-2 text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <Tag className="h-3.5 w-3.5" />
-              Browse by tag
+              Browse by topic
             </Link>
             <Link
               href="/chat"
