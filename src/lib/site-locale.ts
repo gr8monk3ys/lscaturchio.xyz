@@ -1,7 +1,5 @@
 import { SITE_URL } from "@/lib/site-url";
 
-export const DEFAULT_LOCALE = "en";
-
 export const SITE_LOCALES = [
   { locale: "en", hrefLang: "en" },
   { locale: "es", hrefLang: "es" },
@@ -45,16 +43,6 @@ export function stripLocalePrefix(pathname: string): {
     locale: maybeLocale,
     barePath: normalizePath(rest ? `/${rest}` : "/"),
   };
-}
-
-export function withLocalePrefix(
-  locale: LocaleSegment,
-  barePath: string
-): string {
-  const normalized = normalizePath(barePath || "/");
-  if (locale === DEFAULT_LOCALE) return normalized;
-  if (normalized === "/") return `/${locale}`;
-  return `/${locale}${normalized}`;
 }
 
 export function absoluteSitePath(path: string): string {

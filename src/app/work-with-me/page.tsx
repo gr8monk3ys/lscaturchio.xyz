@@ -243,7 +243,12 @@ export default function WorkWithMePage() {
           className="mt-10 scroll-mt-28 neu-flat rounded-2xl p-6 text-sm text-muted-foreground"
         >
           Prefer async-first? Send the goal, the user, the data sources, and the constraint that matters most.
-          I&apos;ll tell you what I would de-risk first and whether the scope makes sense.
+          I&apos;ll tell you what I would de-risk first and whether the scope makes sense. Want the background
+          first? My skills and work history live on the{" "}
+          <Link href="/professional" className="text-primary underline-offset-4 hover:underline">
+            experience page
+          </Link>
+          .
         </div>
       </div>
     </Container>

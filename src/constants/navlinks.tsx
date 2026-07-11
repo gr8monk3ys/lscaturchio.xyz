@@ -9,7 +9,6 @@ import {
   Link2,
   Wrench,
   Mail,
-  Building2,
   Sparkles,
   Book,
   Film,
@@ -41,7 +40,7 @@ export const navigationCategories: NavCategory[] = [
     items: [
       { name: 'About Me', href: '/about', icon: User, description: 'Who I am' },
       { name: 'Now', href: '/now', icon: Clock, description: 'What I\'m up to' },
-      { name: 'Professional', href: '/professional', icon: Sparkles, description: 'Work history' },
+      { name: 'Experience', href: '/professional', icon: Briefcase, description: 'Skills and work history' },
     ],
   },
   {
@@ -50,8 +49,6 @@ export const navigationCategories: NavCategory[] = [
     items: [
       { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
       { name: 'Work With Me', href: '/work-with-me', icon: Sparkles, description: 'Hire me for AI/RAG work' },
-      { name: 'Services', href: '/work-with-me#services', icon: Building2, description: 'What I offer' },
-      { name: 'Testimonials', href: '/work-with-me#testimonials', icon: MessageSquare, description: 'Client feedback' },
     ],
   },
   {
@@ -60,7 +57,6 @@ export const navigationCategories: NavCategory[] = [
     items: [
       { name: 'Blog', href: '/blog', icon: BookOpen, description: 'Articles and thoughts' },
       { name: 'Topics', href: '/topics', icon: Layers, description: 'Curated topic hubs' },
-      { name: 'Series', href: '/series', icon: Layers, description: 'Article series' },
       { name: 'Changelog', href: '/changelog', icon: TrendingUp, description: 'Roadmap + release notes' },
       { name: 'Podcast', href: '/podcast', icon: Mic, description: 'Audio episodes' },
       { name: 'Chat', href: '/chat', icon: MessageSquare, description: 'Talk with AI Lorenzo' },
@@ -126,7 +122,6 @@ export const footerColumns: NavCategory[] = [
     name: 'Writing',
     items: [
       { name: 'Blog', href: '/blog' },
-      { name: 'Map', href: '/map' },
       { name: 'Topics', href: '/topics' },
       { name: 'Series', href: '/series' },
       { name: 'Podcast', href: '/podcast' },
@@ -138,7 +133,6 @@ export const footerColumns: NavCategory[] = [
     items: [
       { name: 'Projects', href: '/projects' },
       { name: 'Work With Me', href: '/work-with-me' },
-      { name: 'Services', href: '/work-with-me#services' },
       { name: 'Uses', href: '/uses' },
     ],
   },
@@ -158,7 +152,7 @@ export const footerColumns: NavCategory[] = [
     name: 'About',
     items: [
       { name: 'About Me', href: '/about' },
-      { name: 'Professional', href: '/professional' },
+      { name: 'Experience', href: '/professional' },
       { name: 'Chat', href: '/chat' },
       { name: 'Contact', href: '/contact' },
     ],

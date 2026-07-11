@@ -79,10 +79,10 @@ export default async function TagPage({ params }: Props) {
           </div>
           <div className="flex items-center gap-2">
             <Link
-              href="/tags"
+              href="/topics"
               className="flex items-center gap-2 px-4 py-2 rounded-xl neu-button hover:text-primary transition-all"
             >
-              Browse all tags
+              Browse topics
             </Link>
             <Link
               href="/blog"
@@ -98,8 +98,8 @@ export default async function TagPage({ params }: Props) {
             <p className="text-lg text-muted-foreground">
               No blog posts found with the tag &quot;{tag}&quot;.
             </p>
-            <Link href="/tags" className="mt-4 inline-block px-6 py-2 rounded-xl cta-secondary">
-              Browse tags
+            <Link href="/topics" className="mt-4 inline-block px-6 py-2 rounded-xl cta-secondary">
+              Browse topics
             </Link>
           </div>
         ) : (

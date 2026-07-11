@@ -12,7 +12,6 @@ import {
   primaryNavigation,
   secondaryNavigationCategories,
 } from "@/constants/navlinks";
-import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { isPathActive } from "@/lib/navigation-path";
 
 import { ThemeToggle } from "./theme-toggle";
@@ -191,7 +190,6 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
             </Link>
 
             <div className="flex items-center justify-center gap-4 pt-6">
-              <LanguageSwitcher compact />
               <CommandPalette />
               <ThemeToggle />
             </div>
