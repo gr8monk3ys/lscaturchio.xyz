@@ -99,6 +99,29 @@ reference is Wikipedia's "Signs of AI writing"; these are the local offenders.
     strongest endings here either narrow to one concrete image or admit what
     the essay can't resolve.
 
+## Garden metadata
+
+Every post declares a `stage` in its meta (backfilled across the corpus in
+July 2026 — keep it that way for new posts):
+
+- `seedling` — rough notes, still forming: a first pass, thin sourcing, or a
+  familiar argument not yet made yours. Publishing seedlings is encouraged;
+  the label is the honesty.
+- `budding` — developing: a coherent essay that could still grow, or leans on
+  secondhand synthesis of well-known sources.
+- `evergreen` — finished and maintained: complete argument, dense named
+  evidence, original synthesis. Polish and length don't qualify a post on
+  their own, and time-sensitive pieces (profiles of sitting politicians,
+  market forecasts) cap at budding — they rot by design and can't honestly
+  claim "maintained".
+
+Promote a stage when the post is revised, not when it feels overdue.
+
+Series are reading arcs, not tags: ordered by narrative (problem → mechanism
+→ response), not by date. If a new post extends an existing series, join it
+with the next `seriesOrder`; don't create a new series until at least three
+posts would sit in it.
+
 ## Mechanical conventions
 
 - Headings: sentence case, `##` level for sections, no emoji anywhere.
