@@ -11,6 +11,48 @@ type RateLimitConfig = {
   window: number;
 };
 
+type RateLimitResult = {
+  success: boolean;
+  limit: number;
+  remaining: number;
+  reset: number;
+};
+
+/**
+ * Attempt a Redis-backed rate limit check.
+ *
+ * Rate limiting is a soft dependency: if Upstash is unreachable, misconfigured,
+ * or its credentials have been rotated, the correct behaviour is to degrade to
+ * the in-memory limiter — not to fail the request. Returning null signals the
+ * caller to fall back. Both the construction and the call are guarded, since
+ * an invalid URL throws synchronously inside the Redis client constructor.
+ */
+async function tryRedisRateLimit(
+  clientIp: string,
+  config: RateLimitConfig
+): Promise<RateLimitResult | null> {
+  try {
+    const redisLimiter = getRedisRateLimiter(config.limit, config.window);
+    if (!redisLimiter) {
+      return null;
+    }
+
+    const redisResult = await redisLimiter.limit(clientIp);
+    return {
+      success: redisResult.success,
+      limit: redisResult.limit,
+      remaining: redisResult.remaining,
+      reset: redisResult.reset,
+    };
+  } catch (error) {
+    logError('Redis rate limiter unavailable, falling back to in-memory', error, {
+      component: 'withRateLimit',
+      action: 'redis',
+    });
+    return null;
+  }
+}
+
 /**
  * Higher-order function to wrap API routes with rate limiting
  *
@@ -34,21 +76,14 @@ export function withRateLimit<T extends unknown[]>(
     // Get client identifier
     const clientIp = getClientIp(request);
 
-    // Try Redis first, fall back to in-memory
-    const redisLimiter = getRedisRateLimiter(config.limit, config.window);
+    // Try Redis first (persistent across deploys), fall back to in-memory
+    const redisResult = await tryRedisRateLimit(clientIp, config);
 
-    let result: { success: boolean; limit: number; remaining: number; reset: number };
+    let result: RateLimitResult;
     let headers: Record<string, string>;
 
-    if (redisLimiter) {
-      // Use Redis rate limiting (persistent across deploys)
-      const redisResult = await redisLimiter.limit(clientIp);
-      result = {
-        success: redisResult.success,
-        limit: redisResult.limit,
-        remaining: redisResult.remaining,
-        reset: redisResult.reset,
-      };
+    if (redisResult) {
+      result = redisResult;
       headers = {
         'X-RateLimit-Limit': result.limit.toString(),
         'X-RateLimit-Remaining': result.remaining.toString(),
@@ -56,7 +91,6 @@ export function withRateLimit<T extends unknown[]>(
         'X-RateLimit-Backend': 'redis',
       };
     } else {
-      // Fall back to in-memory rate limiting
       result = rateLimiter.check(clientIp, config.limit, config.window);
       headers = {
         ...rateLimiter.getHeaders(result),

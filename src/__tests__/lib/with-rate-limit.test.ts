@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
 import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit';
 import { rateLimiter, getClientIp } from '@/lib/rate-limit';
+import { getRedisRateLimiter } from '@/lib/rate-limit-redis';
 import { logError } from '@/lib/logger';
 
 // Mock dependencies
@@ -196,6 +197,104 @@ describe('withRateLimit', () => {
 
     expect(getClientIp).toHaveBeenCalledWith(request);
     expect(rateLimiter.check).toHaveBeenCalledWith('10.0.0.1', 30, 60000);
+  });
+});
+
+describe('withRateLimit Redis backend', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    (getClientIp as Mock).mockReturnValue('192.168.1.1');
+    (rateLimiter.check as Mock).mockReturnValue({
+      success: true,
+      limit: 30,
+      remaining: 29,
+      reset: Date.now() + 60000,
+    });
+    (rateLimiter.getHeaders as Mock).mockReturnValue({
+      'X-RateLimit-Limit': '30',
+      'X-RateLimit-Remaining': '29',
+      'X-RateLimit-Reset': new Date(Date.now() + 60000).toISOString(),
+    });
+  });
+
+  it('uses Redis when it is available and healthy', async () => {
+    (getRedisRateLimiter as Mock).mockReturnValue({
+      limit: vi.fn().mockResolvedValue({
+        success: true,
+        limit: 30,
+        remaining: 25,
+        reset: Date.now() + 60000,
+      }),
+    });
+
+    const mockHandler = vi.fn().mockResolvedValue(NextResponse.json({ ok: true }));
+    const response = await withRateLimit(mockHandler)(
+      new NextRequest('http://localhost/api/test')
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('X-RateLimit-Backend')).toBe('redis');
+    expect(response.headers.get('X-RateLimit-Remaining')).toBe('25');
+    expect(rateLimiter.check).not.toHaveBeenCalled();
+  });
+
+  it('falls back to in-memory when the Redis call rejects', async () => {
+    const redisError = new Error('Upstash unreachable');
+    (getRedisRateLimiter as Mock).mockReturnValue({
+      limit: vi.fn().mockRejectedValue(redisError),
+    });
+
+    const mockHandler = vi.fn().mockResolvedValue(NextResponse.json({ ok: true }));
+    const response = await withRateLimit(mockHandler)(
+      new NextRequest('http://localhost/api/test')
+    );
+
+    // A dead rate limiter must not take down the route it protects.
+    expect(response.status).toBe(200);
+    expect(mockHandler).toHaveBeenCalled();
+    expect(response.headers.get('X-RateLimit-Backend')).toBe('memory');
+    expect(rateLimiter.check).toHaveBeenCalledWith('192.168.1.1', 30, 60000);
+    expect(logError).toHaveBeenCalledWith(
+      'Redis rate limiter unavailable, falling back to in-memory',
+      redisError,
+      { component: 'withRateLimit', action: 'redis' }
+    );
+  });
+
+  it('falls back to in-memory when constructing the Redis limiter throws', async () => {
+    (getRedisRateLimiter as Mock).mockImplementation(() => {
+      throw new Error('Invalid Upstash URL');
+    });
+
+    const mockHandler = vi.fn().mockResolvedValue(NextResponse.json({ ok: true }));
+    const response = await withRateLimit(mockHandler)(
+      new NextRequest('http://localhost/api/test')
+    );
+
+    expect(response.status).toBe(200);
+    expect(mockHandler).toHaveBeenCalled();
+    expect(response.headers.get('X-RateLimit-Backend')).toBe('memory');
+  });
+
+  it('still enforces the limit through the in-memory fallback when Redis is down', async () => {
+    (getRedisRateLimiter as Mock).mockReturnValue({
+      limit: vi.fn().mockRejectedValue(new Error('Upstash unreachable')),
+    });
+    (rateLimiter.check as Mock).mockReturnValue({
+      success: false,
+      limit: 30,
+      remaining: 0,
+      reset: Date.now() + 60000,
+    });
+
+    const mockHandler = vi.fn();
+    const response = await withRateLimit(mockHandler)(
+      new NextRequest('http://localhost/api/test')
+    );
+
+    expect(response.status).toBe(429);
+    expect(mockHandler).not.toHaveBeenCalled();
   });
 });
 
