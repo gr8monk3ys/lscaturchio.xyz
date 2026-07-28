@@ -15,6 +15,7 @@
     "test:e2e:all": "env -u FORCE_COLOR -u NO_COLOR PLAYWRIGHT_INCLUDE_WEBKIT=1 playwright test",
     "test:e2e:ui": "env -u FORCE_COLOR -u NO_COLOR playwright test --ui --project=chromium",
     "smoke:chat": "node scripts/smoke-chat.mjs",
+    "uptime:check": "node scripts/check-uptime.mjs",
     "smoke:chat:prod": "node scripts/smoke-chat.mjs --base-url https://lscaturchio.xyz --attempts 30 --interval-ms 20000",
     "eval:chat": "tsx scripts/eval-chat.ts",
     "predeploy": "bun run lint && bun run typecheck && bun run test && bun run build && bun run test:e2e",
