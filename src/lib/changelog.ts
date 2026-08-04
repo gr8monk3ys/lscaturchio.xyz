@@ -37,7 +37,11 @@ function parseTitle(title: string): { kind: string; subject: string } {
 export async function getShippedPrs(limit: number = 30): Promise<ShippedPr[]> {
   try {
     const res = await fetch(
-      `https://api.github.com/repos/${REPO}/pulls?state=closed&base=main&sort=updated&direction=desc&per_page=100`,
+      // per_page=40: this repo's PR objects run ~43KB each (loop-authored PRs
+      // carry long bodies), and Next.js refuses to ISR-cache fetch responses
+      // over 2MB — going over silently loses the daily cache and hits GitHub
+      // on every revalidation. Verified: 50 → 2.17MB (over), 40 → ~1.7MB.
+      `https://api.github.com/repos/${REPO}/pulls?state=closed&base=main&sort=updated&direction=desc&per_page=40`,
       {
         headers: { Accept: 'application/vnd.github+json' },
         next: { revalidate: 86400 },
