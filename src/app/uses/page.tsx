@@ -6,7 +6,7 @@ import { RagStatusCard } from "@/components/uses/rag-status-card";
 
 export const metadata = buildPageMetadata({
   title: "Uses",
-  description: "Tools, software, and hardware Lorenzo Scaturchio uses daily. From Arch Linux and Neovim to ProtonMail and Bitwarden. Focused on FOSS, privacy, and minimal bloat.",
+  description: "The hardware, dotfiles, and thirty-seven self-hosted services I actually run. Keyboard-driven, FOSS where it counts, and as little of it on someone else's computer as I can manage.",
   path: "/uses",
 });
 
@@ -81,21 +81,42 @@ export default function UsesPage() {
         </Section>
 
         <Section title="Software">
-          <Item title="Operating System & Terminal">
+          <Item title="Operating System">
             <p>
-              Of course like many others, I use <a href="https://archlinux.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Arch Linux</strong></a> (btw).
-              Yes, it is a pain in the ass to set up but yes this was absolutely worth the time. Why? Because of:
+              The daily driver is <strong>macOS</strong>, bullied into behaving like a tiling window
+              manager: <a href="https://github.com/nikitabobko/AeroSpace" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">AeroSpace</a> for
+              i3-style workspaces, <a href="https://github.com/FelixKratz/SketchyBar" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">SketchyBar</a> in
+              place of the menu bar, and <a href="https://karabiner-elements.pqrs.org/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Karabiner</a> remapping
+              caps lock into something useful. <a href="https://archlinux.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Arch</a> runs
+              on the other machines, and my <a href="https://github.com/gr8monk3ys/dotfiles" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">dotfiles</a> install
+              on both — they are tested in Ubuntu and Arch containers in CI, with an optional Nix flake
+              for anyone who wants the whole thing declarative.
             </p>
-            <ol className="list-decimal list-inside ml-4 mt-2 space-y-1">
-              <li>The Wiki</li>
-              <li>Rolling releases</li>
-              <li>Simple and FOSS</li>
-            </ol>
-            <p className="mt-4">
-              I currently use <a href="https://iterm2.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Iterm2</strong></a> for
-              my terminal due to it simply being the most popular tool for MacOS users. For my shell, I use <strong>zsh</strong> with
-              a few plugins for niceties like syntax highlighting and auto-complete.
+          </Item>
+
+          <Item title="Terminal & Shell">
+            <p>
+              <a href="https://ghostty.org/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Ghostty</strong></a> at
+              15pt, with <strong>zsh</strong>, <a href="https://starship.rs/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Starship</a> for
+              the prompt and <a href="https://zellij.dev/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Zellij</a> for
+              multiplexing. The whole config is keyboard-driven; if something needs a mouse I have usually
+              set it up wrong.
             </p>
+          </Item>
+
+          <Item title="Command Line">
+            <p>
+              Most of the standard Unix tools have been quietly replaced:
+            </p>
+            <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
+              <li><a href="https://github.com/atuinsh/atuin" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">atuin</a> — shell history that syncs and is actually searchable</li>
+              <li><a href="https://github.com/sxyazi/yazi" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">yazi</a> — file manager</li>
+              <li><a href="https://github.com/eza-community/eza" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">eza</a> and <a href="https://github.com/sharkdp/bat" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">bat</a> — <code>ls</code> and <code>cat</code>, with colour</li>
+              <li><a href="https://github.com/BurntSushi/ripgrep" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ripgrep</a> and <a href="https://github.com/ajeetdsouza/zoxide" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">zoxide</a> — grep and <code>cd</code>, faster</li>
+              <li><a href="https://github.com/dandavison/delta" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">delta</a> — git diffs worth reading</li>
+              <li><a href="https://jj-vcs.github.io/jj/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">jj</a> — Jujutsu, for the repos where I have stopped pretending git&apos;s index is a good idea</li>
+              <li><a href="https://mise.jdx.dev/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">mise</a> — one version manager instead of five</li>
+            </ul>
           </Item>
 
           <Item title="Browser">
@@ -186,12 +207,42 @@ export default function UsesPage() {
         <Section title="Theme">
           <Item title="Color Scheme & Fonts">
             <p>
-              I use the <a href="https://github.com/catppuccin/catppuccin" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Catppuccin</strong></a> color
-              scheme for just about everything.
+              <a href="https://github.com/joshdick/onedark.vim" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>OneDark</strong></a> everywhere
+              — Atom One Dark in Ghostty, the matching Neovim theme, the same palette in SketchyBar. One
+              theme across every tool matters more than which theme it is; the point is that nothing
+              jars when you move between windows.
             </p>
             <p className="mt-4">
-              For my terminal font, I use <a href="https://github.com/subframe7536/Maple-font" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Maple Mono</strong></a>.
-              Of course, I also use <strong>Nerd Font</strong> icons.
+              Terminal font is <a href="https://www.jetbrains.com/lp/mono/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>JetBrainsMono Nerd Font</strong></a>,
+              patched for icons.
+            </p>
+          </Item>
+        </Section>
+
+        <Section title="Self-Hosted">
+          <Item title="One Raspberry Pi, thirty-seven services">
+            <p>
+              Most of what would otherwise be a dozen subscriptions runs on a single Raspberry Pi 5 in
+              my apartment, as Docker Compose stacks behind{" "}
+              <a href="https://nginxproxymanager.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Nginx Proxy Manager</a> with
+              wildcard TLS. The setup is public at{" "}
+              <a href="https://github.com/gr8monk3ys/pi-lab" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">pi-lab</a>.
+            </p>
+            <ul className="list-disc list-inside ml-4 mt-4 space-y-1">
+              <li><strong>DNS</strong> — Pi-hole for blocking, resolving through a local Unbound and DNSCrypt rather than a public upstream, so ad-blocking does not just relocate who is watching</li>
+              <li><strong>Access</strong> — WireGuard for the VPN, Authelia for single sign-on, CrowdSec underneath on the assumption anything reachable gets probed</li>
+              <li><strong>Media</strong> — Jellyfin with the *arr stack and Calibre-Web</li>
+              <li><strong>Documents</strong> — Paperless-ngx with OCR, Nextcloud for sync, Syncthing between machines</li>
+              <li><strong>Passwords</strong> — Vaultwarden, which is why the Bitwarden clients above talk to my hardware and not somebody else&apos;s</li>
+              <li><strong>The rest</strong> — SearXNG, FreshRSS, n8n, Actual Budget, Mealie, Prometheus</li>
+            </ul>
+          </Item>
+
+          <Item title="Why bother">
+            <p>
+              Every service here is one that either disappeared, got worse, or started charging monthly
+              for something it used to do. Self-hosting is less about the money than about the fact that
+              a thing you run cannot be discontinued from a boardroom.
             </p>
           </Item>
         </Section>
