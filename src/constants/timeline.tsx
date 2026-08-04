@@ -1,9 +1,12 @@
+// Titles and dates mirror the resume repo (~/code/resume, default variant) —
+// that is the source of truth. Keep the two in sync; the site claiming roles
+// or dates the resume does not is worse than either being stale alone.
 export const timeline = [
   {
     company: "Sizzle",
-    title: "Generative AI Engineer",
-    date: "June 2024 - Present",
-    description: "Actualizing the full pipeline for data processing, model training, and deployment of nutritional factors and macro nutrients for any given recipe.",
+    title: "Machine Learning Engineer",
+    date: "June 2024 - May 2025",
+    description: "Built the full pipeline for data processing, model training, and deployment of nutritional factors and macro nutrients for any given recipe.",
     responsibilities: [
       "Integrated AI solutions into Google Cloud services using VertexAI to speed up operations.",
       "Improved data analysis capabilities from custom REST API endpoints, resulting in an easily scalable solution.",
@@ -12,7 +15,7 @@ export const timeline = [
   {
     company: "Upwork, Fiverr",
     title: "AI/ML Freelancer",
-    date: "August 2022 - Present",
+    date: "August 2022 - May 2024",
     description: "Developing and deploying custom AI/ML models for various clients.",
     responsibilities: [
       "Improved business processes and outcomes using both open-source and paid LLMs, resulting in an average efficiency increase of 25%.",
@@ -22,7 +25,7 @@ export const timeline = [
   },
   {
     company: "Joint Genome Institute",
-    title: "Bio-Informatics Data Analyst",
+    title: "Bioinformatics Data Analyst",
     date: "May 2020 - August 2021",
     description: "Used R with a team of researchers to build workflows for genetic homology comparison.",
     responsibilities: [
@@ -34,7 +37,7 @@ export const timeline = [
   },
   {
     company: "Vice Lab",
-    title: "Research Scientist",
+    title: "Computational Systems Intern",
     date: "January 2020 - May 2021",
     description: "Devised and performed Bash scripts to run hydro-power models on a proprietary supercomputer.",
     responsibilities: [
