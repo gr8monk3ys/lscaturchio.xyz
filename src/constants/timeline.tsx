@@ -1,6 +1,8 @@
-// Titles and dates mirror the resume repo (~/code/resume, default variant) —
-// that is the source of truth. Keep the two in sync; the site claiming roles
-// or dates the resume does not is worse than either being stale alone.
+// Titles and dates mirror the resume repo (~/code/resume, default variant),
+// with one confirmed exception: Upwork freelancing is ongoing (Lorenzo,
+// 2026-08) even though the resume's default variant closes it at May 2024.
+// Keep the two in sync; the site claiming roles or dates the resume does not
+// is worse than either being stale alone.
 export const timeline = [
   {
     company: "Sizzle",
@@ -15,7 +17,7 @@ export const timeline = [
   {
     company: "Upwork, Fiverr",
     title: "AI/ML Freelancer",
-    date: "August 2022 - May 2024",
+    date: "August 2022 - Present",
     description: "Developing and deploying custom AI/ML models for various clients.",
     responsibilities: [
       "Improved business processes and outcomes using both open-source and paid LLMs, resulting in an average efficiency increase of 25%.",
