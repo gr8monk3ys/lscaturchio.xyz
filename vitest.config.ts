@@ -19,11 +19,13 @@ export default defineConfig({
       ],
       // Ratchet: set just below actual coverage so CI fails on regressions.
       // Raise these as coverage improves (actual on 2026-07-09: 84.24/74.29/78.73/85.47).
+      // Ratchet: set just below actual coverage so regressions fail CI.
+      // Raise these when coverage improves; never lower them.
       thresholds: {
-        statements: 83,
-        branches: 73,
-        functions: 77,
-        lines: 84,
+        statements: 84,
+        branches: 74,
+        functions: 80,
+        lines: 86,
       },
     },
   },

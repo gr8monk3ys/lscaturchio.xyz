@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { parseCsv } from './csv';
 import { logError } from './logger';
 
 export interface GoodreadsBook {
@@ -37,53 +38,13 @@ export interface GoodreadsStats {
   totalPages: number;
 }
 
-// Parse CSV with proper handling of quoted fields
-function parseCSV(csvText: string): Record<string, string>[] {
-  const lines = csvText.trim().split('\n');
-  if (lines.length < 2) return [];
-
-  const headers = parseCSVLine(lines[0]);
-  const rows: Record<string, string>[] = [];
-
-  for (let i = 1; i < lines.length; i++) {
-    const values = parseCSVLine(lines[i]);
-    const row: Record<string, string> = {};
-    headers.forEach((header, index) => {
-      row[header] = values[index] || '';
-    });
-    rows.push(row);
-  }
-
-  return rows;
-}
-
-function parseCSVLine(line: string): string[] {
-  const values: string[] = [];
-  let current = '';
-  let inQuotes = false;
-
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
-    if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      values.push(current.trim());
-      current = '';
-    } else {
-      current += char;
-    }
-  }
-  values.push(current.trim());
-
-  return values;
-}
 
 // Get all books from local CSV data
 export function getGoodreadsBooks(): GoodreadsBook[] {
   try {
     const csvPath = path.join(process.cwd(), 'public/my-data/goodreads/goodreads_library_export.csv');
     const csvText = fs.readFileSync(csvPath, 'utf-8');
-    const rows = parseCSV(csvText);
+    const rows = parseCsv(csvText);
 
     return rows.map(row => {
       const bookId = row['Book Id'] || '';
@@ -143,6 +104,47 @@ export function getToReadBooks(limit?: number): GoodreadsBook[] {
       return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
     });
   return limit ? books.slice(0, limit) : books;
+}
+
+export interface GoodreadsShelf {
+  /** The raw Goodreads shelf slug, e.g. `books-that-changed-my-life`. */
+  name: string;
+  /** Human-readable form, e.g. `Books that changed my life`. */
+  label: string;
+  books: GoodreadsBook[];
+}
+
+// Goodreads models these three as "exclusive shelves" — they are reading state,
+// not the hand-made shelves worth showing off.
+const EXCLUSIVE_SHELVES = new Set(['read', 'currently-reading', 'to-read']);
+
+function humanizeShelf(slug: string): string {
+  const words = slug.replace(/-/g, ' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+/**
+ * The shelves I made up myself, largest first. These are the ones that say
+ * something — `books-that-changed-my-life` is a judgement, `read` is a checkbox.
+ */
+export function getCustomShelves(): GoodreadsShelf[] {
+  const shelves = new Map<string, GoodreadsBook[]>();
+
+  for (const book of getGoodreadsBooks()) {
+    for (const shelf of book.bookshelves) {
+      if (EXCLUSIVE_SHELVES.has(shelf)) continue;
+      const existing = shelves.get(shelf);
+      if (existing) {
+        existing.push(book);
+      } else {
+        shelves.set(shelf, [book]);
+      }
+    }
+  }
+
+  return Array.from(shelves.entries())
+    .map(([name, books]) => ({ name, label: humanizeShelf(name), books }))
+    .sort((a, b) => b.books.length - a.books.length || a.name.localeCompare(b.name));
 }
 
 // Get top rated books (5 stars)

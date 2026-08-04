@@ -7,6 +7,8 @@ import {
   getLetterboxdStats,
   getTopRatedMovies,
   getRecentWatches,
+  getFavoriteFilms,
+  getReviewedFilms,
 } from '@/lib/letterboxd';
 
 vi.mock('fs', () => ({
@@ -45,12 +47,31 @@ const WATCHLIST_CSV = [
   '2024-05-06,,2020,https://boxd.it/blank',
 ].join('\n');
 
+// Reviews are exported with the *entry* URI for one specific viewing, which is
+// a different namespace from the *film* URIs in ratings.csv and the profile's
+// favourites. Every URI here is deliberately unrelated to the ones above: if
+// the join is ever keyed on URI again, these fixtures stop matching.
+const REVIEWS_CSV = [
+  'Date,Name,Year,Letterboxd URI,Rating,Rewatch,Review,Tags,Watched Date',
+  '2022-08-10,Another Great One,2010,https://boxd.it/entry1,5,No,A tidy little film.,,2022-08-09',
+  `${YEAR}-02-12,"Comma, The Movie",2024,https://boxd.it/entry2,5,Yes,"Two lines,\nand a comma.",,${YEAR}-02-10`,
+  '2019-01-01,Old Film,1999,https://boxd.it/entry3,3.5,No,An earlier take.,,2019-01-01',
+  '2021-01-01,Old Film,1999,https://boxd.it/entry4,3.5,No,The later take wins.,,2021-01-01',
+].join('\n');
+
+const PROFILE_CSV = [
+  'Date Joined,Username,Given Name,Favorite Films',
+  '2023-07-25,gr8monk3ys,Lorenzo,"https://boxd.it/great, https://boxd.it/comma, https://boxd.it/missing"',
+].join('\n');
+
 function serveCsvFixtures() {
   mockReadFileSync.mockImplementation((filePath) => {
     const p = String(filePath);
     if (p.includes('diary.csv')) return DIARY_CSV;
     if (p.includes('ratings.csv')) return RATINGS_CSV;
     if (p.includes('watchlist.csv')) return WATCHLIST_CSV;
+    if (p.includes('reviews.csv')) return REVIEWS_CSV;
+    if (p.includes('profile.csv')) return PROFILE_CSV;
     throw new Error(`ENOENT: ${p}`);
   });
 }
@@ -179,5 +200,100 @@ describe('getRecentWatches', () => {
 
   it('respects the limit', () => {
     expect(getRecentWatches(2)).toHaveLength(2);
+  });
+});
+
+describe('review attachment', () => {
+  // Regression: reviews were originally joined on `Letterboxd URI`, which
+  // silently matched nothing because ratings carry film URIs and reviews carry
+  // per-viewing entry URIs. The join must use title + year.
+  it('attaches reviews across the two URI namespaces', () => {
+    const great = getTopRatedMovies().find((m) => m.title === 'Another Great One');
+
+    expect(great?.link).toBe('https://boxd.it/great');
+    expect(great?.review).toBe('A tidy little film.');
+  });
+
+  it('keeps the most recently watched review when a film was rewatched', () => {
+    const old = getRecentWatches().find((m) => m.title === 'Old Film');
+    expect(old?.review).toBe('The later take wins.');
+  });
+
+  it('preserves reviews containing commas and newlines', () => {
+    const comma = getTopRatedMovies().find((m) => m.title === 'Comma, The Movie');
+    expect(comma?.review).toBe('Two lines,\nand a comma.');
+  });
+
+  it('leaves films without a review untouched', () => {
+    const unrated = getRecentWatches().find((m) => m.title === 'Unrated Film');
+    expect(unrated?.review).toBeUndefined();
+  });
+});
+
+describe('getFavoriteFilms', () => {
+  it('resolves the profile favourites in the order they are pinned', () => {
+    const favorites = getFavoriteFilms();
+
+    // "missing" resolves to nothing and is dropped rather than rendering blank.
+    expect(favorites.map((m) => m.title)).toEqual(['Another Great One', 'Comma, The Movie']);
+  });
+
+  it('carries the rating and the review through', () => {
+    const [first] = getFavoriteFilms();
+    expect(first).toMatchObject({ rating: 5, review: 'A tidy little film.' });
+  });
+
+  it('returns an empty list when the profile export is missing', () => {
+    mockReadFileSync.mockImplementation((filePath) => {
+      const p = String(filePath);
+      if (p.includes('profile.csv')) throw new Error('ENOENT');
+      if (p.includes('ratings.csv')) return RATINGS_CSV;
+      return DIARY_CSV;
+    });
+
+    expect(getFavoriteFilms()).toEqual([]);
+  });
+
+  it('returns an empty list when no favourites are pinned', () => {
+    mockReadFileSync.mockImplementation((filePath) => {
+      const p = String(filePath);
+      if (p.includes('profile.csv')) return 'Date Joined,Username,Favorite Films\n2023-07-25,x,';
+      if (p.includes('ratings.csv')) return RATINGS_CSV;
+      return DIARY_CSV;
+    });
+
+    expect(getFavoriteFilms()).toEqual([]);
+  });
+});
+
+describe('getReviewedFilms', () => {
+  it('returns one entry per reviewed film, newest first', () => {
+    const reviewed = getReviewedFilms();
+
+    expect(reviewed.map((m) => m.title)).toEqual([
+      'Comma, The Movie',
+      'Another Great One',
+      'Old Film',
+    ]);
+  });
+
+  it('prefers the rated record so the star rating survives', () => {
+    const [newest] = getReviewedFilms();
+    expect(newest).toMatchObject({ rating: 5, link: 'https://boxd.it/comma' });
+  });
+
+  it('respects the limit', () => {
+    expect(getReviewedFilms(2)).toHaveLength(2);
+  });
+
+  it('returns an empty list when there are no reviews', () => {
+    mockReadFileSync.mockImplementation((filePath) => {
+      const p = String(filePath);
+      if (p.includes('reviews.csv')) throw new Error('ENOENT');
+      if (p.includes('ratings.csv')) return RATINGS_CSV;
+      return DIARY_CSV;
+    });
+
+    expect(getReviewedFilms()).toEqual([]);
   });
 });
