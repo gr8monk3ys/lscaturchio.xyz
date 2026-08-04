@@ -5,6 +5,19 @@ import { ChangelogTimeline } from '@/components/changelog/changelog-timeline'
 import Link from 'next/link'
 import { ROADMAP, type RoadmapStatus } from '@/constants/roadmap'
 import { Badge } from '@/components/ui/badge'
+import { getShippedPrs } from '@/lib/changelog'
+
+// The shipped feed derives from merged PRs; refresh it daily without a rebuild.
+export const revalidate = 86400
+
+// Conventional-commit kinds → reader-facing labels.
+const KIND_LABELS: Record<string, string> = {
+  feat: 'Added',
+  fix: 'Fixed',
+  perf: 'Faster',
+  docs: 'Docs',
+  test: 'Tests',
+}
 
 export const metadata: Metadata = {
   title: 'Changelog',
@@ -16,7 +29,8 @@ export const metadata: Metadata = {
   },
 }
 
-export default function ChangelogPage() {
+export default async function ChangelogPage() {
+  const shipped = await getShippedPrs(30)
   const grouped = {
     now: ROADMAP.filter((item) => item.status === 'now'),
     next: ROADMAP.filter((item) => item.status === 'next'),
@@ -96,10 +110,43 @@ export default function ChangelogPage() {
             </div>
           </section>
 
+          {shipped.length > 0 && (
+            <section id="shipped" className="mb-12 scroll-mt-28">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold">Shipped</h2>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Every change to this site lands as a pull request, so this feed reads straight
+                  from the repository — it cannot fall behind the way a hand-written list does.
+                </p>
+              </div>
+              <ul className="divide-y divide-border border-y border-border">
+                {shipped.map((pr) => (
+                  <li key={pr.number} className="py-3">
+                    <a
+                      href={pr.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group flex flex-wrap items-baseline gap-x-4 gap-y-1"
+                    >
+                      <span className="label-mono w-24 shrink-0 tabular-nums">{pr.mergedAt}</span>
+                      <span className="label-mono w-14 shrink-0 text-primary">
+                        {KIND_LABELS[pr.kind] ?? 'Changed'}
+                      </span>
+                      <span className="min-w-0 flex-1 text-sm transition-colors group-hover:text-primary">
+                        {pr.title}
+                      </span>
+                      <span className="label-mono">#{pr.number}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Release Notes</h2>
+            <h2 className="text-2xl font-semibold mb-4">Milestones</h2>
             <p className="text-sm text-muted-foreground mb-6">
-              Detailed additions, fixes, and refactors by version.
+              The hand-picked turning points, with the granular trail above.
             </p>
           </section>
 

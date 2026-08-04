@@ -13,6 +13,20 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.1.0",
+    date: "2026-08-03",
+    changes: [
+      { type: "highlight", text: "Garden refresh: the site catches up with what actually got built" },
+      { type: "added", text: "Eight new project case studies written from their repos (Cocoon, Verso, unlinkd, FraudStream, Feedless, Tidy Roll, pi-lab, qsensor-sim)" },
+      { type: "added", text: "Movies and books rebuilt as annotated lists: profile favourites, own review text, full-marks books, custom shelves" },
+      { type: "added", text: "Changelog now derives its shipped feed from merged pull requests" },
+      { type: "changed", text: "/now reads current books, films, and posts from real logs so it cannot go stale" },
+      { type: "changed", text: "/uses corrected against the actual dotfiles; /lab lists twelve experiments" },
+      { type: "fixed", text: "CSV parsing no longer shreds reviews containing newlines; Letterboxd data joined on title+year across its two URI namespaces" },
+      { type: "fixed", text: "Photos page no longer presents stock imagery as original work" },
+    ],
+  },
+  {
     version: "2.0.0",
     date: "2025-01-18",
     changes: [
