@@ -143,6 +143,21 @@ async function main() {
   console.log(`Mode: ${appendMode ? 'append' : 'replace existing by source'}`);
   console.log('');
 
+  // Preflight: prove the provider can actually embed BEFORE touching the
+  // table. Replace mode deletes each source's chunks and then re-inserts, so
+  // a dead API key discovered mid-run empties the production embeddings table
+  // — which is exactly what happened on 2026-08-03.
+  try {
+    await createEmbedding('embedding provider preflight');
+  } catch (error) {
+    console.error('');
+    console.error('❌ Embedding provider preflight failed — no rows were touched.');
+    console.error(`   Provider "${provider}" cannot create embeddings:`);
+    console.error(`   ${error instanceof Error ? error.message : String(error)}`);
+    console.error('   Fix OPENAI_API_KEY (or start Ollama) and re-run.');
+    process.exit(1);
+  }
+
   // Create data directory if it doesn't exist
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
