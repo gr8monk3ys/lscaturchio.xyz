@@ -57,6 +57,29 @@ const nextConfig = {
         destination: '/',
         permanent: true,
       },
+      // Projects retired from the catalogue in July 2026. The [slug] route
+      // soft-redirects unknown slugs, but these URLs were live and indexed, so
+      // they get a real 308 instead.
+      {
+        source: '/projects/leetcode-solver-bot',
+        destination: '/projects',
+        permanent: true,
+      },
+      {
+        source: '/projects/find-my-doggo',
+        destination: '/projects',
+        permanent: true,
+      },
+      {
+        source: '/projects/linkflame',
+        destination: '/projects',
+        permanent: true,
+      },
+      {
+        source: '/projects/eyebook-pdf-reader',
+        destination: '/projects',
+        permanent: true,
+      },
     ];
   },
   async headers() {
