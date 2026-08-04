@@ -36,6 +36,27 @@ Related content inputs also live under `public/my-data/`, including:
 
 If retrieval inputs change and chat relevance matters, regenerate embeddings.
 
+### Reading The Goodreads And Letterboxd Exports
+
+`/books`, `/movies`, and the live sections of `/now` are rendered from the CSV
+exports committed under `public/my-data/`. Two things about those files have
+already caused bugs:
+
+- **Parse them with `src/lib/csv.ts` (`parseCsv`), never by splitting on
+  newlines.** Both services quote free-text fields (reviews, notes) that contain
+  literal newlines. Splitting the file into lines first shreds those records and
+  silently shifts every following column.
+- **Letterboxd uses two URI namespaces.** `ratings.csv`, `watchlist.csv`, and the
+  profile's `Favorite Films` column store the *film* URI (`boxd.it/251c`).
+  `diary.csv` and `reviews.csv` store the *entry* URI for one specific viewing
+  (`boxd.it/8mdUF3`). Joining across those files on `Letterboxd URI` matches
+  nothing and fails quietly. Join on title + year — `filmKey()` in
+  `src/lib/letterboxd.ts` — and let the most recent viewing win.
+
+To refresh the data, replace the CSVs in place; no build step is required. The
+top four films on `/movies` are read from the profile export, so re-pinning
+favourites on Letterboxd and re-exporting is enough to change them.
+
 ## Generated Files
 
 These are part of the current workflow and should not be edited by hand unless the generating workflow changes:

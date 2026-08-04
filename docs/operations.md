@@ -75,6 +75,23 @@ Additional maintenance helpers:
 - `npm run smoke:chat`: smoke-test a target deployment
 - `npm run smoke:chat:prod`: smoke-test production chat
 
+### Refreshing Books And Movies
+
+`/books` and `/movies` read the CSV exports in `public/my-data/goodreads/` and
+`public/my-data/letterboxd/` directly. To update them, export from each service
+and replace the files in place — there is no generation step. See
+[repository-guide.md](repository-guide.md#reading-the-goodreads-and-letterboxd-exports)
+for the two parsing traps these exports carry.
+
+### Reviewing `/now`
+
+`/now` splits into two halves. Reading, watching, and recent writing are derived
+from the data exports and the blog at render time, so they cannot go stale. The
+hand-written parts (location, what I am building, what I am thinking about) live
+in `src/lib/now-data.ts`; bump `NOW_LAST_UPDATED` whenever you revise them, or
+the page will start showing a staleness notice after
+`NOW_STALE_AFTER_DAYS` (120).
+
 ## Database (Neon)
 
 Engagement data, embeddings, and newsletter state live in a single
