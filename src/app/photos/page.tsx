@@ -53,8 +53,8 @@ export default async function PhotosPage({
           <span className="label-mono block">Garden · Photography</span>
           <Heading className="mt-4 text-4xl font-bold md:text-5xl">Photography</Heading>
           <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Moments captured through my lens. A collection of travel, landscape, and nature
-            photography shot on my Fuji X-T30 II with custom film simulation recipes.
+            Travel, landscape, and nature work, shot on a Fuji X-T30 II with custom film
+            simulation recipes.
           </Paragraph>
           <hr className="gallery-rule mt-8" />
         </header>
