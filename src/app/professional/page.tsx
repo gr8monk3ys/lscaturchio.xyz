@@ -62,10 +62,10 @@ export default function ProfessionalPage() {
                 "NumPy",
                 "SQL",
                 "PostgreSQL",
-                "Neon PostgreSQL",
-                "Data Visualization",
+                "Apache Kafka",
+                "Spark Streaming",
+                "Snowflake",
                 "Statistical Modeling",
-                "A/B Testing",
               ]}
             />
             <SkillCategory

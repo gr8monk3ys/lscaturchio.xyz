@@ -213,23 +213,45 @@ function TradingBotDiagram() {
   );
 }
 
-function LeetCodeSolverDiagram() {
+function FraudStreamDiagram() {
   return (
     <DiagramShell
       title="Architecture"
-      subtitle="Automated loop: browse problem → generate solution → submit."
+      subtitle="Transactions scored in-stream, masked before they are ever stored."
     >
       <SvgBase viewBox="0 0 980 240">
-        <Box x={24} y={78} w={220} h={86} title="LeetCode" subtitle="Problem statement" />
-        <Box x={276} y={78} w={240} h={86} title="Browser" subtitle="Playwright automation" />
-        <Box x={544} y={42} w={250} h={86} title="LLM" subtitle="GPT-4 reasoning" tone="primary" />
-        <Box x={544} y={140} w={250} h={78} title="Verifier" subtitle="Sanity + style checks" />
-        <Box x={820} y={78} w={136} h={86} title="Submit" subtitle="Auto-run + logs" />
+        <Box x={24} y={78} w={190} h={86} title="Sources" subtitle="Mobile · POS · Online" />
+        <Box x={240} y={78} w={190} h={86} title="Kafka" subtitle="Avro + Schema Registry" />
+        <Box x={456} y={36} w={230} h={86} title="Spark Streaming" subtitle="Features + quality" tone="primary" />
+        <Box x={456} y={150} w={230} h={70} title="Detection" subtitle="8 patterns, sub-second" />
+        <Box x={712} y={78} w={244} h={86} title="Snowflake" subtitle="Bronze / Silver / Gold" />
 
-        <Arrow x1={244} y1={121} x2={276} y2={121} label="navigate" />
-        <Arrow x1={516} y1={121} x2={544} y2={85} label="prompt" />
-        <Arrow x1={668} y1={128} x2={668} y2={140} label="review" />
-        <Arrow x1={794} y1={85} x2={820} y2={121} label="code" />
+        <Arrow x1={214} y1={121} x2={240} y2={121} label="ingest" />
+        <Arrow x1={430} y1={121} x2={456} y2={79} label="validate" />
+        <Arrow x1={571} y1={122} x2={571} y2={150} label="score" />
+        <Arrow x1={686} y1={79} x2={712} y2={121} label="masked" />
+      </SvgBase>
+    </DiagramShell>
+  );
+}
+
+function QSensorSimDiagram() {
+  return (
+    <DiagramShell
+      title="Architecture"
+      subtitle="Simulation runs are jobs, not requests — progress is queryable throughout."
+    >
+      <SvgBase viewBox="0 0 980 240">
+        <Box x={24} y={78} w={190} h={86} title="Job request" subtitle="Scenario config" />
+        <Box x={240} y={78} w={190} h={86} title="FastAPI" subtitle="REST gateway" />
+        <Box x={456} y={36} w={220} h={86} title="Celery worker" subtitle="SciPy simulation" tone="primary" />
+        <Box x={456} y={150} w={220} h={70} title="Redis" subtitle="Broker + progress" />
+        <Box x={702} y={78} w={254} h={86} title="Navigation output" subtitle="Kalman-filtered" />
+
+        <Arrow x1={214} y1={121} x2={240} y2={121} label="submit" />
+        <Arrow x1={430} y1={121} x2={456} y2={181} label="enqueue" />
+        <Arrow x1={566} y1={150} x2={566} y2={122} label="dispatch" />
+        <Arrow x1={676} y1={79} x2={702} y2={121} label="results" />
       </SvgBase>
     </DiagramShell>
   );
@@ -257,14 +279,32 @@ function BlogAIDiagram() {
   );
 }
 
+/**
+ * Slugs with a hand-drawn diagram. Callers use this to decide whether to render
+ * the generic architecture fallback, so the list lives in exactly one place.
+ */
+export const DIAGRAM_SLUGS = [
+  'talker',
+  'ai-powered-trading-bot',
+  'fraud-stream',
+  'qsensor-sim',
+  'blog-ai',
+] as const;
+
+export function hasArchitectureDiagram(slug: string | undefined): boolean {
+  return !!slug && (DIAGRAM_SLUGS as readonly string[]).includes(slug);
+}
+
 function getDiagramForSlug(slug: string): React.ReactNode {
   switch (slug) {
     case 'talker':
       return <TalkerDiagram />
     case 'ai-powered-trading-bot':
       return <TradingBotDiagram />
-    case 'leetcode-solver-bot':
-      return <LeetCodeSolverDiagram />
+    case 'fraud-stream':
+      return <FraudStreamDiagram />
+    case 'qsensor-sim':
+      return <QSensorSimDiagram />
     case 'blog-ai':
       return <BlogAIDiagram />
     default:

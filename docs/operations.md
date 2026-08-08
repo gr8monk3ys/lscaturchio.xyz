@@ -75,6 +75,42 @@ Additional maintenance helpers:
 - `npm run smoke:chat`: smoke-test a target deployment
 - `npm run smoke:chat:prod`: smoke-test production chat
 
+### Embeddings: Cautions Learned The Hard Way
+
+- **`.env.local` and Vercel production point at the same Neon database.**
+  `generate-embeddings` run locally mutates what production serves. There is
+  no staging copy.
+- The script replaces rows per source (delete, then insert). It now runs a
+  provider preflight before touching anything, because a dead `OPENAI_API_KEY`
+  discovered mid-run once emptied the production embeddings table
+  (2026-08-03; recovered via the Ollama fallback).
+- **Query and stored vectors must share an embedding space.** Production
+  embeds queries with whatever provider its env gives it. After rotating
+  `OPENAI_API_KEY` (in Vercel and `.env.local`), re-run
+  `npm run generate-embeddings` with that key so stored vectors are OpenAI
+  vectors too — dimensions matching (768) is not enough, the spaces differ.
+- Lexical search needs the `content_tsv` column from
+  `supabase/migrations/20260619_hybrid_search.sql`. If retrieval returns
+  nothing and no errors are logged, check the column exists before debugging
+  code.
+
+### Refreshing Books And Movies
+
+`/books` and `/movies` read the CSV exports in `public/my-data/goodreads/` and
+`public/my-data/letterboxd/` directly. To update them, export from each service
+and replace the files in place — there is no generation step. See
+[repository-guide.md](repository-guide.md#reading-the-goodreads-and-letterboxd-exports)
+for the two parsing traps these exports carry.
+
+### Reviewing `/now`
+
+`/now` splits into two halves. Reading, watching, and recent writing are derived
+from the data exports and the blog at render time, so they cannot go stale. The
+hand-written parts (location, what I am building, what I am thinking about) live
+in `src/lib/now-data.ts`; bump `NOW_LAST_UPDATED` whenever you revise them, or
+the page will start showing a staleness notice after
+`NOW_STALE_AFTER_DAYS` (120).
+
 ## Database (Neon)
 
 Engagement data, embeddings, and newsletter state live in a single

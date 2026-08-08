@@ -301,10 +301,17 @@ export async function deleteEmbeddingsBySource(source: string): Promise<number> 
 /**
  * Content hashes already stored for a source, for incremental re-embedding.
  * Empty when the source was never indexed (or predates content_hash).
+ *
+ * Scoped to the CURRENT provider: query vectors and stored vectors must share
+ * an embedding space, so rows embedded by a different provider (or rows old
+ * enough to predate provider metadata) must not count as "already embedded" —
+ * otherwise switching providers leaves the whole index in the wrong space
+ * while every source reports unchanged.
  */
 export async function getSourceContentHashes(source: string): Promise<string[]> {
   const sql = getDb();
-  const rows = await sql`SELECT content_hash FROM embeddings WHERE metadata->>'source' = ${source} AND content_hash IS NOT NULL`;
+  const provider = getEmbeddingProvider();
+  const rows = await sql`SELECT content_hash FROM embeddings WHERE metadata->>'source' = ${source} AND metadata->>'provider' = ${provider} AND content_hash IS NOT NULL`;
   return (rows as Array<Record<string, unknown>>)
     .map((r) => (typeof r.content_hash === 'string' ? r.content_hash : ''))
     .filter(Boolean);

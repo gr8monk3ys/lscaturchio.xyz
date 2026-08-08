@@ -18,7 +18,10 @@ import { Heading } from '../Heading'
 import { Paragraph } from '../Paragraph'
 import { Badge } from '@/components/ui/badge'
 import { Reveal } from '@/components/motion/reveal'
-import { ProjectArchitectureDiagram } from '@/components/projects/ProjectArchitectureDiagram'
+import {
+  ProjectArchitectureDiagram,
+  hasArchitectureDiagram,
+} from '@/components/projects/ProjectArchitectureDiagram'
 import { cn } from '@/lib/utils'
 
 export const statusColors: Record<ProjectStatus, { bg: string; text: string; dotBg: string; label: string }> = {
@@ -274,12 +277,7 @@ export function CaseStudyOverview({ caseStudy }: { caseStudy: CaseStudy | undefi
 }
 
 export function ArchitectureSection({ slug }: { slug?: string }): React.ReactNode {
-  const shouldRenderFallback =
-    !slug ||
-    (slug !== 'talker' &&
-      slug !== 'ai-powered-trading-bot' &&
-      slug !== 'leetcode-solver-bot' &&
-      slug !== 'blog-ai')
+  const shouldRenderFallback = !hasArchitectureDiagram(slug)
 
   return (
     <Reveal>
