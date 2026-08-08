@@ -57,6 +57,28 @@ function parseRows(text: string): string[][] {
   return rows;
 }
 
+/** Quote a cell iff it contains a comma, quote, or newline (RFC 4180). */
+function serializeCell(value: string): string {
+  if (/[",\n\r]/.test(value)) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
+/**
+ * Serialize header-keyed records back to CSV text, preserving column order.
+ * The inverse of parseCsv for round-tripping the committed data exports:
+ * missing keys become empty cells, and cells containing commas, quotes, or
+ * newlines are quoted.
+ */
+export function serializeCsv(headers: string[], records: Record<string, string>[]): string {
+  const lines = [headers.map(serializeCell).join(',')];
+  for (const record of records) {
+    lines.push(headers.map((h) => serializeCell(record[h] ?? '')).join(','));
+  }
+  return lines.join('\n') + '\n';
+}
+
 /**
  * Parse CSV text into header-keyed records. Cells are trimmed, missing trailing
  * columns become empty strings, and rows that are entirely empty are dropped.
