@@ -35,6 +35,8 @@ const LIBRARY_CSV = [
   '6,Ulysses,James Joyce,="0679722769",="9780679722762",0,3.75,783,1990,1922,,2026/02/01,,to-read,',
   '7,Gravity\'s Rainbow,Thomas Pynchon,="0143039946",="9780143039945",0,4.0,776,2006,1973,,2026/03/01,,to-read,',
   '8,,Nobody,="",="",0,0,0,,,,2026/02/02,,to-read,',
+  // rated 5 mid-read: must NOT count as a top-rated (finished) book
+  '9,Rated Mid Read,Someone,="",="",5,4.0,300,2000,2000,,2026/07/01,,currently-reading,',
 ].join('\n');
 
 beforeEach(() => {
@@ -44,7 +46,7 @@ beforeEach(() => {
 
 describe('getGoodreadsBooks', () => {
   it('parses titled rows and drops the untitled one', () => {
-    expect(getGoodreadsBooks().map((b) => b.id)).toEqual(['1', '2', '3', '4', '5', '6', '7']);
+    expect(getGoodreadsBooks().map((b) => b.id)).toEqual(['1', '2', '3', '4', '5', '6', '7', '9']);
   });
 
   it('normalises a zero rating to null and builds the Goodreads link', () => {
@@ -77,7 +79,11 @@ describe('getGoodreadsBooks', () => {
 
 describe('shelf queries', () => {
   it('returns the currently-reading shelf', () => {
-    expect(getCurrentlyReading().map((b) => b.title)).toEqual(['The Idiot', 'Don Quixote']);
+    expect(getCurrentlyReading().map((b) => b.title)).toEqual([
+      'The Idiot',
+      'Don Quixote',
+      'Rated Mid Read',
+    ]);
   });
 
   it('sorts finished books by date read, newest first', () => {
@@ -93,7 +99,7 @@ describe('shelf queries', () => {
     expect(getToReadBooks(1).map((b) => b.title)).toEqual(["Gravity's Rainbow"]);
   });
 
-  it('returns only five-star books', () => {
+  it('returns only five-star FINISHED books — a mid-read rating does not count', () => {
     expect(getTopRatedBooks().map((b) => b.title)).toEqual(['Brave New World', 'Siddhartha']);
     expect(getTopRatedBooks(1)).toHaveLength(1);
   });
@@ -133,11 +139,11 @@ describe('getCustomShelves', () => {
 describe('getGoodreadsStats', () => {
   it('aggregates counts, pages, and the average of rated finished books', () => {
     expect(getGoodreadsStats()).toEqual({
-      totalBooks: 7,
+      totalBooks: 8,
       booksRead: 3,
-      currentlyReading: 2,
+      currentlyReading: 3,
       toRead: 2,
-      fiveStarBooks: 2,
+      fiveStarBooks: 3,
       totalPages: 675, // 152 + 268 + 255
       averageRating: 4.67, // (5 + 5 + 4) / 3
     });

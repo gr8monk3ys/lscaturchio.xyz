@@ -25,6 +25,17 @@ function formatStars(rating: number): string {
   return "★".repeat(rating);
 }
 
+/** Homer needs this: negative publication years are BCE, not a rendering bug. */
+function formatYear(year: number): string {
+  return year < 0 ? `${Math.abs(year)} BCE` : String(year);
+}
+
+/** Small counts read better as words: "Four books", not "4 books". */
+function spellCount(n: number): string {
+  const words = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+  return words[n] ?? String(n);
+}
+
 /** A book I gave full marks, as a numbered plate. */
 function PerfectScore({ book, index }: { book: GoodreadsBook; index: number }) {
   return (
@@ -44,7 +55,7 @@ function PerfectScore({ book, index }: { book: GoodreadsBook; index: number }) {
               {book.title}
             </h3>
             {book.yearPublished ? (
-              <span className="label-mono">{book.yearPublished}</span>
+              <span className="label-mono">{formatYear(book.yearPublished)}</span>
             ) : null}
           </Link>
           <p className="mt-2 text-muted-foreground">{book.author}</p>
@@ -123,8 +134,11 @@ export function BooksList({
               Full marks
             </h2>
             <p className="mt-3 max-w-2xl text-muted-foreground">
-              Three books out of everything I have finished. I am stingy with the fifth star
-              on purpose; it is the only way the rating means anything.
+              {/* Derived, not hardcoded: this said "Three books" until a fourth
+                  five-star arrived with a data refresh and made it a lie. */}
+              {spellCount(perfectScores.length)} book{perfectScores.length === 1 ? "" : "s"} out
+              of everything I have finished. I am stingy with the fifth star on purpose; it is
+              the only way the rating means anything.
             </p>
           </div>
           <ol>

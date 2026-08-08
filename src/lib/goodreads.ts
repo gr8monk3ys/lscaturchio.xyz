@@ -147,10 +147,10 @@ export function getCustomShelves(): GoodreadsShelf[] {
     .sort((a, b) => b.books.length - a.books.length || a.name.localeCompare(b.name));
 }
 
-// Get top rated books (5 stars)
+// Get top rated books (5 stars, finished — a mid-read rating doesn't count yet)
 export function getTopRatedBooks(limit: number = 20): GoodreadsBook[] {
   const books = getGoodreadsBooks()
-    .filter(book => book.rating === 5)
+    .filter(book => book.rating === 5 && book.shelf === 'read')
     .sort((a, b) => {
       if (!a.dateRead || !b.dateRead) return 0;
       return new Date(b.dateRead).getTime() - new Date(a.dateRead).getTime();
