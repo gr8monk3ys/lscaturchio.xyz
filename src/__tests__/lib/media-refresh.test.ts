@@ -67,6 +67,20 @@ describe('parseLetterboxdRss', () => {
     // entities decode, or the heart gets eaten as a half-open tag.
     expect(entry.review).toBe('I <3 this & that');
   });
+
+  it('leaves no angle bracket behind, even for nested or unbalanced markup', () => {
+    const xml = `<rss><channel><item>
+      <letterboxd:filmTitle>X</letterboxd:filmTitle>
+      <letterboxd:filmYear>2026</letterboxd:filmYear>
+      <letterboxd:watchedDate>2026-08-01</letterboxd:watchedDate>
+      <letterboxd:rewatch>No</letterboxd:rewatch>
+      <link>x</link>
+      <description><![CDATA[ <p><img src="p.jpg"/></p> <p>a <scr<script>ipt> b <em>fine</em> c <</p> ]]></description>
+    </item></channel></rss>`;
+    const [entry] = parseLetterboxdRss(xml);
+    expect(entry.review).not.toMatch(/[<>]/);
+    expect(entry.review).toContain('fine');
+  });
 });
 
 describe('parseGoodreadsRss', () => {

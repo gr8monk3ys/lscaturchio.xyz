@@ -47,23 +47,29 @@ function decodeEntities(text: string): string {
 }
 
 /**
- * Strip HTML tags, then drop any angle bracket that survives. A single
- * regex pass over "<scr<script>ipt>" leaves "<script>" behind (CodeQL
- * js/incomplete-multi-character-sanitization); repeating to a fixpoint and
- * then deleting stray brackets means no tag can exist in the output at all.
- * This runs BEFORE entity decoding, so the member's own "&lt;3" is still
- * escaped here and unharmed — only malformed markup loses characters. The
- * review text is only ever rendered as React text content, but stored data
- * should not depend on every future consumer remembering that.
+ * Strip HTML tags with a character scanner rather than a regex: keep text at
+ * bracket depth zero, skip everything inside brackets, and drop stray
+ * brackets. Unlike a `replace(/<[^>]*>/g, '')` pass — which leaves "<script>"
+ * behind in "<scr<script>ipt>" (CodeQL js/incomplete-multi-character-
+ * sanitization) — the output cannot contain an angle bracket at all. This
+ * runs BEFORE entity decoding, so the member's own "&lt;3" is still escaped
+ * here and unharmed — only malformed markup loses characters. The review
+ * text is only ever rendered as React text content, but stored data should
+ * not depend on every future consumer remembering that.
  */
 function stripTags(html: string): string {
-  let previous = html;
-  let current = html.replace(/<[^>]*>/g, '');
-  while (current !== previous) {
-    previous = current;
-    current = current.replace(/<[^>]*>/g, '');
+  let out = '';
+  let depth = 0;
+  for (const ch of html) {
+    if (ch === '<') {
+      depth++;
+    } else if (ch === '>') {
+      if (depth > 0) depth--;
+    } else if (depth === 0) {
+      out += ch;
+    }
   }
-  return current.replace(/[<>]/g, '');
+  return out;
 }
 
 /** CDATA-unwrapped raw value — no entity decoding (for HTML-bearing fields). */
