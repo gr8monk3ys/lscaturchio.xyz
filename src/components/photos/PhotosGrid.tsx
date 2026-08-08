@@ -18,7 +18,6 @@ import {
 import {
   photos,
   photoCategories,
-  placeholderImages,
   type Photo,
   type PhotoCategory,
 } from '@/constants/photos'
@@ -283,16 +282,18 @@ function PhotoLightbox({
   )
 }
 
-function PhotosInstructions(): React.ReactNode {
+/**
+ * Shown while the photos array is empty. This page once padded its walls with
+ * Unsplash stock labelled as my own shots; an honest bare wall beats that.
+ */
+function EmptyGallery(): React.ReactNode {
   return (
-    <div className="mt-16 border-t border-border pt-6 text-center">
-      <p className="text-muted-foreground text-sm">
-        Add your photos to
-        <code className="px-1 font-mono text-foreground"> /public/images/photos/travel/</code>
-        or
-        <code className="px-1 font-mono text-foreground"> /public/images/photos/nature/</code>
-        and update
-        <code className="px-1 font-mono text-foreground"> src/constants/photos.ts</code>
+    <div className="border-y border-border py-20 text-center">
+      <CameraIcon className="mx-auto mb-6 h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
+      <p className="label-mono">Nothing hung yet</p>
+      <p className="mx-auto mt-3 max-w-md text-muted-foreground">
+        The first set is still being culled from the camera roll. Until it is, the walls stay
+        bare — an empty gallery beats a borrowed one.
       </p>
     </div>
   )
@@ -307,19 +308,7 @@ export function PhotosGrid({ initialCategory = 'all' }: PhotosGridProps): React.
     [selectedCategory]
   )
 
-  const photosWithPlaceholders = useMemo(
-    () =>
-      filteredPhotos.map((photo, index) => {
-        const categoryPlaceholders = placeholderImages[photo.category] || placeholderImages.travel
-        return {
-          ...photo,
-          src: categoryPlaceholders[index % categoryPlaceholders.length],
-        }
-      }),
-    [filteredPhotos]
-  )
-
-  const { currentItem, currentIndex, open, close, goToPrevious, goToNext } = useLightbox(photosWithPlaceholders)
+  const { currentItem, currentIndex, open, close, goToPrevious, goToNext } = useLightbox(filteredPhotos)
 
   const handleCategoryChange = useCallback(
     (category: PhotoCategory) => {
@@ -357,17 +346,23 @@ export function PhotosGrid({ initialCategory = 'all' }: PhotosGridProps): React.
     }
   }, [])
 
+  // With no photos at all, category tabs and a lightbox are furniture in an
+  // empty room — show the bare wall and nothing else.
+  if (photos.length === 0) {
+    return <EmptyGallery />
+  }
+
   return (
     <>
       <CategoryTabs
         selectedCategory={selectedCategory}
-        photoCount={photosWithPlaceholders.length}
+        photoCount={filteredPhotos.length}
         onSelectCategory={handleCategoryChange}
       />
 
-      <PhotoMasonryGrid photosWithPlaceholders={photosWithPlaceholders} onOpen={open} />
+      <PhotoMasonryGrid photosWithPlaceholders={filteredPhotos} onOpen={open} />
 
-      {photosWithPlaceholders.length === 0 && (
+      {filteredPhotos.length === 0 && (
         <div className="text-center py-16">
           <CameraIcon className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
           <p className="text-muted-foreground">No photos in this category yet.</p>
@@ -377,14 +372,12 @@ export function PhotosGrid({ initialCategory = 'all' }: PhotosGridProps): React.
       <PhotoLightbox
         currentPhoto={currentItem}
         currentIndex={currentIndex}
-        totalCount={photosWithPlaceholders.length}
+        totalCount={filteredPhotos.length}
         onClose={close}
         onPrevious={goToPrevious}
         onNext={goToNext}
         onDownload={handleDownload}
       />
-
-      <PhotosInstructions />
     </>
   )
 }

@@ -52,7 +52,7 @@ export const TOPIC_HUBS: TopicHub[] = [
     title: "Open Source + Tools",
     description: "Pragmatic tools and small systems that compound.",
     tags: ["open source", "tools", "developer tools"],
-    featuredProjects: ["leetcode-solver-bot", "blog-ai"],
+    featuredProjects: ["cocoon", "feedless", "unlinkd", "blog-ai"],
   },
 ];
 
