@@ -47,8 +47,12 @@ function decodeEntities(text: string): string {
 }
 
 /**
- * Strip HTML tags to a fixpoint: a single pass over "<scr<script>ipt>" leaves
- * "<script>" behind (CodeQL js/incomplete-multi-character-sanitization). The
+ * Strip HTML tags, then drop any angle bracket that survives. A single
+ * regex pass over "<scr<script>ipt>" leaves "<script>" behind (CodeQL
+ * js/incomplete-multi-character-sanitization); repeating to a fixpoint and
+ * then deleting stray brackets means no tag can exist in the output at all.
+ * This runs BEFORE entity decoding, so the member's own "&lt;3" is still
+ * escaped here and unharmed — only malformed markup loses characters. The
  * review text is only ever rendered as React text content, but stored data
  * should not depend on every future consumer remembering that.
  */
@@ -59,7 +63,7 @@ function stripTags(html: string): string {
     previous = current;
     current = current.replace(/<[^>]*>/g, '');
   }
-  return current;
+  return current.replace(/[<>]/g, '');
 }
 
 /** CDATA-unwrapped raw value — no entity decoding (for HTML-bearing fields). */
