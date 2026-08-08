@@ -97,8 +97,25 @@ Additional maintenance helpers:
 ### Refreshing Books And Movies
 
 `/books` and `/movies` read the CSV exports in `public/my-data/goodreads/` and
-`public/my-data/letterboxd/` directly. To update them, export from each service
-and replace the files in place — there is no generation step. See
+`public/my-data/letterboxd/` directly.
+
+Incremental refresh (public RSS, no auth, dry-run by default):
+
+```bash
+npm run refresh-media-data           # report what would change
+npm run refresh-media-data -- --write
+```
+
+A weekly launchd job automates this end to end:
+`scripts/refresh-books-movies.sh` runs the refresh in a throwaway worktree of
+`origin/main` and lands any changes as a rolling PR (`chore/refresh-media-data`)
+— never a direct push. Install per the header comment in
+`ops/launchd/xyz.lscaturchio.refresh-media-data.plist`; logs land in
+`~/Library/Logs/lscaturchio-refresh-media-data.log`.
+
+The feeds only carry recent history (Letterboxd ~50 entries, Goodreads ~100 per
+shelf), so a long gap still needs a one-time full export from each service,
+replacing the files in place. See
 [repository-guide.md](repository-guide.md#reading-the-goodreads-and-letterboxd-exports)
 for the two parsing traps these exports carry.
 
