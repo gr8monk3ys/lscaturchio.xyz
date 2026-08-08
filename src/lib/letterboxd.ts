@@ -27,13 +27,14 @@ const LETTERBOXD_USER = 'gr8monk3ys';
 function firstTag(block: string, tag: string): string | null {
   const m = block.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`));
   if (!m) return null;
+  // &amp; decodes last — decoding it first double-unescapes "&amp;lt;" to "<".
   return m[1]
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
-    .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&#39;/g, "'")
     .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
     .trim();
 }
 

@@ -35,19 +35,42 @@ export interface GoodreadsRssEntry {
 }
 
 function decodeEntities(text: string): string {
+  // &amp; must decode LAST: doing it first turns "&amp;lt;" into "&lt;" and
+  // then into "<" — a double-unescape (CodeQL js/double-escaping).
   return text
-    .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&#39;/g, "'")
     .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
     .trim();
 }
 
-function tagValue(block: string, tag: string): string {
+/**
+ * Strip HTML tags to a fixpoint: a single pass over "<scr<script>ipt>" leaves
+ * "<script>" behind (CodeQL js/incomplete-multi-character-sanitization). The
+ * review text is only ever rendered as React text content, but stored data
+ * should not depend on every future consumer remembering that.
+ */
+function stripTags(html: string): string {
+  let previous = html;
+  let current = html.replace(/<[^>]*>/g, '');
+  while (current !== previous) {
+    previous = current;
+    current = current.replace(/<[^>]*>/g, '');
+  }
+  return current;
+}
+
+/** CDATA-unwrapped raw value — no entity decoding (for HTML-bearing fields). */
+function rawTagValue(block: string, tag: string): string {
   const m = block.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`));
   if (!m) return '';
-  return decodeEntities(m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1'));
+  return m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
+}
+
+function tagValue(block: string, tag: string): string {
+  return decodeEntities(rawTagValue(block, tag));
 }
 
 /** `Tue, 4 Aug 2026 00:00:00 +0000` → `2026/08/04` (Goodreads CSV date form). */
@@ -64,12 +87,16 @@ function toSlashDate(rfc822: string): string {
  * The review body in a Letterboxd RSS description: the first paragraph is the
  * poster image; any remaining paragraphs are the member's review text.
  * Letterboxd appends a spoiler notice paragraph for spoiler-flagged reviews.
+ *
+ * Operates on the RAW description and strips tags BEFORE decoding entities —
+ * decoding first would double-unescape and let a member's literal "&lt;3"
+ * be eaten as a tag.
  */
-function extractReview(description: string): string {
-  const paragraphs = Array.from(description.matchAll(/<p>([\s\S]*?)<\/p>/g))
+function extractReview(rawDescription: string): string {
+  const paragraphs = Array.from(rawDescription.matchAll(/<p>([\s\S]*?)<\/p>/g))
     .map((m) => m[1])
     .filter((p) => !/<img\s/i.test(p))
-    .map((p) => decodeEntities(p.replace(/<[^>]+>/g, '')))
+    .map((p) => decodeEntities(stripTags(p)))
     .filter(Boolean)
     .filter((p) => !/^This review may contain spoilers/i.test(p))
     // Review-less diary entries carry a "Watched on <date>." filler paragraph.
@@ -92,7 +119,7 @@ export function parseLetterboxdRss(xml: string): LetterboxdRssEntry[] {
         rating: tagValue(item, 'letterboxd:memberRating'),
         watchedDate: tagValue(item, 'letterboxd:watchedDate'),
         rewatch: tagValue(item, 'letterboxd:rewatch') === 'Yes' ? ('Yes' as const) : ('No' as const),
-        review: extractReview(tagValue(item, 'description')),
+        review: extractReview(rawTagValue(item, 'description')),
       };
     })
     .filter((e): e is LetterboxdRssEntry => e !== null && Boolean(e.watchedDate));

@@ -49,6 +49,24 @@ describe('parseLetterboxdRss', () => {
     const [, odyssey] = parseLetterboxdRss(LETTERBOXD_XML);
     expect(odyssey.review).toBe('');
   });
+
+  it('does not double-unescape entities, and decodes only after stripping tags', () => {
+    const xml = `<rss><channel><item>
+      <letterboxd:filmTitle>Fear &amp;amp; Loathing</letterboxd:filmTitle>
+      <letterboxd:filmYear>1998</letterboxd:filmYear>
+      <letterboxd:watchedDate>2026-08-01</letterboxd:watchedDate>
+      <letterboxd:rewatch>No</letterboxd:rewatch>
+      <link>x</link>
+      <description><![CDATA[ <p><img src="p.jpg"/></p> <p>I <b>&lt;3</b> this &amp; that</p> ]]></description>
+    </item></channel></rss>`;
+    const [entry] = parseLetterboxdRss(xml);
+
+    // "&amp;amp;" is the literal text "&amp;" — one decode, not two.
+    expect(entry.title).toBe('Fear &amp; Loathing');
+    // The member's escaped "&lt;3" is a literal "<3": tags must strip before
+    // entities decode, or the heart gets eaten as a half-open tag.
+    expect(entry.review).toBe('I <3 this & that');
+  });
 });
 
 describe('parseGoodreadsRss', () => {
