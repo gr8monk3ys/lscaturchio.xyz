@@ -38,6 +38,7 @@ type Args = {
   baseUrl: string
   outputPath: string
   timeoutMs: number
+  intervalMs: number
 }
 
 type RetrievedRow = {
@@ -73,6 +74,9 @@ function parseArgs(argv: string[]): Args {
     baseUrl: 'http://localhost:3000',
     outputPath: '',
     timeoutMs: 30000,
+    // /api/chat is rate-limited to 3 requests/minute; without pacing the eval
+    // trips the limiter after three queries and reports 429s as failures.
+    intervalMs: 21000,
   }
   for (let i = 2; i < argv.length; i++) {
     const flag = argv[i]
@@ -80,12 +84,18 @@ function parseArgs(argv: string[]): Args {
       printUsage()
       process.exit(0)
     }
-    if (flag === '--base-url' || flag === '--output' || flag === '--timeout-ms') {
+    if (
+      flag === '--base-url' ||
+      flag === '--output' ||
+      flag === '--timeout-ms' ||
+      flag === '--interval-ms'
+    ) {
       const value = argv[++i]
       if (!value) throw new Error(`Missing value for ${flag}`)
       if (flag === '--base-url') args.baseUrl = value.replace(/\/$/, '')
       if (flag === '--output') args.outputPath = value
       if (flag === '--timeout-ms') args.timeoutMs = Number(value)
+      if (flag === '--interval-ms') args.intervalMs = Number(value)
       continue
     }
     throw new Error(`Unknown argument: ${flag}`)
@@ -221,6 +231,9 @@ async function main(): Promise<void> {
     })
     const generated = await probeGeneration(args, q.query)
     sections[q.intent].push(formatRow(q, retrieved, generated, i))
+    if (args.intervalMs > 0 && i < queries.length - 1) {
+      await new Promise((resolve) => setTimeout(resolve, args.intervalMs))
+    }
   }
 
   const header = `# Chat Eval — ${new Date().toISOString()}
