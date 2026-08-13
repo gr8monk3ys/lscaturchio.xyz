@@ -98,6 +98,10 @@ export default function GlobalError({
               <button
                 type="button"
                 onClick={() => {
+                  // Hard navigation is deliberate: global-error replaces the root
+                  // layout, so the Next router context is unavailable here. No
+                  // basePath is configured, so the rule's hazard does not apply.
+                  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
                   window.location.href = "/";
                 }}
                 className="px-6 py-3 rounded-xl font-medium transition-all focus:outline-hidden focus:ring-2 focus:ring-offset-2"
