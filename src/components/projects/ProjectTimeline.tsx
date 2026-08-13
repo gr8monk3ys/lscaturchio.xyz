@@ -7,7 +7,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Calendar, ExternalLink, Github, Star } from "lucide-react";
+import { Calendar, ExternalLink, Star } from "lucide-react";
+import { IconBrandGithub } from "@tabler/icons-react";
 
 interface ProjectTimelineProps {
   projects: Product[];
@@ -210,7 +211,7 @@ export function ProjectTimeline({ projects, className }: ProjectTimelineProps) {
                                 className="p-1.5 rounded-md hover:bg-muted transition-colors"
                                 aria-label={`View ${project.title} source on GitHub`}
                               >
-                                <Github className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                <IconBrandGithub className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                               </a>
                             )}
                             {(project.demoUrl || project.href) && (

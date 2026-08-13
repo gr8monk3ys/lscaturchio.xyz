@@ -4,7 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { m, useMotionPreset, useReducedMotion } from '@/lib/motion'
 import { cn } from '@/lib/utils'
-import { Calendar, ExternalLink, Github, ArrowRight } from 'lucide-react'
+import { Calendar, ExternalLink, ArrowRight } from 'lucide-react'
+import { IconBrandGithub } from '@tabler/icons-react'
 import type { Product, ProjectCategory } from '@/types/products'
 
 const categoryLabels: Record<ProjectCategory, string> = {
@@ -149,7 +150,7 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80 transition-colors"
               >
-                <Github className="h-4 w-4" />
+                <IconBrandGithub className="h-4 w-4" />
                 Source
               </a>
             )}
