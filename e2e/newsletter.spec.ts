@@ -18,12 +18,18 @@ test.describe('Newsletter Subscription', () => {
     await expect(emailInput).toHaveValue('test@example.com')
   })
 
-  test('successful subscription shows success message', async ({ page }) => {
+  test('successful subscription shows the server message', async ({ page }) => {
+    // Must mirror the real apiSuccess envelope: { data, success }. Mocking a
+    // bare { message } is why the form reading data.message instead of
+    // data.data.message went unnoticed — the fallback string always won.
     await page.route('**/api/newsletter/subscribe', (route) =>
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ message: 'Successfully subscribed!' }),
+        body: JSON.stringify({
+          data: { message: 'Thanks! Check your inbox to confirm your subscription.' },
+          success: true,
+        }),
       })
     )
 
@@ -33,8 +39,12 @@ test.describe('Newsletter Subscription', () => {
     const submitButton = page.locator('button[type="submit"]').filter({ hasText: 'Subscribe' }).first()
     await submitButton.click()
 
-    // Button changes to "Subscribed!" and message div shows success text
+    // Button changes to "Subscribed!" and the message div shows the text the
+    // server sent — the part that silently regressed.
     await expect(page.getByText('Subscribed!').first()).toBeVisible({ timeout: 15000 })
+    await expect(
+      page.getByText('Thanks! Check your inbox to confirm your subscription.').first(),
+    ).toBeVisible({ timeout: 15000 })
   })
 
   test('empty email is prevented by browser validation', async ({ page }) => {
