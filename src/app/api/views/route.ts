@@ -28,16 +28,20 @@ const handleGet = async (req: NextRequest) => {
       }
 
       const sql = getDb();
-      const rows = await sql`SELECT slug, count FROM views ORDER BY count DESC`;
+      const rows = await sql`SELECT slug, count FROM views ORDER BY count DESC LIMIT 1000`;
 
       const allBlogs = await getAllBlogs();
       const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
 
-      const allViews = rows.map((view) => ({
-        slug: view.slug,
-        title: blogMap.get(view.slug) || view.slug,
-        views: view.count,
-      }));
+      // Defensive: rows written before the slug check above (or by a direct
+      // DB write) must not surface as posts with the raw slug as their title.
+      const allViews = rows
+        .filter((view) => blogMap.has(view.slug))
+        .map((view) => ({
+          slug: view.slug,
+          title: blogMap.get(view.slug) as string,
+          views: view.count,
+        }));
 
       return apiSuccess({
         views: allViews,
@@ -59,7 +63,7 @@ const handleGet = async (req: NextRequest) => {
       }
 
       const sql = getDb();
-      const rows = await sql`SELECT slug, count FROM views ORDER BY count DESC`;
+      const rows = await sql`SELECT slug, count FROM views ORDER BY count DESC LIMIT 1000`;
 
       const views = rows.map((row) => ({
         slug: row.slug,
@@ -141,6 +145,17 @@ const handlePost = async (req: NextRequest) => {
     }
 
     const { slug } = parsed.data;
+
+    // The schema only checks slug *shape*. increment_view_count upserts, so
+    // without checking the slug actually exists any caller could create rows
+    // for arbitrary strings — growing the table without bound and, because the
+    // read paths fall back to `title: slug`, printing attacker-chosen text on
+    // the public /stats page. getAllBlogs() is cached for 60s, so this costs
+    // at most one disk read per minute.
+    const allBlogs = await getAllBlogs();
+    if (!allBlogs.some((blog) => blog.slug === slug)) {
+      return ApiErrors.notFound(`No blog post with slug "${slug}"`);
+    }
 
     // Check if database is properly configured
     if (!isDatabaseConfigured()) {
