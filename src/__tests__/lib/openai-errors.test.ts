@@ -43,3 +43,23 @@ describe('isOpenAIAuthOrConfigError', () => {
     expect(isOpenAIAuthOrConfigError(undefined)).toBe(false);
   });
 });
+
+describe('interop with real openai SDK errors', () => {
+  it('reads status off SDK error instances rather than relying on instanceof', async () => {
+    // These helpers duck-type `.status` instead of checking `instanceof
+    // APIError`, which is what lets them survive an SDK major. Pin that
+    // contract against the real error classes so a future bump that changes
+    // the shape fails here rather than silently degrading chat to the
+    // "misconfigured" path in production.
+    const { AuthenticationError, RateLimitError } = await import('openai');
+    const headers = new Headers();
+
+    const auth = new AuthenticationError(401, { error: { message: 'bad key' } }, 'bad key', headers);
+    const rate = new RateLimitError(429, { error: { message: 'slow down' } }, 'slow down', headers);
+
+    expect(getErrorStatus(auth)).toBe(401);
+    expect(getErrorStatus(rate)).toBe(429);
+    expect(isOpenAIAuthOrConfigError(auth)).toBe(true);
+    expect(isOpenAIAuthOrConfigError(rate)).toBe(false);
+  });
+});
