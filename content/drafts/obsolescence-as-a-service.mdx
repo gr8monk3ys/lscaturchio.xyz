@@ -1,0 +1,59 @@
+export const meta = {
+  title: "Obsolescence as a Service",
+  description: "You don't need a broken part to lose a device. You just need the company that sold it to flip a switch on a server you never saw.",
+  date: "2026-08-03",
+  tags: ["technology", "ownership", "policy", "iot"],
+  series: "Repair",
+  seriesOrder: 3,
+  stage: "seedling",
+}
+
+## The day Revolv died
+
+In 2014, Google's Nest division bought a smart-home startup called Revolv for its hub technology. Revolv had sold a physical device, a small hardware hub that customers paid a one-time fee for, with the explicit promise of a "lifetime subscription" to the cloud service that ran it. People plugged it in, connected their locks and lights and thermostats to it, and forgot about it. That's what a working appliance is supposed to let you do.
+
+On May 15, 2016, Nest sent an email announcing that as of that day, the Revolv hub would stop working entirely. Not lose a feature. Stop working. Every unit, in every home, everywhere, went dark at the same instant, because Nest shut down the servers the hubs depended on to function. No refunds were offered until the backlash got loud enough to embarrass Google into a partial one.
+
+Tony Fadell, then the head of Nest, wrote a blog post at the time defending the decision as a normal part of "constant iteration and innovation." The hardware hadn't failed. Nothing was broken. A company had simply decided, unilaterally and with two months' notice, that it no longer wanted to keep a server running, and every customer's paid-for object became scrap in that instant.
+
+This piece is the third in a series on repair and ownership. The [first](/blog/stopped-repairing-things) covered planned obsolescence as an industrial design choice: parts that wear out on purpose, screens glued shut, cartels agreeing to shorten lightbulb lifespans. The [second](/blog/right-to-repair-civil-right) covered the legal fight over who's allowed to fix a physical object you already own. This one is about a newer failure mode that neither of those frameworks quite reaches: the device that isn't broken, has no broken part to replace, and dies anyway because somewhere else, a server got turned off.
+
+## Optional obsolescence
+
+Call the older kind planned obsolescence: a manufacturer engineers a shorter lifespan into the product itself, then sells you a replacement. Painful, but at least legible. You can point to the glued battery or the soldered board and say, there, that's the part they sabotaged.
+
+Server-dependent obsolescence doesn't require sabotage. It doesn't require a plan at all. A company just has to stop paying an AWS bill.
+
+Insteon, a home-automation company with a real customer base and products that had worked reliably for years, shut down without warning in April 2022. No wind-down announcement, no sunset timeline, no acquisition. The website went dark, the app stopped authenticating, and years of accumulated smart-home setups (locks, switches, sensors, all wired together through Insteon's hub) lost their cloud-dependent features overnight. A volunteer community eventually reverse-engineered a way to keep local functions alive, which is more than most companies leave you.
+
+Spotify discontinued its Car Thing hardware in December 2024 and bricked every unit already sold, turning a $90 purchase into e-waste by remote command, for a product that had been on the market barely two years. Wink pivoted its smart-home hub from free to a mandatory $4.99-a-month subscription in 2020, with existing customers given about a week to accept or lose functionality on hardware they'd already paid for outright.
+
+None of these companies needed to design a shorter lifespan into anything. They needed a board meeting and a decision that a product line, or the company itself, wasn't worth keeping the lights on for. The obsolescence isn't engineered in advance. It's optional, decided after the sale, by people who already have your money.
+
+## Why the repair framework doesn't apply
+
+Part two of this series was about your right to fix a phone, a tractor, a hearing aid, the physical object in your hands. Legislation like Massachusetts's automotive right-to-repair law, or the EU's parts-and-manuals requirements, assumes there's a repair to be had: a part to source, a manual to follow, a technician to hire.
+
+A server-dependent device breaks that assumption completely. There's no failed component. The hardware is, by definition, fine. iFixit can publish every repair manual in the world and it won't help you when the thing that died is a database entry on a server you've never had credentials for, sitting in a data center you couldn't find on a map, owned by a company that may not legally exist anymore.
+
+You can't buy a replacement part for a shut-down API. You can't out-skill your way past a company that dissolved. Right-to-repair statutes, written for a world of screws and circuit boards, have nothing to say about a product whose only failure mode is someone else's balance sheet.
+
+## The dependency you agreed to without reading it
+
+Every server-dependent device is a bet that the company selling it will still exist, in something like its current form, for as long as you want the product to work. That's a strange bet to make about a startup with eighteen months of runway, but it's the bet built into the business model of nearly every "smart" object sold in the last decade.
+
+It's the same dependency chain [self-hosting](/blog/self-hosting-is-political) is a partial answer to, just moved from your email and your files to your door lock and your thermostat. Home Assistant and openHAB exist precisely because enough people got burned by cloud hubs going dark that a market emerged for local-only alternatives, ones that keep working whether or not the vendor is still billing you. Matter, the cross-vendor smart-home standard finalized in 2022, was built in part as an industry response to exactly this failure pattern, promising local control that survives a company's disappearance. Adoption has been slow, and plenty of "Matter-compatible" devices still phone home to a cloud service for their advertised features, because local-only control doesn't generate the recurring engagement data a company can sell.
+
+## What would actually help
+
+There's no Massachusetts ballot initiative for this yet, no FTC report with a name like "Nixing the Sunset." A few ideas are floating around the edges of the discourse: mandatory local-fallback modes so a device degrades to basic function instead of bricking when the cloud goes away, escrowed source code or protocol documentation released automatically on shutdown, minimum notice periods before a company can switch off a paid service, something closer to how utilities have to notify customers before terminating service. The EU's Digital Fairness Act discussions floated software-support minimums in 2024; none of it has hardened into binding law anywhere yet.
+
+What's missing is the outrage infrastructure that right-to-repair built over a decade of iFixit teardown videos and John Deere DMCA horror stories. A bricked Revolv hub doesn't photograph as well as a farmer locked out of his own tractor. The damage is quieter: a lock that still turns fine on its own, plugged into a bridge that just stopped talking to a server that no longer answers.
+
+## The toaster that never needed a server
+
+The 1971 toaster from the first piece in this series never had a company to disappoint you. It had a heating element and a lever, nothing that phoned home, nothing that could be switched off from somewhere else. Durability, in that older sense, was a property of the object.
+
+The devices we buy now often aren't objects in that sense at all. They're leases on a relationship with a company, dressed up in a plastic shell you happen to hold. The shell can be flawless, and the lease can end anyway, the moment the other side decides it isn't worth renewing.
+
+Obsolescence used to require an engineer to design a shorter lifespan on purpose. Now it just requires a company to stop wanting to run a server. That's a lower bar, and it's the one most of what you own has to clear every single day, without you ever finding out you agreed to it.
