@@ -106,12 +106,17 @@ npm run refresh-media-data           # report what would change
 npm run refresh-media-data -- --write
 ```
 
-A weekly launchd job automates this end to end:
-`scripts/refresh-books-movies.sh` runs the refresh in a throwaway worktree of
-`origin/main` and lands any changes as a rolling PR (`chore/refresh-media-data`)
-— never a direct push. Install per the header comment in
-`ops/launchd/xyz.lscaturchio.refresh-media-data.plist`; logs land in
-`~/Library/Logs/lscaturchio-refresh-media-data.log`.
+[`.github/workflows/media-refresh.yml`](../.github/workflows/media-refresh.yml)
+automates this weekly (Mondays 09:30 UTC) and on `workflow_dispatch`. Changes
+land as a rolling PR on `chore/refresh-media-data` — never a direct push. Both
+feeds are public RSS, so the workflow needs no secrets.
+
+This replaced a launchd job that ran from a single Mac. That setup only ran when
+that machine happened to be awake, and its failures went to a local log file
+nobody read: on 2026-08-10 it pushed its branch but never opened a PR, and the
+change sat unnoticed until someone went looking for stale branches. The workflow
+therefore verifies that a PR is actually open before reporting success, and
+fails the run if not.
 
 The feeds only carry recent history (Letterboxd ~50 entries, Goodreads ~100 per
 shelf), so a long gap still needs a one-time full export from each service,
@@ -186,6 +191,48 @@ npm run uptime:check -- --json
 - GitHub's scheduled runners are best-effort and get delayed under load. Treat
   this as "we hear about it within the hour", not an SLA monitor; move to a
   hosted checker if it ever needs to page someone.
+
+## Dependency Maintenance
+
+Routine bumps are handled by
+[`.github/workflows/dep-refresh.yml`](../.github/workflows/dep-refresh.yml),
+monthly and on `workflow_dispatch`. It runs `scripts/bump-deps.mjs` (minor and
+patch only), regenerates `bun.lock`, and runs lint, typecheck, knip, coverage,
+and build **before** opening a rolling PR on `chore/dep-refresh`. Majors are
+never included; the run summary lists the ones it held back.
+
+Locally, the same path is:
+
+```bash
+node scripts/bump-deps.mjs --dry-run   # report only
+node scripts/bump-deps.mjs             # minor + patch
+node scripts/bump-deps.mjs --majors    # include majors, one at a time please
+bun install                            # regenerate bun.lock — required
+bun run predeploy                      # the gates CI enforces
+```
+
+### Why Dependabot does not do this
+
+Dependabot's npm updater maintains `package-lock.json`. The bun migration
+(`56095cc`) removed that file and CI installs from `bun.lock`, which Dependabot
+never writes — so its PRs leave the lockfile stale and
+`bun install --frozen-lockfile` rejects them. This is the mechanism behind the
+recurring "Dependabot Updates" run failures.
+
+The practical consequence: **Dependabot security alerts will not fix
+themselves here.** When GitHub reports an advisory, resolve it through the bun
+path above. Check whether the vulnerable package is also pinned by a *parent*
+dependency before assuming a direct bump is enough — `next` pins `sharp` as an
+optional dependency, so bumping `sharp` alone left `next` resolving a nested
+vulnerable copy, and the advisory (`GHSA-f88m-g3jw-g9cj`) stayed open for about
+two months. Confirm single-copy resolution afterwards:
+
+```bash
+grep -o '"sharp": \["sharp@[^"]*"' bun.lock | sort -u
+```
+
+`.github/dependabot.yml` is scoped to GitHub Actions only, where the updater
+works fine and nothing else tracks version drift.
 
 ## Housekeeping Checklist
 
