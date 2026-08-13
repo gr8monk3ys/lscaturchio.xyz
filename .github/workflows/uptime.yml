@@ -1,0 +1,163 @@
+name: Uptime
+
+# Continuous production probe.
+#
+# `postdeploy-chat-smoke` in ci.yml only runs on push to main, so a dependency
+# that rots *between* deploys is invisible to it — which is exactly how the
+# 2026-07-25 total API outage went unnoticed.
+#
+# Caveat worth knowing: GitHub's scheduled runners are best-effort and get
+# delayed under load, so treat this as "we will hear about it within the hour",
+# not as a real SLA monitor. It is free and lives with the code; a hosted
+# checker (Better Stack, Vercel monitoring) is strictly better if this ever
+# needs to page someone.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+# Never let a slow run pile up on the next scheduled one.
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  probe:
+    name: Probe production
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      # continue-on-error lets the later steps branch on steps.probe.outcome.
+      # The job is still failed explicitly by the final step.
+      - name: Probe production endpoints
+        id: probe
+        continue-on-error: true
+        # Plain redirect, not a pipe: the exit code is the entire signal here
+        # and must not be masked by a downstream process in the pipeline.
+        run: node scripts/check-uptime.mjs --json > result.json
+        shell: bash
+
+      - name: Summarise
+        if: always()
+        run: |
+          cat result.json 2>/dev/null || true
+          {
+            echo '### Uptime probe'
+            echo ''
+            echo '```json'
+            cat result.json 2>/dev/null || echo '{"error":"probe produced no output"}'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+        shell: bash
+
+      - name: Open or update outage issue
+        if: steps.probe.outcome == 'failure'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+
+            let report = 'The probe produced no output, which usually means it crashed before writing results.';
+            try {
+              report = fs.readFileSync('result.json', 'utf8');
+            } catch {}
+
+            const LABEL = 'uptime';
+            const TITLE = 'Production uptime check failing';
+
+            // Ensure the label exists — creating an issue with a missing label errors.
+            try {
+              await github.rest.issues.getLabel({ ...context.repo, name: LABEL });
+            } catch {
+              await github.rest.issues.createLabel({
+                ...context.repo,
+                name: LABEL,
+                color: 'b60205',
+                description: 'Automated production uptime probe',
+              });
+            }
+
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = [
+              `Production checks failed at ${new Date().toISOString()}.`,
+              '',
+              '```json',
+              report.trim(),
+              '```',
+              '',
+              `[Workflow run](${runUrl})`,
+            ].join('\n');
+
+            const { data: open } = await github.rest.issues.listForRepo({
+              ...context.repo,
+              state: 'open',
+              labels: LABEL,
+            });
+
+            if (open.length > 0) {
+              // Already tracking this outage — add an observation instead of a new issue.
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: open[0].number,
+                body,
+              });
+              core.notice(`Updated existing outage issue #${open[0].number}`);
+            } else {
+              const { data: created } = await github.rest.issues.create({
+                ...context.repo,
+                title: TITLE,
+                labels: [LABEL],
+                body,
+              });
+              core.notice(`Opened outage issue #${created.number}`);
+            }
+
+      - name: Close outage issue on recovery
+        if: steps.probe.outcome == 'success'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const LABEL = 'uptime';
+            const { data: open } = await github.rest.issues.listForRepo({
+              ...context.repo,
+              state: 'open',
+              labels: LABEL,
+            });
+
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            for (const issue of open) {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: issue.number,
+                body: `All checks passed at ${new Date().toISOString()}. Closing.\n\n[Workflow run](${runUrl})`,
+              });
+              await github.rest.issues.update({
+                ...context.repo,
+                issue_number: issue.number,
+                state: 'closed',
+                state_reason: 'completed',
+              });
+              core.notice(`Closed recovered outage issue #${issue.number}`);
+            }
+
+      # Surface the failure on the workflow itself, so the run goes red and
+      # GitHub's default "scheduled workflow failed" email fires too.
+      - name: Fail if probe failed
+        if: steps.probe.outcome == 'failure'
+        run: |
+          echo "Production uptime probe failed. See the outage issue and step summary."
+          exit 1
+        shell: bash
