@@ -20,13 +20,16 @@ export const photoCategories: { value: PhotoCategory; label: string }[] = [
   { value: "nature", label: "Nature" },
 ];
 
-// Adding photos:
-//   1. Export from the Photos app and optimize:
-//        cwebp -q 85 -resize 1920 0 input.jpg -o output.webp
+// Adding photos: use the /admin portal (Photos), which converts uploads to
+// webp (q85, max 1920px), computes the aspect ratio, and commits the files
+// plus the entries in src/data/photos.json in one commit. Manual fallback:
+//   1. cwebp -q 85 -resize 1920 0 input.jpg -o output.webp
 //   2. Drop files under /public/images/photos/travel/ or .../nature/
-//   3. Add an entry here with the real camera settings.
+//   3. Add an entry to src/data/photos.json with the real camera settings.
 //
 // The gallery ships empty until real photos exist. It previously held six
 // "sample" entries that rendered Unsplash stock with invented settings and
 // locations — stock photography presented as mine. Bare walls are better.
-export const photos: Photo[] = [];
+import photosJson from "@/data/photos.json";
+
+export const photos: Photo[] = photosJson as Photo[];

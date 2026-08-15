@@ -1,11 +1,11 @@
 /** Digital-garden maturity stages, ordered seedling -> evergreen. */
 export type BlogStage = "seedling" | "budding" | "evergreen";
 
-export const BLOG_STAGES: readonly BlogStage[] = [
+export const BLOG_STAGES = [
   "seedling",
   "budding",
   "evergreen",
-];
+] as const satisfies readonly BlogStage[];
 
 /**
  * The single gate every stage value passes through. MDX `meta` is untyped at

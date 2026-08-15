@@ -133,6 +133,45 @@ in `src/lib/now-data.ts`; bump `NOW_LAST_UPDATED` whenever you revise them, or
 the page will start showing a staleness notice after
 `NOW_STALE_AFTER_DAYS` (120).
 
+## Publishing Via The Admin Portal
+
+`/admin` is a login-protected portal for publishing blog posts, gallery
+photos, the `/now` page, and the `/links` page without a local checkout.
+Publishing commits the generated files straight to `main` via the GitHub API
+(one commit per publish); Vercel deploys the change in about two minutes.
+
+Setup (one-time):
+
+1. Create a GitHub OAuth app (Settings → Developer settings → OAuth Apps)
+   with callback URL `https://lscaturchio.xyz/api/admin/auth/callback`.
+   Record the client ID and secret.
+2. Create a fine-grained personal access token scoped to **this repository
+   only** with **Contents: read and write** — nothing else.
+3. Generate a session secret: `openssl rand -hex 32`.
+4. Set the env vars in Vercel (see `.env.example`): `GITHUB_OAUTH_CLIENT_ID`,
+   `GITHUB_OAUTH_CLIENT_SECRET`, `ADMIN_ALLOWED_LOGIN`,
+   `ADMIN_SESSION_SECRET`, `GITHUB_CONTENT_TOKEN`.
+
+Behaviour and failure modes:
+
+- Only the GitHub account named by `ADMIN_ALLOWED_LOGIN` can sign in.
+- Posts are validated before committing (Zod on the meta, a real MDX compile
+  on the body); invalid content is rejected at publish time and nothing is
+  committed. If a bad commit ever lands anyway, the failed Vercel build
+  leaves the previous deploy live — the failure mode is "not published",
+  never "site down".
+- Photo uploads are converted server-side to webp (q85, max 1920px) and the
+  gallery entry is written to `src/data/photos.json` in the same commit.
+- The `/now` and `/links` editors write `src/data/now.json` and
+  `src/data/links.json`; the portal reads the current versions from `main`,
+  so edits are always against what is deployed.
+- With any env var unset, `/admin` renders a "not configured" notice and the
+  admin APIs refuse to run.
+
+Rotation: revoke and re-issue the PAT (step 2) and update
+`GITHUB_CONTENT_TOKEN` in Vercel; sessions are invalidated by changing
+`ADMIN_SESSION_SECRET`.
+
 ## Serving Audio From A CDN
 
 `public/audio/` holds 83 MP3s totalling **~459MB**, all tracked in git. They are
