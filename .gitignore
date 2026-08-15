@@ -62,6 +62,12 @@ public/audio/.tmp/
 # Migration path: docs/operations.md "Serving audio from a CDN".
 public/audio/*.mp3
 
+# Agent worktrees. Claude Code's EnterWorktree creates full checkouts here;
+# without this they show up as untracked and a whole repo copy is one
+# `git add -A` away from being committed. knip also walks them and reports
+# every file in them as unused.
+.claude/worktrees/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
