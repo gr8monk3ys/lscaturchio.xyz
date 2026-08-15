@@ -11,7 +11,8 @@ Personal site and publishing platform built with Next.js 16, React 19, TypeScrip
 - AI chat with OpenAI, OpenRouter, and Ollama fallbacks
 - Neon/Postgres-backed engagement and content retrieval features
 - Pre-generated text-to-speech audio and an audio manifest pipeline
-- CI quality gates for linting, type-checking, tests, build, and Lighthouse
+- CI quality gates for linting, type-checking, dead-code detection (knip), tests, coverage thresholds, build, E2E, CodeQL, and Lighthouse
+- A scheduled uptime probe that opens a GitHub issue when production degrades
 
 ## Stack
 
@@ -51,19 +52,31 @@ npm run start
 # Code quality
 npm run lint
 npm run typecheck
+npm run knip           # dead files, unused exports and dependencies
 npm test
+npm run test:coverage  # enforces the thresholds CI gates on
 npm run test:e2e
 npm run perf:lighthouse
+
+# Everything CI gates on, in one shot
+npm run predeploy
 
 # Content and operations
 npm run generate-embeddings
 npm run generate-tts-openai
 npm run generate-audio-manifest
+npm run generate-blog-provenance
 npm run audit-media
+npm run refresh-media-data     # Letterboxd/Goodreads CSV refresh (add -- --write)
 npm run suggest-internal-links
 npm run send-webmentions
+npm run db:migrate
+npm run eval:chat
+
+# Production checks
 npm run smoke:chat
 npm run smoke:chat:prod
+npm run uptime:check           # probes /api/health, /api/rag-status, /api/blog-stats, /
 ```
 
 ## Repository Map
