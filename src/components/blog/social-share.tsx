@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Twitter, Linkedin, Link2, Check, Share2, Globe, Zap } from "lucide-react";
+import { Link2, Check, Share2, Globe, Zap } from "lucide-react";
+import { IconBrandTwitter, IconBrandLinkedin } from "@tabler/icons-react";
 import { logError } from "@/lib/logger";
 
 interface SocialShareProps {
@@ -86,7 +87,7 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
         className="flex items-center gap-2"
         aria-label="Share on Twitter"
       >
-        <Twitter className="h-4 w-4" />
+        <IconBrandTwitter className="h-4 w-4" />
         <span className="hidden sm:inline">Twitter</span>
       </Button>
 
@@ -98,7 +99,7 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
         className="flex items-center gap-2"
         aria-label="Share on LinkedIn"
       >
-        <Linkedin className="h-4 w-4" />
+        <IconBrandLinkedin className="h-4 w-4" />
         <span className="hidden sm:inline">LinkedIn</span>
       </Button>
 

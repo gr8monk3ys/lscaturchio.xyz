@@ -105,8 +105,8 @@ describe('/api/newsletter/subscribe', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      expect(response.status).toBe(201);
-      expect(data.data.message).toBe('Successfully subscribed to newsletter!');
+      expect(response.status).toBe(200);
+      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.');
       expect(data.success).toBe(true);
     });
 
@@ -125,7 +125,7 @@ describe('/api/newsletter/subscribe', () => {
   });
 
   describe('existing subscriber', () => {
-    it('returns already subscribed message for active subscriber', async () => {
+    it('returns the same body for an active subscriber', async () => {
       mockSql.mockResolvedValueOnce([{ email: 'existing@example.com', is_active: true }]);
 
       const request = createMockRequest({ email: 'existing@example.com' });
@@ -133,8 +133,7 @@ describe('/api/newsletter/subscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe('Already subscribed');
-      expect(data.data.alreadySubscribed).toBe(true);
+      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.');
       expect(data.success).toBe(true);
     });
 
@@ -151,7 +150,8 @@ describe('/api/newsletter/subscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.data.alreadySubscribed).toBe(true);
+      // Updating preferences must not change the response either.
+      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.');
       expect(mockSql).toHaveBeenCalledTimes(2);
 
       const updateCall = mockSql.mock.calls[1];
@@ -173,8 +173,7 @@ describe('/api/newsletter/subscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe('Successfully resubscribed!');
-      expect(data.data.resubscribed).toBe(true);
+      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.');
       expect(data.success).toBe(true);
     });
 
@@ -212,8 +211,8 @@ describe('/api/newsletter/subscribe', () => {
       const data = await response.json();
 
       // Should still succeed - email is non-blocking (catch in route)
-      expect(response.status).toBe(201);
-      expect(data.data.message).toBe('Successfully subscribed to newsletter!');
+      expect(response.status).toBe(200);
+      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.');
       expect(data.success).toBe(true);
     });
   });

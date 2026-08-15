@@ -1,4 +1,4 @@
-import { getAllBlogs } from '@/lib/getAllBlogs'
+import { getAllBlogs, type BlogPost } from '@/lib/getAllBlogs'
 import { getDb, isDatabaseConfigured } from '@/lib/db'
 import { logError } from '@/lib/logger'
 
@@ -45,25 +45,32 @@ export async function getPopularPosts(limit: number = 5): Promise<{
 
   try {
     const sql = getDb()
+    // Over-fetch a bounded multiple so rows for slugs that are no longer real
+    // posts (renamed, deleted, or written before the /api/views slug check)
+    // can be dropped without returning fewer posts than asked for. Previously
+    // these fell through as `title: row.slug`, which put raw slugs on the page.
     const rows = await sql`
       SELECT slug, count
       FROM views
       ORDER BY count DESC
-      LIMIT ${clampedLimit}
+      LIMIT ${clampedLimit * 3}
     `
 
-    const posts = rows.map((row) => {
-      const b = blogMap.get(row.slug)
-      return {
-        slug: row.slug,
-        title: b?.title ?? row.slug,
-        description: b?.description ?? '',
-        date: b?.date ?? '',
-        tags: b?.tags ?? [],
-        image: b?.image ?? '/images/blog/default.webp',
-        views: row.count ?? 0,
-      }
-    })
+    const posts = rows
+      .filter((row) => blogMap.has(row.slug))
+      .slice(0, clampedLimit)
+      .map((row) => {
+        const b = blogMap.get(row.slug) as BlogPost
+        return {
+          slug: row.slug,
+          title: b.title,
+          description: b.description,
+          date: b.date,
+          tags: b.tags,
+          image: b.image,
+          views: row.count ?? 0,
+        }
+      })
 
     return { source: 'views', posts }
   } catch (error) {

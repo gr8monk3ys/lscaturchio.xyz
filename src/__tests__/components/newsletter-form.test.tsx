@@ -5,8 +5,14 @@ import { NEWSLETTER_TOPICS } from "@/constants/newsletter";
 
 const fetchMock = vi.fn<typeof fetch>();
 
+/** Mirrors apiSuccess: { data, success }. */
 function jsonResponse(body: unknown, ok = true): Response {
-  return { ok, json: async () => body } as Response;
+  return { ok, json: async () => ({ data: body, success: true }) } as Response;
+}
+
+/** Mirrors apiError: { error, success: false } — no `data` wrapper. */
+function jsonErrorResponse(error: string): Response {
+  return { ok: false, json: async () => ({ error, success: false }) } as Response;
 }
 
 function fillEmail(value = "reader@example.com") {
@@ -115,7 +121,7 @@ describe("NewsletterForm", () => {
   });
 
   it("shows the server error message when the response is not ok", async () => {
-    fetchMock.mockResolvedValueOnce(jsonResponse({ error: "Email already subscribed" }, false));
+    fetchMock.mockResolvedValueOnce(jsonErrorResponse("Email already subscribed"));
     render(<NewsletterForm />);
 
     fillEmail();

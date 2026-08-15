@@ -1,6 +1,6 @@
 "use client";
 
-import { Github, Linkedin, Twitter } from "lucide-react";
+import { IconBrandGithub, IconBrandLinkedin, IconBrandTwitter } from "@tabler/icons-react";
 import Link from "next/link";
 import { m } from '@/lib/motion';
 import { useState } from "react";
@@ -30,9 +30,9 @@ const contactMethods = [
 ];
 
 const socialLinks = [
-  { icon: Github, href: "https://github.com/gr8monk3ys", label: "GitHub" },
-  { icon: Linkedin, href: "https://linkedin.com/in/lorenzo-scaturchio", label: "LinkedIn" },
-  { icon: Twitter, href: "https://twitter.com/gr8monk3ys", label: "Twitter" },
+  { icon: IconBrandGithub, href: "https://github.com/gr8monk3ys", label: "GitHub" },
+  { icon: IconBrandLinkedin, href: "https://linkedin.com/in/lorenzo-scaturchio", label: "LinkedIn" },
+  { icon: IconBrandTwitter, href: "https://twitter.com/gr8monk3ys", label: "Twitter" },
 ];
 
 export function ContactForm() {

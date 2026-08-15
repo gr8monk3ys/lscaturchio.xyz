@@ -83,6 +83,39 @@ describe('/api/newsletter/subscribe', () => {
     })
   })
 
+  describe('subscriber enumeration', () => {
+    it('answers identically whether the address is new, active, or inactive', async () => {
+      // The whole point: side effects differ per branch, the response must not.
+      // Previously these returned 201/'Successfully subscribed to newsletter!',
+      // 200/'Already subscribed' + alreadySubscribed, and 200/
+      // 'Successfully resubscribed!' + resubscribed — enough to test whether
+      // any address someone cares about is on the list.
+      const scenarios: Array<[string, unknown[][]]> = [
+        ['new@example.com', [[], []]],
+        ['active@example.com', [[{ email: 'active@example.com', is_active: true }]]],
+        ['inactive@example.com', [[{ email: 'inactive@example.com', is_active: false }], []]],
+      ]
+
+      const observed: Array<{ status: number; body: unknown }> = []
+
+      for (const [email, sqlResults] of scenarios) {
+        vi.clearAllMocks()
+        for (const result of sqlResults) mockSql.mockResolvedValueOnce(result)
+        mockSql.mockResolvedValue([])
+
+        const response = await POST(createMockRequest({ email }))
+        observed.push({ status: response.status, body: await response.json() })
+      }
+
+      const [first, ...rest] = observed
+      for (const other of rest) {
+        expect(other.status).toBe(first.status)
+        expect(other.body).toEqual(first.body)
+      }
+      expect(JSON.stringify(first.body)).not.toMatch(/alreadySubscribed|resubscribed/)
+    })
+  })
+
   describe('new subscription', () => {
     it('returns 201 for new subscriber with valid email', async () => {
       // First call: SELECT returns no existing subscriber
@@ -94,9 +127,9 @@ describe('/api/newsletter/subscribe', () => {
       const response = await POST(request)
       const data = await response.json()
 
-      expect(response.status).toBe(201)
+      expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.data.message).toBe('Successfully subscribed to newsletter!')
+      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.')
     })
 
     it('sends welcome email for new subscriber (non-blocking)', async () => {
@@ -114,7 +147,7 @@ describe('/api/newsletter/subscribe', () => {
   })
 
   describe('existing active subscriber', () => {
-    it('returns 200 with alreadySubscribed for existing active subscriber', async () => {
+    it('returns the same 200 body for an existing active subscriber', async () => {
       mockSql.mockResolvedValueOnce([
         { email: 'existing@example.com', is_active: true },
       ])
@@ -125,8 +158,7 @@ describe('/api/newsletter/subscribe', () => {
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.data.message).toBe('Already subscribed')
-      expect(data.data.alreadySubscribed).toBe(true)
+      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.')
     })
 
     it('updates topic preferences for existing active subscriber', async () => {
@@ -145,7 +177,8 @@ describe('/api/newsletter/subscribe', () => {
       const data = await response.json()
 
       expect(response.status).toBe(200)
-      expect(data.data.alreadySubscribed).toBe(true)
+      // Updating preferences must not change the response either.
+      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.')
       // SELECT + UPDATE
       expect(mockSql).toHaveBeenCalledTimes(2)
 
@@ -160,7 +193,7 @@ describe('/api/newsletter/subscribe', () => {
   })
 
   describe('reactivation of inactive subscriber', () => {
-    it('reactivates inactive subscriber and returns 200 with resubscribed', async () => {
+    it('reactivates an inactive subscriber without disclosing it in the response', async () => {
       mockSql.mockResolvedValueOnce([
         { email: 'inactive@example.com', is_active: false },
       ])
@@ -172,8 +205,7 @@ describe('/api/newsletter/subscribe', () => {
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.data.message).toBe('Successfully resubscribed!')
-      expect(data.data.resubscribed).toBe(true)
+      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.')
     })
 
     it('sends welcome email for reactivated subscriber', async () => {
@@ -252,7 +284,7 @@ describe('/api/newsletter/subscribe', () => {
       const response = await POST(request)
       const data = await response.json()
 
-      expect(response.status).toBe(201)
+      expect(response.status).toBe(200)
       expect(data.success).toBe(true)
 
       // Verify only valid topics passed to INSERT metadata
@@ -281,7 +313,7 @@ describe('/api/newsletter/subscribe', () => {
       const response = await POST(request)
       const data = await response.json()
 
-      expect(response.status).toBe(201)
+      expect(response.status).toBe(200)
       expect(data.success).toBe(true)
 
       // Tagged template: sql`...${email}, ${token}, ${metadata}...`

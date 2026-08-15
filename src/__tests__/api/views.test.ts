@@ -136,6 +136,24 @@ describe('Views API Route', () => {
       expect(data.data.available).toBe(true);
     });
 
+    it('omits rows whose slug is no longer a real post from format=detailed', async () => {
+      // Defence in depth for rows written before the POST slug check, or by a
+      // direct DB write. These previously fell through as `title: slug`.
+      mockSql.mockResolvedValue([
+        { slug: 'buy-cheap-stuff', count: 9999 },
+        { slug: 'post-1', count: 100 },
+      ]);
+      (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue([
+        { slug: 'post-1', title: 'First Post' },
+      ]);
+
+      const request = new NextRequest('http://localhost/api/views?format=detailed');
+      const data = await (await GET(request)).json();
+
+      expect(data.data.views).toEqual([{ slug: 'post-1', title: 'First Post', views: 100 }]);
+      expect(data.data.total).toBe(1);
+    });
+
     it('returns an unavailable detailed payload when the database is not configured', async () => {
       vi.mocked(isDatabaseConfigured).mockReturnValue(false);
 
@@ -158,6 +176,7 @@ describe('Views API Route', () => {
 
   describe('POST /api/views', () => {
     it('increments view count for a valid slug', async () => {
+      vi.mocked(getAllBlogs).mockResolvedValue([{ slug: 'test-post' }] as never);
       mockSql.mockResolvedValue([{ increment_view_count: 43 }]);
 
       const request = new NextRequest('http://localhost/api/views', {
@@ -174,6 +193,25 @@ describe('Views API Route', () => {
 
       expect(response.status).toBe(200);
       expect(data).toEqual({ data: { slug: 'test-post', views: 43 }, success: true });
+    });
+
+    it('rejects a well-formed slug that is not a real post', async () => {
+      // increment_view_count upserts, so an unchecked slug creates a row for
+      // any string. Those rows then rendered on /stats with the raw slug as
+      // the post title, which is attacker-controlled text on a public page.
+      vi.mocked(getAllBlogs).mockResolvedValue([{ slug: 'real-post' }] as never);
+
+      const request = new NextRequest('http://localhost/api/views', {
+        method: 'POST',
+        body: JSON.stringify({ slug: 'not-a-real-post' }),
+        headers: { 'Content-Type': 'application/json', Origin: 'http://localhost' },
+      });
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(404);
+      // The row must never be written.
+      expect(mockSql).not.toHaveBeenCalled();
     });
 
     it('returns 403 when CSRF validation fails', async () => {
@@ -226,6 +264,7 @@ describe('Views API Route', () => {
     });
 
     it('returns 500 on RPC error', async () => {
+      vi.mocked(getAllBlogs).mockResolvedValue([{ slug: 'test-post' }] as never);
       mockSql.mockRejectedValue(new Error('RPC failed'));
 
       const request = new NextRequest('http://localhost/api/views', {

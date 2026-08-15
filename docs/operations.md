@@ -106,12 +106,17 @@ npm run refresh-media-data           # report what would change
 npm run refresh-media-data -- --write
 ```
 
-A weekly launchd job automates this end to end:
-`scripts/refresh-books-movies.sh` runs the refresh in a throwaway worktree of
-`origin/main` and lands any changes as a rolling PR (`chore/refresh-media-data`)
-— never a direct push. Install per the header comment in
-`ops/launchd/xyz.lscaturchio.refresh-media-data.plist`; logs land in
-`~/Library/Logs/lscaturchio-refresh-media-data.log`.
+[`.github/workflows/media-refresh.yml`](../.github/workflows/media-refresh.yml)
+automates this weekly (Mondays 09:30 UTC) and on `workflow_dispatch`. Changes
+land as a rolling PR on `chore/refresh-media-data` — never a direct push. Both
+feeds are public RSS, so the workflow needs no secrets.
+
+This replaced a launchd job that ran from a single Mac. That setup only ran when
+that machine happened to be awake, and its failures went to a local log file
+nobody read: on 2026-08-10 it pushed its branch but never opened a PR, and the
+change sat unnoticed until someone went looking for stale branches. The workflow
+therefore verifies that a PR is actually open before reporting success, and
+fails the run if not.
 
 The feeds only carry recent history (Letterboxd ~50 entries, Goodreads ~100 per
 shelf), so a long gap still needs a one-time full export from each service,
@@ -127,6 +132,78 @@ hand-written parts (location, what I am building, what I am thinking about) live
 in `src/lib/now-data.ts`; bump `NOW_LAST_UPDATED` whenever you revise them, or
 the page will start showing a staleness notice after
 `NOW_STALE_AFTER_DAYS` (120).
+
+## Serving Audio From A CDN
+
+`public/audio/` holds 83 MP3s totalling **~459MB**, all tracked in git. They are
+the bulk of the repository's size. `.gitignore` has carried a
+`public/audio/*.mp3` rule since the initial scaffold claiming they are "served
+from CDN in production", but the files were force-added, the rule never applied
+to them, and no CDN was ever configured. Production serves them from the repo.
+
+Two consequences worth knowing now:
+
+- Every clone pays ~459MB, and git cannot delta-compress MP3s.
+- The rule *does* apply to new files. Audio generated for the next post would be
+  silently ignored, never deploy, and 404 while every existing post works. Until
+  this migration lands, `git add -f` any new MP3.
+
+### Migration
+
+The code side is already done — `getAudioUrl()` in `src/lib/audio-url.ts` reads
+`NEXT_PUBLIC_AUDIO_CDN_URL` and falls back to `/audio/<slug>.mp3`. What is
+missing is a populated origin.
+
+1. **Provision a bucket** and put the 83 files at its root, keeping the
+   `<slug>.mp3` names. Any static origin works; pick whichever you already pay
+   for. Objects must be publicly readable and served as `audio/mpeg`.
+
+   ```bash
+   # S3-compatible (S3, R2 via the S3 API, B2, Spaces)
+   aws s3 sync public/audio/ s3://<bucket>/ --exclude '*' --include '*.mp3' \
+     --content-type audio/mpeg --acl public-read
+
+   # Cloudflare R2 via wrangler
+   for f in public/audio/*.mp3; do
+     npx wrangler r2 object put "<bucket>/$(basename "$f")" --file "$f" \
+       --content-type audio/mpeg
+   done
+   ```
+
+2. **Verify before trusting it.** This is the gate — do not skip it:
+
+   ```bash
+   npm run verify-audio-cdn -- --base-url https://cdn.example.com/audio
+   ```
+
+   It checks all 83 slugs from `src/generated/audio-manifest.ts` and fails on a
+   missing file, a non-audio `content-type` (a 200 serving an HTML error page),
+   a missing `content-length`, or any byte-size mismatch. It exits non-zero
+   unless all 83 pass.
+
+3. **Point production at it.** Set `NEXT_PUBLIC_AUDIO_CDN_URL` in Vercel and
+   redeploy. Confirm a post plays, and that `/api/rss` enclosure URLs point at
+   the CDN.
+
+4. **Only then remove the files from git:**
+
+   ```bash
+   git rm --cached public/audio/*.mp3
+   git commit -m "chore(audio): serve audio from CDN, drop 459MB from the repo"
+   ```
+
+   The `.gitignore` rule takes over from here, and its comment should be
+   simplified since it stops being inert at that point.
+
+`src/generated/audio-manifest.ts` stays committed regardless — it is the source
+of the byte sizes used for RSS enclosures, it is not regenerated during
+`next build`, and nothing about it depends on the MP3s being present. That is
+what makes step 4 safe.
+
+Removing the files from the index does **not** shrink existing history; it only
+stops growth. Reclaiming the 459MB already committed needs a history rewrite
+(`git filter-repo`), a separate decision with the usual force-push and
+fork-divergence costs.
 
 ## Database (Neon)
 
@@ -186,6 +263,48 @@ npm run uptime:check -- --json
 - GitHub's scheduled runners are best-effort and get delayed under load. Treat
   this as "we hear about it within the hour", not an SLA monitor; move to a
   hosted checker if it ever needs to page someone.
+
+## Dependency Maintenance
+
+Routine bumps are handled by
+[`.github/workflows/dep-refresh.yml`](../.github/workflows/dep-refresh.yml),
+monthly and on `workflow_dispatch`. It runs `scripts/bump-deps.mjs` (minor and
+patch only), regenerates `bun.lock`, and runs lint, typecheck, knip, coverage,
+and build **before** opening a rolling PR on `chore/dep-refresh`. Majors are
+never included; the run summary lists the ones it held back.
+
+Locally, the same path is:
+
+```bash
+node scripts/bump-deps.mjs --dry-run   # report only
+node scripts/bump-deps.mjs             # minor + patch
+node scripts/bump-deps.mjs --majors    # include majors, one at a time please
+bun install                            # regenerate bun.lock — required
+bun run predeploy                      # the gates CI enforces
+```
+
+### Why Dependabot does not do this
+
+Dependabot's npm updater maintains `package-lock.json`. The bun migration
+(`56095cc`) removed that file and CI installs from `bun.lock`, which Dependabot
+never writes — so its PRs leave the lockfile stale and
+`bun install --frozen-lockfile` rejects them. This is the mechanism behind the
+recurring "Dependabot Updates" run failures.
+
+The practical consequence: **Dependabot security alerts will not fix
+themselves here.** When GitHub reports an advisory, resolve it through the bun
+path above. Check whether the vulnerable package is also pinned by a *parent*
+dependency before assuming a direct bump is enough — `next` pins `sharp` as an
+optional dependency, so bumping `sharp` alone left `next` resolving a nested
+vulnerable copy, and the advisory (`GHSA-f88m-g3jw-g9cj`) stayed open for about
+two months. Confirm single-copy resolution afterwards:
+
+```bash
+grep -o '"sharp": \["sharp@[^"]*"' bun.lock | sort -u
+```
+
+`.github/dependabot.yml` is scoped to GitHub Actions only, where the updater
+works fine and nothing else tracks version drift.
 
 ## Housekeeping Checklist
 

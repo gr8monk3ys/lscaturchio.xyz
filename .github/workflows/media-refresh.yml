@@ -1,0 +1,126 @@
+name: Media Refresh
+
+# Weekly refresh of the committed Letterboxd/Goodreads CSVs behind /books and
+# /movies, landed as a rolling PR — never a direct push to main.
+#
+# This replaces a launchd job that ran from one specific Mac. That setup had
+# two failure modes this workflow does not:
+#
+#   1. It only ran when that machine happened to be awake on Monday morning.
+#   2. Failures went to a local log file nobody reads. On 2026-08-10 the run
+#      pushed its branch but never opened a PR, and the change sat unnoticed
+#      until someone went looking for stale branches three days later.
+#
+# The PR step here is therefore explicitly checked: if it cannot create or
+# update the PR, the job fails and GitHub's scheduled-failure email fires.
+#
+# No secrets are needed — both feeds are public RSS.
+
+on:
+  schedule:
+    # Mondays at 09:30 UTC, matching the cadence of the launchd job it replaces.
+    - cron: '30 9 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: media-refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  BRANCH: chore/refresh-media-data
+
+jobs:
+  refresh:
+    name: Refresh books/movies data
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # The refresh merges into the CSVs as they exist on main.
+          ref: main
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.9
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Refresh CSVs from RSS
+        run: bun run tsx scripts/refresh-books-movies.ts --write
+        shell: bash
+
+      - name: Detect changes
+        id: diff
+        run: |
+          if git diff --quiet -- public/my-data; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes from the feeds."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --stat -- public/my-data
+            {
+              echo '### Media refresh'
+              echo ''
+              echo '```'
+              git diff --stat -- public/my-data
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+        shell: bash
+
+      - name: Push rolling branch
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add public/my-data
+          git commit -m "chore(data): refresh Letterboxd/Goodreads exports from RSS
+
+          Automated weekly refresh (.github/workflows/media-refresh.yml).
+          Data-artifact-only diff: committed CSVs under public/my-data updated
+          from the public RSS feeds; no code changes."
+          git push --force origin "HEAD:$BRANCH"
+        shell: bash
+
+      # One rolling PR: create it if absent, otherwise the force-push above
+      # already updated it. Failure here is fatal on purpose — a pushed branch
+      # with no PR is precisely the silent failure this workflow exists to stop.
+      - name: Open or confirm PR
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          state="$(gh pr view "$BRANCH" --json state -q .state 2>/dev/null || true)"
+
+          if [ "$state" = "OPEN" ]; then
+            echo "Existing PR updated by the push."
+          else
+            gh pr create \
+              --head "$BRANCH" \
+              --base main \
+              --title "chore(data): refresh Letterboxd/Goodreads exports" \
+              --body "Automated weekly refresh of the committed CSVs in \`public/my-data\` from the public Letterboxd/Goodreads RSS feeds. Data-artifact-only diff — see \`scripts/refresh-books-movies.ts\`.
+
+          Opened by [\`media-refresh.yml\`](../blob/main/.github/workflows/media-refresh.yml)."
+            echo "Opened PR."
+          fi
+
+          # Verify rather than trust: confirm a PR is actually open for the
+          # branch before reporting success.
+          final="$(gh pr view "$BRANCH" --json state -q .state 2>/dev/null || true)"
+          if [ "$final" != "OPEN" ]; then
+            echo "::error::Branch $BRANCH was pushed but no open PR exists for it."
+            exit 1
+          fi
+        shell: bash
