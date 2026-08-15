@@ -1,0 +1,26 @@
+version: 2
+
+# GitHub Actions only, on purpose.
+#
+# npm version updates were deliberately disabled in f3323cd for being noisy,
+# and they cannot work here anyway: Dependabot's npm updater maintains
+# package-lock.json, which the bun migration removed. Its PRs leave bun.lock
+# stale, so `bun install --frozen-lockfile` in CI rejects them. Routine npm
+# bumps are handled by .github/workflows/dep-refresh.yml, which regenerates
+# bun.lock properly and verifies the result before opening a PR.
+#
+# Action versions are a different story: they drift silently, nothing else in
+# the repo tracks them, and the volume is a few PRs a year rather than weekly
+# noise. Grouped into one PR so a quiet month stays quiet.
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "ci"
+    groups:
+      actions:
+        patterns:
+          - "*"
