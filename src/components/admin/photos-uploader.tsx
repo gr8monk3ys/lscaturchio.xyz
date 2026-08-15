@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { inputClass, labelClass, fieldClass } from "./form-styles";
+import { inputClass, labelClass, fieldClass, submitButtonClass } from "./form-styles";
 import { PublishResult, type PublishState } from "./publish-result";
+import { publishRequest } from "./publish";
 
 interface PhotoDraft {
   file: File;
@@ -40,42 +41,25 @@ export function PhotosUploader() {
 
   async function publish() {
     setResult({ state: "saving" });
-    try {
-      const form = new FormData();
-      form.append(
-        "entries",
-        JSON.stringify(
-          drafts.map((d) => ({
-            filename: d.file.name,
-            category: d.category,
-            alt: d.alt,
-            camera: d.camera,
-            lens: d.lens,
-            settings: d.settings,
-            recipe: d.recipe || undefined,
-            location: d.location || undefined,
-            date: d.date,
-          }))
-        )
-      );
-      for (const d of drafts) form.append("files", d.file);
-      const res = await fetch("/api/admin/photos", { method: "POST", body: form });
-      const json = (await res.json()) as {
-        success: boolean;
-        error?: string;
-        data?: { commitUrl: string };
-      };
-      if (!res.ok || !json.success || !json.data) {
-        setResult({ state: "error", message: json.error || `Publish failed (${res.status})` });
-        return;
-      }
-      setResult({ state: "done", commitUrl: json.data.commitUrl, viewPath: "/photos" });
-    } catch (error) {
-      setResult({
-        state: "error",
-        message: error instanceof Error ? error.message : "Publish failed",
-      });
-    }
+    const form = new FormData();
+    form.append(
+      "entries",
+      JSON.stringify(
+        drafts.map((d) => ({
+          filename: d.file.name,
+          category: d.category,
+          alt: d.alt,
+          camera: d.camera,
+          lens: d.lens,
+          settings: d.settings,
+          recipe: d.recipe || undefined,
+          location: d.location || undefined,
+          date: d.date,
+        }))
+      )
+    );
+    for (const d of drafts) form.append("files", d.file);
+    setResult(await publishRequest("/api/admin/photos", { method: "POST", body: form }, "/photos"));
   }
 
   return (
@@ -188,7 +172,7 @@ export function PhotosUploader() {
       <button
         type="submit"
         disabled={drafts.length === 0 || result.state === "saving"}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+        className={submitButtonClass}
       >
         Publish {drafts.length || ""} photo{drafts.length === 1 ? "" : "s"}
       </button>

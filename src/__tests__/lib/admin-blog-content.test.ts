@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
+import { slugify } from "@/lib/admin/slugify";
 import {
-  slugify,
   serializeMeta,
   parseMeta,
   extractBody,

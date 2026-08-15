@@ -8,12 +8,11 @@ import sharp from "sharp";
 export async function toWebp(
   input: Buffer
 ): Promise<{ data: Buffer; aspectRatio: "square" | "portrait" | "landscape" }> {
-  const data = await sharp(input)
+  const { data, info } = await sharp(input)
     .resize({ width: 1920, withoutEnlargement: true })
     .webp({ quality: 85 })
-    .toBuffer();
-  const { width = 1, height = 1 } = await sharp(data).metadata();
-  const ratio = width / height;
+    .toBuffer({ resolveWithObject: true });
+  const ratio = info.width / info.height;
   const aspectRatio = ratio > 1.15 ? "landscape" : ratio < 0.87 ? "portrait" : "square";
   return { data, aspectRatio };
 }

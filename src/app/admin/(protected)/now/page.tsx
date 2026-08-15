@@ -1,25 +1,17 @@
-import { getFile } from "@/lib/admin/github";
+import { loadJsonFromMain, NOW_JSON_PATH } from "@/lib/admin/json-content";
 import { NowEditor } from "@/components/admin/now-editor";
-import type { NowContent } from "@/lib/now-data";
+import type { NowContent } from "@/lib/admin/schemas";
 
 export default async function AdminNowPage() {
-  let initial: NowContent | null = null;
-  let loadError: string | null = null;
-  try {
-    const file = await getFile("src/data/now.json");
-    if (file) initial = JSON.parse(file.text) as NowContent;
-    else loadError = "src/data/now.json not found on main";
-  } catch (error) {
-    loadError = error instanceof Error ? error.message : "Could not load /now content";
-  }
+  const { data, error } = await loadJsonFromMain<NowContent>(NOW_JSON_PATH);
 
   return (
     <main>
       <h1 className="mb-6 text-2xl font-bold">Now page</h1>
-      {initial ? (
-        <NowEditor initial={initial} />
+      {data ? (
+        <NowEditor initial={data} />
       ) : (
-        <p className="text-sm text-red-600 dark:text-red-400">{loadError}</p>
+        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
       )}
     </main>
   );

@@ -1,20 +1,20 @@
 import { z } from "zod";
+import { BLOG_STAGES } from "@/lib/blog-stage";
+import { slugSchema } from "@/lib/validations";
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD");
 
 export const postPublishSchema = z.object({
   title: z.string().min(1).max(120),
-  slug: z
-    .string()
-    .min(1)
-    .max(80)
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase-hyphenated"),
+  slug: slugSchema,
   description: z.string().min(1).max(300),
   date: isoDate,
+  updated: isoDate.optional(),
   tags: z.array(z.string().min(1).max(30)).max(10).default([]),
+  syndication: z.array(z.string().url()).max(10).optional(),
   series: z.string().min(1).max(80).optional(),
   seriesOrder: z.number().int().min(1).max(99).optional(),
-  stage: z.enum(["seedling", "budding", "evergreen"]).optional(),
+  stage: z.enum(BLOG_STAGES).optional(),
   body: z.string().min(1).max(200_000),
   // Existing cover path, passed through on edits so the cover survives when
   // no new image is uploaded.
@@ -79,3 +79,11 @@ export const linksContentSchema = z.record(
       .max(100),
   })
 );
+
+// Content types are derived from the schemas so validation and typing cannot
+// drift apart; pages and editors import these rather than hand-written copies.
+export type NowContent = z.infer<typeof nowContentSchema>;
+export type NowBuild = NowContent["building"][number];
+export type LinksContent = z.infer<typeof linksContentSchema>;
+export type SectionData = LinksContent[string];
+export type LinkData = SectionData["links"][number];

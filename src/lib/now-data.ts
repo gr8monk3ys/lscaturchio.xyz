@@ -11,19 +11,10 @@ export const NOW_LAST_UPDATED: string = nowJson.lastUpdated;
 // silently implying everything below is still true.
 export const NOW_STALE_AFTER_DAYS = 120;
 
-export interface NowBuild {
-  title: string;
-  /** Where to read more — a case study on this site, or the repo. */
-  href: string;
-  note: string;
-}
-
-export interface NowContent {
-  lastUpdated: string;
-  location: { label: string; detail: string };
-  building: NowBuild[];
-  thinkingAbout: string[];
-}
+// Derived from the Zod schema so the /now page, the editor, and the portal's
+// validation share one definition of the content shape.
+export type { NowBuild } from "@/lib/admin/schemas";
+import type { NowBuild } from "@/lib/admin/schemas";
 
 /**
  * Only the parts of /now that genuinely require a human live here. Reading,

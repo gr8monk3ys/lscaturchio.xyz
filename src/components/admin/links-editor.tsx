@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import type { LinksContent, LinkData } from "@/types/links";
-import { inputClass, labelClass, fieldClass } from "./form-styles";
+import { inputClass, labelClass, fieldClass, submitButtonClass } from "./form-styles";
 import { PublishResult, type PublishState } from "./publish-result";
+import { publishRequest } from "./publish";
 
 const EMPTY_LINK: LinkData = { title: "", link: "", linkDescription: "" };
 
@@ -27,37 +28,26 @@ export function LinksEditor({ initial }: { initial: LinksContent }) {
 
   async function publish() {
     setResult({ state: "saving" });
-    try {
-      const cleaned: LinksContent = Object.fromEntries(
-        Object.entries(content).map(([key, section]) => [
-          key,
-          {
-            ...section,
-            links: section.links.map((l) => ({ ...l, rss: l.rss || undefined })),
-          },
-        ])
-      );
-      const res = await fetch("/api/admin/data/links", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cleaned),
-      });
-      const json = (await res.json()) as {
-        success: boolean;
-        error?: string;
-        data?: { commitUrl: string };
-      };
-      if (!res.ok || !json.success || !json.data) {
-        setResult({ state: "error", message: json.error || `Publish failed (${res.status})` });
-        return;
-      }
-      setResult({ state: "done", commitUrl: json.data.commitUrl, viewPath: "/links" });
-    } catch (error) {
-      setResult({
-        state: "error",
-        message: error instanceof Error ? error.message : "Publish failed",
-      });
-    }
+    const cleaned: LinksContent = Object.fromEntries(
+      Object.entries(content).map(([key, section]) => [
+        key,
+        {
+          ...section,
+          links: section.links.map((l) => ({ ...l, rss: l.rss || undefined })),
+        },
+      ])
+    );
+    setResult(
+      await publishRequest(
+        "/api/admin/data/links",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cleaned),
+        },
+        "/links"
+      )
+    );
   }
 
   return (
@@ -131,11 +121,7 @@ export function LinksEditor({ initial }: { initial: LinksContent }) {
           </button>
         </section>
       ))}
-      <button
-        type="submit"
-        disabled={result.state === "saving"}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
-      >
+      <button type="submit" disabled={result.state === "saving"} className={submitButtonClass}>
         Publish /links update
       </button>
       <PublishResult result={result} />

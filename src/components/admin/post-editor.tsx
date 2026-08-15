@@ -2,29 +2,13 @@
 
 import { useState } from "react";
 import { BLOG_STAGES } from "@/lib/blog-stage";
-import { inputClass, labelClass, fieldClass } from "./form-styles";
+import { slugify } from "@/lib/admin/slugify";
+import type { PostMeta } from "@/lib/admin/blog-content";
+import { inputClass, labelClass, fieldClass, submitButtonClass } from "./form-styles";
 import { PublishResult, type PublishState } from "./publish-result";
+import { publishRequest } from "./publish";
 
-export interface PostEditorInitial {
-  slug: string;
-  title: string;
-  description: string;
-  date: string;
-  tags: string[];
-  series?: string;
-  seriesOrder?: number;
-  stage?: string;
-  image?: string;
-  body: string;
-}
-
-function slugifyClient(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/['".]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+export type PostEditorInitial = PostMeta & { slug: string; body: string };
 
 export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
   const editing = Boolean(initial);
@@ -45,7 +29,7 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
 
   function onTitleChange(value: string) {
     setTitle(value);
-    if (!slugTouched) setSlug(slugifyClient(value));
+    if (!slugTouched) setSlug(slugify(value));
   }
 
   function onCoverChange(file: File | undefined) {
@@ -60,8 +44,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
 
   async function publish() {
     setResult({ state: "saving" });
-    try {
-      const res = await fetch("/api/admin/posts", {
+    setResult(
+      await publishRequest("/api/admin/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -69,10 +53,13 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
           slug,
           description,
           date,
+          // Edits stamp today's date as `updated`; syndication rides through.
+          updated: editing ? new Date().toISOString().slice(0, 10) : undefined,
           tags: tags
             .split(",")
             .map((t) => t.trim())
             .filter(Boolean),
+          syndication: initial?.syndication,
           series: series || undefined,
           seriesOrder: seriesOrder ? Number(seriesOrder) : undefined,
           stage: stage || undefined,
@@ -81,23 +68,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
           coverImage: coverImage || undefined,
           overwrite: editing,
         }),
-      });
-      const json = (await res.json()) as {
-        success: boolean;
-        error?: string;
-        data?: { commitUrl: string; path: string };
-      };
-      if (!res.ok || !json.success || !json.data) {
-        setResult({ state: "error", message: json.error || `Publish failed (${res.status})` });
-        return;
-      }
-      setResult({ state: "done", commitUrl: json.data.commitUrl, viewPath: json.data.path });
-    } catch (error) {
-      setResult({
-        state: "error",
-        message: error instanceof Error ? error.message : "Publish failed",
-      });
-    }
+      })
+    );
   }
 
   return (
@@ -243,11 +215,7 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
           required
         />
       </div>
-      <button
-        type="submit"
-        disabled={result.state === "saving"}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
-      >
+      <button type="submit" disabled={result.state === "saving"} className={submitButtonClass}>
         {editing ? "Publish update" : "Publish post"}
       </button>
       <PublishResult result={result} />

@@ -168,6 +168,9 @@ export const RATE_LIMITS = {
 
   // Newsletter operations (prevent spam)
   NEWSLETTER: { limit: 3, window: 300000 }, // 3 requests per 5 minutes
+
+  // Admin portal sign-in (login redirect + OAuth callback)
+  ADMIN_AUTH: { limit: 10, window: 300000 }, // 10 requests per 5 minutes
 } as const;
 
 /**

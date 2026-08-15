@@ -1,14 +1,3 @@
-export interface LinkData {
-  title: string;
-  link: string;
-  linkDescription: string;
-  rss?: string;
-}
-
-export interface SectionData {
-  title: string;
-  description: string;
-  links: LinkData[];
-}
-
-export type LinksContent = Record<string, SectionData>;
+// Derived from the Zod schema so the /links page, the editor, and the
+// validation the portal applies can never drift apart.
+export type { LinkData, SectionData, LinksContent } from "@/lib/admin/schemas";

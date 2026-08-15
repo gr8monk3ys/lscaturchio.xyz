@@ -5,6 +5,8 @@ import { logError } from "@/lib/logger";
 import {
   ADMIN_SESSION_COOKIE,
   OAUTH_STATE_COOKIE,
+  adminCookieOptions,
+  allowedLogin,
   createSessionToken,
   isAdminConfigured,
 } from "@/lib/admin/session";
@@ -42,20 +44,17 @@ async function handler(req: NextRequest): Promise<NextResponse> {
       headers: { Authorization: `Bearer ${tokenData.access_token}` },
     });
     const user = (await userRes.json()) as { login?: string };
-    const allowed = process.env.ADMIN_ALLOWED_LOGIN || "gr8monk3ys";
-    if (!userRes.ok || !user.login || user.login.toLowerCase() !== allowed.toLowerCase()) {
+    if (!userRes.ok || !user.login || user.login.toLowerCase() !== allowedLogin().toLowerCase()) {
       return loginRedirect(req, "denied");
     }
 
     const res = NextResponse.redirect(new URL("/admin", req.url));
     res.cookies.delete(OAUTH_STATE_COOKIE);
-    res.cookies.set(ADMIN_SESSION_COOKIE, createSessionToken(user.login), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60,
-      path: "/",
-    });
+    res.cookies.set(
+      ADMIN_SESSION_COOKIE,
+      createSessionToken(user.login),
+      adminCookieOptions(7 * 24 * 60 * 60)
+    );
     return res;
   } catch (error) {
     logError("Admin OAuth callback failed", error, {
@@ -66,4 +65,4 @@ async function handler(req: NextRequest): Promise<NextResponse> {
   }
 }
 
-export const GET = withRateLimit(handler, RATE_LIMITS.NEWSLETTER);
+export const GET = withRateLimit(handler, RATE_LIMITS.ADMIN_AUTH);

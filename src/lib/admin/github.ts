@@ -60,25 +60,15 @@ export async function listBlogSlugs(): Promise<string[]> {
   return entries.filter((e) => e.type === "dir").map((e) => e.name);
 }
 
+type TreeEntry = { path: string; mode: string; type: string; sha: string };
+
 async function attemptCommit(
-  files: CommitFile[],
+  tree: TreeEntry[],
   message: string
 ): Promise<{ sha: string; url: string } | null> {
   const ref = await ghJson<{ object: { sha: string } }>("/git/ref/heads/main");
   const headSha = ref.object.sha;
   const headCommit = await ghJson<{ tree: { sha: string } }>(`/git/commits/${headSha}`);
-
-  const tree: Array<{ path: string; mode: string; type: string; sha: string }> = [];
-  for (const file of files) {
-    const blob = await ghJson<{ sha: string }>("/git/blobs", {
-      method: "POST",
-      body: JSON.stringify({
-        content: Buffer.from(file.content).toString("base64"),
-        encoding: "base64",
-      }),
-    });
-    tree.push({ path: file.path, mode: "100644", type: "blob", sha: blob.sha });
-  }
 
   const newTree = await ghJson<{ sha: string }>("/git/trees", {
     method: "POST",
@@ -102,9 +92,22 @@ export async function commitToMain(
   files: CommitFile[],
   message: string
 ): Promise<{ sha: string; url: string }> {
-  const first = await attemptCommit(files, message);
+  // Blobs are content-addressed and independent of the head, so upload them
+  // in parallel, once — a retry after a ref race must not re-send megabytes.
+  const tree = await Promise.all(
+    files.map(async (file): Promise<TreeEntry> => {
+      const buffer = Buffer.isBuffer(file.content) ? file.content : Buffer.from(file.content);
+      const blob = await ghJson<{ sha: string }>("/git/blobs", {
+        method: "POST",
+        body: JSON.stringify({ content: buffer.toString("base64"), encoding: "base64" }),
+      });
+      return { path: file.path, mode: "100644", type: "blob", sha: blob.sha };
+    })
+  );
+
+  const first = await attemptCommit(tree, message);
   if (first) return first;
-  const second = await attemptCommit(files, message);
+  const second = await attemptCommit(tree, message);
   if (second) return second;
   throw new Error("GitHub commit failed twice: main moved during both attempts");
 }

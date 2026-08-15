@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { ApiErrors } from "@/lib/api-response";
+import { safeCompare } from "@/lib/api-auth";
 
 export const ADMIN_SESSION_COOKIE = "admin_session";
 export const OAUTH_STATE_COOKIE = "admin_oauth_state";
@@ -16,8 +17,20 @@ export function isAdminConfigured(): boolean {
   );
 }
 
-function allowedLogin(): string {
+/** The one place that decides which GitHub account is the admin. */
+export function allowedLogin(): string {
   return process.env.ADMIN_ALLOWED_LOGIN || "gr8monk3ys";
+}
+
+/** Shared attributes for every cookie the portal sets. */
+export function adminCookieOptions(maxAge: number) {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    maxAge,
+    path: "/",
+  };
 }
 
 function sign(payload: string, secret: string): string {
@@ -41,12 +54,7 @@ export function verifySessionToken(
   if (!secret || !token) return null;
   const [payload, sig] = token.split(".");
   if (!payload || !sig) return null;
-  const expected = sign(payload, secret);
-  const sigBuf = Buffer.from(sig);
-  const expectedBuf = Buffer.from(expected);
-  if (sigBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(sigBuf, expectedBuf)) {
-    return null;
-  }
+  if (!safeCompare(sig, sign(payload, secret))) return null;
   try {
     const data = JSON.parse(Buffer.from(payload, "base64url").toString()) as {
       login?: unknown;

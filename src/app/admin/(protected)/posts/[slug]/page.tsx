@@ -34,20 +34,7 @@ export default async function AdminEditPostPage({
   return (
     <main>
       <h1 className="mb-6 text-2xl font-bold">Edit: {meta.title}</h1>
-      <PostEditor
-        initial={{
-          slug,
-          title: meta.title,
-          description: meta.description,
-          date: meta.date,
-          tags: meta.tags,
-          series: meta.series,
-          seriesOrder: meta.seriesOrder,
-          stage: meta.stage,
-          image: meta.image,
-          body: extractBody(file.text),
-        }}
-      />
+      <PostEditor initial={{ ...meta, slug, body: extractBody(file.text) }} />
     </main>
   );
 }

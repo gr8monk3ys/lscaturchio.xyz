@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { NowContent, NowBuild } from "@/lib/now-data";
-import { inputClass, labelClass, fieldClass } from "./form-styles";
+import type { NowContent, NowBuild } from "@/lib/admin/schemas";
+import { inputClass, labelClass, fieldClass, submitButtonClass } from "./form-styles";
 import { PublishResult, type PublishState } from "./publish-result";
+import { publishRequest } from "./publish";
 
 export function NowEditor({ initial }: { initial: NowContent }) {
   const [location, setLocation] = useState(initial.location);
@@ -11,35 +12,28 @@ export function NowEditor({ initial }: { initial: NowContent }) {
   const [thinkingAbout, setThinkingAbout] = useState<string[]>(initial.thinkingAbout);
   const [result, setResult] = useState<PublishState>({ state: "idle" });
 
+  function updateBuild(index: number, patch: Partial<NowBuild>) {
+    setBuilding(building.map((x, j) => (j === index ? { ...x, ...patch } : x)));
+  }
+
   async function publish() {
     setResult({ state: "saving" });
-    try {
-      const res = await fetch("/api/admin/data/now", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          lastUpdated: new Date().toISOString().slice(0, 10),
-          location,
-          building,
-          thinkingAbout,
-        }),
-      });
-      const json = (await res.json()) as {
-        success: boolean;
-        error?: string;
-        data?: { commitUrl: string };
-      };
-      if (!res.ok || !json.success || !json.data) {
-        setResult({ state: "error", message: json.error || `Publish failed (${res.status})` });
-        return;
-      }
-      setResult({ state: "done", commitUrl: json.data.commitUrl, viewPath: "/now" });
-    } catch (error) {
-      setResult({
-        state: "error",
-        message: error instanceof Error ? error.message : "Publish failed",
-      });
-    }
+    setResult(
+      await publishRequest(
+        "/api/admin/data/now",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lastUpdated: new Date().toISOString().slice(0, 10),
+            location,
+            building,
+            thinkingAbout,
+          }),
+        },
+        "/now"
+      )
+    );
   }
 
   return (
@@ -80,9 +74,7 @@ export function NowEditor({ initial }: { initial: NowContent }) {
               <input
                 className={inputClass}
                 value={b.title}
-                onChange={(e) =>
-                  setBuilding(building.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))
-                }
+                onChange={(e) => updateBuild(i, { title: e.target.value })}
                 required
               />
             </div>
@@ -91,9 +83,7 @@ export function NowEditor({ initial }: { initial: NowContent }) {
               <input
                 className={inputClass}
                 value={b.href}
-                onChange={(e) =>
-                  setBuilding(building.map((x, j) => (j === i ? { ...x, href: e.target.value } : x)))
-                }
+                onChange={(e) => updateBuild(i, { href: e.target.value })}
                 required
               />
             </div>
@@ -104,9 +94,7 @@ export function NowEditor({ initial }: { initial: NowContent }) {
               className={inputClass}
               rows={2}
               value={b.note}
-              onChange={(e) =>
-                setBuilding(building.map((x, j) => (j === i ? { ...x, note: e.target.value } : x)))
-              }
+              onChange={(e) => updateBuild(i, { note: e.target.value })}
               required
             />
           </div>
@@ -156,11 +144,7 @@ export function NowEditor({ initial }: { initial: NowContent }) {
         + Add thought
       </button>
 
-      <button
-        type="submit"
-        disabled={result.state === "saving"}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
-      >
+      <button type="submit" disabled={result.state === "saving"} className={submitButtonClass}>
         Publish /now update
       </button>
       <p className="mt-2 text-xs text-muted-foreground">

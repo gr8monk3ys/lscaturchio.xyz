@@ -41,35 +41,31 @@ describe("listBlogSlugs", () => {
 });
 
 describe("commitToMain", () => {
-  function mockHappyPath() {
+  function mockAttempt(refPatch: Response) {
     fetchMock
       .mockResolvedValueOnce(jsonResponse(200, { object: { sha: "head" } })) // ref
       .mockResolvedValueOnce(jsonResponse(200, { tree: { sha: "basetree" } })) // head commit
-      .mockResolvedValueOnce(jsonResponse(201, { sha: "blob1" })) // blob
       .mockResolvedValueOnce(jsonResponse(201, { sha: "tree1" })) // tree
       .mockResolvedValueOnce(jsonResponse(201, { sha: "commit1" })) // commit
-      .mockResolvedValueOnce(jsonResponse(200, {})); // ref patch
+      .mockResolvedValueOnce(refPatch); // ref patch
   }
 
   it("creates blob, tree, commit, and updates the ref", async () => {
-    mockHappyPath();
+    fetchMock.mockResolvedValueOnce(jsonResponse(201, { sha: "blob1" })); // blob (uploaded first)
+    mockAttempt(jsonResponse(200, {}));
     const result = await commitToMain([{ path: "a.txt", content: "hi" }], "msg");
     expect(result.sha).toBe("commit1");
     expect(result.url).toBe("https://github.com/owner/repo/commit/commit1");
     expect(fetchMock).toHaveBeenCalledTimes(6);
+    expect(String(fetchMock.mock.calls[0][0])).toContain("/git/blobs");
   });
 
-  it("retries once when the ref update is rejected", async () => {
-    fetchMock
-      .mockResolvedValueOnce(jsonResponse(200, { object: { sha: "head" } }))
-      .mockResolvedValueOnce(jsonResponse(200, { tree: { sha: "basetree" } }))
-      .mockResolvedValueOnce(jsonResponse(201, { sha: "blob1" }))
-      .mockResolvedValueOnce(jsonResponse(201, { sha: "tree1" }))
-      .mockResolvedValueOnce(jsonResponse(201, { sha: "commit1" }))
-      .mockResolvedValueOnce(jsonResponse(422, { message: "not a fast forward" }));
-    mockHappyPath();
+  it("retries once without re-uploading blobs when the ref update is rejected", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(201, { sha: "blob1" }));
+    mockAttempt(jsonResponse(422, { message: "not a fast forward" }));
+    mockAttempt(jsonResponse(200, {}));
     const result = await commitToMain([{ path: "a.txt", content: "hi" }], "msg");
     expect(result.sha).toBe("commit1");
-    expect(fetchMock).toHaveBeenCalledTimes(12);
+    expect(fetchMock).toHaveBeenCalledTimes(11); // 1 blob + 2×5 attempt calls
   });
 });

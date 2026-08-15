@@ -1,31 +1,17 @@
 import { compile } from "@mdx-js/mdx";
-import type { BlogStage } from "@/lib/blog-stage";
+import { extractBlogMeta, type BlogMeta } from "@/lib/blog-meta";
 
-export interface PostMeta {
-  title: string;
-  description: string;
-  date: string;
-  image?: string;
-  tags: string[];
-  series?: string;
-  seriesOrder?: number;
-  stage?: BlogStage;
-}
-
-export function slugify(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/['".]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+/** BlogMeta, minus the image requirement — portal posts may ship without one. */
+export type PostMeta = Omit<BlogMeta, "image"> & { image?: string };
 
 const META_KEY_ORDER = [
   "title",
   "description",
   "date",
+  "updated",
   "image",
   "tags",
+  "syndication",
   "series",
   "seriesOrder",
   "stage",
@@ -42,39 +28,21 @@ export function serializeMeta(meta: PostMeta): string {
   return lines.join("\n");
 }
 
+// The portal always emits this exact shape; body extraction depends on it.
 const META_BLOCK_RE = /export const meta = \{\n([\s\S]*?)\n\}/;
 
 /**
- * Parse a meta block back into a PostMeta. Portal-generated blocks always
- * match (one `key: <JSON value>,` per line); hand-written posts follow the
- * same shape today. Anything fancier (computed values, multi-line strings)
- * returns null and the caller falls back to treating the file as opaque.
+ * Parse a post's meta for editing. Values are read with the site's canonical
+ * AST parser (extractBlogMeta, the same one getAllBlogs uses), but form-based
+ * editing additionally requires the standard block shape so extractBody can
+ * split meta from body reliably. Anything else returns null and the caller
+ * treats the file as not portal-editable.
  */
 export function parseMeta(source: string): PostMeta | null {
-  const match = source.match(META_BLOCK_RE);
-  if (!match) return null;
-  const result: Record<string, unknown> = {};
-  for (const rawLine of match[1].split("\n")) {
-    const line = rawLine.trim();
-    if (!line) continue;
-    const kv = line.match(/^(\w+):\s*(.*?),?$/);
-    if (!kv) return null;
-    try {
-      result[kv[1]] = JSON.parse(kv[2]);
-    } catch {
-      return null;
-    }
-  }
-  if (
-    typeof result.title !== "string" ||
-    typeof result.description !== "string" ||
-    typeof result.date !== "string"
-  ) {
-    return null;
-  }
-  if (result.tags === undefined) result.tags = [];
-  if (!Array.isArray(result.tags)) return null;
-  return result as unknown as PostMeta;
+  if (!META_BLOCK_RE.test(source)) return null;
+  const meta = extractBlogMeta(source);
+  if (!meta.title || !meta.description || !meta.date) return null;
+  return { ...meta, tags: meta.tags ?? [] } as PostMeta;
 }
 
 export function extractBody(source: string): string {

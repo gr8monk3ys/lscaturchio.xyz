@@ -78,15 +78,20 @@ describe("PUT /api/admin/data/now", () => {
   });
 });
 
-describe("GET /api/admin/data/links", () => {
-  it("returns the parsed file from GitHub", async () => {
-    getFile.mockResolvedValueOnce({
-      text: JSON.stringify({ docs: { title: "D", description: "d", links: [] } }),
-      sha: "s",
-    });
-    const { GET } = await import("@/app/api/admin/data/links/route");
-    const res = await GET(await authedRequest(undefined, "data/links", "GET"));
-    const body = (await res.json()) as { data: { docs: { title: string } } };
-    expect(body.data.docs.title).toBe("D");
+describe("PUT /api/admin/data/links", () => {
+  it("commits src/data/links.json", async () => {
+    const validLinks = {
+      docs: {
+        title: "D",
+        description: "d",
+        links: [{ title: "T", link: "https://example.com", linkDescription: "x" }],
+      },
+    };
+    const { PUT } = await import("@/app/api/admin/data/links/route");
+    const res = await PUT(await authedRequest(validLinks, "data/links", "PUT"));
+    expect(res.status).toBe(200);
+    const [files] = commitToMain.mock.calls[0] as [Array<{ path: string; content: string }>];
+    expect(files[0].path).toBe("src/data/links.json");
+    expect(JSON.parse(files[0].content)).toEqual(validLinks);
   });
 });

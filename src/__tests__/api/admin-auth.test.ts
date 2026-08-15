@@ -5,7 +5,7 @@ vi.mock("@/lib/with-rate-limit", () => ({
   withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
   RATE_LIMITS: {
     STANDARD: { limit: 30, window: 60000 },
-    NEWSLETTER: { limit: 3, window: 300000 },
+    ADMIN_AUTH: { limit: 10, window: 300000 },
   },
 }));
 vi.mock("@/lib/csrf", () => ({ validateCsrf: vi.fn(() => null) }));
