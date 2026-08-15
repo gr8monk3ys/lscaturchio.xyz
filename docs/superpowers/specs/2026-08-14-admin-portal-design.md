@@ -67,7 +67,9 @@ Rendering is unchanged. The portal's write surface is exactly:
 - Form for the `meta` export: title (auto-slugged, editable), description,
   tags, series + seriesOrder, stage, date (defaults today), optional cover
   image upload → `public/images/blog/<slug>.webp`.
-- Markdown body in a textarea with client-side preview.
+- Markdown body in a textarea. No live preview in v1 (would need a client
+  MDX renderer); instead the server-side MDX compile check gives immediate
+  publish-time feedback.
 - Publish generates `content.mdx` (serialized meta block + body) and the
   boilerplate `page.tsx` (identical across posts except the slug).
 - Edit mode lists posts from the GitHub tree, fetches `content.mdx`, parses
