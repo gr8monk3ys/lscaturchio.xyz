@@ -245,7 +245,9 @@ export default function WorkWithMePage() {
           Prefer async-first? Send the goal, the user, the data sources, and the constraint that matters most.
           I&apos;ll tell you what I would de-risk first and whether the scope makes sense. Want the background
           first? My skills and work history live on the{" "}
-          <Link href="/professional" className="text-primary underline-offset-4 hover:underline">
+          {/* Underlined at rest: inside a paragraph, colour alone does not
+              distinguish a link (WCAG 1.4.1). */}
+          <Link href="/professional" className="text-primary underline underline-offset-4">
             experience page
           </Link>
           .

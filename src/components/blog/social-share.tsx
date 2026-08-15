@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link2, Check, Share2, Globe, Zap } from "lucide-react";
 import { IconBrandTwitter, IconBrandLinkedin } from "@tabler/icons-react";
@@ -9,7 +9,8 @@ import { logError } from "@/lib/logger";
 interface SocialShareProps {
   title: string;
   description: string;
-  url?: string;
+  /** Canonical URL. Required so this never has to read window.location. */
+  url: string;
 }
 
 /**
@@ -18,40 +19,43 @@ interface SocialShareProps {
  */
 export function SocialShare({ title, description, url }: SocialShareProps) {
   const [copied, setCopied] = useState(false);
-  const [hasNativeShare] = useState(
-    () => typeof navigator !== "undefined" && typeof navigator.share === "function"
-  );
-  const shareUrl = url || (typeof window !== "undefined" ? window.location.href : "");
+  // Detect after mount, not during render: probing navigator while rendering
+  // makes the first client render disagree with the server HTML.
+  const [hasNativeShare, setHasNativeShare] = useState(false);
+  useEffect(() => {
+    setHasNativeShare(typeof navigator.share === "function");
+  }, []);
+
   const handleTwitterShare = () => {
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
       title
-    )}&url=${encodeURIComponent(shareUrl)}`;
+    )}&url=${encodeURIComponent(url)}`;
     window.open(twitterUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleLinkedInShare = () => {
     const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-      shareUrl
+      url
     )}`;
     window.open(linkedinUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleBlueskyShare = () => {
-    const text = `${title}\n${shareUrl}`;
-    const url = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+    const text = `${title}\n${url}`;
+    const blueskyUrl = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
+    window.open(blueskyUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleHackerNewsShare = () => {
-    const url = `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(
-      shareUrl
+    const hnUrl = `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(
+      url
     )}&t=${encodeURIComponent(title)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+    window.open(hnUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
@@ -65,7 +69,7 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
         await navigator.share({
           title,
           text: description,
-          url: shareUrl,
+          url,
         });
       } catch (error) {
         logError("Failed to share", error, { component: "SocialShare" });
@@ -115,13 +119,15 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
         <span className="hidden sm:inline">Bluesky</span>
       </Button>
 
-      {/* Hacker News Share */}
+      {/* Hacker News Share. WCAG 2.5.3 (Label in Name): the accessible name
+          must contain the visible label, so it leads with "HN" rather than
+          spelling out Hacker News alone. */}
       <Button
         onClick={handleHackerNewsShare}
         variant="outline"
         size="sm"
         className="flex items-center gap-2"
-        aria-label="Share on Hacker News"
+        aria-label="Share on HN (Hacker News)"
       >
         <Zap className="h-4 w-4" />
         <span className="hidden sm:inline">HN</span>

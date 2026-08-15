@@ -104,11 +104,10 @@ export function BlogLayout({
     return children;
   }
 
-  // Build full URL for JSON-LD
-  const siteUrl = getSiteUrl();
-  const fullUrl = typeof window !== 'undefined'
-    ? window.location.href
-    : `${siteUrl}${pathname}`;
+  // Canonical, never window.location: branching on `typeof window` here
+  // desynced server and client rendering (hydration mismatch on every
+  // non-canonical origin), and href would leak ?utm_source into the JSON-LD.
+  const fullUrl = `${getSiteUrl()}${pathname}`;
 
   return (
     <>
@@ -214,6 +213,7 @@ export function BlogLayout({
                 <SocialShare
                   title={meta.title}
                   description={meta.description}
+                  url={fullUrl}
                 />
               </div>
               {meta.syndication && meta.syndication.length > 0 && (
