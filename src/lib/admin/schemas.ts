@@ -29,7 +29,6 @@ export const postPublishSchema = z.object({
     .optional(),
   overwrite: z.boolean().default(false),
 });
-export type PostPublishInput = z.infer<typeof postPublishSchema>;
 
 export const photoEntrySchema = z.object({
   filename: z.string().min(1).max(200),
@@ -42,7 +41,6 @@ export const photoEntrySchema = z.object({
   location: z.string().max(200).optional(),
   date: isoDate,
 });
-export type PhotoEntryInput = z.infer<typeof photoEntrySchema>;
 
 export const photoEntriesSchema = z.array(photoEntrySchema).min(1).max(20);
 
