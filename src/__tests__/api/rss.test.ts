@@ -51,7 +51,26 @@ describe('/api/rss', () => {
     expect(body).toContain('<rss');
     expect(body).toContain('<channel>');
     expect(body).toMatch(/<title>Lorenzo Scaturchio.s Blog<\/title>/);
-    expect(body).toContain('<link>https://lscaturchio.xyz</link>');
+    // feed@6 normalises the channel link to include a trailing slash; the
+    // route passes the bare origin. Either spelling is valid RSS, so assert
+    // on the origin rather than pinning the library's formatting.
+    expect(body).toMatch(/<link>https:\/\/lscaturchio\.xyz\/?<\/link>/);
+  });
+
+  it('wraps titles and descriptions in CDATA so markup survives intact', async () => {
+    // The escaping path is what matters when the feed generator majors.
+    // A full XML parse would be the stronger check, but happy-dom's DOMParser
+    // does not support CDATA sections; the output was verified as well-formed
+    // out-of-band with a real parser instead.
+    vi.mocked(getAllBlogs).mockResolvedValue([
+      blog({ title: 'Ampersand & <angle> "quotes"', description: 'a & b' }),
+    ]);
+
+    const res = await GET(new NextRequest('http://localhost/api/rss', { method: 'GET' }));
+    const body = await res.text();
+
+    expect(body).toContain('<title><![CDATA[Ampersand & <angle> "quotes"]]></title>');
+    expect(body).toContain('<description><![CDATA[a & b]]></description>');
   });
 
   it('emits one <item> per post with title, link, and description', async () => {
