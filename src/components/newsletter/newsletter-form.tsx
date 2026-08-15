@@ -59,7 +59,10 @@ export function NewsletterForm({
 
       if (response.ok) {
         setStatus('success')
-        setMessage(data.message || 'Successfully subscribed!')
+        // apiSuccess wraps the payload as { data, success }, so the message
+        // lives at data.data.message. Reading data.message meant the server
+        // text was never shown — the fallback below always won.
+        setMessage(data?.data?.message || 'Successfully subscribed!')
         setEmail('')
       } else {
         setStatus('error')
