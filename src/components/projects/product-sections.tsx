@@ -5,12 +5,12 @@ import Link from 'next/link'
 import { m, useMotionPreset } from '@/lib/motion'
 import {
   ExternalLink,
-  Github,
   Calendar,
   Target,
   Lightbulb,
   CheckCircle2,
 } from 'lucide-react'
+import { IconBrandGithub } from '@tabler/icons-react'
 
 import type { Product, ProjectStatus, ProjectCategory } from '@/types/products'
 import type { CaseStudy, CaseStudyMetric, CaseStudyProcessStep } from '@/types/products'
@@ -112,7 +112,7 @@ export function PrimaryProjectLinks({ product }: { product: Product }): React.Re
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 bg-muted text-foreground px-5 py-2.5 rounded-xl font-medium hover:bg-muted/80 transition-colors"
         >
-          <Github className="h-4 w-4" />
+          <IconBrandGithub className="h-4 w-4" />
           View Source
         </a>
       )}
@@ -442,7 +442,7 @@ function SidebarLinks({ product }: { product: Product }): React.ReactNode {
             className="inline-flex items-center justify-between rounded-xl bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80 transition-colors"
           >
             Source
-            <Github className="h-4 w-4" />
+            <IconBrandGithub className="h-4 w-4" />
           </a>
         )}
         {!product.demoUrl && !product.sourceUrl && product.href && (

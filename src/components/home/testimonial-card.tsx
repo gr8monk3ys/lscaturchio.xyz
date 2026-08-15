@@ -2,7 +2,8 @@
 
 import { Testimonial } from '@/types/testimonial';
 import { m, useMotionPreset } from '@/lib/motion';
-import { Linkedin, Twitter, Quote } from 'lucide-react';
+import { Quote } from 'lucide-react';
+import { IconBrandLinkedin, IconBrandTwitter } from '@tabler/icons-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -100,7 +101,7 @@ export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps
                 )}
                 aria-label={`${name}'s LinkedIn profile`}
               >
-                <Linkedin className="h-4 w-4" />
+                <IconBrandLinkedin className="h-4 w-4" />
               </Link>
             )}
             {twitterUrl && (
@@ -114,7 +115,7 @@ export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps
                 )}
                 aria-label={`${name}'s Twitter profile`}
               >
-                <Twitter className="h-4 w-4" />
+                <IconBrandTwitter className="h-4 w-4" />
               </Link>
             )}
           </div>
