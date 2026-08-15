@@ -30,6 +30,13 @@ function buildMetadataJson(
   return JSON.stringify(metadata);
 }
 
+/**
+ * One message for every outcome — new subscriber, already subscribed, or
+ * reactivated. The side effects still differ; the response must not, or the
+ * endpoint becomes a membership oracle for any address someone cares to try.
+ */
+const SUBSCRIBE_MESSAGE = 'Thanks! Check your inbox to confirm your subscription.';
+
 const handlePost = async (request: NextRequest) => {
   const csrfError = validateCsrf(request);
   if (csrfError) return csrfError;
@@ -72,7 +79,9 @@ const handlePost = async (request: NextRequest) => {
             WHERE email = ${normalizedEmail}
           `;
         }
-        return apiSuccess({ message: 'Already subscribed', alreadySubscribed: true });
+        // Same body and status as every other outcome. Distinct responses
+        // let anyone probe whether a given address is on the list.
+        return apiSuccess({ message: SUBSCRIBE_MESSAGE });
       } else {
         // Reactivate subscription
         const metadataJson = buildMetadataJson(topics, source, true);
@@ -89,7 +98,7 @@ const handlePost = async (request: NextRequest) => {
         // Send welcome back email (non-blocking)
         sendWelcomeEmail(normalizedEmail, unsubscribeToken).catch(() => {});
 
-        return apiSuccess({ message: 'Successfully resubscribed!', resubscribed: true });
+        return apiSuccess({ message: SUBSCRIBE_MESSAGE });
       }
     }
 
@@ -103,7 +112,8 @@ const handlePost = async (request: NextRequest) => {
     // Send welcome email (non-blocking - don't fail subscription if email fails)
     sendWelcomeEmail(normalizedEmail, unsubscribeToken).catch(() => {});
 
-    return apiSuccess({ message: 'Successfully subscribed to newsletter!' }, 201);
+    // 200, not 201: a distinct status code discloses that this address was new.
+    return apiSuccess({ message: SUBSCRIBE_MESSAGE });
   } catch (error) {
     logError('Newsletter Subscribe: Unexpected error', error, { component: 'newsletter/subscribe', action: 'POST' });
     return ApiErrors.internalError('Failed to subscribe. Please try again later.');
