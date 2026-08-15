@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { m } from '@/lib/motion'
-import { Github } from 'lucide-react'
+import { IconBrandGithub } from '@tabler/icons-react'
 import useSWR from 'swr'
 import { fetchJson } from '@/lib/fetcher'
 
@@ -35,7 +35,7 @@ export function ContributionGraph() {
     return (
       <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-2 mb-6">
-          <Github className="h-5 w-5 text-primary" />
+          <IconBrandGithub className="h-5 w-5 text-primary" />
           <h3 className="text-xl font-semibold">GitHub Contributions</h3>
         </div>
         <div className="h-32 bg-muted animate-pulse rounded" />
@@ -47,7 +47,7 @@ export function ContributionGraph() {
     return (
       <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-2 mb-4">
-          <Github className="h-5 w-5 text-primary" />
+          <IconBrandGithub className="h-5 w-5 text-primary" />
           <h3 className="text-xl font-semibold">GitHub Contributions</h3>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -63,7 +63,7 @@ export function ContributionGraph() {
     return (
       <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-2 mb-4">
-          <Github className="h-5 w-5 text-primary" />
+          <IconBrandGithub className="h-5 w-5 text-primary" />
           <h3 className="text-xl font-semibold">GitHub Contributions</h3>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -85,7 +85,7 @@ export function ContributionGraph() {
     <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Github className="h-5 w-5 text-primary" />
+          <IconBrandGithub className="h-5 w-5 text-primary" />
           <h3 className="text-xl font-semibold">GitHub Contributions</h3>
         </div>
         <p className="text-sm text-muted-foreground">

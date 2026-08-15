@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { m, useMotionPreset, useReducedMotion } from '@/lib/motion';
 import { TiltCard } from "@/components/ui/animated-card";
-import { Star, ExternalLink, Github, Calendar } from "lucide-react";
+import { Star, ExternalLink, Calendar } from "lucide-react";
+import { IconBrandGithub } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
 interface EnhancedProjectCardProps {
@@ -198,7 +199,7 @@ export function EnhancedProjectCard({
                   "hover:bg-muted/80 hover:text-foreground transition-colors"
                 )}
               >
-                <Github className="h-3.5 w-3.5" />
+                <IconBrandGithub className="h-3.5 w-3.5" />
                 Source
               </a>
             )}
