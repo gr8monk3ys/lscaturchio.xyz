@@ -24,6 +24,7 @@
     "generate-embeddings": "tsx scripts/generate-embeddings.ts",
     "generate-tts-openai": "tsx scripts/generate-openai-tts.ts",
     "generate-audio-manifest": "tsx scripts/generate-audio-manifest.ts",
+    "verify-audio-cdn": "tsx scripts/verify-audio-cdn.ts",
     "refresh-media-data": "tsx scripts/refresh-books-movies.ts",
     "generate-matisse-covers": "node scripts/generate-matisse-covers.mjs",
     "audit-media": "node scripts/audit-media-assets.mjs",
