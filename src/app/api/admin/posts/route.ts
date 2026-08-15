@@ -44,6 +44,7 @@ async function handler(req: NextRequest) {
       series: input.series,
       seriesOrder: input.seriesOrder,
       stage: input.stage,
+      image: input.image,
     };
 
     // Order matters for the commit: content.mdx, page.tsx (create only), cover.

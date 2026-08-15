@@ -16,6 +16,12 @@ export const postPublishSchema = z.object({
   seriesOrder: z.number().int().min(1).max(99).optional(),
   stage: z.enum(["seedling", "budding", "evergreen"]).optional(),
   body: z.string().min(1).max(200_000),
+  // Existing cover path, passed through on edits so the cover survives when
+  // no new image is uploaded.
+  image: z
+    .string()
+    .regex(/^\/images\/blog\/[a-z0-9-]+\.(webp|png|jpe?g)$/, "Image must be a site-relative blog image path")
+    .optional(),
   coverImage: z
     .string()
     .regex(/^data:image\/(png|jpeg|webp);base64,/, "Cover must be a png/jpeg/webp data URL")
