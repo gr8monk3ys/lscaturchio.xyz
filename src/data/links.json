@@ -1,0 +1,184 @@
+{
+  "privacy": {
+    "title": "Digital Privacy Resources",
+    "description": "Resources I have specifically used to educate myself on digital rights and tools to mitigate risk.",
+    "links": []
+  },
+  "docs": {
+    "title": "Favorite Documentation",
+    "description": "Documentation that I find to be insanely good.",
+    "links": [
+      {
+        "title": "Arch Wiki",
+        "link": "https://wiki.archlinux.org/title/Main_page",
+        "linkDescription": "Duh"
+      },
+      {
+        "title": "C++ Reference",
+        "link": "https://cplusplus.com/reference/",
+        "linkDescription": "Comprehensive C++ standard library reference"
+      },
+      {
+        "title": "Rust Programming Language",
+        "link": "https://doc.rust-lang.org/stable/book/",
+        "linkDescription": "Actually GOATED"
+      },
+      {
+        "title": "HTMX",
+        "link": "https://htmx.org/",
+        "linkDescription": "REST APIs without direct JavaScript - it is written in JavaScript though"
+      },
+      {
+        "title": "LangChain",
+        "link": "https://python.langchain.com/docs/introduction/",
+        "linkDescription": "Used this documentation a lot for my applications, the one I have had most fun with"
+      }
+    ]
+  },
+  "indie": {
+    "title": "Alternative Internet",
+    "description": "Websites not about any specific topic, but included because I like their writing.",
+    "links": [
+      {
+        "title": "~bt",
+        "link": "https://bt.ht/",
+        "linkDescription": "Fascinating site",
+        "rss": "https://bt.ht/atom.xml"
+      },
+      {
+        "title": "Neel Nanda",
+        "link": "https://www.neelnanda.io/",
+        "linkDescription": "A mechanistic interpretability Google DeepMind specialist with really cool tips"
+      },
+      {
+        "title": "Ludwig Abap",
+        "link": "https://ludwigabap.com/",
+        "linkDescription": "Very insightful and love the way they display their links/bookmarks"
+      },
+      {
+        "title": "Cheapskate's Guide",
+        "link": "https://cheapskatesguide.org/",
+        "linkDescription": "Shows you don't need a lot of computing power to develop custom applications"
+      },
+      {
+        "title": "CozyNet",
+        "link": "https://www.cozynet.org/",
+        "linkDescription": "Cozy corner of the internet",
+        "rss": "https://www.cozynet.org/feed/feed.xml"
+      },
+      {
+        "title": "Drew DeVault",
+        "link": "https://drewdevault.com",
+        "linkDescription": "Open source advocate and SourceHut creator",
+        "rss": "https://drewdevault.com/blog/index.xml"
+      },
+      {
+        "title": "Jared White",
+        "link": "https://jaredwhite.com/",
+        "linkDescription": "Web development and the open web",
+        "rss": "https://jaredwhite.com/feed.xml"
+      },
+      {
+        "title": "Luke Smith",
+        "link": "https://lukesmith.xyz/",
+        "linkDescription": "Minimalism, Linux, and based takes",
+        "rss": "https://lukesmith.xyz/index.xml"
+      },
+      {
+        "title": "Manuel Moreale",
+        "link": "https://manuelmoreale.com/",
+        "linkDescription": "Thoughtful writing on the web and life",
+        "rss": "https://manuelmoreale.com/feed/rss"
+      }
+    ]
+  },
+  "webdev": {
+    "title": "Web Development",
+    "description": "Websites and blogs about web development (without the bloat).",
+    "links": [
+      {
+        "title": "Go Make Things",
+        "link": "https://gomakethings.com",
+        "linkDescription": "Vanilla JavaScript and simplicity-first web dev",
+        "rss": "https://gomakethings.com/feed/index.xml"
+      },
+      {
+        "title": "The Spicy Web",
+        "link": "https://www.spicyweb.dev/",
+        "linkDescription": "Modern web development with a spicy take",
+        "rss": "https://www.spicyweb.dev/feed.xml"
+      }
+    ]
+  },
+  "youtube": {
+    "title": "YouTube Channels",
+    "description": "YouTube channels I find within normalcy but some one standard deviation off.",
+    "links": [
+      {
+        "title": "Andrej Karpathy",
+        "link": "https://www.youtube.com/@AndrejKarpathy",
+        "linkDescription": "AI and deep learning insights from one of the pioneers in the field"
+      },
+      {
+        "title": "3Blue1Brown",
+        "link": "https://www.youtube.com/@3blue1brown",
+        "linkDescription": "Beautifully visualized math concepts and tutorials"
+      },
+      {
+        "title": "F.D Signifier",
+        "link": "https://www.youtube.com/@FDSignifire",
+        "linkDescription": "Thought-provoking content on culture, politics, and social issues"
+      },
+      {
+        "title": "Tor's Cabinet of Curiosities",
+        "link": "https://www.youtube.com/@torscabinetofcuriosities",
+        "linkDescription": "Exploring fascinating and obscure subjects with deep dives"
+      },
+      {
+        "title": "Eli the Computer Guy",
+        "link": "https://www.youtube.com/@ElitheComputerGuy",
+        "linkDescription": "Tech tutorials and practical computing"
+      },
+      {
+        "title": "Luke Smith",
+        "link": "https://www.youtube.com/@LukeSmithxyz",
+        "linkDescription": "Minimalism, Linux, and self-hosting with a personal touch"
+      },
+      {
+        "title": "Louis Rossmann",
+        "link": "https://www.youtube.com/@rossaborable",
+        "linkDescription": "Tech repair and right to repair advocacy"
+      },
+      {
+        "title": "Coffeezilla",
+        "link": "https://www.youtube.com/@Coffeezilla",
+        "linkDescription": "Investigating scams, frauds, and internet grifters"
+      },
+      {
+        "title": "Dreams of Code",
+        "link": "https://www.youtube.com/@dreamsofcode",
+        "linkDescription": "Coding tutorials and developer productivity"
+      },
+      {
+        "title": "Mental Outlaw",
+        "link": "https://www.youtube.com/@MentalOutlaw",
+        "linkDescription": "Privacy, Linux, and tech commentary"
+      },
+      {
+        "title": "Internet of Bugs",
+        "link": "https://www.youtube.com/@InternetofBugs",
+        "linkDescription": "Software engineering perspectives and industry critique"
+      },
+      {
+        "title": "NEOPUNKFM",
+        "link": "https://www.youtube.com/@NEOPUNKFM",
+        "linkDescription": "Electronic music mixes and cyberpunk culture"
+      },
+      {
+        "title": "Professor Skye's Record Review",
+        "link": "https://www.youtube.com/@ProfessorSkye",
+        "linkDescription": "In-depth reviews of albums and musical analysis"
+      }
+    ]
+  }
+}
