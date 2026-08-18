@@ -178,75 +178,46 @@ Rotation: revoke and re-issue the PAT (step 2) and update
 
 ## Serving Audio From A CDN
 
-`public/audio/` holds 83 MP3s totalling **~459MB**, all tracked in git. They are
-the bulk of the repository's size. `.gitignore` has carried a
-`public/audio/*.mp3` rule since the initial scaffold claiming they are "served
-from CDN in production", but the files were force-added, the rule never applied
-to them, and no CDN was ever configured. Production serves them from the repo.
+Blog audio is served from **Vercel Blob** (store `lscaturchio-audio`,
+`store_EklDXPD3MP5h44QJ`, origin
+`https://ekldxpd3mp5h44qj.public.blob.vercel-storage.com`). The 83 MP3s were
+migrated out of git on 2026-08-17; `NEXT_PUBLIC_AUDIO_CDN_URL` points at the
+Blob origin in every Vercel environment, `getAudioUrl()` builds the URLs, and
+the CSP `media-src` allows the origin. Without the env var, dev falls back to
+`public/audio/` (untracked — a fresh clone has no local MP3s, so set the env
+var in `.env.local`).
 
-Two consequences worth knowing now:
+### Adding audio for a new post
 
-- Every clone pays ~459MB, and git cannot delta-compress MP3s.
-- The rule *does* apply to new files. Audio generated for the next post would be
-  silently ignored, never deploy, and 404 while every existing post works. Until
-  this migration lands, `git add -f` any new MP3.
-
-### Migration
-
-The code side is already done — `getAudioUrl()` in `src/lib/audio-url.ts` reads
-`NEXT_PUBLIC_AUDIO_CDN_URL` and falls back to `/audio/<slug>.mp3`. What is
-missing is a populated origin.
-
-1. **Provision a bucket** and put the 83 files at its root, keeping the
-   `<slug>.mp3` names. Any static origin works; pick whichever you already pay
-   for. Objects must be publicly readable and served as `audio/mpeg`.
+1. Generate the MP3 (`npm run generate-tts-openai`) and regenerate the
+   manifest (`npm run generate-audio-manifest`) — the manifest stays committed
+   because RSS enclosures read byte sizes from it.
+2. Upload to the store, keeping the `<slug>.mp3` name:
 
    ```bash
-   # S3-compatible (S3, R2 via the S3 API, B2, Spaces)
-   aws s3 sync public/audio/ s3://<bucket>/ --exclude '*' --include '*.mp3' \
-     --content-type audio/mpeg --acl public-read
-
-   # Cloudflare R2 via wrangler
-   for f in public/audio/*.mp3; do
-     npx wrangler r2 object put "<bucket>/$(basename "$f")" --file "$f" \
-       --content-type audio/mpeg
-   done
+   vercel blob put public/audio/<slug>.mp3 --access public \
+     --pathname <slug>.mp3 --content-type audio/mpeg \
+     --cache-control-max-age 31536000 \
+     --rw-token "$BLOB_READ_WRITE_TOKEN"
    ```
 
-2. **Verify before trusting it.** This is the gate — do not skip it:
+   (If `VERCEL_OIDC_TOKEN` is in your env, the CLI insists on explicit
+   credentials — pass `--rw-token` as above.)
+
+3. **Verify before trusting it** — the gate checks all slugs in the manifest
+   for presence, `audio/mpeg` content type, and exact byte size:
 
    ```bash
-   npm run verify-audio-cdn -- --base-url https://cdn.example.com/audio
+   npm run verify-audio-cdn
    ```
 
-   It checks all 83 slugs from `src/generated/audio-manifest.ts` and fails on a
-   missing file, a non-audio `content-type` (a 200 serving an HTML error page),
-   a missing `content-length`, or any byte-size mismatch. It exits non-zero
-   unless all 83 pass.
+Do not commit MP3s — `.gitignore` excludes them, and this time the rule is
+real (the old files were force-added before the rule existed).
 
-3. **Point production at it.** Set `NEXT_PUBLIC_AUDIO_CDN_URL` in Vercel and
-   redeploy. Confirm a post plays, and that `/api/rss` enclosure URLs point at
-   the CDN.
-
-4. **Only then remove the files from git:**
-
-   ```bash
-   git rm --cached public/audio/*.mp3
-   git commit -m "chore(audio): serve audio from CDN, drop 459MB from the repo"
-   ```
-
-   The `.gitignore` rule takes over from here, and its comment should be
-   simplified since it stops being inert at that point.
-
-`src/generated/audio-manifest.ts` stays committed regardless — it is the source
-of the byte sizes used for RSS enclosures, it is not regenerated during
-`next build`, and nothing about it depends on the MP3s being present. That is
-what makes step 4 safe.
-
-Removing the files from the index does **not** shrink existing history; it only
-stops growth. Reclaiming the 459MB already committed needs a history rewrite
-(`git filter-repo`), a separate decision with the usual force-push and
-fork-divergence costs.
+Removing the files from the index did **not** shrink existing history; the
+~459MB of MP3 blobs (plus old `.next/` caches) remain in the pack until a
+history rewrite (`git filter-repo` + force-push + a GitHub support ticket to
+drop cached PR refs) — a separate decision with fork-divergence costs.
 
 ## Database (Neon)
 

@@ -46,20 +46,10 @@ __pycache__/
 public/audio/.tmp/
 /tmp/
 
-# Blog audio.
-#
-# WARNING: this rule is currently inert and misleading. All 83 existing MP3s
-# are already tracked (they were force-added), so .gitignore does not exclude
-# them — `git ls-files public/audio/*.mp3` lists all of them, and they are
-# ~459MB of git history. Production serves them straight from the repo; no CDN
-# is configured.
-#
-# The rule does still apply to *new* files, which is the trap: audio generated
-# for the next post would be silently ignored, never deploy, and 404 while
-# every older post works. Until the CDN migration lands, `git add -f` any new
-# MP3 so it matches the others.
-#
-# Migration path: docs/operations.md "Serving audio from a CDN".
+# Blog audio is served from Vercel Blob (NEXT_PUBLIC_AUDIO_CDN_URL), not the
+# repo — migrated 2026-08-17, see docs/operations.md "Serving Audio From A
+# CDN". New MP3s belong in the Blob store (upload + verify-audio-cdn), never
+# in git. Old MP3 blobs remain in git history until a history purge.
 public/audio/*.mp3
 
 # Agent worktrees. Claude Code's EnterWorktree creates full checkouts here;
@@ -74,3 +64,4 @@ next-env.d.ts
 
 # Remember plugin local session history
 .remember/
+.env*
