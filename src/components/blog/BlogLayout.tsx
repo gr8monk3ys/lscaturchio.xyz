@@ -22,16 +22,8 @@ import Link from "next/link";
 import { getTopicHubsForTags } from "@/constants/topics";
 import { getSiteUrl } from "@/lib/site-url";
 import { clampBlogDateToToday } from "@/lib/blog-data";
-import { BLOG_PROVENANCE } from "@/generated/blog-provenance";
 import type { BlogStage } from "@/lib/blog-stage";
 import { StageBadge } from "@/components/blog/stage-badge";
-
-function monthYear(iso: string): string {
-  const d = new Date(`${iso}T00:00:00Z`);
-  return Number.isNaN(d.getTime())
-    ? iso
-    : d.toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
-}
 
 const TextToSpeech = dynamic(
   () => import("./text-to-speech").then((module) => module.TextToSpeech),
@@ -104,11 +96,10 @@ export function BlogLayout({
     return children;
   }
 
-  // Build full URL for JSON-LD
-  const siteUrl = getSiteUrl();
-  const fullUrl = typeof window !== 'undefined'
-    ? window.location.href
-    : `${siteUrl}${pathname}`;
+  // Canonical, never window.location: branching on `typeof window` here
+  // desynced server and client rendering (hydration mismatch on every
+  // non-canonical origin), and href would leak ?utm_source into the JSON-LD.
+  const fullUrl = `${getSiteUrl()}${pathname}`;
 
   return (
     <>
@@ -214,6 +205,7 @@ export function BlogLayout({
                 <SocialShare
                   title={meta.title}
                   description={meta.description}
+                  url={fullUrl}
                 />
               </div>
               {meta.syndication && meta.syndication.length > 0 && (
@@ -232,20 +224,6 @@ export function BlogLayout({
                   {children}
                 </div>
               </Prose>
-
-              {(() => {
-                const prov = BLOG_PROVENANCE[slug];
-                if (!prov) return null;
-                const revised =
-                  prov.revisions > 1 && prov.lastRevised !== prov.firstWritten
-                    ? ` · revised ${prov.revisions} times · last ${monthYear(prov.lastRevised)}`
-                    : "";
-                return (
-                  <p className="label-mono mt-12 border-t border-border pt-6">
-                    First written {monthYear(prov.firstWritten)}{revised}
-                  </p>
-                );
-              })()}
             </div>
 
             {/* Series Navigation (if part of a series) */}

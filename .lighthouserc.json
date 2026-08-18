@@ -2,14 +2,14 @@
   "ci": {
     "collect": {
       "numberOfRuns": 3,
-      "startServerCommand": "npm run start -- --hostname 127.0.0.1 --port 4173",
+      "startServerCommand": "npm run start -- --hostname 127.0.0.1 --port 3000",
       "startServerReadyPattern": "Ready in",
       "startServerReadyTimeout": 180000,
       "url": [
-        "http://127.0.0.1:4173/",
-        "http://127.0.0.1:4173/blog",
-        "http://127.0.0.1:4173/blog/building-rag-systems",
-        "http://127.0.0.1:4173/work-with-me"
+        "http://127.0.0.1:3000/",
+        "http://127.0.0.1:3000/blog",
+        "http://127.0.0.1:3000/blog/building-rag-systems",
+        "http://127.0.0.1:3000/work-with-me"
       ],
       "settings": {
         "preset": "desktop",

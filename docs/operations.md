@@ -53,6 +53,10 @@ The repo ships an annotated [`.env.example`](../.env.example). At a high level:
 ## Content And Retrieval Workflows
 
 ```bash
+# Regenerate the chat corpus (public/my-data/blog-*.md) from the essays.
+# Run after editing any essay; CI runs this with --check and fails on drift.
+npm run sync-retrieval-corpus
+
 # Rebuild embeddings from public/my-data content
 npm run generate-embeddings
 

@@ -11,7 +11,7 @@ export const postPublishSchema = z.object({
   date: isoDate,
   updated: isoDate.optional(),
   tags: z.array(z.string().min(1).max(30)).max(10).default([]),
-  syndication: z.array(z.string().url()).max(10).optional(),
+  syndication: z.array(z.url()).max(10).optional(),
   series: z.string().min(1).max(80).optional(),
   seriesOrder: z.number().int().min(1).max(99).optional(),
   stage: z.enum(BLOG_STAGES).optional(),
@@ -71,9 +71,9 @@ export const linksContentSchema = z.record(
       .array(
         z.object({
           title: z.string().min(1).max(200),
-          link: z.string().url(),
+          link: z.url(),
           linkDescription: z.string().min(1).max(500),
-          rss: z.string().url().optional(),
+          rss: z.url().optional(),
         })
       )
       .max(100),

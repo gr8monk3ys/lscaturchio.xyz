@@ -76,7 +76,8 @@ describe("SocialShare", () => {
   it("opens the Hacker News submit URL with encoded url and title", () => {
     render(<SocialShare {...props} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Share on Hacker News" }));
+    // Name leads with the visible "HN" label to satisfy WCAG 2.5.3.
+    fireEvent.click(screen.getByRole("button", { name: "Share on HN (Hacker News)" }));
 
     expect(openSpy).toHaveBeenCalledWith(
       `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(

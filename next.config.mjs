@@ -109,14 +109,24 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
+            // Every third-party grant names its consumer — when a feature is
+            // removed, delete its lines here in the same pass. Consumers today:
+            //  - giscus.app             guestbook + blog comments (script + iframe)
+            //  - va.vercel-scripts.com  Vercel Analytics / Speed Insights loader
+            //  - translate.google.com / translate.googleapis.com / www.gstatic.com /
+            //    translate-pa.googleapis.com  Google Translate widget
+            //    (src/components/i18n/google-translate.tsx)
+            //  - *.ingest{.us,}.sentry.io  Sentry error beacons (DSN host)
+            //  - vitals.vercel-insights.com  Speed Insights beacon (dev/preview)
+            // If NEXT_PUBLIC_AUDIO_CDN_URL is ever set, add its origin to media-src.
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' blob: pagead2.googlesyndication.com googleads.g.doubleclick.net www.googletagservices.com tpc.googlesyndication.com js.sentry-cdn.com giscus.app static.cloudflareinsights.com va.vercel-scripts.com",
-              "style-src 'self' 'unsafe-inline'",
+              "script-src 'self' 'unsafe-inline' blob: giscus.app va.vercel-scripts.com translate.google.com translate.googleapis.com www.gstatic.com",
+              "style-src 'self' 'unsafe-inline' www.gstatic.com translate.googleapis.com",
               "img-src 'self' data: blob: https:",
-              "font-src 'self' data:",
-              "connect-src 'self' https: wss: cloudflareinsights.com",
-              "frame-src 'self' giscus.app googleads.g.doubleclick.net",
+              "font-src 'self' data: fonts.gstatic.com",
+              "connect-src 'self' https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://vitals.vercel-insights.com https://translate.googleapis.com https://translate-pa.googleapis.com https://translate.google.com",
+              "frame-src 'self' giscus.app translate.google.com",
               "media-src 'self'",
               "worker-src 'self' blob:",
             ].join('; '),

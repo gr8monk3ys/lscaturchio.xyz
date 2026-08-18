@@ -30,11 +30,12 @@ Blog routes are backed by per-slug folders under `src/app/blog/<slug>/`. Shared 
 
 Related content inputs also live under `public/my-data/`, including:
 
-- exported markdown used for retrieval and chat
+- `blog-*.md`: **generated** plain-markdown copies of the essays, used for
+  retrieval and chat — never hand-edit them. After editing any essay, run
+  `npm run sync-retrieval-corpus` (CI fails on drift), then
+  `npm run generate-embeddings` if chat relevance matters.
 - Goodreads and Letterboxd data
 - other structured content sources used by page features
-
-If retrieval inputs change and chat relevance matters, regenerate embeddings.
 
 ### Reading The Goodreads And Letterboxd Exports
 
