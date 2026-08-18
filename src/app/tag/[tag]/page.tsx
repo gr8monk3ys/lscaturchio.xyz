@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { permanentRedirect } from "next/navigation";
 import { Tag } from "lucide-react";
 
 import { Container } from "@/components/Container";
@@ -60,6 +61,12 @@ export default async function TagPage({ params }: Props) {
   const filtered = blogs.filter((blog) =>
     blog.tags.some((t) => t.toLowerCase() === tag.toLowerCase())
   );
+
+  // Retired or unknown tags (the 2026-08 consolidation dropped ~120 tags used
+  // by one or two posts) redirect to the index instead of serving a thin page.
+  if (filtered.length === 0) {
+    permanentRedirect("/tags");
+  }
 
   return (
     <Container className="mt-16 lg:mt-32" size="large">
