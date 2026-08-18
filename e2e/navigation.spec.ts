@@ -16,6 +16,21 @@ test.describe('Navigation', () => {
     expect(count).toBeGreaterThan(0);
   });
 
+  // Regression: locale routing lives in src/proxy.ts (Next 16 renamed
+  // `middleware` -> `proxy`). The old root-level middleware.ts was silently
+  // ignored and every /es|/fr|... URL 404'd in production with nothing
+  // noticing. These assertions fail if the proxy file stops being picked up.
+  test('locale-prefixed URLs resolve via the proxy', async ({ page }) => {
+    const response = await page.goto('/es', { waitUntil: 'domcontentloaded' });
+    expect(response?.status()).toBe(200);
+    await expect(page.locator('main').first()).toBeVisible();
+  });
+
+  test('/en redirects to the bare canonical path', async ({ page }) => {
+    await page.goto('/en/blog', { waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveURL('/blog');
+  });
+
   test('can navigate to blog page', async ({ page }) => {
     await page.goto('/blog', { waitUntil: 'domcontentloaded' });
 

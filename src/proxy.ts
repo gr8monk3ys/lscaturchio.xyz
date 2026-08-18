@@ -73,7 +73,7 @@ function parseLocaleCookie(value: string | undefined): SupportedLocale {
   return SUPPORTED_LOCALE_SET.has(value) ? (value as SupportedLocale) : DEFAULT_LOCALE;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Never touch API routes, Next internals, or static assets.
