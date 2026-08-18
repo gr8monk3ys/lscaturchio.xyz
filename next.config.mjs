@@ -118,14 +118,20 @@ const nextConfig = {
             //    (src/components/i18n/google-translate.tsx)
             //  - *.ingest{.us,}.sentry.io  Sentry error beacons (DSN host)
             //  - vitals.vercel-insights.com  Speed Insights beacon (dev/preview)
+            //  - static.cloudflareinsights.com / cloudflareinsights.com  Cloudflare
+            //    Web Analytics — the beacon is injected by Cloudflare's proxy at the
+            //    edge, so it has no reference anywhere in this repo (verified live
+            //    2026-08-17; do not remove as "unused")
+            //  - translate-pa.googleapis.com appears in script-src because the
+            //    widget fetches it via JSONP (<script>), not XHR
             // If NEXT_PUBLIC_AUDIO_CDN_URL is ever set, add its origin to media-src.
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' blob: giscus.app va.vercel-scripts.com translate.google.com translate.googleapis.com www.gstatic.com",
+              "script-src 'self' 'unsafe-inline' blob: giscus.app va.vercel-scripts.com translate.google.com translate.googleapis.com translate-pa.googleapis.com www.gstatic.com static.cloudflareinsights.com",
               "style-src 'self' 'unsafe-inline' www.gstatic.com translate.googleapis.com",
               "img-src 'self' data: blob: https:",
               "font-src 'self' data: fonts.gstatic.com",
-              "connect-src 'self' https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://vitals.vercel-insights.com https://translate.googleapis.com https://translate-pa.googleapis.com https://translate.google.com",
+              "connect-src 'self' https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://vitals.vercel-insights.com https://cloudflareinsights.com https://translate.googleapis.com https://translate-pa.googleapis.com https://translate.google.com",
               "frame-src 'self' giscus.app translate.google.com",
               "media-src 'self'",
               "worker-src 'self' blob:",
