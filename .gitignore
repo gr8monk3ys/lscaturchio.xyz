@@ -71,3 +71,6 @@ public/audio/*.mp3
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Remember plugin local session history
+.remember/
