@@ -25,6 +25,7 @@
     "knip": "knip",
     "db:migrate": "tsx scripts/run-neon-migration.ts",
     "generate-embeddings": "tsx scripts/generate-embeddings.ts",
+    "sync-retrieval-corpus": "tsx scripts/sync-retrieval-corpus.ts",
     "generate-tts-openai": "tsx scripts/generate-openai-tts.ts",
     "generate-audio-manifest": "tsx scripts/generate-audio-manifest.ts",
     "verify-audio-cdn": "tsx scripts/verify-audio-cdn.ts",
@@ -34,8 +35,7 @@
     "generate-project-logos": "node scripts/generate-project-logos.mjs",
     "suggest-internal-links": "tsx scripts/suggest-internal-links.ts",
     "send-webmentions": "tsx scripts/send-webmentions.ts",
-    "perf:lighthouse": "npx -y @lhci/cli@0.15.x autorun --config=.lighthouserc.json",
-    "generate-blog-provenance": "tsx scripts/generate-blog-provenance.ts"
+    "perf:lighthouse": "npx -y @lhci/cli@0.15.x autorun --config=.lighthouserc.json"
   },
   "dependencies": {
     "@mdx-js/mdx": "^3.1.0",

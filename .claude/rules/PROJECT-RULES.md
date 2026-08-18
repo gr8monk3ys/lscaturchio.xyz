@@ -9,12 +9,9 @@ See also: [CLAUDE.md](../../CLAUDE.md), [docs/repository-guide.md](../../docs/re
 
 ## Stack
 
-- Next.js 16 (App Router) + React 19
-- TypeScript 5 (`strict: true`)
-- Tailwind CSS v4
-- Neon Postgres via `@neondatabase/serverless` (tagged-template SQL) — see `src/lib/db.ts`
-- Vitest (unit/integration) + Playwright (e2e)
-- Sentry (errors), Upstash (Redis rate limiting), OpenAI/OpenRouter/Ollama (chat)
+Read `package.json` for versions. The one thing it won't tell you: database
+access goes through `src/lib/db.ts` (Neon, tagged-template SQL) — never a
+raw client.
 
 ## TypeScript
 
@@ -46,17 +43,8 @@ surrounding file.** The de-facto conventions are:
 
 ## Structure
 
-```
-src/app/         routes, layouts, metadata, sitemap; route handlers under src/app/api
-src/components/  page sections + reusable UI (src/components/ui)
-src/lib/         shared helpers (chat/, db, embeddings, validations, rate-limit, csrf, ...)
-src/hooks/       React hooks
-src/types/       shared types
-src/constants/   static data
-src/generated/   build-generated sources (e.g. audio manifest) — do not hand-edit
-```
-
-Path alias: `@/*` → `src/*`.
+`src/generated/` holds build-generated sources (e.g. the audio manifest) —
+do not hand-edit them. The rest of the layout is what `ls src/` shows.
 
 ## Components
 

@@ -41,6 +41,11 @@ jobs:
       - name: Run knip (dead code / unused deps)
         run: bun run knip
 
+      # The chat retrieval corpus (public/my-data/blog-*.md) is derived from
+      # the essays; this fails when an essay was edited without regenerating it.
+      - name: Verify retrieval corpus is in sync
+        run: bun run sync-retrieval-corpus -- --check
+
   typecheck:
     name: Type Check
     runs-on: ubuntu-latest
