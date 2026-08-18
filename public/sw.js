@@ -1,5 +1,5 @@
 // Service Worker for PWA offline support
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = `lscaturchio-${CACHE_VERSION}`;
 
 // Assets to cache immediately
