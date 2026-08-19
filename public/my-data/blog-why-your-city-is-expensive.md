@@ -12,9 +12,7 @@ Every American city has a zoning code. Most people never read theirs, which is a
 
 Zoning determines what can be built where. On its face that sounds reasonable; you probably don't want a slaughterhouse next to an elementary school. But modern zoning goes far beyond separating incompatible uses. It has become a tool for enforcing artificial scarcity.
 
-In most residential areas of most American cities, it's literally illegal to build anything other than single-family homes. No duplexes, no small apartment buildings, no corner shops. Detached houses on individual lots, stretching to the horizon, and nothing else.
-
-This is insane.
+On roughly three-quarters of the residential land in most American cities, it's literally illegal to build anything other than single-family homes. No duplexes, no small apartment buildings, no corner shops. Detached houses on individual lots, stretching to the horizon, and nothing else.
 
 Take a city, a place where people gather precisely because density creates opportunity, and legally mandate that most of it stay low-density forever. You freeze the built environment in amber, and supply can never catch up with demand. Then people wonder why housing costs keep rising.
 
@@ -24,7 +22,7 @@ Expensive housing makes someone money.
 
 Existing homeowners benefit enormously from rising prices. Their property values go up, their net worth increases, they can refinance and take out equity and feel wealthy. Every new restriction on building, every rejected development proposal, every downzoning that reduces allowed density makes their investment more valuable.
 
-This isn't speculation. It's the explicit motivation behind much of local housing politics. Homeowners show up to city council meetings and planning commission hearings to oppose new construction. They form neighborhood associations dedicated to blocking development. They hire lawyers to challenge building permits.
+This is the explicit, stated motivation behind much of local housing politics. Homeowners show up to city council meetings and planning commission hearings to oppose new construction. They form neighborhood associations dedicated to blocking development. They hire lawyers to challenge building permits.
 
 They call themselves concerned citizens protecting neighborhood character. What's actually happening is simpler: they're protecting their property values by restricting supply.
 
@@ -38,25 +36,23 @@ The coalition is effective because it unites people who agree on almost nothing 
 
 What makes NIMBYism work is that it operates at the local level, where organized opposition has maximum impact. City council members and planning commissioners are exquisitely sensitive to constituent pressure. A few dozen angry emails can kill a project that would house hundreds of families.
 
-And so nothing gets built.
-
 ## The consequences
 
 The housing shortage isn't an abstraction. It's people sleeping in cars. It's families doubled up in apartments designed for half as many occupants. It's young people unable to form households, move out, start their lives.
 
 It's economic stagnation too. When housing costs consume most of people's incomes, there's nothing left to spend on anything else. When workers can't afford to live near good jobs, labor markets stop functioning. When the most productive cities price out everyone except the wealthy, human potential gets squandered.
 
-Some economists estimate that restrictive zoning in major American cities has cost trillions in lost GDP. Trillions, because we collectively decided that neighborhood character matters more than human flourishing.
+Chang-Tai Hsieh and Enrico Moretti put a number on it in 2019: constraints on building in America's most productive cities have cost the economy trillions in forgone output, because workers can't afford to live where their labor is worth the most. The exact size of the estimate has been fought over ever since. The direction hasn't.
 
 ## The solutions nobody wants
 
 The fix is obvious. Build more housing. Allow more density. Legalize apartments in residential neighborhoods. Let developers respond to demand by increasing supply.
 
-This isn't complicated economics. It's the same logic that applies to any other scarce good: if there's not enough of something people want, you make more of it.
+The economics are not complicated — the same logic applies to any scarce good: if there's not enough of something people want, you make more of it.
 
 Obvious solutions require political will that doesn't exist. Every potential housing site has neighbors who will oppose development. Every city council member has constituents who bought houses expecting their neighborhoods to stay exactly the same forever.
 
-Some states have started overriding local zoning to allow more housing. This helps, but it's swimming against a powerful current. Homeowner politics remains dominant at every level of government. The people most harmed by housing scarcity, the renters and the young and those not yet living in a place, are systematically underrepresented in local political processes.
+The places that have tried the obvious fix report back. Minneapolis ended single-family-only zoning citywide in 2018, the first major American city to do it. Auckland upzoned most of the city in 2016, and Ryan Greenaway-McGrevy's research since has found rents growing markedly slower than in comparable New Zealand cities that didn't. Tokyo, where nationally set zoning makes building by right, has repeatedly permitted more new homes in a year than the entire state of California — and kept rents roughly flat while its population grew. Some American states have started overriding local zoning the same way. This helps, but it's swimming against a powerful current. Homeowner politics remains dominant at every level of government. The people most harmed by housing scarcity, the renters and the young and those not yet living in a place, are systematically underrepresented in local political processes.
 
 ## It's a choice
 

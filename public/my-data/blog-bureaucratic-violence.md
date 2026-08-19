@@ -6,7 +6,7 @@ Nobody means to hurt anyone. That's what makes it so efficient.
 
 The agent processing paperwork isn't trying to ruin lives; they're following the checklist. The administrator denying benefits isn't cruel; they're enforcing policy. The judge signing off on detention is operating within legal parameters. Everyone has clean hands, everyone's just doing their job, and people die anyway.
 
-This is bureaucratic violence: harm inflicted through processes so diffuse that no individual can be held responsible. Death by memo. Suffering by protocol.
+This is bureaucratic violence: harm inflicted through processes so diffuse that no individual can be held responsible. Death by memo.
 
 It doesn't require bad people. It requires people doing exactly what they're told.
 
@@ -18,7 +18,9 @@ Bureaucratic violence spreads accountability across so many people that it becom
 
 When someone dies because they couldn't navigate the healthcare bureaucracy, who killed them? The nurse who turned them away for lack of insurance? The insurance agent who denied the claim? The company that wrote the policy? The legislators who created the system, or the voters who elected them?
 
-All of them and none of them. Responsibility is so distributed that it evaporates. Nobody feels personally culpable because nobody personally made the decision. The system made the decision; they implemented it. That's how ordinary people commit atrocities without losing sleep.
+All of them and none of them. Responsibility is so distributed that it evaporates. Nobody feels personally culpable because nobody personally made the decision. The system made the decision; they implemented it.
+
+Hannah Arendt sat through the Eichmann trial in 1961 watching a man insist he had merely coordinated train schedules, and named what she saw the banality of evil. The phrase gets misremembered as "evil is boring." What she meant is closer to this: the atrocity had been decomposed into jobs, and every job was administratively ordinary.
 
 ## Protocol as shield
 
@@ -32,7 +34,7 @@ The protocol itself was the violence. The people carrying it out could sleep at 
 
 ## Metrics over humanity
 
-Bureaucracies optimize for what they measure, and they never measure suffering.
+Bureaucracies optimize for what they measure, and they never measure suffering. David Graeber called bureaucracies "dead zones of the imagination" in *The Utopia of Rules* (2015) — machinery for not having to think about what the institution actually does to people. The dashboard is how the not-thinking is operationalized.
 
 They measure processing time, cases closed, beds filled, claims denied, applicants rejected. The metrics point toward efficiency, volume, cost reduction. None of them point toward human outcomes.
 
@@ -50,7 +52,7 @@ Making people re-apply for benefits every six months isn't designed to humiliate
 
 Making asylum seekers wait in dangerous border towns isn't designed to traumatize them, though it does. It's designed to reduce applications. The misery acts as a filter; only the truly desperate will endure it.
 
-Making people prove their disability repeatedly, with updated documentation and new assessments and additional forms, isn't designed to make them feel worthless, though it does. It's designed to reduce costs. Some percentage will give up, and that's savings.
+And the disability system makes people prove, repeatedly, with updated documentation and new assessments and additional forms, that their condition has not resolved itself. Some percentage will give up. That's the savings.
 
 This is violence as administrative efficiency. Cruelty baked into the process because cruelty achieves policy goals without anyone having to explicitly choose it. You just have to choose the process.
 
@@ -90,8 +92,6 @@ They're normal people doing normal jobs. They have families and hobbies and pets
 
 The agent who processes deportations is just doing their job. The insurance adjuster who denies claims is just following policy. The prison guard who oversees inhumane conditions is just enforcing rules. Each of them has handed the moral responsibility to the system. The system is at fault; they're employees.
 
-This is how ordinary people enable atrocities. Not through malice, through compliance.
-
 ## The irreformability
 
 Can you reform a system designed to produce harm, or do you have to tear it down and build something different?
@@ -108,4 +108,4 @@ Everyone is subject to these systems. You might not be targeted by immigration e
 
 You're one form rejection away from losing healthcare, one administrative error away from losing benefits, one algorithm flag away from being denied a loan or an apartment, one agent having a bad day away from being detained at a checkpoint.
 
-The machine is indiscriminate. Some people get caught in the gears more often, which isn't random, it's by design, but nobody is fully immune. The cruelty isn't a bug. It's load-bearing. And everyone working inside it is just following protocol.
+The machine is indiscriminate. Some people get caught in the gears more often — that part is by design — but nobody is fully immune. And everyone working inside it is just following protocol.
