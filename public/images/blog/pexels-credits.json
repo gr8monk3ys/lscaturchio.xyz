@@ -1,0 +1,501 @@
+{
+  "_about": "Blog cover photos are from Pexels (pexels.com/license). This file maps each post slug to the photo and photographer.",
+  "abolition-isnt-what-you-think": {
+    "photoId": 27541601,
+    "photographer": "H\u00e9ctor Berganza",
+    "photographerUrl": "https://www.pexels.com/@hberganza",
+    "pexelsUrl": "https://www.pexels.com/photo/a-black-and-white-photo-of-a-prison-tower-27541601/"
+  },
+  "actual-reformation": {
+    "photoId": 7728108,
+    "photographer": "Greta Hoffman",
+    "photographerUrl": "https://www.pexels.com/@greta-hoffman",
+    "pexelsUrl": "https://www.pexels.com/photo/crop-gardener-holding-container-with-seedlings-during-planting-7728108/"
+  },
+  "against-optimization": {
+    "photoId": 590020,
+    "photographer": "Lukas Blazek",
+    "photographerUrl": "https://www.pexels.com/@goumbik",
+    "pexelsUrl": "https://www.pexels.com/photo/person-holding-pen-pointing-at-graph-590020/"
+  },
+  "against-productivity-time": {
+    "photoId": 29218403,
+    "photographer": "Dimitri",
+    "photographerUrl": "https://www.pexels.com/@diorvv",
+    "pexelsUrl": "https://www.pexels.com/photo/office-meeting-with-focus-on-a-timer-29218403/"
+  },
+  "ai-art-death-of-process": {
+    "photoId": 7885473,
+    "photographer": "cottonbro studio",
+    "photographerUrl": "https://www.pexels.com/@cottonbro",
+    "pexelsUrl": "https://www.pexels.com/photo/a-close-up-shot-of-a-person-painting-7885473/"
+  },
+  "algorithmic-culture": {
+    "photoId": 17483871,
+    "photographer": "Google DeepMind",
+    "photographerUrl": "https://www.pexels.com/@googledeepmind",
+    "pexelsUrl": "https://www.pexels.com/photo/an-artist-s-illustration-of-artificial-intelligence-ai-this-image-was-inspired-neural-networks-used-in-deep-learning-it-was-created-by-novoto-studio-as-part-of-the-visualising-ai-proje-17483871/"
+  },
+  "art-technology": {
+    "photoId": 1567590,
+    "photographer": "Athena Sandrini",
+    "photographerUrl": "https://www.pexels.com/@athena",
+    "pexelsUrl": "https://www.pexels.com/photo/black-camera-lens-1567590/"
+  },
+  "attention-is-not-a-resource": {
+    "photoId": 29231701,
+    "photographer": "Francesco Ungaro",
+    "photographerUrl": "https://www.pexels.com/@francesco-ungaro",
+    "pexelsUrl": "https://www.pexels.com/photo/close-up-of-a-cat-s-eye-with-green-iris-29231701/"
+  },
+  "bioregionalism-thinking-like-watershed": {
+    "photoId": 32395646,
+    "photographer": "Fu Shan Un",
+    "photographerUrl": "https://www.pexels.com/@unfushan",
+    "pexelsUrl": "https://www.pexels.com/photo/aerial-view-of-mudflat-with-natural-patterns-32395646/"
+  },
+  "borders-are-new": {
+    "photoId": 11679656,
+    "photographer": "Mark Stebnicki",
+    "photographerUrl": "https://www.pexels.com/@nc-farm-bureau-mark",
+    "pexelsUrl": "https://www.pexels.com/photo/photo-of-a-dirt-road-11679656/"
+  },
+  "boredom-is-a-skill": {
+    "photoId": 35401670,
+    "photographer": "Burak Guven",
+    "photographerUrl": "https://www.pexels.com/@burak-guven-2158136640",
+    "pexelsUrl": "https://www.pexels.com/photo/silhouette-on-rainy-boat-ride-with-city-view-35401670/"
+  },
+  "building-rag-systems": {
+    "photoId": 5480781,
+    "photographer": "Brett Sayles",
+    "photographerUrl": "https://www.pexels.com/@brett-sayles",
+    "pexelsUrl": "https://www.pexels.com/photo/server-racks-on-data-center-5480781/"
+  },
+  "bureaucratic-violence": {
+    "photoId": 8382613,
+    "photographer": "cottonbro studio",
+    "photographerUrl": "https://www.pexels.com/@cottonbro",
+    "pexelsUrl": "https://www.pexels.com/photo/close-up-photo-of-file-of-papers-8382613/"
+  },
+  "carceral-state-working": {
+    "photoId": 6069335,
+    "photographer": "RDNE Stock project",
+    "photographerUrl": "https://www.pexels.com/@rdne",
+    "pexelsUrl": "https://www.pexels.com/photo/men-in-orange-clothes-talking-inside-the-room-6069335/"
+  },
+  "climate-change-labor-issue": {
+    "photoId": 16070124,
+    "photographer": "Photo Frames",
+    "photographerUrl": "https://www.pexels.com/@photo-frames-499466243",
+    "pexelsUrl": "https://www.pexels.com/photo/dust-around-man-digging-at-sunset-16070124/"
+  },
+  "code-playground-demo": {
+    "photoId": 37085302,
+    "photographer": "Meet Patel",
+    "photographerUrl": "https://www.pexels.com/@meet-patel-236003280",
+    "pexelsUrl": "https://www.pexels.com/photo/remote-work-with-laptop-on-rooftop-in-urban-setting-37085302/"
+  },
+  "commons-never-left": {
+    "photoId": 28845711,
+    "photographer": "K",
+    "photographerUrl": "https://www.pexels.com/@kelly",
+    "pexelsUrl": "https://www.pexels.com/photo/sheep-grazing-on-a-scottish-hillside-in-autumn-28845711/"
+  },
+  "cooperatives-actually-work": {
+    "photoId": 33339850,
+    "photographer": "HONG SON",
+    "photographerUrl": "https://www.pexels.com/@hson",
+    "pexelsUrl": "https://www.pexels.com/photo/women-engaged-in-handcraft-work-in-workshop-33339850/"
+  },
+  "cruelty-as-policy": {
+    "photoId": 11654007,
+    "photographer": "Engin Akyurt",
+    "photographerUrl": "https://www.pexels.com/@enginakyurt",
+    "pexelsUrl": "https://www.pexels.com/photo/chain-link-fence-and-barbed-wires-11654007/"
+  },
+  "cyber-animism": {
+    "photoId": 28136840,
+    "photographer": "Nic Wood",
+    "photographerUrl": "https://www.pexels.com/@nic-scrollstoppingphotos",
+    "pexelsUrl": "https://www.pexels.com/photo/printed-circuit-board-28136840/"
+  },
+  "death-denial-silicon-valley": {
+    "photoId": 5309168,
+    "photographer": "Griffin Wooldridge",
+    "photographerUrl": "https://www.pexels.com/@griffinw",
+    "pexelsUrl": "https://www.pexels.com/photo/cityscape-of-illuminated-megalopolis-at-night-5309168/"
+  },
+  "death-of-third-places": {
+    "photoId": 13598107,
+    "photographer": "Crab Lens",
+    "photographerUrl": "https://www.pexels.com/@crab-lens-179881567",
+    "pexelsUrl": "https://www.pexels.com/photo/people-at-bazaar-13598107/"
+  },
+  "degrowth-isnt-primitivism": {
+    "photoId": 12476870,
+    "photographer": "Egor Komarov",
+    "photographerUrl": "https://www.pexels.com/@egorkomarov",
+    "pexelsUrl": "https://www.pexels.com/photo/city-trams-on-moving-on-street-12476870/"
+  },
+  "deportation-machine-no-off-switch": {
+    "photoId": 37847918,
+    "photographer": "\u6d77\u98ce \u5f20",
+    "photographerUrl": "https://www.pexels.com/@2150315839",
+    "pexelsUrl": "https://www.pexels.com/photo/people-at-security-checkpoint-in-airport-terminal-37847918/"
+  },
+  "digital-minimalism-beyond-basics": {
+    "photoId": 5082979,
+    "photographer": "cottonbro studio",
+    "photographerUrl": "https://www.pexels.com/@cottonbro",
+    "pexelsUrl": "https://www.pexels.com/photo/macbook-pro-on-white-chair-5082979/"
+  },
+  "due-process-already-dead": {
+    "photoId": 14766052,
+    "photographer": "Christian Wasserfallen",
+    "photographerUrl": "https://www.pexels.com/@christian-wasserfallen-14125573",
+    "pexelsUrl": "https://www.pexels.com/photo/wooden-interior-of-a-courthouse-14766052/"
+  },
+  "effort-without-striving": {
+    "photoId": 14499187,
+    "photographer": "SERHAT  TU\u011e",
+    "photographerUrl": "https://www.pexels.com/@serhattugg",
+    "pexelsUrl": "https://www.pexels.com/photo/brown-mountain-beside-body-of-water-under-blue-sky-14499187/"
+  },
+  "expertise-social-relation": {
+    "photoId": 7964370,
+    "photographer": "Felicity Tai",
+    "photographerUrl": "https://www.pexels.com/@felicity-tai",
+    "pexelsUrl": "https://www.pexels.com/photo/holding-hands-in-office-7964370/"
+  },
+  "fanged-noumena": {
+    "photoId": 16065846,
+    "photographer": "Tim Mossholder",
+    "photographerUrl": "https://www.pexels.com/@timmossholder",
+    "pexelsUrl": "https://www.pexels.com/photo/water-vapor-on-the-glass-16065846/"
+  },
+  "feed-is-the-problem": {
+    "photoId": 17733323,
+    "photographer": "Macx Converge",
+    "photographerUrl": "https://www.pexels.com/@macxconverge",
+    "pexelsUrl": "https://www.pexels.com/photo/man-looking-on-smartphone-17733323/"
+  },
+  "finding-yourself-myth": {
+    "photoId": 8944957,
+    "photographer": "cottonbro studio",
+    "photographerUrl": "https://www.pexels.com/@cottonbro",
+    "pexelsUrl": "https://www.pexels.com/photo/a-man-holding-a-magnifying-glass-8944957/"
+  },
+  "flow-states-not-achievements": {
+    "photoId": 30314397,
+    "photographer": "Beth Fitzpatrick",
+    "photographerUrl": "https://www.pexels.com/@beth-fitzpatrick-742222899",
+    "pexelsUrl": "https://www.pexels.com/photo/surfboard-riding-a-green-wave-at-narragansett-beach-30314397/"
+  },
+  "future-of-work": {
+    "photoId": 34207369,
+    "photographer": "Freek Wolsink",
+    "photographerUrl": "https://www.pexels.com/@freek-wolsink-508219",
+    "pexelsUrl": "https://www.pexels.com/photo/blue-yaskawa-industrial-robot-in-showcase-display-34207369/"
+  },
+  "gdp-terrible-measure": {
+    "photoId": 7947754,
+    "photographer": "RDNE Stock project",
+    "photographerUrl": "https://www.pexels.com/@rdne",
+    "pexelsUrl": "https://www.pexels.com/photo/a-graph-on-printed-paper-7947754/"
+  },
+  "gig-economy-old-exploitation": {
+    "photoId": 29210891,
+    "photographer": "El gringo photo",
+    "photographerUrl": "https://www.pexels.com/@el-gringo-photo-116752370",
+    "pexelsUrl": "https://www.pexels.com/photo/courrier-checking-phone-city-street-scene-29210891/"
+  },
+  "healthcare-is-infrastructure": {
+    "photoId": 32134727,
+    "photographer": "Jacky. T. R. Chou",
+    "photographerUrl": "https://www.pexels.com/@jacky-t-r-chou-1298475188",
+    "pexelsUrl": "https://www.pexels.com/photo/ntuh-biomedical-park-hospital-entrance-in-taiwan-32134727/"
+  },
+  "how-i-built-this-site": {
+    "photoId": 4458210,
+    "photographer": "Ivan S",
+    "photographerUrl": "https://www.pexels.com/@ivan-s",
+    "pexelsUrl": "https://www.pexels.com/photo/close-up-shot-of-a-floor-plan-4458210/"
+  },
+  "ice-kills-americans": {
+    "photoId": 11359523,
+    "photographer": "Nahmad Hassan",
+    "photographerUrl": "https://www.pexels.com/@nahmadofficial",
+    "pexelsUrl": "https://www.pexels.com/photo/a-group-of-people-holding-a-lighted-candles-11359523/"
+  },
+  "impractical-majors": {
+    "photoId": 38087316,
+    "photographer": "Joshuan Barboza",
+    "photographerUrl": "https://www.pexels.com/@jbarbozameca",
+    "pexelsUrl": "https://www.pexels.com/photo/view-of-trajan-s-column-in-rome-s-historic-center-38087316/"
+  },
+  "investing-in-monero": {
+    "photoId": 19840462,
+    "photographer": "Marta Branco",
+    "photographerUrl": "https://www.pexels.com/@martabranco",
+    "pexelsUrl": "https://www.pexels.com/photo/a-line-of-cryptocurrency-coins-lying-on-yellow-and-white-background-19840462/"
+  },
+  "journalism-dead-long-live-journalism": {
+    "photoId": 7618404,
+    "photographer": "cottonbro studio",
+    "photographerUrl": "https://www.pexels.com/@cottonbro",
+    "pexelsUrl": "https://www.pexels.com/photo/a-man-in-white-long-sleeve-shirt-taking-a-photo-7618404/"
+  },
+  "liberation-theology-was-right": {
+    "photoId": 34355589,
+    "photographer": "Chris F",
+    "photographerUrl": "https://www.pexels.com/@chris-f-38966",
+    "pexelsUrl": "https://www.pexels.com/photo/protest-sign-advocating-human-rights-34355589/"
+  },
+  "libraries-are-radical": {
+    "photoId": 27273517,
+    "photographer": "Jan van der Wolf",
+    "photographerUrl": "https://www.pexels.com/@jan-van-der-wolf-11680885",
+    "pexelsUrl": "https://www.pexels.com/photo/a-row-of-bookshelves-in-a-library-27273517/"
+  },
+  "local-food-not-elitist": {
+    "photoId": 868110,
+    "photographer": "AS Photography",
+    "photographerUrl": "https://www.pexels.com/@asphotography",
+    "pexelsUrl": "https://www.pexels.com/photo/vegetables-stall-868110/"
+  },
+  "loneliness-epidemic-structural": {
+    "photoId": 10228199,
+    "photographer": "Ruslan Alekso",
+    "photographerUrl": "https://www.pexels.com/@oskelaq",
+    "pexelsUrl": "https://www.pexels.com/photo/man-standing-near-windows-10228199/"
+  },
+  "meaning-isnt-optional": {
+    "photoId": 1102257,
+    "photographer": "Raman deep",
+    "photographerUrl": "https://www.pexels.com/@raman-deep-424054",
+    "pexelsUrl": "https://www.pexels.com/photo/silhouette-of-person-1102257/"
+  },
+  "meditation-industrial-complex": {
+    "photoId": 8436574,
+    "photographer": "Yan Krukau",
+    "photographerUrl": "https://www.pexels.com/@yankrukov",
+    "pexelsUrl": "https://www.pexels.com/photo/people-in-fitness-clothes-doing-yoga-8436574/"
+  },
+  "meritocracy-myth": {
+    "photoId": 38563819,
+    "photographer": "Miguel Guerra",
+    "photographerUrl": "https://www.pexels.com/@miguel-guerra-3200843",
+    "pexelsUrl": "https://www.pexels.com/photo/track-athlete-preparing-for-sprint-in-mexico-city-38563819/"
+  },
+  "mutual-aid-isnt-charity": {
+    "photoId": 6647115,
+    "photographer": "RDNE Stock project",
+    "photographerUrl": "https://www.pexels.com/@rdne",
+    "pexelsUrl": "https://www.pexels.com/photo/volunteers-opening-food-boxes-6647115/"
+  },
+  "myth-of-neutral-tool": {
+    "photoId": 16243261,
+    "photographer": "Luis Quintero",
+    "photographerUrl": "https://www.pexels.com/@jibarofoto",
+    "pexelsUrl": "https://www.pexels.com/photo/tools-on-wall-in-workshop-16243261/"
+  },
+  "nihilism-is-lazy": {
+    "photoId": 26280308,
+    "photographer": "Jan van der Wolf",
+    "photographerUrl": "https://www.pexels.com/@jan-van-der-wolf-11680885",
+    "pexelsUrl": "https://www.pexels.com/photo/lamp-over-single-chair-26280308/"
+  },
+  "nostalgia-political-weapon": {
+    "photoId": 11962649,
+    "photographer": "Alfo Medeiros",
+    "photographerUrl": "https://www.pexels.com/@alfomedeiros",
+    "pexelsUrl": "https://www.pexels.com/photo/black-canon-on-green-grass-field-11962649/"
+  },
+  "open-source-sustainability-crisis": {
+    "photoId": 1933900,
+    "photographer": "Rahul Pandit",
+    "photographerUrl": "https://www.pexels.com/@rahulp9800",
+    "pexelsUrl": "https://www.pexels.com/photo/blue-and-red-light-from-computer-1933900/"
+  },
+  "platform-feudalism": {
+    "photoId": 33327968,
+    "photographer": "Tahir X\u0259lf\u0259quliyev",
+    "photographerUrl": "https://www.pexels.com/@tahir",
+    "pexelsUrl": "https://www.pexels.com/photo/medieval-stone-fortress-in-lush-greenery-33327968/"
+  },
+  "privacy-in-age-of-ai": {
+    "photoId": 5474035,
+    "photographer": "cottonbro studio",
+    "photographerUrl": "https://www.pexels.com/@cottonbro",
+    "pexelsUrl": "https://www.pexels.com/photo/close-up-shot-of-a-man-5474035/"
+  },
+  "problem-with-green-capitalism": {
+    "photoId": 7656330,
+    "photographer": "Thirdman",
+    "photographerUrl": "https://www.pexels.com/@thirdman",
+    "pexelsUrl": "https://www.pexels.com/photo/nature-garden-plant-leaf-7656330/"
+  },
+  "quantified-self-prison": {
+    "photoId": 6065085,
+    "photographer": "RDNE Stock project",
+    "photographerUrl": "https://www.pexels.com/@rdne",
+    "pexelsUrl": "https://www.pexels.com/photo/a-woman-writing-on-the-paper-6065085/"
+  },
+  "rational-actor-myth": {
+    "photoId": 269630,
+    "photographer": "Pixabay",
+    "photographerUrl": "https://www.pexels.com/@pixabay",
+    "pexelsUrl": "https://www.pexels.com/photo/playing-card-and-poker-chips-and-dices-269630/"
+  },
+  "rent-seeking-eating-everything": {
+    "photoId": 34282750,
+    "photographer": "Chen EdisoN",
+    "photographerUrl": "https://www.pexels.com/@chen-edison-2155188199",
+    "pexelsUrl": "https://www.pexels.com/photo/aerial-view-of-toll-plaza-with-cars-in-lanes-34282750/"
+  },
+  "right-to-repair-civil-right": {
+    "photoId": 31862953,
+    "photographer": "Fotografia Lui Vlad",
+    "photographerUrl": "https://www.pexels.com/@fotografia-lui-vlad-1445510816",
+    "pexelsUrl": "https://www.pexels.com/photo/smartphone-repair-tools-on-a-workbench-31862953/"
+  },
+  "rural-america-isnt-what-you-think": {
+    "photoId": 26180691,
+    "photographer": "Tom Fisk",
+    "photographerUrl": "https://www.pexels.com/@tomfisk",
+    "pexelsUrl": "https://www.pexels.com/photo/rural-fields-in-countryside-26180691/"
+  },
+  "science-studies-for-science-lovers": {
+    "photoId": 5427683,
+    "photographer": "Tima Miroshnichenko",
+    "photographerUrl": "https://www.pexels.com/@tima-miroshnichenko",
+    "pexelsUrl": "https://www.pexels.com/photo/student-wearing-protective-goggles-sitting-beside-a-teacher-5427683/"
+  },
+  "seasonal-living-isnt-nostalgia": {
+    "photoId": 1906438,
+    "photographer": "Ylanite Koppens",
+    "photographerUrl": "https://www.pexels.com/@nietjuhart",
+    "pexelsUrl": "https://www.pexels.com/photo/black-camera-beside-mug-1906438/"
+  },
+  "secular-society-isnt": {
+    "photoId": 8468737,
+    "photographer": "Thirdman",
+    "photographerUrl": "https://www.pexels.com/@thirdman",
+    "pexelsUrl": "https://www.pexels.com/photo/people-sitting-on-benches-in-church-while-praying-8468737/"
+  },
+  "self-hosting-is-political": {
+    "photoId": 2881229,
+    "photographer": "Brett Sayles",
+    "photographerUrl": "https://www.pexels.com/@brett-sayles",
+    "pexelsUrl": "https://www.pexels.com/photo/cables-connected-on-server-2881229/"
+  },
+  "self-made-billionaire-myth": {
+    "photoId": 12008095,
+    "photographer": "Mathias Reding",
+    "photographerUrl": "https://www.pexels.com/@matreding",
+    "pexelsUrl": "https://www.pexels.com/photo/a-person-in-orange-long-sleeve-shirt-standing-on-gray-scaffolding-12008095/"
+  },
+  "simulation-hypothesis": {
+    "photoId": 12264712,
+    "photographer": "Jalil Saeidi",
+    "photographerUrl": "https://www.pexels.com/@jalil-saeidi-135940189",
+    "pexelsUrl": "https://www.pexels.com/photo/women-with-mirror-12264712/"
+  },
+  "smart-home-landlord-dream": {
+    "photoId": 16300099,
+    "photographer": "Joshua Brown",
+    "photographerUrl": "https://www.pexels.com/@lolimjoshingyou",
+    "pexelsUrl": "https://www.pexels.com/photo/camera-on-red-wall-16300099/"
+  },
+  "sports-last-public-ritual": {
+    "photoId": 37830334,
+    "photographer": "Ama Journey",
+    "photographerUrl": "https://www.pexels.com/@ama-journey-2157145868",
+    "pexelsUrl": "https://www.pexels.com/photo/traditional-mud-wrestling-festival-in-vietnam-37830334/"
+  },
+  "stopped-repairing-things": {
+    "photoId": 32529607,
+    "photographer": "S\u00c0I G\u00d2N C\u00d4NG TY CP S\u1ea2N XU\u1ea4T - TH\u01af\u01a0NG M\u1ea0I",
+    "photographerUrl": "https://www.pexels.com/@betongsmcsg",
+    "pexelsUrl": "https://www.pexels.com/photo/construction-workers-repairing-cement-mixer-truck-32529607/"
+  },
+  "strikes-work": {
+    "photoId": 17885542,
+    "photographer": "Nicholas Mageras",
+    "photographerUrl": "https://www.pexels.com/@nicholas-mageras-679382590",
+    "pexelsUrl": "https://www.pexels.com/photo/people-with-banners-protesting-in-city-in-usa-17885542/"
+  },
+  "suburbs-are-ponzi-scheme": {
+    "photoId": 33440163,
+    "photographer": "Macourt Media",
+    "photographerUrl": "https://www.pexels.com/@macourt-media-1519726",
+    "pexelsUrl": "https://www.pexels.com/photo/aerial-view-of-sydney-suburbs-with-rainbow-33440163/"
+  },
+  "surrender-is-not-giving-up": {
+    "photoId": 17506343,
+    "photographer": "David Brown",
+    "photographerUrl": "https://www.pexels.com/@ninobur",
+    "pexelsUrl": "https://www.pexels.com/photo/metal-sculpture-against-blue-sky-17506343/"
+  },
+  "taoist-case-against-hustle-culture": {
+    "photoId": 4925235,
+    "photographer": "Satty Singh",
+    "photographerUrl": "https://www.pexels.com/@sattyfit",
+    "pexelsUrl": "https://www.pexels.com/photo/boardwalk-between-trees-4925235/"
+  },
+  "ubi-not-radical-enough": {
+    "photoId": 7680623,
+    "photographer": "https://kaboompics.com/",
+    "photographerUrl": "https://www.pexels.com/@karola-g",
+    "pexelsUrl": "https://www.pexels.com/photo/close-up-shot-of-a-person-holding-paper-money-on-white-surface-7680623/"
+  },
+  "understanding-ego": {
+    "photoId": 36570323,
+    "photographer": "Valeriia Tkachenko",
+    "photographerUrl": "https://www.pexels.com/@valeriia-tkachenko-1240258405",
+    "pexelsUrl": "https://www.pexels.com/photo/reflective-moment-in-a-dressing-room-mirror-36570323/"
+  },
+  "university-credentialing-machine": {
+    "photoId": 8112119,
+    "photographer": "Pavel Danilyuk",
+    "photographerUrl": "https://www.pexels.com/@pavel-danilyuk",
+    "pexelsUrl": "https://www.pexels.com/photo/selective-focus-photo-of-a-diploma-on-a-frame-8112119/"
+  },
+  "water-wars-coming": {
+    "photoId": 37724468,
+    "photographer": "Mark Stebnicki",
+    "photographerUrl": "https://www.pexels.com/@nc-farm-bureau-mark",
+    "pexelsUrl": "https://www.pexels.com/photo/drought-affected-lake-with-cloudy-sky-37724468/"
+  },
+  "why-reform-fails": {
+    "photoId": 8850657,
+    "photographer": "Tara Winstead",
+    "photographerUrl": "https://www.pexels.com/@tara-winstead",
+    "pexelsUrl": "https://www.pexels.com/photo/a-text-saying-vote-on-light-blue-background-8850657/"
+  },
+  "why-your-city-is-expensive": {
+    "photoId": 38853175,
+    "photographer": "Gaetan THURIN",
+    "photographerUrl": "https://www.pexels.com/@gaetanthurin",
+    "pexelsUrl": "https://www.pexels.com/photo/scenic-view-of-cannes-waterfront-and-hills-38853175/"
+  },
+  "wu-wei-backwards-law": {
+    "photoId": 27078991,
+    "photographer": "Z\u00fclf\u00fc Demir\ud83d\udcf8",
+    "photographerUrl": "https://www.pexels.com/@zlfdmr23",
+    "pexelsUrl": "https://www.pexels.com/photo/rocks-on-stream-27078991/"
+  },
+  "your-workplace-could-be-organized": {
+    "photoId": 37732812,
+    "photographer": "Emin Alper",
+    "photographerUrl": "https://www.pexels.com/@emin-alper-2161785125",
+    "pexelsUrl": "https://www.pexels.com/photo/protesters-gathering-in-antalya-with-red-hard-hats-37732812/"
+  },
+  "zorhan-mamdani-politics": {
+    "photoId": 18498510,
+    "photographer": "Holger J. Bub",
+    "photographerUrl": "https://www.pexels.com/@peederopecta",
+    "pexelsUrl": "https://www.pexels.com/photo/times-square-in-new-york-18498510/"
+  }
+}
