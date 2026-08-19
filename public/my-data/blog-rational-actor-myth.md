@@ -6,7 +6,7 @@ Open an introductory economics textbook, any of them, and within the first few c
 
 Economists mostly know he's fictional. They build models on his assumptions anyway. Those models become policy, and then real humans get crushed by institutions designed for a species that doesn't exist.
 
-## The kill shot: Kahneman and Tversky
+## Kahneman and Tversky
 
 Daniel Kahneman and Amos Tversky started publishing together in the early 1970s. By the time they were done, they had dismantled the rational actor model so thoroughly that Kahneman won the Nobel Prize in Economics for it in 2002. (Tversky would have shared it, but he died in 1996. The Nobel isn't awarded posthumously.)
 
@@ -16,7 +16,7 @@ People don't evaluate outcomes in absolute terms. They evaluate them relative to
 
 They also showed that people systematically miscalculate probabilities. We overweight small probabilities, which is why people buy lottery tickets and catastrophic insurance, and underweight large ones, which is why people don't save for retirement even when they know they should. We anchor to irrelevant numbers. We're swayed by how options are framed; the same surgery described as "90% survival rate" versus "10% mortality rate" produces different choices, even among doctors.
 
-None of this was subtle, and none of it required special conditions. The biases showed up reliably across populations, cultures, and levels of education. The rational actor wasn't a simplification. It was wrong.
+None of this was subtle, and none of it required special conditions. The biases showed up reliably across populations, cultures, and levels of education. A simplification preserves the shape of the thing it simplifies; this model had the shape wrong.
 
 ## The status quo is velcro
 
@@ -52,19 +52,19 @@ The question nudge theory doesn't ask: why are we designing systems that require
 
 ## Behavioral realism, not behavioral patches
 
-The real lesson of behavioral economics isn't that we can trick people into better choices with clever defaults. It's that the rational actor model was always a convenient fiction, and a useful one for institutions that want to shift responsibility onto individuals.
+The real lesson of behavioral economics is that the rational actor was always a convenient fiction — convenient, above all, for institutions that want responsibility shifted onto individuals.
 
 If people are bad at saving for retirement, the rational actor model says that's their problem. If they make poor healthcare choices, give them more information. If they're drowning in debt, they should have calculated the interest rates more carefully. In every case the fiction serves the institution and blames the person. Behavioral economics, at its best, exposes that blame-shifting for what it is.
 
-The alternative isn't paternalism. It's design: systems built for the distractible, loss-averse, status-quo-loving, framing-dependent, cognitively limited humans who actually exist, instead of the utility-maximizing robots we pretend they are.
+The alternative is design: systems built for the distractible, loss-averse, status-quo-loving, framing-dependent, cognitively limited humans who actually exist, instead of the utility-maximizing robots we pretend they are.
 
-This means more than nudges. Automatic enrollment as the norm rather than the exception. Systems simple enough to navigate without expertise. Institutional design that absorbs complexity instead of passing it through to individuals. The gap between Homo economicus and Homo sapiens isn't a rounding error. It's a chasm.
+This means more than nudges. Automatic enrollment as the norm rather than the exception. Systems simple enough to navigate without expertise. Institutional design that absorbs complexity instead of passing it through to individuals.
 
 ## The dead model walks
 
 And yet. Open an economics textbook published this year and you'll still find rational choice theory presented as the baseline. Graduate programs still train economists on models that assume perfect rationality as the starting point and treat behavioral findings as "deviations" or "anomalies."
 
-This is like teaching astronomy with the Ptolemaic model and treating Copernicus as a footnote. The anomalies aren't anomalies. They're the reality. The model is the anomaly.
+This is teaching astronomy from the Ptolemaic model and footnoting Copernicus. The "anomalies" are most of observed human behavior.
 
 Kahneman and Tversky killed the rational actor fifty years ago. Economics just hasn't finished burying the body. Meanwhile real people navigate systems designed for creatures they've never been, make the choices the models say they shouldn't, and absorb the consequences the models say they deserve.
 

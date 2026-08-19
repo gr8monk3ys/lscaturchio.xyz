@@ -12,7 +12,7 @@ Degrowth doesn't mean abandoning modern medicine or living without electricity o
 
 Degrowth targets *throughput*, the total flow of materials and energy through the economy. Not quality of life, not human flourishing, not technological capability. Throughput.
 
-An economy that pulls ever-increasing quantities of raw material out of the ground, turns them into products, uses those products briefly, and discards them as waste cannot continue indefinitely on a finite planet. This is so obvious it feels stupid to type. The obviousness still hasn't penetrated mainstream economic thinking.
+An economy that pulls ever-increasing quantities of raw material out of the ground, turns them into products, uses those products briefly, and discards them as waste cannot continue indefinitely on a finite planet. Herman Daly was making this point in the 1970s — *Steady-State Economics* is from 1977 — and mainstream economics has now spent fifty years not absorbing it.
 
 The goal isn't less well-being. It's the same well-being, or more, with less material moving through the system to produce it. Those are different things, and the whole argument turns on the difference.
 
@@ -24,7 +24,7 @@ Critics of degrowth tend to collapse two different things into one: production a
 
 Producing certain goods genuinely requires advanced technology and serious resource inputs. Medicine. Semiconductors. Scientific instruments. Nobody serious is proposing we stop making these.
 
-But most economic growth isn't driven by necessities or genuinely useful technology. It's driven by disposable goods, planned obsolescence, artificial product differentiation, and the manufacture of demand through advertising. We don't need seventeen near-identical laundry detergents, or smartphones engineered to die in two years, or single-use plastic wrapped around products that didn't need any packaging at all. Degrowth says maybe we can let some of that go.
+Most economic growth, though, is driven not by necessities but by disposable goods, planned obsolescence, artificial product differentiation, and the manufacture of demand through advertising. We don't need seventeen near-identical laundry detergents, or smartphones engineered to die in two years, or single-use plastic wrapped around products that didn't need any packaging at all. Degrowth says maybe we can let some of that go.
 
 Reducing that kind of wasteful production doesn't diminish anyone's quality of life. It might improve it. Less time working to afford things you didn't want, less clutter, less environmental damage in your own neighborhood, less of your attention sold off to advertising.
 
@@ -38,11 +38,11 @@ Degrowth challenges the framework directly by asking what economies are actually
 
 ## Technology isn't the problem
 
-This is where critics consistently miss the point. The argument isn't against technology. It's against one particular use of it: pouring efficiency gains into more throughput instead of less.
+This is where critics consistently miss the point. The argument is with one particular use of technology: pouring efficiency gains into more throughput instead of less.
 
 Every time technology makes production more efficient, a fork appears. The efficiency could cut resource use while holding output steady, or it could hold resource use steady while pushing output up. Modern economies pick the second one almost every time. More efficient cars, so we drive more miles. More efficient manufacturing, so we produce more goods. More efficient agriculture, so we farm more land.
 
-Economists call the pattern the Jevons Paradox, and it's why technological progress doesn't automatically shrink environmental impact and frequently grows it. Degrowth proposes making the other choice: cap resource use, then let technology improve quality inside that ceiling. That's not anti-technology. It's anti-growth-at-all-costs.
+William Stanley Jevons caught the pattern in 1865, watching more-efficient steam engines increase Britain's coal consumption rather than reduce it. It has held ever since, which is why technological progress doesn't automatically shrink environmental impact and frequently grows it. The empirical version of the argument is now well documented: Jason Hickel and Giorgos Kallis went through the decoupling literature in 2019 ("Is Green Growth Possible?", *New Political Economy*) and found no evidence that GDP can be absolutely decoupled from resource use at anything like the speed the climate math requires. Degrowth proposes making the other choice at Jevons's fork: cap resource use, then let technology improve quality inside that ceiling.
 
 ## What degrowth societies actually look like
 
@@ -62,12 +62,12 @@ Saying "we can't degrow because our system requires growth" is circular. It's li
 
 ## The actually difficult questions
 
-Degrowth does face real challenges, and distribution is the big one.
+Degrowth does face real challenges, and distribution is the one I find genuinely hard.
 
 In a growing economy you can paper over distributional conflict. Everyone gets more, even if some get vastly more than others, as long as the pie keeps expanding. In a steady-state or contracting economy that trick stops working, and distribution turns zero-sum. One person getting more means another getting less.
 
 So degrowth has to confront inequality directly, in exactly the way growth-dependent societies have spent decades avoiding. That means genuine redistribution rather than a promise that growth will eventually lift all boats. Politically difficult, yes. But "politically difficult" is not "impossible," and it's certainly not "primitivist."
 
-The path forward isn't abandoning modernity. It's reorganizing modernity around different priorities: well-being over throughput, sufficiency over excess. We can keep the hospitals and the universities and the internet and the scientific research. The one thing we can't keep, the thing no amount of green technology will deliver, is infinite material growth on a finite planet.
+The path forward is reorganizing modernity around different priorities: well-being over throughput, sufficiency over excess. We can keep the hospitals and the universities and the internet and the scientific research. The one thing we can't keep, the thing no amount of green technology will deliver, is infinite material growth on a finite planet.
 
-That's not primitivism. That's arithmetic.
+That part was never a values debate. Jevons could have told you in 1865.

@@ -1,14 +1,12 @@
 # Your Workplace Could Be Organized
 
-## The thing nobody tells you
+## Mostly it's talking to people
 
 Workplace organizing is boring. Not in a bad way. In the way that anything real and effective is boring: it's mostly just talking to people.
 
 The movies show picket lines, dramatic speeches, confrontations with management. That stuff happens eventually, maybe. The actual work is conversations, one at a time, over weeks and months, about mundane things like scheduling and pay and whether the break room has enough chairs.
 
 Your workplace could probably be organized. Most could. The barrier isn't legal, though the law is hostile, and it isn't structural either. It's that most people have never seen it done, so they assume it can't be.
-
-But it can.
 
 ## What organizing actually looks like
 
@@ -20,7 +18,7 @@ Then come the one-on-one conversations. Not group meetings; those come later. In
 
 Most people have never been asked these questions by someone who genuinely wants the answer. When they finally are, they have a lot to say.
 
-The goal isn't to convince anyone of anything, not yet. It's to understand what people care about and to start building relationships with coworkers who might be interested in doing something about it.
+You're not trying to convince anyone of anything yet — just to understand what people care about, and to start building relationships with the coworkers who might want to do something about it.
 
 ## The committee
 
@@ -74,7 +72,7 @@ And it's terrifying for management, because now they have to deal with workers a
 
 There's a widespread belief that organizing happens to other people. Factory workers, teachers, nurses. Not office workers or tech workers or retail workers. Not people like you.
 
-That belief is wrong.
+That belief stopped being tenable in December 2021, when baristas at a Starbucks on Elmwood Avenue in Buffalo voted in the first union at a company-owned store in the chain's history — and hundreds of stores followed inside two years. Four months later, workers at Amazon's JFK8 warehouse on Staten Island won their election with an independent union run on donations, against a company that spent millions on avoidance consultants. Baristas and warehouse pickers, the two workforces everyone had written off as unorganizable.
 
 Any group of workers can organize. There's no minimum company size and no specific industry requirement. If you work somewhere and you have coworkers, you can organize.
 
@@ -88,7 +86,7 @@ The biggest obstacle to organizing isn't management, and it isn't the law. It's 
 
 Fear of retaliation, of conflict, of failure, of being the person who "caused problems." These fears are rational. Retaliation happens, illegally, but it happens. Organizing does create conflict. It can fail, and you might end up exposed.
 
-The fear is part of the system, though. A feature, not a bug. Workers being afraid to organize is precisely what lets management operate the way it does. The fear is doing the work of control.
+The fear is part of the system, though — workers being afraid to organize is precisely what lets management operate the way it does. The fear is doing the work of control.
 
 The only way through it is to act despite it, together. That's what solidarity actually means. Not a slogan. A practice.
 
