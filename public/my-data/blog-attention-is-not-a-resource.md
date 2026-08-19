@@ -12,7 +12,7 @@ When you treat attention as a resource, you accept a set of assumptions that hap
 
 William James defined attention in 1890 as "the taking possession by the mind, in clear and vivid form, of one out of what seem several simultaneously possible objects or trains of thought." That's not a description of spending something. That's a description of *orienting toward something*. There's a difference.
 
-When you pay attention to a conversation with a friend, you don't have less attention afterward. You might be tired, sure. But fatigue isn't depletion. Attention isn't a tank that drains. It's closer to a posture: you can sustain it, redirect it, let it go slack. What you can't do is hand it to someone.
+When you pay attention to a conversation with a friend, you don't have less attention afterward. You might be tired, sure. But attention is closer to a posture than a tank: you can sustain it, redirect it, let it go slack. What you can't do is hand it to someone.
 
 Simone Weil called attention "the rarest and purest form of generosity." She wasn't being poetic so much as precise. Attention is a way of being present to something, and it exists in the space between you and whatever you're attending to.
 
@@ -48,11 +48,11 @@ If attention isn't a resource, then the problem isn't scarcity management. It's 
 
 The question shifts from "how do I budget my attention better?" to "who is manipulating my perceptual environment, and why do we let them?"
 
-That's a regulation question, not a self-help question. It points toward things like banning dark patterns in UI design, requiring algorithmic transparency, restricting behavioral advertising, and treating attentional manipulation the way we treat environmental pollution, as an externality imposed on the public without consent.
+That question belongs to regulators, not to your settings app. It points toward things like banning dark patterns in UI design, requiring algorithmic transparency, restricting behavioral advertising, and treating attentional manipulation the way we treat environmental pollution, as an externality imposed on the public without consent.
 
 Some of this is already happening at the margins. The EU's Digital Services Act restricts some dark patterns. COPPA limits targeting of children. But the core business model (capture attention through psychological manipulation, sell the resulting behavioral data) remains untouched. Because the resource metaphor makes it sound like a market, and markets are supposed to be left alone.
 
-James Williams, a former Google strategist turned philosopher, wrote in *Stand Out of Our Light* that the attention economy is best understood not as an economic problem but as an *ethical* one. The question isn't who gets the scarce resource. The question is who gets to determine what you attend to, and therefore, in a meaningful sense, who gets to determine what your life is about.
+James Williams, a former Google strategist turned philosopher, wrote in *Stand Out of Our Light* that the attention economy is best understood as an *ethical* problem before an economic one. The real question, on his account: who gets to determine what you attend to — and therefore, in a meaningful sense, what your life is about.
 
 ## The oldest insight
 
@@ -64,4 +64,4 @@ Weil again: "Attention, taken to its highest degree, is the same thing as prayer
 
 The resource metaphor flattens all of this into inputs and outputs. It takes one of the most basic features of being conscious and files it as a line item on a budget.
 
-Which leaves the question the metaphor was built to keep you from asking. Not how to budget your attention, but who has their hands on it, and why we let them keep them there.
+Which leaves the question the metaphor was built to keep you from asking: who has their hands on your attention, and why we let them keep them there.
