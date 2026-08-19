@@ -124,7 +124,8 @@ const nextConfig = {
             //    2026-08-17; do not remove as "unused")
             //  - translate-pa.googleapis.com appears in script-src because the
             //    widget fetches it via JSONP (<script>), not XHR
-            // If NEXT_PUBLIC_AUDIO_CDN_URL is ever set, add its origin to media-src.
+            //  - ekldxpd3mp5h44qj.public.blob.vercel-storage.com  blog audio
+            //    (Vercel Blob; the origin behind NEXT_PUBLIC_AUDIO_CDN_URL)
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' blob: giscus.app va.vercel-scripts.com translate.google.com translate.googleapis.com translate-pa.googleapis.com www.gstatic.com static.cloudflareinsights.com",
@@ -133,7 +134,7 @@ const nextConfig = {
               "font-src 'self' data: fonts.gstatic.com",
               "connect-src 'self' https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://vitals.vercel-insights.com https://cloudflareinsights.com https://translate.googleapis.com https://translate-pa.googleapis.com https://translate.google.com",
               "frame-src 'self' giscus.app translate.google.com",
-              "media-src 'self'",
+              "media-src 'self' https://ekldxpd3mp5h44qj.public.blob.vercel-storage.com",
               "worker-src 'self' blob:",
             ].join('; '),
           },
