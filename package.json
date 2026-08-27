@@ -23,6 +23,7 @@
     "eval:chat": "tsx scripts/eval-chat.ts",
     "predeploy": "bun run lint && bun run typecheck && bun run test && bun run build && bun run test:e2e",
     "knip": "knip",
+    "bump-deps": "node scripts/bump-deps.mjs",
     "db:migrate": "tsx scripts/run-neon-migration.ts",
     "generate-embeddings": "tsx scripts/generate-embeddings.ts",
     "sync-retrieval-corpus": "tsx scripts/sync-retrieval-corpus.ts",

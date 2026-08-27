@@ -15,7 +15,6 @@ This repo powers the public `lscaturchio.xyz` site. It is part marketing site, p
 - `scripts`: recurring maintenance tasks and one-off operational helpers
 - `e2e`: Playwright tests
 - `supabase/migrations`: SQL history and migration notes
-- `.claude`: optional Claude Code prompts, hooks, and orchestration helpers; not required for app runtime
 
 ## Route Conventions
 

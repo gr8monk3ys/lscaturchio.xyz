@@ -11,8 +11,7 @@ const utilityLinkClass =
 
 /**
  * The footer is the site map: the header stays slim, so every page in the
- * garden gets its doorway here instead (see
- * docs/superpowers/specs/2026-06-11-nav-footer-redesign-design.md).
+ * garden gets its doorway here instead.
  */
 function Footer() {
   const substackUrl =

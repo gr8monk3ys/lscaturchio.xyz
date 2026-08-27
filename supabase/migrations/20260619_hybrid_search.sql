@@ -1,6 +1,6 @@
 -- Hybrid search: Postgres full-text search alongside pgvector, plus a
 -- per-source content hash for incremental re-embedding.
--- See docs/superpowers/specs/2026-06-19-hybrid-retrieval-design.md
+-- Consumed by src/lib/retrieval.ts
 --
 -- Idempotent: safe to re-run. After applying, re-run `npm run generate-embeddings`
 -- once so existing rows pick up content_hash (content_tsv is generated and
