@@ -356,7 +356,7 @@ $$;
 -- ============================================================================
 -- HYBRID SEARCH (from 20260619_hybrid_search.sql)
 -- Full-text search alongside pgvector + per-source content hash for incremental
--- re-embedding. See docs/superpowers/specs/2026-06-19-hybrid-retrieval-design.md
+-- re-embedding. See src/lib/retrieval.ts
 -- ============================================================================
 ALTER TABLE embeddings
   ADD COLUMN IF NOT EXISTS content_tsv tsvector

@@ -16,6 +16,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
 
@@ -49,6 +50,7 @@ jobs:
   typecheck:
     name: Type Check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
 
@@ -74,6 +76,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
 
@@ -99,6 +102,7 @@ jobs:
   e2e:
     name: E2E
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     needs: [lint, typecheck, test]
     steps:
       - uses: actions/checkout@v7
@@ -127,7 +131,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
+      # Job-level timeout is the backstop; this step gets its own because the
+      # `--with-deps` apt step has hung on an unreachable mirror before
+      # (2026-08-19: two main runs sat here until the 6h ceiling cancelled them).
       - name: Install Playwright browsers
+        timeout-minutes: 10
         run: bunx playwright install --with-deps chromium
 
       # The Playwright webServer builds and serves the app itself, so this job
@@ -161,6 +169,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [lint, typecheck, test]
     steps:
       - uses: actions/checkout@v7
@@ -207,6 +216,7 @@ jobs:
   lighthouse:
     name: Lighthouse Budget
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     needs: [build]
     steps:
       - uses: actions/checkout@v7
@@ -251,6 +261,7 @@ jobs:
   postdeploy-chat-smoke:
     name: Post-Deploy Chat Smoke
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:

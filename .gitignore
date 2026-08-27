@@ -65,3 +65,7 @@ next-env.d.ts
 # Remember plugin local session history
 .remember/
 .env*
+
+# Agent scratch, never source
+.claude/settings.local.json
+.superpowers/

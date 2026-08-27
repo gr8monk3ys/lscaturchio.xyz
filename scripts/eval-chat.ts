@@ -9,7 +9,7 @@
  * Writes a markdown artifact (default tmp/chat-eval-<date>.md) with
  * manual-judgment columns to be filled in afterward.
  *
- * See docs/superpowers/specs/2026-05-08-chat-retrieval-quality-design.md
+ * Queries live in scripts/eval-chat-queries.json.
  */
 
 import { promises as fs } from 'node:fs'

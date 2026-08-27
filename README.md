@@ -1,125 +1,47 @@
 # lscaturchio.xyz
 
-![Site preview](public/images/dashboard.webp)
+Personal site: 83 essays, a portfolio, and a chat box that answers from the essays. Live at https://lscaturchio.xyz.
 
-Personal site and publishing platform built with Next.js 16, React 19, TypeScript, and Tailwind CSS. The repo powers a portfolio, long-form MDX blog, AI chat with retrieval over site content, engagement APIs, localized routes, and a set of maintenance scripts for content, audio, and deployment checks.
+Next.js 16 App Router, React 19, TypeScript, Tailwind, Neon Postgres, deployed on Vercel from `main`.
 
-## What This Repo Includes
+![Home page](docs/screenshot.png)
 
-- Marketing and portfolio pages under the App Router
-- MDX blog posts with shared metadata, tags, series, and JSON-LD
-- AI chat with OpenAI, OpenRouter, and Ollama fallbacks
-- Neon/Postgres-backed engagement and content retrieval features
-- Pre-generated text-to-speech audio and an audio manifest pipeline
-- CI quality gates for linting, type-checking, dead-code detection (knip), tests, coverage thresholds, build, E2E, CodeQL, and Lighthouse
-- A scheduled uptime probe that opens a GitHub issue when production degrades
+## One engineering note
 
-## Stack
+Every public write endpoint is the same four-layer chain, and the contact form is the shortest example ([`src/app/api/contact/route.ts`](src/app/api/contact/route.ts)):
 
-- Next.js 16 App Router
-- React 19
-- TypeScript
-- Tailwind CSS
-- Neon/Postgres
-- OpenAI, OpenRouter, and Ollama
-- Playwright, Vitest, ESLint, Lighthouse CI
-- Vercel deployment
+1. **Rate limit** — `withRateLimit(handler, { limit: 3, window: 5 min })` wraps the handler, so it runs before anything else. Upstash Redis when configured, an in-memory map otherwise; if Redis errors, the request degrades to the in-memory limiter instead of failing ([`src/lib/with-rate-limit.ts`](src/lib/with-rate-limit.ts)).
+2. **CSRF** — `Origin` header checked against the site URL and the exact hostnames Vercel injects for this deployment, never a name prefix: anyone can register `lscaturchio-<x>.vercel.app` ([`src/lib/csrf.ts`](src/lib/csrf.ts)).
+3. **Zod** — `contactFormSchema` trims and bounds name (100), email, message (5000); a failure is a 400 with the field error ([`src/lib/validations.ts`](src/lib/validations.ts)).
+4. **Sanitise at the sink** — the email body is built from `escapeHtml`/`sanitizeForHtmlEmail`, and the subject through `sanitizeEmailSubject`, which strips `\r\n` so a name cannot inject mail headers ([`src/lib/sanitize.ts`](src/lib/sanitize.ts)).
 
-## Quick Start
+Validation and sanitisation are separate on purpose: Zod decides whether the request is well-formed, the sanitisers decide what is safe in a given output (HTML, a header). Each layer has its own unit tests under `src/__tests__/lib/`, and `src/__tests__/api/contact.test.ts` covers the composition.
 
-Examples below use `npm`, but the repo also keeps a Bun lockfile and CI uses Bun.
+## Run
 
 ```bash
-git clone https://github.com/gr8monk3ys/lscaturchio.xyz.git
-cd lscaturchio.xyz
-cp .env.example .env.local
-npm install
-npm run dev
+bun install --frozen-lockfile
+cp .env.example .env.local     # DATABASE_URL is required for build; the rest is optional
+bun run dev                    # http://localhost:3000
 ```
 
-Open `http://localhost:3000`.
-
-For full local functionality, set `DATABASE_URL` and whichever provider keys you want to use in `.env.local`. The environment file is documented in [`.env.example`](.env.example).
-
-## Common Commands
+## Test
 
 ```bash
-# App lifecycle
-npm run dev
-npm run build
-npm run start
-
-# Code quality
-npm run lint
-npm run typecheck
-npm run knip           # dead files, unused exports and dependencies
-npm test
-npm run test:coverage  # enforces the thresholds CI gates on
-npm run test:e2e
-npm run perf:lighthouse
-
-# Everything CI gates on, in one shot
-npm run predeploy
-
-# Content and operations
-npm run generate-embeddings
-npm run generate-tts-openai
-npm run generate-audio-manifest
-npm run generate-blog-provenance
-npm run audit-media
-npm run refresh-media-data     # Letterboxd/Goodreads CSV refresh (add -- --write)
-npm run suggest-internal-links
-npm run send-webmentions
-npm run db:migrate
-npm run eval:chat
-
-# Production checks
-npm run smoke:chat
-npm run smoke:chat:prod
-npm run uptime:check           # probes /api/health, /api/rag-status, /api/blog-stats, /
+bun run lint            # eslint + knip + retrieval-corpus drift check
+bun run typecheck
+bun run test:coverage   # vitest, thresholds enforced
+bun run build
+bun run test:e2e        # playwright, builds and serves the app itself
+bun run predeploy       # all of the above
 ```
 
-## Repository Map
+CI runs the same five jobs on every PR and they are all required. `codeql.yml` scans weekly; `uptime.yml` probes production every 15 minutes and opens an issue when it degrades.
 
-- `src/app`: App Router pages, layouts, route handlers, sitemap, and metadata routes
-- `src/components`: page sections, UI primitives, and client-side behavior
-- `src/lib`: shared data helpers, validation, SEO, chat, DB, and utility modules
-- `src/generated`: generated source such as the audio manifest
-- `public`: static assets, audio output, and `public/my-data` content exports used by retrieval workflows
-- `scripts`: one-off and recurring maintenance scripts
-- `e2e`: Playwright coverage for key user flows
-- `supabase/migrations`: SQL migration history and database setup notes
-- `docs`: repository-specific operating docs and structure notes
+## Content
 
-## Maintenance Notes
-
-- The canonical sitemap comes from [`src/app/sitemap.ts`](src/app/sitemap.ts), not from a postbuild script.
-- Generated or local-only artifacts such as `.next`, `coverage`, `playwright-report`, `test-results`, `.lighthouseci`, `.playwright-cli`, and `tmp` should stay out of commits.
-- When audio files change, regenerate [`src/generated/audio-manifest.ts`](src/generated/audio-manifest.ts) with `npm run generate-audio-manifest`.
-- When retrieval source content changes in `public/my-data`, rerun `npm run generate-embeddings` if you rely on the chat index.
-
-## Further Docs
-
-- [Repository Guide](docs/repository-guide.md)
-- [Operations Guide](docs/operations.md)
-- [Contributing](CONTRIBUTING.md)
-- [Security Policy](SECURITY.md)
-- [CLAUDE.md](CLAUDE.md)
-
-## Deployment
-
-Production deploys target Vercel from `main`. After a production deploy, the fastest app-level smoke check is:
-
-```bash
-npm run smoke:chat:prod
-```
-
-For preview or other environments:
-
-```bash
-npm run smoke:chat -- --base-url https://your-preview-url.vercel.app
-```
+Essays are `src/app/blog/<slug>/content.mdx`. The chat corpus in `public/my-data/blog-*.md` is generated from them (`bun run sync-retrieval-corpus`), and CI fails if the two drift. Blog audio is served from Vercel Blob, not git. Procedures for embeddings, audio, database and monitoring are in [`docs/operations.md`](docs/operations.md); house style for essays is [`docs/writing-style.md`](docs/writing-style.md).
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+[MIT](LICENSE).

@@ -110,17 +110,8 @@ npm run refresh-media-data           # report what would change
 npm run refresh-media-data -- --write
 ```
 
-[`.github/workflows/media-refresh.yml`](../.github/workflows/media-refresh.yml)
-automates this weekly (Mondays 09:30 UTC) and on `workflow_dispatch`. Changes
-land as a rolling PR on `chore/refresh-media-data` — never a direct push. Both
-feeds are public RSS, so the workflow needs no secrets.
-
-This replaced a launchd job that ran from a single Mac. That setup only ran when
-that machine happened to be awake, and its failures went to a local log file
-nobody read: on 2026-08-10 it pushed its branch but never opened a PR, and the
-change sat unnoticed until someone went looking for stale branches. The workflow
-therefore verifies that a PR is actually open before reporting success, and
-fails the run if not.
+Run it locally and open a PR with the result; there is no scheduled job for
+this any more.
 
 The feeds only carry recent history (Letterboxd ~50 entries, Goodreads ~100 per
 shelf), so a long gap still needs a one-time full export from each service,
@@ -280,14 +271,10 @@ npm run uptime:check -- --json
 
 ## Dependency Maintenance
 
-Routine bumps are handled by
-[`.github/workflows/dep-refresh.yml`](../.github/workflows/dep-refresh.yml),
-monthly and on `workflow_dispatch`. It runs `scripts/bump-deps.mjs` (minor and
-patch only), regenerates `bun.lock`, and runs lint, typecheck, knip, coverage,
-and build **before** opening a rolling PR on `chore/dep-refresh`. Majors are
-never included; the run summary lists the ones it held back.
+Routine bumps are manual. `scripts/bump-deps.mjs` takes minors and patches,
+regenerates `bun.lock`, and leaves majors for individual review.
 
-Locally, the same path is:
+
 
 ```bash
 node scripts/bump-deps.mjs --dry-run   # report only
@@ -325,4 +312,4 @@ works fine and nothing else tracks version drift.
 - remove dead files when the workflow that needed them is gone
 - keep docs aligned with actual scripts and config
 - avoid committing local artifacts or scratch outputs
-- update `README.md`, `CONTRIBUTING.md`, and `SECURITY.md` when workflows materially change
+- update `README.md` when workflows materially change

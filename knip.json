@@ -4,7 +4,6 @@
   "ignoreDependencies": [],
   "ignoreBinaries": [
     "uv",
-    "which",
     "ffmpeg"
   ],
   "ignore": [
