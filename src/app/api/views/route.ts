@@ -6,6 +6,7 @@ import { slugQuerySchema, viewTrackingSchema, parseQuery } from "@/lib/validatio
 import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
 import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { apiSuccess, ApiErrors } from "@/lib/api-response";
+import { getDetailedViews, VIEWS_UNAVAILABLE_MESSAGE } from "@/lib/stats-data";
 
 /**
  * GET /api/views?slug=xxx              - Get view count for a specific blog post
@@ -16,38 +17,10 @@ const handleGet = async (req: NextRequest) => {
   try {
     const formatParam = req.nextUrl.searchParams.get('format');
 
-    // Detailed format: views enriched with blog titles (used by stats page)
+    // Detailed format: views enriched with blog titles. Shared with the /stats
+    // server component, which reads getDetailedViews() directly.
     if (formatParam === 'detailed') {
-      if (!isDatabaseConfigured()) {
-        return apiSuccess({
-          views: [],
-          total: 0,
-          available: false,
-          message: 'Public view data is unavailable right now.',
-        });
-      }
-
-      const sql = getDb();
-      const rows = await sql`SELECT slug, count FROM views ORDER BY count DESC LIMIT 1000`;
-
-      const allBlogs = await getAllBlogs();
-      const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
-
-      // Defensive: rows written before the slug check above (or by a direct
-      // DB write) must not surface as posts with the raw slug as their title.
-      const allViews = rows
-        .filter((view) => blogMap.has(view.slug))
-        .map((view) => ({
-          slug: view.slug,
-          title: blogMap.get(view.slug) as string,
-          views: view.count,
-        }));
-
-      return apiSuccess({
-        views: allViews,
-        total: allViews.length,
-        available: true,
-      });
+      return apiSuccess(await getDetailedViews());
     }
 
     const allParam = req.nextUrl.searchParams.get('all');
@@ -109,7 +82,7 @@ const handleGet = async (req: NextRequest) => {
         views: [],
         total: 0,
         available: false,
-        message: 'Public view data is unavailable right now.',
+        message: VIEWS_UNAVAILABLE_MESSAGE,
       });
     }
     if (req.nextUrl.searchParams.get('all') === 'true') {
