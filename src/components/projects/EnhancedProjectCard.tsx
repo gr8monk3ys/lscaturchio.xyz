@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { m, useMotionPreset, useReducedMotion } from '@/lib/motion';
 import { TiltCard } from "@/components/ui/animated-card";
-import { Star, ExternalLink, Calendar } from "lucide-react";
+import { Star, ExternalLink, Calendar, Lock } from "lucide-react";
 import { IconBrandGithub } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
@@ -89,7 +89,9 @@ export function EnhancedProjectCard({
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes={isFeatured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
             />
-            <div className="absolute inset-0 bg-linear-to-t from-background/90 via-background/20 to-transparent" />
+            {/* Covers are real product screenshots, so the scrim only softens the
+                bottom edge into the card — a heavy wash would hide the UI. */}
+            <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-t from-background/70 to-transparent" />
           </m.div>
         </Link>
 
@@ -203,20 +205,17 @@ export function EnhancedProjectCard({
                 Source
               </a>
             )}
-            {!product.demoUrl && !product.sourceUrl && product.href && (
-              <a
-                href={product.href}
-                target="_blank"
-                rel="noopener noreferrer"
+            {product.sourcePrivate && (
+              <span
                 className={cn(
                   "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium",
-                  "bg-primary text-primary-foreground",
-                  "hover:bg-primary/90 transition-colors"
+                  "bg-muted/50 text-muted-foreground cursor-default"
                 )}
+                title="The repository is private, so there is no public source link."
               >
-                <ExternalLink className="h-3.5 w-3.5" />
-                View Project
-              </a>
+                <Lock className="h-3.5 w-3.5" />
+                Private repo
+              </span>
             )}
           </div>
         </div>

@@ -218,11 +218,15 @@ function ProjectGalleryCard({
             priority={isActive}
           />
         </m.div>
-        <div className="absolute inset-0 bg-linear-to-t from-background/95 via-background/30 to-transparent" />
+        {/* Covers are real screenshots and range from near-white (HealthCalc,
+            Cocoon) to near-black (merge-gate). Theme-coloured text over that is
+            unreadable half the time, so the caption band is always a dark scrim
+            with light type regardless of theme. */}
+        <div className="absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-t from-black/90 via-black/55 to-transparent" />
 
-        <div className="absolute left-4 right-4 bottom-4 flex items-end justify-between gap-3">
+        <div className="absolute left-4 right-4 bottom-4 flex items-end justify-between gap-3 text-white">
           <div className="min-w-0">
-            <span className="label-mono block truncate">
+            <span className="label-mono block truncate text-white/75">
               {[
                 ...(project.categories || []).slice(0, 2).map((c) => categoryLabels[c]),
                 ...(project.status ? [statusLabels[project.status]] : []),
@@ -234,7 +238,7 @@ function ProjectGalleryCard({
               </div>
             </m.div>
           </div>
-          <ArrowRight className="h-4 w-4 shrink-0 text-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+          <ArrowRight className="h-4 w-4 shrink-0 text-white/70 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
         </div>
       </div>
 

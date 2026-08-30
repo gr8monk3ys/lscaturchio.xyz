@@ -16,6 +16,7 @@ const handleGet = async () => {
     startDate: p.startDate ?? null,
     demoUrl: p.demoUrl ?? null,
     sourceUrl: p.sourceUrl ?? null,
+    sourcePrivate: Boolean(p.sourcePrivate),
     caseStudy: p.caseStudy ?? null,
   }));
 

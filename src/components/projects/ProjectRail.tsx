@@ -71,7 +71,7 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
           className="object-cover"
           sizes={compact ? '100vw' : '380px'}
         />
-        <div className="absolute inset-0 bg-linear-to-t from-background/95 via-background/30 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-1/5 bg-linear-to-t from-background/60 to-transparent" />
       </div>
 
       <div className="p-5 space-y-4">
