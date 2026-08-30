@@ -79,34 +79,20 @@ export function GiscusComments({
   if (!isConfigured) {
     if (!showFallback) return null
 
+    // Visitors get a plain "not available" line. The setup steps that used to
+    // live here — "set NEXT_PUBLIC_GISCUS_REPO_ID…" — are a note to the site
+    // author, and they were rendering on the public guestbook.
     return (
       <div className="mt-12 pt-8">
         <h3 className="text-2xl font-bold mb-6 text-foreground">Comments</h3>
         <div className="neu-flat rounded-2xl p-6">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Comments are currently disabled because Giscus isn&apos;t configured for this deployment.
+            Comments aren&apos;t open here yet. If you wanted to say something,{" "}
+            <a href="/contact" className="text-primary underline underline-offset-4">
+              send it to me directly
+            </a>{" "}
+            — I read everything.
           </p>
-          <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">To enable comments:</p>
-            <ol className="list-decimal list-inside space-y-1">
-              <li>Create a Giscus integration for your repo and discussion category.</li>
-              <li>
-                Set <code className="font-mono text-xs">NEXT_PUBLIC_GISCUS_REPO_ID</code> and{" "}
-                <code className="font-mono text-xs">NEXT_PUBLIC_GISCUS_CATEGORY_ID</code> in your environment variables.
-              </li>
-            </ol>
-            <p className="pt-2">
-              Setup:{" "}
-              <a
-                href="https://giscus.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                giscus.app
-              </a>
-            </p>
-          </div>
         </div>
       </div>
     )

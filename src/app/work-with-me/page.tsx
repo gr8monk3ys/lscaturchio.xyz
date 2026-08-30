@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
-import { PricingSection } from "@/components/services/pricing-section";
 import ServicesSection from "@/components/services/service-section";
 import { FaqSection } from "@/components/services/faq-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { testimonials } from "@/constants/testimonials";
-import { pricingTiers } from "@/constants/pricing";
 import { questions } from "@/constants/questions";
 import { ArrowUpRight, CalendarDays, CheckCircle2, Mail, Sparkles } from "lucide-react";
 
@@ -14,32 +12,6 @@ export const metadata: Metadata = {
   title: "Work With Me",
   description: "AI engineering, RAG systems, and practical automation. Clear scope, fast iteration, production-ready delivery.",
 };
-
-const frequencies = ["monthly", "yearly"];
-const tiers = pricingTiers.map((tier) => ({
-  name: tier.name,
-  price: tier.price,
-  description: tier.description,
-  features: tier.features,
-  cta: tier.cta,
-  highlighted: tier.highlighted,
-  popular: tier.popular,
-}));
-
-const proofBlocks = [
-  {
-    title: "Start Small, Ship Fast",
-    description: "Prove the workflow with a thin slice before spending on platform work.",
-  },
-  {
-    title: "Harden What Matters",
-    description: "Add evals, observability, and failure handling before the system becomes expensive.",
-  },
-  {
-    title: "Leave With Clarity",
-    description: "Finish with code, tradeoffs, and the next engineering decisions already scoped.",
-  },
-];
 
 const fitSignals = [
   "You need grounded answers, not a flashy demo.",
@@ -119,18 +91,6 @@ export default function WorkWithMePage() {
               </Link>
             </div>
           </section>
-
-          <div className="grid gap-3 md:grid-cols-3">
-            {proofBlocks.map((block) => (
-              <div
-                key={block.title}
-                className="rounded-2xl border border-border/60 bg-background p-4"
-              >
-                <h2 className="text-sm font-semibold text-foreground">{block.title}</h2>
-                <p className="mt-2 text-sm text-muted-foreground">{block.description}</p>
-              </div>
-            ))}
-          </div>
 
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="neu-flat rounded-2xl p-6">
@@ -229,13 +189,17 @@ export default function WorkWithMePage() {
           </section>
         )}
 
-        <div>
-          <PricingSection
-            title="Pricing"
-            subtitle="Choose a tier or start with a call. I’ll recommend the smallest thing that gets you real value."
-            tiers={tiers}
-            frequencies={frequencies}
-          />
+        <div id="pricing" className="scroll-mt-28">
+          <h2 className="font-bold text-2xl md:text-3xl tracking-tight">What it costs</h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            Engagements start around <strong className="text-foreground">$5,000</strong> for a scoped
+            first sprint — enough to ship one end-to-end slice with real data and a measurement you
+            can argue with. Longer builds and advisory retainers are quoted once the scope is real.
+          </p>
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            I don&apos;t quote a number before understanding the constraint, and I&apos;ll say so if
+            the smallest useful version costs less than you expected.
+          </p>
         </div>
 
         <div

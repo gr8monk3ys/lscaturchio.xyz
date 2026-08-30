@@ -11,7 +11,7 @@ import { getAllBlogs } from "@/lib/getAllBlogs";
 import { getPublishedBlogs, sortBlogsByDateDescending } from "@/lib/blog-data";
 
 export const metadata = buildPageMetadata({
-  title: "Now - Lorenzo Scaturchio",
+  title: "Now",
   description: "What I'm currently building, reading, watching, and thinking about.",
   path: "/now",
 });

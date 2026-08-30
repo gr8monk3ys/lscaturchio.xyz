@@ -59,7 +59,9 @@ export function SemanticSearchDemo() {
     <section className="border border-border p-6">
       <h3 className="font-display text-xl font-semibold">Semantic Search Demo</h3>
       <p className="text-sm text-muted-foreground mt-1">
-        Try a query. Results come from my blog via vector similarity.
+        Try a query. This is hybrid retrieval over my essays: results are fused
+        from vector similarity and keyword search, so a post can rank on meaning,
+        on wording, or both. Each result says which one caught it.
       </p>
 
       <div className="mt-5">
@@ -127,7 +129,9 @@ export function SemanticSearchDemo() {
                         })}
                       </span>
                       <span className="ml-2">
-                        Similarity: {Math.round((r.similarity || 0) * 100)}%
+                        {r.similarity > 0
+                          ? `${Math.round(r.similarity * 100)}% vector match`
+                          : "keyword match"}
                       </span>
                     </div>
                   )}

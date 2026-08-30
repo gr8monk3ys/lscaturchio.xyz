@@ -16,34 +16,34 @@ type CaseStudyItem = {
 
 const CASE_STUDIES: CaseStudyItem[] = [
   {
-    id: "talker",
-    kicker: "Education RAG",
-    title: "Talker: Teaching Assistant",
+    id: "merge-gate",
+    kicker: "Policy Engine",
+    title: "merge-gate: Automated Review",
     blurb:
-      "A retrieval assistant grounded on course materials that answers with citations and multimodal context.",
-    metrics: ["+30% engagement", "+25% learning", "Citations-first answers"],
-    href: "/projects/talker",
-    logoSrc: "/images/logos/talker.webp",
+      "Decides which of ~100 open pull requests may merge without a human. Shape is computed from the diff, never eyeballed.",
+    metrics: ["49 tests", "~70 repos governed", "Never arms auto-merge"],
+    href: "/projects/merge-gate",
+    logoSrc: "/images/projects/covers/merge-gate.webp",
   },
   {
-    id: "trading-bot",
-    kicker: "Automation",
-    title: "AI-Powered Trading Bot",
+    id: "verso",
+    kicker: "Product Thinking",
+    title: "Verso: A Diary for Artworks",
     blurb:
-      "Sentiment + technical indicators with strict risk controls, built for disciplined execution and monitoring.",
-    metrics: ["24/7 monitoring", "FinBERT signals", "Hard risk limits"],
-    href: "/projects/ai-powered-trading-bot",
-    logoSrc: "/images/logos/trading-bot.webp",
+      "Letterboxd where the unit is the work, not the visit — a frequency bet, stated up front so it can be falsified.",
+    metrics: ["10k works seeded", "Offline-first capture", "Thesis measured, not assumed"],
+    href: "/projects/verso",
+    logoSrc: "/images/projects/covers/verso.webp",
   },
   {
-    id: "blog-ai",
-    kicker: "Content Systems",
-    title: "Blog-AI: Publishing Pipeline",
+    id: "cocoon",
+    kicker: "Shipped Tool",
+    title: "Cocoon: Calmer Browsing",
     blurb:
-      "SEO-aware content generation with structured prompts, clean MDX output, and repeatable workflows.",
-    metrics: ["Clean MDX + DOCX", "Repeatable prompts", "Automated drafts"],
-    href: "/projects/blog-ai",
-    logoSrc: "/images/logos/blog-ai.webp",
+      "A privacy-first extension that lowers sensory load online. Local only, zero network calls, scoped to seven domains.",
+    metrics: ["Zero network calls", "4 profiles", "Live at cocoon.lscaturchio.xyz"],
+    href: "/projects/cocoon",
+    logoSrc: "/images/projects/covers/cocoon.webp",
   },
 ];
 
@@ -58,10 +58,11 @@ export function ScrollCaseStudies() {
         {/* Catalogue index — no card, just a labelled list on the paper. */}
         <div className="lg:sticky lg:top-28">
           <span className="label-mono mb-3 block">01 — Case Studies</span>
-          <h2 className="text-section-title">Builds that prove the process.</h2>
+          <h2 className="text-section-title">Things I actually shipped.</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Three projects that show how I build: thin slices, grounded retrieval, and
-            systems that stay stable under real users.
+            A policy engine that decides what merges without me, a product built on a
+            stated bet, and a tool people install. All three are running; none of them
+            are demos.
           </p>
 
           <ol className="mt-8 border-t border-border">
@@ -121,13 +122,13 @@ export function ScrollCaseStudies() {
                   </Link>
                 </div>
 
-                <div className="relative aspect-square w-full max-w-[280px] overflow-hidden border border-border bg-muted/30">
+                <div className="relative aspect-16/10 w-full max-w-[340px] overflow-hidden border border-border bg-muted/30">
                   <Image
                     src={item.logoSrc}
-                    alt={`${item.title} logo`}
+                    alt={`${item.title} preview`}
                     fill
-                    className="object-cover p-8"
-                    sizes="280px"
+                    className="object-cover"
+                    sizes="340px"
                   />
                 </div>
               </div>

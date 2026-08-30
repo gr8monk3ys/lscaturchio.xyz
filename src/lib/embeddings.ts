@@ -78,13 +78,20 @@ function splitIntoSegments(text: string): string[] {
     const trimmedLine = line.trim();
     if (!trimmedLine) continue;
 
-    const sentenceRegex = /[^.!?]+[.!?]+/g;
+    // A period between two digits is a decimal point, not a sentence end.
+    // Without the (?<=\d)\.(?=\d) escape hatch, "44.5% exact match" indexes and
+    // renders as two fragments — "44." and "5% exact match" — which is how
+    // "89. 9%" and "23. 7MB" ended up visible in search snippets.
+    const sentenceRegex = /(?:[^.!?]|(?<=\d)\.(?=\d))+(?:[.!?]+|$)/g;
     let lastIndex = 0;
     let match: RegExpExecArray | null;
     while ((match = sentenceRegex.exec(trimmedLine)) !== null) {
       const sentence = match[0].trim();
       if (sentence) segments.push(sentence);
       lastIndex = sentenceRegex.lastIndex;
+      // The trailing `$` alternative can match empty at end-of-string; without
+      // this the loop would not terminate.
+      if (match.index === sentenceRegex.lastIndex) sentenceRegex.lastIndex++;
     }
 
     // Preserve any remainder after the last terminal punctuation (or the whole

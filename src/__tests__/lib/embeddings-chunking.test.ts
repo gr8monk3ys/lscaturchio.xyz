@@ -15,6 +15,26 @@ describe('splitIntoChunks', () => {
     expect(chunks[0]).toContain('Another one.');
   });
 
+  it('does not split a decimal number into two segments', () => {
+    // The old regex /[^.!?]+[.!?]+/g treated the '.' in 44.5 as a sentence end,
+    // so search snippets rendered "44. 5%", "89. 9%" and "23. 7MB".
+    const text = 'Their system hit 44.5% exact match, cutting weight by 89.9% from 23.7MB.';
+    const joined = splitIntoChunks(text, 1000).join(' ');
+    expect(joined).toContain('44.5%');
+    expect(joined).toContain('89.9%');
+    expect(joined).toContain('23.7MB');
+    expect(joined).not.toContain('44. 5');
+    expect(joined).not.toContain('89. 9');
+  });
+
+  it('still splits on genuine sentence boundaries around numbers', () => {
+    const text = 'Version 3.11 shipped. Then 3.12 did too.';
+    const chunks = splitIntoChunks(text, 24);
+    expect(chunks.length).toBeGreaterThan(1);
+    expect(chunks.join(' ')).toContain('3.11');
+    expect(chunks.join(' ')).toContain('3.12');
+  });
+
   it('retains trailing text that lacks terminal punctuation', () => {
     // The old regex /[^.!?]+[.!?]+/g silently dropped any tail without . ! or ?
     const text = 'First sentence. Second sentence. Trailing heading without a period';

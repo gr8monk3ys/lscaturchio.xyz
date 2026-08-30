@@ -13,39 +13,39 @@ type Step = {
 
 const STEPS: Step[] = [
   {
-    id: "align",
-    title: "Align on the problem",
+    id: "state-the-bet",
+    title: "Write the bet down before the code",
     description:
-      "Define what success means, constraints, and the risk surface before writing code.",
-    outcomes: ["Clear scope + owner", "Success metrics", "Failure modes + guardrails"],
+      "Verso exists because logging a gallery visit gives you ~15 events a year and logging each artwork gives you 150+. That claim went in the PRD first, so it could be proven wrong rather than quietly assumed.",
+    outcomes: ["Thesis stated up front", "Falsifiable, not decorative", "A number attached to the claim"],
   },
   {
-    id: "prototype",
-    title: "Prototype the smallest thing",
+    id: "prove-itself",
+    title: "Give every change a way to prove itself",
     description:
-      "Ship a thin slice fast to validate the approach, data, UX, and feasibility.",
-    outcomes: ["Working demo", "Baseline evaluation", "Fast iteration loop"],
+      "A change that has not been run is a guess. Boot the server, render the page, run the script on real input — the failure mode of confident output is that nobody executed it.",
+    outcomes: ["Run it, don't read it", "Real input, not a mock", "Evidence before assertions"],
   },
   {
-    id: "reliability",
-    title: "Engineer for reliability",
+    id: "compute-the-call",
+    title: "Compute the decision, never eyeball it",
     description:
-      "Turn the prototype into a system with tests, observability, and repeatable deployments.",
-    outcomes: ["Clean interfaces", "CI + tests", "Logging + tracing"],
+      "merge-gate classifies a pull request from the shape of its diff. When judgement was done by eye it armed a 197-file change to land unreviewed. Automation earns trust by being narrower than a human, not broader.",
+    outcomes: ["Allowlisted shapes only", "No standing permissions", "Policy in three constants"],
   },
   {
-    id: "measure",
-    title: "Measure and tune",
+    id: "fail-loudly",
+    title: "Fail loudly, not silently",
     description:
-      "Instrument the system and improve quality where it matters: latency, accuracy, and cost.",
-    outcomes: ["Eval harness", "Perf budgets", "Cost controls"],
+      "Cocoon warns when a site's layout changes and its rules stop matching. For an accessibility tool a silent no-op is the worst possible outcome — the user assumes it is working and it is not.",
+    outcomes: ["Broken states are visible", "Degrade per-site, not globally", "No quiet no-ops"],
   },
   {
-    id: "launch",
-    title: "Launch, monitor, iterate",
+    id: "bound-the-damage",
+    title: "Bound the blast radius",
     description:
-      "Get it in front of users and keep it healthy. Real value comes after launch.",
-    outcomes: ["Release plan", "Monitoring + alerts", "Post-launch roadmap"],
+      "Cocoon scopes host permissions to exactly seven domains instead of <all_urls>. FraudStream masks the card number before anything is written. Decide what the system may touch before deciding what it does.",
+    outcomes: ["Least privilege by default", "Mask before you store", "Scoped, reversible changes"],
   },
 ];
 
@@ -62,14 +62,14 @@ export function HowIWorkSection() {
             index="02"
             eyebrow="Process"
             title="How I Work"
-            description="A simple, repeatable process for shipping reliable ML/RAG systems and clean web products."
+            description="Not a methodology. Five things I actually do, each one because skipping it cost me something."
           />
 
           <span className="label-mono block">Principles</span>
           <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-            <li>Ship thin slices, fast.</li>
-            <li>Measure what matters.</li>
-            <li>Harden the edges: tests, observability, and guardrails.</li>
+            <li>A change that has not been run is a guess.</li>
+            <li>State the bet so it can be proven wrong.</li>
+            <li>Narrow beats clever when it runs unattended.</li>
           </ul>
 
           <div className="mt-8 flex flex-wrap gap-4">

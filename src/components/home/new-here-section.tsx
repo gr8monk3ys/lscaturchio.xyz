@@ -172,8 +172,7 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
           <div className="mt-10 border-t border-border pt-6">
             <div className="flex items-center gap-2">
               <TrendingUp className="size-4 text-primary" />
-              <div className="text-sm font-semibold">Popular Posts</div>
-              <div className="text-xs text-muted-foreground">(views)</div>
+              <div className="text-sm font-semibold">Most read</div>
             </div>
             <div className="mt-4 grid gap-2 sm:grid-cols-3">
               {popularPosts.map((post, index) => (
@@ -191,9 +190,6 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
                       <div className="truncate text-sm font-semibold text-foreground group-hover:text-primary">
                         {post.title}
                       </div>
-                    </div>
-                    <div className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                      {post.views.toLocaleString()}
                     </div>
                   </div>
                 </Link>
