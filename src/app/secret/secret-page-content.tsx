@@ -6,18 +6,6 @@ import Link from "next/link";
 // Hidden projects/experiments that aren't on the main portfolio
 const HIDDEN_PROJECTS = [
   {
-    name: "ASCII Art Generator",
-    description: "Converts images to ASCII art. Built for fun on a weekend.",
-    tech: ["Python", "PIL"],
-    status: "Archived",
-  },
-  {
-    name: "CLI Pomodoro Timer",
-    description: "Terminal-based Pomodoro timer with notifications.",
-    tech: ["Rust"],
-    status: "Active",
-  },
-  {
     name: "Vim Config",
     description: "My overly complicated Neovim configuration.",
     tech: ["Lua", "Neovim"],

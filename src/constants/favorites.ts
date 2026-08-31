@@ -34,7 +34,7 @@ export const PERSONAL_FAVORITES: PersonalFavorite[] = [
   },
   {
     label: "Favorite Programming Language",
-    value: "Rust"
+    value: "Python for thinking, TypeScript for shipping"
   },
   {
     label: "Preferred Internet Policy",

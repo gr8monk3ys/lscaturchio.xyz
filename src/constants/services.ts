@@ -91,7 +91,7 @@ export const SERVICES: ServiceContent[] = [
       },
       {
         name: 'Results',
-        content: 'My clients typically see 60-80% reduction in time spent searching for information, higher accuracy than keyword search, and actually useful AI chat interfaces that people want to use.',
+        content: 'What you get is retrieval that answers from your own documents with the source attached, so a wrong answer is traceable rather than mysterious. I do not publish client outcome percentages — I have not run the controlled comparison that would make such a number mean anything.',
         features: [
           'Faster information retrieval',
           'Higher search accuracy',

@@ -91,7 +91,6 @@ export default function ProfessionalPage() {
                 "Vercel",
                 "AWS",
                 "CI/CD",
-                "Rust",
               ]}
             />
           </div>
