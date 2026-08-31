@@ -111,4 +111,70 @@ describe('stats widgets', () => {
       expect(screen.queryByText('Failed to fetch')).toBeNull();
     });
   });
+
+  describe('partial source failures', () => {
+    it('StatsOverview labels only the dead sources and keeps the live ones', async () => {
+      vi.mocked(fetchJson).mockImplementation((input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url === '/api/blog-stats') return Promise.reject(new Error('500'));
+        if (url === '/api/views?format=detailed') {
+          return Promise.resolve({
+            success: true,
+            data: { available: true, total: 2, views: [{ views: 20 }, { views: 5 }] },
+          }) as never;
+        }
+        return Promise.resolve({
+          success: true,
+          data: { activeSubscribers: 9, available: true },
+        }) as never;
+      });
+
+      renderIsolated(<StatsOverview />);
+
+      await waitFor(() => {
+        expect(screen.getByText('25')).toBeInTheDocument();
+      });
+      expect(screen.getByText('9')).toBeInTheDocument();
+      // Blog metadata died, so both cards it feeds read Unavailable — each
+      // card shows the word twice: once as the value, once as the status line.
+      expect(screen.getAllByText('Unavailable')).toHaveLength(4);
+      expect(
+        screen.getByText(/labels it instead of estimating/)
+      ).toBeInTheDocument();
+    });
+
+    it('StatsOverview reports a source that answered but has nothing public to show', async () => {
+      vi.mocked(fetchJson).mockImplementation((input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url === '/api/blog-stats') {
+          return Promise.resolve({
+            success: true,
+            data: { totalPosts: 3, avgReadingTime: 4 },
+          }) as never;
+        }
+        if (url === '/api/views?format=detailed') {
+          return Promise.resolve({
+            success: true,
+            data: { available: false, total: 0, views: [], message: 'View data is private.' },
+          }) as never;
+        }
+        return Promise.resolve({
+          success: true,
+          data: {
+            activeSubscribers: null,
+            available: false,
+            message: 'Subscriber counts are private.',
+          },
+        }) as never;
+      });
+
+      renderIsolated(<StatsOverview />);
+
+      await waitFor(() => {
+        expect(screen.getByText('3')).toBeInTheDocument();
+      });
+      expect(screen.getByText('4 min')).toBeInTheDocument();
+      expect(screen.getAllByText('Unavailable')).toHaveLength(4);
+    });
+  });
 });
