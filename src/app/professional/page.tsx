@@ -46,7 +46,6 @@ export default function ProfessionalPage() {
               skills={[
                 "Python",
                 "PyTorch",
-                "TensorFlow",
                 "Scikit-learn",
                 "LangChain",
                 "OpenAI API",
