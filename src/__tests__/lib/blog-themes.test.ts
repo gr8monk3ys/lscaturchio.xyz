@@ -47,3 +47,14 @@ describe('groupByTheme', () => {
     expect(BLOG_THEMES.map((t) => t.slug)).not.toContain(FALLBACK_THEME_SLUG);
   });
 });
+
+describe('TOPIC_HUBS', () => {
+  it('mirrors the five real themes instead of the old engineering hubs', async () => {
+    const { TOPIC_HUBS } = await import('@/constants/topics');
+    expect(TOPIC_HUBS).toHaveLength(5);
+    const slugs = TOPIC_HUBS.map((h) => h.slug);
+    expect(slugs).toContain('power-institutions');
+    expect(slugs).not.toContain('rag-llms');
+    expect(slugs).not.toContain('open-source-tools');
+  });
+});
