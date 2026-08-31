@@ -8,13 +8,13 @@ I wanted a portfolio that showed off my AI and web work, and I also wanted a pla
 
 ### The stack
 
-On the front end I'm running Next.js 14 with the App Router, which gives me server components, streaming, and a development experience I genuinely enjoy. Styling is Tailwind, with dark mode built in. Animations and page transitions go through Framer Motion. Everything is TypeScript in strict mode, with zero `any` types.
+On the front end I'm running Next.js 16 with the App Router, which gives me server components, streaming, and a development experience I genuinely enjoy. Styling is Tailwind, with dark mode built in. Animations and page transitions go through Framer Motion. Everything is TypeScript in strict mode, with zero `any` types.
 
 The backend is mostly Next.js API routes running as serverless functions. Data and vector search live in Supabase (Postgres with pgvector), the chat and embeddings come from the OpenAI API, and the contact form sends through Resend. Hosting is Vercel, with version control and CI/CD on GitHub.
 
 ### Why these choices?
 
-I picked Next.js 14 over Gatsby or Astro for the server components and streaming SSR, and because the built-in API routes meant I didn't have to stand up a separate backend. The TypeScript support sealed it.
+I picked Next.js over Gatsby or Astro for the server components and streaming SSR, and because the built-in API routes meant I didn't have to stand up a separate backend. The TypeScript support sealed it.
 
 Supabase won over Firebase and MongoDB for one reason above the others: the pgvector extension. Postgres I already knew, the free tier is generous, and being open source matters to me. Semantic search without a second specialized database was the deciding feature.
 
@@ -205,7 +205,7 @@ The whole thing is public at [github.com/lscaturchio/lscaturchio.xyz](https://gi
 
 ## Tech stack deep dive
 
-### Next.js 14 configuration
+### Next.js configuration
 
 ```javascript
 // next.config.mjs
