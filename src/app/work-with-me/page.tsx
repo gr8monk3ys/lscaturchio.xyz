@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
 import ServicesSection from "@/components/services/service-section";
+import { HowIWorkSection } from "@/components/home/how-i-work-section";
 import { FaqSection } from "@/components/services/faq-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { testimonials } from "@/constants/testimonials";
@@ -130,6 +131,8 @@ export default function WorkWithMePage() {
             </div>
           </div>
         </div>
+
+        <HowIWorkSection />
 
         <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
           {deliveryCards.map((card) => (
