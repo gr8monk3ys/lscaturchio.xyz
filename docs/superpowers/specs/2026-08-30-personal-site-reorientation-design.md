@@ -107,8 +107,8 @@ real tag distribution:
 Lorenzo produces indie/folk with industrial textures. It is one line on the
 About page with no evidence anywhere.
 
-Build the surface; it stays empty until he supplies material, exactly like
-`/photos`. Empty state in the same voice as the photography page ("an empty
+New route: `/music`, listed under Garden. Build the surface; it stays empty
+until he supplies material, exactly like `/photos`. Empty state in the same voice as the photography page ("an empty
 gallery beats a borrowed one"). No fabricated track list.
 
 ## E3. Colophon
