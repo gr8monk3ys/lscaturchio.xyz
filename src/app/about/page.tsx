@@ -12,7 +12,7 @@ import { ArrowRight } from "lucide-react";
 
 export const metadata = buildPageMetadata({
   title: "About",
-  description: "AI engineer and essayist from Southern California who loves Arctic Monkeys, plays Scottish bagpipes, produces music, and explores the intersection of technology and human consciousness.",
+  description: "Writer and engineer from Southern California — absurdism, Arctic Monkeys, film as introspection, and the seam between how systems are meant to work and how they do.",
   path: "/about",
 });
 

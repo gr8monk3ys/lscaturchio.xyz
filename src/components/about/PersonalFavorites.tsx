@@ -42,7 +42,7 @@ const favorites = [
   },
   {
     label: "Weird Skill",
-    value: "I can play the Scottish Border Bagpipes"
+    value: "I can name a film from a single frame"
   },
 ];
 

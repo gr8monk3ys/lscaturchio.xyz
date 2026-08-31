@@ -8,11 +8,11 @@
  */
 export const IDENTITY = {
   name: "Lorenzo Scaturchio",
-  /** Short role — used on OG cards and as schema.org Person.jobTitle. */
-  role: "AI Engineer & Essayist",
+  /** Short self-description — used on OG cards and as schema.org Person.description. */
+  role: "builds systems, suspicious of them",
   /** Default <title> and OpenGraph/Twitter title. */
-  titleDefault: "Lorenzo Scaturchio | AI Engineer & Essayist",
-  /** One-sentence description that echoes the homepage thesis. */
+  titleDefault: "Lorenzo Scaturchio — builds systems, suspicious of them",
+  /** One-sentence description that echoes the homepage hero. */
   tagline:
-    "Lorenzo Scaturchio builds AI systems — RAG, retrieval, and applied ML — and writes essays on technology, power, and the world those systems are built into.",
+    "Lorenzo Scaturchio writes about power, attention, and what institutions are actually built to do — and builds the AI systems those essays are suspicious of.",
 } as const;
