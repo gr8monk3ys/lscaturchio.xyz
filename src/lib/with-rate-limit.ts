@@ -37,12 +37,12 @@ async function tryRedisRateLimit(
       return null;
     }
 
-    const redisResult = await redisLimiter.limit(clientIp);
+    const redisResult = await redisLimiter.check(clientIp);
     return {
-      success: redisResult.success,
+      success: redisResult.ok,
       limit: redisResult.limit,
       remaining: redisResult.remaining,
-      reset: redisResult.reset,
+      reset: redisResult.resetAt,
     };
   } catch (error) {
     logError('Redis rate limiter unavailable, falling back to in-memory', error, {

@@ -1,62 +1,21 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { getClientIp, RATE_LIMITS } from '@/lib/rate-limit';
 
-// Create a fresh rate limiter for each test
-function createRateLimiter() {
-  // Clear module cache to get fresh instance
-  const requests = new Map<string, { count: number; resetTime: number }>();
+describe('rateLimiter', () => {
+  // The limiter is a module-level singleton over one MemoryStore, so each test
+  // re-imports the module to get an empty store. (The previous version of this
+  // file hand-rolled a *copy* of the implementation and asserted against that,
+  // so it kept passing no matter what the real module did.)
+  let rateLimiter: typeof import('@/lib/rate-limit').rateLimiter;
 
-  return {
-    check(identifier: string, limit: number = 10, windowMs: number = 60000) {
-      const now = Date.now();
-      const entry = requests.get(identifier);
-
-      if (!entry || entry.resetTime < now) {
-        requests.set(identifier, {
-          count: 1,
-          resetTime: now + windowMs,
-        });
-        return {
-          success: true,
-          limit,
-          remaining: limit - 1,
-          reset: now + windowMs,
-        };
-      }
-
-      if (entry.count < limit) {
-        entry.count++;
-        return {
-          success: true,
-          limit,
-          remaining: limit - entry.count,
-          reset: entry.resetTime,
-        };
-      }
-
-      return {
-        success: false,
-        limit,
-        remaining: 0,
-        reset: entry.resetTime,
-      };
-    },
-    getHeaders(result: ReturnType<typeof this.check>) {
-      return {
-        'X-RateLimit-Limit': result.limit.toString(),
-        'X-RateLimit-Remaining': result.remaining.toString(),
-        'X-RateLimit-Reset': new Date(result.reset).toISOString(),
-      };
-    },
-  };
-}
-
-describe('RateLimiter', () => {
-  let rateLimiter: ReturnType<typeof createRateLimiter>;
-
-  beforeEach(() => {
-    rateLimiter = createRateLimiter();
+  beforeEach(async () => {
     vi.useFakeTimers();
+    vi.resetModules();
+    rateLimiter = (await import('@/lib/rate-limit')).rateLimiter;
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('allows requests under the limit', () => {
@@ -118,6 +77,17 @@ describe('RateLimiter', () => {
     expect(user2.remaining).toBe(1);
   });
 
+  it('keeps the reset time of the window a client is already inside', () => {
+    const windowMs = 60000;
+    const first = rateLimiter.check('user1', 5, windowMs);
+
+    vi.advanceTimersByTime(10_000);
+    const second = rateLimiter.check('user1', 5, windowMs);
+
+    // Fixed window: the second request does not extend the deadline.
+    expect(second.reset).toBe(first.reset);
+  });
+
   describe('getHeaders', () => {
     it('returns correct rate limit headers', () => {
       const result = rateLimiter.check('user1', 10);
@@ -125,7 +95,7 @@ describe('RateLimiter', () => {
 
       expect(headers['X-RateLimit-Limit']).toBe('10');
       expect(headers['X-RateLimit-Remaining']).toBe('9');
-      expect(headers['X-RateLimit-Reset']).toBeDefined();
+      expect(headers['X-RateLimit-Reset']).toBe(new Date(result.reset).toISOString());
     });
   });
 });
