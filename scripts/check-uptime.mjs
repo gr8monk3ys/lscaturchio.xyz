@@ -7,7 +7,7 @@
  * period and nothing noticed. `postdeploy-chat-smoke` only runs on push to main,
  * so a dependency that rots *between* deploys is invisible to it.
  *
- * Two deliberate design choices, both learned from that outage:
+ * Three deliberate design choices, the first two learned from that outage:
  *
  * 1. Every check asserts on the response BODY, not just the status code. The
  *    Upstash instance that caused the outage answers HTTP 200 with an error
@@ -18,12 +18,84 @@
  *    request; on a 15-minute schedule that is ~2900 paid calls a month for no
  *    added signal. Chat is covered post-deploy by scripts/smoke-chat.mjs, and
  *    /api/rag-status verifies the same dependencies for free.
+ *
+ * 3. "The edge refused to talk to us" is NOT "the site is down", and the two
+ *    exit differently. lscaturchio.xyz is served through Cloudflare (proxied,
+ *    in front of Vercel), and Cloudflare's bot/WAF layer intermittently answers
+ *    403 to this probe because it runs from an Azure datacentre IP on a GitHub
+ *    runner. Six such episodes in two days each cleared on their own within
+ *    ~20 minutes while the site served 200s to real traffic throughout. A
+ *    probe that pages for those is worse than no probe, so a refusal that
+ *    never reached the application is reported as `blocked` and exits 75
+ *    (EX_TEMPFAIL) instead of 1. See classifyFailure() for how the two are
+ *    told apart, and .github/workflows/uptime.yml for what each exit means.
  */
+
+import { pathToFileURL } from "node:url";
 
 const DEFAULT_BASE_URL = process.env.UPTIME_BASE_URL || "https://lscaturchio.xyz";
 const DEFAULT_ATTEMPTS = Number(process.env.UPTIME_ATTEMPTS || "3");
 const DEFAULT_INTERVAL_MS = Number(process.env.UPTIME_INTERVAL_MS || "10000");
 const DEFAULT_TIMEOUT_MS = Number(process.env.UPTIME_TIMEOUT_MS || "20000");
+
+/**
+ * Optional shared secret that lets the probe past an edge WAF. Set both to a
+ * header name and value that a Cloudflare "skip" rule matches, and the probe
+ * stops being bot-scored at all. Unset by default; the probe works without it.
+ */
+const BYPASS_HEADER = process.env.UPTIME_BYPASS_HEADER || "";
+const BYPASS_TOKEN = process.env.UPTIME_BYPASS_TOKEN || "";
+
+/** Exit code for "we were refused at the edge", distinct from 1 = down. */
+export const EXIT_BLOCKED = 75;
+
+/**
+ * Statuses an edge/WAF/bot layer uses to refuse a client outright. A 5xx is
+ * never in here: 5xx means something answered and something is broken.
+ */
+const REFUSAL_STATUSES = new Set([401, 403, 429, 451]);
+
+/**
+ * Headers Vercel stamps on any response its router actually produced. Their
+ * presence proves the request reached our deployment, so a 403 carrying them
+ * is our own application refusing — a real defect, not an edge block.
+ */
+const ORIGIN_MARKER_HEADERS = ["x-matched-path", "x-vercel-id", "x-vercel-cache"];
+
+/** Fingerprints of a Cloudflare interstitial/block page. */
+const EDGE_BODY_MARKERS = [
+  "cloudflare ray id",
+  "attention required",
+  "checking your browser",
+  "enable javascript and cookies to continue",
+  "sorry, you have been blocked",
+];
+
+/**
+ * Decide whether a failing response means "the site is down" or "the edge
+ * refused to let us ask". Only ever downgrades a refusal status; a 5xx, a
+ * timeout, a connection error or a 200 with a bad body all stay `down`.
+ *
+ * @returns {"down"|"blocked"}
+ */
+export function classifyFailure({ status, headers, bodyText }) {
+  if (!REFUSAL_STATUSES.has(status)) return "down";
+
+  const get = (name) => (headers && typeof headers.get === "function" ? headers.get(name) : null);
+
+  // Cloudflare says so itself.
+  if (get("cf-mitigated")) return "blocked";
+
+  const text = (bodyText || "").toLowerCase();
+  if (EDGE_BODY_MARKERS.some((marker) => text.includes(marker))) return "blocked";
+
+  // Reached our deployment: this refusal is ours to answer for.
+  if (ORIGIN_MARKER_HEADERS.some((name) => get(name))) return "down";
+
+  // A refusal status that never reached the origin. Something in front of the
+  // app answered for it, which is the definition of an edge block.
+  return "blocked";
+}
 
 /**
  * Each check returns null when healthy, or a string describing the failure.
@@ -77,7 +149,11 @@ function printUsage() {
   console.log(`Usage: node scripts/check-uptime.mjs [options]
 
 Probes production endpoints and asserts on response bodies, not just status codes.
-Exits non-zero if any check fails every attempt.
+
+Exit codes:
+  0   all checks passed
+  1   at least one check is DOWN (5xx, timeout, connection error, or a bad body)
+  ${EXIT_BLOCKED}  every failure was an edge refusal (WAF/bot block) that never reached the app
 
 Options:
   --base-url <url>     Base URL to probe (default: ${DEFAULT_BASE_URL})
@@ -86,6 +162,11 @@ Options:
   --timeout-ms <ms>    Per-request timeout (default: ${DEFAULT_TIMEOUT_MS})
   --json               Emit a JSON summary on stdout
   --help               Show this help
+
+Environment:
+  UPTIME_BYPASS_HEADER / UPTIME_BYPASS_TOKEN
+      Optional header sent with every request, for an edge rule that skips
+      bot protection for this probe. Both must be set to take effect.
 `);
 }
 
@@ -156,27 +237,60 @@ function formatError(error) {
   return error.message;
 }
 
-async function readJsonOrText(response) {
+/**
+ * Read the body once as text, then parse it as JSON when the response claims
+ * to be JSON. The raw text is kept regardless: when a check fails, the first
+ * few hundred characters of what actually came back are the whole diagnosis,
+ * and the old probe threw them away — which is why six "expected 200, got 403"
+ * issues never revealed who was sending the 403.
+ */
+async function readBody(response) {
   const contentType = response.headers.get("content-type") || "";
+  let text = "";
+  try {
+    text = await response.text();
+  } catch (error) {
+    return { text: "", parsed: `<unreadable body: ${formatError(error)}>` };
+  }
+
   if (contentType.includes("application/json")) {
     try {
-      return await response.json();
+      return { text, parsed: JSON.parse(text) };
     } catch (error) {
-      return `<unparseable JSON: ${formatError(error)}>`;
+      return { text, parsed: `<unparseable JSON: ${formatError(error)}>` };
     }
   }
-  return response.text();
+
+  return { text, parsed: text };
+}
+
+/** The handful of headers worth keeping in an outage report. */
+function diagnosticHeaders(headers) {
+  const wanted = [
+    "server",
+    "cf-ray",
+    "cf-mitigated",
+    "content-type",
+    "x-matched-path",
+    "x-vercel-id",
+    "x-vercel-cache",
+    "retry-after",
+  ];
+  const out = {};
+  for (const name of wanted) {
+    const value = headers.get(name);
+    if (value) out[name] = value;
+  }
+  return out;
 }
 
 async function requestWithTimeout(url, timeoutMs) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const headers = { "User-Agent": "lscaturchio-uptime-check" };
+  if (BYPASS_HEADER && BYPASS_TOKEN) headers[BYPASS_HEADER] = BYPASS_TOKEN;
   try {
-    return await fetch(url, {
-      method: "GET",
-      signal: controller.signal,
-      headers: { "User-Agent": "lscaturchio-uptime-check" },
-    });
+    return await fetch(url, { method: "GET", signal: controller.signal, headers });
   } finally {
     clearTimeout(timer);
   }
@@ -184,22 +298,37 @@ async function requestWithTimeout(url, timeoutMs) {
 
 async function runCheck(check, config) {
   let lastFailure = "no attempts made";
+  let lastClassification = "down";
+  let lastDiagnostics = null;
 
   for (let attempt = 1; attempt <= config.attempts; attempt += 1) {
     const url = `${config.baseUrl}${check.path}`;
 
     try {
       const response = await requestWithTimeout(url, config.timeoutMs);
-      const body = await readJsonOrText(response);
-      const failure = check.verify(response.status, body);
+      const { text, parsed } = await readBody(response);
+      const failure = check.verify(response.status, parsed);
 
       if (!failure) {
         return { name: check.name, path: check.path, ok: true, attempts: attempt };
       }
 
       lastFailure = failure;
+      lastClassification = classifyFailure({
+        status: response.status,
+        headers: response.headers,
+        bodyText: text,
+      });
+      lastDiagnostics = {
+        status: response.status,
+        headers: diagnosticHeaders(response.headers),
+        bodyExcerpt: text.slice(0, 300),
+      };
     } catch (error) {
+      // Nothing answered at all. Always an outage, never a block.
       lastFailure = formatError(error);
+      lastClassification = "down";
+      lastDiagnostics = null;
     }
 
     // Retry transient blips before declaring an outage.
@@ -214,6 +343,8 @@ async function runCheck(check, config) {
     ok: false,
     attempts: config.attempts,
     failure: lastFailure,
+    classification: lastClassification,
+    diagnostics: lastDiagnostics,
   };
 }
 
@@ -224,11 +355,21 @@ async function main() {
   // serialise the whole probe.
   const results = await Promise.all(CHECKS.map((check) => runCheck(check, config)));
   const failures = results.filter((result) => !result.ok);
+  const down = failures.filter((result) => result.classification === "down");
+
+  // Blocked only counts when EVERY failure is a block. One genuine 5xx
+  // alongside a block still pages: a partial outage is an outage.
+  const blocked = failures.length > 0 && down.length === 0;
 
   if (config.json) {
     console.log(
       JSON.stringify(
-        { baseUrl: config.baseUrl, healthy: failures.length === 0, results },
+        {
+          baseUrl: config.baseUrl,
+          healthy: failures.length === 0,
+          blocked,
+          results,
+        },
         null,
         2
       )
@@ -236,13 +377,22 @@ async function main() {
   } else {
     console.log(`Uptime check against ${config.baseUrl}\n`);
     for (const result of results) {
-      const status = result.ok ? "PASS" : "FAIL";
+      const status = result.ok ? "PASS" : result.classification === "blocked" ? "BLOCK" : "FAIL";
       const detail = result.ok
         ? `(attempt ${result.attempts})`
         : `after ${result.attempts} attempts — ${result.failure}`;
-      console.log(`  ${status}  ${result.name.padEnd(12)} ${result.path.padEnd(18)} ${detail}`);
+      console.log(`  ${status.padEnd(5)} ${result.name.padEnd(12)} ${result.path.padEnd(18)} ${detail}`);
     }
     console.log("");
+  }
+
+  if (blocked) {
+    console.error(
+      `${failures.length} of ${results.length} checks were refused at the edge (WAF/bot block), ` +
+        `not served by the app: ${failures.map((f) => f.name).join(", ")}. ` +
+        `Treating as BLOCKED, not an outage.`
+    );
+    process.exit(EXIT_BLOCKED);
   }
 
   if (failures.length > 0) {
@@ -255,7 +405,13 @@ async function main() {
   console.log(`All ${results.length} checks passed.`);
 }
 
-main().catch((error) => {
-  console.error(`Uptime check crashed: ${formatError(error)}`);
-  process.exit(1);
-});
+// Only probe when run as a script; importing this file (tests) must be inert.
+const invokedDirectly =
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (invokedDirectly) {
+  main().catch((error) => {
+    console.error(`Uptime check crashed: ${formatError(error)}`);
+    process.exit(1);
+  });
+}

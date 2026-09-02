@@ -247,8 +247,35 @@ baseline stays current.
 ## Monitoring
 
 - `.github/workflows/uptime.yml` probes production every 15 minutes and on
-  `workflow_dispatch`. On failure it opens (or comments on) an issue labelled
-  `uptime` and fails the run; on the next passing run it closes that issue.
+  `workflow_dispatch`. It sorts every failure into one of two buckets, and they
+  escalate very differently:
+
+| Probe result | Exit | Run | Issue |
+| --- | --- | --- | --- |
+| healthy | 0 | green | closes any open `uptime` / `uptime-blocked` issue |
+| **blocked** — every failure was refused *before* reaching the app | 75 | green + warning | none, until blocked continuously for 6h (then one `uptime-blocked` issue) |
+| **down** — a failure the app produced, or nothing answered | 1 | red | one `uptime` issue after **2 consecutive** down runs (~30 min) |
+
+- **A 403 is not an outage.** `lscaturchio.xyz` is proxied through Cloudflare in
+  front of Vercel, and Cloudflare's bot/WAF layer intermittently refuses the
+  probe because it runs from an Azure datacentre IP. Between 2026-08-29 and
+  08-31 that filed six outage issues (#181-#185, #188) for a site that was
+  serving 200s to real traffic the whole time; every one auto-closed within
+  ~20 minutes. A monitor that cries wolf six times in two days is worse than no
+  monitor, because it also masks the real thing.
+- The tell is that Vercel's routing headers (`x-matched-path`, `x-vercel-id`)
+  are **absent**: the request never reached the deployment. `classifyFailure()`
+  in `scripts/check-uptime.mjs` keys on exactly that, plus `cf-mitigated` and
+  the Cloudflare block-page body. A 403 that *does* carry those headers is our
+  own application refusing, and still counts as down.
+- Failing results now record the status, the interesting response headers and
+  the first 300 characters of the body. The old probe reported only
+  `expected 200, got 403`, which is why six issues never revealed who sent it.
+- To stop being blocked at all: add a Cloudflare WAF **skip** rule matching a
+  secret header, then set the repo variable `UPTIME_BYPASS_HEADER` and the
+  secret `UPTIME_BYPASS_TOKEN`. The probe sends the header when both are set.
+- Streak state lives in an Actions cache (`uptime-state-*`). A cache miss resets
+  the streak, which can only delay an alert by one run — never invent one.
 - Run the same probe locally against any environment:
 
 ```bash

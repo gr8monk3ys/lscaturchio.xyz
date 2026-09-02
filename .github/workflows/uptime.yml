@@ -6,11 +6,26 @@ name: Uptime
 # that rots *between* deploys is invisible to it — which is exactly how the
 # 2026-07-25 total API outage went unnoticed.
 #
+# What this workflow escalates, and what it deliberately does not:
+#
+#   down     a check failed in a way that means the site is broken (5xx, a
+#            connection error, a timeout, or a 200 carrying a bad body). Turns
+#            the run red immediately; opens an issue only after DOWN_STREAK
+#            consecutive runs, i.e. ~30 minutes of sustained failure.
+#   blocked  every failure was an edge refusal that never reached the app —
+#            Cloudflare's bot/WAF layer answering 403 to a datacentre IP. The
+#            run stays green with a warning. Between 2026-08-29 and 08-31 this
+#            filed six outage issues (#181-#185, #188) for a site that was up
+#            the whole time; each auto-closed within ~20 minutes. That is how a
+#            monitor teaches you to ignore it.
+#   blind    blocked continuously for BLIND_AFTER_HOURS. The probe is no longer
+#            verifying anything, which is itself worth one issue.
+#
 # Caveat worth knowing: GitHub's scheduled runners are best-effort and get
 # delayed under load, so treat this as "we will hear about it within the hour",
 # not as a real SLA monitor. It is free and lives with the code; a hosted
-# checker (Better Stack, Vercel monitoring) is strictly better if this ever
-# needs to page someone.
+# checker (Better Stack, Vercel monitoring) probes from an IP the edge trusts
+# and is strictly better if this ever needs to page someone.
 
 on:
   schedule:
@@ -26,6 +41,13 @@ permissions:
   contents: read
   issues: write
 
+env:
+  # Consecutive `down` runs required before an outage issue is opened.
+  DOWN_STREAK: '2'
+  # Hours of continuous edge blocking before we admit the probe is blind.
+  BLIND_AFTER_HOURS: '6'
+  STATE_FILE: uptime-state/state.json
+
 jobs:
   probe:
     name: Probe production
@@ -39,14 +61,39 @@ jobs:
         with:
           node-version: 22
 
-      # continue-on-error lets the later steps branch on steps.probe.outcome.
-      # The job is still failed explicitly by the final step.
+      # Streak state has to outlive the run. Cache keys are immutable, so each
+      # run writes a fresh key and restores the newest one by prefix. A cache
+      # miss resets the streak to zero, which can only ever delay an alert by
+      # one run — it can never invent one.
+      - name: Restore probe state
+        uses: actions/cache/restore@v4
+        with:
+          path: uptime-state
+          key: uptime-state-${{ github.run_id }}
+          restore-keys: uptime-state-
+
+      # Exit code is the entire signal, so it is captured directly rather than
+      # left to a pipeline where a downstream process would mask it.
+      #   0 = healthy, 75 = blocked at the edge, anything else = down
       - name: Probe production endpoints
         id: probe
-        continue-on-error: true
-        # Plain redirect, not a pipe: the exit code is the entire signal here
-        # and must not be masked by a downstream process in the pipeline.
-        run: node scripts/check-uptime.mjs --json > result.json
+        env:
+          UPTIME_BYPASS_HEADER: ${{ vars.UPTIME_BYPASS_HEADER }}
+          UPTIME_BYPASS_TOKEN: ${{ secrets.UPTIME_BYPASS_TOKEN }}
+        run: |
+          set +e
+          node scripts/check-uptime.mjs --json > result.json
+          code=$?
+          set -e
+
+          case "$code" in
+            0)  state=healthy ;;
+            75) state=blocked ;;
+            *)  state=down ;;
+          esac
+
+          echo "state=$state" >> "$GITHUB_OUTPUT"
+          echo "Probe exited $code -> $state"
         shell: bash
 
       - name: Summarise
@@ -54,7 +101,7 @@ jobs:
         run: |
           cat result.json 2>/dev/null || true
           {
-            echo '### Uptime probe'
+            echo "### Uptime probe: ${{ steps.probe.outputs.state || 'crashed' }}"
             echo ''
             echo '```json'
             cat result.json 2>/dev/null || echo '{"error":"probe produced no output"}'
@@ -62,102 +109,177 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
         shell: bash
 
-      - name: Open or update outage issue
-        if: steps.probe.outcome == 'failure'
+      - name: Update streak state and escalate
+        id: escalate
+        if: always() && steps.probe.outputs.state != ''
         uses: actions/github-script@v9
+        env:
+          STATE: ${{ steps.probe.outputs.state }}
         with:
           script: |
             const fs = require('fs');
+            const path = require('path');
+
+            const state = process.env.STATE;
+            const downStreakRequired = Number(process.env.DOWN_STREAK);
+            const blindAfterHours = Number(process.env.BLIND_AFTER_HOURS);
+            const stateFile = process.env.STATE_FILE;
+
+            const OUTAGE_LABEL = 'uptime';
+            const BLIND_LABEL = 'uptime-blocked';
 
             let report = 'The probe produced no output, which usually means it crashed before writing results.';
             try {
-              report = fs.readFileSync('result.json', 'utf8');
+              report = fs.readFileSync('result.json', 'utf8').trim();
             } catch {}
 
-            const LABEL = 'uptime';
-            const TITLE = 'Production uptime check failing';
-
-            // Ensure the label exists — creating an issue with a missing label errors.
+            let prior = { downStreak: 0, blockedSince: null };
             try {
-              await github.rest.issues.getLabel({ ...context.repo, name: LABEL });
+              prior = { ...prior, ...JSON.parse(fs.readFileSync(stateFile, 'utf8')) };
             } catch {
-              await github.rest.issues.createLabel({
-                ...context.repo,
-                name: LABEL,
-                color: 'b60205',
-                description: 'Automated production uptime probe',
-              });
+              core.info('No prior probe state (first run, or the cache expired). Starting from zero.');
             }
 
+            const now = new Date();
+            const next = { downStreak: 0, blockedSince: null };
+
+            if (state === 'down') {
+              next.downStreak = (prior.downStreak || 0) + 1;
+            } else if (state === 'blocked') {
+              // A block says nothing about health, so it neither advances nor
+              // clears the outage streak — it just parks it.
+              next.downStreak = prior.downStreak || 0;
+              next.blockedSince = prior.blockedSince || now.toISOString();
+            }
+
+            fs.mkdirSync(path.dirname(stateFile), { recursive: true });
+            fs.writeFileSync(stateFile, JSON.stringify(next));
+            core.info(`state=${state} streak=${next.downStreak} blockedSince=${next.blockedSince}`);
+
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const body = [
-              `Production checks failed at ${new Date().toISOString()}.`,
-              '',
-              '```json',
-              report.trim(),
-              '```',
-              '',
-              `[Workflow run](${runUrl})`,
-            ].join('\n');
 
-            const { data: open } = await github.rest.issues.listForRepo({
-              ...context.repo,
-              state: 'open',
-              labels: LABEL,
-            });
+            async function ensureLabel(name, color, description) {
+              try {
+                await github.rest.issues.getLabel({ ...context.repo, name });
+              } catch {
+                await github.rest.issues.createLabel({ ...context.repo, name, color, description });
+              }
+            }
 
-            if (open.length > 0) {
-              // Already tracking this outage — add an observation instead of a new issue.
-              await github.rest.issues.createComment({
-                ...context.repo,
-                issue_number: open[0].number,
-                body,
+            async function openIssues(label) {
+              const { data } = await github.rest.issues.listForRepo({
+                ...context.repo, state: 'open', labels: label,
               });
-              core.notice(`Updated existing outage issue #${open[0].number}`);
-            } else {
+              return data;
+            }
+
+            // One issue per condition, updated with observations. A second
+            // failing run comments; it never opens a second issue.
+            async function openOrUpdate({ label, color, description, title, body }) {
+              await ensureLabel(label, color, description);
+              const open = await openIssues(label);
+              if (open.length > 0) {
+                await github.rest.issues.createComment({
+                  ...context.repo, issue_number: open[0].number, body,
+                });
+                core.notice(`Updated existing issue #${open[0].number}`);
+                return;
+              }
               const { data: created } = await github.rest.issues.create({
-                ...context.repo,
-                title: TITLE,
-                labels: [LABEL],
-                body,
+                ...context.repo, title, labels: [label], body,
               });
-              core.notice(`Opened outage issue #${created.number}`);
+              core.notice(`Opened issue #${created.number}`);
             }
 
-      - name: Close outage issue on recovery
-        if: steps.probe.outcome == 'success'
-        uses: actions/github-script@v9
-        with:
-          script: |
-            const LABEL = 'uptime';
-            const { data: open } = await github.rest.issues.listForRepo({
-              ...context.repo,
-              state: 'open',
-              labels: LABEL,
+            async function closeAll(label, reason) {
+              for (const issue of await openIssues(label)) {
+                await github.rest.issues.createComment({
+                  ...context.repo,
+                  issue_number: issue.number,
+                  body: `${reason} at ${now.toISOString()}. Closing.\n\n[Workflow run](${runUrl})`,
+                });
+                await github.rest.issues.update({
+                  ...context.repo, issue_number: issue.number,
+                  state: 'closed', state_reason: 'completed',
+                });
+                core.notice(`Closed #${issue.number}`);
+              }
+            }
+
+            const reportBlock = ['```json', report, '```', '', `[Workflow run](${runUrl})`].join('\n');
+
+            if (state === 'healthy') {
+              await closeAll(OUTAGE_LABEL, 'All checks passed');
+              await closeAll(BLIND_LABEL, 'The probe is reaching production again');
+              return;
+            }
+
+            if (state === 'blocked') {
+              core.warning(
+                'Every failing check was refused at the edge before it reached the app ' +
+                '(Cloudflare bot/WAF). The site is not implicated. No outage issue filed.'
+              );
+
+              const blockedHours = (now - new Date(next.blockedSince)) / 3_600_000;
+              if (blockedHours >= blindAfterHours) {
+                await openOrUpdate({
+                  label: BLIND_LABEL,
+                  color: 'fbca04',
+                  description: 'The uptime probe is being blocked at the edge',
+                  title: 'Uptime probe has been blocked at the edge for hours',
+                  body: [
+                    `The probe has been refused at the edge continuously since ${next.blockedSince}`,
+                    `(${blockedHours.toFixed(1)}h). It is not verifying that production works — a real`,
+                    'outage starting now could go unnoticed.',
+                    '',
+                    'This is a monitoring failure, not a site failure. Fixes, cheapest first:',
+                    '',
+                    '- Add a Cloudflare WAF **skip** rule matching a secret header, then set the',
+                    '  `UPTIME_BYPASS_HEADER` variable and `UPTIME_BYPASS_TOKEN` secret on this repo.',
+                    '- Or move the probe to a checker whose source IP the edge trusts.',
+                    '',
+                    reportBlock,
+                  ].join('\n'),
+                });
+              }
+              return;
+            }
+
+            // state === 'down'
+            if (next.downStreak < downStreakRequired) {
+              core.warning(
+                `Production checks failed (${next.downStreak}/${downStreakRequired} consecutive runs). ` +
+                'The run is red; an issue opens if the next run fails too.'
+              );
+              return;
+            }
+
+            await openOrUpdate({
+              label: OUTAGE_LABEL,
+              color: 'b60205',
+              description: 'Automated production uptime probe',
+              title: 'Production uptime check failing',
+              body: [
+                `Production checks failed on ${next.downStreak} consecutive runs, most recently at ${now.toISOString()}.`,
+                'These failures reached the application (or nothing answered at all), so this is not an edge block.',
+                '',
+                reportBlock,
+              ].join('\n'),
             });
 
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+      - name: Save probe state
+        if: always() && steps.probe.outputs.state != ''
+        uses: actions/cache/save@v4
+        with:
+          path: uptime-state
+          key: uptime-state-${{ github.run_id }}
 
-            for (const issue of open) {
-              await github.rest.issues.createComment({
-                ...context.repo,
-                issue_number: issue.number,
-                body: `All checks passed at ${new Date().toISOString()}. Closing.\n\n[Workflow run](${runUrl})`,
-              });
-              await github.rest.issues.update({
-                ...context.repo,
-                issue_number: issue.number,
-                state: 'closed',
-                state_reason: 'completed',
-              });
-              core.notice(`Closed recovered outage issue #${issue.number}`);
-            }
-
-      # Surface the failure on the workflow itself, so the run goes red and
-      # GitHub's default "scheduled workflow failed" email fires too.
-      - name: Fail if probe failed
-        if: steps.probe.outcome == 'failure'
+      # Surface a real failure on the workflow itself, so the run goes red and
+      # GitHub's default "scheduled workflow failed" email fires. A blocked run
+      # stays green on purpose: nothing about the site is known to be wrong.
+      - name: Fail if production is down
+        if: steps.probe.outputs.state == 'down'
         run: |
-          echo "Production uptime probe failed. See the outage issue and step summary."
+          echo "Production uptime probe failed against the application. See the step summary."
           exit 1
         shell: bash
