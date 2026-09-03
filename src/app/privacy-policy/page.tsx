@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
       <div className="prose prose-neutral dark:prose-invert max-w-none">
         <h1>Privacy Policy & Transparency</h1>
         <p className="lead">
-          Last updated: February 4, 2025
+          Last updated: September 2, 2026
         </p>
         
         <h2>Transparency Statement</h2>
@@ -21,11 +21,40 @@ export default function PrivacyPolicyPage() {
           and gives you insight into how I maintain sustainability while providing value to the community.
         </p>
 
-        <h2>Analytics & Tracking</h2>
+        <h2>Analytics &amp; Tracking</h2>
         <p>
-          I use Vercel Analytics and Speed Insights to understand website performance and user experience.
-          These tools are privacy-focused and do not collect personally identifiable information. The analytics
-          help me improve the website&apos;s performance and content quality.
+          Five third-party services run on this site. Naming two of them and leaving the
+          others out would be the kind of omission the essays here complain about, so here
+          is the whole list.
+        </p>
+        <ul>
+          <li>
+            <strong>Vercel Analytics and Speed Insights</strong> — page views and loading
+            performance, aggregated. No cookies, no cross-site identifier.
+          </li>
+          <li>
+            <strong>Cloudflare Web Analytics</strong> — the same kind of aggregate traffic
+            counting, injected at the network edge rather than by this codebase.
+          </li>
+          <li>
+            <strong>Sentry</strong> — error and performance monitoring. When something breaks
+            it sends me the error, the page it happened on, and the browser. Your IP address
+            and email are stripped before the event leaves your browser. It does not record
+            your session: session replay was removed in September 2026 because it captured
+            reader sessions this page had never disclosed.
+          </li>
+          <li>
+            <strong>Giscus</strong> — comments on essays and the guestbook, backed by GitHub
+            Discussions. It loads only on pages that have comments, and only GitHub sees your
+            account.
+          </li>
+          <li>
+            <strong>Google Translate</strong> — loads only if you switch the site to another
+            language. Leave it in English and it never runs.
+          </li>
+        </ul>
+        <p>
+          None of these tell me who you are. I cannot see which essays a specific person read.
         </p>
 
         <h2>Information Collection</h2>
