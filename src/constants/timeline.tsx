@@ -1,51 +1,85 @@
-// Titles and dates mirror the resume repo (~/code/resume, default variant),
-// with one confirmed exception: Upwork freelancing is ongoing (Lorenzo,
-// 2026-08) even though the resume's default variant closes it at May 2024.
-// Keep the two in sync; the site claiming roles or dates the resume does not
-// is worse than either being stale alone.
+// Source of truth is the resume repo (~/code/resume): `default/sections/
+// experience.tex` for the roles that fit a one-page resume, and
+// `docs/linkedin-copy.md` for the canonical longform prose, which also carries
+// the roles the one-pager drops for space (VICE Lab).
+//
+// Reconciled 2026-08-30. Corrections made in that pass, so they are not
+// silently reintroduced:
+//   - JGI "98% accuracy" was wrong. The model is KNN for plant-microbe
+//     interaction prediction and its score is F1 0.68.
+//   - Upwork "98% customer satisfaction rate" is really a 98% Job Success
+//     Score, a metric the Upwork platform computes and publishes.
+//   - Upwork "average efficiency increase of 25%" and "reducing operational
+//     costs by up to 20%" appear in neither the resume nor the LinkedIn copy.
+//     Removed rather than carried forward.
+//   - VICE Lab Cython work is a 30% runtime reduction, not 20%, and the Vue.js
+//     dashboard carries no engagement metric in any source.
+//   - Sizzle was described without any of its real numbers; the resume has
+//     them.
+//   - G&M Trailer Repair was missing entirely.
+//
+// Keep the two in sync. The site claiming roles, dates or numbers the resume
+// does not is worse than either being stale alone.
 export const timeline = [
   {
     company: "Sizzle",
     title: "Machine Learning Engineer",
     date: "June 2024 - May 2025",
-    description: "Built the full pipeline for data processing, model training, and deployment of nutritional factors and macro nutrients for any given recipe.",
+    description:
+      "Built and ran an end-to-end computer vision pipeline for estimating macro-nutrients from food images, and explained its behaviour and its limits to people who did not build it.",
     responsibilities: [
-      "Integrated AI solutions into Google Cloud services using VertexAI to speed up operations.",
-      "Improved data analysis capabilities from custom REST API endpoints, resulting in an easily scalable solution.",
+      "Deployed the pipeline on GCP Vertex AI and BigQuery, serving 5k+ daily inference requests in production.",
+      "Integrated the fine-tuned vision model into a production REST API in Kotlin, holding a <200ms p95 target for 10+ B2B clients.",
+      "Turned vague quality complaints into concrete labeling guidelines across a 50k+ image dataset, raising model accuracy by 12 percentage points.",
     ],
   },
   {
-    company: "Upwork, Fiverr",
+    company: "Upwork",
     title: "AI/ML Freelancer",
     date: "August 2022 - Present",
-    description: "Developing and deploying custom AI/ML models for various clients.",
+    description:
+      "Discovery and scoping with clients, turning open-ended business problems into delivered systems.",
     responsibilities: [
-      "Improved business processes and outcomes using both open-source and paid LLMs, resulting in an average efficiency increase of 25%.",
-      "Engineered end-to-end MLOps solutions, including CI/CD pipelines, model monitoring, and infrastructure automation, attaining a 98% customer satisfaction rate.",
-      "Collaborated with cross-functional teams to integrate AI solutions into existing systems, enhancing overall efficiency and functionality, reducing operational costs by up to 20%.",
+      "Delivered custom ML for 4 clients: RAG document Q&A, fine-tuned classification, and automated data pipelines.",
+      "Built the MLOps around them — CI/CD, model versioning, monitoring.",
+      "Maintained a 98% Job Success Score by setting expectations up front, demoing work in progress, and documenting the handoff.",
+    ],
+  },
+  {
+    company: "G&M Trailer Repair, Inc.",
+    title: "Operations Coordinator",
+    date: "2022 - Present",
+    description:
+      "Asked to organize the files at a paper-run trailer shop; the real problem was records nobody could query.",
+    responsibilities: [
+      "Rebuilt receipts, pick tickets, and job scheduling into searchable Excel systems and a Kanban board inside Microsoft Teams — the suite the crew already used.",
+      "Built and owned the parts inventory, an hour log normalizing labor against per-client rates, and PTO accrual formulas, automating the repetitive steps in VBA and invoicing in QuickBooks.",
+      "Coordinated repair intake and dispatch for a fleet running roughly 200 trailers a month, working daily with a primarily Spanish-speaking crew.",
     ],
   },
   {
     company: "Joint Genome Institute",
     title: "Bioinformatics Data Analyst",
     date: "May 2020 - August 2021",
-    description: "Used R with a team of researchers to build workflows for genetic homology comparison.",
+    description:
+      "Built data processing pipelines in R for genomic homology comparison, with a team of researchers.",
     responsibilities: [
-      "Slashed processing time by 90%.",
-      "Constructed a model based on plant species datasets for microbial interactions, achieving 98% accuracy.",
-      "Created and optimized genome reference pipelines, decreasing processing time from 4 hours to 10 minutes.",
-      "Showcased and presented technologies to over 1000 end clients and senior leadership members in yearly user meeting.",
+      "Cut processing time by 90%, shortening iteration cycles for the research teams.",
+      "Engineered ETL pipelines for genome reference data, cutting preprocessing from 4 hours to 10 minutes.",
+      "Delivered a KNN classification model for plant-microbe interaction prediction (F1 0.68), and walked researchers through what that number did and did not support.",
+      "Presented pipeline capabilities and architecture to 1,000+ end users and senior leadership at the annual user meeting.",
     ],
   },
   {
-    company: "Vice Lab",
+    company: "VICE Lab",
     title: "Computational Systems Intern",
     date: "January 2020 - May 2021",
-    description: "Devised and performed Bash scripts to run hydro-power models on a proprietary supercomputer.",
+    description:
+      "Ran hydropower models on a proprietary supercomputer, and made the results readable without an engineer present.",
     responsibilities: [
-      "Achieved a 50% reduction in processing time through asynchronous execution deployed with Slurm.",
-      "Drove creation of a data visualization web application for hydro power models operated with Vue.js, increasing user engagement by 25% and improving data interpretation.",
-      "Optimized model implementation and resolved bottlenecks using Cython, further cutting down execution time by 20%.",
+      "Parallelized model execution on Slurm HPC, cutting total runtime by 50%.",
+      "Ported core Python logic to Cython for a further 30% runtime reduction.",
+      "Built a Vue.js visualization layer stakeholders could read without an engineer's help.",
     ],
   },
 ];
