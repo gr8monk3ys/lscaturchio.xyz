@@ -14,7 +14,7 @@ import { IDENTITY } from "@/constants/identity";
 import { splitHomepageBlogs } from "@/lib/blog-data";
 
 export const metadata: Metadata = {
-  title: "Home",
+  title: { absolute: IDENTITY.titleDefault },
   description:
     "AI case studies, product builds, and practical writing from Lorenzo Scaturchio across retrieval systems, automation, and web development.",
   openGraph: {

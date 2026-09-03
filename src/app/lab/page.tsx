@@ -4,7 +4,6 @@ import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { SemanticSearchDemo } from "@/components/lab/semantic-search-demo";
 import { ToySimilarity } from "@/components/lab/toy-similarity";
-import { AskLorenzoDemo } from "@/components/lab/ask-lorenzo-demo";
 import { EXPERIMENTS } from "@/constants/experiments";
 import { ArrowUpRight } from "lucide-react";
 
@@ -36,7 +35,6 @@ export default function LabPage() {
           </h2>
           <div className="grid grid-cols-1 gap-6">
             <SemanticSearchDemo />
-            <AskLorenzoDemo />
             <ToySimilarity />
           </div>
         </section>

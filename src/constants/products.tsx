@@ -280,7 +280,7 @@ export const products: Product[] = [
     href: "https://github.com/gr8monk3ys/TAlker",
     title: "Talker",
     description:
-      "An open source teaching assistant RAG leveraging OLlama2 with a FAISS knowledge base. Increased student engagement by 30% and learning efficiency by 25%.",
+      "An open source teaching assistant that answers course questions from the syllabus, slides and lecture materials — with citations, and YouTube timestamps when a video covers the answer.",
     thumbnail: TAlker,
     stack: ["Python", "FAISS", "OLlama2", "RAG"],
     slug: "talker",
@@ -293,14 +293,14 @@ export const products: Product[] = [
       challenge: "Students struggled to get timely answers to course-specific questions outside of office hours, leading to bottlenecks and disengagement.",
       solution: "Built a RAG-powered teaching assistant using OLlama2 and FAISS that answers questions based on class syllabus, slides, and materials. Added multi-modal support including YouTube videos with timestamp links.",
       results: [
-        "30% increase in student engagement",
-        "25% improvement in learning efficiency",
-        "Multi-modal responses with video timestamps",
-        "Open source with community contributions"
+        "Answers grounded in course materials, returned with the source cited",
+        "Multi-modal responses that deep-link to the timestamp in a lecture video",
+        "Ran on a local OLlama2 model, so no course material left the machine",
+        "Open source, with outside contributions merged",
       ],
       metrics: [
-        { label: "Engagement", value: "+30%" },
-        { label: "Learning efficiency", value: "+25%" },
+        { label: "Retrieval", value: "FAISS" },
+        { label: "Model", value: "Local OLlama2" },
         { label: "Answer style", value: "Citations-first" },
         { label: "Modalities", value: "Text + video" },
       ],
@@ -329,8 +329,8 @@ export const products: Product[] = [
       ],
     },
     details: [
-      "Implemented and collaborated on an open source teaching assistant RAG leveraging OLlama2 with a FAISS knowledge base, answering students' questions based on class criteria, syllabus, and slides, increasing student engagement by 30%.",
-      "Included features of providing multi-modal results to queries from classrooms such as YouTube videos with video time queues based on question context, enhancing learning efficiency by 25%.",
+      "Built an open source teaching assistant on a local OLlama2 model with a FAISS knowledge base, answering student questions from the course syllabus, slides and materials.",
+      "Added multi-modal retrieval that returns lecture videos deep-linked to the timestamp covering the question, rather than the whole recording.",
     ],
   },
   {

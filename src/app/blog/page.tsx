@@ -4,7 +4,7 @@ import { BlogGrid } from "@/components/blog/BlogGrid";
 import { filterByStage } from "@/lib/blog-stage";
 import { BlogArchiveStats } from "@/components/blog/blog-archive-stats";
 import Link from "next/link";
-import { MessageSquare, Tag } from "lucide-react";
+import { Tag } from "lucide-react";
 import type { Metadata } from "next";
 import { ogCardUrl } from "@/lib/seo";
 import { toBlogPreview } from "@/lib/blog-data";
@@ -112,14 +112,6 @@ export default async function Blog({
             >
               <Tag className="h-3.5 w-3.5" />
               Browse by topic
-            </Link>
-            <Link
-              href="/chat"
-              prefetch={false}
-              className="label-mono inline-flex items-center gap-2 text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              <MessageSquare className="h-3.5 w-3.5" />
-              Ask about a post
             </Link>
           </div>
           <hr className="gallery-rule mt-8" />

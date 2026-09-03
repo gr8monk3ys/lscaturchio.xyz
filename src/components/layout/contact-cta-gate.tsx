@@ -9,20 +9,18 @@ const ContactCTA = dynamic(
   { ssr: false, loading: () => null }
 );
 
-const CONTACT_CTA_EXCLUDED_PATHS = new Set<string>([
-  "/chat",
-  "/contact",
-  "/services",
-  "/work-with-me",
-]);
+// The CTA is an allowlist, not a blocklist. It used to render everywhere
+// except a handful of pages, which put a consulting pitch on the guestbook,
+// the photography page, the movie diary and the 404. The garden pages are
+// personal; selling on them is the wrong move, and pitching someone who just
+// hit a broken link is worse. Selling belongs where the visitor came to buy.
+const CONTACT_CTA_PATHS = new Set<string>(["/projects"]);
 
 export function ContactCTAGate() {
   const pathname = usePathname();
 
   if (!pathname) return null;
-  if (pathname === "/") return null;
-  if (pathname.startsWith("/blog")) return null;
-  if (CONTACT_CTA_EXCLUDED_PATHS.has(pathname)) return null;
+  if (!CONTACT_CTA_PATHS.has(pathname)) return null;
 
   return (
     <Suspense fallback={<div className="min-h-[200px]" />}>
