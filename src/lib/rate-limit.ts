@@ -109,13 +109,14 @@ export const RATE_LIMITS = {
  * Helper to get client IP from Next.js request
  * Checks multiple headers from various CDN/proxy providers
  *
- * This is NOT the kit's `getClientId`. That helper trusts `cf-connecting-ip`
- * and reads the RIGHT-most `x-forwarded-for` entry, which is correct behind
- * Cloudflare; this app is not behind Cloudflare and is deployed on Vercel,
- * where `cf-connecting-ip` is fully client-controlled and the left-most
- * forwarded entry is the convention. Swapping in `getClientId` would hand a
- * caller a free way to rotate its bucket past the OpenAI-backed limits, so
- * only the IP *parsing* comes from the kit — the trust policy stays here.
+ * This is NOT the kit's `getClientId`. In next-kit v0.1.1 that helper trusted
+ * `cf-connecting-ip` unconditionally — fully client-controlled on a Vercel
+ * deployment like this one, and a free way to rotate a bucket past the limits
+ * protecting the OpenAI-backed endpoints. v0.1.2 (pinned here) fixed that:
+ * platform headers are read only when declared, defaulting to `x-real-ip` then
+ * the right-most `x-forwarded-for` hop. This function still stays local because
+ * it encodes this site's own header order; only the IP *parsing*
+ * (`normalizeIpCandidate`) comes from the kit.
  */
 export function getClientIp(request: Request): string {
   const headers = request.headers;
@@ -140,10 +141,24 @@ export function getClientIp(request: Request): string {
     }
   }
 
-  // Lower-trust fallback for non-Vercel/local environments. On Vercel the
-  // trusted headers above are always present, so this branch is not reached in
-  // production. The leftmost x-forwarded-for entry is the originating client per
-  // convention but is spoofable, which is why it ranks below the platform headers.
+  // ---------------------------------------------------------------------------
+  // EVERYTHING BELOW IS CLIENT-ROTATABLE AND IS NOT A TRUST BOUNDARY.
+  //
+  // Both remaining fallbacks read values the caller supplies verbatim: the
+  // left-most x-forwarded-for entry, and the user-agent/accept-* fingerprint.
+  // A caller that varies either one mints a fresh rate-limit bucket per request,
+  // so on their own they enforce nothing. They exist only so local `next dev`
+  // and any non-Vercel host still bucket requests somehow.
+  //
+  // They are unreachable in production: Vercel sets x-vercel-forwarded-for and
+  // x-real-ip on every request and overwrites any client-supplied copy, so the
+  // trusted loop above always returns first. Do not copy this shape into code
+  // that runs where those platform headers are absent — there, the right-most
+  // x-forwarded-for hop (the one your own edge appended) is the only defensible
+  // key, which is what @gr8monk3ys/next-kit's `getClientId` defaults to.
+  // ---------------------------------------------------------------------------
+
+  // Left-most x-forwarded-for: the originating client per convention, spoofable.
   const forwardedFor = headers.get('x-forwarded-for');
   if (forwardedFor) {
     const ip = normalizeIpCandidate(forwardedFor.split(',')[0] ?? forwardedFor);
@@ -152,8 +167,9 @@ export function getClientIp(request: Request): string {
     }
   }
 
-  // Generate a fingerprint as last resort
-  // This ensures each unique client gets their own bucket
+  // Browser fingerprint as last resort, so each unique client gets its own
+  // bucket when no IP header is available at all. Trivially varied by the
+  // caller; see the boundary note above.
   const userAgent = headers.get('user-agent') || '';
   const acceptLanguage = headers.get('accept-language') || '';
   const acceptEncoding = headers.get('accept-encoding') || '';
