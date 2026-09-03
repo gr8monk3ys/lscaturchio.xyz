@@ -77,6 +77,10 @@ describe("buildPageTsx", () => {
   it("embeds the slug in the blog path", () => {
     expect(buildPageTsx("my-post")).toContain('"/blog/my-post"');
   });
+
+  it("hands the slug to BlogLayout so the shell never re-derives it", () => {
+    expect(buildPageTsx("my-post")).toContain('<BlogLayout meta={meta} slug="my-post">');
+  });
 });
 
 describe("validateMdx", () => {

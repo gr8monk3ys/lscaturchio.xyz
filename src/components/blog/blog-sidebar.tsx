@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type RefObject } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MessageSquareText, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -43,13 +43,12 @@ const QUICK_PROMPTS: Array<{ id: string; label: string; prompt: (title: string, 
  * contents, and the seen-set keeps two identically named headings from
  * collapsing onto one anchor.
  */
-function useEssayHeadings(contentRef?: RefObject<HTMLElement | null>, slug?: string) {
+function useEssayHeadings(slug?: string) {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>("");
 
   useEffect(() => {
     const root =
-      contentRef?.current ??
       document.querySelector<HTMLElement>(".prose-gallery") ??
       document.querySelector<HTMLElement>("article");
     if (!root) return;
@@ -93,7 +92,7 @@ function useEssayHeadings(contentRef?: RefObject<HTMLElement | null>, slug?: str
     return () => {
       elements.forEach((element) => observer.unobserve(element));
     };
-  }, [contentRef, slug]);
+  }, [slug]);
 
   return { headings, activeId };
 }
@@ -213,13 +212,11 @@ function ContentsList({
 export function BlogSidebar({
   slug,
   title,
-  contentRef,
 }: {
   slug: string;
   title: string;
-  contentRef?: RefObject<HTMLElement | null>;
 }) {
-  const { headings, activeId } = useEssayHeadings(contentRef, slug);
+  const { headings, activeId } = useEssayHeadings(slug);
   const headingTexts = useMemo(() => headings.map((h) => h.text), [headings]);
 
   return (
@@ -245,14 +242,8 @@ export function BlogSidebar({
  * Contents for narrow windows: a collapsed disclosure under the essay header.
  * The rail is xl-only, and below that the reader had no map at all.
  */
-export function EssayContentsInline({
-  contentRef,
-  slug,
-}: {
-  contentRef?: RefObject<HTMLElement | null>;
-  slug: string;
-}) {
-  const { headings, activeId } = useEssayHeadings(contentRef, slug);
+export function EssayContentsInline({ slug }: { slug: string }) {
+  const { headings, activeId } = useEssayHeadings(slug);
 
   if (headings.length === 0) return null;
 
@@ -272,13 +263,11 @@ export function EssayContentsInline({
 export function EssayAskInline({
   slug,
   title,
-  contentRef,
 }: {
   slug: string;
   title: string;
-  contentRef?: RefObject<HTMLElement | null>;
 }) {
-  const { headings } = useEssayHeadings(contentRef, slug);
+  const { headings } = useEssayHeadings(slug);
   const headingTexts = useMemo(() => headings.map((h) => h.text), [headings]);
 
   return (

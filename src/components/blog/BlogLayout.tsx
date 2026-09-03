@@ -1,13 +1,8 @@
-"use client";
-
-import { useRef, ReactNode } from "react";
-import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
+import { ReactNode } from "react";
 import { formatDate } from "@/lib/formatDate";
 import { Container } from "../Container";
 import { Heading } from "../Heading";
 import { Prose } from "@/components/blog/Prose";
-import { ArrowLeft } from "lucide-react";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { ReadingProgress } from "./reading-progress";
@@ -17,66 +12,19 @@ import { SocialShare } from "./social-share";
 import { ReadingProgressTracker } from "./reading-progress-tracker";
 import { BlogJsonLd } from "./blog-json-ld";
 import { SyndicationLinks } from "./syndication-links";
+import { BackButton } from "./back-button";
+import { TextToSpeech } from "./text-to-speech";
+import { SeriesNavigation } from "./series-navigation";
+import { Webmentions } from "./webmentions";
+import { GiscusComments } from "./giscus-comments";
+import { RelatedPosts } from "./related-posts";
+import { BlogSidebar, EssayContentsInline, EssayAskInline } from "./blog-sidebar";
 import Link from "next/link";
 import { getTopicHubsForTags } from "@/constants/topics";
 import { getSiteUrl } from "@/lib/site-url";
 import { clampBlogDateToToday } from "@/lib/blog-data";
 import type { BlogStage } from "@/lib/blog-stage";
 import { StageBadge } from "@/components/blog/stage-badge";
-
-const TextToSpeech = dynamic(
-  () => import("./text-to-speech").then((module) => module.TextToSpeech),
-  { ssr: false, loading: () => null }
-);
-
-const SeriesNavigation = dynamic(
-  () => import("./series-navigation").then((module) => module.SeriesNavigation),
-  { ssr: false, loading: () => null }
-);
-
-const Webmentions = dynamic(
-  () => import("./webmentions").then((module) => module.Webmentions),
-  { ssr: false, loading: () => <EndMatterSkeleton label="From the open web" rows={1} /> }
-);
-
-const GiscusComments = dynamic(
-  () => import("./giscus-comments").then((module) => module.GiscusComments),
-  { ssr: false, loading: () => null }
-);
-
-const RelatedPosts = dynamic(
-  () => import("./related-posts").then((module) => module.RelatedPosts),
-  { ssr: false, loading: () => <EndMatterSkeleton label="Related" rows={2} /> }
-);
-
-const BlogSidebar = dynamic(
-  () => import("./blog-sidebar").then((module) => module.BlogSidebar),
-  { ssr: false, loading: () => null }
-);
-
-const EssayContentsInline = dynamic(
-  () => import("./blog-sidebar").then((module) => module.EssayContentsInline),
-  { ssr: false, loading: () => null }
-);
-
-const EssayAskInline = dynamic(
-  () => import("./blog-sidebar").then((module) => module.EssayAskInline),
-  { ssr: false, loading: () => null }
-);
-
-/** Reserves the end matter's space while its client-only blocks load. */
-function EndMatterSkeleton({ label, rows }: { label: string; rows: number }) {
-  return (
-    <section className="mt-12 border-t border-border pt-6" aria-hidden>
-      <span className="label-mono block">{label}</span>
-      <div className="mt-4 space-y-3">
-        {Array.from({ length: rows }).map((_, i) => (
-          <div key={i} className="h-4 w-full max-w-lg bg-muted/60" />
-        ))}
-      </div>
-    </section>
-  );
-}
 
 interface BlogMeta {
   title: string;
@@ -94,6 +42,12 @@ interface BlogMeta {
 interface BlogLayoutProps {
   children: ReactNode;
   meta: BlogMeta;
+  /**
+   * The essay's own slug. Every route already writes its path literally, so
+   * the shell takes it as a prop instead of re-deriving it from
+   * `usePathname()` — which is what made this whole file client-only.
+   */
+  slug: string;
   isRssFeed?: boolean;
   previousPathname?: string;
   readingTime?: number;
@@ -102,18 +56,15 @@ interface BlogLayoutProps {
 export function BlogLayout({
   children,
   meta,
+  slug,
   isRssFeed = false,
   previousPathname,
   readingTime = 5,
 }: BlogLayoutProps) {
-  const pathname = usePathname();
-  const contentRef = useRef<HTMLDivElement>(null);
   const safeDate = clampBlogDateToToday(meta.date);
   const safeUpdated = meta.updated ? clampBlogDateToToday(meta.updated) : undefined;
   const relatedHubs = getTopicHubsForTags(meta.tags);
-
-  // Get slug from pathname
-  const slug = pathname.split('/').pop() || '';
+  const pathname = `/blog/${slug}`;
 
   if (isRssFeed) {
     return children;
@@ -142,16 +93,7 @@ export function BlogLayout({
         <div className="mx-auto max-w-2xl xl:mx-0">
           <BreadcrumbNav customSegments={{ blog: "Blog" }} />
 
-          {previousPathname && (
-            <button
-              type="button"
-              onClick={() => window.history.back()}
-              aria-label="Go back to blogs"
-              className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
-            >
-              <ArrowLeft className="h-4 w-4 stroke-zinc-500 transition group-hover:stroke-zinc-700 dark:stroke-zinc-500 dark:group-hover:stroke-zinc-400" />
-            </button>
-          )}
+          {previousPathname && <BackButton />}
           <article>
             <header className="flex flex-col">
               {/* Wall-label meta line: date · reading time · tags · views */}
@@ -230,7 +172,7 @@ export function BlogLayout({
                 </p>
               )}
 
-              <EssayContentsInline contentRef={contentRef} slug={slug} />
+              <EssayContentsInline slug={slug} />
 
               <hr className="gallery-rule mt-8" />
 
@@ -249,14 +191,10 @@ export function BlogLayout({
               {/* Listening is the one alternative that belongs before the
                   text. Sharing and subscribing wait until it has been read. */}
               <div className="mb-8">
-                <TextToSpeech slug={slug} contentRef={contentRef} />
+                <TextToSpeech slug={slug} />
               </div>
 
-              <Prose>
-                <div ref={contentRef}>
-                  {children}
-                </div>
-              </Prose>
+              <Prose>{children}</Prose>
             </div>
 
             {/* End matter: share and series first, as wall labels on one
@@ -289,7 +227,7 @@ export function BlogLayout({
               currentUrl={pathname}
             />
 
-            <EssayAskInline slug={slug} title={meta.title} contentRef={contentRef} />
+            <EssayAskInline slug={slug} title={meta.title} />
 
             <NewsletterCTA
               defaultTopics={relatedHubs.map((hub) => hub.slug)}
@@ -303,7 +241,7 @@ export function BlogLayout({
         </div>
 
         {/* Sidebar (AI + TOC) - only visible on xl screens */}
-        <BlogSidebar slug={slug} title={meta.title} contentRef={contentRef} />
+        <BlogSidebar slug={slug} title={meta.title} />
       </div>
     </Container>
     </>

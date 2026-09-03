@@ -99,7 +99,7 @@ export default async function Blog({
       <div className="space-y-10">
         <header className="pt-4">
           <span className="label-mono block">Essays, Notes &amp; Experiments</span>
-          <h1 className="mt-4 max-w-3xl text-[2.7rem] font-semibold leading-[1.02] tracking-tight text-foreground sm:text-[3rem] md:text-[3.15rem]">
+          <h1 className="mt-4 max-w-3xl text-[clamp(2.7rem,2.36rem+1.45vw,3.15rem)] font-semibold leading-[1.02] tracking-tight text-foreground">
             Essays on AI, software, and the world they&apos;re reshaping.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">

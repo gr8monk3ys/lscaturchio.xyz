@@ -6,7 +6,7 @@ export const metadata = buildBlogMetadata(meta, "/blog/flow-states-not-achieveme
 
 export default function Page() {
   return (
-    <BlogLayout meta={meta}>
+    <BlogLayout meta={meta} slug="flow-states-not-achievements">
       <Content />
     </BlogLayout>
   );

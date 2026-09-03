@@ -6,7 +6,7 @@ export const metadata = buildBlogMetadata(meta, "/blog/cruelty-as-policy");
 
 export default function Page() {
   return (
-    <BlogLayout meta={meta}>
+    <BlogLayout meta={meta} slug="cruelty-as-policy">
       <Content />
     </BlogLayout>
   );

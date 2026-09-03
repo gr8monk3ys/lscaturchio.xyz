@@ -6,7 +6,7 @@ export const metadata = buildBlogMetadata(meta, "/blog/climate-change-labor-issu
 
 export default function Page() {
   return (
-    <BlogLayout meta={meta}>
+    <BlogLayout meta={meta} slug="climate-change-labor-issue">
       <Content />
     </BlogLayout>
   );
