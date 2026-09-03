@@ -220,11 +220,11 @@ describe('withRateLimit Redis backend', () => {
 
   it('uses Redis when it is available and healthy', async () => {
     (getRedisRateLimiter as Mock).mockReturnValue({
-      limit: vi.fn().mockResolvedValue({
-        success: true,
+      check: vi.fn().mockResolvedValue({
+        ok: true,
         limit: 30,
         remaining: 25,
-        reset: Date.now() + 60000,
+        resetAt: Date.now() + 60000,
       }),
     });
 
@@ -242,7 +242,7 @@ describe('withRateLimit Redis backend', () => {
   it('falls back to in-memory when the Redis call rejects', async () => {
     const redisError = new Error('Upstash unreachable');
     (getRedisRateLimiter as Mock).mockReturnValue({
-      limit: vi.fn().mockRejectedValue(redisError),
+      check: vi.fn().mockRejectedValue(redisError),
     });
 
     const mockHandler = vi.fn().mockResolvedValue(NextResponse.json({ ok: true }));
@@ -279,7 +279,7 @@ describe('withRateLimit Redis backend', () => {
 
   it('still enforces the limit through the in-memory fallback when Redis is down', async () => {
     (getRedisRateLimiter as Mock).mockReturnValue({
-      limit: vi.fn().mockRejectedValue(new Error('Upstash unreachable')),
+      check: vi.fn().mockRejectedValue(new Error('Upstash unreachable')),
     });
     (rateLimiter.check as Mock).mockReturnValue({
       success: false,

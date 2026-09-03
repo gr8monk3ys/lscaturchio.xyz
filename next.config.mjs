@@ -183,6 +183,9 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   reactStrictMode: true,
+  // The kit's `import` condition points at its TypeScript source, so Next has
+  // to compile it like first-party code.
+  transpilePackages: ['@gr8monk3ys/next-kit'],
   experimental: {
     // optimizeCss removed: it needs the `critters`/`beasties` package (not a
     // dependency here), so Next silently ignores it — a no-op that implied
