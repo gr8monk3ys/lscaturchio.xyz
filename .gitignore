@@ -69,3 +69,17 @@ next-env.d.ts
 # Agent scratch, never source
 .claude/settings.local.json
 .superpowers/
+
+# Higgsfield CLI companion skills, installed into the project by
+# `npx skills add higgsfield-ai/skills`. Local tooling, not source: ~1.2MB of
+# third-party instruction files that the CLI reinstalls on demand.
+.agents/
+.claude/skills/
+skills-lock.json
+
+# Impeccable local session state. DESIGN.md and .impeccable/design.json are
+# tracked (they are the design record); the live-mode server state, the
+# detector cache and machine-local config are not.
+.impeccable/live/
+.impeccable/hook.cache.json
+.impeccable/*.local.json

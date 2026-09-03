@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { apiSuccess } from '@/lib/api-response';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
@@ -33,7 +34,7 @@ function degradedResponse(message: string): NextResponse {
     message,
   };
 
-  return NextResponse.json(payload, {
+  return apiSuccess(payload, {
     status: 200,
     headers: CACHE_HEADERS,
   });
@@ -96,7 +97,7 @@ const handleGet = async () => {
       degraded: false,
     };
 
-    return NextResponse.json(payload, {
+    return apiSuccess(payload, {
       status: 200,
       headers: CACHE_HEADERS,
     });

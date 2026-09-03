@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db';
 import { getAllBlogs } from '@/lib/getAllBlogs';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
 import { validateApiKey } from '@/lib/api-auth';
+import { apiSuccess, ApiErrors } from '@/lib/api-response';
 
 interface AnalyticsData {
   newsletter: {
@@ -138,13 +139,10 @@ const handleGet = async (request: NextRequest) => {
       },
     };
 
-    return NextResponse.json(analyticsData);
+    return apiSuccess(analyticsData);
   } catch (error) {
     logError('Analytics: Unexpected error', error, { component: 'analytics', action: 'GET' });
-    return NextResponse.json(
-      { error: 'Failed to fetch analytics' },
-      { status: 500 }
-    );
+    return ApiErrors.internalError('Failed to fetch analytics');
   }
 };
 

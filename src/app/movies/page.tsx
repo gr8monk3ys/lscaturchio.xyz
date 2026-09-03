@@ -1,7 +1,5 @@
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
-import { Heading } from "@/components/Heading";
-import { Paragraph } from "@/components/Paragraph";
 import { MoviesList } from "@/components/movies/MoviesList";
 
 import {
@@ -12,6 +10,7 @@ import {
   getRecentWatches,
   getLetterboxdWatchlist,
 } from "@/lib/letterboxd";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Movies",
@@ -32,25 +31,27 @@ export default function MoviesPage() {
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-4xl mx-auto">
         {/* Header — gallery masthead */}
-        <header className="mb-14">
-          <span className="label-mono block">Garden · Watching</span>
-          <Heading className="mt-4 text-4xl font-bold md:text-5xl">Movies</Heading>
-          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Synced from my{" "}
-            <a
-              href="https://letterboxd.com/gr8monk3ys/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary underline-offset-4 hover:underline"
-            >
-              Letterboxd
-            </a>
-            . The five-star list is the short one. The notes attached to some of these were
-            written for nobody in particular, usually right after the credits, and they read
-            like it.
-          </Paragraph>
-          <hr className="gallery-rule mt-8" />
-        </header>
+        <PageHead
+          className="mb-14"
+          kicker="Garden · Watching"
+          title="Movies"
+          blurb={
+            <>
+              Synced from my{" "}
+              <a
+                href="https://letterboxd.com/gr8monk3ys/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline-offset-4 hover:underline"
+              >
+                Letterboxd
+              </a>
+              . The five-star list is the short one. The notes attached to some of these were
+              written for nobody in particular, usually right after the credits, and they read
+              like it.
+            </>
+          }
+        />
 
         <MoviesList
           stats={stats}

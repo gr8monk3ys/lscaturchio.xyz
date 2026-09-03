@@ -3,8 +3,7 @@
 import { Product, ProjectStatus, ProjectCategory } from "@/types/products";
 import Image from "next/image";
 import Link from "next/link";
-import { m, useMotionPreset, useReducedMotion } from '@/lib/motion';
-import { TiltCard } from "@/components/ui/animated-card";
+import { m, useReducedMotion } from '@/lib/motion';
 import { Star, ExternalLink, Calendar, Lock } from "lucide-react";
 import { IconBrandGithub } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
@@ -41,16 +40,9 @@ export function EnhancedProjectCard({
   const statusConfig = statusColors[status];
   const reduceMotion = useReducedMotion();
   const shared = !reduceMotion && !!product.slug;
-  const fastTransition = useMotionPreset('fast');
-
-  const CardWrapper = isFeatured ? TiltCard : m.div;
-  const cardProps = isFeatured
-    ? { tiltAmount: 8, scale: 1.02, glareOpacity: 0.05 }
-    : { whileHover: { y: -4, transition: fastTransition } };
 
   return (
-    <CardWrapper
-      {...cardProps}
+    <m.div
       className={cn(
         "group relative h-full",
         isFeatured && "col-span-2",
@@ -220,6 +212,6 @@ export function EnhancedProjectCard({
           </div>
         </div>
       </div>
-    </CardWrapper>
+    </m.div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useCallback, ReactNode } from "react";
 import useSWR from "swr";
-import { fetchJson, unwrapApiData } from "@/lib/fetcher";
+import { fetchJson, type ApiEnvelope } from "@/lib/fetcher";
 
 interface ViewCountsContextType {
   viewCounts: Record<string, number>;
@@ -14,17 +14,16 @@ interface ViewCountsContextType {
 const ViewCountsContext = createContext<ViewCountsContextType | null>(null);
 
 type ViewRow = { slug: string; views: number };
-type ViewsEnvelope = { data?: { views?: ViewRow[] }; views?: ViewRow[] };
+type ViewsEnvelope = ApiEnvelope<{ views?: ViewRow[] }>;
+type ViewCountEnvelope = ApiEnvelope<{ views?: number }>;
 
-function extractViewRows(payload: unknown): ViewRow[] {
-  const data = unwrapApiData(payload as { views?: ViewRow[] });
-  const rows = (data as { views?: ViewRow[] }).views;
+function extractViewRows(payload: ViewsEnvelope): ViewRow[] {
+  const rows = payload.data?.views;
   return Array.isArray(rows) ? rows : [];
 }
 
-function extractSingleViewCount(payload: unknown): number {
-  const data = unwrapApiData(payload as { views?: number });
-  const views = (data as { views?: number }).views;
+function extractSingleViewCount(payload: ViewCountEnvelope): number {
+  const views = payload.data?.views;
   return typeof views === "number" ? views : 0;
 }
 
@@ -56,7 +55,7 @@ export function ViewCountsProvider({ children }: { children: ReactNode }) {
 
   const trackView = useCallback(async (slug: string) => {
     try {
-      const payload = await fetchJson<{ data?: { views?: number }; views?: number }>("/api/views", {
+      const payload = await fetchJson<ViewCountEnvelope>("/api/views", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug }),
@@ -100,14 +99,14 @@ export function useViewCount(slug: string) {
   } = useSWR<number>(
     hasContext ? null : `/api/views?slug=${encodeURIComponent(slug)}`,
     async (url: string) => {
-      const payload = await fetchJson<{ data?: { views?: number }; views?: number }>(url);
+      const payload = await fetchJson<ViewCountEnvelope>(url);
       return extractSingleViewCount(payload);
     }
   );
 
   const trackFallbackView = useCallback(async () => {
     try {
-      const payload = await fetchJson<{ data?: { views?: number }; views?: number }>("/api/views", {
+      const payload = await fetchJson<ViewCountEnvelope>("/api/views", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug }),

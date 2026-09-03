@@ -2,9 +2,9 @@ import { NextRequest } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { logError } from "@/lib/logger";
-import { validateCsrf } from "@/lib/csrf";
-import { slugQuerySchema, viewTrackingSchema, parseBody, parseQuery } from "@/lib/validations";
+import { slugQuerySchema, viewTrackingSchema, parseQuery } from "@/lib/validations";
 import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
+import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
 /**
@@ -130,21 +130,26 @@ export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
  * POST /api/views
  * Increment view count for a blog post (atomic operation)
  */
-const handlePost = async (req: NextRequest) => {
-  // CSRF protection
-  const csrfError = validateCsrf(req);
-  if (csrfError) return csrfError;
-
-  try {
-    const body = await req.json();
-
-    // Zod validation
-    const parsed = parseBody(viewTrackingSchema, body);
-    if (!parsed.success) {
-      return ApiErrors.badRequest(parsed.error);
-    }
-
-    const { slug } = parsed.data;
+export const POST = withWriteRoute(
+  {
+    // 30 requests per minute - standard mutation endpoint.
+    limit: RATE_LIMITS.STANDARD,
+    auth: {
+      kind: "public",
+      reason: "Every reader increments the counter for the post they are reading.",
+    },
+    csrf: { kind: "required" },
+    body: { kind: "json", schema: viewTrackingSchema },
+    envelope: { kind: "standard" },
+    errors: {
+      log: "View Counter: Unexpected error",
+      component: "views",
+      action: "POST",
+      message: "Failed to record view",
+    },
+  },
+  async ({ data }) => {
+    const { slug } = data;
 
     // The schema only checks slug *shape*. increment_view_count upserts, so
     // without checking the slug actually exists any caller could create rows
@@ -154,13 +159,13 @@ const handlePost = async (req: NextRequest) => {
     // at most one disk read per minute.
     const allBlogs = await getAllBlogs();
     if (!allBlogs.some((blog) => blog.slug === slug)) {
-      return ApiErrors.notFound(`No blog post with slug "${slug}"`);
+      throw writeError.notFound(`No blog post with slug "${slug}"`);
     }
 
     // Check if database is properly configured
     if (!isDatabaseConfigured()) {
       // Return mock data when database is not configured (dev mode)
-      return apiSuccess({ slug, views: 1 });
+      return { slug, views: 1 };
     }
 
     const sql = getDb();
@@ -169,16 +174,10 @@ const handlePost = async (req: NextRequest) => {
     const rows = await sql`SELECT increment_view_count(${slug})`;
 
     if (!rows.length) {
-      logError("View Counter: RPC returned no result", null, { component: 'views', action: 'POST', slug });
-      return ApiErrors.internalError("Failed to record view");
+      logError("View Counter: RPC returned no result", null, { component: "views", action: "POST", slug });
+      throw writeError.internal("Failed to record view");
     }
 
-    return apiSuccess({ slug, views: rows[0].increment_view_count });
-  } catch (error) {
-    logError("View Counter: Unexpected error", error, { component: 'views', action: 'POST' });
-    return ApiErrors.internalError("Failed to record view");
+    return { slug, views: rows[0].increment_view_count };
   }
-};
-
-// Export POST with rate limiting (30 requests per minute - standard mutation endpoint)
-export const POST = withRateLimit(handlePost, RATE_LIMITS.STANDARD);
+);

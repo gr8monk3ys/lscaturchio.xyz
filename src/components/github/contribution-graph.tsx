@@ -1,10 +1,9 @@
 "use client"
 
 import { useState } from 'react'
-import { m } from '@/lib/motion'
 import { IconBrandGithub } from '@tabler/icons-react'
 import useSWR from 'swr'
-import { fetchJson } from '@/lib/fetcher'
+import { fetchJson, type ApiEnvelope } from '@/lib/fetcher'
 
 interface ContributionDay {
   contributionCount: number
@@ -24,11 +23,12 @@ interface ContributionsResponse {
 }
 
 export function ContributionGraph() {
-  const { data, error, isLoading } = useSWR<ContributionsResponse>(
+  const { data: envelope, error, isLoading } = useSWR<ApiEnvelope<ContributionsResponse>>(
     '/api/github/contributions',
     fetchJson,
     { revalidateOnFocus: false }
   )
+  const data = envelope?.data
   const [hoveredDay, setHoveredDay] = useState<ContributionDay | null>(null)
 
   if (isLoading) {
@@ -121,11 +121,8 @@ export function ContributionGraph() {
               {data.weeks.map((week, weekIndex) => (
                 <div key={weekIndex} className="flex flex-col gap-1">
                   {week.contributionDays.map((day, dayIndex) => (
-                    <m.div
+                    <div
                       key={dayIndex}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: weekIndex * 0.01 + dayIndex * 0.002 }}
                       onMouseEnter={() => setHoveredDay(day)}
                       onMouseLeave={() => setHoveredDay(null)}
                       className="w-3 h-3 rounded-sm cursor-pointer transition-transform hover:scale-150 hover:z-10 relative"

@@ -45,7 +45,7 @@ describe("NewsletterForm", () => {
     for (const topic of NEWSLETTER_TOPICS) {
       expect(screen.getByRole("button", { name: topic.label })).toBeInTheDocument();
     }
-    expect(screen.getByText("0/6")).toBeInTheDocument();
+    expect(screen.getByText("Topics (optional)")).toBeInTheDocument();
   });
 
   it("requires the email field for client-side validation", () => {
@@ -55,18 +55,16 @@ describe("NewsletterForm", () => {
     expect(input).toHaveAttribute("type", "email");
   });
 
-  it("toggles a topic on and off and updates the counter", () => {
+  it("toggles a topic on and off", () => {
     render(<NewsletterForm />);
     const topic = screen.getByRole("button", { name: "RAG + LLM Systems" });
     expect(topic).toHaveAttribute("aria-pressed", "false");
 
     fireEvent.click(topic);
     expect(topic).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByText("1/6")).toBeInTheDocument();
 
     fireEvent.click(topic);
     expect(topic).toHaveAttribute("aria-pressed", "false");
-    expect(screen.getByText("0/6")).toBeInTheDocument();
   });
 
   it("pre-selects valid defaultTopics and drops unknown ones", () => {
@@ -77,7 +75,9 @@ describe("NewsletterForm", () => {
     expect(
       screen.getByRole("button", { name: "AI + Society" })
     ).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByText("2/6")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Systems + Craft" })
+    ).toHaveAttribute("aria-pressed", "false");
   });
 
   it("posts email, topics, and source to the subscribe endpoint", async () => {

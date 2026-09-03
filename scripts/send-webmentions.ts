@@ -1,7 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import glob from "fast-glob";
-import { extractBlogMeta } from "../src/lib/blog-meta";
+import { listEssaySources } from "../src/lib/essay-sources";
 
 type Cache = Record<string, string[]>;
 
@@ -142,21 +141,15 @@ async function main(): Promise<void> {
   }
 
   const siteUrl = getSiteUrl();
-  const blogRoot = path.join(process.cwd(), "src", "app", "blog");
-  const blogFileNames = await glob(["*.mdx", "*/content.mdx"], { cwd: blogRoot });
+  const essays = await listEssaySources();
 
   const cachePath = path.join(process.cwd(), "tmp", "webmentions-sent.json");
   const cache = (await readJsonFile<Cache>(cachePath)) ?? {};
 
   const targetsBySource: Array<{ source: string; slug: string; targets: string[] }> = [];
 
-  for (const rel of blogFileNames) {
-    const postSlug = rel.replace(/(\/content)?\.mdx$/, "");
+  for (const { slug: postSlug, meta, source: content } of essays) {
     if (slug && postSlug !== slug) continue;
-
-    const full = path.join(blogRoot, rel);
-    const content = await fs.readFile(full, "utf-8");
-    const meta = extractBlogMeta(content);
 
     // Skip posts that are future-dated in source (belt + suspenders).
     const safeDate = meta.date ? clampToToday(meta.date) : null;

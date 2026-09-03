@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { fetchJson, unwrapApiData, HttpError } from '@/lib/fetcher';
+import { fetchJson, HttpError } from '@/lib/fetcher';
 
 function jsonResponse(body: unknown, init: { ok?: boolean; status?: number; contentType?: string } = {}) {
   const { ok = true, status = 200, contentType = 'application/json' } = init;
@@ -74,16 +74,5 @@ describe('fetchJson', () => {
     } as unknown as Response;
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response));
     await expect(fetchJson('/api/x')).resolves.toEqual({ minimal: true });
-  });
-});
-
-describe('unwrapApiData', () => {
-  it('unwraps enveloped payloads', () => {
-    expect(unwrapApiData({ data: { a: 1 } })).toEqual({ a: 1 });
-  });
-
-  it('passes bare payloads through', () => {
-    expect(unwrapApiData({ a: 1 })).toEqual({ a: 1 });
-    expect(unwrapApiData(null)).toBeNull();
   });
 });

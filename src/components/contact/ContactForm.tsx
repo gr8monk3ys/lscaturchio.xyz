@@ -2,7 +2,6 @@
 
 import { IconBrandGithub, IconBrandLinkedin, IconBrandTwitter } from "@tabler/icons-react";
 import Link from "next/link";
-import { m } from '@/lib/motion';
 import { useState } from "react";
 
 const contactMethods = [
@@ -71,13 +70,9 @@ export function ContactForm() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      {/* Contact Methods */}
-      <m.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid md:grid-cols-3 divide-border border-y border-border md:divide-x mb-16"
-      >
+      {/* Contact Methods — no entrance animation: an `initial={{ opacity: 0 }}`
+          mount under `LazyMotion strict` can be missed, hiding the whole page. */}
+      <div className="grid md:grid-cols-3 divide-border border-y border-border md:divide-x mb-16">
         {contactMethods.map((method) => (
           <div key={method.title} className="px-5 py-6">
             <h3 className="label-mono">{method.title}</h3>
@@ -96,23 +91,23 @@ export function ContactForm() {
             )}
           </div>
         ))}
-      </m.div>
+      </div>
 
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-2 gap-12">
         {/* Contact Form */}
-        <m.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-        >
+        <div>
           <h2 className="label-mono mb-6">Send a Message</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium mb-2">
-                  Name
-                </label>
+                <div className="mb-2 flex items-baseline gap-2">
+                  <label htmlFor="name" className="block text-sm font-medium">
+                    Name
+                  </label>
+                  {/* Wall label: the required marker is metadata, not part of the field name. */}
+                  <span aria-hidden="true" className="label-mono">Required</span>
+                </div>
                 <input
                   type="text"
                   id="name"
@@ -126,9 +121,13 @@ export function ContactForm() {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-2">
-                  Email
-                </label>
+                <div className="mb-2 flex items-baseline gap-2">
+                  <label htmlFor="email" className="block text-sm font-medium">
+                    Email
+                  </label>
+                  {/* Wall label: the required marker is metadata, not part of the field name. */}
+                  <span aria-hidden="true" className="label-mono">Required</span>
+                </div>
                 <input
                   type="email"
                   id="email"
@@ -144,9 +143,13 @@ export function ContactForm() {
               </div>
             </div>
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium mb-2">
-                Subject
-              </label>
+              <div className="mb-2 flex items-baseline gap-2">
+                <label htmlFor="subject" className="block text-sm font-medium">
+                  Subject
+                </label>
+                {/* Wall label: the required marker is metadata, not part of the field name. */}
+                <span aria-hidden="true" className="label-mono">Required</span>
+              </div>
               <input
                 type="text"
                 id="subject"
@@ -160,9 +163,13 @@ export function ContactForm() {
               />
             </div>
             <div>
-              <label htmlFor="message" className="block text-sm font-medium mb-2">
-                Message
-              </label>
+              <div className="mb-2 flex items-baseline gap-2">
+                <label htmlFor="message" className="block text-sm font-medium">
+                  Message
+                </label>
+                {/* Wall label: the required marker is metadata, not part of the field name. */}
+                <span aria-hidden="true" className="label-mono">Required</span>
+              </div>
               <textarea
                 id="message"
                 name="message"
@@ -190,7 +197,7 @@ export function ContactForm() {
                 </p>
               )}
               {submitStatus === "error" && (
-                <p className="text-center text-red-600">
+                <p className="text-center text-destructive">
                   Message failed to send. Please try again or email me directly at
                   {" "}
                   <Link href="mailto:lorenzosca7@protonmail.ch" className="underline">
@@ -201,15 +208,10 @@ export function ContactForm() {
               )}
             </div>
           </form>
-        </m.div>
+        </div>
 
         {/* Additional Info */}
-        <m.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-          className="space-y-8"
-        >
+        <div className="space-y-8">
           {/* What to Expect */}
           <div>
             <h3 className="label-mono mb-4">What Helps Me Reply Fast</h3>
@@ -263,7 +265,7 @@ export function ContactForm() {
               ))}
             </div>
           </div>
-        </m.div>
+        </div>
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ export const questions: FaqItem[] = [
   },
   {
     question: "What industries have you worked with?",
-    answer: "I have experience across fintech, healthcare, e-commerce, and developer tools. My focus areas include AI/ML systems, data pipelines, and full-stack web applications. Whether you need a RAG-powered chatbot, a data analytics dashboard, or a custom automation solution, I can adapt to your domain.",
+    answer: "Food and restaurant data at Sizzle, plant-microbe research at JGI, a data lab at UC Merced, and four Upwork clients with document Q&A and classification work. The experience page lists each engagement with its numbers. If your domain is not on it, say so on the call and I will tell you whether that matters.",
   },
   {
     question: "How do you handle pricing and estimates?",
@@ -18,22 +18,22 @@ export const questions: FaqItem[] = [
   },
   {
     question: "What deliverables can clients expect?",
-    answer: "Depending on the project, deliverables typically include production-ready code, technical documentation, deployment guides, and knowledge transfer sessions. For data science projects, you will also receive model performance reports, data quality assessments, and recommendations for ongoing maintenance.",
+    answer: "Working code in your repository, a short document of the decisions and why, a deployment path a team can keep running, and a handoff session. For retrieval and model work, an eval set you can rerun and the measured numbers it produced.",
   },
   {
     question: "How do you handle data confidentiality and NDAs?",
-    answer: "I take data security seriously. I am happy to sign NDAs before any sensitive information is shared. All client data is handled according to best practices - encrypted in transit and at rest, with access strictly limited. I can also work within your existing security protocols if required.",
+    answer: "I will sign an NDA before anything sensitive moves, and I work inside whatever security setup you already have rather than asking you to adopt mine. I would rather agree the handling rules with you in writing than publish a general promise about them here.",
   },
   {
     question: "What is the difference between one-time consulting and ongoing support?",
-    answer: "One-time consulting is ideal for specific projects like building a proof-of-concept, auditing existing systems, or solving a particular technical challenge. Ongoing support includes regular maintenance, feature development, and strategic advisory. Many clients start with a one-time project and transition to ongoing support as their needs evolve.",
+    answer: "One-time consulting is for a specific problem: a proof of concept, an audit of an existing system, or a technical question that needs an answer. Ongoing support covers maintenance, new features, and advisory. Either can turn into the other once the scope is real.",
   },
   {
     question: "Do you work with teams or just individuals?",
-    answer: "Both. I work directly with founders and solo entrepreneurs, but I also collaborate with existing engineering teams. For team engagements, I can serve as a technical advisor, help with code reviews, or work as an embedded contributor. I adapt my communication style and workflow to fit your team structure.",
+    answer: "Both. I have worked one to one with individual clients through Upwork, and inside engineering teams at Sizzle, the Joint Genome Institute and a data lab at UC Merced. On a team I can advise, review code, or work as an embedded contributor."
   },
   {
     question: "What is your availability and typical response time?",
-    answer: "I am based in Pasadena, CA (Pacific Time) and typically work Monday through Friday. For active projects, I respond to messages within 24 hours and am available for scheduled calls during business hours. For urgent matters, we can discuss priority support arrangements.",
+    answer: "I am in Los Angeles (Pacific Time) and work Monday through Friday. On active projects I reply within a business day and take scheduled calls during business hours. If something is urgent, we can agree a faster arrangement up front.",
   },
 ];

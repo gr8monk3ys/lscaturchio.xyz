@@ -21,8 +21,16 @@ describe('Section', () => {
     expect(container.querySelectorAll('.bg-border\\/70').length).toBe(2);
   });
 
-  it('omits the reveal animation wrapper when reveal is false', () => {
-    const { container } = render(<Section reveal={false}><span>x</span></Section>);
+  it('renders no dividers unless asked', () => {
+    const { container } = render(<Section><span>x</span></Section>);
+    expect(container.querySelectorAll('.bg-border\\/70').length).toBe(0);
+  });
+
+  it('never mounts its content hidden', () => {
+    const { container } = render(<Section><p>readable</p></Section>);
+    // The motion doctrine is that the page does not animate itself in, so no
+    // wrapper may start hidden and no observer may gate the content.
     expect(container.querySelector('[data-reveal-state]')).toBeNull();
+    expect(screen.getByText('readable')).toBeVisible();
   });
 });

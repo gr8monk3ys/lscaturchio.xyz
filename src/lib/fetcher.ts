@@ -1,3 +1,14 @@
+/**
+ * The one JSON shape every API route answers in.
+ *
+ * Success is `{ data, success: true }` and failure is `{ error, success: false }`
+ * (see `src/lib/api-response.ts`). Because there is exactly one shape, callers
+ * spell the payload once — `fetchJson<ApiEnvelope<Payload>>(url)` — and read
+ * `.data`. `fetchJson` throws `HttpError` on a non-2xx, so a value that comes
+ * back is always the success arm.
+ */
+export type ApiEnvelope<T> = { data: T; success: true };
+
 export class HttpError extends Error {
   status: number;
   payload: unknown;
@@ -50,12 +61,5 @@ export async function fetchJson<T>(input: RequestInfo | URL, init?: RequestInit)
     throw new HttpError(message, response.status, payload);
   }
 
-  return payload as T;
-}
-
-export function unwrapApiData<T>(payload: T | { data?: T }): T {
-  if (payload && typeof payload === "object" && "data" in payload) {
-    return (payload as { data?: T }).data as T;
-  }
   return payload as T;
 }

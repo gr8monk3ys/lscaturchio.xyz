@@ -1,6 +1,6 @@
 'use client';
 
-import { m, useInView } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRef } from 'react';
@@ -31,7 +31,6 @@ export function TestimonialsSection({
   description = 'Kind words from colleagues and clients I have worked with',
 }: TestimonialsSectionProps) {
   const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, margin: '-100px' });
 
   const displayedTestimonials: Testimonial[] = showAll
     ? testimonials
@@ -68,8 +67,8 @@ export function TestimonialsSection({
         {/* Testimonials Grid */}
         <m.div
           variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? 'show' : 'hidden'}
+          initial={false}
+          animate="show"
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {displayedTestimonials.map((testimonial, index) => (

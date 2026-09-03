@@ -3,7 +3,7 @@
 import { BrainCircuit, Database, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useSWR from "swr";
-import { fetchJson } from "@/lib/fetcher";
+import { fetchJson, type ApiEnvelope } from "@/lib/fetcher";
 
 type RagStatus = {
   timestamp: string;
@@ -26,9 +26,10 @@ function Pill({ ok, label }: { ok: boolean; label: string }) {
 }
 
 export function RagStatusCard() {
-  const { data: status, error } = useSWR<RagStatus>("/api/rag-status", fetchJson, {
+  const { data, error } = useSWR<ApiEnvelope<RagStatus>>("/api/rag-status", fetchJson, {
     revalidateOnFocus: false,
   });
+  const status = data?.data;
 
   return (
     <div className="border-y border-border py-6">
@@ -40,7 +41,7 @@ export function RagStatusCard() {
           </div>
         </div>
         {status ? (
-          <div className="text-[11px] text-muted-foreground tabular-nums">
+          <div className="text-[0.72rem] text-muted-foreground tabular-nums">
             {new Date(status.timestamp).toLocaleString()}
           </div>
         ) : (

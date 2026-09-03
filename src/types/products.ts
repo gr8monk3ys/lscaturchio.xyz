@@ -18,7 +18,8 @@ export interface CaseStudy {
   challenge: string;
   solution: string;
   results: string[];
-  metrics?: CaseStudyMetric[];
+  /** Always authored: every case study ships its own metrics. */
+  metrics: CaseStudyMetric[];
   process?: CaseStudyProcessStep[];
   whatIdDoNext?: string[];
 }

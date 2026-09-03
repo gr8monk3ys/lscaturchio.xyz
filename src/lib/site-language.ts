@@ -1,35 +1,34 @@
 import {
+  GOOGLE_TRANSLATE_COOKIE,
+  LOCALE_COOKIE,
+  SITE_LOCALES,
   isLocaleSegment,
+  localeToGoogleTranslate,
   stripLocalePrefix,
-  type LocaleSegment,
+  type GoogleTranslateCode,
 } from "@/lib/site-locale";
 
-export const GOOGLE_TRANSLATE_COOKIE = "googtrans";
-export const LOCALE_COOKIE = "site_locale";
+export { GOOGLE_TRANSLATE_COOKIE, LOCALE_COOKIE };
 
-export const SITE_LANGUAGES = [
+/**
+ * A language code here is a Google Translate code (`zh-CN`), not a URL segment
+ * (`zh-cn`). The locale table in `site-locale.ts` owns the mapping between them.
+ */
+export type LanguageCode = GoogleTranslateCode;
+
+/** Display order and labels for the language picker. Codes come from the table. */
+export const SITE_LANGUAGES: readonly { code: LanguageCode; label: string }[] = [
   { code: "en", label: "English" },
   { code: "es", label: "Espanol" },
   { code: "zh-CN", label: "Chinese" },
   { code: "hi", label: "Hindi" },
   { code: "ar", label: "Arabic" },
   { code: "fr", label: "French" },
-] as const;
-
-export type LanguageCode = (typeof SITE_LANGUAGES)[number]["code"];
+];
 
 const LANGUAGE_CODE_SET = new Set<string>(
-  SITE_LANGUAGES.map((language) => language.code)
+  SITE_LOCALES.map((entry) => entry.googleTranslate)
 );
-
-const LOCALE_SEGMENT_TO_LANGUAGE: Record<LocaleSegment, LanguageCode> = {
-  en: "en",
-  es: "es",
-  fr: "fr",
-  hi: "hi",
-  ar: "ar",
-  "zh-cn": "zh-CN",
-};
 
 export function getCookieValue(name: string): string | undefined {
   if (typeof document === "undefined") return undefined;
@@ -62,7 +61,7 @@ export function getActiveLanguageFromCookies(): LanguageCode {
 export function getActiveLanguageFromLocaleCookie(): LanguageCode | null {
   const localeCookie = getCookieValue(LOCALE_COOKIE);
   if (!isLocaleSegment(localeCookie)) return null;
-  return LOCALE_SEGMENT_TO_LANGUAGE[localeCookie];
+  return localeToGoogleTranslate(localeCookie);
 }
 
 export function getActiveLanguageFromPathname(
@@ -71,7 +70,7 @@ export function getActiveLanguageFromPathname(
   if (!pathname) return null;
   const { locale } = stripLocalePrefix(pathname);
   if (!locale) return null;
-  return LOCALE_SEGMENT_TO_LANGUAGE[locale];
+  return localeToGoogleTranslate(locale);
 }
 
 export function getActiveLanguage(): LanguageCode {

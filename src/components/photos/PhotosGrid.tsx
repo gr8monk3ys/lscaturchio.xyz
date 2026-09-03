@@ -68,13 +68,13 @@ type PhotoMasonryGridProps = {
 function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridProps): React.ReactNode {
   return (
     <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+      {/* Static tiles: the staggered opacity-0 entrance could be missed under
+          `LazyMotion strict`, leaving the gallery blank. The lightbox below
+          still animates — its arrival is the information. */}
       {photosWithPlaceholders.map((photo, index) => (
-        <m.button
+        <button
           key={photo.id}
           type="button"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05 }}
           className="break-inside-avoid w-full text-left cursor-pointer group"
           onClick={() => onOpen(photo, index)}
         >
@@ -108,7 +108,7 @@ function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridPr
               </div>
             </div>
           </div>
-        </m.button>
+        </button>
       ))}
     </div>
   )

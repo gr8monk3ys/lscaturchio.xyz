@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Link2, Check, Share2, Globe, Zap } from "lucide-react";
 import { IconBrandTwitter, IconBrandLinkedin } from "@tabler/icons-react";
 import { logError } from "@/lib/logger";
+import { cn } from "@/lib/utils";
 
 interface SocialShareProps {
   title: string;
@@ -13,10 +13,12 @@ interface SocialShareProps {
   url: string;
 }
 
-/**
- * Enhanced social share component with platform-specific buttons
- * Includes Twitter, LinkedIn, copy link, and native share fallback
- */
+// Share as a row of wall-label links, not a row of pills: the same register
+// as the suggested questions on the masthead. One mono label, then the
+// destinations, each an underline-on-hover link.
+const shareLinkClass =
+  "label-mono inline-flex items-center gap-1.5 normal-case tracking-normal text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+
 export function SocialShare({ title, description, url }: SocialShareProps) {
   const [copied, setCopied] = useState(false);
   // Detect after mount, not during render: probing navigator while rendering
@@ -78,96 +80,61 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm font-medium text-muted-foreground mr-2">
-        Share:
-      </span>
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+      <span className="label-mono">Share</span>
 
-      {/* Twitter Share */}
-      <Button
-        onClick={handleTwitterShare}
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2"
-        aria-label="Share on Twitter"
-      >
-        <IconBrandTwitter className="h-4 w-4" />
+      <button type="button" onClick={handleTwitterShare} className={shareLinkClass} aria-label="Share on Twitter">
+        <IconBrandTwitter className="h-3.5 w-3.5" aria-hidden="true" />
         <span className="hidden sm:inline">Twitter</span>
-      </Button>
+      </button>
 
-      {/* LinkedIn Share */}
-      <Button
-        onClick={handleLinkedInShare}
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2"
-        aria-label="Share on LinkedIn"
-      >
-        <IconBrandLinkedin className="h-4 w-4" />
+      <button type="button" onClick={handleLinkedInShare} className={shareLinkClass} aria-label="Share on LinkedIn">
+        <IconBrandLinkedin className="h-3.5 w-3.5" aria-hidden="true" />
         <span className="hidden sm:inline">LinkedIn</span>
-      </Button>
+      </button>
 
-      {/* Bluesky Share */}
-      <Button
-        onClick={handleBlueskyShare}
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2"
-        aria-label="Share on Bluesky"
-      >
-        <Globe className="h-4 w-4" />
+      <button type="button" onClick={handleBlueskyShare} className={shareLinkClass} aria-label="Share on Bluesky">
+        <Globe className="h-3.5 w-3.5" aria-hidden="true" />
         <span className="hidden sm:inline">Bluesky</span>
-      </Button>
+      </button>
 
-      {/* Hacker News Share. WCAG 2.5.3 (Label in Name): the accessible name
-          must contain the visible label, so it leads with "HN" rather than
-          spelling out Hacker News alone. */}
-      <Button
-        onClick={handleHackerNewsShare}
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2"
-        aria-label="Share on HN (Hacker News)"
-      >
-        <Zap className="h-4 w-4" />
+      {/* WCAG 2.5.3 (Label in Name): the accessible name must contain the
+          visible label, so it leads with "HN" rather than Hacker News alone. */}
+      <button type="button" onClick={handleHackerNewsShare} className={shareLinkClass} aria-label="Share on HN (Hacker News)">
+        <Zap className="h-3.5 w-3.5" aria-hidden="true" />
         <span className="hidden sm:inline">HN</span>
-      </Button>
+      </button>
 
-      {/* Copy Link */}
-      <Button
+      <button
+        type="button"
         onClick={handleCopyLink}
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2 relative"
+        className={cn(shareLinkClass, copied && "text-primary")}
         aria-label="Copy link"
+        aria-live="polite"
       >
-        <div className="flex items-center gap-2">
-          {copied ? (
-            <>
-              <Check className="h-4 w-4 text-green-600" />
-              <span className="hidden sm:inline text-green-600">Copied!</span>
-            </>
-          ) : (
-            <>
-              <Link2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Copy Link</span>
-            </>
-          )}
-        </div>
-      </Button>
+        {copied ? (
+          <>
+            <Check className="h-3.5 w-3.5" aria-hidden="true" />
+            <span className="hidden sm:inline">Copied!</span>
+          </>
+        ) : (
+          <>
+            <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
+            <span className="hidden sm:inline">Copy Link</span>
+          </>
+        )}
+      </button>
 
-      {/* Native Share (mobile fallback) */}
       {hasNativeShare && (
-        <Button
+        <button
+          type="button"
           onClick={handleNativeShare}
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2 sm:hidden"
+          className={cn(shareLinkClass, "sm:hidden")}
           aria-label="Share via native share"
         >
-          <Share2 className="h-4 w-4" />
+          <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
           <span>More</span>
-        </Button>
+        </button>
       )}
     </div>
   );

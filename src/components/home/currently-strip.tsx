@@ -96,7 +96,7 @@ export async function CurrentlyStrip({ latestPost, latestRepo }: CurrentlyStripP
                   className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary"
                 />
                 <span className="min-w-0">
-                  <span className="block text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  <span className="label-mono block">
                     {item.label}
                   </span>
                   <span className="block truncate text-sm text-foreground transition-colors group-hover:text-primary">

@@ -24,7 +24,7 @@ export function calculateReadingTime(text: string, wordsPerMinute: number = 200)
   return {
     words,
     minutes,
-    text: `${minutes} min read`,
+    text: formatReadingTime(minutes),
   }
 }
 

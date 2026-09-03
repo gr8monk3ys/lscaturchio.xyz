@@ -67,7 +67,7 @@ export const metadata = buildBlogMetadata(meta, "/blog/${slug}");
 
 export default function Page() {
   return (
-    <BlogLayout meta={meta}>
+    <BlogLayout meta={meta} slug="${slug}">
       <Content />
     </BlogLayout>
   );

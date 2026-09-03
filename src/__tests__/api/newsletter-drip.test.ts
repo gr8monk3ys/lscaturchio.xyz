@@ -9,7 +9,9 @@ vi.mock('@/lib/with-rate-limit', () => ({
 
 vi.mock('@/lib/rate-limit', () => ({
   RATE_LIMITS: {
-    PUBLIC: { limit: 100, window: 60000 },
+    // Mirrors src/lib/rate-limit.ts. The drip endpoint moved off PUBLIC
+    // (100/min) onto STANDARD when it joined the shared write chain.
+    STANDARD: { limit: 30, window: 60000 },
   },
 }));
 
@@ -81,7 +83,8 @@ describe('/api/newsletter/drip', () => {
     const body = await response.json();
 
     expect(response.status).toBe(200);
-    expect(body).toEqual({
+    expect(body.success).toBe(true);
+    expect(body.data).toEqual({
       processed: 1,
       sent: 1,
       failed: 0,
@@ -114,7 +117,8 @@ describe('/api/newsletter/drip', () => {
     const body = await response.json();
 
     expect(response.status).toBe(200);
-    expect(body).toEqual({
+    expect(body.success).toBe(true);
+    expect(body.data).toEqual({
       processed: 1,
       sent: 1,
       failed: 0,
@@ -162,7 +166,8 @@ describe('/api/newsletter/drip', () => {
     const body = await response.json();
 
     expect(response.status).toBe(200);
-    expect(body).toEqual({
+    expect(body.success).toBe(true);
+    expect(body.data).toEqual({
       processed: 1,
       sent: 0,
       failed: 1,

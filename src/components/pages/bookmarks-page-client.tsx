@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { AnimatePresence, m } from '@/lib/motion';
 import { Bookmark, Trash2, ExternalLink, ArrowLeft, Download } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/Container";
@@ -174,11 +173,7 @@ export function BookmarksPageClient() {
 
           {/* Empty State */}
           {bookmarks.length === 0 && (
-            <m.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col items-center justify-center py-20 text-center"
-            >
+            <div className="flex flex-col items-center justify-center py-20 text-center">
               <div className="p-4 rounded-full bg-muted mb-6">
                 <Bookmark className="h-12 w-12 text-muted-foreground" />
               </div>
@@ -192,21 +187,17 @@ export function BookmarksPageClient() {
               <Link href="/blog">
                 <Button className="mt-6">Browse Articles</Button>
               </Link>
-            </m.div>
+            </div>
           )}
 
-          {/* Bookmarks Grid */}
-          <AnimatePresence mode="popLayout">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {bookmarks.map((bookmark, index) => (
-                <m.article
-                  key={bookmark.slug}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="group relative rounded-xl border border-border bg-card overflow-hidden hover:border-primary/50 transition-colors"
-                >
+          {/* Bookmarks Grid — static: the staggered opacity-0 entrance could be
+              missed under `LazyMotion strict`, hiding every saved article. */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {bookmarks.map((bookmark) => (
+              <article
+                key={bookmark.slug}
+                className="group relative rounded-xl border border-border bg-card overflow-hidden hover:border-primary/50 transition-colors"
+              >
                   {/* Image */}
                   <Link href={`/blog/${bookmark.slug}`}>
                     <div className="relative h-40 overflow-hidden">
@@ -256,26 +247,20 @@ export function BookmarksPageClient() {
                   >
                     <ExternalLink className="h-4 w-4" />
                   </Link>
-                </m.article>
-              ))}
-            </div>
-          </AnimatePresence>
+              </article>
+            ))}
+          </div>
 
           {/* Tips Section */}
           {bookmarks.length > 0 && (
-            <m.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="mt-12 p-6 rounded-xl bg-muted/30 border border-border"
-            >
+            <div className="mt-12 p-6 rounded-xl bg-muted/30 border border-border">
               <h3 className="font-semibold mb-2">💡 Tips</h3>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Bookmarks are stored locally in your browser</li>
                 <li>• Use the Export button to save your bookmarks</li>
                 <li>• Press <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs">⌘K</kbd> to quickly search your bookmarks</li>
               </ul>
-            </m.div>
+            </div>
           )}
         </div>
     </Container>

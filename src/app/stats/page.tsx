@@ -1,7 +1,7 @@
 import { Container } from '@/components/Container'
-import { Heading } from '@/components/Heading'
 import { Metadata } from 'next'
 import dynamic from 'next/dynamic'
+import { PageHead } from "@/components/ui/page-head";
 
 const StatsOverview = dynamic(() => import('@/components/stats/stats-overview').then(m => m.StatsOverview))
 const VisitorChart = dynamic(() => import('@/components/stats/visitor-chart').then(m => m.VisitorChart))
@@ -24,17 +24,17 @@ export default function StatsPage() {
     <div className="py-20">
       <Container>
         <div className="max-w-6xl mx-auto">
-          <header className="mb-12">
-            <span className="label-mono block">Garden · Metrics</span>
-            <Heading as="h1" className="mt-4 text-4xl font-bold md:text-5xl">
-              Site Statistics
-            </Heading>
-            <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-              A public snapshot of what this site actually tracks. Aggregate metrics stay visible,
-              and anything private or unavailable is labeled instead of guessed.
-            </p>
-            <hr className="gallery-rule mt-8" />
-          </header>
+          <PageHead
+            className="mb-12"
+            kicker="Garden · Metrics"
+            title="Site Statistics"
+            blurb={
+              <>
+                A public snapshot of what this site actually tracks. Aggregate metrics stay visible,
+                and anything private or unavailable is labeled instead of guessed.
+              </>
+            }
+          />
 
           <div className="space-y-8">
             <StatsOverview />

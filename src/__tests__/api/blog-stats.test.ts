@@ -38,7 +38,8 @@ describe('/api/blog-stats', () => {
           title: 'First Post',
           description: 'Description 1',
           date: '2024-01-01',
-          content: 'A'.repeat(2000), // ~10 minutes reading time (2000 chars / 1000 * 5)
+          content: 'A'.repeat(2000),
+          readingTimeMinutes: 10,
           tags: ['javascript', 'react'],
           image: '/images/blog/post-1.webp',
         },
@@ -47,7 +48,8 @@ describe('/api/blog-stats', () => {
           title: 'Second Post',
           description: 'Description 2',
           date: '2024-01-15',
-          content: 'B'.repeat(4000), // ~20 minutes reading time
+          content: 'B'.repeat(4000),
+          readingTimeMinutes: 20,
           tags: ['typescript', 'react'],
           image: '/images/blog/post-2.webp',
         },
@@ -56,7 +58,8 @@ describe('/api/blog-stats', () => {
           title: 'Third Post',
           description: 'Description 3',
           date: '2024-02-01',
-          content: 'C'.repeat(1000), // ~5 minutes reading time
+          content: 'C'.repeat(1000),
+          readingTimeMinutes: 5,
           tags: ['javascript'],
           image: '/images/blog/post-3.webp',
         },
@@ -84,6 +87,7 @@ describe('/api/blog-stats', () => {
           description: 'Desc',
           date: '2024-01-01',
           content: 'Content',
+          readingTimeMinutes: 1,
           tags: ['react', 'javascript'],
           image: '/images/blog/default.webp',
         },
@@ -93,6 +97,7 @@ describe('/api/blog-stats', () => {
           description: 'Desc',
           date: '2024-01-02',
           content: 'Content',
+          readingTimeMinutes: 1,
           tags: ['react', 'typescript'],
           image: '/images/blog/default.webp',
         },
@@ -102,6 +107,7 @@ describe('/api/blog-stats', () => {
           description: 'Desc',
           date: '2024-01-03',
           content: 'Content',
+          readingTimeMinutes: 1,
           tags: ['react', 'nextjs'],
           image: '/images/blog/default.webp',
         },
@@ -128,6 +134,7 @@ describe('/api/blog-stats', () => {
           description: 'Desc',
           date: '2024-01-01',
           content: 'Content',
+          readingTimeMinutes: 1,
           tags: ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7'],
           image: '/images/blog/default.webp',
         },
@@ -165,6 +172,7 @@ describe('/api/blog-stats', () => {
           description: 'Desc',
           date: '2024-01-01',
           content: 'Content',
+          readingTimeMinutes: 1,
           tags: [],
           image: '/images/blog/default.webp',
         },
@@ -189,6 +197,7 @@ describe('/api/blog-stats', () => {
           description: 'Desc',
           date: '2024-01-01',
           content: '',
+          readingTimeMinutes: 0,
           tags: ['test'],
           image: '/images/blog/default.webp',
         },
@@ -202,7 +211,6 @@ describe('/api/blog-stats', () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.data.totalPosts).toBe(1);
-      // Math.ceil(0/1000) * 5 = 0
       expect(data.data.totalReadingTime).toBe(0);
     });
 
@@ -213,7 +221,8 @@ describe('/api/blog-stats', () => {
           title: 'Short Post',
           description: 'Desc',
           date: '2024-01-01',
-          content: 'A'.repeat(500), // Math.ceil(500/1000) * 5 = 5
+          content: 'A'.repeat(500),
+          readingTimeMinutes: 5,
           tags: [],
           image: '/images/blog/default.webp',
         },
@@ -222,7 +231,8 @@ describe('/api/blog-stats', () => {
           title: 'Medium Post',
           description: 'Desc',
           date: '2024-01-02',
-          content: 'B'.repeat(1500), // Math.ceil(1500/1000) * 5 = 10
+          content: 'B'.repeat(1500),
+          readingTimeMinutes: 10,
           tags: [],
           image: '/images/blog/default.webp',
         },
@@ -235,7 +245,7 @@ describe('/api/blog-stats', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.totalReadingTime).toBe(15); // 5 + 10
+      expect(data.data.totalReadingTime).toBe(15); // sums the field, not the chars
       expect(data.data.avgReadingTime).toBe(8); // Math.round(15/2)
     });
   });
@@ -276,6 +286,7 @@ describe('/api/blog-stats', () => {
           description: 'Desc',
           date: '2024-01-01',
           content: 'Content',
+          readingTimeMinutes: 1,
           // tags is missing - this might cause issues
           image: '/images/blog/default.webp',
         },
@@ -301,6 +312,7 @@ describe('/api/blog-stats', () => {
           description: 'Desc',
           date: '2024-01-01',
           content: 'Content here',
+          readingTimeMinutes: 1,
           tags: ['tag1'],
           image: '/images/blog/default.webp',
         },
@@ -332,6 +344,7 @@ describe('/api/blog-stats', () => {
           description: 'Desc',
           date: '2024-01-01',
           content: 'Content',
+          readingTimeMinutes: 1,
           tags: ['react', 'typescript'],
           image: '/images/blog/default.webp',
         },

@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
-import ServicesSection from "@/components/services/service-section";
 import { HowIWorkSection } from "@/components/home/how-i-work-section";
 import { FaqSection } from "@/components/services/faq-section";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { testimonials } from "@/constants/testimonials";
 import { questions } from "@/constants/questions";
-import { ArrowUpRight, CalendarDays, CheckCircle2, Mail, Sparkles } from "lucide-react";
+import { SERVICES } from "@/constants/services";
+import { ArrowUpRight } from "lucide-react";
+import { LedgerChips, LedgerRows, ordinal } from "@/components/ui/ledger-section";
 
 export const metadata: Metadata = {
-  title: "Work With Me",
-  description: "AI engineering, RAG systems, and practical automation. Clear scope, fast iteration, production-ready delivery.",
+  title: "Work with me",
+  description:
+    "AI engineering, RAG systems, and practical automation. Clear scope, fast iteration, production-ready delivery.",
 };
+
+const CALL_URL = "https://calendly.com/gr8monk3ys/30min";
 
 const fitSignals = [
   "You need grounded answers, not a flashy demo.",
@@ -26,164 +30,207 @@ const sprintPlan = [
   "Add guardrails, instrumentation, and a rollout path that a team can keep running.",
 ];
 
-const deliveryCards = [
-  {
-    title: "What I Usually Build",
-    items: [
-      "RAG and search systems with citations, evals, and observability.",
-      "Agent workflows and automation that reduce manual operational work.",
-      "Architecture reviews for LLM apps that need lower latency and better reliability.",
-    ],
-  },
-  {
-    title: "Where Projects Usually Break",
-    items: [
-      "The prototype works, but nobody defined the real acceptance criteria.",
-      "Costs rise because retrieval, prompts, and failure handling stayed ad hoc.",
-      "The team has no clean path from pilot to production ownership.",
-    ],
-  },
-  {
-    title: "What You Leave With",
-    items: [
-      "A working slice of the system that can be shown, tested, and measured.",
-      "A clearer roadmap for what to automate, what to delay, and what to monitor.",
-      "Documentation and decisions that make the next handoff cleaner.",
-    ],
-  },
+const usuallyBuild = [
+  "RAG and search systems with citations, evals, and observability.",
+  "Agent workflows and automation that reduce manual operational work.",
+  "Architecture reviews for LLM apps that need lower latency and better reliability.",
 ];
+
+const whereItBreaks = [
+  "The prototype works, but nobody defined the real acceptance criteria.",
+  "Costs rise because retrieval, prompts, and failure handling stayed ad hoc.",
+  "The team has no clean path from pilot to production ownership.",
+];
+
+const leaveWith = [
+  "A working slice of the system that can be shown, tested, and measured.",
+  "A clearer roadmap for what to automate, what to delay, and what to monitor.",
+  "Documentation and decisions that make the next handoff cleaner.",
+];
+
+/**
+ * One row of the engagement ledger: a mono label in the margin, the entry
+ * beside it, a hairline beneath. The same register as the essay index and the
+ * process list, so the hirer reads the same notebook the reader does.
+ */
+function LedgerRow({
+  label,
+  children,
+  id,
+}: {
+  label: string;
+  children: React.ReactNode;
+  id?: string;
+}) {
+  return (
+    <div
+      id={id}
+      className="grid gap-x-8 gap-y-2 border-b border-border py-7 scroll-mt-28 md:grid-cols-[11rem_1fr]"
+    >
+      <span className="label-mono pt-1">{label}</span>
+      <div className="min-w-0 max-w-lg">{children}</div>
+    </div>
+  );
+}
+
+function LedgerList({ items, numbered = false }: { items: string[]; numbered?: boolean }) {
+  return (
+    <LedgerRows items={items} numbered={numbered} className="space-y-2.5">
+      {(item, entryNumber) => (
+        <li key={item} className="grid grid-cols-[1.75rem_1fr] gap-x-2 text-sm leading-relaxed text-foreground/85">
+          <span className="label-mono pt-1 tabular-nums" aria-hidden>
+            {entryNumber ?? "—"}
+          </span>
+          <span>{item}</span>
+        </li>
+      )}
+    </LedgerRows>
+  );
+}
 
 export default function WorkWithMePage() {
   return (
-    <Container className="mt-16 lg:mt-32">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-10 space-y-6">
-          <section className="rounded-[1.75rem] border border-border/60 bg-background/85 p-8 lg:p-10">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              AI Engineering + RAG Delivery
-            </div>
-            <h1 className="text-page-title mt-6 text-4xl font-bold tracking-tight text-foreground md:text-5xl">
-              Ship the smallest reliable version first.
-            </h1>
-            <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground selection:bg-primary/20 selection:text-primary md:text-lg">
-              I help teams turn vague AI ideas into working systems with clear scope, measured quality,
-              and production-minded delivery. The goal is not a demo. The goal is something a team can
-              trust, evaluate, and keep improving.
-            </p>
+    <Container className="mt-16 lg:mt-24">
+      <div className="mx-auto max-w-7xl">
+        {/* Masthead: one headline, one thesis, one action. */}
+        <header className="max-w-3xl px-4 sm:px-6 lg:px-8">
+          <span className="label-mono block">Work with me · Remote · Los Angeles</span>
+          <h1 className="text-page-title mt-5 text-balance text-foreground">
+            Ship the smallest reliable version first.
+          </h1>
+          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+            I help teams turn vague AI ideas into working systems with clear scope, measured
+            quality, and a delivery a team can keep running. The goal is not a demo. The goal is
+            something you can trust, evaluate, and keep improving.
+          </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link
-                href="https://calendly.com/gr8monk3ys/30min"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cta-primary inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
-              >
-                <CalendarDays className="h-4 w-4" />
-                Schedule a Call
-                <ArrowUpRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/contact"
-                className="neu-button inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors hover:text-primary"
-              >
-                <Mail className="h-4 w-4 text-primary" />
-                Send a Project Brief
-              </Link>
-            </div>
-          </section>
-
-          <div className="grid gap-6 lg:grid-cols-3">
-            <div className="neu-flat rounded-2xl p-6">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Best Fit
-              </h2>
-              <ul className="mt-4 space-y-3">
-                {fitSignals.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="neu-card p-6">
-              <h2 className="text-lg font-semibold">Typical First Sprint</h2>
-              <ol className="mt-4 space-y-4 text-sm text-muted-foreground">
-                {sprintPlan.map((item, index) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                      {index + 1}
-                    </span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-
-            <div className="neu-pressed rounded-2xl p-6">
-              <h2 className="text-lg font-semibold">Availability</h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Currently taking on new consulting and build engagements. Remote-first, with short
-                advisory work and hands-on implementation both available.
-              </p>
-            </div>
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link
+              href={CALL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cta-primary inline-flex h-11 items-center gap-2 rounded-full px-5 text-sm"
+            >
+              Schedule a call
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </Link>
+            <Link
+              href="/contact"
+              className="label-mono text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            >
+              Or send a brief →
+            </Link>
           </div>
-        </div>
+        </header>
+
+        {/* The engagement, as a ledger. Price first: it is the question every
+            visitor to this page is actually asking. */}
+        <section aria-label="The engagement" className="mt-14 border-t border-border px-4 sm:px-6 lg:px-8">
+          <LedgerRow label="What it costs" id="pricing">
+            <p className="text-sm leading-relaxed text-foreground/85">
+              Engagements start around{" "}
+              <strong className="font-semibold text-foreground">$5,000</strong> for a scoped
+              first sprint: enough to ship one end-to-end slice with real data and a measurement
+              you can argue with. Longer builds and advisory retainers are quoted once the scope
+              is real.
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              I don&apos;t quote a number before understanding the constraint, and I&apos;ll say
+              so if the smallest useful version costs less than you expected.
+            </p>
+          </LedgerRow>
+
+          <LedgerRow label="Best fit">
+            <LedgerList items={fitSignals} />
+          </LedgerRow>
+
+          <LedgerRow label="First sprint">
+            <LedgerList items={sprintPlan} numbered />
+          </LedgerRow>
+
+          <LedgerRow label="What I usually build">
+            <LedgerList items={usuallyBuild} />
+          </LedgerRow>
+
+          <LedgerRow label="Where projects break">
+            <LedgerList items={whereItBreaks} />
+          </LedgerRow>
+
+          <LedgerRow label="What you leave with">
+            <LedgerList items={leaveWith} />
+          </LedgerRow>
+
+          <LedgerRow label="Availability">
+            <p className="text-sm leading-relaxed text-foreground/85">
+              Taking on new consulting and build engagements. Remote-first, with short advisory
+              work and hands-on implementation both available.
+            </p>
+          </LedgerRow>
+        </section>
 
         <HowIWorkSection />
 
-        <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {deliveryCards.map((card) => (
-            <div key={card.title} className="neu-card p-6">
-              <h2 className="text-lg font-semibold">{card.title}</h2>
-              <ul className="mt-3 space-y-3 text-sm text-muted-foreground">
-                {card.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+        {/* Services: every service and every facet on the page at once, as
+            stacked entries. Nothing to click to find out what is on offer. */}
+        <section id="services" className="scroll-mt-28 border-t border-border py-16 px-4 sm:px-6 lg:px-8">
+          <span className="label-mono block">Services</span>
+          <h2 className="text-section-title mt-3">What the work looks like</h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            Scope, approach, and what I actually ship, for each kind of engagement.
+          </p>
 
-        <section
-          id="services"
-          className="scroll-mt-28 mb-10"
-        >
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold">Services</h2>
-            <p className="text-sm text-muted-foreground mt-2">
-              Scope, approach, and implementation details for how I ship client work.
-            </p>
-          </div>
-          <div className="neu-card">
-            <ServicesSection />
+          <div className="mt-10 space-y-14">
+            {SERVICES.map((service, serviceIndex) => (
+              <article
+                key={service.title}
+                className="grid gap-x-8 gap-y-6 border-t border-border pt-8 lg:grid-cols-[minmax(240px,320px)_1fr]"
+              >
+                <div className="lg:sticky lg:top-28 lg:self-start">
+                  <span className="label-mono block">
+                    {ordinal(serviceIndex)}
+                  </span>
+                  <h3 className="text-card-title mt-2">{service.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">{service.subtitle}</p>
+                </div>
+
+                <dl className="divide-y divide-border border-y border-border">
+                  {service.tabs.map((tab) => (
+                    <div key={tab.name} className="grid gap-x-6 gap-y-2 py-5 md:grid-cols-[9rem_1fr]">
+                      <dt className="label-mono pt-1">{tab.name}</dt>
+                      <dd className="min-w-0">
+                        <p className="max-w-lg text-sm leading-relaxed text-foreground/85">
+                          {tab.content}
+                        </p>
+                        <LedgerChips
+                          items={tab.features}
+                          className="mt-3"
+                          itemClassName="normal-case tracking-normal text-foreground/65"
+                        />
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </article>
+            ))}
           </div>
         </section>
 
-        <section
-          id="faq"
-          className="scroll-mt-28 mb-10"
-        >
+        <section id="faq" className="scroll-mt-28 border-t border-border">
           <FaqSection
-            title="Frequently Asked Questions"
-            description="Answers to common questions about delivery, scope, and communication."
+            title="Questions people ask first"
+            description="Delivery, scope, and how we would talk to each other."
             items={questions}
             contactInfo={{
               title: "Still have questions?",
               description: "Book a short call and I can tell you exactly what I would do first.",
-              buttonText: "Schedule a Call",
-              contactUrl: "https://calendly.com/gr8monk3ys/30min",
+              buttonText: "Schedule a call",
+              contactUrl: CALL_URL,
             }}
           />
         </section>
 
         {testimonials.length > 0 && (
-          <section
-            id="testimonials"
-            className="scroll-mt-28 mb-10"
-          >
+          <section id="testimonials" className="scroll-mt-28 border-t border-border py-16 px-4 sm:px-6 lg:px-8">
             <TestimonialsSection
               showAll
               title="Testimonials"
@@ -192,33 +239,20 @@ export default function WorkWithMePage() {
           </section>
         )}
 
-        <div id="pricing" className="scroll-mt-28">
-          <h2 className="font-bold text-2xl md:text-3xl tracking-tight">What it costs</h2>
-          <p className="mt-3 max-w-2xl text-muted-foreground">
-            Engagements start around <strong className="text-foreground">$5,000</strong> for a scoped
-            first sprint — enough to ship one end-to-end slice with real data and a measurement you
-            can argue with. Longer builds and advisory retainers are quoted once the scope is real.
+        <section id="contact" className="scroll-mt-28 border-t border-border py-12 px-4 sm:px-6 lg:px-8">
+          <span className="label-mono block">Prefer async?</span>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Send the goal, the user, the data sources, and the constraint that matters most.
+            I&apos;ll tell you what I would de-risk first and whether the scope makes sense. Want
+            the background first? My skills and work history live on the{" "}
+            {/* Underlined at rest: inside a paragraph, colour alone does not
+                distinguish a link (WCAG 1.4.1). */}
+            <Link href="/professional" className="text-primary underline underline-offset-4">
+              experience page
+            </Link>
+            .
           </p>
-          <p className="mt-3 max-w-2xl text-muted-foreground">
-            I don&apos;t quote a number before understanding the constraint, and I&apos;ll say so if
-            the smallest useful version costs less than you expected.
-          </p>
-        </div>
-
-        <div
-          id="contact"
-          className="mt-10 scroll-mt-28 neu-flat rounded-2xl p-6 text-sm text-muted-foreground"
-        >
-          Prefer async-first? Send the goal, the user, the data sources, and the constraint that matters most.
-          I&apos;ll tell you what I would de-risk first and whether the scope makes sense. Want the background
-          first? My skills and work history live on the{" "}
-          {/* Underlined at rest: inside a paragraph, colour alone does not
-              distinguish a link (WCAG 1.4.1). */}
-          <Link href="/professional" className="text-primary underline underline-offset-4">
-            experience page
-          </Link>
-          .
-        </div>
+        </section>
       </div>
     </Container>
   );

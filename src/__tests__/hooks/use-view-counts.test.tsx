@@ -37,12 +37,12 @@ describe('ViewCountsProvider', () => {
     it('fetches all view counts on mount', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
+        json: async () => ({ data: {
           views: [
             { slug: 'post-1', views: 100 },
             { slug: 'post-2', views: 200 },
           ],
-        }),
+        }, success: true }),
       });
 
       const { result } = renderHook(() => useViewCounts(), { wrapper });
@@ -93,7 +93,7 @@ describe('ViewCountsProvider', () => {
     it('handles empty response', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ views: [] }),
+        json: async () => ({ data: { views: [] }, success: true }),
       });
 
       const { result } = renderHook(() => useViewCounts(), { wrapper });
@@ -108,7 +108,7 @@ describe('ViewCountsProvider', () => {
     it('handles missing views property in response', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({}),
+        json: async () => ({ data: {}, success: true }),
       });
 
       const { result } = renderHook(() => useViewCounts(), { wrapper });
@@ -134,9 +134,9 @@ describe('ViewCountsProvider', () => {
     it('returns view count for existing post', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
+        json: async () => ({ data: {
           views: [{ slug: 'test-post', views: 42 }],
-        }),
+        }, success: true }),
       });
 
       const { result } = renderHook(() => useViewCounts(), { wrapper });
@@ -151,9 +151,9 @@ describe('ViewCountsProvider', () => {
     it('returns 0 for non-existent post', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
+        json: async () => ({ data: {
           views: [{ slug: 'other-post', views: 100 }],
-        }),
+        }, success: true }),
       });
 
       const { result } = renderHook(() => useViewCounts(), { wrapper });
@@ -171,9 +171,9 @@ describe('ViewCountsProvider', () => {
       // Initial fetch
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
+        json: async () => ({ data: {
           views: [{ slug: 'test-post', views: 10 }],
-        }),
+        }, success: true }),
       });
 
       const { result } = renderHook(() => useViewCounts(), { wrapper });
@@ -185,7 +185,7 @@ describe('ViewCountsProvider', () => {
       // Track view
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ views: 11 }),
+        json: async () => ({ data: { views: 11 }, success: true }),
       });
 
       await act(async () => {
@@ -204,9 +204,9 @@ describe('ViewCountsProvider', () => {
     it('handles trackView failure gracefully', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
+        json: async () => ({ data: {
           views: [{ slug: 'test-post', views: 10 }],
-        }),
+        }, success: true }),
       });
 
       const { result } = renderHook(() => useViewCounts(), { wrapper });
@@ -232,7 +232,7 @@ describe('ViewCountsProvider', () => {
     it('handles trackView network error gracefully', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ views: [] }),
+        json: async () => ({ data: { views: [] }, success: true }),
       });
 
       const { result } = renderHook(() => useViewCounts(), { wrapper });
@@ -282,9 +282,9 @@ describe('useViewCount', () => {
     it('returns view count from context', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
+        json: async () => ({ data: {
           views: [{ slug: 'my-post', views: 55 }],
-        }),
+        }, success: true }),
       });
 
       const { result } = renderHook(() => useViewCount('my-post'), { wrapper });
@@ -299,9 +299,9 @@ describe('useViewCount', () => {
     it('provides trackView function', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
+        json: async () => ({ data: {
           views: [{ slug: 'my-post', views: 10 }],
-        }),
+        }, success: true }),
       });
 
       const { result } = renderHook(() => useViewCount('my-post'), { wrapper });
@@ -312,7 +312,7 @@ describe('useViewCount', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ views: 11 }),
+        json: async () => ({ data: { views: 11 }, success: true }),
       });
 
       await act(async () => {
@@ -327,7 +327,7 @@ describe('useViewCount', () => {
     it('fetches individual view count', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ views: 33 }),
+        json: async () => ({ data: { views: 33 }, success: true }),
       });
 
       const { result } = renderHook(() => useViewCount('individual-post'), { wrapper: swrOnlyWrapper });
@@ -376,7 +376,7 @@ describe('useViewCount', () => {
     it('provides fallback trackView function', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ views: 5 }),
+        json: async () => ({ data: { views: 5 }, success: true }),
       });
 
       const { result } = renderHook(() => useViewCount('track-post'), { wrapper: swrOnlyWrapper });
@@ -387,7 +387,7 @@ describe('useViewCount', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ views: 6 }),
+        json: async () => ({ data: { views: 6 }, success: true }),
       });
 
       await act(async () => {
@@ -406,7 +406,7 @@ describe('useViewCount', () => {
     it('encodes slug properly in URL', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ views: 1 }),
+        json: async () => ({ data: { views: 1 }, success: true }),
       });
 
       renderHook(() => useViewCount('post-with-special&chars'), { wrapper: swrOnlyWrapper });
@@ -425,11 +425,11 @@ describe('useViewCount', () => {
       mockFetch
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ views: 10 }),
+          json: async () => ({ data: { views: 10 }, success: true }),
         })
         .mockResolvedValueOnce({
           ok: true,
-          json: async () => ({ views: 20 }),
+          json: async () => ({ data: { views: 20 }, success: true }),
         });
 
       const { result, rerender } = renderHook(

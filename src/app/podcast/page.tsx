@@ -1,12 +1,11 @@
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
-import { Heading } from "@/components/Heading";
-import { Paragraph } from "@/components/Paragraph";
 import { Rss } from "lucide-react";
 import Link from "next/link";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { hasAudioForSlug } from "@/lib/audio";
 import { getAudioUrl } from "@/lib/audio-url";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Podcast",
@@ -21,13 +20,12 @@ export default function PodcastPage() {
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-4xl mx-auto">
         {/* Header — gallery masthead */}
-        <header className="mb-12">
-          <span className="label-mono block">Garden · Audio</span>
-          <Heading className="mt-4 text-4xl font-bold md:text-5xl">Podcast</Heading>
-          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Audio versions of my writing: AI, technology, philosophy, and building systems that ship cleanly.
-          </Paragraph>
-
+        <PageHead
+          className="mb-12"
+          kicker="Garden · Audio"
+          title="Podcast"
+          blurb="Audio versions of my writing: AI, technology, philosophy, and building systems that ship cleanly."
+        >
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link
               href={rssUrl}
@@ -40,9 +38,7 @@ export default function PodcastPage() {
               Works in Apple Podcasts, Overcast, Pocket Casts, and more.
             </span>
           </div>
-
-          <hr className="gallery-rule mt-8" />
-        </header>
+        </PageHead>
 
         <Episodes />
       </div>

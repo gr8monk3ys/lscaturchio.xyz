@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getSeriesPosts } from "@/lib/getAllBlogs";
 import { logError } from "@/lib/logger";
 import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
+import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
 /**
  * API route to fetch posts from a specific series
@@ -12,10 +13,7 @@ const handleGet = async (req: NextRequest) => {
     const seriesName = req.nextUrl.searchParams.get("name");
 
     if (!seriesName) {
-      return NextResponse.json(
-        { error: "Series name is required" },
-        { status: 400 }
-      );
+      return ApiErrors.badRequest("Series name is required");
     }
 
     const posts = await getSeriesPosts(seriesName);
@@ -26,17 +24,14 @@ const handleGet = async (req: NextRequest) => {
       seriesOrder: post.seriesOrder ?? 0,
     }));
 
-    return NextResponse.json({
+    return apiSuccess({
       series: seriesName,
       count: simplifiedPosts.length,
       posts: simplifiedPosts,
     });
   } catch (error) {
     logError("Series API: Unexpected error", error, { component: 'series', action: 'GET' });
-    return NextResponse.json(
-      { error: "Failed to fetch series posts" },
-      { status: 500 }
-    );
+    return ApiErrors.internalError("Failed to fetch series posts");
   }
 };
 

@@ -1,0 +1,567 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-01T23:59:49.029Z",
+  "title": "Design System: lscaturchio.xyz",
+  "extensions": {
+    "colorMeta": {
+      "forest-ink": {
+        "role": "primary",
+        "displayName": "Forest Ink",
+        "canonical": "hsl(152 52% 20%)",
+        "tonalRamp": [
+          "#123a28",
+          "#1f6142",
+          "#2b885c",
+          "#37ae77",
+          "#51c890",
+          "#77d4a9",
+          "#9ee0c1",
+          "#c5edda"
+        ]
+      },
+      "forest-ink-dark": {
+        "role": "primary",
+        "displayName": "Forest Ink (night)",
+        "canonical": "hsl(152 44% 46%)",
+        "tonalRamp": [
+          "#153727",
+          "#245c42",
+          "#32815c",
+          "#40a576",
+          "#5abf90",
+          "#7ecda8",
+          "#a3dbc1",
+          "#c8eada"
+        ]
+      },
+      "moss": {
+        "role": "secondary",
+        "displayName": "Moss",
+        "canonical": "hsl(152 38% 36%)",
+        "tonalRamp": [
+          "#183527",
+          "#285841",
+          "#377b5c",
+          "#479e76",
+          "#61b88f",
+          "#84c8a8",
+          "#a7d7c1",
+          "#cae7da"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "hsl(38 25% 97%)",
+        "tonalRamp": [
+          "#30291d",
+          "#504430",
+          "#705f43",
+          "#8f7a56",
+          "#a99470",
+          "#bcac8f",
+          "#cfc3af",
+          "#e2dbcf"
+        ]
+      },
+      "paper-card": {
+        "role": "neutral",
+        "displayName": "Paper Card",
+        "canonical": "hsl(38 25% 98%)",
+        "tonalRamp": [
+          "#30291d",
+          "#504430",
+          "#705f43",
+          "#8f7a56",
+          "#a99470",
+          "#bcac8f",
+          "#cfc3af",
+          "#e2dbcf"
+        ]
+      },
+      "paper-tinted": {
+        "role": "neutral",
+        "displayName": "Paper Tinted",
+        "canonical": "hsl(38 18% 92%)",
+        "tonalRamp": [
+          "#2d281f",
+          "#4b4334",
+          "#695e49",
+          "#87785e",
+          "#a19278",
+          "#b6aa96",
+          "#cbc2b4",
+          "#e0dbd2"
+        ]
+      },
+      "paper-warm": {
+        "role": "neutral",
+        "displayName": "Paper Warm",
+        "canonical": "hsl(32 50% 92%)",
+        "tonalRamp": [
+          "#392813",
+          "#604220",
+          "#865c2d",
+          "#ac7739",
+          "#c69053",
+          "#d2a979",
+          "#dfc19f",
+          "#ecdac6"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "hsl(210 15% 12%)",
+        "tonalRamp": [
+          "#21262c",
+          "#364049",
+          "#4c5967",
+          "#627384",
+          "#7b8c9d",
+          "#98a6b3",
+          "#b6bfc9",
+          "#d3d9de"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "hsl(215 10% 42%)",
+        "tonalRamp": [
+          "#22262a",
+          "#393f46",
+          "#505862",
+          "#67717e",
+          "#818a98",
+          "#9da4af",
+          "#b9bec6",
+          "#d5d8dd"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "hsl(30 18% 86%)",
+        "tonalRamp": [
+          "#2d261f",
+          "#4b4034",
+          "#695949",
+          "#87735e",
+          "#a18c78",
+          "#b6a696",
+          "#cbbfb4",
+          "#e0d9d2"
+        ]
+      },
+      "night": {
+        "role": "neutral",
+        "displayName": "Night",
+        "canonical": "hsl(220 15% 8%)",
+        "tonalRamp": [
+          "#21242c",
+          "#363d49",
+          "#4c5567",
+          "#626d84",
+          "#7b879d",
+          "#98a1b3",
+          "#b6bcc9",
+          "#d3d7de"
+        ]
+      },
+      "night-card": {
+        "role": "neutral",
+        "displayName": "Night Card",
+        "canonical": "hsl(220 15% 10%)",
+        "tonalRamp": [
+          "#21242c",
+          "#363d49",
+          "#4c5567",
+          "#626d84",
+          "#7b879d",
+          "#98a1b3",
+          "#b6bcc9",
+          "#d3d7de"
+        ]
+      },
+      "night-tinted": {
+        "role": "neutral",
+        "displayName": "Night Tinted",
+        "canonical": "hsl(220 10% 16%)",
+        "tonalRamp": [
+          "#22252a",
+          "#393e46",
+          "#505662",
+          "#676f7e",
+          "#818898",
+          "#9da3af",
+          "#b9bdc6",
+          "#d5d7dd"
+        ]
+      },
+      "night-ink": {
+        "role": "neutral",
+        "displayName": "Night Ink",
+        "canonical": "hsl(0 0% 98%)",
+        "tonalRamp": [
+          "#262626",
+          "#404040",
+          "#595959",
+          "#737373",
+          "#8c8c8c",
+          "#a6a6a6",
+          "#bfbfbf",
+          "#d9d9d9"
+        ]
+      },
+      "night-ink-muted": {
+        "role": "neutral",
+        "displayName": "Night Ink Muted",
+        "canonical": "hsl(220 10% 70%)",
+        "tonalRamp": [
+          "#22252a",
+          "#393e46",
+          "#505662",
+          "#676f7e",
+          "#818898",
+          "#9da3af",
+          "#b9bdc6",
+          "#d5d7dd"
+        ]
+      },
+      "night-hairline": {
+        "role": "neutral",
+        "displayName": "Night Hairline",
+        "canonical": "hsl(220 10% 18%)",
+        "tonalRamp": [
+          "#22252a",
+          "#393e46",
+          "#505662",
+          "#676f7e",
+          "#818898",
+          "#9da3af",
+          "#b9bdc6",
+          "#d5d7dd"
+        ]
+      },
+      "signal-error": {
+        "role": "error",
+        "displayName": "Error",
+        "canonical": "hsl(0 84.2% 60.2%)",
+        "tonalRamp": [
+          "#460606",
+          "#750a0a",
+          "#a40e0e",
+          "#d31212",
+          "#ed2c2c",
+          "#f15b5b",
+          "#f58a8a",
+          "#f9b9b9"
+        ]
+      },
+      "signal-success": {
+        "role": "success",
+        "displayName": "Success",
+        "canonical": "hsl(142 76% 36%)",
+        "tonalRamp": [
+          "#09431e",
+          "#0f7033",
+          "#159d47",
+          "#1cca5b",
+          "#35e375",
+          "#62ea94",
+          "#8ff0b2",
+          "#bcf6d1"
+        ]
+      },
+      "signal-warning": {
+        "role": "warning",
+        "displayName": "Warning",
+        "canonical": "hsl(38 92% 50%)",
+        "tonalRamp": [
+          "#493003",
+          "#7a4f05",
+          "#ab6f07",
+          "#dc8f09",
+          "#f6a823",
+          "#f8bc54",
+          "#facf85",
+          "#fce2b6"
+        ]
+      },
+      "signal-info": {
+        "role": "info",
+        "displayName": "Info",
+        "canonical": "hsl(217 91% 60%)",
+        "tonalRamp": [
+          "#031e49",
+          "#06327a",
+          "#0846aa",
+          "#0a5adb",
+          "#2474f5",
+          "#5593f7",
+          "#85b2f9",
+          "#b6d1fc"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The home masthead and nothing else."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "One per page: the page title."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headings."
+      },
+      "card-title": {
+        "displayName": "Card Title",
+        "purpose": "Headings inside a row or card."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading text; essays at prose-lg with a Forest Ink drop cap."
+      },
+      "label": {
+        "displayName": "Wall Label",
+        "purpose": "All metadata: kickers, dates, counts, captions, footer links. Uppercase, tracked, tabular numerals."
+      }
+    },
+    "shadows": [
+      {
+        "name": "nav-sheet",
+        "value": "0 8px 30px rgba(0,0,0,0.08)",
+        "purpose": "The fixed navigation only; separates the sheet from scrolling content."
+      },
+      {
+        "name": "cta-ledge",
+        "value": "0 1px 0 hsl(var(--primary) / 0.25)",
+        "purpose": "The primary CTA only; a 1px ledge under the one filled button."
+      },
+      {
+        "name": "nav-pill-inset",
+        "value": "inset 0 1px 0 hsl(var(--border))",
+        "purpose": "The navigation control pill."
+      }
+    ],
+    "motion": [
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Hover colour and border transitions."
+      },
+      {
+        "name": "duration-default",
+        "value": "200ms",
+        "purpose": "Default hover/focus transitions."
+      },
+      {
+        "name": "duration-slow",
+        "value": "300ms",
+        "purpose": "Nav underline growth."
+      },
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Entrance, reveal and layout motion (framer-motion 0.2/0.35/0.5s)."
+      },
+      {
+        "name": "reveal",
+        "value": "650ms, 14px rise",
+        "purpose": "Below-fold scroll reveal; none under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ],
+    "containers": [
+      {
+        "name": "narrow",
+        "value": "42rem"
+      },
+      {
+        "name": "medium",
+        "value": "56rem"
+      },
+      {
+        "name": "wide",
+        "value": "72rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one filled action per view: Forest Ink with a 1px ledge.",
+      "html": "<button class=\"ds-btn-primary\">Ask <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:8px 16px;font-family:'Instrument Sans', ui-sans-serif, system-ui, sans-serif;font-size:.875rem;font-weight:600;white-space:nowrap;border-radius:14px;background:hsl(var(--primary, 152 52% 20%));color:hsl(var(--primary-foreground, 0 0% 100%));border:1px solid hsl(var(--primary, 152 52% 20%) / .42);box-shadow:0 1px 0 hsl(var(--primary, 152 52% 20%) / .25);cursor:pointer;transition:filter .15s ease,transform .1s ease}.ds-btn-primary:hover{filter:brightness(1.05)}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:focus-visible{outline:2px solid hsl(var(--primary, 152 52% 20%));outline-offset:2px}.ds-btn-primary:disabled{background:hsl(var(--muted, 38 18% 92%));color:hsl(var(--muted-foreground, 215 10% 42%));border-color:hsl(var(--border, 30 18% 86%));box-shadow:none}"
+    },
+    {
+      "name": "Default Button",
+      "kind": "button",
+      "refersTo": "button-default",
+      "description": "Paper Card with a hairline; tints toward Forest Ink on hover.",
+      "html": "<button class=\"ds-btn-default\">View work</button>",
+      "css": ".ds-btn-default{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:8px 16px;font-family:'Instrument Sans', ui-sans-serif, system-ui, sans-serif;font-size:.875rem;font-weight:500;white-space:nowrap;border-radius:14px;background:hsl(var(--card, 38 25% 98%));color:hsl(var(--foreground, 210 15% 12%));border:1px solid hsl(var(--border, 30 18% 86%));cursor:pointer;transition:background-color .15s ease,border-color .15s ease,color .15s ease,transform .1s ease}.ds-btn-default:hover{background:hsl(var(--primary, 152 52% 20%) / .06);border-color:hsl(var(--primary, 152 52% 20%) / .45);color:hsl(var(--primary, 152 52% 20%))}.ds-btn-default:active{transform:translateY(1px)}.ds-btn-default:focus-visible{outline:2px solid hsl(var(--primary, 152 52% 20%));outline-offset:2px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Invisible until hovered, then a hairline paper surface.",
+      "html": "<button class=\"ds-btn-ghost\">Cancel</button>",
+      "css": ".ds-btn-ghost{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:8px 16px;font-family:'Instrument Sans', ui-sans-serif, system-ui, sans-serif;font-size:.875rem;font-weight:500;border-radius:14px;background:transparent;color:hsl(var(--foreground, 210 15% 12%));border:1px solid transparent;cursor:pointer;transition:background-color .15s ease,border-color .15s ease}.ds-btn-ghost:hover{background:hsl(var(--card, 38 25% 98%));border-color:hsl(var(--border, 30 18% 86%))}.ds-btn-ghost:focus-visible{outline:2px solid hsl(var(--primary, 152 52% 20%));outline-offset:2px}"
+    },
+    {
+      "name": "Wall Label",
+      "kind": "custom",
+      "refersTo": "wall-label",
+      "description": "The mono placard beside every piece of work: kicker, date, count, caption.",
+      "html": "<span class=\"ds-wall-label\">Essays · Systems · Los Angeles</span>",
+      "css": ".ds-wall-label{display:block;font-family:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;font-size:.72rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:hsl(var(--muted-foreground, 215 10% 42%));font-feature-settings:'tnum' 1}"
+    },
+    {
+      "name": "Underline Input",
+      "kind": "input",
+      "refersTo": "input-underline",
+      "description": "The masthead ask field: a rule on the page with the primary button inside it.",
+      "html": "<form class=\"ds-ask\"><input class=\"ds-ask-input\" type=\"text\" placeholder=\"It's read everything I've written…\" /><button class=\"ds-ask-btn\" type=\"submit\">Ask <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button></form>",
+      "css": ".ds-ask{position:relative;max-width:42rem}.ds-ask-input{height:56px;width:100%;box-sizing:border-box;padding:0 112px 0 0;border:0;border-bottom:1px solid hsl(var(--border, 30 18% 86%));border-radius:0;background:transparent;font-family:'Instrument Sans', ui-sans-serif, system-ui, sans-serif;font-size:1.125rem;color:hsl(var(--foreground, 210 15% 12%));outline:none;transition:border-color .15s ease}.ds-ask-input::placeholder{color:hsl(var(--muted-foreground, 215 10% 42%) / .7)}.ds-ask-input:focus{border-bottom-color:hsl(var(--primary, 152 52% 20%))}.ds-ask-btn{position:absolute;right:0;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 20px;border-radius:9999px;background:hsl(var(--primary, 152 52% 20%));color:hsl(var(--primary-foreground, 0 0% 100%));border:1px solid hsl(var(--primary, 152 52% 20%) / .42);box-shadow:0 1px 0 hsl(var(--primary, 152 52% 20%) / .25);font-family:'Instrument Sans', ui-sans-serif, system-ui, sans-serif;font-size:.875rem;font-weight:600;cursor:pointer}.ds-ask-btn:hover{filter:brightness(1.05)}.ds-ask-btn:focus-visible{outline:2px solid hsl(var(--primary, 152 52% 20%));outline-offset:2px}"
+    },
+    {
+      "name": "Field Input",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "The boxed form field: Paper Card, hairline, 8px corners.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Email</span><input class=\"ds-field-input\" type=\"email\" placeholder=\"you@example.com\" /></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:6px;max-width:20rem;font-family:'Instrument Sans', ui-sans-serif, system-ui, sans-serif}.ds-field-label{font-size:.875rem;font-weight:500;color:hsl(var(--foreground, 210 15% 12%))}.ds-field-input{height:40px;padding:8px 12px;box-sizing:border-box;border-radius:8px;background:hsl(var(--card, 38 25% 98%));border:1px solid hsl(var(--border, 30 18% 86%));color:hsl(var(--foreground, 210 15% 12%));font-family:'Instrument Sans', ui-sans-serif, system-ui, sans-serif;font-size:.875rem;transition:border-color .15s ease}.ds-field-input::placeholder{color:hsl(var(--muted-foreground, 215 10% 42%) / .7)}.ds-field-input:focus{border-color:hsl(var(--primary, 152 52% 20%) / .5);outline:2px solid hsl(var(--primary, 152 52% 20%));outline-offset:2px}"
+    },
+    {
+      "name": "Outline Chip",
+      "kind": "chip",
+      "refersTo": "badge-outline",
+      "description": "The house chip: round, hairline, Paper Card.",
+      "html": "<span class=\"ds-chip\">Retrieval</span> <span class=\"ds-chip\">Political economy</span>",
+      "css": ".ds-chip{display:inline-flex;align-items:center;padding:4px 12px;border-radius:9999px;background:hsl(var(--card, 38 25% 98%));border:1px solid hsl(var(--border, 30 18% 86%));color:hsl(var(--foreground, 210 15% 12%));font-family:'Instrument Sans', ui-sans-serif, system-ui, sans-serif;font-size:.75rem;font-weight:600;transition:color .15s ease,border-color .15s ease}.ds-chip:hover{color:hsl(var(--primary, 152 52% 20%));border-color:hsl(var(--primary, 152 52% 20%) / .45)}"
+    },
+    {
+      "name": "Index Row",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "How lists are built here: a wall label, a title, a clamped description, divided by hairlines. Preferred over cards.",
+      "html": "<a class=\"ds-row\" href=\"#\"><span class=\"ds-row-label\">2026-08-30 · Essay</span><span class=\"ds-row-title\">Attention is not a resource</span><span class=\"ds-row-desc\">What changes when you stop treating attention as something to be spent and start treating it as something that is taken.</span></a>",
+      "css": ".ds-row{display:block;padding:20px 0;border-bottom:1px solid hsl(var(--border, 30 18% 86%));text-decoration:none;color:hsl(var(--foreground, 210 15% 12%));font-family:'Instrument Sans', ui-sans-serif, system-ui, sans-serif}.ds-row-label{display:block;margin-bottom:8px;font-family:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;font-size:.72rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:hsl(var(--muted-foreground, 215 10% 42%));font-feature-settings:'tnum' 1}.ds-row-title{display:block;font-family:Fraunces, ui-sans-serif, system-ui, sans-serif;font-size:1.25rem;font-weight:620;line-height:1.2;letter-spacing:-.02em;transition:color .15s ease}.ds-row:hover .ds-row-title{color:hsl(var(--primary, 152 52% 20%))}.ds-row-desc{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:6px;font-size:.875rem;line-height:1.6;color:hsl(var(--muted-foreground, 215 10% 42%))}"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Tinted paper with a hairline; the border warms on hover, nothing lifts.",
+      "html": "<div class=\"ds-card\"><span class=\"ds-card-label\">Project · 2026</span><h3 class=\"ds-card-title\">Cocoon</h3><p class=\"ds-card-body\">Seven host permissions, zero network calls.</p></div>",
+      "css": ".ds-card{padding:24px;border-radius:18px;background:hsl(var(--card, 38 25% 98%));border:1px solid hsl(var(--border, 30 18% 86%));color:hsl(var(--foreground, 210 15% 12%));font-family:'Instrument Sans', ui-sans-serif, system-ui, sans-serif;max-width:22rem;transition:border-color .2s ease}.ds-card:hover{border-color:hsl(var(--primary, 152 52% 20%) / .45)}.ds-card-label{display:block;margin-bottom:10px;font-family:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;font-size:.72rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:hsl(var(--muted-foreground, 215 10% 42%))}.ds-card-title{margin:0;font-family:Fraunces, ui-sans-serif, system-ui, sans-serif;font-size:1.25rem;font-weight:620;line-height:1.2;letter-spacing:-.02em}.ds-card-body{margin:8px 0 0;font-size:.875rem;line-height:1.6;color:hsl(var(--muted-foreground, 215 10% 42%))}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "The fixed paper sheet: blur, 40% hairline, links that grow a Forest Ink underline.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav-brand\">Lorenzo Scaturchio</span><div class=\"ds-nav-links\"><a class=\"ds-nav-link ds-nav-link--active\" href=\"#\">Writing</a><a class=\"ds-nav-link\" href=\"#\">Garden</a><a class=\"ds-nav-link\" href=\"#\">Projects</a><a class=\"ds-nav-link\" href=\"#\">About</a></div><div class=\"ds-nav-pill\"><span class=\"ds-nav-dot\"></span></div></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;justify-content:space-between;gap:24px;height:80px;padding:0 24px;background:hsl(var(--background, 38 25% 97%) / .9);backdrop-filter:blur(12px);border-bottom:1px solid hsl(var(--border, 30 18% 86%) / .4);box-shadow:0 8px 30px rgba(0,0,0,.08);font-family:'Instrument Sans', ui-sans-serif, system-ui, sans-serif}.ds-nav-brand{font-family:Fraunces, ui-sans-serif, system-ui, sans-serif;font-weight:700;font-size:1.125rem;letter-spacing:-.02em;color:hsl(var(--foreground, 210 15% 12%))}.ds-nav-links{display:flex;gap:20px}.ds-nav-link{position:relative;padding:6px 0;font-size:.875rem;font-weight:500;color:hsl(var(--foreground, 210 15% 12%));text-decoration:none}.ds-nav-link::after{content:'';position:absolute;left:0;bottom:0;width:100%;height:2px;background:hsl(var(--primary, 152 52% 20%));transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.4,0,.2,1)}.ds-nav-link:hover::after,.ds-nav-link--active::after{transform:scaleX(1)}.ds-nav-pill{display:flex;align-items:center;padding:8px 12px;border-radius:9999px;border:1px solid hsl(var(--border, 30 18% 86%));background:hsl(var(--background, 38 25% 97%) / .8);box-shadow:inset 0 1px 0 hsl(var(--border, 30 18% 86%))}.ds-nav-dot{width:16px;height:16px;border-radius:50%;background:hsl(var(--primary, 152 52% 20%))}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Field Notebook",
+    "overview": "\n**Creative North Star: \"The Field Notebook\"**\n\nThe site is a working notebook kept on warm paper. Everything in it is a record: an essay, a film watched on a date, a book with a rating, a job with a sourced number. The page itself is the paper, off-white with a near-invisible grain; the writing is set in a serif with personality; the accent is a single green ink used the way one pen is used, for the marks that matter. Beside every entry sits a small monospace label, the way a specimen is catalogued: kicker, date, count, place. Structure comes from hairline rules and from tinted patches of the same paper, never from boxes floating above it.\n\nThe mood is quiet and unhurried. Nothing competes for attention; whitespace and rules do the organising, and the reader is trusted to move through it at their own pace. It is warm and papery: the ground, the grain, and the sand-toned borders all read as paper rather than screen. It is precise and catalogued: tabular numerals, uppercase mono labels, and dates give the site the feel of a place that keeps records honestly. And it is literary and serif-led: Fraunces carries the personality, so the display type is the only decoration the system needs.\n\nThe system deliberately is not three things. It is not neumorphic: the soft double-shadow blooms that once covered the site were its single biggest \"AI template\" signal and were removed in favour of ink-on-paper. It is not SaaS landing-page chrome: no gradient blobs, no glassy card grids, no badge-pill features in three columns. And it is not the dark-mode-first developer aesthetic: mono is a label beside the work, never the voice of the work, and dark mode is a night-reading variant of the same notebook, not a terminal.",
+    "keyCharacteristics": [
+      "One paper ground, warm off-white with a fixed 3.5% noise grain; dark mode is a night variant of the same page.",
+      "One ink accent, Forest Ink, spent sparingly: links, the drop cap, text selection, the single primary CTA.",
+      "Hairline rules and tint shifts structure the page; there are no floating cards and no decorative shadows.",
+      "Three type voices with fixed jobs: Fraunces speaks, Instrument Sans reads, IBM Plex Mono catalogues.",
+      "Motion is a soft settle, never a performance: 150–300ms hover, a 650ms reveal, all off under reduced motion."
+    ],
+    "rules": [
+      {
+        "name": "The One Pen Rule",
+        "body": "Forest Ink is the only chromatic accent on any surface, and it marks action or emphasis, never area. If a screen has green in more than a few places, it has too many.",
+        "section": "colors"
+      },
+      {
+        "name": "The Sand Hairline Rule",
+        "body": "Dividers are 1px of Hairline, sand-toned, never neutral grey and never thicker. Depth of structure is expressed by more rules and more space, not by darker lines.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tinted Paper Rule",
+        "body": "A \"contained\" surface is the same paper at a different tint (Paper Card lighter, Paper Tinted darker), bordered by a hairline. It is never a white box on a grey page.",
+        "section": "colors"
+      },
+      {
+        "name": "The Wall Label Rule",
+        "body": "Every piece of metadata (a date, a count, a place, a category) is set as a Label: mono, small, uppercase, tracked, muted. Metadata never borrows the body or heading voice.",
+        "section": "typography"
+      },
+      {
+        "name": "The Serif Speaks Rule",
+        "body": "Fraunces appears only where the site is speaking: headings, the drop cap, the masthead. Never in body copy, UI controls or labels.",
+        "section": "typography"
+      },
+      {
+        "name": "The Fluid Heading Rule",
+        "body": "Headings scale with `clamp()`, not breakpoints; weights step down the hierarchy (720 → 700 → 650 → 620 → 560) and tracking loosens as size falls.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Paper Rule",
+        "body": "No shadow on any content surface, at rest or on hover. A hovered surface changes tint and border colour; it does not rise.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Two Sheets Rule",
+        "body": "The only elevated objects are the fixed navigation and the primary CTA's 1px ledge. Nothing else may add a shadow without changing this file first.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** introduce every section, row and figure with a wall label (mono, 0.72rem, 0.16em, uppercase, Ink Muted) before its title.",
+      "**Do** divide with 1px sand hairlines and 64–96px of vertical space; let whitespace and rules do the structuring.",
+      "**Do** spend Forest Ink on action and emphasis only: links, hover, the drop cap, one primary button per view.",
+      "**Do** build lists as stacked hairline-divided rows (label, title, clamped description), and use asymmetric editorial grids (`1fr / 300px`, `280–360px / 1fr`) when two columns are needed.",
+      "**Do** keep numerals tabular in labels and oldstyle in display, and set every date and count in mono.",
+      "**Do** design dark mode as the same notebook at night: cool hue-220 page, the same green lifted to #42a979, hairlines at 18% lightness.",
+      "**Do** give an empty section an honest empty state in the same voice and typography as a full one.",
+      "**Do** collapse to one column below md, flex-wrap every row of labels, and avoid fixed text widths so right-to-left and long translated strings survive."
+    ],
+    "donts": [
+      "**Don't** add shadows to content surfaces at rest or on hover; the nav sheet and the CTA ledge are the only elevated objects.",
+      "**Don't** reintroduce neumorphic double shadows, inset \"pressed\" shadows or glassy card grids; the `--neu-shadow-*` tokens are legacy and must not spread.",
+      "**Don't** build SaaS landing-page furniture: gradient blobs, three-column feature tiles, pill badges as decoration, glowing buttons.",
+      "**Don't** use monospace as a voice. It is the label beside the work, never headings or body copy; the site is not a terminal.",
+      "**Don't** set Fraunces in body text, controls or labels, and don't set body copy in anything but Instrument Sans.",
+      "**Don't** use neutral grey for rules or muted surfaces; every neutral is warm paper (hue 30–38) in light mode and cool night (hue 220) in dark.",
+      "**Don't** introduce a second accent colour; Moss exists for secondary fills and the four signal colours are for status only.",
+      "**Don't** round the portrait plate or box the underline input; squareness marks the work, roundness marks the interface.",
+      "**Don't** define `--spacing-xs..4xl` tokens in `@theme`; in Tailwind v4 they shadow the `max-w-*` container scale and collapse layouts."
+    ]
+  }
+}

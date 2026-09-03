@@ -25,7 +25,16 @@ import { getAudioUrl } from "@/lib/audio-url"
 
 interface UseAudioPlayerArgs {
   slug: string
-  contentRef: RefObject<HTMLDivElement | null>
+}
+
+/**
+ * The essay body, found in the DOM rather than handed down as a ref. Taking a
+ * ref forced the whole essay shell to be a Client Component; `.prose-gallery`
+ * is the stable class `Prose` puts on that same container.
+ */
+function getProseRoot(): HTMLDivElement | null {
+  if (typeof document === "undefined") return null
+  return document.querySelector<HTMLDivElement>(".prose-gallery")
 }
 
 interface UseAudioPlayerReturn {
@@ -44,7 +53,7 @@ interface UseAudioPlayerReturn {
   dispatch: React.Dispatch<import("@/components/blog/text-to-speech-types").PlayerAction>
 }
 
-export function useAudioPlayer({ slug, contentRef }: UseAudioPlayerArgs): UseAudioPlayerReturn {
+export function useAudioPlayer({ slug }: UseAudioPlayerArgs): UseAudioPlayerReturn {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const [state, dispatch] = useReducer(playerReducer, INITIAL_STATE)
@@ -83,18 +92,18 @@ export function useAudioPlayer({ slug, contentRef }: UseAudioPlayerArgs): UseAud
   }, [slug])
 
   useEffect(() => {
-    const root = contentRef.current
+    const root = getProseRoot()
     if (!root) return
 
     dispatch({ type: "SET_TRANSCRIPT", transcript: buildTranscript(root) })
-  }, [contentRef, slug])
+  }, [slug])
 
   useEffect(() => {
-    const root = contentRef.current
+    const root = getProseRoot()
     if (!root || state.duration <= 0) return
 
     dispatch({ type: "SET_CHAPTERS", chapters: buildChapters(root, state.duration) })
-  }, [contentRef, state.duration])
+  }, [state.duration])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -211,7 +220,8 @@ export function useAudioPlayer({ slug, contentRef }: UseAudioPlayerArgs): UseAud
   )
 
   const toggleFallback = useCallback((): void => {
-    if (!contentRef.current || typeof window === "undefined" || !window.speechSynthesis) {
+    const root = getProseRoot()
+    if (!root || typeof window === "undefined" || !window.speechSynthesis) {
       return
     }
 
@@ -221,12 +231,12 @@ export function useAudioPlayer({ slug, contentRef }: UseAudioPlayerArgs): UseAud
       return
     }
 
-    const utterance = new SpeechSynthesisUtterance(contentRef.current.textContent || "")
+    const utterance = new SpeechSynthesisUtterance(root.textContent || "")
     utterance.rate = 0.9
     utterance.onend = () => dispatch({ type: "SET_FALLBACK_PLAYING", value: false })
     window.speechSynthesis.speak(utterance)
     dispatch({ type: "SET_FALLBACK_PLAYING", value: true })
-  }, [contentRef, state.fallbackPlaying])
+  }, [state.fallbackPlaying])
 
   const jumpToChapter = useCallback((chapter: Chapter): void => {
     const audio = audioRef.current

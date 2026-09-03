@@ -25,10 +25,6 @@ if (SENTRY_DSN) {
     // Performance Monitoring
     tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
 
-    // Session Replay (captures 10% of sessions, 100% on error)
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-
     // Debug mode in development
     debug: process.env.NODE_ENV === "development",
 
@@ -65,12 +61,11 @@ if (SENTRY_DSN) {
       return event;
     },
 
-    integrations: [
-      Sentry.replayIntegration({
-        // Mask all text to protect privacy
-        maskAllText: true,
-        blockAllMedia: true,
-      }),
-    ],
+    // Session Replay is deliberately NOT enabled. It recorded 10% of reader
+    // sessions and 100% of sessions that hit an error, which the privacy
+    // policy never disclosed, and it was the bulk of a 251KB gzipped chunk
+    // that every route loaded — a reader opening one essay paid for it.
+    // Error and performance monitoring below are kept; they send an event,
+    // not a recording.
   });
 }

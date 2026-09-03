@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
-import { validateCsrf } from "@/lib/csrf";
+import { z } from "zod";
 import { logInfo, logError } from "@/lib/logger";
 import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
+import { withWriteRoute } from "@/lib/api/write-route";
 
 // Resume file path - stored in public directory
 const RESUME_FILENAME = "Lorenzo_Scaturchio_Resume.pdf";
@@ -86,44 +87,38 @@ export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC)
  * POST /api/resume
  * Track resume downloads (optional analytics)
  */
-const handlePost = async (req: NextRequest) => {
-  const csrfError = validateCsrf(req);
-  if (csrfError) return csrfError;
+const resumeTrackSchema = z.object({
+  // The only action this endpoint has ever accepted. Previously an untyped
+  // `body.action === "track"` string compare that answered 400 "Invalid action";
+  // Zod now produces the 400 with the field message instead.
+  action: z.literal("track"),
+});
 
-  try {
-    const body = await req.json();
-
-    if (body.action === "track") {
-      // Log download for analytics
-      logInfo("Resume: Download tracked", {
-        component: "resume",
-        action: "download",
-        timestamp: new Date().toISOString(),
-        userAgent: req.headers.get("user-agent") || "unknown",
-      });
-
-      // Optionally: Increment counter in Neon PostgreSQL
-      // const sql = getDb();
-      // await sql`SELECT increment_resume_downloads()`;
-
-      return NextResponse.json({ success: true });
-    }
-
-    return NextResponse.json(
-      { error: "Invalid action" },
-      { status: 400 }
-    );
-  } catch (error) {
-    logError("Resume: Error tracking download", error, {
+export const POST = withWriteRoute(
+  {
+    limit: RATE_LIMITS.STANDARD,
+    auth: {
+      kind: "public",
+      reason: "Fire-and-forget download telemetry from the public download button.",
+    },
+    csrf: { kind: "required" },
+    body: { kind: "json", schema: resumeTrackSchema },
+    envelope: { kind: "standard" },
+    errors: {
+      log: "Resume: Error tracking download",
       component: "resume",
       action: "POST",
+      message: "Failed to track download",
+    },
+  },
+  async ({ req }) => {
+    logInfo("Resume: Download tracked", {
+      component: "resume",
+      action: "download",
+      timestamp: new Date().toISOString(),
+      userAgent: req.headers.get("user-agent") || "unknown",
     });
 
-    return NextResponse.json(
-      { error: "Failed to track download" },
-      { status: 500 }
-    );
+    return { tracked: true };
   }
-};
-
-export const POST = withRateLimit(handlePost, RATE_LIMITS.STANDARD);
+);

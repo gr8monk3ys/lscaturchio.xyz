@@ -1,7 +1,4 @@
-import glob from "fast-glob";
-import fs from "fs/promises";
-import path from "path";
-import { extractBlogMeta } from "../src/lib/blog-meta";
+import { listEssaySources } from "../src/lib/essay-sources";
 
 type PostIndexEntry = {
   slug: string;
@@ -65,29 +62,14 @@ function score(a: PostIndexEntry, b: PostIndexEntry): { score: number; sharedTag
 }
 
 async function buildIndex(): Promise<PostIndexEntry[]> {
-  const blogRoot = path.join(process.cwd(), "src", "app", "blog");
-  const blogFileNames = await glob(["*.mdx", "*/content.mdx"], { cwd: blogRoot });
+  const essays = await listEssaySources();
 
-  const entries: PostIndexEntry[] = [];
-  for (const rel of blogFileNames) {
-    const full = path.join(blogRoot, rel);
-    const content = await fs.readFile(full, "utf-8");
-    const meta = extractBlogMeta(content);
-
-    if (!meta.title) continue;
-    const slug = rel.replace(/(\/content)?\.mdx$/, "");
-    const tags = (meta.tags ?? []).map((t) => t.toLowerCase());
-    const keywords = tokenize(meta.title);
-
-    entries.push({
-      slug,
-      title: meta.title,
-      tags,
-      keywords,
-    });
-  }
-
-  return entries;
+  return essays.map(({ slug, meta }) => ({
+    slug,
+    title: meta.title!,
+    tags: (meta.tags ?? []).map((t) => t.toLowerCase()),
+    keywords: tokenize(meta.title!),
+  }));
 }
 
 async function main() {

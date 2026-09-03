@@ -120,27 +120,18 @@ export function CodeBlock({
   }, [codeText]);
 
   return (
-    <div className="group relative my-6 rounded-xl border border-border overflow-hidden bg-zinc-950 dark:bg-zinc-900">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/50 dark:bg-zinc-800/50 border-b border-border/50">
-        <div className="flex items-center gap-2">
-          {/* Traffic lights decoration */}
-          <div className="hidden sm:flex items-center gap-1.5 mr-2">
-            <div className="w-3 h-3 rounded-full bg-red-500/80" />
-            <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-            <div className="w-3 h-3 rounded-full bg-green-500/80" />
-          </div>
-
+    <div className="group relative my-6 rounded-xl border border-border overflow-hidden bg-card">
+      {/* Header — a wall label for the listing, not a window chrome. */}
+      <div className="flex items-center justify-between gap-3 px-4 py-2 bg-muted/50 border-b border-border/70">
+        <div className="flex items-center gap-3">
           {/* Filename or language label */}
-          <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+          <div className="label-mono flex items-center gap-1.5">
             {languageInfo.icon || <Hash className="h-3.5 w-3.5" />}
-            <span className="font-medium">
-              {filename || languageInfo.label}
-            </span>
+            <span>{filename || languageInfo.label}</span>
           </div>
 
           {/* Line count */}
-          <span className="text-xs text-zinc-500 hidden sm:inline">
+          <span className="label-mono hidden sm:inline">
             {totalLines} line{totalLines !== 1 ? "s" : ""}
           </span>
         </div>
@@ -153,7 +144,7 @@ export function CodeBlock({
             }}
             size="sm"
             variant="ghost"
-            className="h-7 px-2 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+            className="h-7 px-2 text-muted-foreground hover:text-primary hover:bg-primary/6"
             aria-label={showNumbers ? "Hide line numbers" : "Show line numbers"}
           >
             <Hash className={cn("h-3.5 w-3.5", showNumbers && "text-primary")} />
@@ -164,18 +155,18 @@ export function CodeBlock({
             onClick={handleCopy}
             size="sm"
             variant="ghost"
-            className="h-7 px-2 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+            className="h-7 px-2 text-muted-foreground hover:text-primary hover:bg-primary/6"
             aria-label="Copy code to clipboard"
           >
             {copied ? (
-              <span className="flex items-center gap-1 text-green-400">
+              <span className="flex items-center gap-1 text-primary">
                 <Check className="h-3.5 w-3.5" />
-                <span className="text-xs">Copied!</span>
+                <span className="label-mono text-primary">Copied!</span>
               </span>
             ) : (
               <span className="flex items-center gap-1">
                 <Copy className="h-3.5 w-3.5" />
-                <span className="text-xs hidden sm:inline">Copy</span>
+                <span className="label-mono hidden sm:inline">Copy</span>
               </span>
             )}
           </Button>
@@ -191,7 +182,9 @@ export function CodeBlock({
       >
         <pre
           className={cn(
-            "p-4 text-sm leading-relaxed",
+            // The typography plugin paints .prose pre with gray-200 on a dark
+            // ground; the frame is paper now, so force the paper ink instead.
+            "p-4 text-sm leading-relaxed text-foreground! bg-transparent!",
             showNumbers && "pl-2",
             className
           )}
@@ -201,7 +194,7 @@ export function CodeBlock({
             <code className="flex">
               {/* Line numbers */}
               <div
-                className="select-none pr-4 text-right text-zinc-600 border-r border-zinc-800 mr-4"
+                className="select-none pr-4 text-right text-muted-foreground/60 border-r border-border mr-4"
                 aria-hidden="true"
               >
                 {lineNumbers.map((lineNumber) => (
@@ -220,17 +213,17 @@ export function CodeBlock({
 
         {/* Collapse gradient */}
         {shouldCollapse && (
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-linear-to-t from-zinc-950 dark:from-zinc-900 to-transparent pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-linear-to-t from-card to-transparent pointer-events-none" />
         )}
       </div>
 
       {/* Expand/collapse button */}
       {isLongCode && (
-        <div className="border-t border-border/50">
+        <div className="border-t border-border/70">
           <Button
             onClick={() => setIsExpanded(!isExpanded)}
             variant="ghost"
-            className="w-full h-10 rounded-none text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
+            className="w-full h-10 rounded-none text-muted-foreground hover:text-primary hover:bg-primary/6"
           >
             {isExpanded ? (
               <>

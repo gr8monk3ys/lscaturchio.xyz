@@ -80,7 +80,7 @@ export function Music() {
       <div className="w-full max-w-7xl mx-auto">
         <m.div
           variants={containerVariants}
-          initial="hidden"
+          initial={false}
           animate="visible"
           className="flex flex-col gap-10"
         >

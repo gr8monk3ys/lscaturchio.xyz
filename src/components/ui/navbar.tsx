@@ -30,6 +30,7 @@ export function Navbar() {
                   width={200}
                   height={40}
                   className="h-14 w-auto dark:invert"
+                  unoptimized
                 />
               </Link>
             </div>

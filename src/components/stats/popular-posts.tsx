@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import useSWR from 'swr'
-import { fetchJson, unwrapApiData } from '@/lib/fetcher'
+import { fetchJson, type ApiEnvelope } from '@/lib/fetcher'
 
 interface PopularPostsPayload {
   available?: boolean
@@ -12,13 +12,13 @@ interface PopularPostsPayload {
 }
 
 export function PopularPosts() {
-  const { data, isLoading, error } = useSWR<{ data?: PopularPostsPayload } | PopularPostsPayload>(
+  const { data, isLoading, error } = useSWR<ApiEnvelope<PopularPostsPayload>>(
     '/api/views?format=detailed',
     fetchJson,
     { revalidateOnFocus: false }
   )
 
-  const payload = data ? unwrapApiData(data) : null
+  const payload = data?.data ?? null
 
   const posts = useMemo(() => {
     if (!payload?.available || !Array.isArray(payload.views)) return []

@@ -4,11 +4,8 @@ export {
   AnimatePresence,
   LazyMotion,
   m,
-  useInView,
-  useMotionValue,
   useReducedMotion,
   useScroll,
-  useSpring,
   useTransform,
 } from 'framer-motion'
 

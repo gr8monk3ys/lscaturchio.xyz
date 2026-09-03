@@ -77,7 +77,7 @@ export function Hero() {
                 key={question}
                 href={`/chat?q=${encodeURIComponent(question)}`}
                 prefetch={false}
-                className="label-mono normal-case tracking-normal text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                className="label-mono normal-case tracking-normal text-muted-foreground ink-underline transition-colors hover:text-primary"
               >
                 {question}
               </Link>
@@ -85,7 +85,7 @@ export function Hero() {
             <Link
               href="/projects"
               prefetch={false}
-              className="label-mono ml-auto text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+              className="label-mono ml-auto text-foreground ink-underline transition-colors hover:text-primary"
             >
               View work →
             </Link>

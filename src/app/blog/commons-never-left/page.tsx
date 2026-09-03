@@ -6,7 +6,7 @@ export const metadata = buildBlogMetadata(meta, "/blog/commons-never-left");
 
 export default function Page() {
   return (
-    <BlogLayout meta={meta}>
+    <BlogLayout meta={meta} slug="commons-never-left">
       <Content />
     </BlogLayout>
   );

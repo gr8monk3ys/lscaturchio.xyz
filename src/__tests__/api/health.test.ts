@@ -18,7 +18,7 @@ vi.mock('@/lib/logger', () => ({
 vi.mock('@/lib/with-rate-limit', () => ({
   withRateLimit: (handler: (...args: unknown[]) => unknown) => handler,
   RATE_LIMITS: {
-    STANDARD: { limit: 60, window: 60000 },
+    STANDARD: { limit: 30, window: 60000 },
     PUBLIC: { limit: 100, window: 60000 },
     AI_HEAVY: { limit: 5, window: 60000 },
   },
@@ -49,7 +49,7 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const data = await response.json()
+      const { data } = await response.json()
 
       expect(response.status).toBe(200)
       expect(data.status).toBe('healthy')
@@ -62,7 +62,7 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const data = await response.json()
+      const { data } = await response.json()
 
       expect(response.status).toBe(503)
       expect(data.status).toBe('unhealthy')
@@ -73,7 +73,7 @@ describe('Health API Route', () => {
       mockSql.mockRejectedValue(new Error('Connection refused'))
 
       const response = await callGet()
-      const data = await response.json()
+      const { data } = await response.json()
 
       expect(response.status).toBe(503)
       expect(data.status).toBe('unhealthy')
@@ -84,7 +84,7 @@ describe('Health API Route', () => {
       vi.mocked(isDatabaseConfigured).mockReturnValue(false)
 
       const response = await callGet()
-      const data = await response.json()
+      const { data } = await response.json()
 
       expect(response.status).toBe(503)
       expect(data.status).toBe('unhealthy')
@@ -95,7 +95,7 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const data = await response.json()
+      const { data } = await response.json()
 
       expect(data).toHaveProperty('timestamp')
       expect(data).toHaveProperty('version')
@@ -120,7 +120,7 @@ describe('Health API Route', () => {
       mockSql.mockRejectedValue(new TypeError('Cannot read properties of undefined'))
 
       const response = await callGet()
-      const data = await response.json()
+      const { data } = await response.json()
 
       expect(response.status).toBe(503)
       expect(data.status).toBe('unhealthy')
@@ -133,7 +133,7 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const data = await response.json()
+      const { data } = await response.json()
 
       expect(data.version).toBe('0.1.0')
     })
@@ -143,7 +143,7 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const data = await response.json()
+      const { data } = await response.json()
 
       expect(data.version).toBe('2.5.0')
     })
@@ -154,7 +154,7 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const data = await response.json()
+      const { data } = await response.json()
 
       expect(data.version).toBe('abc1234')
     })
@@ -166,7 +166,7 @@ describe('Health API Route', () => {
       })
 
       const response = await callGet()
-      const data = await response.json()
+      const { data } = await response.json()
 
       expect(response.status).toBe(503)
       expect(data.status).toBe('unhealthy')

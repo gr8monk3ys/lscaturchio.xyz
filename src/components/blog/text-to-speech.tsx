@@ -1,7 +1,5 @@
 "use client"
 
-import { type RefObject } from "react"
-
 import { useAudioPlayer } from "@/hooks/use-audio-player"
 
 import {
@@ -13,10 +11,9 @@ import {
 
 interface AudioPlayerProps {
   slug: string
-  contentRef: RefObject<HTMLDivElement | null>
 }
 
-export function TextToSpeech({ slug, contentRef }: AudioPlayerProps): React.ReactElement | null {
+export function TextToSpeech({ slug }: AudioPlayerProps): React.ReactElement | null {
   const {
     state,
     progressRef,
@@ -31,7 +28,7 @@ export function TextToSpeech({ slug, contentRef }: AudioPlayerProps): React.Reac
     toggleFallback,
     jumpToChapter,
     dispatch,
-  } = useAudioPlayer({ slug, contentRef })
+  } = useAudioPlayer({ slug })
 
   if (state.hasAudio === null) {
     return null

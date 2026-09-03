@@ -1,11 +1,10 @@
 import { Suspense } from "react";
 import { buildPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/Container";
-import { Heading } from "@/components/Heading";
-import { Paragraph } from "@/components/Paragraph";
 import { PhotosGrid } from "@/components/photos/PhotosGrid";
 import { Loader2 } from "lucide-react";
 import type { PhotoCategory } from "@/constants/photos";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Photography",
@@ -49,15 +48,17 @@ export default async function PhotosPage({
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-6xl mx-auto">
         {/* Header — gallery masthead */}
-        <header className="mb-12">
-          <span className="label-mono block">Garden · Photography</span>
-          <Heading className="mt-4 text-4xl font-bold md:text-5xl">Photography</Heading>
-          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Travel, landscape, and nature work, shot on a Fuji X-T30 II with custom film
-            simulation recipes.
-          </Paragraph>
-          <hr className="gallery-rule mt-8" />
-        </header>
+        <PageHead
+          className="mb-12"
+          kicker="Garden · Photography"
+          title="Photography"
+          blurb={
+            <>
+              Travel, landscape, and nature work, shot on a Fuji X-T30 II with custom film
+              simulation recipes.
+            </>
+          }
+        />
 
         <Suspense fallback={<PhotosGridSkeleton />}>
           <PhotosGrid initialCategory={initialCategory} />

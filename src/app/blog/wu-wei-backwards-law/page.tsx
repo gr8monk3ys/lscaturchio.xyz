@@ -6,7 +6,7 @@ export const metadata = buildBlogMetadata(meta, "/blog/wu-wei-backwards-law");
 
 export default function Page() {
   return (
-    <BlogLayout meta={meta}>
+    <BlogLayout meta={meta} slug="wu-wei-backwards-law">
       <Content />
     </BlogLayout>
   );

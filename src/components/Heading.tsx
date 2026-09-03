@@ -1,5 +1,6 @@
-import { twMerge } from "tailwind-merge";
 import React from "react";
+
+import { cn } from "@/lib/utils";
 
 type HeadingTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span" | "div";
 
@@ -26,7 +27,7 @@ export const Heading = ({
 }) => {
   return (
     <Component
-      className={twMerge(
+      className={cn(
         // Use the site display font by default; keep sizing flexible via caller.
         "font-display tracking-tight text-foreground",
         defaultSizeByTag[Component],

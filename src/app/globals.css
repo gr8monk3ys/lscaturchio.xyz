@@ -136,9 +136,9 @@
 /* ============================================================
  * EDITORIAL SURFACES
  * The neu-* names are kept (45+ files use them) but the language
- * is now flat ink-on-paper: hairline rules, tint shifts, and a
- * single hover lift — no neumorphic shadow blooms. The blooms
- * were the single biggest "AI template" signal on the site.
+ * is flat ink-on-paper: hairline rules and tint shifts, no shadow
+ * and no lift. The neumorphic blooms these once carried were the
+ * single biggest "AI template" signal on the site.
  * ============================================================ */
 
 @utility neu-flat {
@@ -196,12 +196,12 @@
   border-radius: var(--radius);
   transition:
     border-color 0.2s ease,
-    background-color 0.2s ease,
-    transform 0.2s ease;
+    background-color 0.2s ease;
 
+  /* Flat Paper Rule: warm the border and tint the paper. Never lift. */
   &:hover {
     border-color: hsl(var(--primary) / 0.45);
-    transform: translateY(-2px);
+    background: hsl(var(--primary) / 0.05);
   }
 }
 
@@ -288,68 +288,46 @@
   @apply text-primary font-semibold;
 }
 
-@utility reveal {
-  /* Scroll reveal primitives (IntersectionObserver toggles data-reveal-state) */
-  --reveal-y: 14px;
-  --reveal-delay: 0ms;
-  --reveal-duration: 650ms;
-  --reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+/* ============================================================
+ * MOTION — paper does not move, ink is drawn.
+ *
+ * A notebook page is inert; what changes on it is the ink. So no
+ * section rises or fades in. The site's one gesture is a line being
+ * ruled: hairlines score in from the left and nothing else moves.
+ *
+ * This is also why it cannot blank a page. The only thing that ever
+ * animates is a decorative 1px rule, so a script that never runs, or
+ * an observer that never fires, costs a line and never a paragraph.
+ * ============================================================ */
 
-  opacity: 0;
-  transform: translate3d(0, var(--reveal-y), 0);
-  /* Ease the in→out flip that happens on hydration for below-fold elements
-     (server renders 'in'; the observer then resets them) so it reads as a
-     soft settle rather than a hard pop. */
-  transition: opacity 220ms ease;
+/* The pen gesture, and the site's only authored motion: a link's underline is
+ * scored in from the left rather than switched on. It runs under the cursor or
+ * the focus ring and nowhere else, so unlike an entrance animation it cannot
+ * fail closed and strand content. */
+@utility ink-underline {
+  position: relative;
+  text-decoration: none;
 
-  &[data-reveal-state='in'] {
-    animation: reveal-in var(--reveal-duration) var(--reveal-ease) both;
-    animation-delay: var(--reveal-delay);
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.18em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    transform: scaleX(1);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    opacity: 1 !important;
-    transform: none !important;
-    animation: none !important;
-    transition: none !important;
-    &[data-reveal-state='in'] {
-      opacity: 1 !important;
-      transform: none !important;
-      animation: none !important;
-      transition: none !important;
-    }
-  }
-}
-
-@utility selected-writing-media {
-  /* Selected writing rail */
-  transform: translate3d(var(--writing-parallax-x, 0px), 0, 0) scale(1.12);
-  will-change: transform;
-
-  .selected-writing-card:hover & {
-    transform: translate3d(var(--writing-parallax-x, 0px), -2px, 0) scale(1.16);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transform: none !important;
-    will-change: auto;
-
-    .selected-writing-card:hover & {
-      transform: none !important;
-      will-change: auto;
-    }
-  }
-}
-
-@utility selected-writing-card {
-  &:hover .selected-writing-media {
-    transform: translate3d(var(--writing-parallax-x, 0px), -2px, 0) scale(1.16);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    &:hover .selected-writing-media {
-      transform: none !important;
-      will-change: auto;
+    &::after {
+      transition: none;
     }
   }
 }
@@ -474,121 +452,6 @@
   @apply focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
 }
 
-@utility skeleton-shimmer {
-  /* ============================================
-   * SKELETON LOADING ANIMATION
-   * Shimmer effect for loading states
-   * ============================================ */
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    transform: translateX(-100%);
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.4),
-      transparent
-    );
-    animation: shimmer 1.5s infinite;
-  }
-
-  .dark &::after {
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.1),
-      transparent
-    );
-  }
-}
-
-
-@utility glass {
-  /* Register the custom property for animation */
-
-  /* ============================================
-   * GLASSMORPHISM CLASSES
-   * Frosted glass effect utilities
-   * ============================================ */
-  background: hsl(var(--background) / 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid hsl(var(--border) / 0.5);
-
-  .dark & {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-}
-
-@utility glass-subtle {
-  background: hsl(var(--background) / 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid hsl(var(--border) / 0.3);
-
-  .dark & {
-    background: rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-  }
-}
-
-@utility glass-heavy {
-  background: hsl(var(--background) / 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid hsl(var(--border) / 0.7);
-
-  .dark & {
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-  }
-}
-
-@utility nav-underline {
-
-  /* ============================================
-   * NAV UNDERLINE ANIMATION
-   * Slide-in underline effect for navigation
-   * ============================================ */
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: hsl(var(--primary));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  &:hover::after {
-    transform: scaleX(1);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    &::after {
-      transition: none;
-    }
-  }
-}
-
-@utility nav-underline-active {
-
-  /* Active state */
-  &::after {
-    transform: scaleX(1);
-  }
-}
-
 @layer base {
   :root {
     --background: 38 25% 97%;
@@ -637,14 +500,6 @@
     --z-popover: 1060;
     --z-tooltip: 1070;
 
-    /* Neumorphic shadows - light mode (subtle, barely visible) */
-    --neu-shadow-light: rgba(255, 255, 255, 0.9);
-    --neu-shadow-dark: rgba(120, 110, 90, 0.18);
-    --neu-shadow-sm: 4px 4px 6px -1px var(--neu-shadow-dark), -3px -3px 6px var(--neu-shadow-light);
-    --neu-shadow: 10px 10px 16px -2px var(--neu-shadow-dark), -8px -8px 16px -2px var(--neu-shadow-light);
-    --neu-shadow-lg: 16px 16px 24px -3px var(--neu-shadow-dark), -12px -12px 24px -3px var(--neu-shadow-light);
-    --neu-shadow-inset: inset -4px -4px 8px -1px var(--neu-shadow-light), inset 3px 3px 8px -1px var(--neu-shadow-dark);
-    --neu-shadow-inset-sm: inset -3px -3px 6px var(--neu-shadow-light), inset 2px 2px 5px var(--neu-shadow-dark);
   }
 
   .dark {
@@ -693,14 +548,6 @@
     --z-popover: 1060;
     --z-tooltip: 1070;
 
-    /* Neumorphic shadows - dark mode (asymmetric for natural depth) */
-    --neu-shadow-light: rgba(60, 70, 90, 0.45);
-    --neu-shadow-dark: rgba(0, 0, 0, 0.65);
-    --neu-shadow-sm: 5px 5px 8px -2px var(--neu-shadow-dark), -4px -4px 8px -2px var(--neu-shadow-light);
-    --neu-shadow: 10px 10px 16px -3px var(--neu-shadow-dark), -8px -8px 16px -3px var(--neu-shadow-light);
-    --neu-shadow-lg: 16px 16px 24px -4px var(--neu-shadow-dark), -12px -12px 24px -4px var(--neu-shadow-light);
-    --neu-shadow-inset: inset -5px -5px 8px -2px var(--neu-shadow-light), inset 3px 3px 10px -2px var(--neu-shadow-dark);
-    --neu-shadow-inset-sm: inset -3px -3px 6px var(--neu-shadow-light), inset 2px 2px 6px var(--neu-shadow-dark);
   }
 
   body {
@@ -728,6 +575,45 @@
     font-optical-sizing: auto;
   }
 
+  /* Browser surfaces the design system should own too: a caret in the
+   * site's own ink, and a scrollbar that reads as a sand rule rather than
+   * as operating-system chrome. */
+  :root {
+    caret-color: hsl(var(--primary));
+    scrollbar-color: hsl(var(--border)) transparent;
+    scrollbar-width: thin;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border: 3px solid hsl(var(--background));
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.45);
+  }
+
+  /* Tailwind's built-in loops carry meaning (something is loading), so
+   * reduced motion slows them rather than freezing them into a shape that
+   * looks broken. */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-pulse,
+    .animate-spin,
+    .animate-bounce {
+      animation-duration: 3s !important;
+    }
+  }
+
   /* Owned accent: selecting text anywhere on the site tints it with the
    * site's forest-green primary — a small signature every reader touches. */
   ::selection {
@@ -750,26 +636,8 @@
 
 @layer utilities {
 
-  @keyframes reveal-in {
-    from {
-      opacity: 0;
-      transform: translate3d(0, var(--reveal-y), 0);
-    }
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0);
-    }
-  }
 }
 
-@layer components {
-
-  @keyframes shimmer {
-    100% {
-      transform: translateX(100%);
-    }
-  }
-}
 
 /* Editorial drop cap: the first letter of an essay set large in Fraunces,
    like the opening initial of a printed article. Scoped to the article body. */
@@ -783,10 +651,11 @@
   color: hsl(var(--primary));
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .prose-gallery :is(h2, h3) {
-    scroll-margin-top: 6rem;
-  }
+/* Clears the 80px fixed header on an anchor jump. Not motion, so it must
+ * not sit behind a motion preference: reduced-motion readers were landing
+ * with the heading tucked under the bar. */
+.prose-gallery :is(h2, h3) {
+  scroll-margin-top: 6rem;
 }
 
 /* Google Translate integration hardening */

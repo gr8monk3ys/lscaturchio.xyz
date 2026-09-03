@@ -1,11 +1,8 @@
-import { NextRequest } from 'next/server';
 import { hybridSearch } from '@/lib/embeddings';
 import { logError } from '@/lib/logger';
-import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
-import { validateCsrf } from '@/lib/csrf';
-import { chatRequestSchema, parseBody } from '@/lib/validations';
-import { apiSuccess, ApiErrors } from '@/lib/api-response';
+import { withWriteRoute } from '@/lib/api/write-route';
+import { chatRequestSchema } from '@/lib/validations';
 import { generateChatAnswer } from '@/lib/chat/providers';
 import {
   buildSystemPromptWithContext,
@@ -43,19 +40,26 @@ async function loadSemanticRetrieval(query: string): Promise<SemanticRetrieval> 
   }
 }
 
-const handlePost = async (req: NextRequest) => {
-  const csrfError = validateCsrf(req);
-  if (csrfError) return csrfError;
-
-  try {
-    const body = await req.json();
-    const parsed = parseBody(chatRequestSchema, body);
-    if (!parsed.success) {
-      return ApiErrors.badRequest(parsed.error);
-    }
-
-    const query = sanitizeChatInput(parsed.data.query);
-    const { contextSlug } = parsed.data;
+export const POST = withWriteRoute(
+  {
+    limit: RATE_LIMITS.CHAT,
+    auth: {
+      kind: 'public',
+      reason: 'The site-wide chat box is open to every reader; abuse is bounded by RATE_LIMITS.CHAT.',
+    },
+    csrf: { kind: 'required' },
+    body: { kind: 'json', schema: chatRequestSchema },
+    envelope: { kind: 'standard' },
+    errors: {
+      log: 'Chat API request failed',
+      component: 'chat',
+      action: 'POST',
+      message: 'Failed to process chat request',
+    },
+  },
+  async ({ data }) => {
+    const query = sanitizeChatInput(data.query);
+    const { contextSlug } = data;
 
     const retrieval = await loadSemanticRetrieval(query);
 
@@ -68,33 +72,24 @@ const handlePost = async (req: NextRequest) => {
       }
     }
 
-    const systemPrompt = buildSystemPromptWithContext(
-      SYSTEM_PROMPT,
-      postContext,
-      retrieval,
-    );
+    const systemPrompt = buildSystemPromptWithContext(SYSTEM_PROMPT, postContext, retrieval);
 
     const result = await generateChatAnswer(systemPrompt, query);
 
     if (result) {
-      return apiSuccess({
+      return {
         answer: result.answer,
         provider: result.provider,
         model: result.model,
         degraded: result.usedFallbackModel,
-      });
+      };
     }
 
-    return apiSuccess({
+    return {
       answer: buildFallbackAnswer(retrieval.context, retrieval.closest, retrieval.confidence),
       provider: 'fallback' as const,
       model: null,
       degraded: true,
-    });
-  } catch (error: unknown) {
-    logError('Chat API request failed', error, { endpoint: '/api/chat' });
-    return ApiErrors.internalError('Failed to process chat request');
+    };
   }
-};
-
-export const POST = withRateLimit(handlePost, RATE_LIMITS.CHAT);
+);

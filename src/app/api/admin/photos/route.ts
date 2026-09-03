@@ -1,11 +1,5 @@
-import { NextRequest } from "next/server";
-import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
-import { validateCsrf } from "@/lib/csrf";
-import { logError } from "@/lib/logger";
-import { parseBody } from "@/lib/validations";
-import { apiSuccess, ApiErrors } from "@/lib/api-response";
-import { requireAdmin } from "@/lib/admin/session";
+import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { getFile, commitToMain, type CommitFile } from "@/lib/admin/github";
 import { jsonFileContent, PHOTOS_JSON_PATH } from "@/lib/admin/json-content";
 import { photoEntriesSchema } from "@/lib/admin/schemas";
@@ -15,23 +9,26 @@ import type { Photo } from "@/constants/photos";
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 
-async function handler(req: NextRequest) {
-  const authError = requireAdmin(req);
-  if (authError) return authError;
-  const csrfError = validateCsrf(req);
-  if (csrfError) return csrfError;
-
-  try {
-    const form = await req.formData();
-    const entriesRaw = form.get("entries");
-    if (typeof entriesRaw !== "string") return ApiErrors.missingField("entries");
-    const parsed = parseBody(photoEntriesSchema, JSON.parse(entriesRaw));
-    if (!parsed.success) return ApiErrors.badRequest(parsed.error);
-    const entries = parsed.data;
-
-    const uploads = form.getAll("files").filter((f): f is File => f instanceof File);
+export const POST = withWriteRoute(
+  {
+    limit: RATE_LIMITS.STANDARD,
+    auth: { kind: "adminSession" },
+    csrf: { kind: "required" },
+    // Multipart: the image bytes ride alongside a JSON metadata field, which
+    // is what the schema validates.
+    body: { kind: "formData", jsonField: "entries", schema: photoEntriesSchema },
+    envelope: { kind: "standard" },
+    errors: {
+      log: "Admin photo publish failed",
+      component: "admin-photos",
+      action: "POST",
+      message: "Publish failed — nothing was committed",
+    },
+  },
+  async ({ data: entries, form }) => {
+    const uploads = (form?.getAll("files") ?? []).filter((f): f is File => f instanceof File);
     if (uploads.length !== entries.length) {
-      return ApiErrors.badRequest("Each uploaded file needs exactly one metadata entry");
+      throw writeError.badRequest("Each uploaded file needs exactly one metadata entry");
     }
 
     const current = await getFile(PHOTOS_JSON_PATH);
@@ -44,10 +41,10 @@ async function handler(req: NextRequest) {
     });
     for (const t of targets) {
       if (t.upload.size > MAX_UPLOAD_BYTES) {
-        return ApiErrors.badRequest(`${t.upload.name} exceeds ${MAX_UPLOAD_BYTES / 1024 / 1024}MB`);
+        throw writeError.badRequest(`${t.upload.name} exceeds ${MAX_UPLOAD_BYTES / 1024 / 1024}MB`);
       }
       if (photos.some((p) => p.src === t.src)) {
-        return ApiErrors.conflict(`${t.src} already exists in the gallery`);
+        throw writeError.conflict(`${t.src} already exists in the gallery`);
       }
     }
 
@@ -80,11 +77,6 @@ async function handler(req: NextRequest) {
       files,
       `content(photos): add ${added.length} photo(s) via portal`
     );
-    return apiSuccess({ commitUrl: commit.url, added });
-  } catch (error) {
-    logError("Admin photo publish failed", error, { component: "admin-photos", action: "POST" });
-    return ApiErrors.internalError("Publish failed — nothing was committed");
+    return { commitUrl: commit.url, added };
   }
-}
-
-export const POST = withRateLimit(handler, RATE_LIMITS.STANDARD);
+);

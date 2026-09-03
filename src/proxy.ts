@@ -1,52 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const LOCALE_COOKIE = "site_locale";
-const GOOGLE_TRANSLATE_COOKIE = "googtrans";
-const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
-
-const DEFAULT_LOCALE = "en";
-const SUPPORTED_LOCALES = ["en", "es", "fr", "hi", "ar", "zh-cn"] as const;
-type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
-
-const SUPPORTED_LOCALE_SET = new Set<string>(SUPPORTED_LOCALES);
-
-const LOCALE_TO_GOOGLE_TRANSLATE: Record<Exclude<SupportedLocale, "en">, string> = {
-  es: "es",
-  fr: "fr",
-  hi: "hi",
-  ar: "ar",
-  "zh-cn": "zh-CN",
-};
+import {
+  DEFAULT_LOCALE,
+  GOOGLE_TRANSLATE_COOKIE,
+  LOCALE_COOKIE,
+  LOCALE_COOKIE_MAX_AGE_SECONDS,
+  localeToGoogleTranslate,
+  parseLocaleCookie,
+  stripLocalePrefix,
+  withLocalePrefix,
+  type LocaleSegment,
+} from "@/lib/site-locale";
 
 function isPublicFile(pathname: string): boolean {
   // Treat anything with a file extension as a public/static file.
   return /\.[a-z0-9]+$/i.test(pathname);
 }
 
-function stripLocalePrefix(pathname: string): { locale: SupportedLocale | null; barePath: string } {
-  const parts = pathname.split("/").filter(Boolean);
-  const maybeLocale = parts[0];
-  if (!maybeLocale || !SUPPORTED_LOCALE_SET.has(maybeLocale)) {
-    return { locale: null, barePath: pathname };
-  }
-
-  const locale = maybeLocale as SupportedLocale;
-  const rest = parts.slice(1).join("/");
-  const barePath = `/${rest}`.replace(/\/$/, "") || "/";
-  return { locale, barePath };
-}
-
-function withLocalePrefix(locale: SupportedLocale, barePath: string): string {
-  const normalized = barePath.startsWith("/") ? barePath : `/${barePath}`;
-  if (locale === DEFAULT_LOCALE) return normalized;
-  if (normalized === "/") return `/${locale}`;
-  return `/${locale}${normalized}`;
-}
-
-function setLocaleCookies(response: NextResponse, locale: SupportedLocale): void {
+function setLocaleCookies(response: NextResponse, locale: LocaleSegment): void {
   response.cookies.set(LOCALE_COOKIE, locale, {
     path: "/",
-    maxAge: COOKIE_MAX_AGE_SECONDS,
+    maxAge: LOCALE_COOKIE_MAX_AGE_SECONDS,
     sameSite: "lax",
   });
 
@@ -59,18 +33,14 @@ function setLocaleCookies(response: NextResponse, locale: SupportedLocale): void
     return;
   }
 
-  const translateCode = LOCALE_TO_GOOGLE_TRANSLATE[locale];
+  // The URL segment is lowercase (/zh-cn); Google Translate wants zh-CN.
+  const translateCode = localeToGoogleTranslate(locale);
   const value = encodeURIComponent(`/en/${translateCode}`);
   response.cookies.set(GOOGLE_TRANSLATE_COOKIE, value, {
     path: "/",
-    maxAge: COOKIE_MAX_AGE_SECONDS,
+    maxAge: LOCALE_COOKIE_MAX_AGE_SECONDS,
     sameSite: "lax",
   });
-}
-
-function parseLocaleCookie(value: string | undefined): SupportedLocale {
-  if (!value) return DEFAULT_LOCALE;
-  return SUPPORTED_LOCALE_SET.has(value) ? (value as SupportedLocale) : DEFAULT_LOCALE;
 }
 
 export function proxy(request: NextRequest) {

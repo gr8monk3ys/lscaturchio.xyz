@@ -1,59 +1,30 @@
-"use client";
-
-import { useRef, ReactNode } from "react";
-import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
+import { ReactNode } from "react";
 import { formatDate } from "@/lib/formatDate";
 import { Container } from "../Container";
 import { Heading } from "../Heading";
 import { Prose } from "@/components/blog/Prose";
-import { ArrowLeft } from "lucide-react";
 import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { ReadingProgress } from "./reading-progress";
 import { NewsletterCTA } from "./newsletter-cta";
-import { InlineNewsletterCTA } from "./inline-newsletter-cta";
 import { ViewCounter } from "./view-counter";
 import { SocialShare } from "./social-share";
 import { ReadingProgressTracker } from "./reading-progress-tracker";
 import { BlogJsonLd } from "./blog-json-ld";
 import { SyndicationLinks } from "./syndication-links";
+import { BackButton } from "./back-button";
+import { TextToSpeech } from "./text-to-speech";
+import { SeriesNavigation } from "./series-navigation";
+import { Webmentions } from "./webmentions";
+import { GiscusComments } from "./giscus-comments";
+import { RelatedPosts } from "./related-posts";
+import { BlogSidebar, EssayContentsInline, EssayAskInline } from "./blog-sidebar";
 import Link from "next/link";
 import { getTopicHubsForTags } from "@/constants/topics";
 import { getSiteUrl } from "@/lib/site-url";
 import { clampBlogDateToToday } from "@/lib/blog-data";
 import type { BlogStage } from "@/lib/blog-stage";
 import { StageBadge } from "@/components/blog/stage-badge";
-
-const TextToSpeech = dynamic(
-  () => import("./text-to-speech").then((module) => module.TextToSpeech),
-  { ssr: false, loading: () => null }
-);
-
-const SeriesNavigation = dynamic(
-  () => import("./series-navigation").then((module) => module.SeriesNavigation),
-  { ssr: false, loading: () => null }
-);
-
-const Webmentions = dynamic(
-  () => import("./webmentions").then((module) => module.Webmentions),
-  { ssr: false, loading: () => null }
-);
-
-const GiscusComments = dynamic(
-  () => import("./giscus-comments").then((module) => module.GiscusComments),
-  { ssr: false, loading: () => null }
-);
-
-const RelatedPosts = dynamic(
-  () => import("./related-posts").then((module) => module.RelatedPosts),
-  { ssr: false, loading: () => null }
-);
-
-const BlogSidebar = dynamic(
-  () => import("./blog-sidebar").then((module) => module.BlogSidebar),
-  { ssr: false, loading: () => null }
-);
 
 interface BlogMeta {
   title: string;
@@ -71,6 +42,12 @@ interface BlogMeta {
 interface BlogLayoutProps {
   children: ReactNode;
   meta: BlogMeta;
+  /**
+   * The essay's own slug. Every route already writes its path literally, so
+   * the shell takes it as a prop instead of re-deriving it from
+   * `usePathname()` — which is what made this whole file client-only.
+   */
+  slug: string;
   isRssFeed?: boolean;
   previousPathname?: string;
   readingTime?: number;
@@ -79,18 +56,15 @@ interface BlogLayoutProps {
 export function BlogLayout({
   children,
   meta,
+  slug,
   isRssFeed = false,
   previousPathname,
   readingTime = 5,
 }: BlogLayoutProps) {
-  const pathname = usePathname();
-  const contentRef = useRef<HTMLDivElement>(null);
   const safeDate = clampBlogDateToToday(meta.date);
   const safeUpdated = meta.updated ? clampBlogDateToToday(meta.updated) : undefined;
   const relatedHubs = getTopicHubsForTags(meta.tags);
-
-  // Get slug from pathname
-  const slug = pathname.split('/').pop() || '';
+  const pathname = `/blog/${slug}`;
 
   if (isRssFeed) {
     return children;
@@ -119,16 +93,7 @@ export function BlogLayout({
         <div className="mx-auto max-w-2xl xl:mx-0">
           <BreadcrumbNav customSegments={{ blog: "Blog" }} />
 
-          {previousPathname && (
-            <button
-              type="button"
-              onClick={() => window.history.back()}
-              aria-label="Go back to blogs"
-              className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
-            >
-              <ArrowLeft className="h-4 w-4 stroke-zinc-500 transition group-hover:stroke-zinc-700 dark:stroke-zinc-500 dark:group-hover:stroke-zinc-400" />
-            </button>
-          )}
+          {previousPathname && <BackButton />}
           <article>
             <header className="flex flex-col">
               {/* Wall-label meta line: date · reading time · tags · views */}
@@ -139,14 +104,20 @@ export function BlogLayout({
                 {meta.tags.length > 0 && (
                   <>
                     <span aria-hidden className="text-foreground/25">·</span>
-                    {meta.tags.map((tag) => (
-                      <Link
-                        key={tag}
-                        href={`/tag/${encodeURIComponent(tag)}`}
-                        className="transition-colors hover:text-primary"
-                      >
-                        {tag}
-                      </Link>
+                    {meta.tags.map((tag, tagIndex) => (
+                      <span key={tag} className="inline-flex items-center">
+                        <Link
+                          href={`/tag/${encodeURIComponent(tag)}`}
+                          className="transition-colors hover:text-primary"
+                        >
+                          {tag}
+                        </Link>
+                        {tagIndex < meta.tags.length - 1 && (
+                          <span aria-hidden className="ml-3 text-foreground/25">
+                            ·
+                          </span>
+                        )}
+                      </span>
                     ))}
                   </>
                 )}
@@ -171,6 +142,21 @@ export function BlogLayout({
                 <p className="label-mono mt-3">Updated {formatDate(safeUpdated)}</p>
               )}
 
+              {/* Byline as a wall label: the reader who arrived mid-essay
+                  should leave knowing who wrote it without hunting. */}
+              <p className="label-mono mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="text-foreground">Lorenzo Scaturchio</span>
+                <span aria-hidden className="text-foreground/25">·</span>
+                <span>Los Angeles</span>
+                <span aria-hidden className="text-foreground/25">·</span>
+                <Link
+                  href="/about"
+                  className="text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                >
+                  About the author →
+                </Link>
+              </p>
+
               {relatedHubs.length > 0 && (
                 <p className="label-mono mt-5 flex flex-wrap items-center gap-x-4 gap-y-1">
                   <span className="text-foreground/70">Explore</span>
@@ -186,6 +172,8 @@ export function BlogLayout({
                 </p>
               )}
 
+              <EssayContentsInline slug={slug} />
+
               <hr className="gallery-rule mt-8" />
 
               <div className="relative mt-8 aspect-video overflow-hidden border border-border bg-muted">
@@ -200,58 +188,55 @@ export function BlogLayout({
               </div>
             </header>
             <div className="mt-8">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                <TextToSpeech slug={slug} contentRef={contentRef} />
+              {/* Listening is the one alternative that belongs before the
+                  text. Sharing and subscribing wait until it has been read. */}
+              <div className="mb-8">
+                <TextToSpeech slug={slug} />
+              </div>
+
+              <Prose>{children}</Prose>
+            </div>
+
+            {/* End matter: share and series first, as wall labels on one
+                hairline, then the rest of the machinery. */}
+            <footer className="mt-12 border-t border-border pt-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <SocialShare
                   title={meta.title}
                   description={meta.description}
                   url={fullUrl}
                 />
-              </div>
-              {meta.syndication && meta.syndication.length > 0 && (
-                <div className="mb-8">
+                {meta.syndication && meta.syndication.length > 0 && (
                   <SyndicationLinks links={meta.syndication} />
-                </div>
+                )}
+              </div>
+
+              {meta.series && meta.seriesOrder && (
+                <SeriesNavigation
+                  seriesName={meta.series}
+                  currentSlug={slug}
+                  currentOrder={meta.seriesOrder}
+                />
               )}
+            </footer>
 
-              <InlineNewsletterCTA
-                defaultTopics={relatedHubs.map((hub) => hub.slug)}
-                sourcePath={pathname}
-              />
+            {/* The reader's next step is another essay; everything else
+                comes after it. */}
+            <RelatedPosts
+              currentTitle={meta.title}
+              currentUrl={pathname}
+            />
 
-              <Prose>
-                <div ref={contentRef}>
-                  {children}
-                </div>
-              </Prose>
-            </div>
+            <EssayAskInline slug={slug} title={meta.title} />
 
-            {/* Series Navigation (if part of a series) */}
-            {meta.series && meta.seriesOrder && (
-              <SeriesNavigation
-                seriesName={meta.series}
-                currentSlug={slug}
-                currentOrder={meta.seriesOrder}
-              />
-            )}
-
-            {/* Newsletter CTA */}
             <NewsletterCTA
               defaultTopics={relatedHubs.map((hub) => hub.slug)}
               sourcePath={pathname}
             />
 
-            {/* Webmentions (likes/reposts/replies from the open web) */}
             <Webmentions path={pathname} />
 
-            {/* Comments Section */}
             <GiscusComments />
-
-            {/* Related Posts */}
-            <RelatedPosts
-              currentTitle={meta.title}
-              currentUrl={pathname}
-            />
           </article>
         </div>
 

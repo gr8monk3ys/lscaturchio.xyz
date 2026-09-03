@@ -8,7 +8,9 @@ import {
   slugQuerySchema,
   parseBody,
   parseQuery,
+  chatRequestSchema,
 } from '@/lib/validations';
+import { CHAT_PROVIDERS } from '@/lib/chat/providers';
 
 describe('slugSchema', () => {
   it('accepts valid slugs', () => {
@@ -191,5 +193,41 @@ describe('parseQuery helper', () => {
     if (!result.success) {
       expect(result.error).toBeDefined();
     }
+  });
+});
+
+describe('chatRequestSchema provider drift guard', () => {
+  // The schema once advertised 'anthropic' and 'google' — neither exists in the
+  // ladder — and a 'model' field the route threw away. These tests fail if the
+  // request contract and the real provider set are ever able to disagree again.
+  const shape = chatRequestSchema.shape as Record<string, unknown>;
+
+  it('advertises no provider the ladder cannot answer with', () => {
+    const advertised: string[] =
+      'provider' in shape
+        ? ((shape.provider as { options?: string[]; _def?: { innerType?: { options?: string[] } } })
+            .options ??
+          (shape.provider as { _def?: { innerType?: { options?: string[] } } })._def?.innerType
+            ?.options ??
+          [])
+        : [];
+    const unroutable = advertised.filter(
+      (p) => !(CHAT_PROVIDERS as readonly string[]).includes(p)
+    );
+    expect(unroutable).toEqual([]);
+  });
+
+  it('accepts only the fields the route actually reads', () => {
+    expect(Object.keys(shape).sort()).toEqual(['contextSlug', 'query']);
+  });
+
+  it('drops a caller-supplied provider and model instead of pretending to honour them', () => {
+    const parsed = chatRequestSchema.parse({
+      query: 'who are you?',
+      provider: 'google',
+      model: 'gemini-2.0',
+    });
+    expect(parsed).not.toHaveProperty('provider');
+    expect(parsed).not.toHaveProperty('model');
   });
 });

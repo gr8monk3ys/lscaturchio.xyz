@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Search, Loader2, ArrowUpRight, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useSWR from "swr";
-import { fetchJson, unwrapApiData } from "@/lib/fetcher";
+import { fetchJson, type ApiEnvelope } from "@/lib/fetcher";
 
 interface SearchResult {
   title: string;
@@ -40,7 +40,7 @@ export function SemanticSearchDemo() {
     ? `/api/search?q=${encodeURIComponent(debouncedQuery)}&limit=6`
     : null;
 
-  const { data, isLoading, error } = useSWR<{ data?: { results?: SearchResult[] }; results?: SearchResult[] }>(
+  const { data, isLoading, error } = useSWR<ApiEnvelope<{ results?: SearchResult[] }>>(
     requestUrl,
     fetchJson,
     {
@@ -50,9 +50,8 @@ export function SemanticSearchDemo() {
   );
 
   const results = useMemo(() => {
-    if (!data) return [];
-    const unwrapped = unwrapApiData(data as { results?: SearchResult[] });
-    return Array.isArray(unwrapped.results) ? unwrapped.results : [];
+    const found = data?.data?.results;
+    return Array.isArray(found) ? found : [];
   }, [data]);
 
   return (

@@ -22,7 +22,7 @@ function renderWithSWR(ui: ReactNode) {
 }
 
 function jsonResponse(body: unknown) {
-  return { ok: true, status: 200, json: async () => body };
+  return { ok: true, status: 200, json: async () => ({ data: body, success: true }) };
 }
 
 function postCalls() {

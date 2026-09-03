@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { buildPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/Container";
-import { Heading } from "@/components/Heading";
-import { Paragraph } from "@/components/Paragraph";
 import { ArrowUpRight } from "lucide-react";
+import { footerColumns, primaryNavigation } from "@/constants/navlinks";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Garden",
@@ -25,7 +25,7 @@ const PLOTS = [
   },
   {
     href: "/movies",
-    title: "Films",
+    title: "Movies",
     blurb: "A diary of what I've watched, pulled from Letterboxd.",
   },
   {
@@ -55,22 +55,51 @@ const PLOTS = [
   },
 ];
 
+// Every other doorway on the site, so the garden is the whole map rather than
+// a curated subset. Drawn from the footer columns plus the pages that have no
+// other entrance anywhere.
+const BARE_SOIL: Array<{ href: string; name: string }> = [
+  { href: "/colophon", name: "Colophon" },
+  { href: "/roadmap", name: "Roadmap" },
+  { href: "/stats", name: "Stats" },
+  { href: "/bookmarks", name: "Bookmarks" },
+  { href: "/map", name: "Map" },
+  { href: "/tags", name: "Tags" },
+  { href: "/api-docs", name: "API" },
+];
+
+// Anything already in the header or tended above does not need a second door.
+const SHOWN = new Set<string>([
+  "/garden",
+  ...PLOTS.map((plot) => plot.href),
+  ...primaryNavigation.map((item) => item.href),
+]);
+
+const MORE: Array<{ href: string; name: string }> = [
+  ...footerColumns.flatMap((column) => column.items),
+  ...BARE_SOIL,
+]
+  .map((item) => ({ href: item.href, name: item.name }))
+  .filter(
+    (item, index, all) =>
+      !SHOWN.has(item.href) && all.findIndex((other) => other.href === item.href) === index
+  );
+
 export default function GardenPage() {
   return (
     <Container size="large">
       <div className="py-10">
-        <header>
-          <span className="label-mono block">Garden</span>
-          <Heading className="mt-4 font-bold text-4xl md:text-5xl tracking-tight">
-            A garden, not a homepage.
-          </Heading>
-          <Paragraph className="mt-4 max-w-2xl text-muted-foreground">
-            The parts of this site that aren&apos;t work. Some of these are tended
-            weekly, some are overgrown, and one or two are still bare soil. That&apos;s
-            the point of a garden.
-          </Paragraph>
-          <hr className="gallery-rule mt-8" />
-        </header>
+        <PageHead
+          kicker="Garden"
+          title="A garden, not a homepage."
+          blurb={
+            <>
+              The parts of this site that aren&apos;t work. Some of these are tended
+              weekly, some are overgrown, and one or two are still bare soil. That&apos;s
+              the point of a garden.
+            </>
+          }
+        />
 
         <ul className="mt-10 grid grid-cols-1 gap-px overflow-hidden border border-border bg-border sm:grid-cols-2">
           {PLOTS.map((plot) => (
@@ -93,6 +122,25 @@ export default function GardenPage() {
             </li>
           ))}
         </ul>
+
+        <section className="mt-14" aria-labelledby="garden-more">
+          <span id="garden-more" className="label-mono block">
+            Also growing · {MORE.length} more pages
+          </span>
+          <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-4">
+            {MORE.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  prefetch={false}
+                  className="label-mono normal-case tracking-normal text-foreground ink-underline transition-colors hover:text-primary"
+                >
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
     </Container>
   );

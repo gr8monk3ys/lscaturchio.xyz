@@ -17,6 +17,8 @@ function getCategoryLabel(category: CommandCategory): string {
   }
 }
 
+const LISTBOX_ID = 'command-palette-listbox'
+
 type DialogProps = {
   commandCount: number
   groupedCommands: CommandGroups
@@ -47,6 +49,8 @@ export function CommandPaletteDialog({
   selectedIndex,
 }: DialogProps): React.ReactElement {
   let globalIndex = -1
+  const activeOptionId =
+    commandCount > 0 ? `${LISTBOX_ID}-option-${selectedIndex}` : undefined
 
   return (
     <>
@@ -75,6 +79,11 @@ export function CommandPaletteDialog({
               onChange={(e) => onChangeQuery(e.target.value)}
               placeholder="Search pages, blogs, or actions..."
               aria-label="Search pages, blogs, or actions"
+              role="combobox"
+              aria-expanded
+              aria-autocomplete="list"
+              aria-controls={LISTBOX_ID}
+              aria-activedescendant={activeOptionId}
               className="flex-1 bg-transparent text-base outline-hidden placeholder:text-muted-foreground"
             />
             {isSearching && <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />}
@@ -88,12 +97,18 @@ export function CommandPaletteDialog({
                 <X className="h-4 w-4" />
               </button>
             )}
-            <kbd className="hidden sm:inline-flex h-5 items-center rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+            <kbd className="hidden sm:inline-flex h-5 items-center rounded border bg-muted px-1.5 font-mono text-[0.72rem] font-medium text-muted-foreground">
               ESC
             </kbd>
           </div>
 
-          <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-2" role="listbox">
+          <div
+            ref={listRef}
+            id={LISTBOX_ID}
+            className="max-h-[60vh] overflow-y-auto p-2"
+            role="listbox"
+            aria-label="Search results"
+          >
             {commandCount === 0 ? (
               <div className="py-8 text-center text-muted-foreground">
                 <Sparkles className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -118,6 +133,8 @@ export function CommandPaletteDialog({
                           <button
                             key={command.id}
                             type="button"
+                            id={`${LISTBOX_ID}-option-${globalIndex}`}
+                            tabIndex={-1}
                             data-index={globalIndex}
                             onClick={() => onSelectCommand(command)}
                             onMouseEnter={() => onHoverIndex(globalIndex)}

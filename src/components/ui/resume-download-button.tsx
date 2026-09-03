@@ -36,10 +36,8 @@ export function ResumeDownloadButton({
       className={cn(
         "group relative inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all",
         variant === "default" && [
-          "border border-zinc-200 bg-white/50 text-zinc-900 backdrop-blur-xs",
-          "hover:border-zinc-300 hover:bg-white/80",
-          "dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100",
-          "dark:hover:border-zinc-700 dark:hover:bg-zinc-900/80",
+          "border border-border bg-card text-foreground",
+          "hover:border-primary/45 hover:bg-primary/6 hover:text-primary",
         ],
         variant === "outline-solid" && [
           "neu-button text-foreground hover:text-primary",

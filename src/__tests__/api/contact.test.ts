@@ -8,47 +8,28 @@ vi.mock('@/lib/logger', () => ({
 
 vi.mock('@/lib/with-rate-limit', () => ({
   withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
+  // Mirrors src/lib/rate-limit.ts — these values drifted once (STANDARD 60 vs
+  // the real 30, AI_HEAVY 10 vs the real 5) and nothing caught it.
   RATE_LIMITS: {
     NEWSLETTER: { limit: 3, window: 300000 },
-    STANDARD: { limit: 60, window: 60000 },
-    AI_HEAVY: { limit: 10, window: 60000 },
+    STANDARD: { limit: 30, window: 60000 },
+    AI_HEAVY: { limit: 5, window: 60000 },
   },
 }));
 
 vi.mock('@/lib/rate-limit', () => ({
+  // Mirrors src/lib/rate-limit.ts — these values drifted once (STANDARD 60 vs
+  // the real 30, AI_HEAVY 10 vs the real 5) and nothing caught it.
   RATE_LIMITS: {
     NEWSLETTER: { limit: 3, window: 300000 },
-    STANDARD: { limit: 60, window: 60000 },
-    AI_HEAVY: { limit: 10, window: 60000 },
+    STANDARD: { limit: 30, window: 60000 },
+    AI_HEAVY: { limit: 5, window: 60000 },
   },
 }));
 
-// Mock sanitize functions
-vi.mock('@/lib/sanitize', () => ({
-  escapeHtml: (str: string) => {
-    if (typeof str !== 'string') return '';
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  },
-  sanitizeForHtmlEmail: (str: string) => {
-    if (typeof str !== 'string') return '';
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;')
-      .replace(/\n/g, '<br>');
-  },
-  sanitizeEmailSubject: (str: string) => {
-    if (typeof str !== 'string') return '';
-    return str.replace(/[\r\n]/g, ' ').trim().slice(0, 200);
-  },
-}));
+// @/lib/sanitize is deliberately NOT mocked. It used to be reimplemented here,
+// which meant these tests asserted a copy of the sanitisers rather than the
+// sanitisers, and a regression in src/lib/sanitize.ts could not fail the suite.
 
 vi.mock('@/lib/csrf', () => ({
   validateCsrf: vi.fn(),

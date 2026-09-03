@@ -96,7 +96,7 @@ export default async function ChangelogPage() {
                         {item.tags?.length ? (
                           <div className="mt-3 flex flex-wrap gap-2">
                             {item.tags.map((tag) => (
-                              <Badge key={tag} variant="secondary" className="text-[11px]">
+                              <Badge key={tag} variant="secondary" className="text-[0.72rem]">
                                 {tag}
                               </Badge>
                             ))}

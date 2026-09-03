@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { buildPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/Container";
-import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Colophon",
@@ -32,24 +32,23 @@ export default function ColophonPage() {
   return (
     <Container size="large">
       <div className="py-10">
-        <header>
-          <span className="label-mono block">Colophon</span>
-          <Heading className="mt-4 font-bold text-4xl md:text-5xl tracking-tight">
-            How this is built.
-          </Heading>
-          <Paragraph className="mt-4 max-w-2xl text-muted-foreground">
-            A living page, kept current. The long version — every decision and the
-            reasoning behind it — is in{" "}
-            <Link
-              href="/blog/how-i-built-this-site"
-              className="text-primary underline underline-offset-4"
-            >
-              the post
-            </Link>
-            , which is dated and will age. This will not.
-          </Paragraph>
-          <hr className="gallery-rule mt-8" />
-        </header>
+        <PageHead
+          kicker="Colophon"
+          title="How this is built."
+          blurb={
+            <>
+              A living page, kept current. The long version — every decision and the
+              reasoning behind it — is in{" "}
+              <Link
+                href="/blog/how-i-built-this-site"
+                className="text-primary underline underline-offset-4"
+              >
+                the post
+              </Link>
+              , which is dated and will age. This will not.
+            </>
+          }
+        />
 
         <section className="mt-10" aria-labelledby="stack">
           <h2 id="stack" className="label-mono">The stack</h2>

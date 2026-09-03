@@ -1,25 +1,18 @@
-"use client";
-
 import { cn } from "@/lib/utils";
-import { m, useMotionPreset } from '@/lib/motion';
 
 interface ParagraphProps {
   children: React.ReactNode;
   className?: string;
 }
 
+/**
+ * Body paragraph for page heads. Deliberately static: this used to animate
+ * in on scroll, and the sentence that explains a page stayed at opacity 0
+ * whenever the motion features loaded late. Text is never gated behind JS.
+ */
 export function Paragraph({ children, className }: ParagraphProps) {
-  const transition = useMotionPreset('slow');
-  const paragraphVariants = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0, transition },
-  };
   return (
-    <m.p
-      variants={paragraphVariants}
-      initial="initial"
-      whileInView="animate"
-      viewport={{ once: true, margin: "-20px" }}
+    <p
       className={cn(
         "text-base md:text-lg lg:text-xl leading-relaxed text-muted-foreground",
         "selection:bg-primary/20 selection:text-primary",
@@ -27,6 +20,6 @@ export function Paragraph({ children, className }: ParagraphProps) {
       )}
     >
       {children}
-    </m.p>
+    </p>
   );
 }

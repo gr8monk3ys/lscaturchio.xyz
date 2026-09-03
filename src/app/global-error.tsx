@@ -7,7 +7,134 @@ import { useEffect } from 'react'
  * Global error boundary for handling errors in the root layout.
  * This is a special Next.js component that must render its own <html> and <body> tags.
  * It catches errors that occur during rendering of the root layout.
+ *
+ * It cannot rely on the app's stylesheet or its CSS custom properties loading, so
+ * the palette below is inlined as literal values taken from DESIGN.md rather than
+ * read from `--background` / `--foreground`. Dark mode keys off `prefers-color-scheme`
+ * because the theme class lives on the root layout's <html>, which is gone here.
  */
+const paletteCss = `
+  :root {
+    --ge-paper: #f9f8f5;
+    --ge-card: #fbfaf9;
+    --ge-ink: #1a1f23;
+    --ge-ink-muted: #606976;
+    --ge-hairline: #e2dbd5;
+    --ge-forest: #184e35;
+    --ge-forest-contrast: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ge-paper: #111317;
+      --ge-card: #16181d;
+      --ge-ink: #fafafa;
+      --ge-ink-muted: #abb0ba;
+      --ge-hairline: #292c32;
+      --ge-forest: #42a979;
+      --ge-forest-contrast: #111317;
+      color-scheme: dark;
+    }
+  }
+  .ge-body {
+    margin: 0;
+    background: var(--ge-paper);
+    color: var(--ge-ink);
+    font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.65;
+  }
+  .ge-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .ge-sheet {
+    width: 100%;
+    max-width: 34rem;
+    background: var(--ge-card);
+    border: 1px solid var(--ge-hairline);
+    border-radius: 18px;
+    padding: 32px;
+  }
+  .ge-label {
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ge-ink-muted);
+    font-feature-settings: 'tnum' 1;
+    margin: 0;
+  }
+  .ge-title {
+    font-family: 'Fraunces', ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.9rem, 3.6vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    margin: 16px 0 0;
+  }
+  .ge-copy {
+    color: var(--ge-ink-muted);
+    margin: 16px 0 0;
+  }
+  .ge-rule {
+    border: 0;
+    border-top: 1px solid var(--ge-hairline);
+    margin: 24px 0;
+  }
+  .ge-digest {
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.75rem;
+    color: var(--ge-ink-muted);
+    word-break: break-all;
+    margin: 0 0 24px;
+  }
+  .ge-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+  .ge-cta {
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 14px;
+    border: 1px solid var(--ge-forest);
+    background: var(--ge-forest);
+    color: var(--ge-forest-contrast);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition: filter 150ms ease;
+  }
+  .ge-cta:hover { filter: brightness(1.05); }
+  .ge-link {
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ge-ink-muted);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-underline-offset: 4px;
+    transition: color 150ms ease;
+  }
+  .ge-link:hover { color: var(--ge-forest); text-decoration: underline; }
+  .ge-cta:focus-visible, .ge-link:focus-visible {
+    outline: 2px solid var(--ge-forest);
+    outline-offset: 2px;
+  }
+`
+
 export default function GlobalError({
   error,
   reset,
@@ -22,77 +149,24 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className="bg-[hsl(0,0%,96%)] dark:bg-[hsl(240,10%,8%)] text-[hsl(240,10%,3.9%)] dark:text-[hsl(0,0%,98%)]">
-        <div className="flex min-h-screen flex-col items-center justify-center p-4">
-          <div
-            className="max-w-md w-full text-center p-8 sm:p-12 rounded-2xl"
-            style={{
-              background: 'inherit',
-              boxShadow:
-                '8px 8px 12px -2px rgba(200, 200, 210, 0.2), -6px -6px 12px -1px rgba(255, 255, 255, 0.85)',
-            }}
-          >
-            {/* Error icon */}
-            <div className="mb-6 flex justify-center">
-              <div
-                className="rounded-full p-4"
-                style={{
-                  boxShadow:
-                    'inset -3px -3px 5px -1px rgba(255, 255, 255, 0.85), inset 2px 2px 6px -1px rgba(200, 200, 210, 0.2)',
-                }}
-              >
-                <svg
-                  className="h-8 w-8 text-red-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            {/* Error message */}
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-3">
-              Something went wrong
-            </h1>
-            <p className="text-base leading-relaxed opacity-70 mb-6">
-              A critical error occurred. We&apos;ve been notified and are working on a fix.
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: paletteCss }} />
+      </head>
+      <body className="ge-body">
+        <div className="ge-wrap">
+          <main className="ge-sheet">
+            <p className="ge-label">Error &middot; Unrecoverable</p>
+            <h1 className="ge-title">Something went wrong.</h1>
+            <p className="ge-copy">
+              A critical error broke the page before it could render. It has been
+              reported; trying again often works, and the front page always does.
             </p>
-
-            {/* Error digest in development */}
+            <hr className="ge-rule" />
             {process.env.NODE_ENV === 'development' && error.digest && (
-              <div
-                className="rounded-lg p-3 mb-6 text-left"
-                style={{
-                  boxShadow:
-                    'inset -2px -2px 3px rgba(255, 255, 255, 0.85), inset 1px 1px 3px rgba(200, 200, 210, 0.2)',
-                }}
-              >
-                <p className="text-xs font-mono opacity-60 break-all">
-                  Digest: {error.digest}
-                </p>
-              </div>
+              <p className="ge-digest">Digest: {error.digest}</p>
             )}
-
-            {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                onClick={() => reset()}
-                className="px-6 py-3 rounded-xl font-medium transition-all focus:outline-hidden focus:ring-2 focus:ring-offset-2"
-                style={{
-                  backgroundColor: 'hsl(82, 32%, 16%)',
-                  color: 'white',
-                  boxShadow:
-                    '3px 3px 5px -1px rgba(200, 200, 210, 0.2), -2px -2px 5px rgba(255, 255, 255, 0.85)',
-                }}
-              >
+            <div className="ge-actions">
+              <button type="button" onClick={() => reset()} className="ge-cta">
                 Try again
               </button>
               <button
@@ -104,16 +178,12 @@ export default function GlobalError({
                   // eslint-disable-next-line @next/next/no-location-assign-relative-destination
                   window.location.href = "/";
                 }}
-                className="px-6 py-3 rounded-xl font-medium transition-all focus:outline-hidden focus:ring-2 focus:ring-offset-2"
-                style={{
-                  boxShadow:
-                    '3px 3px 5px -1px rgba(200, 200, 210, 0.2), -2px -2px 5px rgba(255, 255, 255, 0.85)',
-                }}
+                className="ge-link"
               >
                 Go home
               </button>
             </div>
-          </div>
+          </main>
         </div>
       </body>
     </html>

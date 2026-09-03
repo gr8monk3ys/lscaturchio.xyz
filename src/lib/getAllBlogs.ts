@@ -1,11 +1,10 @@
-import glob from "fast-glob";
-import * as path from "path";
-import fs from "fs/promises";
-import { extractBlogMeta } from "@/lib/blog-meta";
+import { listEssaySources, type EssaySource } from "@/lib/essay-sources";
 import {
   clampBlogDateToToday,
+  isBlogPublished,
   sortBlogsByDateDescending,
 } from "@/lib/blog-data";
+import { calculateReadingTime } from "@/lib/reading-time";
 import type { BlogStage } from "@/lib/blog-stage";
 
 // Module-level cache for getAllBlogs() to avoid repeated disk reads
@@ -29,23 +28,34 @@ interface BlogMeta {
 export interface BlogPost extends BlogMeta {
   slug: string;
   content: string;
+  /**
+   * Whether the post is live. Decided here, from the raw front-matter date,
+   * because `date` below has been clamped and can no longer answer it.
+   */
+  published: boolean;
+  /** The one reading-time number the whole site quotes. */
+  readingTimeMinutes: number;
+  words: number;
 }
 
-async function readBlog(fileName: string): Promise<BlogPost | null> {
-  const blogDir = path.join(process.cwd(), "src/app/blog");
-  const filePath = path.join(blogDir, fileName);
-  const content = await fs.readFile(filePath, "utf-8");
-  const meta = extractBlogMeta(content);
+function toBlogPost(essay: EssaySource): BlogPost {
+  const { meta, source: content } = essay;
+  // `listEssaySources` has already guaranteed title and date parse.
+  const title = meta.title as string;
+  const date = meta.date as string;
 
-  if (!meta.title || !meta.date) return null;
-
-  const publishDate = clampBlogDateToToday(meta.date);
+  // Order matters. Publication is judged on the raw date; the clamp that
+  // follows is purely a display concern, so a mis-dated post still renders a
+  // sane date instead of one from 2999.
+  const published = isBlogPublished(date);
+  const publishDate = clampBlogDateToToday(date);
   const updatedDate = meta.updated ? clampBlogDateToToday(meta.updated) : undefined;
+  const reading = calculateReadingTime(content);
 
   return {
-    slug: fileName.replace(/(\/content)?\.mdx$/, ""),
+    slug: essay.slug,
     content,
-    title: meta.title,
+    title,
     description: meta.description || "",
     date: publishDate,
     updated: updatedDate,
@@ -55,6 +65,9 @@ async function readBlog(fileName: string): Promise<BlogPost | null> {
     series: meta.series,
     seriesOrder: meta.seriesOrder,
     stage: meta.stage,
+    published,
+    readingTimeMinutes: reading.minutes,
+    words: reading.words,
   };
 }
 
@@ -64,13 +77,10 @@ export async function getAllBlogs(): Promise<BlogPost[]> {
     return cachedBlogs;
   }
 
-  const blogFileNames = await glob(["*.mdx", "*/content.mdx"], {
-    cwd: path.join(process.cwd(), "src/app/blog"),
-  });
-
-  const results = await Promise.all(blogFileNames.map(readBlog));
-  const blogs = results.filter((b): b is BlogPost => b !== null);
-  const sortedBlogs = sortBlogsByDateDescending(blogs);
+  // A post with no title or no date cannot be rendered or ordered, so the
+  // render path asks for both; malformed sources are dropped, not fatal.
+  const essays = await listEssaySources({ requiredMeta: ["title", "date"] });
+  const sortedBlogs = sortBlogsByDateDescending(essays.map(toBlogPost));
 
   cachedBlogs = sortedBlogs;
   cacheTime = now;

@@ -1,11 +1,12 @@
 import { NextRequest } from 'next/server';
+import { z } from 'zod';
 import { searchEmbeddings, type HybridRow } from '@/lib/embeddings';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
-import { validateCsrf } from '@/lib/csrf';
 import { logError } from '@/lib/logger';
 import type { SearchResult } from '@/types/embeddings';
 import { apiSuccess, ApiErrors } from '@/lib/api-response';
+import { withWriteRoute } from '@/lib/api/write-route';
 
 /**
  * Groups raw embedding results by blog post URL, keeping only unique snippets
@@ -83,6 +84,28 @@ function parseLimit(raw: unknown): number {
   return Math.min(Math.max(parsed, 1), 50);
 }
 
+/**
+ * The POST body, as a schema rather than the route-local checks GET still uses.
+ * Messages and coercions are deliberately identical to `validateQuery` /
+ * `parseLimit` so moving POST onto the shared write chain changed no response.
+ */
+const searchPostSchema = z
+  .object({ query: z.unknown().optional(), limit: z.unknown().optional() })
+  .superRefine((body, ctx) => {
+    const query = body.query;
+    if (typeof query !== 'string' || query.trim().length === 0) {
+      ctx.addIssue({ code: 'custom', message: 'Search query is required' });
+      return;
+    }
+    if (query.length > 500) {
+      ctx.addIssue({ code: 'custom', message: 'Search query too long (max 500 characters)' });
+    }
+  })
+  .transform((body) => ({
+    query: body.query as string,
+    limit: parseLimit(body.limit),
+  }));
+
 const handleGet = async (request: NextRequest) => {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -118,17 +141,26 @@ const handleGet = async (request: NextRequest) => {
   }
 };
 
-const handlePost = async (request: NextRequest) => {
-  const csrfError = validateCsrf(request);
-  if (csrfError) return csrfError;
-
-  try {
-    const body = await request.json();
-    const query = body.query;
-    const limit = parseLimit(body.limit);
-
-    const queryError = validateQuery(query);
-    if (queryError) return queryError;
+export const POST = withWriteRoute(
+  {
+    // 5 requests per minute.
+    limit: RATE_LIMITS.AI_HEAVY,
+    auth: {
+      kind: 'public',
+      reason: 'Site search is a public read; the mutation-shaped POST only carries a longer query body.',
+    },
+    csrf: { kind: 'required' },
+    body: { kind: 'json', schema: searchPostSchema },
+    envelope: { kind: 'standard' },
+    errors: {
+      log: 'Search: Unexpected error',
+      component: 'search',
+      action: 'POST',
+      message: 'Search failed. Please try again later.',
+    },
+  },
+  async ({ data }) => {
+    const { query, limit } = data;
 
     const results = await searchEmbeddings(query, limit);
     const grouped = groupEmbeddingResults(results, { includeTags: true });
@@ -148,17 +180,9 @@ const handlePost = async (request: NextRequest) => {
         };
       });
 
-    return apiSuccess({
-      query,
-      results: searchResults,
-      count: searchResults.length,
-    });
-  } catch (error) {
-    logError('Search: Unexpected error', error, { component: 'search', action: 'POST' });
-    return ApiErrors.internalError('Search failed. Please try again later.');
+    return { query, results: searchResults, count: searchResults.length };
   }
-};
+);
 
 // Export with rate limiting (5 requests per minute)
 export const GET = withRateLimit(handleGet, RATE_LIMITS.AI_HEAVY);
-export const POST = withRateLimit(handlePost, RATE_LIMITS.AI_HEAVY);

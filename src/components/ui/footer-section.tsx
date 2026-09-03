@@ -79,16 +79,16 @@ function Footer() {
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
             {footerColumns.map((column) => (
               <nav key={column.name} aria-label={column.name}>
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                <h3 className="label-mono mb-3 block">
                   {column.name}
                 </h3>
-                <ul className="space-y-2 text-sm">
+                <ul className="space-y-0.5 text-sm">
                   {column.items.map((item) => (
                     <li key={item.href}>
                       <Link
                         href={item.href}
                         prefetch={false}
-                        className="transition-colors hover:text-primary"
+                        className="ink-underline inline-flex min-h-6 items-center py-1 transition-colors hover:text-primary"
                       >
                         {item.name}
                       </Link>
@@ -104,14 +104,26 @@ function Footer() {
           <p className="label-mono">
             © {currentYear} · Los Angeles · A garden, not a homepage
           </p>
-          <nav className="flex gap-5">
-            <Link href="/stats" prefetch={false} className="label-mono transition-colors hover:text-primary">
+          <nav className="flex gap-4">
+            <Link
+              href="/stats"
+              prefetch={false}
+              className="label-mono ink-underline inline-flex min-h-6 items-center px-1 transition-colors hover:text-primary"
+            >
               Stats
             </Link>
-            <Link href="/privacy-policy" prefetch={false} className="label-mono transition-colors hover:text-primary">
+            <Link
+              href="/privacy-policy"
+              prefetch={false}
+              className="label-mono ink-underline inline-flex min-h-6 items-center px-1 transition-colors hover:text-primary"
+            >
               Privacy
             </Link>
-            <Link href="/terms-of-service" prefetch={false} className="label-mono transition-colors hover:text-primary">
+            <Link
+              href="/terms-of-service"
+              prefetch={false}
+              className="label-mono ink-underline inline-flex min-h-6 items-center px-1 transition-colors hover:text-primary"
+            >
               Terms
             </Link>
           </nav>

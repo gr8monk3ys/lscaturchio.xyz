@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { logError } from "@/lib/logger";
 import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
+import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
 interface SeriesInfo {
   name: string;
@@ -67,16 +67,13 @@ const handleGet = async () => {
     // Sort series by total posts (descending)
     allSeries.sort((a, b) => b.totalPosts - a.totalPosts);
 
-    return NextResponse.json({
+    return apiSuccess({
       series: allSeries,
       count: allSeries.length,
     });
   } catch (error) {
     logError("All Series API: Unexpected error", error, { component: 'all-series', action: 'GET' });
-    return NextResponse.json(
-      { error: "Failed to fetch series" },
-      { status: 500 }
-    );
+    return ApiErrors.internalError("Failed to fetch series");
   }
 };
 
