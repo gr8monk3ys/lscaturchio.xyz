@@ -21,9 +21,10 @@ vi.mock('@/lib/with-rate-limit', () => ({
 }));
 
 vi.mock('@/lib/rate-limit', () => ({
+  // Mirrors src/lib/rate-limit.ts.
   RATE_LIMITS: {
     AI_HEAVY: { limit: 5, window: 60000 },
-    STANDARD: { limit: 60, window: 60000 },
+    STANDARD: { limit: 30, window: 60000 },
   },
 }));
 

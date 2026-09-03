@@ -2,10 +2,9 @@ import Link from "next/link";
 
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
-import { Heading } from "@/components/Heading";
-import { Paragraph } from "@/components/Paragraph";
 import { WorkTimeline } from "@/components/ui/work-timeline";
 import { ResumeDownloadButton } from "@/components/ui/resume-download-button";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Professional",
@@ -25,17 +24,16 @@ export default function ProfessionalPage() {
     <Container size="large">
       <div className="max-w-4xl mx-auto py-12 space-y-20">
         {/* Header — gallery masthead */}
-        <header>
-          <span className="label-mono block">Professional</span>
-          <Heading className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
-            Work &amp; Skills
-          </Heading>
-          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            My professional journey in data science, machine learning, and web development.
-            Building things that make data science more accessible.
-          </Paragraph>
-          <hr className="gallery-rule mt-8" />
-        </header>
+        <PageHead
+          kicker="Professional"
+          title={<>Work &amp; Skills</>}
+          blurb={
+            <>
+              My professional journey in data science, machine learning, and web development.
+              Building things that make data science more accessible.
+            </>
+          }
+        />
 
         {/* Skills Section */}
         <section>

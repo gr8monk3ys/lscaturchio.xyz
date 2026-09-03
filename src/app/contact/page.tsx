@@ -1,10 +1,9 @@
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
-import { Heading } from "@/components/Heading";
-import { Paragraph } from "@/components/Paragraph";
 import { ContactForm } from "@/components/contact/ContactForm";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Contact",
@@ -16,17 +15,18 @@ export default function Contact() {
   return (
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-6xl mx-auto space-y-16">
-        <header className="mb-12">
-          <span className="label-mono block">Get in touch</span>
-          <Heading className="mt-4 text-4xl font-bold md:text-5xl">
-            Tell me what you are trying to ship.
-          </Heading>
-          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Best fit for RAG + ML systems, architecture reviews, and automation work that needs to
-            hold up in production. If you already know the goal, the data, or the constraint,
-            you have enough to reach out.
-          </Paragraph>
-
+        <PageHead
+          className="mb-12"
+          kicker="Get in touch"
+          title="Tell me what you are trying to ship."
+          blurb={
+            <>
+              Best fit for RAG + ML systems, architecture reviews, and automation work that needs to
+              hold up in production. If you already know the goal, the data, or the constraint,
+              you have enough to reach out.
+            </>
+          }
+        >
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
               href="https://calendly.com/gr8monk3ys/30min"
@@ -44,9 +44,7 @@ export default function Contact() {
               Email Directly
             </Link>
           </div>
-
-          <hr className="gallery-rule mt-8" />
-        </header>
+        </PageHead>
 
         <div className="grid gap-6 sm:grid-cols-3 divide-border border-y border-border sm:divide-x">
           <div className="px-5 py-6">

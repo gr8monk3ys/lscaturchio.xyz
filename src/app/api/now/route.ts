@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
 import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
 import { nowData } from "@/lib/now-data";
+import { apiSuccess } from "@/lib/api-response";
 
 const handleGet = async () => {
-  return NextResponse.json(
+  return apiSuccess(
     {
       generatedAt: new Date().toISOString(),
       now: nowData,

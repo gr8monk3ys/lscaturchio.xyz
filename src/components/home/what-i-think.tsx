@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Section } from "@/components/ui/Section";
+import { LedgerHead, LedgerSection } from "@/components/ui/ledger-section";
 import { groupByTheme } from "@/lib/blog-themes";
 import type { BlogPreview } from "@/lib/blog-data";
 
@@ -10,15 +10,15 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
     .slice(0, 3);
 
   return (
-    <Section padding="large" size="wide" divider topDivider reveal={false}>
-      <div className="grid items-start gap-12 lg:grid-cols-[minmax(280px,360px)_1fr]">
-        <div className="lg:sticky lg:top-28">
-          <span className="label-mono mb-3 block">01 — What I think</span>
-          <h2 className="text-section-title">Mostly arguments.</h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Eighty-three essays, grouped by what they are actually about. Politics,
-            philosophy and economics outnumber the engineering three to one.
-          </p>
+    <LedgerSection
+      head={
+        <>
+          <LedgerHead
+            index="01"
+            eyebrow="What I think"
+            title="Mostly arguments."
+            description="Eighty-three essays, grouped by what they are actually about. Politics, philosophy and economics outnumber the engineering three to one."
+          />
           <Link
             href="/blog"
             prefetch={false}
@@ -26,33 +26,33 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
           >
             Read everything →
           </Link>
-        </div>
-
-        <div className="space-y-10">
-          {groups.map(({ theme, posts: themePosts }) => (
-            <section key={theme.slug}>
-              <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                <h3 className="text-lg font-semibold tracking-tight">{theme.title}</h3>
-                <span className="label-mono shrink-0">{themePosts.length}</span>
-              </div>
-              <ul className="mt-4 space-y-3">
-                {themePosts.slice(0, 2).map((post) => (
-                  <li key={post.slug}>
-                    <Link href={`/blog/${post.slug}`} prefetch={false} className="group block">
-                      <span className="font-semibold text-foreground group-hover:text-primary">
-                        {post.title}
-                      </span>
-                      <span className="mt-1 block text-sm text-muted-foreground line-clamp-2">
-                        {post.description}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
-        </div>
+        </>
+      }
+    >
+      <div className="space-y-10">
+        {groups.map(({ theme, posts: themePosts }) => (
+          <section key={theme.slug}>
+            <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
+              <h3 className="text-lg font-semibold tracking-tight">{theme.title}</h3>
+              <span className="label-mono shrink-0">{themePosts.length}</span>
+            </div>
+            <ul className="mt-4 space-y-3">
+              {themePosts.slice(0, 2).map((post) => (
+                <li key={post.slug}>
+                  <Link href={`/blog/${post.slug}`} prefetch={false} className="group block">
+                    <span className="font-semibold text-foreground group-hover:text-primary">
+                      {post.title}
+                    </span>
+                    <span className="mt-1 block max-w-lg text-sm text-muted-foreground line-clamp-2">
+                      {post.description}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
       </div>
-    </Section>
+    </LedgerSection>
   );
 }

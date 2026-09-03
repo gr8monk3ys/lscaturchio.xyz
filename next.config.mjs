@@ -4,6 +4,10 @@ import { withSentryConfig } from '@sentry/nextjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Dev-only allowance so impeccable live mode can load.
+const __impeccableLiveDev =
+  process.env.NODE_ENV === "development" ? " http://localhost:8400" : "";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -137,11 +141,11 @@ const nextConfig = {
             //    (Vercel Blob; the origin behind NEXT_PUBLIC_AUDIO_CDN_URL)
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' blob: giscus.app va.vercel-scripts.com translate.google.com translate.googleapis.com translate-pa.googleapis.com www.gstatic.com static.cloudflareinsights.com",
+              `script-src 'self' 'unsafe-inline' blob: giscus.app va.vercel-scripts.com translate.google.com translate.googleapis.com translate-pa.googleapis.com www.gstatic.com static.cloudflareinsights.com${__impeccableLiveDev}`,
               "style-src 'self' 'unsafe-inline' www.gstatic.com translate.googleapis.com",
               "img-src 'self' data: blob: https:",
               "font-src 'self' data: fonts.gstatic.com",
-              "connect-src 'self' https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://vitals.vercel-insights.com https://cloudflareinsights.com https://translate.googleapis.com https://translate-pa.googleapis.com https://translate.google.com",
+              `connect-src 'self' https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://vitals.vercel-insights.com https://cloudflareinsights.com https://translate.googleapis.com https://translate-pa.googleapis.com https://translate.google.com${__impeccableLiveDev}`,
               "frame-src 'self' giscus.app translate.google.com",
               "media-src 'self' https://ekldxpd3mp5h44qj.public.blob.vercel-storage.com",
               "worker-src 'self' blob:",

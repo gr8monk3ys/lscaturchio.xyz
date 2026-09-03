@@ -1,11 +1,10 @@
 import fs from 'fs'
 import path from 'path'
-import glob from 'fast-glob'
 import OpenAI from 'openai'
 import { execFileSync } from 'child_process'
+import { listEssaySources } from '../src/lib/essay-sources'
 
 const AUDIO_DIR = path.join(process.cwd(), 'public', 'audio')
-const BLOG_DIR = path.join(process.cwd(), 'src', 'app', 'blog')
 const TMP_DIR = path.join(AUDIO_DIR, '.tmp-openai')
 
 const MAX_CHUNK_LENGTH = Number(process.env.OPENAI_TTS_MAX_CHARS || 3200)
@@ -244,15 +243,13 @@ async function main(): Promise<void> {
   const { force, model, voice, instructions, slugFilter } = parseArgs()
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-  const blogFiles = await glob(['*/content.mdx', '*.mdx'], { cwd: BLOG_DIR })
+  const essays = await listEssaySources()
 
   let processed = 0
   let skipped = 0
   let failed = 0
 
-  for (const fileName of blogFiles) {
-    const slug = fileName.replace(/(\/content)?\.mdx$/, '')
-
+  for (const { slug, source } of essays) {
     if (slugFilter.size > 0 && !slugFilter.has(slug)) {
       continue
     }
@@ -263,8 +260,7 @@ async function main(): Promise<void> {
       continue
     }
 
-    const content = fs.readFileSync(path.join(BLOG_DIR, fileName), 'utf-8')
-    const plainText = stripMdxToPlainText(content)
+    const plainText = stripMdxToPlainText(source)
 
     if (plainText.length < MIN_CONTENT_LENGTH) {
       console.log(`Skipping ${slug} (content too short)`)
@@ -291,7 +287,7 @@ async function main(): Promise<void> {
   console.log(`  Processed: ${processed}`)
   console.log(`  Skipped:   ${skipped}`)
   console.log(`  Failed:    ${failed}`)
-  console.log(`  Total:     ${blogFiles.length}`)
+  console.log(`  Total:     ${essays.length}`)
   console.log('')
 }
 

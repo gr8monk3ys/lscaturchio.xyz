@@ -45,7 +45,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ ...useMotionPreset('slow'), delay: 0.2 }}
-            className="text-2xl font-bold leading-10 tracking-tight"
+            className="text-section-title"
           >
             {title}
           </m.h2>
@@ -86,10 +86,10 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
             </Accordion>
           </div>
 
-          <div className="mt-10 rounded-2xl neu-card p-6">
-            <h3 className="text-lg font-semibold">{contactInfo.title}</h3>
+          <div className="mt-10 border-t border-border pt-6">
+            <h3 className="text-card-title">{contactInfo.title}</h3>
             <p className="mt-2 text-muted-foreground">{contactInfo.description}</p>
-            <Button asChild variant="primary" className="mt-4">
+            <Button asChild variant="primary" className="mt-4 rounded-full">
               <a href={contactInfo.contactUrl} target="_blank" rel="noopener noreferrer">
                 {contactInfo.buttonText}
               </a>

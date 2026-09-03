@@ -24,7 +24,7 @@ export function CommandPaletteTrigger({ className, onOpen }: TriggerProps): Reac
       <span aria-hidden="true" className="hidden sm:inline">Search</span>
       <kbd
         aria-hidden="true"
-        className="hidden sm:inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium"
+        className="hidden sm:inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[0.72rem] font-medium"
       >
         <span className="text-xs">⌘</span>K
       </kbd>

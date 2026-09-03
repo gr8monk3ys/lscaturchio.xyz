@@ -1,7 +1,5 @@
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
-import { Heading } from "@/components/Heading";
-import { Paragraph } from "@/components/Paragraph";
 import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { nowData, getNowFreshness } from "@/lib/now-data";
@@ -9,6 +7,7 @@ import { getCurrentlyReading } from "@/lib/goodreads";
 import { getRecentWatches } from "@/lib/letterboxd";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { getPublishedBlogs, sortBlogsByDateDescending } from "@/lib/blog-data";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Now",
@@ -33,23 +32,27 @@ export default async function NowPage() {
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-3xl mx-auto">
         {/* Header — gallery masthead */}
-        <header className="mb-12">
-          <span className="label-mono block">Garden · Now</span>
-          <Heading className="mt-4 text-4xl font-bold md:text-5xl">What I&apos;m Doing Now</Heading>
-          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            A snapshot of current focus, in the sense of{" "}
-            <a
-              href="https://nownownow.com/about"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              nownownow.com
-            </a>
-            . Reading, watching, and writing below are read from my actual logs rather than
-            retyped, so they are right even when the rest of this page is overdue. Reviewed{" "}
-            <span className="font-medium text-foreground">{nowData.lastUpdatedLabel}</span>.
-          </Paragraph>
+        <PageHead
+          className="mb-12"
+          kicker="Garden · Now"
+          title={<>What I&apos;m Doing Now</>}
+          blurb={
+            <>
+              A snapshot of current focus, in the sense of{" "}
+              <a
+                href="https://nownownow.com/about"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                nownownow.com
+              </a>
+              . Reading, watching, and writing below are read from my actual logs rather than
+              retyped, so they are right even when the rest of this page is overdue. Reviewed{" "}
+              <span className="font-medium text-foreground">{nowData.lastUpdatedLabel}</span>.
+            </>
+          }
+        >
           {isStale && (
             <div
               role="status"
@@ -62,8 +65,7 @@ export default async function NowPage() {
               </span>
             </div>
           )}
-          <hr className="gallery-rule mt-8" />
-        </header>
+        </PageHead>
 
         {/* Location */}
         <section className="mb-16">

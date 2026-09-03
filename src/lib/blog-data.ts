@@ -14,9 +14,34 @@ export interface BlogTagFields {
   tags: string[];
 }
 
-export interface BlogContentFields extends BlogDateFields, BlogTagFields {
-  content: string;
+/**
+ * Whether a post is live yet, decided from its RAW front-matter date.
+ *
+ * This rule lives here and nowhere else, and it has to be asked *before*
+ * `clampBlogDateToToday` runs. The clamp rewrites a future date to today, so a
+ * clamped record can never look unpublished and any date comparison downstream
+ * of the clamp is a no-op that silently passes everything. `readBlog` asks this
+ * of the raw date and stores the answer as `published`; every consumer reads
+ * the flag instead of re-deriving it.
+ */
+export function isBlogPublished(date: string, now: Date = new Date()): boolean {
+  const time = new Date(date).getTime();
+  if (!Number.isFinite(time)) return false;
+  return time <= now.getTime() + FUTURE_BLOG_GRACE_PERIOD_MS;
 }
+
+export interface BlogPublicationFields extends BlogDateFields {
+  /** Decided once, at the read seam, from the unclamped front-matter date. */
+  published: boolean;
+}
+
+export interface BlogReadingTimeFields {
+  /** `calculateReadingTime` minutes, computed once at the read seam. */
+  readingTimeMinutes: number;
+  words: number;
+}
+
+export type BlogStatsSource = BlogTagFields & BlogReadingTimeFields;
 
 export interface BlogPreviewSource extends BlogDateFields, BlogTagFields {
   slug: string;
@@ -78,20 +103,17 @@ export function sortBlogsByDateDescending<T extends BlogDateFields>(
   return [...blogs].sort((a, b) => b.date.localeCompare(a.date));
 }
 
-export function getPublishedBlogs<T extends BlogDateFields>(
-  blogs: readonly T[],
-  now: Date = new Date()
+/**
+ * Newest-first list of the posts that are live. Reads the `published` flag
+ * `readBlog` computed; it deliberately does not look at `date` again, because
+ * by the time a record gets here its date has been clamped for display.
+ */
+export function getPublishedBlogs<T extends BlogPublicationFields>(
+  blogs: readonly T[]
 ): T[] {
   return blogs
-    .map((blog) => ({ blog, time: new Date(blog.date).getTime() }))
-    .filter(({ time }) => Number.isFinite(time))
-    .filter(({ time }) => time <= now.getTime() + FUTURE_BLOG_GRACE_PERIOD_MS)
-    .sort((a, b) => b.time - a.time)
-    .map(({ blog }) => blog);
-}
-
-function getReadingTimeFromContent(content: string): number {
-  return Math.ceil(content.length / 1000) * 5;
+    .filter((blog) => blog.published)
+    .sort((a, b) => b.date.localeCompare(a.date));
 }
 
 function getTopTags<T extends BlogTagFields>(
@@ -112,12 +134,12 @@ function getTopTags<T extends BlogTagFields>(
     .slice(0, limit);
 }
 
-export function getBlogStats<T extends BlogContentFields>(
+export function getBlogStats<T extends BlogStatsSource>(
   blogs: readonly T[]
 ): BlogStatsSummary {
   const totalPosts = blogs.length;
   const totalReadingTime = blogs.reduce(
-    (total, blog) => total + getReadingTimeFromContent(blog.content),
+    (total, blog) => total + blog.readingTimeMinutes,
     0
   );
 
@@ -141,30 +163,24 @@ export function toBlogPreview<T extends BlogPreviewSource>(blog: T): BlogPreview
   };
 }
 
-export function splitHomepageBlogs<T extends BlogPreviewSource>(
+/**
+ * The homepage's single source of blog sections. Both halves come off the same
+ * published list, so the "latest" strip and the themed index can never disagree
+ * about what has shipped.
+ */
+export function splitHomepageBlogs<
+  T extends BlogPreviewSource & BlogPublicationFields,
+>(
   blogs: readonly T[],
-  {
-    now = new Date(),
-    recentCount = 3,
-    selectedCount = 8,
-  }: {
-    now?: Date;
-    recentCount?: number;
-    selectedCount?: number;
-  } = {}
+  { recentCount = 3 }: { recentCount?: number } = {}
 ): {
+  publishedBlogs: BlogPreview[];
   recentBlogs: BlogPreview[];
-  selectedWriting: BlogPreview[];
 } {
-  const publishedBlogs = getPublishedBlogs(blogs, now);
-  const recentBlogsRaw = publishedBlogs.slice(0, recentCount);
-  const recentSlugs = new Set(recentBlogsRaw.map((blog) => blog.slug));
+  const publishedBlogs = getPublishedBlogs(blogs).map(toBlogPreview);
 
   return {
-    recentBlogs: recentBlogsRaw.map(toBlogPreview),
-    selectedWriting: publishedBlogs
-      .filter((blog) => !recentSlugs.has(blog.slug))
-      .slice(0, selectedCount)
-      .map(toBlogPreview),
+    publishedBlogs,
+    recentBlogs: publishedBlogs.slice(0, recentCount),
   };
 }

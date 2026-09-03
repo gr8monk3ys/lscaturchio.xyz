@@ -40,7 +40,7 @@ function getPageParamValue(value: string): number {
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Lorenzo Scaturchio is a developer, writer and speaker. He is a digital nomad and travels around the world while working remotely.",
+    "Eighty-three essays on power, attention, philosophy, economics and the systems that carry them, by Lorenzo Scaturchio.",
   openGraph: {
     title: "Blog | Lorenzo Scaturchio",
     description:

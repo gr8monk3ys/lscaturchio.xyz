@@ -1,25 +1,28 @@
-import { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db';
-import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
-import { validateCsrf } from '@/lib/csrf';
-import { logError } from '@/lib/logger';
-import { unsubscribeSchema, parseBody } from '@/lib/validations';
-import { apiSuccess, ApiErrors } from '@/lib/api-response';
+import { withWriteRoute, writeError } from '@/lib/api/write-route';
+import { unsubscribeSchema } from '@/lib/validations';
 
-const handlePost = async (request: NextRequest) => {
-  const csrfError = validateCsrf(request);
-  if (csrfError) return csrfError;
-
-  try {
-    const body = await request.json();
-    const parsed = parseBody(unsubscribeSchema, body);
-
-    if (!parsed.success) {
-      return ApiErrors.badRequest(parsed.error);
-    }
-
-    const { token } = parsed.data;
+export const POST = withWriteRoute(
+  {
+    // 3 requests per 5 minutes.
+    limit: RATE_LIMITS.NEWSLETTER,
+    auth: {
+      kind: 'public',
+      reason: 'The unsubscribe token in the body is the credential; it arrives by email, not by session.',
+    },
+    csrf: { kind: 'required' },
+    body: { kind: 'json', schema: unsubscribeSchema },
+    envelope: { kind: 'standard' },
+    errors: {
+      log: 'Newsletter Unsubscribe: Unexpected error',
+      component: 'newsletter/unsubscribe',
+      action: 'POST',
+      message: 'Failed to unsubscribe. Please try again later.',
+    },
+  },
+  async ({ data }) => {
+    const { token } = data;
 
     const sql = getDb();
 
@@ -28,22 +31,16 @@ const handlePost = async (request: NextRequest) => {
     const subscriber = rows[0];
 
     if (!subscriber) {
-      return ApiErrors.notFound('Invalid unsubscribe token');
+      throw writeError.notFound('Invalid unsubscribe token');
     }
 
     if (!subscriber.is_active) {
-      return apiSuccess({ message: 'Already unsubscribed' });
+      return { message: 'Already unsubscribed' };
     }
 
     // Deactivate subscription
     await sql`UPDATE newsletter_subscribers SET is_active = false WHERE unsubscribe_token = ${token}`;
 
-    return apiSuccess({ message: 'Successfully unsubscribed' });
-  } catch (error) {
-    logError('Newsletter Unsubscribe: Unexpected error', error, { component: 'newsletter/unsubscribe', action: 'POST' });
-    return ApiErrors.internalError('Failed to unsubscribe. Please try again later.');
+    return { message: 'Successfully unsubscribed' };
   }
-};
-
-// Export with rate limiting (3 requests per 5 minutes)
-export const POST = withRateLimit(handlePost, RATE_LIMITS.NEWSLETTER);
+);

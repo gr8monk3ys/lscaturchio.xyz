@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-import { Section, SectionHeader } from "@/components/ui/Section";
+import { SectionHeader } from "@/components/ui/Section";
+import { LedgerChips, LedgerRows, LedgerSection } from "@/components/ui/ledger-section";
 import { Button } from "@/components/ui/button";
 
 type Step = {
@@ -49,15 +50,11 @@ const STEPS: Step[] = [
   },
 ];
 
-function formatIndex(i: number): string {
-  return String(i + 1).padStart(2, "0");
-}
-
 export function HowIWorkSection() {
   return (
-    <Section padding="large" size="wide" divider topDivider reveal={false}>
-      <div className="grid items-start gap-12 lg:grid-cols-[minmax(280px,360px)_1fr]">
-        <div className="lg:sticky lg:top-28">
+    <LedgerSection
+      head={
+        <>
           <SectionHeader
             index="02"
             eyebrow="Process"
@@ -86,34 +83,36 @@ export function HowIWorkSection() {
               See case studies →
             </Link>
           </div>
-        </div>
-
-        {/* Process ledger — numbered rows on the paper, divided by hairlines. */}
-        <ol className="border-t border-border">
-          {STEPS.map((step, index) => (
-            <li
-              key={step.id}
-              id={`how-i-work-${step.id}`}
-              className="scroll-mt-28 border-b border-border py-8"
-            >
-              <div className="grid gap-x-6 gap-y-2 sm:grid-cols-[auto_1fr]">
-                <span className="label-mono text-2xl leading-none tracking-normal text-foreground/60">
-                  {formatIndex(index)}
-                </span>
-                <div>
-                  <h3 className="text-card-title">{step.title}</h3>
-                  <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-                    {step.description}
-                  </p>
-                  <p className="label-mono mt-4 text-foreground/65">
-                    {step.outcomes.join("  ·  ")}
-                  </p>
-                </div>
+        </>
+      }
+    >
+      {/* Process ledger — numbered rows on the paper, divided by hairlines. */}
+      <LedgerRows items={STEPS} numbered className="border-t border-border">
+        {(step, entryNumber) => (
+          <li
+            key={step.id}
+            id={`how-i-work-${step.id}`}
+            className="scroll-mt-28 border-b border-border py-8"
+          >
+            <div className="grid gap-x-6 gap-y-2 sm:grid-cols-[auto_1fr]">
+              <span className="label-mono text-2xl leading-none tracking-normal text-foreground/60">
+                {entryNumber}
+              </span>
+              <div>
+                <h3 className="text-card-title">{step.title}</h3>
+                <p className="mt-2 max-w-lg text-sm text-muted-foreground">
+                  {step.description}
+                </p>
+                <LedgerChips
+                  items={step.outcomes}
+                  className="mt-4"
+                  itemClassName="text-foreground/65"
+                />
               </div>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </Section>
+            </div>
+          </li>
+        )}
+      </LedgerRows>
+    </LedgerSection>
   );
 }

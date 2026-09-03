@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import useSWR from 'swr'
-import { fetchJson, unwrapApiData } from '@/lib/fetcher'
+import { fetchJson, type ApiEnvelope } from '@/lib/fetcher'
 import { formatDate } from '@/lib/formatDate'
 
 interface RelatedPost {
@@ -40,15 +40,14 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
       ? `/api/related-posts?title=${encodeURIComponent(currentTitle)}&url=${encodeURIComponent(currentUrl)}&limit=3`
       : null
 
-  const { data, isLoading, error } = useSWR<{ data?: { related?: RelatedPost[] }; related?: RelatedPost[] }>(
+  const { data, isLoading, error } = useSWR<ApiEnvelope<{ related?: RelatedPost[] }>>(
     requestUrl,
     fetchJson
   )
 
   const posts = useMemo(() => {
-    if (!data) return []
-    const unwrapped = unwrapApiData(data as { related?: RelatedPost[] })
-    return Array.isArray(unwrapped.related) ? unwrapped.related : []
+    const related = data?.data?.related
+    return Array.isArray(related) ? related : []
   }, [data])
 
   if (isLoading) {

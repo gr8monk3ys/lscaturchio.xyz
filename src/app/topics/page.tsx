@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Container } from "@/components/Container";
-import { Heading } from "@/components/Heading";
-import { Paragraph } from "@/components/Paragraph";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { ogCardUrl } from "@/lib/seo";
 import { TOPIC_HUBS } from "@/constants/topics";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata: Metadata = {
   title: "Topics",
@@ -50,14 +49,12 @@ export default async function TopicsPage() {
     <Container className="mt-16 lg:mt-32" size="large">
       <div className="max-w-5xl mx-auto">
         {/* Header — gallery masthead */}
-        <header className="mb-12">
-          <span className="label-mono block">Garden · Topics</span>
-          <Heading className="mt-4 text-4xl font-bold md:text-5xl">Topics</Heading>
-          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            A small set of curated hubs that link related posts and projects.
-          </Paragraph>
-          <hr className="gallery-rule mt-8" />
-        </header>
+        <PageHead
+          className="mb-12"
+          kicker="Garden · Topics"
+          title="Topics"
+          blurb="A small set of curated hubs that link related posts and projects."
+        />
 
         <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
           {hubsWithCounts.map((hub) => (

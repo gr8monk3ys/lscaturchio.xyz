@@ -11,16 +11,16 @@ import { getPopularPosts } from "@/lib/popular-posts";
 import type { Metadata } from "next";
 import { ogCardUrl } from "@/lib/seo";
 import { IDENTITY } from "@/constants/identity";
-import { splitHomepageBlogs, toBlogPreview } from "@/lib/blog-data";
+import { splitHomepageBlogs } from "@/lib/blog-data";
 
 export const metadata: Metadata = {
   title: { absolute: IDENTITY.titleDefault },
   description:
-    "AI case studies, product builds, and practical writing from Lorenzo Scaturchio across retrieval systems, automation, and web development.",
+    "Essays on power, attention and what institutions are built to do, plus the AI and web systems Lorenzo Scaturchio builds, films watched, books read, and what he is doing now.",
   openGraph: {
     title: IDENTITY.titleDefault,
     description:
-      "AI case studies, product builds, and practical writing across retrieval systems, automation, and web development.",
+      "Essays on power, attention and institutions, plus the systems Lorenzo Scaturchio builds and the rest of what he keeps.",
     images: [
       {
         url: ogCardUrl({
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: IDENTITY.titleDefault,
-    description: "AI case studies, product builds, and practical writing across retrieval systems and web development.",
+    description: "Essays on power, attention and institutions, plus the systems Lorenzo Scaturchio builds.",
     images: [
       ogCardUrl({
         title: "Lorenzo Scaturchio",
@@ -55,7 +55,8 @@ export default async function Home() {
     getPopularPosts(3),
   ]);
 
-  const { recentBlogs } = splitHomepageBlogs(allBlogs);
+  // One split, one definition of "published", shared by both writing sections.
+  const { recentBlogs, publishedBlogs } = splitHomepageBlogs(allBlogs);
 
   const popularPosts = popularPostsResult.posts.map((p) => ({
     slug: p.slug,
@@ -84,11 +85,11 @@ export default async function Home() {
         questions={[
           {
             question: "What services does Lorenzo Scaturchio offer?",
-            answer: "Lorenzo Scaturchio offers data science consulting, machine learning solutions, web application development, and custom digital experiences for businesses and individuals."
+            answer: "AI engineering: retrieval and search systems with citations and evals, agent workflows and automation, and architecture reviews for LLM applications. Engagements start with a scoped first sprint."
           },
           {
             question: "How can I contact Lorenzo Scaturchio?",
-            answer: "You can reach out through the contact form on the website or schedule a meeting via the provided Calendly link."
+            answer: "Use the contact form on the site, or schedule a call from the Work with me page."
           }
         ]}
       />
@@ -100,7 +101,7 @@ export default async function Home() {
       <CurrentlyStrip latestPost={latestPost} latestRepo={latestRepo} />
 
       {/* The writing leads — this is a personal site, not a portfolio */}
-      <WhatIThink posts={allBlogs.map(toBlogPreview)} />
+      <WhatIThink posts={publishedBlogs} />
 
       {/* Projects as evidence, not as the pitch */}
       <ScrollCaseStudies />

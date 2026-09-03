@@ -6,6 +6,7 @@ import {
   parseBlogIsoDate,
   getBlogLastModified,
   getPublishedBlogs,
+  isBlogPublished,
   sortBlogsByDateDescending,
   getBlogStats,
   splitHomepageBlogs,
@@ -65,26 +66,29 @@ describe("parseBlogIsoDate / getBlogLastModified", () => {
   });
 });
 
-describe("getPublishedBlogs", () => {
+describe("isBlogPublished", () => {
   const now = new Date("2025-06-15T12:00:00Z");
-  const posts = [
-    { slug: "old", date: "2025-01-01" },
-    { slug: "tomorrow", date: "2025-06-16" },
-    { slug: "far-future", date: "2025-08-01" },
-    { slug: "bad-date", date: "whenever" },
-  ].map((p) => ({ ...p, title: p.slug, description: "", tags: [] }));
 
-  it("hides far-future posts but allows a one-day grace period", () => {
-    const slugs = getPublishedBlogs(posts, now).map((b) => b.slug);
-    expect(slugs).toContain("old");
-    expect(slugs).toContain("tomorrow"); // within the 24h grace window
-    expect(slugs).not.toContain("far-future");
+  it("publishes past dates and the one-day grace window, but not beyond", () => {
+    expect(isBlogPublished("2025-01-01", now)).toBe(true);
+    expect(isBlogPublished("2025-06-16", now)).toBe(true); // within 24h grace
+    expect(isBlogPublished("2025-08-01", now)).toBe(false);
   });
 
-  it("drops posts with unparseable dates and sorts newest first", () => {
-    const slugs = getPublishedBlogs(posts, now).map((b) => b.slug);
-    expect(slugs).not.toContain("bad-date");
-    expect(slugs).toEqual(["tomorrow", "old"]);
+  it("treats an unparseable date as unpublished", () => {
+    expect(isBlogPublished("whenever", now)).toBe(false);
+  });
+});
+
+describe("getPublishedBlogs", () => {
+  const posts = [
+    { slug: "old", date: "2025-01-01", published: true },
+    { slug: "newer", date: "2025-06-01", published: true },
+    { slug: "far-future", date: "2025-08-01", published: false },
+  ];
+
+  it("filters on the flag decided at the read seam, newest first", () => {
+    expect(getPublishedBlogs(posts).map((b) => b.slug)).toEqual(["newer", "old"]);
   });
 });
 
@@ -98,18 +102,14 @@ describe("sortBlogsByDateDescending", () => {
 });
 
 describe("getBlogStats", () => {
-  const post = (content: string, tags: string[]) => ({
-    content,
+  const post = (readingTimeMinutes: number, tags: string[]) => ({
+    readingTimeMinutes,
+    words: readingTimeMinutes * 200,
     tags,
-    date: "2025-01-01",
   });
 
-  it("computes totals, averages, and top tags", () => {
-    const stats = getBlogStats([
-      post("x".repeat(1000), ["ai", "labor"]),
-      post("x".repeat(2500), ["ai"]),
-    ]);
-    // 1000 chars -> ceil(1)*5 = 5 min; 2500 -> ceil(2.5)*5 = 15 min.
+  it("sums the reading time already on the record rather than re-deriving it", () => {
+    const stats = getBlogStats([post(5, ["ai", "labor"]), post(15, ["ai"])]);
     expect(stats.totalPosts).toBe(2);
     expect(stats.totalReadingTime).toBe(20);
     expect(stats.avgReadingTime).toBe(10);
@@ -118,7 +118,7 @@ describe("getBlogStats", () => {
 
   it("caps topTags at five and handles the empty corpus", () => {
     const many = getBlogStats([
-      post("x", ["a", "b", "c", "d", "e", "f", "g"]),
+      post(1, ["a", "b", "c", "d", "e", "f", "g"]),
     ]);
     expect(many.topTags).toHaveLength(5);
     const empty = getBlogStats([]);
@@ -128,28 +128,30 @@ describe("getBlogStats", () => {
 });
 
 describe("splitHomepageBlogs", () => {
-  const now = new Date("2025-06-15T12:00:00Z");
-  const mk = (slug: string, date: string) => ({
+  const mk = (slug: string, date: string, published = true) => ({
     slug,
     title: slug,
     description: "",
     date,
     tags: [],
+    published,
   });
-  const posts = Array.from({ length: 15 }, (_, i) =>
-    mk(`post-${i}`, `2025-05-${String(15 - i).padStart(2, "0")}`)
-  );
+  const posts = [
+    ...Array.from({ length: 15 }, (_, i) =>
+      mk(`post-${i}`, `2025-05-${String(15 - i).padStart(2, "0")}`)
+    ),
+    mk("unpublished", "2999-01-01", false),
+  ];
 
-  it("splits recent from selected without overlap", () => {
-    const { recentBlogs, selectedWriting } = splitHomepageBlogs(posts, { now });
-    expect(recentBlogs).toHaveLength(3);
-    expect(selectedWriting).toHaveLength(8);
-    const recent = new Set(recentBlogs.map((b) => b.slug));
-    expect(selectedWriting.some((b) => recent.has(b.slug))).toBe(false);
+  it("gives both homepage sections the same published set", () => {
+    const { recentBlogs, publishedBlogs } = splitHomepageBlogs(posts);
+    expect(publishedBlogs).toHaveLength(15);
+    expect(publishedBlogs.map((b) => b.slug)).not.toContain("unpublished");
+    expect(recentBlogs).toEqual(publishedBlogs.slice(0, 3));
   });
 
   it("fills in the default cover image on previews", () => {
-    const { recentBlogs } = splitHomepageBlogs([mk("bare", "2025-01-01")], { now });
+    const { recentBlogs } = splitHomepageBlogs([mk("bare", "2025-01-01")]);
     expect(recentBlogs[0].image).toContain("default");
   });
 });

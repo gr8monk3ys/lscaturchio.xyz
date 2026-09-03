@@ -289,6 +289,10 @@ npm run uptime:check -- --json
   answers `HTTP 200` with an `{"error": ...}` body, and `/api/health` can return
   `200` while reporting `"status":"unhealthy"`. A status-only probe stays green
   through both. Preserve this property when adding checks.
+- **Every JSON endpoint answers in one envelope** — `{ data, success }` on
+  success, `{ error, success: false }` on failure (`src/lib/api-response.ts`).
+  Body assertions therefore read through `body.data`; a check written against a
+  bare payload silently sees `undefined` and reports a false failure.
 - `/api/chat` is deliberately **not** probed on a schedule — it bills a real
   model call per request. Chat is covered post-deploy by `smoke:chat:prod`, and
   `/api/rag-status` verifies the same dependencies for free.

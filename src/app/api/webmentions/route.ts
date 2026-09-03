@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
 import { fetchWebmentions } from "@/lib/webmentions";
 import { getSiteUrl } from "@/lib/site-url";
+import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
 function isSafePath(path: string): boolean {
   if (!path.startsWith("/")) return false;
@@ -18,10 +19,7 @@ function isSafePath(path: string): boolean {
 const handleGet = async (req: NextRequest) => {
   const path = req.nextUrl.searchParams.get("path") ?? "";
   if (!path || !isSafePath(path)) {
-    return NextResponse.json(
-      { error: "Invalid or missing path" },
-      { status: 400 }
-    );
+    return ApiErrors.badRequest("Invalid or missing path");
   }
 
   const siteUrl = getSiteUrl();
@@ -29,7 +27,7 @@ const handleGet = async (req: NextRequest) => {
 
   try {
     const data = await fetchWebmentions(target);
-    return NextResponse.json(data, {
+    return apiSuccess(data, {
       headers: {
         // Webmentions don't need to be real-time; cache at the edge when possible.
         "Cache-Control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
@@ -37,7 +35,7 @@ const handleGet = async (req: NextRequest) => {
     });
   } catch {
     // Never hard-fail the UI on webmention outages.
-    return NextResponse.json(
+    return apiSuccess(
       {
         target,
         counts: { like: 0, repost: 0, reply: 0, mention: 0 },

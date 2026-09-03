@@ -11,7 +11,6 @@ import { hasArchitectureDiagram } from '@/components/projects/ProjectArchitectur
 import { products } from '@/constants/products'
 import {
   statusColors,
-  deriveMetricsFromResults,
   defaultProcessSteps,
   HeaderSection,
   HeroSection,
@@ -45,10 +44,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
   }, [product])
 
   const caseStudy = product.caseStudy
-  const metrics =
-    caseStudy?.metrics && caseStudy.metrics.length > 0
-      ? caseStudy.metrics
-      : deriveMetricsFromResults(caseStudy?.results)
+  const metrics = caseStudy?.metrics ?? []
   const processSteps =
     caseStudy?.process && caseStudy.process.length > 0
       ? caseStudy.process

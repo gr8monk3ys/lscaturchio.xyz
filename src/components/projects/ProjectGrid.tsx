@@ -73,7 +73,7 @@ export function ProjectGrid({ projects, className, showSectionHeaders = true }: 
   return (
     <m.div
       variants={containerVariants}
-      initial="hidden"
+      initial={false}
       whileInView="show"
       viewport={{ once: true, margin: "-50px" }}
       className={cn("space-y-12", className)}

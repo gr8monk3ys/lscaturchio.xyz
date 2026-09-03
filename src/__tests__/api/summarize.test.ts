@@ -20,7 +20,9 @@ vi.mock('@/lib/with-rate-limit', () => ({
 }));
 
 vi.mock('@/lib/rate-limit', () => ({
+  // Mirrors src/lib/rate-limit.ts. /api/summarize takes SUMMARIZE, not AI_HEAVY.
   RATE_LIMITS: {
+    SUMMARIZE: { limit: 2, window: 60000 },
     AI_HEAVY: { limit: 5, window: 60000 },
   },
 }));

@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
 import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
 import { products } from "@/constants/products";
+import { apiSuccess } from "@/lib/api-response";
 
 const handleGet = async () => {
   const projects = products.map((p) => ({
@@ -20,7 +20,7 @@ const handleGet = async () => {
     caseStudy: p.caseStudy ?? null,
   }));
 
-  return NextResponse.json(
+  return apiSuccess(
     { count: projects.length, projects },
     {
       headers: {

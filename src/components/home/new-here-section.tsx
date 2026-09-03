@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Compass, User, BookOpen, Clock, TrendingUp } from "lucide-react";
 import { Section, SectionHeader } from "@/components/ui/Section";
-import { Reveal } from "@/components/motion/reveal";
+import { LedgerRows } from "@/components/ui/ledger-section";
 import { getTopicHubsForTags } from "@/constants/topics";
 
 interface PopularPostData {
@@ -15,6 +14,15 @@ interface PopularPostData {
 
 interface NewHereSectionProps {
   popularPosts: PopularPostData[];
+}
+
+interface Step {
+  href: string;
+  label: string;
+  title: string;
+  blurb: string;
+  cta: string;
+  progress?: number | null;
 }
 
 export function NewHereSection({ popularPosts }: NewHereSectionProps) {
@@ -58,15 +66,70 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
     }
   }, []);
 
-  const returning = !!lastRead;
   const recommendedHub = useMemo(() => {
     if (!lastRead?.tags || lastRead.tags.length === 0) return null;
     return getTopicHubsForTags(lastRead.tags, 1)[0] ?? null;
   }, [lastRead]);
 
+  // Only claim someone stopped partway through when the stored progress says
+  // so. An entry in the history means the page was opened, which is not the
+  // same thing, and this site does not assert what it cannot show.
+  const resumable =
+    lastRead &&
+    typeof lastReadProgress === "number" &&
+    lastReadProgress >= 5 &&
+    lastReadProgress < 95
+      ? { slug: lastRead.slug, title: lastRead.title, progress: lastReadProgress }
+      : null;
+
+  // Three doorways in reading order: the work, then the person, then what is
+  // current. Rows on the paper, not a tray of cards.
+  const steps: Step[] = [
+    resumable
+      ? {
+          href: `/blog/${resumable.slug}`,
+          label: "Where you stopped",
+          title: resumable.title ?? "Pick up where you left off",
+          blurb: "You stopped partway through this one.",
+          cta: "Resume",
+          progress: resumable.progress,
+        }
+      : {
+          href: "/blog",
+          label: "Start with the writing",
+          title: "Mostly arguments",
+          blurb:
+            "Eighty-three essays on power, attention, and what institutions are actually built to do.",
+          cta: "Read the essays",
+        },
+    recommendedHub
+      ? {
+          href: `/topics/${recommendedHub.slug}`,
+          label: "Then the thread",
+          title: recommendedHub.title,
+          blurb: recommendedHub.description,
+          cta: "Follow it",
+        }
+      : {
+          href: "/about",
+          label: "Then the person",
+          title: "Who is writing this",
+          blurb:
+            "A writer and engineer in Los Angeles who builds AI systems and is suspicious of them.",
+          cta: "About me",
+        },
+    {
+      href: "/now",
+      label: "Then what is current",
+      title: "What I'm doing now",
+      blurb: "Reading, watching, and building, each line honestly dated.",
+      cta: "See now",
+    },
+  ];
+
   return (
     <Section padding="compact" size="wide" divider topDivider reveal={false}>
-      <div className="max-w-4xl mx-auto">
+      <div className="mx-auto max-w-4xl">
         <SectionHeader
           index="04"
           eyebrow="Start here"
@@ -74,127 +137,74 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
           description="A quick path to get the most out of this site."
         />
 
-        <div className="grid sm:grid-cols-3 gap-4">
-          <Reveal delayMs={0}>
-            <Link
-              href={returning ? `/blog/${lastRead.slug}` : "/about"}
-              prefetch={false}
-              className="group block h-full"
-            >
-              <div className="h-full border border-border p-5 transition-colors hover:border-primary/45">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="pb-1">
-                    <Compass className="h-4 w-4 text-primary" />
-                  </div>
-                  {returning ? <BookOpen className="h-4 w-4 text-primary" /> : <User className="h-4 w-4 text-primary" />}
-                </div>
-                <h3 className="font-semibold text-sm mb-1">
-                  {returning ? "Continue Reading" : "About Me"}
-                </h3>
-                <p className="text-xs text-muted-foreground mb-2">
-                  {returning
-                    ? (lastRead.title ? `Pick up: ${lastRead.title}` : "Pick up where you left off.")
-                    : "Get to know who I am."}
-                </p>
-                {returning && lastReadProgress !== null && (
-                  <div className="mb-2">
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted/70">
-                      <div
-                        className="h-full rounded-full bg-primary"
-                        style={{ width: `${lastReadProgress}%` }}
-                        aria-label={`Reading progress ${lastReadProgress}%`}
-                      />
-                    </div>
-                    <div className="mt-1 text-[11px] text-muted-foreground tabular-nums">
-                      {lastReadProgress}% read
-                    </div>
-                  </div>
-                )}
-                <span className="text-primary text-xs group-hover:underline inline-flex items-center gap-1">
-                  {returning ? "Resume" : "Read"} <ArrowRight className="h-3 w-3" />
+        <LedgerRows items={steps} numbered className="border-t border-border">
+          {(step, entryNumber) => (
+            <li key={step.href} className="border-b border-border">
+              <Link
+                href={step.href}
+                prefetch={false}
+                className="group grid items-baseline gap-x-6 gap-y-1 py-6 sm:grid-cols-[2.5rem_10rem_1fr]"
+              >
+                <span className="label-mono tabular-nums" aria-hidden>
+                  {entryNumber}
                 </span>
-              </div>
-            </Link>
-          </Reveal>
+                <span className="label-mono">{step.label}</span>
+                <span className="min-w-0">
+                  <span className="block font-display text-lg font-semibold tracking-tight transition-colors group-hover:text-primary">
+                    {step.title}
+                  </span>
+                  <span className="mt-1 block max-w-lg text-sm leading-relaxed text-muted-foreground">
+                    {step.blurb}
+                  </span>
 
-          <Reveal delayMs={80}>
-            <Link
-              href={returning && recommendedHub ? `/topics/${recommendedHub.slug}` : "/blog"}
-              prefetch={false}
-              className="group block h-full"
-            >
-              <div className="h-full border border-border p-5 transition-colors hover:border-primary/45">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="pb-1">
-                    <Compass className="h-4 w-4 text-primary" />
-                  </div>
-                  <BookOpen className="h-4 w-4 text-primary" />
-                </div>
-                <h3 className="font-semibold text-sm mb-1">
-                  {returning && recommendedHub ? "More Like This" : "Explore Blog"}
-                </h3>
-                <p className="text-xs text-muted-foreground mb-2">
-                  {returning && recommendedHub
-                    ? recommendedHub.description
-                    : "AI, data science, and dev."}
-                </p>
-                <span className="text-primary text-xs group-hover:underline inline-flex items-center gap-1">
-                  {returning && recommendedHub ? "Explore" : "Browse"} <ArrowRight className="h-3 w-3" />
-                </span>
-              </div>
-            </Link>
-          </Reveal>
+                  {typeof step.progress === "number" && (
+                    <span className="mt-3 block max-w-xs">
+                      <span
+                        className="block h-0.5 w-full bg-border"
+                        role="img"
+                        aria-label={`Reading progress ${step.progress} percent`}
+                      >
+                        <span
+                          className="block h-0.5 bg-primary"
+                          style={{ width: `${step.progress}%` }}
+                        />
+                      </span>
+                      <span className="label-mono mt-1.5 block tabular-nums">
+                        {step.progress}% read
+                      </span>
+                    </span>
+                  )}
 
-          <Reveal delayMs={160}>
-            {/* The hero already owns the AI-chat entry point; this slot surfaces
-                /now instead so the garden's pulse page gets homepage wayfinding. */}
-            <Link href="/now" prefetch={false} className="group block h-full">
-              <div className="h-full border border-border p-5 transition-colors hover:border-primary/45">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="pb-1">
-                    <Compass className="h-4 w-4 text-primary" />
-                  </div>
-                  <Clock className="h-4 w-4 text-primary" />
-                </div>
-                <h3 className="font-semibold text-sm mb-1">What I&apos;m Doing Now</h3>
-                <p className="text-xs text-muted-foreground mb-2">
-                  Current focus, honestly dated.
-                </p>
-                <span className="text-primary text-xs group-hover:underline inline-flex items-center gap-1">
-                  See now <ArrowRight className="h-3 w-3" />
+                  <span className="label-mono mt-3 inline-block text-foreground underline-offset-4 transition-colors group-hover:text-primary group-hover:underline">
+                    {step.cta} →
+                  </span>
                 </span>
-              </div>
-            </Link>
-          </Reveal>
-        </div>
+              </Link>
+            </li>
+          )}
+        </LedgerRows>
 
         {popularPosts.length > 0 && (
-          <div className="mt-10 border-t border-border pt-6">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="size-4 text-primary" />
-              <div className="text-sm font-semibold">Most read</div>
-            </div>
-            <div className="mt-4 grid gap-2 sm:grid-cols-3">
-              {popularPosts.map((post, index) => (
-                <Link
-                  key={post.slug}
-                  href={`/blog/${post.slug}`}
-                  prefetch={false}
-                  className="group rounded-xl border border-border/60 bg-background/70 px-4 py-3 hover:bg-primary/4 transition-colors"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold text-muted-foreground tabular-nums">
-                        {String(index + 1).padStart(2, "0")}
-                      </div>
-                      <div className="truncate text-sm font-semibold text-foreground group-hover:text-primary">
-                        {post.title}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+          <div className="mt-10">
+            <span className="label-mono block">Most read</span>
+            <LedgerRows items={popularPosts} numbered className="mt-3 border-t border-border">
+              {(post, entryNumber) => (
+                <li key={post.slug} className="border-b border-border">
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    prefetch={false}
+                    className="group grid grid-cols-[2.5rem_1fr] items-baseline gap-x-6 py-3"
+                  >
+                    <span className="label-mono tabular-nums" aria-hidden>
+                      {entryNumber}
+                    </span>
+                    <span className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+                      {post.title}
+                    </span>
+                  </Link>
+                </li>
+              )}
+            </LedgerRows>
           </div>
         )}
       </div>

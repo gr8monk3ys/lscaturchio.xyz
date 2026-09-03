@@ -11,20 +11,20 @@ export interface ServiceContent {
 export const SERVICES: ServiceContent[] = [
   {
     title: 'AI Agents & Automation',
-    subtitle: 'Custom AI agents that actually work for your specific use case',
+    subtitle: 'Agents built around your task, not a template',
     tabs: [
       {
-        name: 'What I Build',
-        content: "I build AI agents that handle real tasks - from research assistants that dig through documents to workflow automations that save hours of manual work. Each agent is designed around your actual needs, not generic templates.",
+        name: 'What I build',
+        content: "I build agents that do a named job: read a pile of documents and answer from them with the source attached, or take a repetitive step out of a workflow. Each one is scoped to your task, not assembled from a template.",
         features: [
-          'LangChain & CrewAI implementations',
+          'Retrieval over your own documents',
           'RAG systems with your data',
           'Tool-using agents',
           'Multi-agent workflows',
         ],
       },
       {
-        name: 'How It Works',
+        name: 'How it works',
         content: "We start with a conversation about what you're trying to accomplish. Then I prototype quickly, iterate based on your feedback, and deliver something production-ready. No 50-page proposals - just working software.",
         features: [
           'Rapid prototyping',
@@ -34,17 +34,17 @@ export const SERVICES: ServiceContent[] = [
         ],
       },
       {
-        name: 'Use Cases',
-        content: "I've built agents for document analysis, customer support automation, research workflows, content generation, and data processing pipelines. If there's a repetitive task eating up your team's time, there's probably an agent for it.",
+        name: 'Use cases',
+        content: "The work I have shipped is document question-answering over a client's own corpus, fine-tuned classification, and retrieval that cites its sources. If your repetitive task is not one of those, say so on the call and I will tell you whether it is a fit.",
         features: [
           'Document Q&A systems',
-          'Support ticket routing',
+          'Fine-tuned classification',
           'Research automation',
-          'Content pipelines',
+          'Retrieval with citations',
         ],
       },
       {
-        name: 'Getting Started',
+        name: 'Getting started',
         content: "Book a free 30-minute call and tell me what you're working on. I'll give you honest feedback on whether AI is the right solution and what it would take to build. No sales pitch, just straight talk.",
         features: [
           'Free initial consultation',
@@ -57,11 +57,11 @@ export const SERVICES: ServiceContent[] = [
   },
   {
     title: 'RAG & Search Systems',
-    subtitle: 'Make your data actually searchable and useful',
+    subtitle: 'Search that answers from your own documents',
     tabs: [
       {
-        name: 'What I Build',
-        content: 'Retrieval-Augmented Generation systems that let you chat with your documents, search through knowledge bases, and get accurate answers grounded in your actual data. No hallucinations, just facts from your sources.',
+        name: 'What I build',
+        content: 'Retrieval systems that let you ask questions of your own documents and knowledge bases. Every answer cites the passage it came from, so a wrong one is traceable rather than mysterious.',
         features: [
           'Vector database setup',
           'Embedding optimization',
@@ -70,33 +70,33 @@ export const SERVICES: ServiceContent[] = [
         ],
       },
       {
-        name: 'Tech Stack',
-        content: 'I work with Neon pgvector, Pinecone, Weaviate, and Chroma depending on your needs and scale. OpenAI, Anthropic, or open-source models for embeddings and generation. Whatever fits your requirements and budget.',
+        name: 'Tech stack',
+        content: 'What I have run in production: Neon pgvector for retrieval, OpenAI for embeddings and generation, Vertex AI and BigQuery for inference at volume. If your stack is different I will learn it, but I will not pretend I have already shipped on it.',
         features: [
-          'Neon pgvector / Pinecone / Weaviate',
+          'Neon pgvector retrieval',
           'OpenAI / Claude / Open-source',
           'Next.js / Python backends',
           'Vercel / AWS deployment',
         ],
       },
       {
-        name: 'Common Projects',
-        content: 'Internal knowledge bases for teams, customer-facing documentation search, research paper analysis tools, legal document review systems, and support chatbots that actually know your product.',
+        name: 'Common projects',
+        content: 'Internal knowledge search, documentation search that answers in prose, and research corpora you need to ask questions of. The chat on this site is the public example: it answers from eighty-three essays and shows you what it read.',
         features: [
           'Internal knowledge search',
           'Documentation chatbots',
           'Research tools',
-          'Support automation',
+          'Search that cites its source',
         ],
       },
       {
-        name: 'Results',
-        content: 'What you get is retrieval that answers from your own documents with the source attached, so a wrong answer is traceable rather than mysterious. I do not publish client outcome percentages — I have not run the controlled comparison that would make such a number mean anything.',
+        name: 'What you get',
+        content: 'Retrieval that answers from your own documents with the source attached. I do not publish client outcome percentages: I have not run the controlled comparison that would make such a number mean anything.',
         features: [
-          'Faster information retrieval',
-          'Higher search accuracy',
-          'Reduced support tickets',
-          'Better user experience',
+          'Answers with the source attached',
+          'An eval set you can rerun',
+          'A cost and latency budget, measured',
+          'No outcome numbers I cannot show',
         ],
       },
     ],
@@ -106,7 +106,7 @@ export const SERVICES: ServiceContent[] = [
     subtitle: 'Get unstuck on AI/ML projects with hands-on help',
     tabs: [
       {
-        name: 'How I Help',
+        name: 'How I help',
         content: "Sometimes you don't need someone to build the whole thing - you just need expertise to unblock your team. I do code reviews, architecture sessions, pair programming, and strategic planning for AI projects.",
         features: [
           'Architecture review',
@@ -116,8 +116,8 @@ export const SERVICES: ServiceContent[] = [
         ],
       },
       {
-        name: 'Common Asks',
-        content: '"Our RAG system is returning garbage" - "We need to add AI features but don\'t know where to start" - "Our LLM costs are out of control" - "Should we fine-tune or use prompting?" I\'ve helped teams work through all of these.',
+        name: 'Common asks',
+        content: '"Our RAG system is returning garbage." "We need to add AI features but don\'t know where to start." "Our LLM costs are out of control." "Should we fine-tune or use prompting?" These are the questions the work usually starts from.',
         features: [
           'Debugging AI systems',
           'Cost optimization',
@@ -126,7 +126,7 @@ export const SERVICES: ServiceContent[] = [
         ],
       },
       {
-        name: 'Engagement Types',
+        name: 'Engagement types',
         content: 'One-time deep dives, weekly office hours, or embedded support with your team. Flexible arrangements based on what you actually need. Remote-friendly, async-friendly.',
         features: [
           'One-time consultations',
@@ -137,12 +137,12 @@ export const SERVICES: ServiceContent[] = [
       },
       {
         name: 'Background',
-        content: "I've been building with LLMs since GPT-3, worked on production RAG systems, and keep up with the latest research. Not a generalist who read a blog post - someone who's shipped real AI products.",
+        content: "Production retrieval and classification systems at Sizzle and for Upwork clients, a plant-microbe prediction model at JGI, and the search that runs this site. The work history on the experience page lists each with its numbers.",
         features: [
           'Production experience',
           'Current research knowledge',
           'Practical implementation focus',
-          'No-BS communication',
+          'Plain communication',
         ],
       },
     ],

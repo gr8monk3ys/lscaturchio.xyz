@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { m } from '@/lib/motion'
 import { IconBrandGithub } from '@tabler/icons-react'
 import useSWR from 'swr'
-import { fetchJson } from '@/lib/fetcher'
+import { fetchJson, type ApiEnvelope } from '@/lib/fetcher'
 
 interface ContributionDay {
   contributionCount: number
@@ -24,11 +24,12 @@ interface ContributionsResponse {
 }
 
 export function ContributionGraph() {
-  const { data, error, isLoading } = useSWR<ContributionsResponse>(
+  const { data: envelope, error, isLoading } = useSWR<ApiEnvelope<ContributionsResponse>>(
     '/api/github/contributions',
     fetchJson,
     { revalidateOnFocus: false }
   )
+  const data = envelope?.data
   const [hoveredDay, setHoveredDay] = useState<ContributionDay | null>(null)
 
   if (isLoading) {

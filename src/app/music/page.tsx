@@ -1,8 +1,7 @@
 import { buildPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/Container";
-import { Heading } from "@/components/Heading";
-import { Paragraph } from "@/components/Paragraph";
 import { Music as MusicIcon } from "lucide-react";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Music",
@@ -20,18 +19,17 @@ export default function MusicPage() {
   return (
     <Container size="large">
       <div className="py-10">
-        <header>
-          <span className="label-mono block">Garden · Music</span>
-          <Heading className="mt-4 font-bold text-4xl md:text-5xl tracking-tight">
-            Music
-          </Heading>
-          <Paragraph className="mt-4 max-w-2xl text-muted-foreground">
-            Indie folk with industrial textures — acoustic instruments run through
-            things that were not built for them. Made at home, mostly late, mostly
-            for me.
-          </Paragraph>
-          <hr className="gallery-rule mt-8" />
-        </header>
+        <PageHead
+          kicker="Garden · Music"
+          title="Music"
+          blurb={
+            <>
+              Indie folk with industrial textures — acoustic instruments run through
+              things that were not built for them. Made at home, mostly late, mostly
+              for me.
+            </>
+          }
+        />
 
         <div className="mt-10 border-y border-border py-20 text-center">
           <MusicIcon

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { apiSuccess } from '@/lib/api-response'
 import { getDb, isDatabaseConfigured } from '@/lib/db'
 import { logError } from '@/lib/logger'
 import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit'
@@ -79,7 +80,7 @@ const handleGet = async (): Promise<NextResponse> => {
     // Return appropriate status code
     const statusCode = allHealthy ? 200 : 503
 
-    return NextResponse.json(response, {
+    return apiSuccess(response, {
       status: statusCode,
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -100,7 +101,7 @@ const handleGet = async (): Promise<NextResponse> => {
       },
     }
 
-    return NextResponse.json(response, {
+    return apiSuccess(response, {
       status: 503,
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',

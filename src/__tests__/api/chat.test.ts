@@ -36,7 +36,9 @@ vi.mock('@/lib/with-rate-limit', () => ({
 }));
 
 vi.mock('@/lib/rate-limit', () => ({
+  // Mirrors src/lib/rate-limit.ts. /api/chat takes CHAT, not AI_HEAVY.
   RATE_LIMITS: {
+    CHAT: { limit: 3, window: 60000 },
     AI_HEAVY: { limit: 5, window: 60000 },
   },
 }));

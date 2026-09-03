@@ -27,7 +27,7 @@ vi.mock('@/lib/getAllBlogs', () => ({
 vi.mock('@/lib/with-rate-limit', () => ({
   withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
   RATE_LIMITS: {
-    STANDARD: { limit: 60, window: 60000 },
+    STANDARD: { limit: 30, window: 60000 },
     PUBLIC: { limit: 100, window: 60000 },
     AI_HEAVY: { limit: 5, window: 60000 },
   },

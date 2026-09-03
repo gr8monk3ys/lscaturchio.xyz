@@ -84,10 +84,7 @@ export function NewsletterForm({
     <div className="w-full max-w-md">
       <form onSubmit={handleSubmit} className="space-y-3">
         <div className="space-y-2">
-          <div className="flex items-center justify-between gap-3">
-            <span className="label-mono">Topics (optional)</span>
-            <span className="label-mono">{topics.length}/6</span>
-          </div>
+          <span className="label-mono block">Topics (optional)</span>
           <div className={cn("flex flex-wrap gap-2", compact && "gap-1.5")}>
             {NEWSLETTER_TOPICS.map((t) => {
               const active = topics.includes(t.id);

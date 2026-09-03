@@ -49,9 +49,12 @@ describe('/api/newsletter/stats', () => {
 
     expect(response.status).toBe(200);
     expect(data).toEqual({
-      activeSubscribers: null,
-      available: false,
-      message: 'Newsletter subscriber counts are unavailable right now.',
+      success: true,
+      data: {
+        activeSubscribers: null,
+        available: false,
+        message: 'Newsletter subscriber counts are unavailable right now.',
+      },
     });
   });
 
@@ -61,8 +64,8 @@ describe('/api/newsletter/stats', () => {
 
     expect(response.status).toBe(200);
     expect(data).toEqual({
-      activeSubscribers: 150,
-      available: true,
+      success: true,
+      data: { activeSubscribers: 150, available: true },
     });
   });
 
@@ -74,24 +77,19 @@ describe('/api/newsletter/stats', () => {
 
     expect(response.status).toBe(200);
     expect(data).toEqual({
-      activeSubscribers: 0,
-      available: true,
+      success: true,
+      data: { activeSubscribers: 0, available: true },
     });
   });
 
-  it('returns an unavailable state on database errors', async () => {
+  it('returns a standard error envelope on database errors', async () => {
     mockSql.mockRejectedValue(new Error('Database error'));
 
     const response = await GET(createRequest());
     const data = await response.json();
 
     expect(response.status).toBe(500);
-    expect(data).toEqual({
-      error: 'Failed to fetch stats',
-      activeSubscribers: null,
-      available: false,
-      message: 'Newsletter subscriber counts are unavailable right now.',
-    });
+    expect(data).toEqual({ error: 'Failed to fetch stats', success: false });
   });
 
   it('logs unexpected errors', async () => {

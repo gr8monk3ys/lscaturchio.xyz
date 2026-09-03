@@ -37,10 +37,13 @@ describe('/api/github/contributions', () => {
 
     expect(response.status).toBe(200);
     expect(data).toEqual({
-      totalContributions: 0,
-      weeks: [],
-      degraded: true,
-      message: 'GitHub contribution data is temporarily unavailable.',
+      success: true,
+      data: {
+        totalContributions: 0,
+        weeks: [],
+        degraded: true,
+        message: 'GitHub contribution data is temporarily unavailable.',
+      },
     });
     expect(mockFetch).not.toHaveBeenCalled();
   });
@@ -78,19 +81,22 @@ describe('/api/github/contributions', () => {
 
     expect(response.status).toBe(200);
     expect(data).toEqual({
-      totalContributions: 12,
-      weeks: [
-        {
-          contributionDays: [
-            {
-              contributionCount: 1,
-              date: '2026-03-01',
-              color: '#9be9a8',
-            },
-          ],
-        },
-      ],
-      degraded: false,
+      success: true,
+      data: {
+        totalContributions: 12,
+        weeks: [
+          {
+            contributionDays: [
+              {
+                contributionCount: 1,
+                date: '2026-03-01',
+                color: '#9be9a8',
+              },
+            ],
+          },
+        ],
+        degraded: false,
+      },
     });
   });
 
@@ -106,9 +112,9 @@ describe('/api/github/contributions', () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.degraded).toBe(true);
-    expect(data.totalContributions).toBe(0);
-    expect(data.weeks).toEqual([]);
+    expect(data.data.degraded).toBe(true);
+    expect(data.data.totalContributions).toBe(0);
+    expect(data.data.weeks).toEqual([]);
     expect(logError).toHaveBeenCalledWith(
       'GitHub Contributions: API error',
       expect.any(Error),

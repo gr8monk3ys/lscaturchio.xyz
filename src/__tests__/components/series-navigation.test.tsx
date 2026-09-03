@@ -27,7 +27,7 @@ function mockSeriesResponse(seriesPosts: typeof posts) {
   mockFetch.mockResolvedValue({
     ok: true,
     status: 200,
-    json: async () => ({ posts: seriesPosts }),
+    json: async () => ({ data: { posts: seriesPosts }, success: true }),
   });
 }
 
@@ -157,7 +157,7 @@ describe("SeriesNavigation", () => {
     mockFetch.mockResolvedValue({
       ok: true,
       status: 200,
-      json: async () => ({}),
+      json: async () => ({ data: {}, success: true }),
     });
 
     const { container } = renderWithSWR(

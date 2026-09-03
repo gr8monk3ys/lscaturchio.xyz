@@ -118,15 +118,14 @@ export function parseQuery<T extends z.ZodSchema>(
 }
 
 /**
- * AI Provider enum for chat API
- */
-const aiProviderSchema = z.enum(['openai', 'anthropic', 'google'], {
-  message: "Provider must be 'openai', 'anthropic', or 'google'",
-});
-
-/**
  * Chat API request validation
- * Validates provider, model, and query parameters
+ *
+ * Deliberately no `provider` / `model` fields: `/api/chat` does not route on
+ * them. `generateChatAnswer` walks a fixed ladder (see CHAT_PROVIDERS in
+ * `@/lib/chat/providers`) and picks the first provider that answers, so a
+ * caller-supplied provider would be validated and then ignored — an interface
+ * advertising capability that does not exist. The response still reports which
+ * provider actually answered. See validations.test.ts for the drift guard.
  */
 export const chatRequestSchema = z.object({
   query: z
@@ -134,11 +133,6 @@ export const chatRequestSchema = z.object({
     .min(1, 'Query is required')
     .max(1000, 'Query too long (max 1000 characters)'),
   contextSlug: slugSchema.optional(),
-  provider: aiProviderSchema.optional(),
-  model: z
-    .string()
-    .max(100, 'Model name too long')
-    .optional(),
 });
 
 /**

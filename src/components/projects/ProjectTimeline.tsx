@@ -107,7 +107,7 @@ export function ProjectTimeline({ projects, className }: ProjectTimelineProps) {
               {projectsByYear[year].map((project, index) => (
                 <m.div
                   key={project.slug}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={false}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ ...defaultTransition, delay: index * 0.1 }}

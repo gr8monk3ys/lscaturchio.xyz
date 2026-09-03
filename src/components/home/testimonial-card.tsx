@@ -34,7 +34,7 @@ export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps
 
   return (
     <m.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={false}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
       transition={{

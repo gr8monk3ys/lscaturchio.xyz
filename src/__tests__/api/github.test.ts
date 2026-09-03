@@ -5,7 +5,7 @@ import { NextRequest } from 'next/server';
 vi.mock('@/lib/with-rate-limit', () => ({
   withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
   RATE_LIMITS: {
-    STANDARD: { limit: 60, window: 60000 },
+    STANDARD: { limit: 30, window: 60000 },
     PUBLIC: { limit: 100, window: 60000 },
     AI_HEAVY: { limit: 5, window: 60000 },
   },
@@ -58,7 +58,7 @@ describe('GitHub API Route', () => {
       mockGetGithubPortfolioRepos.mockResolvedValue(mockPortfolioRepos);
 
       const response = await GET(createMockRequest());
-      const data = await response.json();
+      const { data } = await response.json();
 
       expect(response.status).toBe(200);
       expect(Array.isArray(data)).toBe(true);
@@ -72,7 +72,7 @@ describe('GitHub API Route', () => {
       mockGetGithubPortfolioRepos.mockResolvedValue([mockPortfolioRepos[0]]);
 
       const response = await GET(createMockRequest());
-      const data = await response.json();
+      const { data } = await response.json();
 
       expect(data[0]).toMatchObject({
         title: 'awesome-project',
@@ -112,7 +112,7 @@ describe('GitHub API Route', () => {
       mockGetGithubPortfolioRepos.mockResolvedValue([]);
 
       const response = await GET(createMockRequest());
-      const data = await response.json();
+      const { data } = await response.json();
 
       expect(response.status).toBe(200);
       expect(data).toEqual([]);

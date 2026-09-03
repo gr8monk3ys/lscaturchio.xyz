@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { fetchJson, unwrapApiData } from '@/lib/fetcher'
+import { fetchJson } from '@/lib/fetcher'
+import type { ApiEnvelope } from '@/lib/fetcher'
 
 interface BlogStatsPayload {
   totalPosts?: number
@@ -54,20 +55,14 @@ const cardStyles = {
 
 async function loadOverview(): Promise<OverviewData> {
   const [blogStatsResult, viewsResult, newsletterResult] = await Promise.allSettled([
-    fetchJson<{ data?: BlogStatsPayload } | BlogStatsPayload>('/api/blog-stats'),
-    fetchJson<{ data?: ViewsPayload } | ViewsPayload>('/api/views?format=detailed'),
-    fetchJson<NewsletterStatsPayload>('/api/newsletter/stats'),
+    fetchJson<ApiEnvelope<BlogStatsPayload>>('/api/blog-stats'),
+    fetchJson<ApiEnvelope<ViewsPayload>>('/api/views?format=detailed'),
+    fetchJson<ApiEnvelope<NewsletterStatsPayload>>('/api/newsletter/stats'),
   ])
 
-  const blogStats =
-    blogStatsResult.status === 'fulfilled'
-      ? unwrapApiData(blogStatsResult.value as { data?: BlogStatsPayload } | BlogStatsPayload)
-      : null
-  const views =
-    viewsResult.status === 'fulfilled'
-      ? unwrapApiData(viewsResult.value as { data?: ViewsPayload } | ViewsPayload)
-      : null
-  const newsletter = newsletterResult.status === 'fulfilled' ? newsletterResult.value : null
+  const blogStats = blogStatsResult.status === 'fulfilled' ? blogStatsResult.value.data : null
+  const views = viewsResult.status === 'fulfilled' ? viewsResult.value.data : null
+  const newsletter = newsletterResult.status === 'fulfilled' ? newsletterResult.value.data : null
 
   const totalViews =
     views?.available && Array.isArray(views.views)

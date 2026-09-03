@@ -1,13 +1,9 @@
-import { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db';
 import crypto from 'crypto';
-import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
-import { validateCsrf } from '@/lib/csrf';
-import { logError } from '@/lib/logger';
-import { newsletterSubscribeSchema, parseBody } from '@/lib/validations';
+import { withWriteRoute } from '@/lib/api/write-route';
+import { newsletterSubscribeSchema } from '@/lib/validations';
 import { sendWelcomeEmail } from '@/lib/email';
-import { apiSuccess, ApiErrors } from '@/lib/api-response';
 import { NEWSLETTER_TOPIC_IDS } from '@/constants/newsletter';
 
 function buildMetadataJson(
@@ -37,27 +33,31 @@ function buildMetadataJson(
  */
 const SUBSCRIBE_MESSAGE = 'Thanks! Check your inbox to confirm your subscription.';
 
-const handlePost = async (request: NextRequest) => {
-  const csrfError = validateCsrf(request);
-  if (csrfError) return csrfError;
-
-  try {
-    const body = await request.json();
-
-    // Zod validation (email is normalized/trimmed by schema transform)
-    const parsed = parseBody(newsletterSubscribeSchema, body);
-    if (!parsed.success) {
-      return ApiErrors.badRequest(parsed.error);
-    }
-
-    const normalizedEmail = parsed.data.email;
+export const POST = withWriteRoute(
+  {
+    // 3 requests per 5 minutes to prevent spam.
+    limit: RATE_LIMITS.NEWSLETTER,
+    auth: {
+      kind: 'public',
+      reason: 'Signing up for the newsletter is by definition an unauthenticated action.',
+    },
+    csrf: { kind: 'required' },
+    body: { kind: 'json', schema: newsletterSubscribeSchema },
+    envelope: { kind: 'standard' },
+    errors: {
+      log: 'Newsletter Subscribe: Unexpected error',
+      component: 'newsletter/subscribe',
+      action: 'POST',
+      message: 'Failed to subscribe. Please try again later.',
+    },
+  },
+  async ({ data }) => {
+    const normalizedEmail = data.email;
     const allowedTopics = new Set<string>(NEWSLETTER_TOPIC_IDS);
-    const topics = Array.from(
-      new Set((parsed.data.topics ?? []).map((t) => t.trim()))
-    )
+    const topics = Array.from(new Set((data.topics ?? []).map((t: string) => t.trim())))
       .filter((t) => allowedTopics.has(t))
       .slice(0, 6);
-    const source = parsed.data.source;
+    const source = data.source;
 
     // Generate unsubscribe token
     const unsubscribeToken = crypto.randomBytes(32).toString('hex');
@@ -81,25 +81,25 @@ const handlePost = async (request: NextRequest) => {
         }
         // Same body and status as every other outcome. Distinct responses
         // let anyone probe whether a given address is on the list.
-        return apiSuccess({ message: SUBSCRIBE_MESSAGE });
-      } else {
-        // Reactivate subscription
-        const metadataJson = buildMetadataJson(topics, source, true);
-        await sql`
-          UPDATE newsletter_subscribers
-          SET
-            is_active = true,
-            subscribed_at = NOW(),
-            unsubscribe_token = ${unsubscribeToken},
-            metadata = COALESCE(metadata, '{}'::jsonb) || ${metadataJson}::jsonb
-          WHERE email = ${normalizedEmail}
-        `;
-
-        // Send welcome back email (non-blocking)
-        sendWelcomeEmail(normalizedEmail, unsubscribeToken).catch(() => {});
-
-        return apiSuccess({ message: SUBSCRIBE_MESSAGE });
+        return { message: SUBSCRIBE_MESSAGE };
       }
+
+      // Reactivate subscription
+      const metadataJson = buildMetadataJson(topics, source, true);
+      await sql`
+        UPDATE newsletter_subscribers
+        SET
+          is_active = true,
+          subscribed_at = NOW(),
+          unsubscribe_token = ${unsubscribeToken},
+          metadata = COALESCE(metadata, '{}'::jsonb) || ${metadataJson}::jsonb
+        WHERE email = ${normalizedEmail}
+      `;
+
+      // Send welcome back email (non-blocking)
+      sendWelcomeEmail(normalizedEmail, unsubscribeToken).catch(() => {});
+
+      return { message: SUBSCRIBE_MESSAGE };
     }
 
     // Insert new subscriber (no IP/user-agent for GDPR compliance)
@@ -113,12 +113,6 @@ const handlePost = async (request: NextRequest) => {
     sendWelcomeEmail(normalizedEmail, unsubscribeToken).catch(() => {});
 
     // 200, not 201: a distinct status code discloses that this address was new.
-    return apiSuccess({ message: SUBSCRIBE_MESSAGE });
-  } catch (error) {
-    logError('Newsletter Subscribe: Unexpected error', error, { component: 'newsletter/subscribe', action: 'POST' });
-    return ApiErrors.internalError('Failed to subscribe. Please try again later.');
+    return { message: SUBSCRIBE_MESSAGE };
   }
-};
-
-// Export with rate limiting (3 requests per 5 minutes to prevent spam)
-export const POST = withRateLimit(handlePost, RATE_LIMITS.NEWSLETTER);
+);

@@ -1,7 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
-import { validateApiKey } from "@/lib/api-auth";
+import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { logError, logInfo } from "@/lib/logger";
 import { sendOnboardingEmail } from "@/lib/email";
@@ -54,21 +52,38 @@ function buildOnboardingState(
   };
 }
 
-const handlePost = async (req: NextRequest) => {
-  const authError = validateApiKey(req, {
-    envKey: "NEWSLETTER_ADMIN_API_KEY",
-    component: "newsletter/drip",
-    action: "POST",
-  });
-  if (authError) return authError;
+export const POST = withWriteRoute(
+  {
+    // Was RATE_LIMITS.PUBLIC (100/min). This endpoint sends up to BATCH_SIZE
+    // onboarding emails per call, so 100 calls a minute from one IP is 5,000
+    // sends; the scheduled caller runs on the order of once an hour. STANDARD
+    // (30/min) is still far above any legitimate cadence.
+    limit: RATE_LIMITS.STANDARD,
+    auth: { kind: "apiKey", envKey: "NEWSLETTER_ADMIN_API_KEY" },
+    csrf: {
+      kind: "skip",
+      reason:
+        "Called by a scheduled machine client with an API key, never by a browser. A cron request sends no Origin or Referer, which validateCsrf rejects outright, so requiring it would break every legitimate call. The API key is the whole authorisation and it is not ambiently attached the way a cookie is, so there is no cross-site request to forge.",
+    },
+    body: {
+      kind: "none",
+      reason: "Takes no request body; its only input is the ?dryRun query flag.",
+    },
+    envelope: { kind: "standard" },
+    errors: {
+      log: "Newsletter drip failed",
+      component: "newsletter/drip",
+      action: "POST",
+      message: "Failed to send onboarding emails",
+    },
+  },
+  async ({ req }) => {
+    if (!isDatabaseConfigured()) {
+      throw writeError.internal("DATABASE_URL is not configured");
+    }
 
-  if (!isDatabaseConfigured()) {
-    return NextResponse.json({ error: "DATABASE_URL is not configured" }, { status: 500 });
-  }
+    const dryRun = req.nextUrl.searchParams.get("dryRun") === "true";
 
-  const dryRun = req.nextUrl.searchParams.get("dryRun") === "true";
-
-  try {
     const sql = getDb();
 
     const rows = await sql`
@@ -202,14 +217,6 @@ const handlePost = async (req: NextRequest) => {
       dryRun,
     });
 
-    return NextResponse.json(
-      { processed: rows.length, sent, failed, skipped, dryRun },
-      { status: 200 }
-    );
-  } catch (error) {
-    logError("Newsletter drip failed", error, { component: "newsletter/drip" });
-    return NextResponse.json({ error: "Failed to send onboarding emails" }, { status: 500 });
+    return { processed: rows.length, sent, failed, skipped, dryRun };
   }
-};
-
-export const POST = withRateLimit(handlePost, RATE_LIMITS.PUBLIC);
+);

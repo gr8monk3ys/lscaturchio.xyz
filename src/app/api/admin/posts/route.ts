@@ -1,11 +1,5 @@
-import { NextRequest } from "next/server";
-import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
-import { validateCsrf } from "@/lib/csrf";
-import { logError } from "@/lib/logger";
-import { parseBody } from "@/lib/validations";
-import { apiSuccess, ApiErrors } from "@/lib/api-response";
-import { requireAdmin } from "@/lib/admin/session";
+import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { getFile, commitToMain, type CommitFile } from "@/lib/admin/github";
 import { postPublishSchema } from "@/lib/admin/schemas";
 import {
@@ -16,24 +10,28 @@ import {
 } from "@/lib/admin/blog-content";
 import { toWebp } from "@/lib/admin/images";
 
-async function handler(req: NextRequest) {
-  const authError = requireAdmin(req);
-  if (authError) return authError;
-  const csrfError = validateCsrf(req);
-  if (csrfError) return csrfError;
-
-  try {
-    const parsed = parseBody(postPublishSchema, await req.json());
-    if (!parsed.success) return ApiErrors.badRequest(parsed.error);
-    const input = parsed.data;
-
+export const POST = withWriteRoute(
+  {
+    limit: RATE_LIMITS.STANDARD,
+    auth: { kind: "adminSession" },
+    csrf: { kind: "required" },
+    body: { kind: "json", schema: postPublishSchema },
+    envelope: { kind: "standard" },
+    errors: {
+      log: "Admin post publish failed",
+      component: "admin-posts",
+      action: "POST",
+      message: "Publish failed — nothing was committed",
+    },
+  },
+  async ({ data: input }) => {
     const contentPath = `src/app/blog/${input.slug}/content.mdx`;
     const existing = await getFile(contentPath);
     if (existing && !input.overwrite) {
-      return ApiErrors.conflict(`A post with slug "${input.slug}" already exists`);
+      throw writeError.conflict(`A post with slug "${input.slug}" already exists`);
     }
     if (!existing && input.overwrite) {
-      return ApiErrors.notFound(`No post with slug "${input.slug}" to update`);
+      throw writeError.notFound(`No post with slug "${input.slug}" to update`);
     }
 
     const meta: PostMeta = {
@@ -61,7 +59,7 @@ async function handler(req: NextRequest) {
 
     const mdx = buildContentMdx(meta, input.body);
     const mdxCheck = await validateMdx(mdx);
-    if (!mdxCheck.ok) return ApiErrors.badRequest(`MDX does not compile: ${mdxCheck.error}`);
+    if (!mdxCheck.ok) throw writeError.badRequest(`MDX does not compile: ${mdxCheck.error}`);
 
     files.push({ path: contentPath, content: mdx });
     if (!existing) {
@@ -71,11 +69,6 @@ async function handler(req: NextRequest) {
 
     const verb = existing ? "update" : "add";
     const commit = await commitToMain(files, `content(blog): ${verb} ${input.slug} via portal`);
-    return apiSuccess({ commitUrl: commit.url, path: `/blog/${input.slug}` });
-  } catch (error) {
-    logError("Admin post publish failed", error, { component: "admin-posts", action: "POST" });
-    return ApiErrors.internalError("Publish failed — nothing was committed");
+    return { commitUrl: commit.url, path: `/blog/${input.slug}` };
   }
-}
-
-export const POST = withRateLimit(handler, RATE_LIMITS.STANDARD);
+);

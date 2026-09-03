@@ -1,36 +1,40 @@
-import { NextRequest } from "next/server";
-import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
-import { validateCsrf } from "@/lib/csrf";
+import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { escapeHtml, sanitizeForHtmlEmail, sanitizeEmailSubject } from "@/lib/sanitize";
 import { logError } from "@/lib/logger";
-import { contactFormSchema, parseBody } from "@/lib/validations";
-import { apiSuccess, ApiErrors } from "@/lib/api-response";
+import { contactFormSchema } from "@/lib/validations";
 
-async function handler(req: NextRequest) {
-  const csrfError = validateCsrf(req);
-  if (csrfError) return csrfError;
-
-  try {
-    const body = await req.json();
-
-    // Zod validation
-    const parsed = parseBody(contactFormSchema, body);
-    if (!parsed.success) {
-      return ApiErrors.badRequest(parsed.error);
-    }
-
-    const { name, email, message } = parsed.data;
+export const POST = withWriteRoute(
+  {
+    limit: RATE_LIMITS.NEWSLETTER,
+    auth: {
+      kind: "public",
+      reason: "The contact form is the site's front door; anyone must be able to reach it.",
+    },
+    csrf: { kind: "required" },
+    body: { kind: "json", schema: contactFormSchema },
+    envelope: { kind: "standard" },
+    errors: {
+      log: "Contact Form: Unexpected error",
+      component: "contact",
+      action: "POST",
+      message: "An unexpected error occurred. Please try again later.",
+    },
+  },
+  async ({ data }) => {
+    const { name, email, message } = data;
 
     // Check if Resend API key is configured
     const resendApiKey = process.env.RESEND_API_KEY;
 
     if (!resendApiKey) {
       logError("Contact Form: RESEND_API_KEY is not configured", null, {
-        component: 'contact',
-        action: 'POST',
+        component: "contact",
+        action: "POST",
       });
-      return ApiErrors.internalError("Contact form is temporarily unavailable. Please try again later.");
+      throw writeError.internal(
+        "Contact form is temporarily unavailable. Please try again later."
+      );
     }
 
     // Send email using Resend
@@ -62,18 +66,11 @@ async function handler(req: NextRequest) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      logError("Contact Form: Resend API error", errorData, { component: 'contact', action: 'POST' });
+      logError("Contact Form: Resend API error", errorData, { component: "contact", action: "POST" });
 
-      return ApiErrors.internalError("Failed to send message. Please try again later.");
+      throw writeError.internal("Failed to send message. Please try again later.");
     }
 
-    return apiSuccess({
-      message: "Message sent successfully! I'll get back to you soon.",
-    });
-  } catch (error) {
-    logError("Contact Form: Unexpected error", error, { component: 'contact', action: 'POST' });
-    return ApiErrors.internalError("An unexpected error occurred. Please try again later.");
+    return { message: "Message sent successfully! I'll get back to you soon." };
   }
-}
-
-export const POST = withRateLimit(handler, RATE_LIMITS.NEWSLETTER);
+);

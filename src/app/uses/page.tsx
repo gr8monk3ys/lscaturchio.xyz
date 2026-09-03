@@ -1,8 +1,7 @@
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
-import { Heading } from "@/components/Heading";
-import { Paragraph } from "@/components/Paragraph";
 import { RagStatusCard } from "@/components/uses/rag-status-card";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Uses",
@@ -30,23 +29,24 @@ export default function UsesPage() {
   return (
     <Container size="large">
       <div className="max-w-4xl mx-auto py-12">
-        <header className="mb-12">
-          <span className="label-mono block">Garden · Setup</span>
-          <Heading className="mt-4 text-4xl font-bold md:text-5xl">What I Use</Heading>
-          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            The following is the way in which I am currently using my setup. My philosophy is usually
-            associated with it being <a href="https://suckless.org/rocks/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">FOSS</a> (Free
-            and open source software) since this is ideally how the internet is supposed to be used.
-            Typically, the less bloat that exists the better.
-          </Paragraph>
-          <hr className="gallery-rule mt-8" />
-          <div className="mt-8 border-l-2 border-border pl-4">
-            <p className="label-mono">Disclosure</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Many of the links here are affiliate links to services and products I use. I would never use affiliate links for products that I don&apos;t personally use.
-            </p>
-          </div>
-        </header>
+        <PageHead
+          kicker="Garden · Setup"
+          title="What I Use"
+          blurb={
+            <>
+              The following is the way in which I am currently using my setup. My philosophy is usually
+              associated with it being <a href="https://suckless.org/rocks/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">FOSS</a> (Free
+              and open source software) since this is ideally how the internet is supposed to be used.
+              Typically, the less bloat that exists the better.
+            </>
+          }
+        />
+        <div className="mt-8 mb-12 border-l-2 border-border pl-4">
+          <p className="label-mono">Disclosure</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Many of the links here are affiliate links to services and products I use. I would never use affiliate links for products that I don&apos;t personally use.
+          </p>
+        </div>
 
         <Section title="Hardware">
           <Item title="Laptop">

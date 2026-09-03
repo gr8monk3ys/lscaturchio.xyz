@@ -49,24 +49,6 @@ export const categoryLabels: Record<ProjectCategory, string> = {
   'data-science': 'Data Science',
 }
 
-export function deriveMetricsFromResults(results: string[] | undefined): CaseStudyMetric[] {
-  if (!results || results.length === 0) return []
-
-  const metrics: CaseStudyMetric[] = []
-  for (const item of results) {
-    const match = item.match(/(\+?\d+%|\d+\/\d+|24\/7)/)
-    if (!match) continue
-
-    const value = match[1]
-    const label = item.replace(match[0], '').replace(/^[\s:–—-]+/, '').trim()
-    metrics.push({ value, label: label || 'Impact' })
-
-    if (metrics.length >= 4) break
-  }
-
-  return metrics
-}
-
 export function defaultProcessSteps(title: string): CaseStudyProcessStep[] {
   return [
     {

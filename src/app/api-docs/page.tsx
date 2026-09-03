@@ -45,6 +45,12 @@ export default function ApiDocsPage() {
           <Paragraph className="text-lg text-muted-foreground">
             These endpoints are read-only and intended for integrations, personal tooling, and community remixing.
           </Paragraph>
+          <Paragraph className="mt-4 text-sm text-muted-foreground">
+            Every endpoint on this site answers in one envelope. Success is{" "}
+            <code className="font-mono">{`{ "data": ..., "success": true }`}</code> and failure is{" "}
+            <code className="font-mono">{`{ "error": "...", "success": false }`}</code>, so the payloads
+            described below are what you find under <code className="font-mono">data</code>.
+          </Paragraph>
         </div>
 
         <div className="space-y-4">

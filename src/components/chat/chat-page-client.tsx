@@ -17,6 +17,8 @@ interface ChatMessage {
   id: number;
   content: string;
   sender: "user" | "ai";
+  /** Set on a failed turn so the reader can resend the question that failed. */
+  failedQuery?: string;
 }
 
 // POV-forward openers — the chat is an interactive version of Lorenzo's
@@ -27,6 +29,15 @@ const STARTER_PROMPTS = [
   "What did you used to believe that you've since changed your mind on?",
   "Pick a fight with Silicon Valley for me.",
 ];
+
+// Honest about the mechanism: this is retrieval over the essays, not a
+// model trained on them. The site's one rule is that nothing on it claims
+// more than it can show.
+const OPENER =
+  "I answer from Lorenzo's essays and the notes on this site, in his words where I can find them. Ask what he thinks. Or push back and argue.";
+
+const ERROR_COPY =
+  "That one didn't get through. The essays are still here; try the question again, or ask it another way.";
 
 interface ChatPageClientProps {
   contextSlug?: string;
@@ -41,12 +52,7 @@ export function ChatPageClient({
 }: ChatPageClientProps) {
 
   const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 1,
-      content:
-        "I'm an AI trained on everything Lorenzo has written — the essays, the code notes, the opinions. Ask what he thinks. Or push back and argue.",
-      sender: "ai",
-    },
+    { id: 1, content: OPENER, sender: "ai" },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -114,9 +120,9 @@ export function ChatPageClient({
         ...prev,
         {
           id: prev.length + 1,
-          content:
-            "I’m having trouble responding right now. Please try again in a moment.",
+          content: ERROR_COPY,
           sender: "ai",
+          failedQuery: query,
         },
       ]);
     } finally {
@@ -137,26 +143,35 @@ export function ChatPageClient({
   };
 
   return (
-    <div className="neu-card flex min-h-[70vh] flex-col rounded-2xl">
-      <div className="px-5 py-4 border-b">
-        <h1 className="text-xl font-semibold">Chat with Lorenzo</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Powered by RAG over blog content. Press Enter to send, Shift+Enter for a new line.
+    <div className="flex min-h-[70vh] flex-col border-y border-border">
+      <div className="px-1 py-5">
+        <span className="label-mono block">Ask the site</span>
+        <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight">Chat with Lorenzo</h1>
+        <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+          Answers come from the essays, not from a model that made them up. Enter sends;
+          Shift+Enter starts a new line.
         </p>
         {contextSlug && (
-          <div className="mt-3 text-xs text-muted-foreground">
-            Context:{" "}
+          <p className="label-mono mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span>Reading</span>
             <Link
               href={`/blog/${contextSlug}`}
-              className="text-primary hover:underline"
+              className="normal-case tracking-normal text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
             >
               {contextTitle || contextSlug}
             </Link>
-          </div>
+            <span aria-hidden className="text-foreground/25">·</span>
+            <Link
+              href={`/blog/${contextSlug}`}
+              className="normal-case tracking-normal text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            >
+              ← Back to the essay
+            </Link>
+          </p>
         )}
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden border-t border-border">
         <ChatMessageList role="log" aria-live="polite" aria-label="Conversation with Lorenzo">
           {messages.map((message) => (
             <ChatBubble
@@ -173,6 +188,15 @@ export function ChatPageClient({
                 variant={message.sender === "user" ? "sent" : "received"}
               >
                 {message.content}
+                {message.failedQuery && !isLoading && (
+                  <button
+                    type="button"
+                    onClick={() => void sendMessage(message.failedQuery ?? "")}
+                    className="label-mono mt-3 block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  >
+                    Try again →
+                  </button>
+                )}
               </ChatBubbleMessage>
             </ChatBubble>
           ))}
@@ -209,29 +233,39 @@ export function ChatPageClient({
         </ChatMessageList>
       </div>
 
-      <div className="p-4 border-t">
+      <div className="border-t border-border py-4">
         <form
           onSubmit={handleSubmit}
-          className="relative rounded-xl border bg-background focus-within:ring-1 focus-within:ring-ring"
+          className="relative border-b border-border focus-within:border-primary"
         >
+          <label htmlFor="chat-message" className="sr-only">Message</label>
           <ChatInput
+            id="chat-message"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
+            placeholder="Ask, or argue…"
             aria-label="Message"
-            className="border-0 bg-transparent shadow-none focus:ring-0 focus-visible:ring-0"
+            className="border-0 bg-transparent px-0 shadow-none focus:ring-0 focus-visible:ring-0"
           />
-          <div className="flex items-center justify-end px-3 pb-3">
+          <div className="flex items-center justify-between gap-3 pb-3">
+            {isLoading ? (
+              <span className="label-mono normal-case tracking-normal" aria-live="polite">
+                Reading the essays…
+              </span>
+            ) : (
+              <span className="label-mono normal-case tracking-normal">Enter to send</span>
+            )}
             <Button
               type="submit"
               size="sm"
-              className="gap-1.5"
+              variant="primary"
+              className="gap-1.5 rounded-full"
               disabled={isLoading}
               aria-label="Send message"
             >
               Send
-              <CornerDownLeft className="h-3.5 w-3.5" />
+              <CornerDownLeft className="h-3.5 w-3.5" aria-hidden="true" />
             </Button>
           </div>
         </form>

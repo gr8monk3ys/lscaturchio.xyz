@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { fetchJson, unwrapApiData } from '@/lib/fetcher'
+import { fetchJson, type ApiEnvelope } from '@/lib/fetcher'
 
 interface ViewRow {
   slug: string
@@ -20,13 +20,13 @@ const numberFormatter = new Intl.NumberFormat('en-US')
 const skeletonRows = ['views-skeleton-1', 'views-skeleton-2', 'views-skeleton-3', 'views-skeleton-4', 'views-skeleton-5']
 
 export function VisitorChart() {
-  const { data, isLoading } = useSWR<{ data?: ViewsPayload } | ViewsPayload>(
+  const { data, isLoading } = useSWR<ApiEnvelope<ViewsPayload>>(
     '/api/views?format=detailed',
     fetchJson,
     { revalidateOnFocus: false, shouldRetryOnError: false }
   )
 
-  const payload = data ? unwrapApiData(data) : null
+  const payload = data?.data ?? null
 
   const rows = useMemo(() => {
     if (!payload?.available || !Array.isArray(payload.views)) {

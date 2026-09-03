@@ -100,6 +100,9 @@ export function classifyFailure({ status, headers, bodyText }) {
 /**
  * Each check returns null when healthy, or a string describing the failure.
  * Keep these cheap, unauthenticated, and free of side effects.
+ *
+ * Every JSON endpoint answers in the one envelope (`{ data, success }`, see
+ * src/lib/api-response.ts), so each body assertion reads through `body.data`.
  */
 const CHECKS = [
   {
@@ -107,9 +110,10 @@ const CHECKS = [
     path: "/api/health",
     verify: (status, body) => {
       if (status !== 200) return `expected 200, got ${status}`;
-      if (body?.status !== "healthy") return `status is "${body?.status}"`;
-      if (body?.checks?.database !== "ok") return `database check is "${body?.checks?.database}"`;
-      if (body?.checks?.environment !== "ok") return `environment check is "${body?.checks?.environment}"`;
+      const health = body?.data;
+      if (health?.status !== "healthy") return `status is "${health?.status}"`;
+      if (health?.checks?.database !== "ok") return `database check is "${health?.checks?.database}"`;
+      if (health?.checks?.environment !== "ok") return `environment check is "${health?.checks?.environment}"`;
       return null;
     },
   },
@@ -118,9 +122,10 @@ const CHECKS = [
     path: "/api/rag-status",
     verify: (status, body) => {
       if (status !== 200) return `expected 200, got ${status}`;
-      if (!body?.database?.ok) return "database not ok";
-      if (!body?.embeddings?.available) return "embeddings provider unavailable";
-      if (!(body?.embeddings?.count > 0)) return `embedding count is ${body?.embeddings?.count}`;
+      const rag = body?.data;
+      if (!rag?.database?.ok) return "database not ok";
+      if (!rag?.embeddings?.available) return "embeddings provider unavailable";
+      if (!(rag?.embeddings?.count > 0)) return `embedding count is ${rag?.embeddings?.count}`;
       return null;
     },
   },

@@ -79,7 +79,7 @@ function Footer() {
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
             {footerColumns.map((column) => (
               <nav key={column.name} aria-label={column.name}>
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                <h3 className="label-mono mb-3 block">
                   {column.name}
                 </h3>
                 <ul className="space-y-2 text-sm">

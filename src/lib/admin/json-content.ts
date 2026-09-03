@@ -1,10 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import type { ZodSchema } from "zod";
-import { validateCsrf } from "@/lib/csrf";
-import { logError } from "@/lib/logger";
-import { parseBody } from "@/lib/validations";
-import { apiSuccess, ApiErrors } from "@/lib/api-response";
-import { requireAdmin } from "@/lib/admin/session";
+import { RATE_LIMITS } from "@/lib/rate-limit";
+import { withWriteRoute } from "@/lib/api/write-route";
 import { getFile, commitToMain } from "@/lib/admin/github";
 
 // The single source of truth for where portal-managed JSON lives. The PUT
@@ -19,9 +15,9 @@ export function jsonFileContent(value: unknown): string {
 }
 
 /**
- * Build the PUT handler for a JSON content file: session gate, CSRF, Zod
- * validation, then a single commit to main. Wrap the result in withRateLimit
- * at the route.
+ * Build the whole PUT route for a JSON content file: the standard write chain
+ * (rate limit, admin session, CSRF, Zod, envelope) plus a single commit to
+ * main. Export the result directly as the route's PUT.
  */
 export function makeJsonContentPut(config: {
   filePath: string;
@@ -29,27 +25,28 @@ export function makeJsonContentPut(config: {
   commitMessage: string;
   logLabel: string;
 }) {
-  return async function handler(req: NextRequest): Promise<NextResponse> {
-    const authError = requireAdmin(req);
-    if (authError) return authError;
-    const csrfError = validateCsrf(req);
-    if (csrfError) return csrfError;
-    try {
-      const parsed = parseBody(config.schema, await req.json());
-      if (!parsed.success) return ApiErrors.badRequest(parsed.error);
-      const commit = await commitToMain(
-        [{ path: config.filePath, content: jsonFileContent(parsed.data) }],
-        config.commitMessage
-      );
-      return apiSuccess({ commitUrl: commit.url });
-    } catch (error) {
-      logError(`Admin ${config.logLabel} publish failed`, error, {
+  return withWriteRoute(
+    {
+      limit: RATE_LIMITS.STANDARD,
+      auth: { kind: "adminSession" },
+      csrf: { kind: "required" },
+      body: { kind: "json", schema: config.schema },
+      envelope: { kind: "standard" },
+      errors: {
+        log: `Admin ${config.logLabel} publish failed`,
         component: "admin-data",
         action: `PUT ${config.logLabel}`,
-      });
-      return ApiErrors.internalError("Publish failed — nothing was committed");
+        message: "Publish failed — nothing was committed",
+      },
+    },
+    async ({ data }) => {
+      const commit = await commitToMain(
+        [{ path: config.filePath, content: jsonFileContent(data) }],
+        config.commitMessage
+      );
+      return { commitUrl: commit.url };
     }
-  };
+  );
 }
 
 /** Server-side loader the admin editor pages seed their forms from. */

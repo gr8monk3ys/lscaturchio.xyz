@@ -1,11 +1,10 @@
 import { buildPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/Container";
-import { Heading } from "@/components/Heading";
-import { Paragraph } from "@/components/Paragraph";
 import { SemanticSearchDemo } from "@/components/lab/semantic-search-demo";
 import { ToySimilarity } from "@/components/lab/toy-similarity";
 import { EXPERIMENTS } from "@/constants/experiments";
 import { ArrowUpRight } from "lucide-react";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Lab",
@@ -19,15 +18,17 @@ export default function LabPage() {
     <Container className="mt-16 lg:mt-32">
       <div className="max-w-5xl mx-auto">
         {/* Header — gallery masthead */}
-        <header className="mb-12">
-          <span className="label-mono block">Garden · Experiments</span>
-          <Heading className="mt-4 text-4xl font-bold md:text-5xl">Lab</Heading>
-          <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Demos of the search and retrieval actually running on this site, and below them the
-            side projects that never grew into case studies. Expect rough edges.
-          </Paragraph>
-          <hr className="gallery-rule mt-8" />
-        </header>
+        <PageHead
+          className="mb-12"
+          kicker="Garden · Experiments"
+          title="Lab"
+          blurb={
+            <>
+              Demos of the search and retrieval actually running on this site, and below them the
+              side projects that never grew into case studies. Expect rough edges.
+            </>
+          }
+        />
 
         <section aria-labelledby="demos-heading" className="mb-20">
           <h2 id="demos-heading" className="label-mono mb-6">

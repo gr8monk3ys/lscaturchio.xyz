@@ -18,9 +18,6 @@ vi.mock('@/components/blog/social-share', () => ({
 vi.mock('@/components/blog/newsletter-cta', () => ({
   NewsletterCTA: () => <div data-testid="newsletter-cta" />,
 }));
-vi.mock('@/components/blog/inline-newsletter-cta', () => ({
-  InlineNewsletterCTA: () => <div data-testid="inline-newsletter-cta" />,
-}));
 vi.mock('@/components/blog/reading-progress-tracker', () => ({
   ReadingProgressTracker: () => null,
 }));

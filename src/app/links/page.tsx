@@ -3,6 +3,7 @@ import { buildPageMetadata } from "@/lib/seo";
 import { ExternalLink, Rss } from "lucide-react";
 import linksJson from "@/data/links.json";
 import type { LinksContent, SectionData } from "@/types/links";
+import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Links",
@@ -54,17 +55,17 @@ export default function LinksPage() {
   return (
     <Container size="large">
       <div className="max-w-4xl mx-auto py-12">
-        <header className="mb-12">
-          <span className="label-mono block">Garden · Bookmarks</span>
-          <h1 className="mt-4 text-4xl md:text-5xl font-bold tracking-tight">
-            Links &amp; Resources
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            A curated collection of documentation, indie blogs, and YouTube channels that have shaped
-            my thinking. Consider this my digital bookshelf.
-          </p>
-          <hr className="gallery-rule mt-8" />
-        </header>
+        <PageHead
+          className="mb-12"
+          kicker="Garden · Bookmarks"
+          title={<>Links &amp; Resources</>}
+          blurb={
+            <>
+              A curated collection of documentation, indie blogs, and YouTube channels that have shaped
+              my thinking. Consider this my digital bookshelf.
+            </>
+          }
+        />
 
         {Object.entries(linksData).map(([id, data]) => (
           <Section key={id} data={data} />

@@ -11,7 +11,7 @@ const CommandPalette = dynamic(
     loading: () => (
       <div
         aria-hidden
-        className="h-9 w-[88px] rounded-lg border border-border/50 bg-muted/40"
+        className="h-9 w-[132px] rounded-lg border border-border/50 bg-muted/40"
       />
     ),
   }
@@ -19,7 +19,7 @@ const CommandPalette = dynamic(
 
 export function NavbarControls() {
   return (
-    <div className="flex w-[150px] items-center justify-end gap-2">
+    <div className="flex items-center justify-end gap-2">
       <CommandPalette />
       <ThemeToggle />
     </div>

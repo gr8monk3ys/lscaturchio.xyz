@@ -88,7 +88,7 @@ export function CommandPaletteDialog({
                 <X className="h-4 w-4" />
               </button>
             )}
-            <kbd className="hidden sm:inline-flex h-5 items-center rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+            <kbd className="hidden sm:inline-flex h-5 items-center rounded border bg-muted px-1.5 font-mono text-[0.72rem] font-medium text-muted-foreground">
               ESC
             </kbd>
           </div>

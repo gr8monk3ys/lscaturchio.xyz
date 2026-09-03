@@ -5,7 +5,7 @@ test.describe('Chat', () => {
     await page.goto('/chat', { waitUntil: 'networkidle' })
     // Wait for React hydration — greeting message is rendered by client state
     await expect(
-      page.getByText("I'm an AI trained on everything Lorenzo has written")
+      page.getByText("I answer from Lorenzo's essays and the notes on this site")
     ).toBeVisible({ timeout: 15000 })
   })
 
@@ -90,7 +90,7 @@ test.describe('Chat', () => {
     await sendButton.click()
 
     await expect(
-      page.getByText('trouble responding', { exact: false })
+      page.getByText("didn't get through", { exact: false })
     ).toBeVisible({ timeout: 15000 })
   })
 

@@ -67,7 +67,15 @@ function uniqueModelCandidates(primary: string, fallback?: string): string[] {
   return Array.from(new Set(candidates));
 }
 
-export type ChatProvider = 'openai' | 'openrouter' | 'ollama' | 'fallback';
+/**
+ * The providers the ladder in `generateChatAnswer` can actually answer with,
+ * in the order it tries them (plus the no-provider fallback). This tuple is
+ * the single source of truth: `ChatProvider` is derived from it, so a name
+ * that is not in here cannot be a provider anywhere in the app.
+ */
+export const CHAT_PROVIDERS = ['openai', 'openrouter', 'ollama', 'fallback'] as const;
+
+export type ChatProvider = (typeof CHAT_PROVIDERS)[number];
 
 export type ProviderResult = {
   answer: string;

@@ -54,23 +54,18 @@ describe('RelatedPosts', () => {
     const { container } = render(<RelatedPosts currentTitle="T" currentUrl="/u" />);
     expect(container).toBeEmptyDOMElement();
 
-    swrState({ data: { related: [] } });
+    swrState({ data: { data: { related: [] }, success: true } });
     const { container: empty } = render(<RelatedPosts currentTitle="T" currentUrl="/u" />);
     expect(empty).toBeEmptyDOMElement();
   });
 
-  it('unwraps the enveloped API shape ({ data: { related } })', () => {
-    swrState({ data: { data: { related: [post] } } });
+  it('reads the one API envelope ({ data: { related } })', () => {
+    swrState({ data: { data: { related: [post] }, success: true } });
     render(<RelatedPosts currentTitle="T" currentUrl="/u" />);
     expect(screen.getByRole('link', { name: /Strikes Work/ })).toHaveAttribute(
       'href',
       '/blog/strikes-work'
     );
-  });
-
-  it('accepts the bare shape ({ related }) too', () => {
-    swrState({ data: { related: [post] } });
-    render(<RelatedPosts currentTitle="T" currentUrl="/u" />);
     expect(screen.getByText('Labor history without the amnesia.')).toBeInTheDocument();
   });
 });

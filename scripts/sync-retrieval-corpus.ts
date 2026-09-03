@@ -14,40 +14,33 @@
  */
 import fs from "fs";
 import path from "path";
-import { extractBlogMeta } from "../src/lib/blog-meta";
+import { listEssaySources, MalformedEssayError } from "../src/lib/essay-sources";
 import {
   buildCorpusDocument,
   corpusFileName,
   slugFromCorpusFileName,
 } from "../src/lib/retrieval-corpus";
 
-const BLOG_DIR = path.join(process.cwd(), "src", "app", "blog");
 const DATA_DIR = path.join(process.cwd(), "public", "my-data");
 
-function main() {
+async function main() {
   const check = process.argv.includes("--check");
 
-  const slugs = fs
-    .readdirSync(BLOG_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name)
-    .filter((slug) => fs.existsSync(path.join(BLOG_DIR, slug, "content.mdx")))
-    .sort();
+  // Strict on purpose: an unparseable meta must fail the build rather than
+  // quietly drop an essay out of the corpus. The usual cause is ASI —
+  // `export const meta = {...}` without a trailing `;`, followed by JSX, parses
+  // as one continued expression and the meta object is lost. Add the semicolon
+  // in the post.
+  const essays = await listEssaySources({
+    requiredMeta: ["title"],
+    onMalformed: "throw",
+  });
 
   const stale: string[] = [];
   let unchanged = 0;
 
-  for (const slug of slugs) {
-    const mdx = fs.readFileSync(path.join(BLOG_DIR, slug, "content.mdx"), "utf-8");
-    const meta = extractBlogMeta(mdx);
-    if (!meta.title) {
-      // Usually ASI: `export const meta = {...}` without a trailing `;`,
-      // followed by JSX, parses as one continued expression and the meta
-      // object is lost. Add the semicolon in the post.
-      console.error(`✗ ${slug}: could not parse meta.title from content.mdx`);
-      process.exit(1);
-    }
-    const expected = buildCorpusDocument(meta.title, mdx);
+  for (const { slug, meta, source: mdx } of essays) {
+    const expected = buildCorpusDocument(meta.title!, mdx);
     const target = path.join(DATA_DIR, corpusFileName(slug));
 
     const current = fs.existsSync(target) ? fs.readFileSync(target, "utf-8") : null;
@@ -60,7 +53,7 @@ function main() {
   }
 
   // blog-*.md files whose essay no longer exists.
-  const slugSet = new Set(slugs);
+  const slugSet = new Set(essays.map((e) => e.slug));
   const orphans = fs
     .readdirSync(DATA_DIR)
     .filter((f) => {
@@ -97,4 +90,11 @@ function main() {
   }
 }
 
-main();
+main().catch((error) => {
+  if (error instanceof MalformedEssayError) {
+    console.error(`✗ ${error.message}`);
+    process.exit(1);
+  }
+  console.error(error);
+  process.exit(1);
+});

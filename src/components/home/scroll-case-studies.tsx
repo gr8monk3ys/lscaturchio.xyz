@@ -2,7 +2,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 
-import { Section } from "@/components/ui/Section";
+import {
+  LedgerHead,
+  LedgerRows,
+  LedgerSection,
+  ordinal,
+} from "@/components/ui/ledger-section";
 
 type CaseStudyItem = {
   id: string;
@@ -47,33 +52,28 @@ const CASE_STUDIES: CaseStudyItem[] = [
   },
 ];
 
-function formatIndex(i: number): string {
-  return String(i + 1).padStart(2, "0");
-}
-
 export function ScrollCaseStudies() {
   return (
-    <Section padding="large" size="wide" divider topDivider reveal={false}>
-      <div className="grid items-start gap-12 lg:grid-cols-[minmax(280px,360px)_1fr]">
-        {/* Catalogue index — no card, just a labelled list on the paper. */}
-        <div className="lg:sticky lg:top-28">
-          <span className="label-mono mb-3 block">02 — Things I made</span>
-          <h2 className="text-section-title">Things I actually shipped.</h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            A policy engine that decides what merges without me, a product built on a
-            stated bet, and a tool people install. All three are running; none of them
-            are demos.
-          </p>
+    <LedgerSection
+      head={
+        /* Catalogue index — no card, just a labelled list on the paper. */
+        <>
+          <LedgerHead
+            index="02"
+            eyebrow="Things I made"
+            title="Things I actually shipped."
+            description="A policy engine that decides what merges without me, a product built on a stated bet, and a tool people install. All three are running; none of them are demos."
+          />
 
-          <ol className="mt-8 border-t border-border">
-            {CASE_STUDIES.map((item, index) => (
+          <LedgerRows items={CASE_STUDIES} numbered className="mt-8 border-t border-border">
+            {(item, entryNumber) => (
               <li key={item.id}>
                 <a
                   href={`#case-study-${item.id}`}
                   className="group flex items-baseline gap-4 border-b border-border py-4 transition-colors hover:text-primary"
                 >
                   <span className="label-mono shrink-0 text-foreground/70">
-                    {formatIndex(index)}
+                    {entryNumber}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="label-mono block">{item.kicker}</span>
@@ -84,58 +84,58 @@ export function ScrollCaseStudies() {
                   <ArrowUpRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
                 </a>
               </li>
-            ))}
-          </ol>
-        </div>
+            )}
+          </LedgerRows>
+        </>
+      }
+    >
+      {/* Plates — hairline-framed, hung on the wall with space between. */}
+      <div className="space-y-20 md:space-y-28">
+        {CASE_STUDIES.map((item, index) => (
+          <article
+            key={item.id}
+            id={`case-study-${item.id}`}
+            className="scroll-mt-28"
+            aria-label={item.title}
+          >
+            <div className="grid gap-8 md:grid-cols-[1fr_minmax(0,280px)] md:items-start">
+              <div>
+                <span className="label-mono">
+                  {ordinal(index)} — {item.kicker}
+                </span>
+                <h3 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+                  {item.title}
+                </h3>
+                <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
+                  {item.blurb}
+                </p>
 
-        {/* Plates — hairline-framed, hung on the wall with space between. */}
-        <div className="space-y-20 md:space-y-28">
-          {CASE_STUDIES.map((item, index) => (
-            <article
-              key={item.id}
-              id={`case-study-${item.id}`}
-              className="scroll-mt-28"
-              aria-label={item.title}
-            >
-              <div className="grid gap-8 md:grid-cols-[1fr_minmax(0,280px)] md:items-start">
-                <div>
-                  <span className="label-mono">
-                    {formatIndex(index)} — {item.kicker}
-                  </span>
-                  <h3 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-                    {item.title}
-                  </h3>
-                  <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">
-                    {item.blurb}
-                  </p>
+                <p className="label-mono mt-6 text-foreground/70">
+                  {item.metrics.join("  ·  ")}
+                </p>
 
-                  <p className="label-mono mt-6 text-foreground/70">
-                    {item.metrics.join("  ·  ")}
-                  </p>
-
-                  <Link
-                    href={item.href}
-                    className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary underline-offset-4 hover:underline"
-                  >
-                    Read the case study
-                    <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                  </Link>
-                </div>
-
-                <div className="relative aspect-16/10 w-full max-w-[340px] overflow-hidden border border-border bg-muted/30">
-                  <Image
-                    src={item.logoSrc}
-                    alt={`${item.title} preview`}
-                    fill
-                    className="object-cover"
-                    sizes="340px"
-                  />
-                </div>
+                <Link
+                  href={item.href}
+                  className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                >
+                  Read the case study
+                  <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </Link>
               </div>
-            </article>
-          ))}
-        </div>
+
+              <div className="relative aspect-16/10 w-full max-w-[340px] overflow-hidden border border-border bg-muted/30">
+                <Image
+                  src={item.logoSrc}
+                  alt={`${item.title} preview`}
+                  fill
+                  className="object-cover"
+                  sizes="340px"
+                />
+              </div>
+            </div>
+          </article>
+        ))}
       </div>
-    </Section>
+    </LedgerSection>
   );
 }

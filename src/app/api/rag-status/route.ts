@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
@@ -9,6 +8,7 @@ import {
 } from "@/lib/embeddings";
 import { isOllamaAvailable } from "@/lib/ollama";
 import { logError } from "@/lib/logger";
+import { apiSuccess } from "@/lib/api-response";
 
 const handleGet = async () => {
   const timestamp = new Date().toISOString();
@@ -58,7 +58,7 @@ const handleGet = async () => {
     }
   }
 
-  return NextResponse.json(
+  return apiSuccess(
     {
       timestamp,
       database: {

@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { withRateLimit } from '@/lib/with-rate-limit'
 import { RATE_LIMITS } from '@/lib/rate-limit'
 import { getPopularPosts } from '@/lib/popular-posts'
+import { apiSuccess, ApiErrors } from '@/lib/api-response'
 
 function parseLimit(req: NextRequest): number {
   const raw = req.nextUrl.searchParams.get('limit')
@@ -15,13 +16,10 @@ const handleGet = async (req: NextRequest) => {
   const result = await getPopularPosts(limit)
 
   if (result.source === 'error') {
-    return NextResponse.json(
-      { source: 'error', posts: [] },
-      { status: 500 }
-    )
+    return ApiErrors.internalError('Failed to fetch popular posts')
   }
 
-  return NextResponse.json(result, {
+  return apiSuccess(result, {
     headers: {
       'Cache-Control':
         'public, max-age=60, s-maxage=300, stale-while-revalidate=86400',

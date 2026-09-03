@@ -12,7 +12,6 @@ import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { ReadingProgress } from "./reading-progress";
 import { NewsletterCTA } from "./newsletter-cta";
-import { InlineNewsletterCTA } from "./inline-newsletter-cta";
 import { ViewCounter } from "./view-counter";
 import { SocialShare } from "./social-share";
 import { ReadingProgressTracker } from "./reading-progress-tracker";
@@ -37,7 +36,7 @@ const SeriesNavigation = dynamic(
 
 const Webmentions = dynamic(
   () => import("./webmentions").then((module) => module.Webmentions),
-  { ssr: false, loading: () => null }
+  { ssr: false, loading: () => <EndMatterSkeleton label="From the open web" rows={1} /> }
 );
 
 const GiscusComments = dynamic(
@@ -47,13 +46,37 @@ const GiscusComments = dynamic(
 
 const RelatedPosts = dynamic(
   () => import("./related-posts").then((module) => module.RelatedPosts),
-  { ssr: false, loading: () => null }
+  { ssr: false, loading: () => <EndMatterSkeleton label="Related" rows={2} /> }
 );
 
 const BlogSidebar = dynamic(
   () => import("./blog-sidebar").then((module) => module.BlogSidebar),
   { ssr: false, loading: () => null }
 );
+
+const EssayContentsInline = dynamic(
+  () => import("./blog-sidebar").then((module) => module.EssayContentsInline),
+  { ssr: false, loading: () => null }
+);
+
+const EssayAskInline = dynamic(
+  () => import("./blog-sidebar").then((module) => module.EssayAskInline),
+  { ssr: false, loading: () => null }
+);
+
+/** Reserves the end matter's space while its client-only blocks load. */
+function EndMatterSkeleton({ label, rows }: { label: string; rows: number }) {
+  return (
+    <section className="mt-12 border-t border-border pt-6" aria-hidden>
+      <span className="label-mono block">{label}</span>
+      <div className="mt-4 space-y-3">
+        {Array.from({ length: rows }).map((_, i) => (
+          <div key={i} className="h-4 w-full max-w-lg bg-muted/60" />
+        ))}
+      </div>
+    </section>
+  );
+}
 
 interface BlogMeta {
   title: string;
@@ -139,14 +162,20 @@ export function BlogLayout({
                 {meta.tags.length > 0 && (
                   <>
                     <span aria-hidden className="text-foreground/25">·</span>
-                    {meta.tags.map((tag) => (
-                      <Link
-                        key={tag}
-                        href={`/tag/${encodeURIComponent(tag)}`}
-                        className="transition-colors hover:text-primary"
-                      >
-                        {tag}
-                      </Link>
+                    {meta.tags.map((tag, tagIndex) => (
+                      <span key={tag} className="inline-flex items-center">
+                        <Link
+                          href={`/tag/${encodeURIComponent(tag)}`}
+                          className="transition-colors hover:text-primary"
+                        >
+                          {tag}
+                        </Link>
+                        {tagIndex < meta.tags.length - 1 && (
+                          <span aria-hidden className="ml-3 text-foreground/25">
+                            ·
+                          </span>
+                        )}
+                      </span>
                     ))}
                   </>
                 )}
@@ -171,6 +200,21 @@ export function BlogLayout({
                 <p className="label-mono mt-3">Updated {formatDate(safeUpdated)}</p>
               )}
 
+              {/* Byline as a wall label: the reader who arrived mid-essay
+                  should leave knowing who wrote it without hunting. */}
+              <p className="label-mono mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="text-foreground">Lorenzo Scaturchio</span>
+                <span aria-hidden className="text-foreground/25">·</span>
+                <span>Los Angeles</span>
+                <span aria-hidden className="text-foreground/25">·</span>
+                <Link
+                  href="/about"
+                  className="text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                >
+                  About the author →
+                </Link>
+              </p>
+
               {relatedHubs.length > 0 && (
                 <p className="label-mono mt-5 flex flex-wrap items-center gap-x-4 gap-y-1">
                   <span className="text-foreground/70">Explore</span>
@@ -186,6 +230,8 @@ export function BlogLayout({
                 </p>
               )}
 
+              <EssayContentsInline contentRef={contentRef} slug={slug} />
+
               <hr className="gallery-rule mt-8" />
 
               <div className="relative mt-8 aspect-video overflow-hidden border border-border bg-muted">
@@ -200,24 +246,11 @@ export function BlogLayout({
               </div>
             </header>
             <div className="mt-8">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+              {/* Listening is the one alternative that belongs before the
+                  text. Sharing and subscribing wait until it has been read. */}
+              <div className="mb-8">
                 <TextToSpeech slug={slug} contentRef={contentRef} />
-                <SocialShare
-                  title={meta.title}
-                  description={meta.description}
-                  url={fullUrl}
-                />
               </div>
-              {meta.syndication && meta.syndication.length > 0 && (
-                <div className="mb-8">
-                  <SyndicationLinks links={meta.syndication} />
-                </div>
-              )}
-
-              <InlineNewsletterCTA
-                defaultTopics={relatedHubs.map((hub) => hub.slug)}
-                sourcePath={pathname}
-              />
 
               <Prose>
                 <div ref={contentRef}>
@@ -226,37 +259,51 @@ export function BlogLayout({
               </Prose>
             </div>
 
-            {/* Series Navigation (if part of a series) */}
-            {meta.series && meta.seriesOrder && (
-              <SeriesNavigation
-                seriesName={meta.series}
-                currentSlug={slug}
-                currentOrder={meta.seriesOrder}
-              />
-            )}
+            {/* End matter: share and series first, as wall labels on one
+                hairline, then the rest of the machinery. */}
+            <footer className="mt-12 border-t border-border pt-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <SocialShare
+                  title={meta.title}
+                  description={meta.description}
+                  url={fullUrl}
+                />
+                {meta.syndication && meta.syndication.length > 0 && (
+                  <SyndicationLinks links={meta.syndication} />
+                )}
+              </div>
 
-            {/* Newsletter CTA */}
+              {meta.series && meta.seriesOrder && (
+                <SeriesNavigation
+                  seriesName={meta.series}
+                  currentSlug={slug}
+                  currentOrder={meta.seriesOrder}
+                />
+              )}
+            </footer>
+
+            {/* The reader's next step is another essay; everything else
+                comes after it. */}
+            <RelatedPosts
+              currentTitle={meta.title}
+              currentUrl={pathname}
+            />
+
+            <EssayAskInline slug={slug} title={meta.title} contentRef={contentRef} />
+
             <NewsletterCTA
               defaultTopics={relatedHubs.map((hub) => hub.slug)}
               sourcePath={pathname}
             />
 
-            {/* Webmentions (likes/reposts/replies from the open web) */}
             <Webmentions path={pathname} />
 
-            {/* Comments Section */}
             <GiscusComments />
-
-            {/* Related Posts */}
-            <RelatedPosts
-              currentTitle={meta.title}
-              currentUrl={pathname}
-            />
           </article>
         </div>
 
         {/* Sidebar (AI + TOC) - only visible on xl screens */}
-        <BlogSidebar slug={slug} title={meta.title} />
+        <BlogSidebar slug={slug} title={meta.title} contentRef={contentRef} />
       </div>
     </Container>
     </>
