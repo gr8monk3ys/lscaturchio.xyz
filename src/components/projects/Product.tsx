@@ -7,6 +7,7 @@ import { m, useMotionPreset, useReducedMotion } from '@/lib/motion'
 import { ArrowLeft } from 'lucide-react'
 
 import { Product } from '@/types/products'
+import { hasArchitectureDiagram } from '@/components/projects/ProjectArchitectureDiagram'
 import { products } from '@/constants/products'
 import {
   statusColors,
@@ -56,7 +57,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
   const pageSections = [
     { id: 'overview', label: 'Overview' },
     ...(caseStudy ? [{ id: 'challenge', label: 'Challenge' }, { id: 'solution', label: 'Approach' }] : []),
-    { id: 'architecture', label: 'Architecture' },
+    ...(hasArchitectureDiagram(product.slug) ? [{ id: 'architecture', label: 'Architecture' }] : []),
     { id: 'process', label: 'Process' },
     ...(caseStudy ? [{ id: 'outcomes', label: 'Outcomes' }] : []),
     ...(product.details && product.details.length > 0 ? [{ id: 'details', label: 'Details' }] : []),

@@ -9,6 +9,7 @@ import {
   Target,
   Lightbulb,
   CheckCircle2,
+  Lock,
 } from 'lucide-react'
 import { IconBrandGithub } from '@tabler/icons-react'
 
@@ -88,7 +89,7 @@ export function defaultProcessSteps(title: string): CaseStudyProcessStep[] {
 }
 
 export function PrimaryProjectLinks({ product }: { product: Product }): React.ReactNode {
-  if (!product.demoUrl && !product.sourceUrl && !product.href) {
+  if (!product.demoUrl && !product.sourceUrl && !product.sourcePrivate) {
     return null
   }
 
@@ -116,16 +117,14 @@ export function PrimaryProjectLinks({ product }: { product: Product }): React.Re
           View Source
         </a>
       )}
-      {!product.demoUrl && !product.sourceUrl && product.href && (
-        <a
-          href={product.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-medium hover:bg-primary/90 transition-colors"
+      {product.sourcePrivate && (
+        <span
+          className="inline-flex items-center gap-2 bg-muted/50 text-muted-foreground px-5 py-2.5 rounded-xl font-medium cursor-default"
+          title="The repository is private, so there is no public source link."
         >
-          <ExternalLink className="h-4 w-4" />
-          View Project
-        </a>
+          <Lock className="h-4 w-4" />
+          Private repo
+        </span>
       )}
     </div>
   )
@@ -225,7 +224,7 @@ export function HeroSection({ activeImage, product, shared }: HeroSectionProps):
             src={activeImage}
             alt={`${product.title} project visual`}
             fill
-            className="object-contain p-10"
+            className="object-cover"
             sizes="(max-width: 768px) 100vw, 80vw"
             priority
           />
@@ -277,23 +276,14 @@ export function CaseStudyOverview({ caseStudy }: { caseStudy: CaseStudy | undefi
 }
 
 export function ArchitectureSection({ slug }: { slug?: string }): React.ReactNode {
-  const shouldRenderFallback = !hasArchitectureDiagram(slug)
+  // No diagram means no section. A placeholder that says the architecture
+  // "varies by deployment" tells the reader nothing and reads as unfinished.
+  if (!hasArchitectureDiagram(slug)) return null
 
   return (
     <Reveal>
       <section id="architecture">
         <ProjectArchitectureDiagram slug={slug ?? ''} />
-        {shouldRenderFallback ? (
-          <div className="rounded-2xl border border-border/50 bg-card/50 p-6">
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Architecture
-            </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              This case study focuses on outcomes and implementation details. The high-level architecture varies by
-              deployment and is best explained in context.
-            </p>
-          </div>
-        ) : null}
       </section>
     </Reveal>
   )
@@ -415,7 +405,7 @@ export function RelatedProjectsSection({ relatedProjects }: { relatedProjects: P
 }
 
 function SidebarLinks({ product }: { product: Product }): React.ReactNode {
-  if (!product.demoUrl && !product.sourceUrl && !product.href) {
+  if (!product.demoUrl && !product.sourceUrl && !product.sourcePrivate) {
     return null
   }
 
@@ -445,16 +435,14 @@ function SidebarLinks({ product }: { product: Product }): React.ReactNode {
             <IconBrandGithub className="h-4 w-4" />
           </a>
         )}
-        {!product.demoUrl && !product.sourceUrl && product.href && (
-          <a
-            href={product.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-between rounded-xl bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80 transition-colors"
+        {product.sourcePrivate && (
+          <span
+            className="inline-flex items-center justify-between rounded-xl bg-muted/50 px-4 py-2 text-sm font-medium text-muted-foreground cursor-default"
+            title="The repository is private, so there is no public source link."
           >
-            Project
-            <ExternalLink className="h-4 w-4" />
-          </a>
+            Private repo
+            <Lock className="h-4 w-4" />
+          </span>
         )}
       </div>
     </div>

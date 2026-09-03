@@ -36,7 +36,10 @@ export type Product = {
   featured?: boolean;
   status?: ProjectStatus;
   demoUrl?: string;
+  /** Only set when the repo is PUBLIC. A private repo's URL 404s for visitors. */
   sourceUrl?: string;
+  /** Repo exists but is private — render an explanation, never a dead link. */
+  sourcePrivate?: boolean;
   startDate?: string; // Format: "YYYY-MM"
   caseStudy?: CaseStudy;
 };

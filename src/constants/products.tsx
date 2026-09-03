@@ -1,17 +1,23 @@
 import { Product } from "@/types/products";
 
-import cocoon from "../../public/images/logos-modern/cocoon.svg";
-import verso from "../../public/images/logos-modern/verso.svg";
-import unlinkd from "../../public/images/logos-modern/unlinkd.svg";
-import fraudStream from "../../public/images/logos-modern/fraud-stream.svg";
-import feedless from "../../public/images/logos-modern/feedless.svg";
-import qsensorSim from "../../public/images/logos-modern/qsensor-sim.svg";
-import tidyRoll from "../../public/images/logos-modern/tidy-roll.svg";
-import piLab from "../../public/images/logos-modern/pi-lab.svg";
-import tradingBot from "../../public/images/logos-modern/trading-bot.svg";
-import TAlker from "../../public/images/logos-modern/talker.svg";
-import blogAI from "../../public/images/logos-modern/blog-ai.svg";
-import paperSummarizer from "../../public/images/logos-modern/paper-summarizer.svg";
+import cocoon from "../../public/images/projects/covers/cocoon.webp";
+import verso from "../../public/images/projects/covers/verso.webp";
+import unlinkd from "../../public/images/projects/covers/unlinkd.webp";
+import fraudStream from "../../public/images/projects/covers/fraud-stream.webp";
+import feedless from "../../public/images/projects/covers/feedless.webp";
+import qsensorSim from "../../public/images/projects/covers/qsensor-sim.webp";
+import tidyRoll from "../../public/images/projects/covers/tidy-roll.webp";
+import piLab from "../../public/images/projects/covers/pi-lab.webp";
+import tradingBot from "../../public/images/projects/covers/trading-bot.webp";
+import TAlker from "../../public/images/projects/covers/talker.webp";
+import blogAI from "../../public/images/projects/covers/blog-ai.webp";
+import paperSummarizer from "../../public/images/projects/covers/paper-summarizer.webp";
+import mergeGate from "../../public/images/projects/covers/merge-gate.webp";
+import healthcalc from "../../public/images/projects/covers/healthcalc.webp";
+import remedi from "../../public/images/projects/covers/remedi.webp";
+import numerology from "../../public/images/projects/covers/numerology.webp";
+import albumConceptualizer from "../../public/images/projects/covers/album-conceptualizer.webp";
+import linkFlame from "../../public/images/projects/covers/link-flame.webp";
 
 export const products: Product[] = [
   // ============================================
@@ -29,6 +35,7 @@ export const products: Product[] = [
     categories: ["tools", "open-source"],
     status: "active",
     startDate: "2026-02",
+    demoUrl: "https://cocoon.lscaturchio.xyz/",
     sourceUrl: "https://github.com/gr8monk3ys/cocoon",
     caseStudy: {
       challenge:
@@ -207,7 +214,7 @@ export const products: Product[] = [
     ],
   },
   {
-    href: "https://github.com/gr8monk3ys/fraud-stream",
+    href: "/projects/fraud-stream",
     title: "FraudStream",
     description:
       "A production-grade streaming pipeline that scores financial transactions for fraud in milliseconds rather than hours, built on Kafka, Spark Structured Streaming, and a Snowflake medallion warehouse.",
@@ -216,9 +223,9 @@ export const products: Product[] = [
     slug: "fraud-stream",
     featured: true,
     categories: ["data-science", "open-source"],
-    status: "active",
+    status: "archived",
     startDate: "2025-08",
-    sourceUrl: "https://github.com/gr8monk3ys/fraud-stream",
+    sourcePrivate: true,
     caseStudy: {
       challenge:
         "Financial institutions process thousands of card transactions a second, and hidden among them are account takeovers, card-testing attacks, and synthetic-identity fraud. Traditional batch processing surfaces these hours or days later — by which point the money is gone and the job is recovery, not prevention.",
@@ -279,7 +286,7 @@ export const products: Product[] = [
     slug: "talker",
     featured: true,
     categories: ["ai-ml", "open-source"],
-    status: "active",
+    status: "archived",
     startDate: "2024-01",
     sourceUrl: "https://github.com/gr8monk3ys/TAlker",
     caseStudy: {
@@ -396,7 +403,7 @@ export const products: Product[] = [
     slug: "feedless",
     featured: false,
     categories: ["tools", "open-source"],
-    status: "active",
+    status: "archived",
     startDate: "2026-07",
     sourceUrl: "https://github.com/gr8monk3ys/feedless",
     caseStudy: {
@@ -450,7 +457,7 @@ export const products: Product[] = [
     ],
   },
   {
-    href: "https://github.com/gr8monk3ys/tidy-roll",
+    href: "https://tidyroll-legal.vercel.app",
     title: "Tidy Roll",
     description:
       "A Tinder-swipe interface for cleaning up your camera roll. Swipe right to keep, left to toss, watch the megabytes tick up. Free, no ads, no accounts, entirely on-device.",
@@ -462,7 +469,7 @@ export const products: Product[] = [
     status: "active",
     startDate: "2026-02",
     demoUrl: "https://tidyroll-legal.vercel.app",
-    sourceUrl: "https://github.com/gr8monk3ys/tidy-roll",
+    sourcePrivate: true,
     caseStudy: {
       challenge:
         "Photo cleanup apps are a well-known dark-pattern category: they upload your library, gate the delete behind a subscription, or quietly keep a copy. The interaction itself is also wrong — a multi-select grid asks you to make a hundred decisions at once, which is why nobody finishes.",
@@ -514,7 +521,7 @@ export const products: Product[] = [
     ],
   },
   {
-    href: "https://github.com/gr8monk3ys/pi-lab",
+    href: "/projects/pi-lab",
     title: "pi-lab",
     description:
       "A self-hosted homelab running 37 Docker Compose services on a Raspberry Pi 5 — DNS ad-blocking, VPN, media, documents, passwords, and intrusion detection behind wildcard TLS.",
@@ -525,7 +532,7 @@ export const products: Product[] = [
     categories: ["tools", "open-source"],
     status: "maintained",
     startDate: "2026-02",
-    sourceUrl: "https://github.com/gr8monk3ys/pi-lab",
+    sourcePrivate: true,
     caseStudy: {
       challenge:
         "Self-hosting advice is either a single-service tutorial or a rack-mounted enterprise build. There was no honest middle: what can one 8 GB Raspberry Pi actually carry, and what does it cost in complexity to run the services that would otherwise be a dozen subscriptions?",
@@ -577,7 +584,7 @@ export const products: Product[] = [
     ],
   },
   {
-    href: "https://github.com/gr8monk3ys/qsensor-sim",
+    href: "/projects/qsensor-sim",
     title: "qsensor-sim",
     description:
       "A physics-based quantum sensor simulation API for GPS-denied navigation research — synthetic IMU data with quantum decoherence effects, processed through Kalman filtering and bias correction.",
@@ -586,9 +593,9 @@ export const products: Product[] = [
     slug: "qsensor-sim",
     featured: false,
     categories: ["data-science", "tools"],
-    status: "maintained",
+    status: "archived",
     startDate: "2025-08",
-    sourceUrl: "https://github.com/gr8monk3ys/qsensor-sim",
+    sourcePrivate: true,
     caseStudy: {
       challenge:
         "Quantum inertial sensors are a serious answer to GPS-denied navigation, but the hardware is scarce and classified-adjacent. Anyone wanting to develop the signal processing that sits downstream of such a sensor has no data to develop against.",
@@ -717,5 +724,227 @@ export const products: Product[] = [
       "A tool for summarizing academic papers using NLP techniques. Extracts key points and generates concise summaries from research documents.",
       "Built with transformers for accurate extraction. Accepts papers from various sources.",
     ],
+  },
+  // ============================================
+  // ADDED 2026-08-30 — recent public work with live deployments
+  // ============================================
+  {
+    href: "https://github.com/gr8monk3ys/merge-gate",
+    title: "merge-gate",
+    description:
+      "The policy engine that decides which of ~100 open pull requests may merge without a human. Shape is computed from the diff, never eyeballed \u2014 and it refuses to arm auto-merge on anything, ever.",
+    thumbnail: mergeGate,
+    stack: ["Python", "GitHub API", "pytest"],
+    slug: "merge-gate",
+    featured: true,
+    categories: ["tools", "open-source"],
+    status: "active",
+    startDate: "2026-08",
+    sourceUrl: "https://github.com/gr8monk3ys/merge-gate",
+    caseStudy: {
+      challenge:
+        "A fleet of ~70 repos produces more pull requests than one person can read \u2014 mostly dependency bumps, mostly safe, occasionally not. Reviewing by eye does not scale, and the obvious shortcut is worse than the problem: GitHub's auto-merge grants standing permission to merge future content based on a judgement about past content.",
+      solution:
+        "Classify every PR by the shape of its diff, and merge only the shapes that cannot carry behaviour: lockfiles, tests, data artifacts, whitelisted CI fixes, and dependency bumps whose every version delta is patch or minor. Content never auto-merges. The gate merges a green PR immediately against the exact SHA it judged, and disables any standing arm it finds.",
+      results: [
+        "49 tests covering the classifier and the merge decision, with DECISIONS.md recording why each rule exists",
+        "Version deltas read from the PR body, not the title \u2014 a group bump titled '21 updates' names no versions but its body tabulates the majors that must block it",
+        "A group is as risky as its riskiest member: bump_kind() takes the max",
+        "requirements*.txt treated as a manifest, not a lockfile \u2014 the bug that let pytest 7\u21929 and cryptography 48\u219250 through",
+      ],
+      metrics: [
+        { label: "Tests", value: "49 passing" },
+        { label: "Repos governed", value: "~70" },
+        { label: "Arms granted", value: "Zero" },
+        { label: "Policy surface", value: "3 constants" },
+      ],
+      process: [
+        {
+          title: "Measure before merging",
+          description:
+            "The classifier runs against the live fleet and prints its decision per PR, so the policy can be audited before it is trusted.",
+        },
+        {
+          title: "Never arm auto-merge",
+          description:
+            "A PR armed as a minor bump was force-pushed to a major and merged 130 seconds later. No polling cadence catches that window, so arming was removed entirely rather than made faster.",
+        },
+        {
+          title: "Judge the head you merge",
+          description:
+            "Merges pass --match-head-commit with the judged SHA; GitHub refuses server-side if the branch moved. A pending PR waits for the next sweep \u2014 that latency is the price of never merging unjudged content.",
+        },
+        {
+          title: "Put the policy in three constants",
+          description:
+            "AUTO_MERGE_BUMP_KINDS, ZERO_MAJOR_MINOR_IS_BREAKING and TRUST_SHA_PINNED_ACTION_BUMPS sit at the top of the file. Changing what merges is a one-line, reviewable decision.",
+        },
+      ],
+      whatIdDoNext: [
+        "Publish the classification history so drift in the fleet's PR mix is visible over time.",
+        "Let a repo carry its own overrides without forking the constants.",
+      ],
+    },
+    details: [
+      "Extracted the fleet's merge policy into a standalone public engine with 49 tests and a DECISIONS.md that records the reasoning behind each rule.",
+      "Proved a tempting optimisation wrong with measurement: grouping Dependabot PRs to cut noise makes them strictly less mergeable here, because one 0.x minor or SHA-pinned action in a group demotes the whole PR.",
+    ],
+  },
+  {
+    href: "https://healthcalc.xyz",
+    title: "HealthCalc",
+    description:
+      "56 health and fitness calculators \u2014 BMI, body fat, TDEE, GLP-1 tracking, Army fitness testing \u2014 each backed by a cited formula rather than a black box. No account, no paywall.",
+    thumbnail: healthcalc,
+    stack: ["Next.js", "TypeScript", "Tailwind", "Bun"],
+    slug: "healthcalc",
+    featured: false,
+    categories: ["web-apps", "tools"],
+    status: "active",
+    startDate: "2026-03",
+    demoUrl: "https://healthcalc.xyz",
+    sourceUrl: "https://github.com/gr8monk3ys/healthcalc.xyz",
+    caseStudy: {
+      challenge:
+        "Health calculators online are mostly ad-farms: the number appears, the formula behind it does not, and the page wants an email before it will tell you anything. The arithmetic is trivial \u2014 the trust is the hard part.",
+      solution:
+        "Every calculator names the formula it uses and links the source. Nothing is gated, nothing requires an account, and the unit system is a first-class toggle rather than an assumption baked into the inputs.",
+      results: [
+        "56 calculators, each showing its underlying formula",
+        "Metric and imperial as a global toggle, not per-form",
+        "No account required for any calculator",
+        "Guides alongside the tools so the number has context",
+      ],
+      metrics: [
+        { label: "Calculators", value: "56" },
+        { label: "Account required", value: "None" },
+        { label: "Formulas", value: "Cited" },
+        { label: "Cost", value: "Free" },
+      ],
+    },
+  },
+  {
+    href: "https://remedi-iota.vercel.app",
+    title: "Remedi",
+    description:
+      "Search a drug or supplement and get evidence-based natural alternatives, with the strength of evidence and the dosage guidance attached \u2014 not just a list of herbs.",
+    thumbnail: remedi,
+    stack: ["Next.js", "TypeScript", "Prisma", "Postgres"],
+    slug: "remedi",
+    featured: false,
+    categories: ["web-apps", "ai-ml"],
+    status: "active",
+    startDate: "2026-01",
+    demoUrl: "https://remedi-iota.vercel.app",
+    sourceUrl: "https://github.com/gr8monk3ys/remedi",
+    caseStudy: {
+      challenge:
+        "Natural-remedy content is the worst-quality corner of health search: confident claims, no sourcing, and no way to tell a well-studied intervention from folklore. The failure mode of building here is producing more of the same.",
+      solution:
+        "Every remedy carries an evidence level and scientific references, so a weak result is visibly weak rather than presented with the same confidence as a strong one. Search accepts a drug name, a symptom, or a plain-language description.",
+      results: [
+        "Evidence level and references attached to every remedy",
+        "Search by drug, symptom, or natural-language description",
+        "Comparison view for weighing alternatives side by side",
+      ],
+      metrics: [
+        { label: "Every remedy", value: "Cited" },
+        { label: "Search modes", value: "3" },
+        { label: "Evidence", value: "Graded, not implied" },
+      ],
+    },
+  },
+  {
+    href: "https://numerology-sigma-vert.vercel.app",
+    title: "Numen",
+    description:
+      "A complete esoteric numerology suite \u2014 Pythagorean, Chaldean and Kabbalistic systems computed from a name and birth date, rendered as a full reading rather than a single lucky number.",
+    thumbnail: numerology,
+    stack: ["Next.js", "TypeScript", "Tailwind"],
+    slug: "numen",
+    featured: false,
+    categories: ["web-apps"],
+    status: "active",
+    startDate: "2026-08",
+    demoUrl: "https://numerology-sigma-vert.vercel.app",
+    sourceUrl: "https://github.com/gr8monk3ys/numerology",
+    caseStudy: {
+      challenge:
+        "Numerology sites compute one number and stop. The systems they draw from disagree with each other in interesting ways, and flattening that into a single answer throws away the only thing that makes the subject worth building.",
+      solution:
+        "Compute all three systems side by side and show where they diverge \u2014 life path, soul urge, karmic debts, tarot correspondences, life-cycle forecasts. The design commits fully to the subject matter instead of apologising for it with a generic SaaS layout.",
+      results: [
+        "Three numerological systems computed and compared",
+        "Full reading: core chart, karmic debts, angel numbers, forecast",
+        "A visual identity that matches the subject rather than a default template",
+      ],
+      metrics: [
+        { label: "Systems", value: "3" },
+        { label: "Core numbers", value: "5" },
+        { label: "Input", value: "Name + birth date" },
+      ],
+    },
+  },
+  {
+    href: "https://album-conceptualizer.vercel.app",
+    title: "Album Conceptualizer",
+    description:
+      "Turn one idea into a coherent album blueprint \u2014 album bible, tracklist, lyric drafts, chord progressions, narrative arcs \u2014 and hand off to a DAW. A blueprint, not an audio generator.",
+    thumbnail: albumConceptualizer,
+    stack: ["Python", "Next.js", "FastAPI"],
+    slug: "album-conceptualizer",
+    featured: false,
+    categories: ["ai-ml", "web-apps"],
+    status: "active",
+    startDate: "2026-06",
+    demoUrl: "https://album-conceptualizer.vercel.app",
+    sourceUrl: "https://github.com/gr8monk3ys/album-conceptualizer",
+    caseStudy: {
+      challenge:
+        "Generative music tools produce audio nobody asked for and skip the part that is actually hard: deciding what an album is about and keeping thirteen tracks pointed in the same direction. The blank session, not the missing waveform, is where records stall.",
+      solution:
+        "Work before the DAW, not instead of it. The output is an album bible \u2014 themes, motifs, references, narrative rules \u2014 plus a tracklist, lyric drafts and chord progressions, exported as MIDI, ChordPro and MusicXML so a human finishes the record.",
+      results: [
+        "Album bible carrying themes, motifs and narrative rules across the tracklist",
+        "DAW handoff: MIDI, ChordPro, MusicXML export packs",
+        "Comments, versions and remix handoff in one workspace",
+        "Explicitly not an audio generator \u2014 a blueprint a musician executes",
+      ],
+      metrics: [
+        { label: "Unit of work", value: "The album" },
+        { label: "Export", value: "MIDI · ChordPro · MusicXML" },
+        { label: "Generates audio", value: "No, deliberately" },
+      ],
+    },
+  },
+  {
+    href: "https://link-flame-rouge.vercel.app",
+    title: "Link Flame",
+    description:
+      "An eco-commerce storefront where every product is screened for what it is made of and who made it \u2014 the screening criteria are the product, and they are visible.",
+    thumbnail: linkFlame,
+    stack: ["Next.js", "TypeScript", "Prisma", "Tailwind"],
+    slug: "link-flame",
+    featured: false,
+    categories: ["web-apps"],
+    status: "maintained",
+    startDate: "2024-06",
+    demoUrl: "https://link-flame-rouge.vercel.app",
+    sourceUrl: "https://github.com/gr8monk3ys/link-flame",
+    caseStudy: {
+      challenge:
+        "\u2018Sustainable\u2019 in commerce is an unpoliced adjective. A storefront that uses the word without showing its criteria is indistinguishable from one that does not mean it.",
+      solution:
+        "Make the screening explicit and browsable: shop by what matters to you, with the material and sourcing criteria surfaced on the product rather than buried in an About page.",
+      results: [
+        "Products screened on material and sourcing, with criteria shown",
+        "Browse by value, not just by category",
+        "1% for the Planet member, stated on the storefront",
+      ],
+      metrics: [
+        { label: "Screening", value: "Visible" },
+        { label: "Browse axis", value: "By value" },
+      ],
+    },
   },
 ];
