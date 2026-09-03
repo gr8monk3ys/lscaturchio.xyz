@@ -57,7 +57,7 @@ export function ScrollCaseStudies() {
       <div className="grid items-start gap-12 lg:grid-cols-[minmax(280px,360px)_1fr]">
         {/* Catalogue index — no card, just a labelled list on the paper. */}
         <div className="lg:sticky lg:top-28">
-          <span className="label-mono mb-3 block">01 — Case Studies</span>
+          <span className="label-mono mb-3 block">02 — Things I made</span>
           <h2 className="text-section-title">Things I actually shipped.</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             A policy engine that decides what merges without me, a product built on a

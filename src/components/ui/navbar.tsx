@@ -12,7 +12,7 @@ const navLinkBaseClass =
 // The one accent action in the header — hiring is the commercial CTA, so it
 // gets the filled treatment while everything else stays quiet. Breadth lives
 // in the footer site map and ⌘K search, not in dropdowns.
-const ACCENT_HREF = "/work-with-me";
+const ACCENT_HREF = "";
 const accentLinkClass =
   "block whitespace-nowrap rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
 

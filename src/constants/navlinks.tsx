@@ -80,8 +80,9 @@ export const navigationCategories: NavCategory[] = [
 export const primaryNavigation: NavItem[] = [
   { name: 'Writing', href: '/blog', icon: BookOpen, description: 'Essays and engineering notes' },
   { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
+  { name: 'Garden', href: '/garden', icon: Sparkles, description: 'Books, films, music, experiments' },
   { name: 'About', href: '/about', icon: User, description: 'Who I am' },
-  { name: 'Work With Me', href: '/work-with-me', icon: Sparkles, description: 'Hire me for AI/RAG work' },
+  { name: 'Hire me', href: '/work-with-me', icon: Briefcase, description: 'Consulting and build work' },
 ];
 
 export const secondaryNavigationCategories: NavCategory[] = navigationCategories
@@ -140,6 +141,7 @@ export const footerColumns: NavCategory[] = [
     name: 'Garden',
     items: [
       { name: 'Books', href: '/books' },
+      { name: 'Music', href: '/music' },
       { name: 'Movies', href: '/movies' },
       { name: 'Photos', href: '/photos' },
       { name: 'Now', href: '/now' },

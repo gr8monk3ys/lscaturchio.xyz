@@ -1,6 +1,7 @@
 import { Container } from "@/components/Container";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
+import { ThemedBlogSections } from "@/components/blog/ThemedBlogSections";
 import { filterByStage } from "@/lib/blog-stage";
 import { BlogArchiveStats } from "@/components/blog/blog-archive-stats";
 import Link from "next/link";
@@ -90,6 +91,8 @@ export default async function Blog({
   const visibleBlogs = filteredBlogs
     .slice(pageStart, pageStart + BLOGS_PER_PAGE)
     .map(toBlogPreview);
+  const hasActiveFilter = Boolean(normalizedTag || stageFilter);
+  const themedBlogs = filteredBlogs.map(toBlogPreview);
 
   return (
     <Container size="large">
@@ -100,9 +103,9 @@ export default async function Blog({
             Essays on AI, software, and the world they&apos;re reshaping.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Half of this is practical notes on shipping RAG and production systems. The other half
-            argues about politics, philosophy, and culture — because the systems we build land in a
-            world, and pretending otherwise is its own ideology.
+            Mostly arguments about power, money, and attention — with notes on the systems I
+            build in between. Grouped by what they are about; filter by tag or stage for the
+            date-ordered archive.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
             <Link
@@ -117,15 +120,19 @@ export default async function Blog({
           <hr className="gallery-rule mt-8" />
         </header>
 
-        <BlogGrid
-          blogs={visibleBlogs}
-          currentPage={currentPage}
-          pageStart={pageStart}
-          tagFilter={tagFilter}
-          stageFilter={stageFilter}
-          totalBlogs={filteredBlogs.length}
-          totalPages={totalPages}
-        />
+        {hasActiveFilter ? (
+          <BlogGrid
+            blogs={visibleBlogs}
+            currentPage={currentPage}
+            pageStart={pageStart}
+            tagFilter={tagFilter}
+            stageFilter={stageFilter}
+            totalBlogs={filteredBlogs.length}
+            totalPages={totalPages}
+          />
+        ) : (
+          <ThemedBlogSections posts={themedBlogs} />
+        )}
 
         <Suspense fallback={<div className="min-h-[260px]" />}>
           <BlogArchiveStats />

@@ -1,3 +1,5 @@
+import { BLOG_THEMES } from "@/lib/blog-themes";
+
 export interface TopicHub {
   slug: string;
   title: string;
@@ -10,51 +12,18 @@ export interface TopicHub {
   featuredProjects?: string[];
 }
 
-export const TOPIC_HUBS: TopicHub[] = [
-  {
-    slug: "rag-llms",
-    title: "RAG + LLM Systems",
-    description: "Applied retrieval, evaluation, and real-world reliability.",
-    tags: ["rag", "retrieval", "llms", "ai", "embeddings"],
-    featuredPosts: ["building-rag-systems"],
-    featuredProjects: ["talker"],
-  },
-  {
-    slug: "ai-society",
-    title: "AI + Society",
-    description: "How incentives, culture, and power shape what we build.",
-    tags: ["ai", "culture", "politics", "ethics", "technology"],
-    featuredPosts: ["algorithmic-culture", "myth-of-neutral-tool"],
-  },
-  {
-    slug: "systems-craft",
-    title: "Systems + Craft",
-    description: "Shipping, performance, and the boring parts that make it work.",
-    tags: ["systems", "engineering", "web", "performance"],
-    featuredPosts: ["how-i-built-this-site"],
-  },
-  {
-    slug: "work-economy",
-    title: "Work + Economy",
-    description: "Labor, incentives, and the stories we tell about productivity.",
-    tags: ["work", "economy", "labor", "productivity"],
-    featuredPosts: ["future-of-work", "against-productivity-time"],
-  },
-  {
-    slug: "places-infrastructure",
-    title: "Places + Infrastructure",
-    description: "Cities, governance, climate, and the physical substrate.",
-    tags: ["cities", "infrastructure", "climate", "housing"],
-    featuredPosts: ["suburbs-are-ponzi-scheme", "why-your-city-is-expensive"],
-  },
-  {
-    slug: "open-source-tools",
-    title: "Open Source + Tools",
-    description: "Pragmatic tools and small systems that compound.",
-    tags: ["open source", "tools", "developer tools"],
-    featuredProjects: ["cocoon", "feedless", "unlinkd", "blog-ai"],
-  },
-];
+/**
+ * Hubs now mirror the five themes derived from the real tag distribution
+ * (src/lib/blog-themes.ts). The previous eight were engineering-shaped —
+ * rag-llms, systems-craft, open-source-tools — which sorted a body of work
+ * that is 25 political / 24 philosophical / 24 economic into the wrong drawers.
+ */
+export const TOPIC_HUBS: TopicHub[] = BLOG_THEMES.map((theme) => ({
+  slug: theme.slug,
+  title: theme.title,
+  description: theme.description,
+  tags: theme.tags,
+}));
 
 export function findTopicHub(slug: string): TopicHub | undefined {
   return TOPIC_HUBS.find((hub) => hub.slug === slug);

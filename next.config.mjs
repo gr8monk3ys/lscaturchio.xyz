@@ -12,6 +12,15 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   async redirects() {
     return [
+      // The eight engineering-shaped topic hubs were replaced by five themes
+      // derived from the real tag distribution. These URLs were live and
+      // indexed, so they get a real 308 rather than a soft 404.
+      { source: '/topics/rag-llms', destination: '/topics/technology-attention', permanent: true },
+      { source: '/topics/ai-society', destination: '/topics/technology-attention', permanent: true },
+      { source: '/topics/systems-craft', destination: '/topics/technology-attention', permanent: true },
+      { source: '/topics/work-economy', destination: '/topics/money-work', permanent: true },
+      { source: '/topics/places-infrastructure', destination: '/topics/place-climate', permanent: true },
+      { source: '/topics/open-source-tools', destination: '/topics/technology-attention', permanent: true },
       {
         source: '/services',
         destination: '/work-with-me#services',

@@ -15,15 +15,15 @@ export function Hero() {
       <div className="mx-auto grid max-w-6xl gap-12 py-16 md:grid-cols-[1fr_minmax(0,300px)] md:items-end md:py-24 lg:py-28">
         {/* The name is the work; everything else is the wall label. */}
         <div className="min-w-0 space-y-6">
-          <span className="label-mono block">Applied ML · RAG Systems · Essays</span>
+          <span className="label-mono block">Essays · Systems · Los Angeles</span>
 
           <h1 className="text-balance text-5xl font-semibold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
             Hey, I&apos;m <span className="text-primary">Lorenzo Scaturchio</span>
           </h1>
 
           <p className="max-w-xl text-lg text-muted-foreground sm:text-xl">
-            I build AI systems by day and write about the world they&apos;re being
-            built into. Real systems, not demos — and essays with opinions.
+            I build AI systems and I&apos;m suspicious of them. I write about power,
+            attention, and what institutions are actually built to do.
           </p>
         </div>
 

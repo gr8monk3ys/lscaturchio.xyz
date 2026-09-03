@@ -1,8 +1,8 @@
 import { Hero } from "@/components/home/Hero";
 import { NewHereSection } from "@/components/home/new-here-section";
-import { HowIWorkSection } from "@/components/home/how-i-work-section";
-import { SelectedWriting } from "@/components/home/selected-writing";
 import { ScrollCaseStudies } from "@/components/home/scroll-case-studies";
+import { WhatIThink } from "@/components/home/what-i-think";
+import { WhoIAm } from "@/components/home/who-i-am";
 import { CurrentlyStrip } from "@/components/home/currently-strip";
 import { FAQStructuredData, BreadcrumbStructuredData } from "@/components/ui/structured-data";
 import { getAllBlogs } from "@/lib/getAllBlogs";
@@ -11,7 +11,7 @@ import { getPopularPosts } from "@/lib/popular-posts";
 import type { Metadata } from "next";
 import { ogCardUrl } from "@/lib/seo";
 import { IDENTITY } from "@/constants/identity";
-import { splitHomepageBlogs } from "@/lib/blog-data";
+import { splitHomepageBlogs, toBlogPreview } from "@/lib/blog-data";
 
 export const metadata: Metadata = {
   title: { absolute: IDENTITY.titleDefault },
@@ -55,7 +55,7 @@ export default async function Home() {
     getPopularPosts(3),
   ]);
 
-  const { recentBlogs, selectedWriting } = splitHomepageBlogs(allBlogs);
+  const { recentBlogs } = splitHomepageBlogs(allBlogs);
 
   const popularPosts = popularPostsResult.posts.map((p) => ({
     slug: p.slug,
@@ -99,14 +99,14 @@ export default async function Home() {
       {/* Live "what I'm up to" strip — the garden's pulse */}
       <CurrentlyStrip latestPost={latestPost} latestRepo={latestRepo} />
 
-      {/* The one project moment: scroll-driven case studies */}
+      {/* The writing leads — this is a personal site, not a portfolio */}
+      <WhatIThink posts={allBlogs.map(toBlogPreview)} />
+
+      {/* Projects as evidence, not as the pitch */}
       <ScrollCaseStudies />
 
-      {/* How I Work */}
-      <HowIWorkSection />
-
-      {/* The one writing moment */}
-      <SelectedWriting posts={selectedWriting} />
+      {/* The person behind the rest of it */}
+      <WhoIAm />
 
       {/* Wayfinding for first-time visitors */}
       <NewHereSection popularPosts={popularPosts} />
