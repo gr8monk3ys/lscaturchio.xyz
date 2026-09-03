@@ -2,7 +2,7 @@
 
 import Image, { StaticImageData } from 'next/image'
 import Link from 'next/link'
-import { m, useMotionPreset } from '@/lib/motion'
+import { m } from '@/lib/motion'
 import {
   ExternalLink,
   Calendar,
@@ -18,7 +18,6 @@ import type { CaseStudy, CaseStudyMetric, CaseStudyProcessStep } from '@/types/p
 import { Heading } from '../Heading'
 import { Paragraph } from '../Paragraph'
 import { Badge } from '@/components/ui/badge'
-import { Reveal } from '@/components/motion/reveal'
 import {
   ProjectArchitectureDiagram,
   hasArchitectureDiagram,
@@ -186,33 +185,23 @@ type HeroSectionProps = {
 
 export function HeroSection({ activeImage, product, shared }: HeroSectionProps): React.ReactNode {
   return (
-    <Reveal>
+    <div className="rounded-2xl border border-border/50 overflow-hidden">
       <m.div
-        className="rounded-2xl border border-border/50 overflow-hidden"
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={useMotionPreset('default')}
+        layoutId={shared ? `project-cover-${product.slug}` : undefined}
+        className={cn('relative aspect-video overflow-hidden', 'bg-accent/40')}
       >
-        <m.div
-          layoutId={shared ? `project-cover-${product.slug}` : undefined}
-          className={cn(
-            'relative aspect-video overflow-hidden',
-            'bg-accent/40'
-          )}
-        >
-          <div className="pointer-events-none absolute -top-16 -right-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-16 -left-24 h-72 w-72 rounded-full bg-secondary/10 blur-3xl" />
-          <Image
-            src={activeImage}
-            alt={`${product.title} project visual`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 80vw"
-            priority
-          />
-        </m.div>
+        <div className="pointer-events-none absolute -top-16 -right-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-16 -left-24 h-72 w-72 rounded-full bg-secondary/10 blur-3xl" />
+        <Image
+          src={activeImage}
+          alt={`${product.title} project visual`}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 80vw"
+          priority
+        />
       </m.div>
-    </Reveal>
+    </div>
   )
 }
 
@@ -220,40 +209,38 @@ export function CaseStudyOverview({ caseStudy }: { caseStudy: CaseStudy | undefi
   if (!caseStudy) return null
 
   return (
-    <Reveal>
-      <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)]">
-        <section id="challenge" className="rounded-2xl border border-border/50 bg-card/50 p-6">
-          <div className="mb-3 flex items-center gap-2">
-            <Target className="h-5 w-5 text-orange-500" />
-            <h3 className="font-semibold">The Challenge</h3>
-          </div>
-          <p className="text-sm leading-relaxed text-muted-foreground">{caseStudy.challenge}</p>
-        </section>
-
-        <section id="solution" className="rounded-2xl border border-border/50 bg-card/50 p-6">
-          <div className="mb-3 flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-yellow-500" />
-            <h3 className="font-semibold">The Approach</h3>
-          </div>
-          <p className="text-sm leading-relaxed text-muted-foreground">{caseStudy.solution}</p>
-        </section>
-
-        <section className="rounded-2xl border border-primary/18 bg-primary/5 p-6">
-          <div className="mb-3 flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">What Changed</h3>
-          </div>
-          <ul className="space-y-2">
-            {caseStudy.results.slice(0, 3).map((result) => (
-              <li key={result} className="flex items-start gap-2 text-sm text-foreground">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                <span>{result}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
+    <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)]">
+      <section id="challenge" className="rounded-2xl border border-border/50 bg-card/50 p-6">
+        <div className="mb-3 flex items-center gap-2">
+          <Target className="h-5 w-5 text-orange-500" />
+          <h3 className="font-semibold">The Challenge</h3>
+        </div>
+        <p className="text-sm leading-relaxed text-muted-foreground">{caseStudy.challenge}</p>
       </section>
-    </Reveal>
+
+      <section id="solution" className="rounded-2xl border border-border/50 bg-card/50 p-6">
+        <div className="mb-3 flex items-center gap-2">
+          <Lightbulb className="h-5 w-5 text-yellow-500" />
+          <h3 className="font-semibold">The Approach</h3>
+        </div>
+        <p className="text-sm leading-relaxed text-muted-foreground">{caseStudy.solution}</p>
+      </section>
+
+      <section className="rounded-2xl border border-primary/18 bg-primary/5 p-6">
+        <div className="mb-3 flex items-center gap-2">
+          <CheckCircle2 className="h-5 w-5 text-primary" />
+          <h3 className="font-semibold">What Changed</h3>
+        </div>
+        <ul className="space-y-2">
+          {caseStudy.results.slice(0, 3).map((result) => (
+            <li key={result} className="flex items-start gap-2 text-sm text-foreground">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>{result}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </section>
   )
 }
 
@@ -263,32 +250,28 @@ export function ArchitectureSection({ slug }: { slug?: string }): React.ReactNod
   if (!hasArchitectureDiagram(slug)) return null
 
   return (
-    <Reveal>
-      <section id="architecture">
-        <ProjectArchitectureDiagram slug={slug ?? ''} />
-      </section>
-    </Reveal>
+    <section id="architecture">
+      <ProjectArchitectureDiagram slug={slug ?? ''} />
+    </section>
   )
 }
 
 export function ProcessSection({ processSteps }: { processSteps: CaseStudyProcessStep[] }): React.ReactNode {
   return (
-    <Reveal>
-      <section id="process" className="rounded-2xl border border-border/50 bg-card/50 p-6">
-        <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Process</div>
-        <ol className="mt-5 relative border-l border-border/60 pl-6 space-y-6">
-          {processSteps.map((step, index) => (
-            <li key={`${step.title}-${step.description}`} className="relative">
-              <span className="absolute -left-[13px] top-0 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary tabular-nums">
-                {index + 1}
-              </span>
-              <div className="font-semibold">{step.title}</div>
-              <p className="mt-1 text-sm text-muted-foreground">{step.description}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-    </Reveal>
+    <section id="process" className="rounded-2xl border border-border/50 bg-card/50 p-6">
+      <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Process</div>
+      <ol className="mt-5 relative border-l border-border/60 pl-6 space-y-6">
+        {processSteps.map((step, index) => (
+          <li key={`${step.title}-${step.description}`} className="relative">
+            <span className="absolute -left-[13px] top-0 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary tabular-nums">
+              {index + 1}
+            </span>
+            <div className="font-semibold">{step.title}</div>
+            <p className="mt-1 text-sm text-muted-foreground">{step.description}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
   )
 }
 
@@ -296,39 +279,37 @@ export function OutcomesSection({ caseStudy }: { caseStudy: CaseStudy | undefine
   if (!caseStudy) return null
 
   return (
-    <Reveal>
-      <section id="outcomes" className="rounded-2xl border border-primary/18 bg-primary/5 p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <CheckCircle2 className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold">Outcomes</h3>
-        </div>
+    <section id="outcomes" className="rounded-2xl border border-primary/18 bg-primary/5 p-6">
+      <div className="flex items-center gap-2 mb-4">
+        <CheckCircle2 className="h-5 w-5 text-primary" />
+        <h3 className="font-semibold">Outcomes</h3>
+      </div>
 
-        <ul className="space-y-2">
-          {caseStudy.results.map((result) => (
-            <li key={result} className="flex items-start gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 shrink-0" />
-              <span className="text-foreground">{result}</span>
-            </li>
-          ))}
-        </ul>
+      <ul className="space-y-2">
+        {caseStudy.results.map((result) => (
+          <li key={result} className="flex items-start gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 shrink-0" />
+            <span className="text-foreground">{result}</span>
+          </li>
+        ))}
+      </ul>
 
-        {caseStudy.whatIdDoNext && caseStudy.whatIdDoNext.length > 0 && (
-          <div className="mt-6 rounded-xl border border-border/50 bg-background/60 p-4">
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              What I&apos;d do next
-            </div>
-            <ul className="mt-2 space-y-2">
-              {caseStudy.whatIdDoNext.map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-muted-foreground" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+      {caseStudy.whatIdDoNext && caseStudy.whatIdDoNext.length > 0 && (
+        <div className="mt-6 rounded-xl border border-border/50 bg-background/60 p-4">
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            What I&apos;d do next
           </div>
-        )}
-      </section>
-    </Reveal>
+          <ul className="mt-2 space-y-2">
+            {caseStudy.whatIdDoNext.map((item) => (
+              <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <span className="mt-2 h-1.5 w-1.5 rounded-full bg-muted-foreground" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
   )
 }
 
@@ -336,37 +317,29 @@ export function DetailsSection({ details }: { details: string[] | undefined }): 
   if (!details || details.length === 0) return null
 
   return (
-    <Reveal>
-      <section id="details" className="rounded-2xl border border-border/50 bg-card/50 p-6">
-        <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-4">Details</div>
-        <div className="prose prose-sm md:prose-base max-w-none text-muted-foreground prose-headings:text-foreground prose-p:text-muted-foreground">
-          {details.map((paragraph, index) => (
-            <p key={index}>{paragraph}</p>
-          ))}
-        </div>
-      </section>
-    </Reveal>
+    <section id="details" className="rounded-2xl border border-border/50 bg-card/50 p-6">
+      <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-4">Details</div>
+      <div className="prose prose-sm md:prose-base max-w-none text-muted-foreground prose-headings:text-foreground prose-p:text-muted-foreground">
+        {details.map((paragraph, index) => (
+          <p key={index}>{paragraph}</p>
+        ))}
+      </div>
+    </section>
   )
 }
 
 export function RelatedProjectsSection({ relatedProjects }: { relatedProjects: Product[] }): React.ReactNode {
-  const slowTransition = useMotionPreset('slow')
   if (relatedProjects.length === 0) return null
 
   return (
-    <m.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ ...slowTransition, delay: 0.3 }}
-      className="border-t border-border/50 pt-12"
-    >
+    <div className="border-t border-border/50 pt-12">
       <h3 className="text-xl font-semibold mb-6">Related Projects</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {relatedProjects.map((relatedProject) => (
           <Link
             key={relatedProject.slug}
             href={`/projects/${relatedProject.slug}`}
-            className="group block p-4 rounded-xl border border-border/50 bg-card/50 hover:border-primary/30 hover:shadow-md transition-all"
+            className="group block p-4 rounded-xl border border-border/50 bg-card/50 transition-colors hover:border-primary/45 hover:bg-primary/6"
           >
             <div className="relative aspect-video rounded-lg overflow-hidden mb-3">
               <Image
@@ -382,7 +355,7 @@ export function RelatedProjectsSection({ relatedProjects }: { relatedProjects: P
           </Link>
         ))}
       </div>
-    </m.div>
+    </div>
   )
 }
 

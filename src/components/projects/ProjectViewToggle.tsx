@@ -1,6 +1,6 @@
 "use client";
 
-import { m, AnimatePresence, useMotionPreset, useReducedMotion } from '@/lib/motion';
+import { m, useReducedMotion } from '@/lib/motion';
 import { LayoutDashboard, LayoutGrid, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -87,42 +87,14 @@ export function ProjectViewWrapper({
   timelineView,
   className,
 }: ProjectViewWrapperProps) {
-  const fastTransition = useMotionPreset('fast');
+  // No crossfade between views. These panels held every project link on the
+  // page, and the `initial={{ opacity: 0 }}` mount was missed under
+  // `LazyMotion strict`: switching to Grid or Timeline rendered a blank
+  // 400px block with 20 live links inside it. Page content never mounts
+  // hidden (DESIGN.md: the page is paper and does not move).
   return (
     <div className={cn("relative min-h-[400px]", className)}>
-      <AnimatePresence mode="wait">
-        {mode === "gallery" ? (
-          <m.div
-            key="gallery"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={fastTransition}
-          >
-            {galleryView}
-          </m.div>
-        ) : mode === "grid" ? (
-          <m.div
-            key="grid"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={fastTransition}
-          >
-            {gridView}
-          </m.div>
-        ) : (
-          <m.div
-            key="timeline"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={fastTransition}
-          >
-            {timelineView}
-          </m.div>
-        )}
-      </AnimatePresence>
+      {mode === "gallery" ? galleryView : mode === "grid" ? gridView : timelineView}
     </div>
   );
 }

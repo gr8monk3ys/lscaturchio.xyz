@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface SectionProps {
@@ -15,7 +15,6 @@ interface SectionProps {
   /** Optional top separator */
   topDivider?: boolean;
   /** Reveal animation on enter */
-  reveal?: boolean;
   /** Background variant */
   background?: "default" | "muted" | "card";
 }
@@ -52,14 +51,8 @@ export function Section({
   id,
   divider = false,
   topDivider = false,
-  reveal = true,
   background = "default",
 }: SectionProps) {
-  const revealStyle = {
-    "--reveal-y": "16px",
-    "--reveal-delay": "0ms",
-  } as CSSProperties;
-
   return (
     <section
       id={id}
@@ -70,22 +63,27 @@ export function Section({
       )}
     >
       {topDivider && (
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 max-w-lg h-px bg-border/70" />
+        <div
+          className={cn(
+            "absolute top-0 left-1/2 h-px w-1/2 max-w-lg -translate-x-1/2 bg-border/70"
+          )}
+        />
       )}
       <div
         className={cn(
           "mx-auto px-4 sm:px-6 lg:px-8",
           sizeClasses[size],
-          paddingClasses[padding],
-          reveal && "reveal"
+          paddingClasses[padding]
         )}
-        data-reveal-state={reveal ? "in" : undefined}
-        style={reveal ? revealStyle : undefined}
       >
         {children}
       </div>
       {divider && (
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/3 max-w-md h-px bg-border/70" />
+        <div
+          className={cn(
+            "absolute bottom-0 left-1/2 h-px w-1/3 max-w-md -translate-x-1/2 bg-border/70"
+          )}
+        />
       )}
     </section>
   );

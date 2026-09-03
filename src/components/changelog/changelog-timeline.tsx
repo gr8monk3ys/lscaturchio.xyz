@@ -1,6 +1,5 @@
 "use client"
 
-import { m } from '@/lib/motion'
 import { Plus, Edit, Bug, Sparkles } from 'lucide-react'
 import { CHANGELOG } from '@/constants/changelog'
 
@@ -14,13 +13,12 @@ const CHANGE_ICONS = {
 export function ChangelogTimeline() {
   return (
     <div className="space-y-12">
+      {/* Static rows: an entrance animation here can be missed under
+          `LazyMotion strict`, leaving the whole changelog invisible. */}
       {CHANGELOG.map((entry, index) => (
-        <m.div
+        <div
           key={entry.version}
           id={`v-${entry.version.replace(/\./g, "-")}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
           className="relative"
         >
           {/* Timeline line */}
@@ -68,7 +66,7 @@ export function ChangelogTimeline() {
               )
             })}
           </div>
-        </m.div>
+        </div>
       ))}
     </div>
   )

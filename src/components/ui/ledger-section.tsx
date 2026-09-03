@@ -27,7 +27,7 @@ interface LedgerSectionProps {
  */
 export function LedgerSection({ head, children }: LedgerSectionProps) {
   return (
-    <Section padding="large" size="wide" divider topDivider reveal={false}>
+    <Section padding="large" size="wide" divider topDivider>
       <div className="grid items-start gap-12 lg:grid-cols-[minmax(280px,360px)_1fr]">
         <div className="lg:sticky lg:top-28">{head}</div>
         {children}

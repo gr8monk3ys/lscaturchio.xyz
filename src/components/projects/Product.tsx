@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { StaticImageData } from 'next/image'
 import Link from 'next/link'
-import { m, useMotionPreset, useReducedMotion } from '@/lib/motion'
+import { useReducedMotion } from '@/lib/motion'
 import { ArrowLeft } from 'lucide-react'
 
 import { Product } from '@/types/products'
@@ -61,12 +61,8 @@ export const SingleProduct = ({ product }: { product: Product }) => {
 
   return (
     <div className="py-10 max-w-6xl mx-auto">
-      <m.div
-        initial={{ opacity: 0, x: -14 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={useMotionPreset('fast')}
-        className="mb-8"
-      >
+      {/* Static: page content never mounts at opacity 0 (see DESIGN.md). */}
+      <div className="mb-8">
         <Link
           href="/projects"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
@@ -74,7 +70,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
           <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
           Back to Projects
         </Link>
-      </m.div>
+      </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-10 items-start">
         <div className="space-y-10">

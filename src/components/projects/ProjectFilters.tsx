@@ -1,7 +1,6 @@
 "use client";
 
 import { ProjectCategory, Product } from "@/types/products";
-import { m } from '@/lib/motion';
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { useMemo } from "react";
@@ -83,12 +82,10 @@ export function ProjectFilters({
       </div>
 
       {/* Active Tech Filter & Clear Button */}
+      {/* Static: this row also mounts on arrival when filters come from the
+          URL, and an entrance animation can strand it at opacity 0. */}
       {hasFilters && (
-        <m.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-wrap items-center gap-2"
-        >
+        <div className="flex flex-wrap items-center gap-2">
           {currentTech && (
             <span className="label-mono inline-flex items-center gap-1.5 text-primary">
               Tech: {currentTech}
@@ -108,7 +105,7 @@ export function ProjectFilters({
             <X className="h-3.5 w-3.5" />
             Clear all
           </button>
-        </m.div>
+        </div>
       )}
     </div>
   );

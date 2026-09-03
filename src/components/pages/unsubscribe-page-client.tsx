@@ -2,7 +2,6 @@
 
 import { Container } from '@/components/Container'
 import { Heading } from '@/components/Heading'
-import { m, useMotionPreset } from '@/lib/motion'
 import { Check, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -13,11 +12,8 @@ export function UnsubscribePageClient({ status, message }: { status: Unsubscribe
     <div className="min-h-screen flex items-center justify-center py-20">
       <Container>
         <div className="max-w-md mx-auto text-center">
-          <m.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={useMotionPreset('slow')}
-            >
+          {/* Static: this is the entire page; it must never mount hidden. */}
+          <div>
               <div className="mb-6 flex justify-center">
                 {status === 'success' && (
                   <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
@@ -62,7 +58,7 @@ export function UnsubscribePageClient({ status, message }: { status: Unsubscribe
                   </Link>
                 )}
               </div>
-          </m.div>
+          </div>
         </div>
       </Container>
     </div>

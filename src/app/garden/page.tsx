@@ -133,7 +133,7 @@ export default function GardenPage() {
                 <Link
                   href={item.href}
                   prefetch={false}
-                  className="label-mono normal-case tracking-normal text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                  className="label-mono normal-case tracking-normal text-foreground ink-underline transition-colors hover:text-primary"
                 >
                   {item.name}
                 </Link>

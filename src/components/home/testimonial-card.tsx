@@ -1,7 +1,7 @@
 'use client';
 
 import { Testimonial } from '@/types/testimonial';
-import { m, useMotionPreset } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import { Quote } from 'lucide-react';
 import { IconBrandLinkedin, IconBrandTwitter } from '@tabler/icons-react';
 import Image from 'next/image';
@@ -30,7 +30,6 @@ function getInitials(name: string): string {
 
 export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps) {
   const { name, role, company, avatar, content, linkedinUrl, twitterUrl, date } = testimonial;
-  const fastTransition = useMotionPreset('fast');
 
   return (
     <m.div
@@ -42,13 +41,10 @@ export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps
         delay: index * 0.1,
         ease: [0.6, -0.05, 0.01, 0.99] as [number, number, number, number],
       }}
-      whileHover={{
-        y: -4,
-        transition: fastTransition,
-      }}
       className="group relative h-full"
     >
-      <div className="neu-card h-full p-6 flex flex-col transition-all duration-300 hover:shadow-lg">
+      {/* Flat Paper Rule: hover warms the border and tints the ground; no lift, no shadow. */}
+      <div className="neu-card h-full p-6 flex flex-col">
         {/* Quote Icon */}
         <div className="absolute -top-3 -left-1 text-primary/20">
           <Quote className="h-12 w-12 rotate-180" strokeWidth={1} />

@@ -22,7 +22,7 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
           <Link
             href="/blog"
             prefetch={false}
-            className="label-mono mt-8 inline-block text-foreground underline-offset-4 hover:text-primary hover:underline"
+            className="label-mono mt-8 inline-block text-foreground underline-offset-4 ink-underline hover:text-primary"
           >
             Read everything →
           </Link>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { m, AnimatePresence } from "@/lib/motion";
 import Link from "next/link";
 import { Clock, ListVideo, PenLine, Trophy } from "lucide-react";
 import type { LetterboxdMovie, LetterboxdStats } from "@/lib/letterboxd";
@@ -74,15 +73,11 @@ function FavoriteFilm({ movie, index }: { movie: LetterboxdMovie; index: number 
   );
 }
 
-function FilmRow({ movie, index }: { movie: LetterboxdMovie; index: number }) {
+/** Static row: staggered opacity-0 entrances were missed under `LazyMotion
+ *  strict`, leaving the whole film catalogue blank. */
+function FilmRow({ movie }: { movie: LetterboxdMovie }) {
   return (
-    <m.li
-      layout
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.015, 0.3) }}
-      className="border-t border-border py-5"
-    >
+    <li className="border-t border-border py-5">
       <div className="flex flex-col gap-x-6 gap-y-2 sm:flex-row sm:items-baseline sm:justify-between">
         <Link
           href={movie.link}
@@ -117,7 +112,7 @@ function FilmRow({ movie, index }: { movie: LetterboxdMovie; index: number }) {
           &ldquo;{movie.review}&rdquo;
         </p>
       ) : null}
-    </m.li>
+    </li>
   );
 }
 
@@ -203,19 +198,11 @@ export function MoviesList({
           })}
         </div>
 
-        <AnimatePresence mode="wait">
-          <m.ul
-            key={activeTab}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="mt-8 border-b border-border"
-          >
-            {activeMovies.map((movie, index) => (
-              <FilmRow key={`${movie.title}-${movie.year}`} movie={movie} index={index} />
-            ))}
-          </m.ul>
-        </AnimatePresence>
+        <ul className="mt-8 border-b border-border">
+          {activeMovies.map((movie) => (
+            <FilmRow key={`${movie.title}-${movie.year}`} movie={movie} />
+          ))}
+        </ul>
 
         {activeMovies.length === 0 ? (
           <p className="py-12 text-center text-muted-foreground">

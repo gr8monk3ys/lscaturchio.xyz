@@ -78,7 +78,7 @@ export function HowIWorkSection() {
             <Link
               href="/projects"
               prefetch={false}
-              className="label-mono self-center text-foreground underline-offset-4 hover:text-primary hover:underline"
+              className="label-mono self-center text-foreground underline-offset-4 ink-underline hover:text-primary"
             >
               See case studies →
             </Link>

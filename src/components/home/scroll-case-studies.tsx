@@ -116,7 +116,7 @@ export function ScrollCaseStudies() {
 
                 <Link
                   href={item.href}
-                  className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                  className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary underline-offset-4"
                 >
                   Read the case study
                   <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

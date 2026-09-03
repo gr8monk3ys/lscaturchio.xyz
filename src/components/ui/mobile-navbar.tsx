@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -29,13 +29,77 @@ const CommandPalette = dynamic(
   }
 );
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function categoryPanelId(name: string): string {
+  return `mobile-nav-panel-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+}
+
 function MobileNavbarContent({ pathname }: { pathname: string }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const toggleRef = useRef<HTMLButtonElement | null>(null);
+  const menuRef = useRef<HTMLElement | null>(null);
 
   const toggleCategory = (name: string) => {
     setExpandedCategory((current) => (current === name ? null : name));
   };
+
+  const closeMenu = useCallback(() => {
+    setIsMenuOpen(false);
+    toggleRef.current?.focus();
+  }, []);
+
+  // Escape + focus containment while the overlay is open. Mirrors the
+  // document-level keydown listener in use-command-palette.
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeMenu();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const toggle = toggleRef.current;
+      const menu = menuRef.current;
+      if (!toggle || !menu) return;
+
+      // The toggle sits outside the overlay but must stay reachable, so the
+      // cycle runs toggle -> menu contents -> toggle and never reaches the
+      // page behind.
+      const focusable = [
+        toggle,
+        ...Array.from(menu.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)),
+      ].filter((element) => element.offsetParent !== null || element === toggle);
+
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+
+      if (event.shiftKey) {
+        if (active === first || !active || !focusable.includes(active)) {
+          event.preventDefault();
+          last.focus();
+        }
+        return;
+      }
+
+      if (active === last || !active || !focusable.includes(active)) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [closeMenu, isMenuOpen]);
 
   return (
     <>
@@ -44,7 +108,10 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
       <div className="fixed right-0 top-0 z-60 p-4 md:hidden">
         <button
           type="button"
-          onClick={() => setIsMenuOpen((current) => !current)}
+          ref={toggleRef}
+          onClick={() =>
+            isMenuOpen ? closeMenu() : setIsMenuOpen(true)
+          }
           className="flex h-10 w-10 items-center justify-center rounded-xl neu-button transition-transform hover:scale-[1.02] active:scale-[0.98] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           aria-label="Toggle menu"
           aria-expanded={isMenuOpen}
@@ -57,6 +124,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
       {isMenuOpen && (
         <nav
           id="mobile-navigation-menu"
+          ref={menuRef}
           aria-label="Mobile"
           className="fixed inset-0 z-55 flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
         >
@@ -101,6 +169,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
             {secondaryNavigationCategories.map((category) => {
               const Icon = category.icon;
               const isExpanded = expandedCategory === category.name;
+              const panelId = categoryPanelId(category.name);
                 const hasActiveItem = category.items.some((item) =>
                   isPathActive(pathname, item.href)
                 );
@@ -110,6 +179,8 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
                   <button
                     type="button"
                     onClick={() => toggleCategory(category.name)}
+                    aria-expanded={isExpanded}
+                    aria-controls={panelId}
                     className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-lg font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                       hasActiveItem
                         ? "text-primary"
@@ -128,7 +199,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
                   </button>
 
                   {isExpanded && (
-                    <div className="overflow-hidden">
+                    <div id={panelId} className="overflow-hidden">
                       <div className="space-y-1 pl-4">
                         {category.items.map((item) => {
                           const ItemIcon = item.icon;

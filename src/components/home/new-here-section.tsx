@@ -128,7 +128,7 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
   ];
 
   return (
-    <Section padding="compact" size="wide" divider topDivider reveal={false}>
+    <Section padding="compact" size="wide" divider topDivider>
       <div className="mx-auto max-w-4xl">
         <SectionHeader
           index="04"

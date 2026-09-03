@@ -1,6 +1,6 @@
 "use client";
 
-import { m, useInView } from '@/lib/motion';
+import { m } from '@/lib/motion';
 import { useRef } from "react";
 
 const interests = [
@@ -38,7 +38,6 @@ const interests = [
 
 export function Interests() {
   const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -74,8 +73,8 @@ export function Interests() {
       <div className="w-full max-w-7xl mx-auto" ref={containerRef}>
         <m.div
           variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "show" : "hidden"}
+          initial={false}
+          animate="show"
           className="flex flex-col gap-10"
         >
           <m.div variants={itemVariants} className="flex gap-4 flex-col items-start">

@@ -164,10 +164,12 @@ export default function RootLayout({
         </Script>
       </head>
       <body>
-        {/* Skip to content link for accessibility */}
+        {/* Skip to content link. Positioned off-screen by transform rather than
+            clipped with sr-only, so the focused state has a real, measurable box:
+            a paper card on a hairline with the Forest Ink focus ring. */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-hidden"
+          className="fixed left-4 top-4 z-[200] -translate-y-[300%] rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-transform duration-200 focus:translate-y-0 focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
         >
           Skip to content
         </a>
@@ -184,7 +186,7 @@ export default function RootLayout({
             <Suspense fallback={<div className="min-h-[64px] md:hidden" />}>
               <MobileNavbarGate />
             </Suspense>
-            <main id="main-content" className="overflow-x-clip">
+            <main id="main-content" tabIndex={-1} className="overflow-x-clip focus:outline-hidden">
               {children}
             </main>
             <DeferredLayoutExtras />

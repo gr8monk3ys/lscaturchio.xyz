@@ -41,7 +41,7 @@ export function RagStatusCard() {
           </div>
         </div>
         {status ? (
-          <div className="text-[11px] text-muted-foreground tabular-nums">
+          <div className="text-[0.72rem] text-muted-foreground tabular-nums">
             {new Date(status.timestamp).toLocaleString()}
           </div>
         ) : (

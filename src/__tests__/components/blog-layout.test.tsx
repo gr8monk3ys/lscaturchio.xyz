@@ -5,10 +5,17 @@ import { getSiteUrl } from '@/lib/site-url';
 
 // The layout composes many interactive widgets that have their own tests
 // (or fetch on mount). Stub them so this file tests the layout itself.
-vi.mock('next/navigation', () => ({
-  usePathname: () => '/blog/strikes-work',
+// The shell no longer reads `usePathname()`; the slug arrives as a prop.
+vi.mock('@/components/blog/text-to-speech', () => ({ TextToSpeech: () => null }));
+vi.mock('@/components/blog/series-navigation', () => ({ SeriesNavigation: () => null }));
+vi.mock('@/components/blog/webmentions', () => ({ Webmentions: () => null }));
+vi.mock('@/components/blog/giscus-comments', () => ({ GiscusComments: () => null }));
+vi.mock('@/components/blog/related-posts', () => ({ RelatedPosts: () => null }));
+vi.mock('@/components/blog/blog-sidebar', () => ({
+  BlogSidebar: () => null,
+  EssayContentsInline: () => null,
+  EssayAskInline: () => null,
 }));
-vi.mock('next/dynamic', () => ({ default: () => () => null }));
 vi.mock('@/components/blog/view-counter', () => ({
   ViewCounter: () => <span data-testid="view-counter" />,
 }));
@@ -33,7 +40,7 @@ const meta = {
 describe('BlogLayout', () => {
   it('returns bare children for the RSS feed rendering', () => {
     const { container } = render(
-      <BlogLayout meta={meta} isRssFeed>
+      <BlogLayout meta={meta} slug="strikes-work" isRssFeed>
         <p>article body</p>
       </BlogLayout>
     );
@@ -43,7 +50,7 @@ describe('BlogLayout', () => {
 
   it('renders the header: title, description, date, reading time, tag links', () => {
     render(
-      <BlogLayout meta={meta} readingTime={7}>
+      <BlogLayout meta={meta} slug="strikes-work" readingTime={7}>
         <p>body</p>
       </BlogLayout>
     );
@@ -60,7 +67,7 @@ describe('BlogLayout', () => {
 
   it('builds the canonical URL from the site origin, not window.location', () => {
     render(
-      <BlogLayout meta={meta}>
+      <BlogLayout meta={meta} slug="strikes-work">
         <p>body</p>
       </BlogLayout>
     );
@@ -74,13 +81,13 @@ describe('BlogLayout', () => {
 
   it('shows an updated line only when meta.updated exists', () => {
     const { rerender } = render(
-      <BlogLayout meta={meta}>
+      <BlogLayout meta={meta} slug="strikes-work">
         <p>body</p>
       </BlogLayout>
     );
     expect(screen.queryByText(/^Updated/)).toBeNull();
     rerender(
-      <BlogLayout meta={{ ...meta, updated: '2026-01-10' }}>
+      <BlogLayout meta={{ ...meta, updated: '2026-01-10' }} slug="strikes-work">
         <p>body</p>
       </BlogLayout>
     );
@@ -89,7 +96,7 @@ describe('BlogLayout', () => {
 
   it('links topic hubs matched from the post tags', () => {
     render(
-      <BlogLayout meta={meta}>
+      <BlogLayout meta={meta} slug="strikes-work">
         <p>body</p>
       </BlogLayout>
     );
@@ -103,7 +110,7 @@ describe('BlogLayout', () => {
 
   it('renders syndication links only when provided', () => {
     render(
-      <BlogLayout meta={{ ...meta, syndication: ['https://bsky.app/profile/x/post/1'] }}>
+      <BlogLayout meta={{ ...meta, syndication: ['https://bsky.app/profile/x/post/1'] }} slug="strikes-work">
         <p>body</p>
       </BlogLayout>
     );
@@ -113,7 +120,7 @@ describe('BlogLayout', () => {
   it('shows a back button that walks browser history when there is a previous page', async () => {
     const back = vi.spyOn(window.history, 'back').mockImplementation(() => {});
     render(
-      <BlogLayout meta={meta} previousPathname="/blog">
+      <BlogLayout meta={meta} slug="strikes-work" previousPathname="/blog">
         <p>body</p>
       </BlogLayout>
     );

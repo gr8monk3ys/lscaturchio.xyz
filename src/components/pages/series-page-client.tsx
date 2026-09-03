@@ -1,7 +1,6 @@
 "use client";
 
 import { Container } from "@/components/Container";
-import { m } from '@/lib/motion';
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { FallbackImage } from "@/components/ui/fallback-image";
@@ -74,13 +73,8 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
 
           {/* Series Grid */}
           <div className="space-y-16">
-            {allSeries.map((series, index) => (
-              <m.div
-                key={series.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
+            {allSeries.map((series) => (
+              <div key={series.name}>
                 {/* Series Header */}
                 <div>
                   <h2 className="font-display text-2xl font-bold">{series.name}</h2>
@@ -141,7 +135,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
                     </Link>
                   ))}
                 </div>
-              </m.div>
+              </div>
             ))}
           </div>
         </div>

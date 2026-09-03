@@ -79,7 +79,9 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
           key={shellKey}
           {...(!reduceMotion
             ? {
-                initial: { opacity: 0, y: 8 },
+                // Never mount hidden: the panel's content must survive a
+                // missed mount animation.
+                initial: false as const,
                 animate: { opacity: 1, y: 0 },
                 transition: fastTransition,
               }

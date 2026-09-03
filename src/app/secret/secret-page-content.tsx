@@ -1,6 +1,5 @@
 "use client";
 
-import { m, useMotionPreset, useReducedMotion } from '@/lib/motion';
 import Link from "next/link";
 
 // Hidden projects/experiments that aren't on the main portfolio
@@ -21,27 +20,19 @@ const EASTER_EGG_HINTS = [
   "Some things are only visible in dark mode",
 ];
 
+/**
+ * Deliberately static. Every block on this page was an `initial={{ opacity: 0 }}`
+ * framer-motion mount, and under `LazyMotion strict` that animation can be
+ * missed entirely — leaving the whole page blank. Page content never mounts
+ * hidden (DESIGN.md: the page is paper and does not move).
+ */
 export function SecretPageContent() {
-  const slowTransition = useMotionPreset('slow');
-  const reduce = useReducedMotion();
   return (
     <div className="min-h-screen py-24 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <m.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={slowTransition}
-        >
-        <m.div
-          className="text-6xl mb-4"
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1 }}
-          transition={reduce ? { duration: 0 } : { delay: 0.2, type: 'spring' as const, damping: 10 }}
-        >
-            🎉
-          </m.div>
+        <div className="text-center mb-16">
+          <div className="text-6xl mb-4">🎉</div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             You Found the Secret Page!
           </h1>
@@ -49,26 +40,18 @@ export function SecretPageContent() {
             Welcome to the hidden corner of my website. Here are some things that
             didn&apos;t quite make it to the main pages.
           </p>
-        </m.div>
+        </div>
 
         {/* Hidden Projects */}
-        <m.section
-          className="mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
+        <section className="mb-16">
           <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
             <span>🔬</span> Hidden Experiments
           </h2>
           <div className="grid gap-4">
-            {HIDDEN_PROJECTS.map((project, index) => (
-              <m.div
+            {HIDDEN_PROJECTS.map((project) => (
+              <div
                 key={project.name}
                 className="bg-muted/30 border border-border rounded-xl p-5"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -91,18 +74,13 @@ export function SecretPageContent() {
                     {project.status}
                   </span>
                 </div>
-              </m.div>
+              </div>
             ))}
           </div>
-        </m.section>
+        </section>
 
         {/* Easter Egg Hints */}
-        <m.section
-          className="mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
+        <section className="mb-16">
           <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
             <span>🥚</span> More Secrets?
           </h2>
@@ -112,29 +90,18 @@ export function SecretPageContent() {
               hints:
             </p>
             <ul className="space-y-2">
-              {EASTER_EGG_HINTS.map((hint, index) => (
-                <m.li
-                  key={hint}
-                  className="flex items-center gap-2 text-sm"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 + index * 0.1 }}
-                >
+              {EASTER_EGG_HINTS.map((hint) => (
+                <li key={hint} className="flex items-center gap-2 text-sm">
                   <span className="text-primary">→</span>
                   <span>{hint}</span>
-                </m.li>
+                </li>
               ))}
             </ul>
           </div>
-        </m.section>
+        </section>
 
         {/* Back to home */}
-        <m.div
-          className="text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-        >
+        <div className="text-center">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-primary hover:underline"
@@ -142,7 +109,7 @@ export function SecretPageContent() {
             <span>←</span>
             <span>Back to the regular website</span>
           </Link>
-        </m.div>
+        </div>
       </div>
     </div>
   );
