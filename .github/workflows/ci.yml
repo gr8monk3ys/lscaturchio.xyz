@@ -3,8 +3,13 @@ name: CI
 on:
   push:
     branches: [main]
+  # Every pull request, not only those targeting main. Stacked PRs (a branch
+  # based on another branch) were matching no trigger at all, so #187, #190,
+  # #191 and #203 sat for days showing a green tick that was Vercel's preview
+  # deploy, never Lint / Type Check / Test / Build / E2E. A check that cannot
+  # fire is worse than no check: it reads as a pass. The repo is public, so
+  # Actions minutes are unmetered and there is nothing to save here.
   pull_request:
-    branches: [main]
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
