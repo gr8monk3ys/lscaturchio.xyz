@@ -1,40 +1,15 @@
 import type { Metadata } from "next";
-import { ogCardUrl } from "@/lib/seo";
 import { SeriesPageClient, type Series } from "@/components/pages/series-page-client";
 import { getAllBlogs } from "@/lib/getAllBlogs";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Blog Series",
   description:
     "Multi-part writing series from Lorenzo Scaturchio, organized by topic and reading order.",
-  openGraph: {
-    title: "Blog Series | Lorenzo Scaturchio",
-    description: "Multi-part deep dives into complex topics.",
-    images: [
-      {
-        url: ogCardUrl({
-          title: "Blog Series",
-          description: "Multi-part deep dives",
-          type: "blog",
-        }),
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Blog Series | Lorenzo Scaturchio",
-    description: "Multi-part deep dives into complex topics.",
-    images: [
-      ogCardUrl({
-        title: "Blog Series",
-        description: "Multi-part deep dives",
-        type: "blog",
-      }),
-    ],
-  },
-};
+  path: "/series",
+  cardType: "blog",
+});
 
 async function getSeriesData(): Promise<Series[]> {
   const blogs = await getAllBlogs();

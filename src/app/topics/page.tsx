@@ -3,35 +3,15 @@ import Link from "next/link";
 
 import { Container } from "@/components/Container";
 import { getAllBlogs } from "@/lib/getAllBlogs";
-import { ogCardUrl } from "@/lib/seo";
 import { TOPIC_HUBS } from "@/constants/topics";
 import { PageHead } from "@/components/ui/page-head";
+import { buildPageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Topics",
   description: "Topic hubs that organize posts and projects into bigger themes.",
-  openGraph: {
-    title: "Topics | Lorenzo Scaturchio",
-    description: "Topic hubs that organize posts and projects into bigger themes.",
-    images: [
-      {
-        url: ogCardUrl({
-          title: "Topics",
-          description: "Pillars, hubs, and collections",
-          type: "blog",
-        }),
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Topics | Lorenzo Scaturchio",
-    description: "Pillars, hubs, and collections.",
-    images: [ogCardUrl({ title: "Topics", description: "Pillars, hubs, and collections", type: "blog" })],
-  },
-};
+  path: "/topics",
+});
 
 export const revalidate = 3600;
 

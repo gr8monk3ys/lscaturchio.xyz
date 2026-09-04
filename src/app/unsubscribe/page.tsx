@@ -1,42 +1,24 @@
 import type { Metadata } from "next";
-import { ogCardUrl } from "@/lib/seo";
 import { UnsubscribePageClient, type UnsubscribeStatus } from "@/components/pages/unsubscribe-page-client";
 import { getDb } from "@/lib/db";
 import { logError } from "@/lib/logger";
+import { buildPageMetadata } from "@/lib/seo";
+import {
+  readSearchParam,
+  type SearchParamValue,
+} from "@/lib/search-params";
 
 export const metadata: Metadata = {
-  title: "Unsubscribe",
-  description:
-    "Manage your newsletter preferences and unsubscribe from Lorenzo Scaturchio email updates.",
-  robots: {
-    index: false,
-    follow: false,
-  },
-  openGraph: {
-    title: "Unsubscribe | Lorenzo Scaturchio",
-    description: "Manage your newsletter subscription preferences.",
-    images: [
-      {
-        url: ogCardUrl({
-          title: "Newsletter",
-          description: "Subscription preferences",
-          type: "default",
-        }),
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
+  ...buildPageMetadata({
+    title: "Unsubscribe",
+    description:
+      "Manage your newsletter preferences and unsubscribe from Lorenzo Scaturchio email updates.",
+    path: "/unsubscribe",
+  }),
+  // A one-time link keyed to a subscriber must never enter an index.
+  robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";
-
-type SearchParamValue = string | string[] | undefined;
-
-function getSearchParamValue(params: Record<string, SearchParamValue>, key: string): string {
-  const value = params[key];
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
 
 async function resolveUnsubscribeState(
   token: string
@@ -63,7 +45,7 @@ export default async function UnsubscribePage({
   searchParams?: Promise<Record<string, SearchParamValue>>;
 }) {
   const params = (await searchParams) ?? {};
-  const token = getSearchParamValue(params, "token").trim();
+  const token = readSearchParam(params, "token").trim();
 
   if (!token) {
     return <UnsubscribePageClient status="no-token" message="No unsubscribe token provided" />;

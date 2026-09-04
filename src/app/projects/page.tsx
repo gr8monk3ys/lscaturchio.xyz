@@ -5,51 +5,24 @@ import { Paragraph } from "@/components/Paragraph";
 import { ProjectsPageContent } from "@/components/projects/ProjectsPageContent";
 import { Metadata } from "next";
 import { ArrowUpRight } from "lucide-react";
-import { ogCardUrl } from "@/lib/seo";
+import { buildPageMetadata } from "@/lib/seo";
+import {
+  readSearchParam,
+  type SearchParamValue,
+} from "@/lib/search-params";
 import {
   normalizeProjectCategory,
   normalizeProjectSort,
   summarizeCatalogue,
 } from "@/lib/project-catalogue";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Projects",
   description:
     "A collection of AI/ML, web development, and open source projects. Full case studies with technical details, challenges, and results.",
-  openGraph: {
-    title: "Projects | Lorenzo Scaturchio",
-    description:
-      "A collection of AI/ML, web development, and open source projects with full case studies.",
-    images: [
-      {
-        url: ogCardUrl({
-          title: "Projects",
-          description: "Case studies and technical write-ups",
-          type: "project",
-        }),
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Projects | Lorenzo Scaturchio",
-    description: "Case studies and technical write-ups.",
-    images: [ogCardUrl({ title: "Projects", description: "Case studies and technical write-ups", type: "project" })],
-  },
-};
-
-type SearchParamValue = string | string[] | undefined;
-
-function getSearchParamValue(
-  params: Record<string, SearchParamValue>,
-  key: string
-): string {
-  const value = params[key];
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
+  path: "/projects",
+  cardType: "project",
+});
 
 export default async function Projects({
   searchParams,
@@ -58,10 +31,10 @@ export default async function Projects({
 }) {
   const params = (await searchParams) ?? {};
   const initialCategory = normalizeProjectCategory(
-    getSearchParamValue(params, "category")
+    readSearchParam(params, "category")
   );
-  const initialTech = getSearchParamValue(params, "tech");
-  const initialSort = normalizeProjectSort(getSearchParamValue(params, "sort"));
+  const initialTech = readSearchParam(params, "tech");
+  const initialSort = normalizeProjectSort(readSearchParam(params, "sort"));
   const catalogue = summarizeCatalogue();
 
   return (

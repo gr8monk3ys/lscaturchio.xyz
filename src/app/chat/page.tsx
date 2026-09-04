@@ -1,16 +1,12 @@
 import { Container } from "@/components/Container";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
+import {
+  readSearchParam,
+  type SearchParamValue,
+} from "@/lib/search-params";
 
 const ChatPageClient = dynamic(() => import("@/components/chat/chat-page-client").then(m => m.ChatPageClient));
-
-type SearchParamValue = string | string[] | undefined;
-
-function getSearchParamValue(params: Record<string, SearchParamValue>, key: string): string {
-  const value = params[key];
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
 
 export const metadata = {
   title: "Chat",
@@ -23,9 +19,9 @@ export default async function ChatPage({
   searchParams?: Promise<Record<string, SearchParamValue>>;
 }) {
   const params = (await searchParams) ?? {};
-  const contextSlug = getSearchParamValue(params, "contextSlug");
-  const contextTitle = getSearchParamValue(params, "contextTitle");
-  const initialQuery = getSearchParamValue(params, "q");
+  const contextSlug = readSearchParam(params, "contextSlug");
+  const contextTitle = readSearchParam(params, "contextTitle");
+  const initialQuery = readSearchParam(params, "q");
 
   return (
     <Container size="small">

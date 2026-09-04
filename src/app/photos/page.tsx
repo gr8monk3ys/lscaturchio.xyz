@@ -5,6 +5,10 @@ import { PhotosGrid } from "@/components/photos/PhotosGrid";
 import { Loader2 } from "lucide-react";
 import type { PhotoCategory } from "@/constants/photos";
 import { PageHead } from "@/components/ui/page-head";
+import {
+  readEnumParam,
+  type SearchParamValue,
+} from "@/lib/search-params";
 
 export const metadata = buildPageMetadata({
   title: "Photography",
@@ -20,21 +24,7 @@ function PhotosGridSkeleton() {
   );
 }
 
-type SearchParamValue = string | string[] | undefined;
-
-function getSearchParamValue(
-  params: Record<string, SearchParamValue>,
-  key: string
-): string {
-  const value = params[key];
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
-
-function normalizeCategory(value: string): PhotoCategory {
-  const allowed: PhotoCategory[] = ["all", "travel", "nature"];
-  return allowed.includes(value as PhotoCategory) ? (value as PhotoCategory) : "all";
-}
+const PHOTO_CATEGORIES: readonly PhotoCategory[] = ["all", "travel", "nature"];
 
 export default async function PhotosPage({
   searchParams,
@@ -42,7 +32,7 @@ export default async function PhotosPage({
   searchParams?: Promise<Record<string, SearchParamValue>>;
 }) {
   const params = (await searchParams) ?? {};
-  const initialCategory = normalizeCategory(getSearchParamValue(params, "category"));
+  const initialCategory = readEnumParam(params, "category", PHOTO_CATEGORIES, "all");
 
   return (
     <Container className="mt-16 lg:mt-32">

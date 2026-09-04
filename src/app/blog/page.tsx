@@ -7,9 +7,14 @@ import { BlogArchiveStats } from "@/components/blog/blog-archive-stats";
 import Link from "next/link";
 import { Tag } from "lucide-react";
 import type { Metadata } from "next";
-import { ogCardUrl } from "@/lib/seo";
 import { toBlogPreview } from "@/lib/blog-data";
 import { Suspense } from "react";
+import { buildPageMetadata } from "@/lib/seo";
+import {
+  readPageParam,
+  readSearchParam,
+  type SearchParamValue,
+} from "@/lib/search-params";
 
 interface Blog {
   slug: string;
@@ -20,50 +25,15 @@ interface Blog {
   tags: string[];
 }
 
-type SearchParamValue = string | string[] | undefined;
 const BLOGS_PER_PAGE = 12;
 
-function getSearchParamValue(
-  params: Record<string, SearchParamValue>,
-  key: string
-): string {
-  const value = params[key];
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
-
-function getPageParamValue(value: string): number {
-  const page = Number.parseInt(value, 10);
-  return Number.isFinite(page) && page > 0 ? page : 1;
-}
-
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Blog",
   description:
     "Eighty-three essays on power, attention, philosophy, economics and the systems that carry them, by Lorenzo Scaturchio.",
-  openGraph: {
-    title: "Blog | Lorenzo Scaturchio",
-    description:
-      "Essays on software development, AI, and the politics of technology.",
-    images: [
-      {
-        url: ogCardUrl({
-          title: "Blog",
-          description: "Essays on software, AI, and technology",
-          type: "blog",
-        }),
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Blog | Lorenzo Scaturchio",
-    description: "Essays on software, AI, and technology.",
-    images: [ogCardUrl({ title: "Blog", description: "Essays on software, AI, and technology", type: "blog" })],
-  },
-};
+  path: "/blog",
+  cardType: "blog",
+});
 
 // Revalidate the blog listing every hour for fresh content
 export const revalidate = 3600;
@@ -74,9 +44,9 @@ export default async function Blog({
   searchParams?: Promise<Record<string, SearchParamValue>>;
 }) {
   const params = (await searchParams) ?? {};
-  const tagFilter = getSearchParamValue(params, "tag");
-  const stageFilter = getSearchParamValue(params, "stage");
-  const requestedPage = getPageParamValue(getSearchParamValue(params, "page"));
+  const tagFilter = readSearchParam(params, "tag");
+  const stageFilter = readSearchParam(params, "stage");
+  const requestedPage = readPageParam(params);
   const blogs = await getAllBlogs();
   const normalizedTag = tagFilter.trim().toLowerCase();
   const tagFilteredBlogs = normalizedTag

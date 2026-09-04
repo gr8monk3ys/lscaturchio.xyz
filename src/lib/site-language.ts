@@ -8,7 +8,20 @@ import {
   type GoogleTranslateCode,
 } from "@/lib/site-locale";
 
-export { GOOGLE_TRANSLATE_COOKIE, LOCALE_COOKIE };
+/**
+ * Which language the reader is currently in.
+ *
+ * There are three sources that can answer it — the locale prefix on the URL,
+ * this site's own locale cookie, and Google Translate's `googtrans` cookie —
+ * and they disagree. The precedence between them is the whole point of this
+ * module, so it is resolved here rather than advertised.
+ *
+ * This used to export four separate resolvers plus their two helpers, and a
+ * caller had to know which one to reach for and in what order. None of those
+ * five names had a single call site outside this file; the two re-exported
+ * cookie constants had none either, because `proxy.ts` imports them from
+ * `site-locale.ts` directly.
+ */
 
 /**
  * A language code here is a Google Translate code (`zh-CN`), not a URL segment
@@ -26,58 +39,77 @@ export const SITE_LANGUAGES: readonly { code: LanguageCode; label: string }[] = 
   { code: "fr", label: "French" },
 ];
 
+const DEFAULT_LANGUAGE: LanguageCode = "en";
+
 const LANGUAGE_CODE_SET = new Set<string>(
   SITE_LOCALES.map((entry) => entry.googleTranslate)
 );
 
-export function getCookieValue(name: string): string | undefined {
-  if (typeof document === "undefined") return undefined;
-  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+/**
+ * Where the answer is read from. Defaults to the live browser; tests pass a
+ * literal instead, which is the seam that made the precedence rule testable
+ * without touching `document.cookie`.
+ */
+export interface LanguageEnvironment {
+  /** Path including any locale prefix, e.g. "/es/blog". */
+  pathname?: string;
+  /** A raw `document.cookie` string. */
+  cookies?: string;
+}
+
+function readBrowserEnvironment(): LanguageEnvironment {
+  if (typeof window === "undefined") return {};
+  return {
+    pathname: window.location.pathname,
+    cookies: typeof document === "undefined" ? undefined : document.cookie,
+  };
+}
+
+function readCookie(cookies: string | undefined, name: string): string | undefined {
+  if (!cookies) return undefined;
+  const match = cookies.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
   return match?.[1];
 }
 
-export function parseGoogTransCookie(
-  cookieValue: string | undefined
-): LanguageCode {
-  if (!cookieValue) {
-    return "en";
-  }
+/** `googtrans` is "/from/to"; only the trailing segment names the target. */
+function fromGoogleTranslateCookie(
+  cookies: string | undefined
+): LanguageCode | null {
+  const raw = readCookie(cookies, GOOGLE_TRANSLATE_COOKIE);
+  if (!raw) return null;
 
-  const raw = decodeURIComponent(cookieValue);
-  const parts = raw.split("/");
+  const parts = decodeURIComponent(raw).split("/");
   const selected = parts[parts.length - 1];
 
-  if (!selected || !LANGUAGE_CODE_SET.has(selected)) {
-    return "en";
-  }
-
-  return selected as LanguageCode;
+  return selected && LANGUAGE_CODE_SET.has(selected)
+    ? (selected as LanguageCode)
+    : null;
 }
 
-export function getActiveLanguageFromCookies(): LanguageCode {
-  return parseGoogTransCookie(getCookieValue(GOOGLE_TRANSLATE_COOKIE));
+function fromLocaleCookie(cookies: string | undefined): LanguageCode | null {
+  const locale = readCookie(cookies, LOCALE_COOKIE);
+  return isLocaleSegment(locale) ? localeToGoogleTranslate(locale) : null;
 }
 
-export function getActiveLanguageFromLocaleCookie(): LanguageCode | null {
-  const localeCookie = getCookieValue(LOCALE_COOKIE);
-  if (!isLocaleSegment(localeCookie)) return null;
-  return localeToGoogleTranslate(localeCookie);
-}
-
-export function getActiveLanguageFromPathname(
-  pathname = typeof window !== "undefined" ? window.location.pathname : ""
-): LanguageCode | null {
+function fromPathname(pathname: string | undefined): LanguageCode | null {
   if (!pathname) return null;
   const { locale } = stripLocalePrefix(pathname);
-  if (!locale) return null;
-  return localeToGoogleTranslate(locale);
+  return locale ? localeToGoogleTranslate(locale) : null;
 }
 
-export function getActiveLanguage(): LanguageCode {
+/**
+ * The reader's language. Precedence is URL prefix, then this site's locale
+ * cookie, then Google Translate's — the URL wins because it is the thing the
+ * reader can see and share.
+ */
+export function getActiveLanguage(
+  environment: LanguageEnvironment = readBrowserEnvironment()
+): LanguageCode {
   return (
-    getActiveLanguageFromPathname() ??
-    getActiveLanguageFromLocaleCookie() ??
-    getActiveLanguageFromCookies()
+    fromPathname(environment.pathname) ??
+    fromLocaleCookie(environment.cookies) ??
+    fromGoogleTranslateCookie(environment.cookies) ??
+    DEFAULT_LANGUAGE
   );
 }
 
