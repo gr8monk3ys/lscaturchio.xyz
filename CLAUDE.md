@@ -25,6 +25,20 @@ Personal site at https://lscaturchio.xyz: Next.js 16 App Router, React 19, TypeS
 - Editing an essay without `sync-retrieval-corpus` fails CI's drift check
 - The `E2E` job builds and serves the app itself, so it needs the same env as `Build`
 
+## Agent skills
+
+### Issue tracker
+
+GitHub issues on `gr8monk3ys/lscaturchio.xyz`, via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical roles, unrenamed. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one root `CONTEXT.md` plus `docs/adr/`, neither created yet. See `docs/agents/domain.md`.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know
