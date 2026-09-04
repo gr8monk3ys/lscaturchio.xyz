@@ -51,7 +51,7 @@ export function defaultProcessSteps(title: string): CaseStudyProcessStep[] {
   ]
 }
 
-export function PrimaryProjectLinks({ product }: { product: Product }): React.ReactNode {
+function PrimaryProjectLinks({ product }: { product: Product }): React.ReactNode {
   if (!product.demoUrl && !product.sourceUrl && !product.sourcePrivate) {
     return null
   }
