@@ -1,6 +1,7 @@
 "use client";
 
-import { Product, ProjectStatus } from "@/types/products";
+import { Product } from "@/types/products";
+import { projectStatusTone } from "@/lib/project-catalogue";
 import { m, useMotionPreset, useScroll, useTransform } from '@/lib/motion';
 import { useRef, useEffect, useState, useMemo } from "react";
 import Image from "next/image";
@@ -14,12 +15,6 @@ interface ProjectTimelineProps {
   projects: Product[];
   className?: string;
 }
-
-const statusColors: Record<ProjectStatus, string> = {
-  active: "bg-green-500",
-  maintained: "bg-yellow-500",
-  archived: "bg-gray-500",
-};
 
 export function ProjectTimeline({ projects, className }: ProjectTimelineProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -118,7 +113,7 @@ export function ProjectTimeline({ projects, className }: ProjectTimelineProps) {
                     <div
                       className={cn(
                         "h-4 w-4 rounded-full border-2 border-background",
-                        statusColors[project.status || "active"]
+                        projectStatusTone(project.status).dot
                       )}
                     />
                   </div>

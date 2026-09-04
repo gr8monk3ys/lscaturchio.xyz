@@ -7,7 +7,7 @@ import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { BlogCard } from "@/components/blog/BlogCard";
-import { products } from "@/constants/products";
+import { listRoutableProjects } from "@/lib/project-catalogue";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { ogCardUrl } from "@/lib/seo";
 import { findTopicHub, TOPIC_HUBS } from "@/constants/topics";
@@ -61,9 +61,9 @@ export default async function TopicHubPage({ params }: Props) {
     .sort((a, b) => b.date.localeCompare(a.date));
 
   const featuredProjectSlugs = new Set(hub.featuredProjects ?? []);
-  const relatedProjects = products
-    .filter((p) => !!p.slug)
-    .filter((p) => featuredProjectSlugs.has(p.slug!));
+  const relatedProjects = listRoutableProjects().filter((project) =>
+    featuredProjectSlugs.has(project.slug)
+  );
 
   return (
     <Container className="mt-16 lg:mt-32" size="large">

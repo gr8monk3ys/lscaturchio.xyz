@@ -31,6 +31,14 @@ export const products: Product[] = [
     thumbnail: cocoon,
     stack: ["TypeScript", "React", "Manifest V3", "Vite"],
     slug: "cocoon",
+    homeCard: {
+      kicker: "Accessibility",
+      title: "Cocoon: A Calmer Internet",
+      blurb:
+        "Softens algorithmic feeds and reduces motion for people who find the web overwhelming. No accounts, no analytics, nothing leaves the device.",
+      metrics: ["Local-only storage", "Zero network calls", "4 presets"],
+      coverSrc: "/images/projects/covers/cocoon.webp",
+    },
     featured: true,
     categories: ["tools", "open-source"],
     status: "active",
@@ -95,6 +103,14 @@ export const products: Product[] = [
     thumbnail: verso,
     stack: ["Next.js", "TypeScript", "SQLite", "Zod"],
     slug: "verso",
+    homeCard: {
+      kicker: "Product Thinking",
+      title: "Verso: A Diary for Artworks",
+      blurb:
+        "Letterboxd where the unit is the work, not the visit — a frequency bet, stated up front so it can be falsified.",
+      metrics: ["10k works seeded", "Offline-first capture", "Thesis measured, not assumed"],
+      coverSrc: "/images/projects/covers/verso.webp",
+    },
     featured: true,
     categories: ["web-apps"],
     status: "active",
@@ -736,6 +752,14 @@ export const products: Product[] = [
     thumbnail: mergeGate,
     stack: ["Python", "GitHub API", "pytest"],
     slug: "merge-gate",
+    homeCard: {
+      kicker: "Policy Engine",
+      title: "merge-gate: Automated Review",
+      blurb:
+        "Decides which of ~100 open pull requests may merge without a human. Shape is computed from the diff, never eyeballed.",
+      metrics: ["49 passing tests", "~70 repos governed", "Zero arms granted"],
+      coverSrc: "/images/projects/covers/merge-gate.webp",
+    },
     featured: true,
     categories: ["tools", "open-source"],
     status: "active",

@@ -3,15 +3,12 @@
 import { m, useReducedMotion } from '@/lib/motion';
 import { ArrowDownUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  PROJECT_SORT_OPTIONS,
+  type ProjectSortMode,
+} from "@/lib/project-catalogue";
 
-export type ProjectSortMode = "featured" | "newest" | "oldest" | "name";
-
-const options: Array<{ value: ProjectSortMode; label: string }> = [
-  { value: "featured", label: "Featured" },
-  { value: "newest", label: "Newest" },
-  { value: "oldest", label: "Oldest" },
-  { value: "name", label: "A–Z" },
-];
+const options = PROJECT_SORT_OPTIONS;
 
 export function ProjectSortToggle({
   className,

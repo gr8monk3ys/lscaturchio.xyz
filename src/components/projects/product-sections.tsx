@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { IconBrandGithub } from '@tabler/icons-react'
 
-import type { Product, ProjectStatus, ProjectCategory } from '@/types/products'
+import type { Product, ProjectStatus } from '@/types/products'
 import type { CaseStudy, CaseStudyMetric, CaseStudyProcessStep } from '@/types/products'
 import { Heading } from '../Heading'
 import { Paragraph } from '../Paragraph'
@@ -23,30 +23,12 @@ import {
   hasArchitectureDiagram,
 } from '@/components/projects/ProjectArchitectureDiagram'
 import { cn } from '@/lib/utils'
+import {
+  PROJECT_CATEGORY_LABELS,
+  projectStatusLabel,
+  projectStatusTone,
+} from '@/lib/project-catalogue' 
 
-export const statusColors: Record<ProjectStatus, { bg: string; text: string; dotBg: string; label: string }> = {
-  active: { bg: 'bg-success-muted', text: 'text-success', dotBg: 'bg-success', label: 'Active' },
-  maintained: {
-    bg: 'bg-warning-muted',
-    text: 'text-warning',
-    dotBg: 'bg-warning',
-    label: 'Maintained',
-  },
-  archived: {
-    bg: 'bg-muted',
-    text: 'text-muted-foreground',
-    dotBg: 'bg-muted-foreground',
-    label: 'Archived',
-  },
-}
-
-export const categoryLabels: Record<ProjectCategory, string> = {
-  'ai-ml': 'AI/ML',
-  'web-apps': 'Web Apps',
-  'tools': 'Tools',
-  'open-source': 'Open Source',
-  'data-science': 'Data Science',
-}
 
 export function defaultProcessSteps(title: string): CaseStudyProcessStep[] {
   return [
@@ -115,27 +97,28 @@ type HeaderSectionProps = {
   metrics: CaseStudyMetric[]
   product: Product
   shared: boolean
-  statusConfig: { bg: string; text: string; dotBg: string; label: string }
+  status: ProjectStatus | undefined
 }
 
-export function HeaderSection({ metrics, product, shared, statusConfig }: HeaderSectionProps): React.ReactNode {
+export function HeaderSection({ metrics, product, shared, status }: HeaderSectionProps): React.ReactNode {
+  const statusTone = projectStatusTone(status)
   return (
     <header id="overview" className="space-y-5">
       <div className="flex flex-wrap items-center gap-2">
         <div
           className={cn(
             'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium',
-            statusConfig.bg,
-            statusConfig.text
+            statusTone.bg,
+            statusTone.text
           )}
         >
-          <span className={cn('h-1.5 w-1.5 rounded-full', statusConfig.dotBg)} />
-          {statusConfig.label}
+          <span className={cn('h-1.5 w-1.5 rounded-full', statusTone.dot)} />
+          {projectStatusLabel(status)}
         </div>
 
         {product.categories?.map((category) => (
           <Badge key={category} variant="secondary">
-            {categoryLabels[category]}
+            {PROJECT_CATEGORY_LABELS[category]}
           </Badge>
         ))}
 

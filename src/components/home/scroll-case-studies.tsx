@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 
+import { listHomeCaseStudies } from "@/lib/project-catalogue";
 import {
   LedgerHead,
   LedgerRows,
@@ -9,48 +10,13 @@ import {
   ordinal,
 } from "@/components/ui/ledger-section";
 
-type CaseStudyItem = {
-  id: string;
-  kicker: string;
-  title: string;
-  blurb: string;
-  metrics: string[];
-  href: string;
-  logoSrc: string;
-};
+/**
+ * The three projects the home page leads with. Their copy, metrics and cover
+ * live on the project records, so this names an order and nothing else.
+ */
+const FEATURED_SLUGS = ["merge-gate", "verso", "cocoon"] as const;
 
-const CASE_STUDIES: CaseStudyItem[] = [
-  {
-    id: "merge-gate",
-    kicker: "Policy Engine",
-    title: "merge-gate: Automated Review",
-    blurb:
-      "Decides which of ~100 open pull requests may merge without a human. Shape is computed from the diff, never eyeballed.",
-    metrics: ["49 tests", "~70 repos governed", "Never arms auto-merge"],
-    href: "/projects/merge-gate",
-    logoSrc: "/images/projects/covers/merge-gate.webp",
-  },
-  {
-    id: "verso",
-    kicker: "Product Thinking",
-    title: "Verso: A Diary for Artworks",
-    blurb:
-      "Letterboxd where the unit is the work, not the visit — a frequency bet, stated up front so it can be falsified.",
-    metrics: ["10k works seeded", "Offline-first capture", "Thesis measured, not assumed"],
-    href: "/projects/verso",
-    logoSrc: "/images/projects/covers/verso.webp",
-  },
-  {
-    id: "cocoon",
-    kicker: "Shipped Tool",
-    title: "Cocoon: Calmer Browsing",
-    blurb:
-      "A privacy-first extension that lowers sensory load online. Local only, zero network calls, scoped to seven domains.",
-    metrics: ["Zero network calls", "4 profiles", "Live at cocoon.lscaturchio.xyz"],
-    href: "/projects/cocoon",
-    logoSrc: "/images/projects/covers/cocoon.webp",
-  },
-];
+const CASE_STUDIES = listHomeCaseStudies(FEATURED_SLUGS);
 
 export function ScrollCaseStudies() {
   return (
@@ -67,9 +33,9 @@ export function ScrollCaseStudies() {
 
           <LedgerRows items={CASE_STUDIES} numbered className="mt-8 border-t border-border">
             {(item, entryNumber) => (
-              <li key={item.id}>
+              <li key={item.slug}>
                 <a
-                  href={`#case-study-${item.id}`}
+                  href={`#case-study-${item.slug}`}
                   className="group flex items-baseline gap-4 border-b border-border py-4 transition-colors hover:text-primary"
                 >
                   <span className="label-mono shrink-0 text-foreground/70">
@@ -93,8 +59,8 @@ export function ScrollCaseStudies() {
       <div className="space-y-20 md:space-y-28">
         {CASE_STUDIES.map((item, index) => (
           <article
-            key={item.id}
-            id={`case-study-${item.id}`}
+            key={item.slug}
+            id={`case-study-${item.slug}`}
             className="scroll-mt-28"
             aria-label={item.title}
           >
@@ -125,7 +91,7 @@ export function ScrollCaseStudies() {
 
               <div className="relative aspect-16/10 w-full max-w-[340px] overflow-hidden border border-border bg-muted/30">
                 <Image
-                  src={item.logoSrc}
+                  src={item.coverSrc}
                   alt={`${item.title} preview`}
                   fill
                   className="object-cover"
