@@ -89,6 +89,23 @@ export async function getAllBlogs(): Promise<BlogPost[]> {
 }
 
 /**
+ * The reading time for one essay, from the same computation every other
+ * surface quotes.
+ *
+ * Returns undefined when the slug has no source. Callers must render nothing
+ * in that case: the essay shell used to take this as an optional prop
+ * defaulting to 5, which only two of eighty-three routes ever passed, so
+ * eighty-one essays quoted "5 min" regardless of length. A number that is
+ * absent is visibly absent; a number that is wrong is not.
+ */
+export async function getReadingTimeMinutes(
+  slug: string
+): Promise<number | undefined> {
+  const allBlogs = await getAllBlogs();
+  return allBlogs.find((blog) => blog.slug === slug)?.readingTimeMinutes;
+}
+
+/**
  * Get all posts from the same series
  */
 export async function getSeriesPosts(seriesName: string): Promise<BlogPost[]> {

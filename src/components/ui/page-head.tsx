@@ -39,7 +39,11 @@ export function PageHead({
   return (
     <header className={cn(className)}>
       <span className="label-mono block">{kicker}</span>
-      <Heading className="mt-4 text-4xl font-bold md:text-5xl">{title}</Heading>
+      {/* Spacing only. `Heading` supplies `text-page-title` for an h1, and any
+          size class named here would replace it: the two live in one
+          tailwind-merge group, so the caller's would win and take the
+          clamp() with it. */}
+      <Heading className="mt-4">{title}</Heading>
       {blurb && (
         <Paragraph className="mt-4 max-w-2xl text-lg text-muted-foreground">
           {blurb}

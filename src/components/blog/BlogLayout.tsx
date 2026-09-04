@@ -23,6 +23,7 @@ import Link from "next/link";
 import { getTopicHubsForTags } from "@/constants/topics";
 import { getSiteUrl } from "@/lib/site-url";
 import { clampBlogDateToToday } from "@/lib/blog-data";
+import { getReadingTimeMinutes } from "@/lib/getAllBlogs";
 import type { BlogStage } from "@/lib/blog-stage";
 import { StageBadge } from "@/components/blog/stage-badge";
 
@@ -50,16 +51,14 @@ interface BlogLayoutProps {
   slug: string;
   isRssFeed?: boolean;
   previousPathname?: string;
-  readingTime?: number;
 }
 
-export function BlogLayout({
+export async function BlogLayout({
   children,
   meta,
   slug,
   isRssFeed = false,
   previousPathname,
-  readingTime = 5,
 }: BlogLayoutProps) {
   const safeDate = clampBlogDateToToday(meta.date);
   const safeUpdated = meta.updated ? clampBlogDateToToday(meta.updated) : undefined;
@@ -69,6 +68,10 @@ export function BlogLayout({
   if (isRssFeed) {
     return children;
   }
+
+  // Derived, never passed. Only two routes ever passed the old prop, so the
+  // other eighty-one rendered its default of 5.
+  const readingTime = await getReadingTimeMinutes(slug);
 
   // Canonical, never window.location: branching on `typeof window` here
   // desynced server and client rendering (hydration mismatch on every
@@ -99,8 +102,12 @@ export function BlogLayout({
               {/* Wall-label meta line: date · reading time · tags · views */}
               <div className="label-mono flex flex-wrap items-center gap-x-3 gap-y-1.5">
                 <time dateTime={safeDate}>{formatDate(safeDate)}</time>
-                <span aria-hidden className="text-foreground/25">·</span>
-                <span>{readingTime} min</span>
+                {readingTime !== undefined && (
+                  <>
+                    <span aria-hidden className="text-foreground/25">·</span>
+                    <span>{readingTime} min</span>
+                  </>
+                )}
                 {meta.tags.length > 0 && (
                   <>
                     <span aria-hidden className="text-foreground/25">·</span>
