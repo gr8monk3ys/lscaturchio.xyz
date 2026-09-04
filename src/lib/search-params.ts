@@ -13,9 +13,6 @@ export type SearchParamValue = string | string[] | undefined;
 
 export type SearchParams = Record<string, SearchParamValue>;
 
-/** What a route is handed before it is awaited. */
-export type SearchParamsPromise = Promise<SearchParams>;
-
 /**
  * One parameter as a string. A repeated parameter takes its first value,
  * because every reader here wants a single answer, and an absent one reads
