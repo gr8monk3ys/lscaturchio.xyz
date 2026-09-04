@@ -12,9 +12,9 @@ export function BackButton() {
       type="button"
       onClick={() => window.history.back()}
       aria-label="Go back to blogs"
-      className="group mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
+      className="mb-8 flex h-10 w-10 items-center justify-center border border-border bg-transparent text-muted-foreground transition-colors hover:border-primary/45 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
     >
-      <ArrowLeft className="h-4 w-4 stroke-zinc-500 transition group-hover:stroke-zinc-700 dark:stroke-zinc-500 dark:group-hover:stroke-zinc-400" />
+      <ArrowLeft className="h-4 w-4" aria-hidden="true" />
     </button>
   );
 }
