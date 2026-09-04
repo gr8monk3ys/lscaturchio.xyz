@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ROADMAP, type RoadmapStatus } from '@/constants/roadmap'
 import { Badge } from '@/components/ui/badge'
 import { getShippedPrs } from '@/lib/changelog'
+import { buildPageMetadata } from '@/lib/seo'
 
 // The shipped feed derives from merged PRs; refresh it daily without a rebuild.
 export const revalidate = 86400
@@ -19,15 +20,14 @@ const KIND_LABELS: Record<string, string> = {
   test: 'Tests',
 }
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'Changelog',
-  description: 'See what&apos;s new, what&apos;s changed, and what&apos;s been fixed on this website.',
-  openGraph: {
-    title: 'Changelog | Lorenzo Scaturchio',
-    description: 'Version history and updates for lscaturchio.xyz',
-    url: 'https://lscaturchio.xyz/changelog',
-  },
-}
+  // Plain apostrophes: this is a meta description, not JSX, so the HTML
+  // entities that used to sit here were served literally to crawlers.
+  description:
+    "See what's new, what's changed, and what's been fixed on this website.",
+  path: '/changelog',
+})
 
 export default async function ChangelogPage() {
   const shipped = await getShippedPrs(30)

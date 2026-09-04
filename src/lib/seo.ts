@@ -93,9 +93,15 @@ export function buildPageMetadata(meta: {
   description: string;
   /** Site-relative canonical path, e.g. `/books`. */
   path: string;
+  /**
+   * Which card art to generate. The only reason a page ever hand-rolled its
+   * own `openGraph` block instead of calling this was to ask for a card type,
+   * so asking is now part of the interface.
+   */
+  cardType?: OgCardType;
 }): Metadata {
-  const { title, description, path } = meta;
-  const imageUrl = ogCardUrl({ title, description, type: "default" });
+  const { title, description, path, cardType = "default" } = meta;
+  const imageUrl = ogCardUrl({ title, description, type: cardType });
 
   return {
     title,

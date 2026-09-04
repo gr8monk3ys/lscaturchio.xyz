@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 import { getAllBlogs } from '@/lib/getAllBlogs'
-import { products } from '@/constants/products'
+import { listRoutableProjects } from '@/lib/project-catalogue'
 import { TOPIC_HUBS } from '@/constants/topics'
 import { getBlogLastModified } from '@/lib/blog-data'
 import { absoluteSitePath } from '@/lib/site-locale'
@@ -74,7 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.4,
   }))
 
-  const projectEntries = products.map((product) => ({
+  const projectEntries = listRoutableProjects().map((product) => ({
     path: `/projects/${product.slug}`,
     lastModified: now,
     changeFrequency: 'monthly' as ChangeFrequency,

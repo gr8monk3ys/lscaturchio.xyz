@@ -4,17 +4,14 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { m, useMotionPreset, useReducedMotion } from '@/lib/motion'
 import { cn } from '@/lib/utils'
+import {
+  PROJECT_CATEGORY_LABELS,
+  projectStatusLabel,
+} from '@/lib/project-catalogue' 
 import { Calendar, ExternalLink, ArrowRight } from 'lucide-react'
 import { IconBrandGithub } from '@tabler/icons-react'
-import type { Product, ProjectCategory } from '@/types/products'
+import type { Product } from '@/types/products'
 
-const categoryLabels: Record<ProjectCategory, string> = {
-  'ai-ml': 'AI/ML',
-  'web-apps': 'Web Apps',
-  'tools': 'Tools',
-  'open-source': 'Open Source',
-  'data-science': 'Data Science',
-}
 
 function formatStartDate(startDate?: string): string | null {
   if (!startDate) return null
@@ -50,7 +47,7 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
   const when = formatStartDate(project.startDate)
   const title = project.title
   const description = project.description
-  const tags = (project.categories || []).map((c) => categoryLabels[c])
+  const tags = (project.categories || []).map((c) => PROJECT_CATEGORY_LABELS[c])
   const highlights = toStableListItems(
     (project.caseStudy?.results ?? []).slice(0, 3),
     project.slug ?? project.title
@@ -90,7 +87,7 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
           <div className="space-y-2">
             <span className="label-mono flex items-center gap-2">
               {project.status && (
-                <span>{project.status === 'active' ? 'Active' : project.status === 'maintained' ? 'Maintained' : 'Archived'}</span>
+                <span>{projectStatusLabel(project.status)}</span>
               )}
               {project.status && when && <span aria-hidden>·</span>}
               {when && (

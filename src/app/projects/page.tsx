@@ -5,66 +5,24 @@ import { Paragraph } from "@/components/Paragraph";
 import { ProjectsPageContent } from "@/components/projects/ProjectsPageContent";
 import { Metadata } from "next";
 import { ArrowUpRight } from "lucide-react";
-import { ogCardUrl } from "@/lib/seo";
-import { products } from "@/constants/products";
-import { ProjectCategory } from "@/types/products";
-import { ProjectSortMode } from "@/components/projects/ProjectSortToggle";
+import { buildPageMetadata } from "@/lib/seo";
+import {
+  readSearchParam,
+  type SearchParamValue,
+} from "@/lib/search-params";
+import {
+  normalizeProjectCategory,
+  normalizeProjectSort,
+  summarizeCatalogue,
+} from "@/lib/project-catalogue";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Projects",
   description:
     "A collection of AI/ML, web development, and open source projects. Full case studies with technical details, challenges, and results.",
-  openGraph: {
-    title: "Projects | Lorenzo Scaturchio",
-    description:
-      "A collection of AI/ML, web development, and open source projects with full case studies.",
-    images: [
-      {
-        url: ogCardUrl({
-          title: "Projects",
-          description: "Case studies and technical write-ups",
-          type: "project",
-        }),
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Projects | Lorenzo Scaturchio",
-    description: "Case studies and technical write-ups.",
-    images: [ogCardUrl({ title: "Projects", description: "Case studies and technical write-ups", type: "project" })],
-  },
-};
-
-type SearchParamValue = string | string[] | undefined;
-
-function getSearchParamValue(
-  params: Record<string, SearchParamValue>,
-  key: string
-): string {
-  const value = params[key];
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
-
-function normalizeCategory(value: string): ProjectCategory | "all" {
-  const allowed = new Set<ProjectCategory>([
-    "ai-ml",
-    "web-apps",
-    "tools",
-    "open-source",
-    "data-science",
-  ]);
-  if (allowed.has(value as ProjectCategory)) return value as ProjectCategory;
-  return "all";
-}
-
-function normalizeSort(value: string): ProjectSortMode {
-  const allowed: ProjectSortMode[] = ["featured", "newest", "oldest", "name"];
-  return allowed.includes(value as ProjectSortMode) ? (value as ProjectSortMode) : "featured";
-}
+  path: "/projects",
+  cardType: "project",
+});
 
 export default async function Projects({
   searchParams,
@@ -72,14 +30,12 @@ export default async function Projects({
   searchParams?: Promise<Record<string, SearchParamValue>>;
 }) {
   const params = (await searchParams) ?? {};
-  const initialCategory = normalizeCategory(getSearchParamValue(params, "category"));
-  const initialTech = getSearchParamValue(params, "tech");
-  const initialSort = normalizeSort(getSearchParamValue(params, "sort"));
-  const projectCount = products.length;
-  const featuredCount = products.filter((project) => project.featured).length;
-  const categoryCount = new Set(
-    products.flatMap((project) => project.categories ?? [])
-  ).size;
+  const initialCategory = normalizeProjectCategory(
+    readSearchParam(params, "category")
+  );
+  const initialTech = readSearchParam(params, "tech");
+  const initialSort = normalizeProjectSort(readSearchParam(params, "sort"));
+  const catalogue = summarizeCatalogue();
 
   return (
     <Container className="mt-16 lg:mt-32">
@@ -113,9 +69,9 @@ export default async function Projects({
               numeral visually on top. */}
           <dl className="mt-10 grid grid-cols-3 divide-x divide-border border-y border-border">
             {[
-              { label: "Projects", value: projectCount },
-              { label: "Featured", value: featuredCount },
-              { label: "Categories", value: categoryCount },
+              { label: "Projects", value: catalogue.total },
+              { label: "Featured", value: catalogue.featured },
+              { label: "Categories", value: catalogue.categories },
             ].map((stat) => (
               <div key={stat.label} className="flex flex-col-reverse px-5 py-6 first:pl-0">
                 <dt className="label-mono mt-2">{stat.label}</dt>

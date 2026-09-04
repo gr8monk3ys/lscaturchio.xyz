@@ -24,6 +24,20 @@ export interface CaseStudy {
   whatIdDoNext?: string[];
 }
 
+/**
+ * How a project introduces itself on the home page. It lives on the project
+ * record rather than in the home component so a project's facts and its
+ * pitch are edited together — they had already drifted apart once.
+ */
+export interface ProjectHomeCard {
+  kicker: string;
+  title: string;
+  blurb: string;
+  /** Rendered as a single wall-label line, joined with separators. */
+  metrics: string[];
+  coverSrc: string;
+}
+
 export type Product = {
   title: string;
   description: string;
@@ -43,4 +57,6 @@ export type Product = {
   sourcePrivate?: boolean;
   startDate?: string; // Format: "YYYY-MM"
   caseStudy?: CaseStudy;
+  /** Set only on projects featured on the home page. */
+  homeCard?: ProjectHomeCard;
 };

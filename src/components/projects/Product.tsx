@@ -8,9 +8,8 @@ import { ArrowLeft } from 'lucide-react'
 
 import { Product } from '@/types/products'
 import { hasArchitectureDiagram } from '@/components/projects/ProjectArchitectureDiagram'
-import { products } from '@/constants/products'
+import { findRelatedProjects } from '@/lib/project-catalogue'
 import {
-  statusColors,
   defaultProcessSteps,
   HeaderSection,
   HeroSection,
@@ -26,22 +25,10 @@ import {
 export const SingleProduct = ({ product }: { product: Product }) => {
   const activeImage: StaticImageData | string = product.thumbnail
 
-  const status = product.status || 'active'
-  const statusConfig = statusColors[status]
   const reduceMotion = useReducedMotion()
   const shared = !reduceMotion && !!product.slug
 
-  const relatedProjects = useMemo(() => {
-    if (!product.categories || product.categories.length === 0) return []
-
-    return products
-      .filter(
-        (candidate) =>
-          candidate.slug !== product.slug &&
-          candidate.categories?.some((category) => product.categories?.includes(category))
-      )
-      .slice(0, 3)
-  }, [product])
+  const relatedProjects = useMemo(() => findRelatedProjects(product), [product])
 
   const caseStudy = product.caseStudy
   const metrics = caseStudy?.metrics ?? []
@@ -78,7 +65,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
             metrics={metrics}
             product={product}
             shared={shared}
-            statusConfig={statusConfig}
+            status={product.status}
           />
           <HeroSection
             activeImage={activeImage}

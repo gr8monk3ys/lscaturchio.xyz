@@ -1,24 +1,10 @@
 import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
-import { products } from "@/constants/products";
+import { listProjects, toPublicProject } from "@/lib/project-catalogue";
 import { apiSuccess } from "@/lib/api-response";
 
 const handleGet = async () => {
-  const projects = products.map((p) => ({
-    slug: p.slug ?? "",
-    title: p.title,
-    description: p.description,
-    href: p.href,
-    stack: p.stack ?? [],
-    categories: p.categories ?? [],
-    featured: Boolean(p.featured),
-    status: p.status ?? "active",
-    startDate: p.startDate ?? null,
-    demoUrl: p.demoUrl ?? null,
-    sourceUrl: p.sourceUrl ?? null,
-    sourcePrivate: Boolean(p.sourcePrivate),
-    caseStudy: p.caseStudy ?? null,
-  }));
+  const projects = listProjects().map(toPublicProject);
 
   return apiSuccess(
     { count: projects.length, projects },

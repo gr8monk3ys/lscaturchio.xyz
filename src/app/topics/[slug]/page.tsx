@@ -7,9 +7,9 @@ import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
 import { BlogCard } from "@/components/blog/BlogCard";
-import { products } from "@/constants/products";
+import { listRoutableProjects } from "@/lib/project-catalogue";
 import { getAllBlogs } from "@/lib/getAllBlogs";
-import { ogCardUrl } from "@/lib/seo";
+import { buildPageMetadata } from "@/lib/seo";
 import { findTopicHub, TOPIC_HUBS } from "@/constants/topics";
 
 type Props = {
@@ -25,25 +25,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const hub = findTopicHub(slug);
   if (!hub) return {};
 
-  const title = `${hub.title} | Topics | Lorenzo Scaturchio`;
-  const description = hub.description;
-  const image = ogCardUrl({ title: hub.title, description, type: "blog" });
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: [{ url: image, width: 1200, height: 630 }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [image],
-    },
-  };
+  return buildPageMetadata({
+    title: `${hub.title} | Topics`,
+    description: hub.description,
+    path: `/topics/${slug}`,
+    cardType: "blog",
+  });
 }
 
 export const revalidate = 3600;
@@ -61,9 +48,9 @@ export default async function TopicHubPage({ params }: Props) {
     .sort((a, b) => b.date.localeCompare(a.date));
 
   const featuredProjectSlugs = new Set(hub.featuredProjects ?? []);
-  const relatedProjects = products
-    .filter((p) => !!p.slug)
-    .filter((p) => featuredProjectSlugs.has(p.slug!));
+  const relatedProjects = listRoutableProjects().filter((project) =>
+    featuredProjectSlugs.has(project.slug)
+  );
 
   return (
     <Container className="mt-16 lg:mt-32" size="large">

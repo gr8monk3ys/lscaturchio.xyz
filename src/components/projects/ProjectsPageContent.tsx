@@ -2,14 +2,18 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { products } from "@/constants/products";
 import { ProjectCategory } from "@/types/products";
+import {
+  listProjects,
+  summarizeCatalogue,
+  type ProjectSortMode,
+} from "@/lib/project-catalogue";
 import { ProjectFilters } from "./ProjectFilters";
 import { ProjectGallery } from "./ProjectGallery";
 import { ProjectGrid } from "./ProjectGrid";
 import { ProjectTimeline } from "./ProjectTimeline";
 import { ProjectViewToggle, ProjectViewWrapper } from "./ProjectViewToggle";
-import { ProjectSortMode, ProjectSortToggle } from "./ProjectSortToggle";
+import { ProjectSortToggle } from "./ProjectSortToggle";
 
 type ViewMode = "gallery" | "grid" | "timeline";
 
@@ -71,33 +75,12 @@ export function ProjectsPageContent({
     router.push(pathname, { scroll: false });
   }, [pathname, router]);
 
-  const filteredProjects = useMemo(() => {
-    const dateValue = (startDate?: string): number => {
-      if (!startDate) return 0;
-      const value = new Date(`${startDate}-01`).getTime();
-      return Number.isFinite(value) ? value : 0;
-    };
+  const filteredProjects = useMemo(
+    () => listProjects({ category, tech, sort }),
+    [category, tech, sort]
+  );
 
-    const result = products.filter((project) => {
-      const categoryMatch =
-        category === "all" || project.categories?.includes(category as ProjectCategory);
-      const techMatch = !tech || project.stack?.includes(tech);
-      return categoryMatch && techMatch;
-    });
-
-    result.sort((a, b) => {
-      if (sort === "name") return a.title.localeCompare(b.title);
-      if (sort === "oldest") return dateValue(a.startDate) - dateValue(b.startDate);
-      if (sort === "newest") return dateValue(b.startDate) - dateValue(a.startDate);
-
-      const aFeatured = a.featured ? 1 : 0;
-      const bFeatured = b.featured ? 1 : 0;
-      if (bFeatured !== aFeatured) return bFeatured - aFeatured;
-      return dateValue(b.startDate) - dateValue(a.startDate);
-    });
-
-    return result;
-  }, [category, tech, sort]);
+  const catalogueTotal = summarizeCatalogue().total;
 
   const hasFilters = category !== "all" || !!tech;
 
@@ -106,7 +89,6 @@ export function ProjectsPageContent({
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
         <ProjectFilters
           className="flex-1"
-          projects={products}
           currentCategory={category}
           currentTech={tech}
           onCategoryChange={handleCategoryChange}
@@ -121,7 +103,7 @@ export function ProjectsPageContent({
 
       {hasFilters && (
         <div className="text-sm text-muted-foreground">
-          Showing {filteredProjects.length} of {products.length} projects
+          Showing {filteredProjects.length} of {catalogueTotal} projects
         </div>
       )}
 

@@ -6,23 +6,14 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import { AnimatePresence, m, useMotionPreset, useReducedMotion } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { Keyboard, ArrowRight } from 'lucide-react'
-import type { Product, ProjectCategory, ProjectStatus } from '@/types/products'
+import type { Product } from '@/types/products'
 import { useGalleryKeyboard } from '@/hooks/use-gallery-keyboard'
 import { ProjectRail } from './ProjectRail'
+import {
+  PROJECT_CATEGORY_LABELS,
+  PROJECT_STATUS_LABELS,
+} from "@/lib/project-catalogue";
 
-const categoryLabels: Record<ProjectCategory, string> = {
-  'ai-ml': 'AI/ML',
-  'web-apps': 'Web Apps',
-  'tools': 'Tools',
-  'open-source': 'Open Source',
-  'data-science': 'Data Science',
-}
-
-const statusLabels: Record<ProjectStatus, string> = {
-  active: 'Active',
-  maintained: 'Maintained',
-  archived: 'Archived',
-}
 
 interface ProjectGalleryState {
   activeSlug: string
@@ -228,8 +219,8 @@ function ProjectGalleryCard({
           <div className="min-w-0">
             <span className="label-mono block truncate text-white/75">
               {[
-                ...(project.categories || []).slice(0, 2).map((c) => categoryLabels[c]),
-                ...(project.status ? [statusLabels[project.status]] : []),
+                ...(project.categories || []).slice(0, 2).map((c) => PROJECT_CATEGORY_LABELS[c]),
+                ...(project.status ? [PROJECT_STATUS_LABELS[project.status]] : []),
               ].join("  ·  ")}
             </span>
             <m.div layoutId={shared ? `project-title-${project.slug}` : undefined}>

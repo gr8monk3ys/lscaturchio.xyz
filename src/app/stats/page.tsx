@@ -2,6 +2,7 @@ import { Container } from '@/components/Container'
 import { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import { PageHead } from "@/components/ui/page-head";
+import { buildPageMetadata } from "@/lib/seo";
 
 const StatsOverview = dynamic(() => import('@/components/stats/stats-overview').then(m => m.StatsOverview))
 const VisitorChart = dynamic(() => import('@/components/stats/visitor-chart').then(m => m.VisitorChart))
@@ -9,15 +10,12 @@ const ContributionGraph = dynamic(() => import('@/components/github/contribution
 const PopularPosts = dynamic(() => import('@/components/stats/popular-posts').then(m => m.PopularPosts))
 const TechStack = dynamic(() => import('@/components/stats/tech-stack').then(m => m.TechStack))
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: 'Site Statistics',
-  description: 'A public snapshot of site metrics, writing activity, and the technology behind this website.',
-  openGraph: {
-    title: 'Site Statistics | Lorenzo Scaturchio',
-    description: 'A public snapshot of site metrics, writing activity, and the technology behind this website.',
-    url: 'https://lscaturchio.xyz/stats',
-  },
-}
+  description:
+    'A public snapshot of site metrics, writing activity, and the technology behind this website.',
+  path: '/stats',
+});
 
 export default function StatsPage() {
   return (

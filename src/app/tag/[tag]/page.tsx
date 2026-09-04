@@ -6,7 +6,7 @@ import { Tag } from "lucide-react";
 import { Container } from "@/components/Container";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { getAllBlogs } from "@/lib/getAllBlogs";
-import { ogCardUrl } from "@/lib/seo";
+import { buildPageMetadata } from "@/lib/seo";
 
 type Props = {
   params: Promise<{ tag: string }>;
@@ -30,25 +30,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const raw = (await params).tag;
   const tag = safeDecodeURIComponent(raw);
 
-  const title = `Tag: ${tag} | Lorenzo Scaturchio`;
-  const description = `Blog posts tagged with \"${tag}\".`;
-  const image = ogCardUrl({ title: `Tag: ${tag}`, description: "Browse related posts", type: "blog" });
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: [{ url: image, width: 1200, height: 630 }],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [image],
-    },
-  };
+  // The root layout's title template already appends the site name; adding it
+  // here too produced "Tag: x | Lorenzo Scaturchio | Lorenzo Scaturchio".
+  return buildPageMetadata({
+    title: `Tag: ${tag}`,
+    description: `Blog posts tagged with "${tag}".`,
+    path: `/tag/${encodeURIComponent(tag)}`,
+    cardType: "blog",
+  });
 }
 
 export const revalidate = 3600;

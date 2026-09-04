@@ -1,7 +1,7 @@
 import { Container } from "@/components/Container";
 import { SingleProduct } from "@/components/projects/Product";
-import { products } from "@/constants/products";
-import { Product } from "@/types/products";
+import { findProject, listRoutableProjects } from "@/lib/project-catalogue";
+
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { buildProjectMetadata } from "@/lib/seo";
@@ -11,14 +11,12 @@ type Props = {
 };
 
 export function generateStaticParams(): Array<{ slug: string }> {
-  return products
-    .filter((p): p is Product & { slug: string } => typeof p.slug === 'string')
-    .map((p) => ({ slug: p.slug }))
+  return listRoutableProjects().map((project) => ({ slug: project.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = products.find((p) => p.slug === slug) as Product | undefined;
+  const product = findProject(slug);
   if (product) {
     return buildProjectMetadata(
       {
@@ -40,7 +38,7 @@ export default async function SingleProjectPage({
   params,
 }: Props) {
   const { slug } = await params;
-  const product = products.find((p) => p.slug === slug);
+  const product = findProject(slug);
 
   if (!product) {
     redirect("/projects");

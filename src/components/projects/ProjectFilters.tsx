@@ -1,13 +1,17 @@
 "use client";
 
-import { ProjectCategory, Product } from "@/types/products";
+import { ProjectCategory } from "@/types/products";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { useMemo } from "react";
+import {
+  PROJECT_CATEGORIES,
+  PROJECT_CATEGORY_LABELS,
+  countProjectsByCategory,
+} from "@/lib/project-catalogue";
 
 interface ProjectFiltersProps {
   className?: string;
-  projects: Product[];
   currentCategory: ProjectCategory | "all";
   currentTech: string;
   onCategoryChange: (category: ProjectCategory | "all") => void;
@@ -22,16 +26,14 @@ type CategoryOption = {
 
 const categories: CategoryOption[] = [
   { value: "all", label: "All" },
-  { value: "ai-ml", label: "AI/ML" },
-  { value: "web-apps", label: "Web Apps" },
-  { value: "tools", label: "Tools" },
-  { value: "open-source", label: "Open Source" },
-  { value: "data-science", label: "Data Science" },
+  ...PROJECT_CATEGORIES.map((value) => ({
+    value,
+    label: PROJECT_CATEGORY_LABELS[value],
+  })),
 ];
 
 export function ProjectFilters({
   className,
-  projects,
   currentCategory,
   currentTech,
   onCategoryChange,
@@ -41,16 +43,7 @@ export function ProjectFilters({
 
   const hasFilters = currentCategory !== "all" || currentTech;
 
-  // Calculate project counts per category
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: projects.length };
-    categories.slice(1).forEach((cat) => {
-      counts[cat.value] = projects.filter((p) =>
-        p.categories?.includes(cat.value as ProjectCategory)
-      ).length;
-    });
-    return counts;
-  }, [projects]);
+  const categoryCounts = useMemo(() => countProjectsByCategory(), []);
 
   return (
     <div className={cn("space-y-4", className)}>

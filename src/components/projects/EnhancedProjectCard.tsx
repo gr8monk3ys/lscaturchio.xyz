@@ -1,12 +1,17 @@
 "use client";
 
-import { Product, ProjectStatus, ProjectCategory } from "@/types/products";
+import { Product } from "@/types/products";
 import Image from "next/image";
 import Link from "next/link";
 import { m, useReducedMotion } from '@/lib/motion';
 import { Star, ExternalLink, Calendar, Lock } from "lucide-react";
 import { IconBrandGithub } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import {
+  PROJECT_CATEGORY_LABELS,
+  projectStatusLabel,
+  projectStatusTone,
+} from "@/lib/project-catalogue";
 
 interface EnhancedProjectCardProps {
   product: Product;
@@ -15,20 +20,6 @@ interface EnhancedProjectCardProps {
   showCaseStudyPreview?: boolean;
 }
 
-const statusColors: Record<ProjectStatus, { bg: string; text: string; label: string }> = {
-  active: { bg: "bg-green-500/10", text: "text-green-500", label: "Active" },
-  maintained: { bg: "bg-yellow-500/10", text: "text-yellow-500", label: "Maintained" },
-  archived: { bg: "bg-gray-500/10", text: "text-gray-500", label: "Archived" },
-};
-
-const categoryLabels: Record<ProjectCategory, string> = {
-  "ai-ml": "AI/ML",
-  "web-apps": "Web Apps",
-  "tools": "Tools",
-  "open-source": "Open Source",
-  "data-science": "Data Science",
-};
-
 export function EnhancedProjectCard({
   product,
   variant = "default",
@@ -36,8 +27,7 @@ export function EnhancedProjectCard({
   showCaseStudyPreview = false,
 }: EnhancedProjectCardProps) {
   const isFeatured = variant === "featured" || product.featured;
-  const status = product.status || "active";
-  const statusConfig = statusColors[status];
+  const statusTone = projectStatusTone(product.status);
   const reduceMotion = useReducedMotion();
   const shared = !reduceMotion && !!product.slug;
 
@@ -91,9 +81,9 @@ export function EnhancedProjectCard({
         <div className="relative p-5 space-y-4">
           {/* Status & categories — single mono wall-label line. */}
           <div className="label-mono flex items-center gap-2">
-            <span className={cn("h-1.5 w-1.5 rounded-full", statusConfig.text.replace("text-", "bg-"))} />
+            <span className={cn("h-1.5 w-1.5 rounded-full", statusTone.dot)} />
             <span>
-              {[statusConfig.label, ...(product.categories?.slice(0, 2).map((c) => categoryLabels[c]) ?? [])].join("  ·  ")}
+              {[projectStatusLabel(product.status), ...(product.categories?.slice(0, 2).map((c) => PROJECT_CATEGORY_LABELS[c]) ?? [])].join("  ·  ")}
             </span>
           </div>
 
