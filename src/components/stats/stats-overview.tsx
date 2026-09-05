@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import useSWR from 'swr'
 import { fetchJson } from '@/lib/fetcher'
 import type { ApiEnvelope } from '@/lib/fetcher'
+import type { OverviewData, OverviewMetric } from '@/lib/stats-data'
 
 interface BlogStatsPayload {
   totalPosts?: number
@@ -20,19 +21,6 @@ interface NewsletterStatsPayload {
   activeSubscribers?: number | null
   available?: boolean
   message?: string
-}
-
-interface OverviewMetric {
-  available: boolean
-  note?: string
-  value: number | null
-}
-
-interface OverviewData {
-  avgReadTime: OverviewMetric
-  newsletterSubscribers: OverviewMetric
-  totalPosts: OverviewMetric
-  totalViews: OverviewMetric
 }
 
 const numberFormatter = new Intl.NumberFormat('en-US')
@@ -59,6 +47,14 @@ async function loadOverview(): Promise<OverviewData> {
     fetchJson<ApiEnvelope<ViewsPayload>>('/api/views?format=detailed'),
     fetchJson<ApiEnvelope<NewsletterStatsPayload>>('/api/newsletter/stats'),
   ])
+
+  // Per-source failures degrade to a labelled "Unavailable" card. All three
+  // failing at once is not four private sources, it is the API not answering —
+  // that is worth saying out loud rather than labelling every card.
+  const results = [blogStatsResult, viewsResult, newsletterResult]
+  if (results.every((result) => result.status === 'rejected')) {
+    throw new Error('Stats endpoints did not answer')
+  }
 
   const blogStats = blogStatsResult.status === 'fulfilled' ? blogStatsResult.value.data : null
   const views = viewsResult.status === 'fulfilled' ? viewsResult.value.data : null
@@ -111,11 +107,16 @@ function formatMetricValue(metric: OverviewMetric, suffix?: string) {
   return `${numberFormatter.format(metric.value)}${suffix ?? ''}`
 }
 
-export function StatsOverview() {
-  const { data, isLoading } = useSWR('stats-overview', loadOverview, {
+export function StatsOverview({ fallbackData }: { fallbackData?: OverviewData }) {
+  const { data, error, isLoading } = useSWR('stats-overview', loadOverview, {
+    fallbackData,
     revalidateOnFocus: false,
     shouldRetryOnError: false,
   })
+
+  // `isLoading` stays true through the first request even when the server
+  // supplied fallbackData, so the skeleton keys off having nothing to show.
+  const showSkeleton = isLoading && !data
 
   const cards = useMemo(() => {
     if (!data) return []
@@ -130,10 +131,19 @@ export function StatsOverview() {
 
   const hasUnavailableMetrics = cards.some((card) => !card.metric.available)
 
+  if (error && !data) {
+    return (
+      <p className="border-y border-border px-5 py-6 text-sm text-muted-foreground">
+        The metrics endpoint did not answer, so there is nothing to show. Rather than guess at
+        numbers, this section stays empty until it responds again.
+      </p>
+    )
+  }
+
   return (
     <div className="space-y-4">
         <div className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-4 sm:divide-x">
-          {(isLoading ? Array.from({ length: 4 }, (_, index) => index) : cards).map((card) => {
+          {(showSkeleton ? Array.from({ length: 4 }, (_, index) => index) : cards).map((card) => {
             if (typeof card === 'number') {
               return (
                 <div key={`stats-skeleton-${card}`} className="px-5 py-6" aria-hidden="true">

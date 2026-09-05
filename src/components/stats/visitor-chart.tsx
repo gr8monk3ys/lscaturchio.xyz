@@ -19,14 +19,22 @@ interface ViewsPayload {
 const numberFormatter = new Intl.NumberFormat('en-US')
 const skeletonRows = ['views-skeleton-1', 'views-skeleton-2', 'views-skeleton-3', 'views-skeleton-4', 'views-skeleton-5']
 
-export function VisitorChart() {
-  const { data, isLoading } = useSWR<ApiEnvelope<ViewsPayload>>(
+export function VisitorChart({
+  fallbackData,
+}: {
+  fallbackData?: ApiEnvelope<ViewsPayload>
+}) {
+  const { data, error, isLoading } = useSWR<ApiEnvelope<ViewsPayload>>(
     '/api/views?format=detailed',
     fetchJson,
-    { revalidateOnFocus: false, shouldRetryOnError: false }
+    { fallbackData, revalidateOnFocus: false, shouldRetryOnError: false }
   )
 
   const payload = data?.data ?? null
+
+  // `isLoading` stays true through the first request even when the server
+  // supplied fallbackData, so the skeleton keys off having nothing to show.
+  const showSkeleton = isLoading && !data
 
   const rows = useMemo(() => {
     if (!payload?.available || !Array.isArray(payload.views)) {
@@ -50,7 +58,7 @@ export function VisitorChart() {
         </p>
       </div>
 
-      {isLoading ? (
+      {showSkeleton ? (
         <div className="space-y-4" aria-hidden="true">
           {skeletonRows.map((skeletonId) => (
             <div key={skeletonId} className="space-y-2">
@@ -58,6 +66,11 @@ export function VisitorChart() {
               <div className="h-3 w-full animate-pulse rounded-full bg-muted" />
             </div>
           ))}
+        </div>
+      ) : error && !payload ? (
+        <div className="text-sm text-muted-foreground">
+          The view-count endpoint did not answer. This ranking is left blank rather than filled in
+          with a guess; reloading usually brings it back.
         </div>
       ) : !payload?.available ? (
         <div className="text-sm text-muted-foreground">
