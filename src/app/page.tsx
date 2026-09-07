@@ -110,7 +110,7 @@ export default async function Home() {
       <WhoIAm />
 
       {/* Wayfinding for first-time visitors */}
-      <NewHereSection popularPosts={popularPosts} />
+      <NewHereSection popularPosts={popularPosts} essayCount={publishedBlogs.length} />
     </div>
   );
 }

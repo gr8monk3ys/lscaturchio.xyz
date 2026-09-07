@@ -170,7 +170,7 @@ The system deliberately is not three things. It is not neumorphic: the soft doub
 
 **Key Characteristics:**
 - One paper ground, warm off-white with a fixed 3.5% noise grain; dark mode is a night variant of the same page.
-- One ink accent, Forest Ink, spent sparingly: links, the drop cap, text selection, the single primary CTA.
+- One ink accent, Forest Ink, spent sparingly: links, text selection, the single primary CTA.
 - Hairline rules and tint shifts structure the page; there are no floating cards and no decorative shadows.
 - Three type voices with fixed jobs: Fraunces speaks, Instrument Sans reads, IBM Plex Mono catalogues.
 - Motion is a soft settle, never a performance: 150–300ms hover, a 650ms reveal, all off under reduced motion.
@@ -180,7 +180,7 @@ The system deliberately is not three things. It is not neumorphic: the soft doub
 A warm, low-chroma paper palette with one deep green ink and a sand-toned hairline; dark mode inverts to a cool night page with the same green lifted for contrast.
 
 ### Primary
-- **Forest Ink** (#184e35 light / #42a979 dark; `--primary`): the one pen. Links, the essay drop cap, the hover colour of any interactive text, the 22% tint behind selected text, the fill of the single primary button, the underline that grows beneath a hovered nav item, and the border that warms on a hovered surface. The dark value is lighter so the ink stays legible on night paper.
+- **Forest Ink** (#184e35 light / #42a979 dark; `--primary`): the one pen. Links, the hover colour of any interactive text, the 22% tint behind selected text, the fill of the single primary button, the underline that grows beneath a hovered nav item, and the border that warms on a hovered surface. The dark value is lighter so the ink stays legible on night paper.
 - **Moss** (#397f5e; `--secondary`): a lighter green for secondary fills and status tints. Rarely seen; it exists so a second green never has to be invented.
 
 ### Neutral
@@ -216,14 +216,14 @@ A warm, low-chroma paper palette with one deep green ink and a sand-toned hairli
 - **Headline** (Fraunces 700, clamp 1.9–3.2rem, 1.12, -0.03em): one per page, the page title.
 - **Title** (Fraunces 650, clamp 1.55–2.25rem, 1.18, -0.026em): section headings. Framer-motion section headings use the 3xl/4xl steps at weight 700.
 - **Card Title** (Fraunces 620, 1.25rem, 1.2, -0.02em): headings inside a list row or card. A subsection step exists at 1.075rem / 560.
-- **Body** (Instrument Sans 400, 1rem, 1.65): reading text. Essays use the typography plugin's `prose-lg` at full width of the reading column, with the opening letter set as a 3.4em Fraunces drop cap in Forest Ink.
+- **Body** (Instrument Sans 400, 1rem, 1.65): reading text. Essays use the typography plugin's `prose-lg` at full width of the reading column. There is no drop cap: the rule that specified one never matched the rendered DOM, and 81 of the 83 essays open on a section heading rather than a paragraph, so there is no opening letter to set.
 - **Description** (Instrument Sans 400, 0.875–1rem, Ink Muted): secondary copy under a title.
 - **Label** (IBM Plex Mono 500, 0.72rem, 0.16em tracking, uppercase, tabular numerals, Ink Muted): the wall label. Kickers ("Essays · Systems · Los Angeles"), dates, counts, captions, footer links, suggested-question chips. The same class with normal case and tracking is the small mono link style.
 
 ### Named Rules
 **The Wall Label Rule.** Every piece of metadata (a date, a count, a place, a category) is set as a Label: mono, small, uppercase, tracked, muted. Metadata never borrows the body or heading voice.
 
-**The Serif Speaks Rule.** Fraunces appears only where the site is speaking: headings, the drop cap, the masthead. Never in body copy, UI controls or labels.
+**The Serif Speaks Rule.** Fraunces appears only where the site is speaking: headings and the masthead. Never in body copy, UI controls or labels.
 
 **The Fluid Heading Rule.** Headings scale with `clamp()`, not breakpoints; weights step down the hierarchy (720 → 700 → 650 → 620 → 560) and tracking loosens as size falls.
 
@@ -245,7 +245,9 @@ Flat paper, tint shifts only. Every surface sits on one plane. Hierarchy is draw
 
 Two exceptions exist and are structural, not decorative: the fixed navigation bar carries a wide, soft shadow (`0 8px 30px rgba(0,0,0,0.08)`) so it reads as a separate sheet when content scrolls under it, and the primary CTA carries a 1px ledge (`0 1px 0` of Forest Ink at 25%) beneath its border so the one filled button feels pressed onto the page.
 
-The old neumorphic shadow tokens (`--neu-shadow-*`) still exist in the stylesheet because forty-odd files reference the `neu-*` class names, but the classes themselves are now flat: background, hairline, tint. The filled and destructive badge variants are the last places the double-shadow values are still applied; treat that as debt, not vocabulary. The `neu-card` utility keeps a 2px hover lift; it is a leftover, not the doctrine.
+The old neumorphic shadow tokens (`--neu-shadow-*`) are **gone** from the stylesheet, and every `neu-*` utility is now flat: background, hairline, tint. `neu-card` no longer lifts on hover either — it warms its border and tints the paper, like everything else. What survives is only the naming: 26 files still reference `neu-*` class names that no longer mean anything neumorphic. Treat the names as debt to be renamed, not as vocabulary to extend.
+
+Two inset hairline shadows remain in components, both violations rather than exceptions: the navigation's control pill (`navbar.tsx`) and the `/blog` stat tiles (`blog-stats.tsx`). Neither is sanctioned by the Two Sheets Rule.
 
 ### Named Rules
 **The Flat Paper Rule.** No shadow on any content surface, at rest or on hover. A hovered surface changes tint and border colour; it does not rise.
@@ -303,7 +305,7 @@ The `label-mono` utility: IBM Plex Mono 500, 0.72rem, 0.16em tracking, uppercase
 Wall-label kicker, a Fraunces name at 5xl–7xl with the surname in Forest Ink, a one-sentence muted thesis, and a square hairline-bordered portrait with a mono caption at the right edge. Below a hairline, the underline ask field with a round primary "Ask" inside it and three mono suggested questions. It is the notebook's title page.
 
 ### Essay Body (signature)
-`prose prose-lg` at the reading width, Fraunces headings with 6rem scroll margin, a 3.4em Forest Ink drop cap on the first paragraph, hairline rules between sections.
+`prose prose-lg` at the reading width, Fraunces headings with 6rem scroll margin, hairline rules between sections.
 
 ### Motion
 Hover and focus transitions are 150ms (fast), 200ms (default) or 300ms (slow) with `ease`. Entrance and layout motion is framer-motion at 0.2/0.35/0.5s on the standard curve `cubic-bezier(0.22, 1, 0.36, 1)`. Below-fold content uses the `reveal` utility: 14px rise, 650ms, same curve, staggered by a delay variable. Skeletons shimmer once per 1.5s. Every motion collapses to none under `prefers-reduced-motion`.
@@ -313,7 +315,7 @@ Hover and focus transitions are 150ms (fast), 200ms (default) or 300ms (slow) wi
 ### Do:
 - **Do** introduce every section, row and figure with a wall label (mono, 0.72rem, 0.16em, uppercase, Ink Muted) before its title.
 - **Do** divide with 1px sand hairlines and 64–96px of vertical space; let whitespace and rules do the structuring.
-- **Do** spend Forest Ink on action and emphasis only: links, hover, the drop cap, one primary button per view.
+- **Do** spend Forest Ink on action and emphasis only: links, hover, one primary button per view.
 - **Do** build lists as stacked hairline-divided rows (label, title, clamped description), and use asymmetric editorial grids (`1fr / 300px`, `280–360px / 1fr`) when two columns are needed.
 - **Do** keep numerals tabular in labels and oldstyle in display, and set every date and count in mono.
 - **Do** design dark mode as the same notebook at night: cool hue-220 page, the same green lifted to #42a979, hairlines at 18% lightness.

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { BookOpen, Clock, ListVideo } from "lucide-react";
 import type { GoodreadsBook, GoodreadsShelf, GoodreadsStats } from "@/lib/goodreads";
+import { spellCount, pluralize } from "@/lib/spell-count";
 
 interface BooksListProps {
   stats: GoodreadsStats;
@@ -27,12 +28,6 @@ function formatStars(rating: number): string {
 /** Homer needs this: negative publication years are BCE, not a rendering bug. */
 function formatYear(year: number): string {
   return year < 0 ? `${Math.abs(year)} BCE` : String(year);
-}
-
-/** Small counts read better as words: "Four books", not "4 books". */
-function spellCount(n: number): string {
-  const words = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
-  return words[n] ?? String(n);
 }
 
 /** A book I gave full marks, as a numbered plate. */
@@ -130,8 +125,11 @@ export function BooksList({
             </h2>
             <p className="mt-3 max-w-2xl text-muted-foreground">
               {/* Derived, not hardcoded: this said "Three books" until a fourth
-                  five-star arrived with a data refresh and made it a lie. */}
-              {spellCount(perfectScores.length)} book{perfectScores.length === 1 ? "" : "s"} out
+                  five-star arrived with a data refresh and made it a lie. The
+                  page description made the same mistake independently and went
+                  on making it for longer, which is why the count now comes from
+                  one helper both the body and the metadata call. */}
+              {spellCount(perfectScores.length)} {pluralize(perfectScores.length, "book")} out
               of everything I have finished. I am stingy with the fifth star on purpose; it is
               the only way the rating means anything.
             </p>

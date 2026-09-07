@@ -10,13 +10,25 @@ import {
   getCustomShelves,
 } from "@/lib/goodreads";
 import { PageHead } from "@/components/ui/page-head";
+import { spellCountLower, pluralize } from "@/lib/spell-count";
 
-export const metadata = buildPageMetadata({
-  title: "Books",
-  description:
-    "What I'm reading, what I finished, and the three books I gave full marks. Synced from Goodreads.",
-  path: "/books",
-});
+/**
+ * Derived, not typed. This description said "the three books I gave full marks"
+ * while the page body four lines down correctly rendered "Six books" — the same
+ * rot `BooksList` had already been fixed for, repeated in the one string no test
+ * renders and no drift check read.
+ */
+export function generateMetadata() {
+  const perfectScores = getTopRatedBooks().length;
+
+  return buildPageMetadata({
+    title: "Books",
+    description: `What I'm reading, what I finished, and the ${spellCountLower(
+      perfectScores
+    )} ${pluralize(perfectScores, "book")} I gave full marks. Synced from Goodreads.`,
+    path: "/books",
+  });
+}
 
 export default function BooksPage() {
   const stats = getGoodreadsStats();
@@ -25,6 +37,9 @@ export default function BooksPage() {
   const recentlyRead = getReadBooks(40);
   const toRead = getToReadBooks(40);
   const shelves = getCustomShelves();
+  // Also derived. "roughly five times" was true when it was typed (4.7x) and
+  // would have stayed on the page as the shelves moved underneath it.
+  const queueRatio = stats.booksRead > 0 ? Math.round(stats.toRead / stats.booksRead) : 0;
 
   return (
     <Container className="mt-16 lg:mt-32">
@@ -45,8 +60,9 @@ export default function BooksPage() {
               >
                 Goodreads
               </a>
-              . The queue is roughly five times the size of the finished pile, which is the
-              honest state of most people&rsquo;s reading and worth showing rather than hiding.
+              . The queue is roughly {spellCountLower(queueRatio)} times the size of the
+              finished pile, which is the honest state of most people&rsquo;s reading and
+              worth showing rather than hiding.
             </>
           }
         />

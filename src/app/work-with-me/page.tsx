@@ -3,8 +3,6 @@ import Link from "next/link";
 import { Container } from "@/components/Container";
 import { HowIWorkSection } from "@/components/home/how-i-work-section";
 import { FaqSection } from "@/components/services/faq-section";
-import { TestimonialsSection } from "@/components/home/testimonials-section";
-import { testimonials } from "@/constants/testimonials";
 import { questions } from "@/constants/questions";
 import { SERVICES } from "@/constants/services";
 import { ArrowUpRight } from "lucide-react";
@@ -228,16 +226,6 @@ export default function WorkWithMePage() {
             }}
           />
         </section>
-
-        {testimonials.length > 0 && (
-          <section id="testimonials" className="scroll-mt-28 border-t border-border py-16 px-4 sm:px-6 lg:px-8">
-            <TestimonialsSection
-              showAll
-              title="Testimonials"
-              description="Feedback from people I have built with across AI, product, and software projects."
-            />
-          </section>
-        )}
 
         <section id="contact" className="scroll-mt-28 border-t border-border py-12 px-4 sm:px-6 lg:px-8">
           <span className="label-mono block">Prefer async?</span>
