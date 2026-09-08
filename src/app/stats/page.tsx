@@ -11,9 +11,9 @@ const PopularPosts = dynamic(() => import('@/components/stats/popular-posts').th
 const TechStack = dynamic(() => import('@/components/stats/tech-stack').then(m => m.TechStack))
 
 export const metadata: Metadata = buildPageMetadata({
-  title: 'Site Statistics',
+  title: 'Stats',
   description:
-    'A public snapshot of site metrics, writing activity, and the technology behind this website.',
+    'What the site is made of and how much of it gets read. Sourced where a source exists, labelled where one does not.',
   path: '/stats',
 });
 

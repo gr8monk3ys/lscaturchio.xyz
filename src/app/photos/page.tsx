@@ -12,7 +12,7 @@ import {
 
 export const metadata = buildPageMetadata({
   title: "Photography",
-  description: "A collection of travel, landscape, and nature photography. Shot on Fuji X-T30 II with various film simulation recipes.",
+  description: "Photographs from wherever I have been carrying the camera. Shot on a Fuji X-T30 II, mostly on film simulation recipes.",
   path: "/photos",
 });
 

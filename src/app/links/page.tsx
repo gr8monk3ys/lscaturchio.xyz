@@ -7,7 +7,7 @@ import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Links",
-  description: "Curated collection of bookmarks, documentation, indie blogs, and YouTube channels that have shaped my thinking on AI, privacy, and technology.",
+  description: "The bookmarks, docs, indie blogs and YouTube channels I keep going back to. Mostly AI, privacy, and how systems get built.",
   path: "/links",
 });
 
