@@ -127,13 +127,16 @@ export default function GardenPage() {
           <span id="garden-more" className="label-mono block">
             Also growing · {MORE.length} more pages
           </span>
-          <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-4">
+          {/* `min-h-11` on phones: these fourteen links measured 15px tall,
+              well under WCAG 2.5.8's 24px floor and the smallest tap targets
+              on the page. The compact wall-label row returns from `sm:` up. */}
+          <ul className="mt-4 flex flex-wrap gap-x-5 border-t border-border pt-4 sm:gap-y-2">
             {MORE.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
                   prefetch={false}
-                  className="label-mono normal-case tracking-normal text-foreground ink-underline transition-colors hover:text-primary"
+                  className="label-mono inline-flex min-h-11 items-center normal-case tracking-normal text-foreground ink-underline transition-colors hover:text-primary sm:min-h-0"
                 >
                   {item.name}
                 </Link>

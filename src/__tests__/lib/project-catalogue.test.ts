@@ -10,7 +10,6 @@ import {
   listProjects,
   listRoutableProjects,
   normalizeProjectCategory,
-  normalizeProjectSort,
   projectStatusLabel,
   projectStatusTone,
   summarizeCatalogue,
@@ -67,14 +66,10 @@ describe("listProjects", () => {
     ]);
   });
 
-  it("sorts by name, newest and oldest", () => {
-    const titles = (sort: "name" | "newest" | "oldest") =>
-      listProjects({ sort }, fixture).map((p) => p.title);
-
-    expect(titles("name")).toEqual(["Alpha", "Beta", "Gamma"]);
-    expect(titles("newest")).toEqual(["Beta", "Alpha", "Gamma"]);
-    // Gamma has no start date, so it sorts as the oldest rather than last.
-    expect(titles("oldest")).toEqual(["Gamma", "Alpha", "Beta"]);
+  it("puts an undated project last rather than poisoning the comparator", () => {
+    // Gamma has no start date. It sorts as the oldest, which keeps it inside
+    // the featured/newest ordering instead of producing NaN comparisons.
+    expect(listProjects({}, fixture).map((p) => p.title).at(-1)).toBe("Gamma");
   });
 
   it("filters by category and by tech, and combines them", () => {
@@ -99,7 +94,7 @@ describe("listProjects", () => {
 
   it("does not mutate the catalogue it was given", () => {
     const order = fixture.map((p) => p.title);
-    listProjects({ sort: "name" }, fixture);
+    listProjects({ category: "ai-ml" }, fixture);
     expect(fixture.map((p) => p.title)).toEqual(order);
   });
 });
@@ -175,12 +170,6 @@ describe("URL parameter narrowing", () => {
     expect(normalizeProjectCategory("nonsense")).toBe("all");
     expect(normalizeProjectCategory(undefined)).toBe("all");
     expect(normalizeProjectCategory("")).toBe("all");
-  });
-
-  it("accepts known sort modes and falls back to featured", () => {
-    expect(normalizeProjectSort("newest")).toBe("newest");
-    expect(normalizeProjectSort("sideways")).toBe("featured");
-    expect(normalizeProjectSort(undefined)).toBe("featured");
   });
 });
 

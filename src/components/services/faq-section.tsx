@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Accordion,
   AccordionContent,
@@ -61,11 +60,16 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
           <div className="mt-10 border-t border-border pt-6">
             <h3 className="text-card-title">{contactInfo.title}</h3>
             <p className="mt-2 text-muted-foreground">{contactInfo.description}</p>
-            <Button asChild variant="primary" className="mt-4 rounded-full">
-              <a href={contactInfo.contactUrl} target="_blank" rel="noopener noreferrer">
-                {contactInfo.buttonText}
-              </a>
-            </Button>
+            {/* A mono link, not a third filled CTA repeating the masthead's
+                "Schedule a call" verbatim. One primary action per view. */}
+            <a
+              href={contactInfo.contactUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="label-mono mt-4 inline-block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            >
+              {contactInfo.buttonText} →
+            </a>
           </div>
         </div>
       </div>

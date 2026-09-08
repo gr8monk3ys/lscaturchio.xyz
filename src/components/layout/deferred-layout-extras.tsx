@@ -3,14 +3,6 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
-const ContactCTAGate = dynamic(
-  () =>
-    import("@/components/layout/contact-cta-gate").then(
-      (module) => module.ContactCTAGate
-    ),
-  { ssr: false, loading: () => null }
-);
-
 const ClientEnhancements = dynamic(
   () =>
     import("@/components/layout/client-enhancements").then(
@@ -43,9 +35,6 @@ export function DeferredLayoutExtras() {
   }
 
   return (
-    <>
-      <ContactCTAGate />
-      <ClientEnhancements />
-    </>
+    <ClientEnhancements />
   );
 }
