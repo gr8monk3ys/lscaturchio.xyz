@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { LedgerRows } from "@/components/ui/ledger-section";
 import { getTopicHubsForTags } from "@/constants/topics";
+import { spellCount, pluralize } from "@/lib/spell-count";
 
 interface PopularPostData {
   slug: string;
@@ -14,6 +15,12 @@ interface PopularPostData {
 
 interface NewHereSectionProps {
   popularPosts: PopularPostData[];
+  /**
+   * Counted on the server and passed down. This component is a Client
+   * Component, so it cannot read the essay directory itself — which is why the
+   * number used to be typed into the string and had no way to stay true.
+   */
+  essayCount: number;
 }
 
 interface Step {
@@ -25,7 +32,7 @@ interface Step {
   progress?: number | null;
 }
 
-export function NewHereSection({ popularPosts }: NewHereSectionProps) {
+export function NewHereSection({ popularPosts, essayCount }: NewHereSectionProps) {
   const [lastRead, setLastRead] = useState<{
     slug: string;
     title?: string;
@@ -98,8 +105,10 @@ export function NewHereSection({ popularPosts }: NewHereSectionProps) {
           href: "/blog",
           label: "Start with the writing",
           title: "Mostly arguments",
-          blurb:
-            "Eighty-three essays on power, attention, and what institutions are actually built to do.",
+          blurb: `${spellCount(essayCount)} ${pluralize(
+            essayCount,
+            "essay"
+          )} on power, attention, and what institutions are actually built to do.`,
           cta: "Read the essays",
         },
     recommendedHub

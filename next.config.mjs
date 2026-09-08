@@ -31,8 +31,12 @@ const nextConfig = {
         permanent: true,
       },
       {
+        // Not `#testimonials`. That anchor never rendered: `testimonials` is a
+        // deliberately empty array (PRODUCT.md lists testimonials among the
+        // absences future work must not fill in), so the section it named was
+        // always gated off. The redirect now lands on the page itself.
         source: '/testimonials',
-        destination: '/work-with-me#testimonials',
+        destination: '/work-with-me',
         permanent: true,
       },
       {

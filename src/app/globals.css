@@ -639,17 +639,15 @@
 }
 
 
-/* Editorial drop cap: the first letter of an essay set large in Fraunces,
-   like the opening initial of a printed article. Scoped to the article body. */
-.prose-gallery > div > p:first-of-type::first-letter {
-  float: left;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 3.4em;
-  line-height: 0.78;
-  margin: 0.05em 0.09em 0 0;
-  color: hsl(var(--primary));
-}
+/* No drop cap. The rule that used to live here selected
+   `.prose-gallery > div > p:first-of-type::first-letter`, but MDX children land
+   as DIRECT children of the Prose div — there is no intermediate div — so it
+   matched nothing on any of the essays and never once rendered.
+
+   Removed rather than repaired: 81 of the 83 essays open on an `##` heading,
+   not a paragraph, so the corrected selector would have floated a 3.4em initial
+   directly under a section heading on almost every post. The essays' structure
+   does not want a drop cap. */
 
 /* Clears the 80px fixed header on an anchor jump. Not motion, so it must
  * not sit behind a motion preference: reduced-motion readers were landing

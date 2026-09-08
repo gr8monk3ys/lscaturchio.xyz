@@ -81,7 +81,10 @@ export const SERVICES: ServiceContent[] = [
       },
       {
         name: 'Common projects',
-        content: 'Internal knowledge search, documentation search that answers in prose, and research corpora you need to ask questions of. The chat on this site is the public example: it answers from eighty-three essays and shows you what it read.',
+        // No count here on purpose. This is a plain constants file with no way
+        // to read the essay directory, so any number written into it is a
+        // number that cannot stay true. The claim works without one.
+        content: 'Internal knowledge search, documentation search that answers in prose, and research corpora you need to ask questions of. The chat on this site is the public example: it answers from every essay I have published and shows you what it read.',
         features: [
           'Internal knowledge search',
           'Documentation chatbots',

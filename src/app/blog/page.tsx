@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 import { toBlogPreview } from "@/lib/blog-data";
 import { Suspense } from "react";
 import { buildPageMetadata } from "@/lib/seo";
+import { spellCount, pluralize } from "@/lib/spell-count";
 import {
   readPageParam,
   readSearchParam,
@@ -27,13 +28,24 @@ interface Blog {
 
 const BLOGS_PER_PAGE = 12;
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "Blog",
-  description:
-    "Eighty-three essays on power, attention, philosophy, economics and the systems that carry them, by Lorenzo Scaturchio.",
-  path: "/blog",
-  cardType: "blog",
-});
+/**
+ * The essay count is derived. Typed into four separate strings, it was correct
+ * on the day it was written and silently wrong on the day the eighty-fourth
+ * essay landed — the same failure mode `/books` shipped with "three books".
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const published = (await getAllBlogs()).filter((blog) => blog.published);
+
+  return buildPageMetadata({
+    title: "Blog",
+    description: `${spellCount(published.length)} ${pluralize(
+      published.length,
+      "essay"
+    )} on power, attention, philosophy, economics and the systems that carry them, by Lorenzo Scaturchio.`,
+    path: "/blog",
+    cardType: "blog",
+  });
+}
 
 // Revalidate the blog listing every hour for fresh content
 export const revalidate = 3600;
