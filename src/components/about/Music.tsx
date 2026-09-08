@@ -16,28 +16,28 @@ const favoriteAlbums: Album[] = [
     title: "Vespertine",
     artist: "Björk",
     year: 2001,
-    description: "A masterpiece of intimate electronic music that creates a winter wonderland of microscopic sounds. The album's delicate production and Björk's ethereal vocals craft a deeply personal and immersive sonic experience.",
+    description: "Built with Matmos out of microbeats made from domestic noise — shuffled cards, cracking ice, footsteps — with Zeena Parkins on harp. Björk has said she mixed it for laptop speakers and headphones, because that was where people were about to hear everything.",
     imageUrl: "/images/music/vespertine.webp"
   },
   {
     title: "Cosmogramma",
     artist: "Flying Lotus",
     year: 2010,
-    description: "An otherworldly fusion of electronic, jazz, and experimental music that pushes the boundaries of production. The album's complex layering and cosmic soundscapes create a unique journey through sound and space.",
+    description: "Steven Ellison made it after his mother died, and it plays like grief with the seams left in. Thundercat on bass throughout, Thom Yorke on one track, and the harp lineage of his great-aunt Alice Coltrane running underneath the drum programming.",
     imageUrl: "/images/music/cosmogramma.webp"
   },
   {
     title: "Hunky Dory",
     artist: "David Bowie",
     year: 1971,
-    description: "A brilliant showcase of Bowie's songwriting prowess, combining folk rock with theatrical flair. From 'Changes' to 'Life on Mars?', each track demonstrates his unparalleled ability to blend profound lyrics with innovative arrangements.",
+    description: "Rick Wakeman on piano, a year before Ziggy. \"Life on Mars?\" exists because Bowie wrote an English lyric for the French song that became \"My Way\", lost the job to Paul Anka, and wrote his own over the same shape. \"Kooks\" he wrote for his newborn son.",
     imageUrl: "/images/music/hunky-dory.webp"
   },
   {
     title: "Titanic Rising",
     artist: "Weyes Blood",
     year: 2019,
-    description: "A modern classic that channels 70s soft rock through a contemporary lens. Natalie Mering's stunning vocals and rich orchestration create a cinematic album that addresses both personal and universal themes with remarkable depth.",
+    description: "Natalie Mering co-produced it with Jonathan Rado. The cover — a bedroom furnished and then flooded — was shot in a water tank, which is about as literal as an album about climate dread and drowning nostalgia can get.",
     imageUrl: "/images/music/titanic-rising.webp"
   }
 ];
@@ -88,10 +88,10 @@ export function Music() {
             <span className="label-mono block">Soundscapes</span>
             <div className="flex gap-2 flex-col">
               <h2 className="font-display text-3xl md:text-5xl tracking-tight font-bold text-foreground">
-                Favorite Albums
+                Favorite albums
               </h2>
               <p className="text-lg max-w-prose">
-                A selection of albums that showcase the boundless creativity and emotional depth of music.
+                Four I keep going back to, and what is actually going on in them.
               </p>
             </div>
           </m.div>

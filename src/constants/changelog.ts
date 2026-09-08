@@ -18,7 +18,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     changes: [
       { type: "highlight", text: "Garden refresh: the site catches up with what actually got built" },
       { type: "added", text: "Eight new project case studies written from their repos (Cocoon, Verso, unlinkd, FraudStream, Feedless, Tidy Roll, pi-lab, qsensor-sim)" },
-      { type: "added", text: "Movies and books rebuilt as annotated lists: profile favourites, own review text, full-marks books, custom shelves" },
+      { type: "added", text: "Movies and books rebuilt as annotated lists: profile favorites, own review text, full-marks books, custom shelves" },
       { type: "added", text: "Changelog now derives its shipped feed from merged pull requests" },
       { type: "changed", text: "/now reads current books, films, and posts from real logs so it cannot go stale" },
       { type: "changed", text: "/uses corrected against the actual dotfiles; /lab lists twelve experiments" },
