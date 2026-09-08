@@ -16,8 +16,17 @@ interface SocialShareProps {
 // Share as a row of wall-label links, not a row of pills: the same register
 // as the suggested questions on the masthead. One mono label, then the
 // destinations, each an underline-on-hover link.
+/**
+ * `min-h-11` is the whole point of this class.
+ *
+ * These were the smallest touch targets on the site: a 3.5 icon with its label
+ * `hidden` below `sm:` rendered as a bare 14x14px button, measured five times
+ * over on an essay page. WCAG 2.5.8 sets the floor at 24x24 and the comfortable
+ * target is 44. The labels now show at every width and the row keeps a 44px
+ * tap height on phones, collapsing to the compact mono link row from `sm:` up.
+ */
 const shareLinkClass =
-  "label-mono inline-flex items-center gap-1.5 normal-case tracking-normal text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+  "label-mono inline-flex min-h-11 items-center gap-1.5 normal-case tracking-normal text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:min-h-0";
 
 export function SocialShare({ title, description, url }: SocialShareProps) {
   const [copied, setCopied] = useState(false);
@@ -85,24 +94,24 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
 
       <button type="button" onClick={handleTwitterShare} className={shareLinkClass} aria-label="Share on Twitter">
         <IconBrandTwitter className="h-3.5 w-3.5" aria-hidden="true" />
-        <span className="hidden sm:inline">Twitter</span>
+        <span>Twitter</span>
       </button>
 
       <button type="button" onClick={handleLinkedInShare} className={shareLinkClass} aria-label="Share on LinkedIn">
         <IconBrandLinkedin className="h-3.5 w-3.5" aria-hidden="true" />
-        <span className="hidden sm:inline">LinkedIn</span>
+        <span>LinkedIn</span>
       </button>
 
       <button type="button" onClick={handleBlueskyShare} className={shareLinkClass} aria-label="Share on Bluesky">
         <Globe className="h-3.5 w-3.5" aria-hidden="true" />
-        <span className="hidden sm:inline">Bluesky</span>
+        <span>Bluesky</span>
       </button>
 
       {/* WCAG 2.5.3 (Label in Name): the accessible name must contain the
           visible label, so it leads with "HN" rather than Hacker News alone. */}
       <button type="button" onClick={handleHackerNewsShare} className={shareLinkClass} aria-label="Share on HN (Hacker News)">
         <Zap className="h-3.5 w-3.5" aria-hidden="true" />
-        <span className="hidden sm:inline">HN</span>
+        <span>HN</span>
       </button>
 
       <button
@@ -115,12 +124,12 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
         {copied ? (
           <>
             <Check className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="hidden sm:inline">Copied!</span>
+            <span>Copied!</span>
           </>
         ) : (
           <>
             <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="hidden sm:inline">Copy Link</span>
+            <span>Copy Link</span>
           </>
         )}
       </button>

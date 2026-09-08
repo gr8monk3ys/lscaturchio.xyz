@@ -214,7 +214,9 @@ export function BooksList({
               >
                 <Icon className="h-3.5 w-3.5" />
                 {tab.label}
-                <span className="tabular-nums opacity-60">{count}</span>
+                {/* No `opacity-60`: it composited this count down to 2.42:1 against
+                    the paper, under AA's 4.5. The chip already separates it. */}
+                <span className="tabular-nums">{count}</span>
               </button>
             );
           })}
