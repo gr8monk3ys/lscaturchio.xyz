@@ -1,15 +1,12 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 import { SectionHeader } from "@/components/ui/Section";
-import { LedgerChips, LedgerRows, LedgerSection } from "@/components/ui/ledger-section";
-import { Button } from "@/components/ui/button";
+import { LedgerRows, LedgerSection } from "@/components/ui/ledger-section";
 
 type Step = {
   id: string;
   title: string;
   description: string;
-  outcomes: string[];
 };
 
 const STEPS: Step[] = [
@@ -18,35 +15,30 @@ const STEPS: Step[] = [
     title: "Write the bet down before the code",
     description:
       "Verso exists because logging a gallery visit gives you ~15 events a year and logging each artwork gives you 150+. That claim went in the PRD first, so it could be proven wrong rather than quietly assumed.",
-    outcomes: ["Thesis stated up front", "Falsifiable, not decorative", "A number attached to the claim"],
   },
   {
     id: "prove-itself",
     title: "Give every change a way to prove itself",
     description:
       "A change that has not been run is a guess. Boot the server, render the page, run the script on real input — the failure mode of confident output is that nobody executed it.",
-    outcomes: ["Run it, don't read it", "Real input, not a mock", "Evidence before assertions"],
   },
   {
     id: "compute-the-call",
     title: "Compute the decision, never eyeball it",
     description:
       "merge-gate classifies a pull request from the shape of its diff. When judgement was done by eye it armed a 197-file change to land unreviewed. Automation earns trust by being narrower than a human, not broader.",
-    outcomes: ["Allowlisted shapes only", "No standing permissions", "Policy in three constants"],
   },
   {
     id: "fail-loudly",
     title: "Fail loudly, not silently",
     description:
       "Cocoon warns when a site's layout changes and its rules stop matching. For an accessibility tool a silent no-op is the worst possible outcome — the user assumes it is working and it is not.",
-    outcomes: ["Broken states are visible", "Degrade per-site, not globally", "No quiet no-ops"],
   },
   {
     id: "bound-the-damage",
     title: "Bound the blast radius",
     description:
       "Cocoon scopes host permissions to exactly seven domains instead of <all_urls>. FraudStream masks the card number before anything is written. Decide what the system may touch before deciding what it does.",
-    outcomes: ["Least privilege by default", "Mask before you store", "Scoped, reversible changes"],
   },
 ];
 
@@ -55,10 +47,12 @@ export function HowIWorkSection() {
     <LedgerSection
       head={
         <>
+          {/* No `index`. The "02" here was inherited from the home page's
+              01-04 numbering, but this section only ever renders on
+              /work-with-me — which opened on 02 and had no 01. */}
           <SectionHeader
-            index="02"
             eyebrow="Process"
-            title="How I Work"
+            title="How I work"
             description="Not a methodology. Five things I actually do, each one because skipping it cost me something."
           />
 
@@ -69,16 +63,22 @@ export function HowIWorkSection() {
             <li>Narrow beats clever when it runs unattended.</li>
           </ul>
 
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Button asChild size="sm" variant="primary">
-              <Link href="/contact" prefetch={false}>
-                Start a project <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
+          {/* Both mono links. This page had three filled primary CTAs — the
+              masthead's "Schedule a call", this one, and the FAQ's verbatim
+              repeat of the masthead's. DESIGN.md allows one per view, and the
+              masthead owns it. */}
+          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3">
+            <Link
+              href="/contact"
+              prefetch={false}
+              className="label-mono text-foreground underline-offset-4 ink-underline hover:text-primary"
+            >
+              Start a project →
+            </Link>
             <Link
               href="/projects"
               prefetch={false}
-              className="label-mono self-center text-foreground underline-offset-4 ink-underline hover:text-primary"
+              className="label-mono text-foreground underline-offset-4 ink-underline hover:text-primary"
             >
               See case studies →
             </Link>
@@ -103,11 +103,6 @@ export function HowIWorkSection() {
                 <p className="mt-2 max-w-lg text-sm text-muted-foreground">
                   {step.description}
                 </p>
-                <LedgerChips
-                  items={step.outcomes}
-                  className="mt-4"
-                  itemClassName="text-foreground/65"
-                />
               </div>
             </div>
           </li>

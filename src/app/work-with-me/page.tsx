@@ -6,7 +6,7 @@ import { FaqSection } from "@/components/services/faq-section";
 import { questions } from "@/constants/questions";
 import { SERVICES } from "@/constants/services";
 import { ArrowUpRight } from "lucide-react";
-import { LedgerChips, LedgerRows, ordinal } from "@/components/ui/ledger-section";
+import { LedgerRows, ordinal } from "@/components/ui/ledger-section";
 
 export const metadata: Metadata = {
   title: "Work with me",
@@ -196,14 +196,13 @@ export default function WorkWithMePage() {
                     <div key={tab.name} className="grid gap-x-6 gap-y-2 py-5 md:grid-cols-[9rem_1fr]">
                       <dt className="label-mono pt-1">{tab.name}</dt>
                       <dd className="min-w-0">
+                        {/* Prose only. Each tab carried a four-item `features`
+                            run underneath that restated the sentence above it —
+                            and the stack one asserted deployment targets the
+                            prose never claims. */}
                         <p className="max-w-lg text-sm leading-relaxed text-foreground/85">
                           {tab.content}
                         </p>
-                        <LedgerChips
-                          items={tab.features}
-                          className="mt-3"
-                          itemClassName="normal-case tracking-normal text-foreground/65"
-                        />
                       </dd>
                     </div>
                   ))}
