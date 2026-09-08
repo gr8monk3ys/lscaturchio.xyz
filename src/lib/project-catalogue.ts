@@ -70,18 +70,6 @@ export const PROJECT_STATUS_TONE: Record<
   },
 };
 
-export type ProjectSortMode = "featured" | "newest" | "oldest" | "name";
-
-export const PROJECT_SORT_OPTIONS: readonly {
-  value: ProjectSortMode;
-  label: string;
-}[] = [
-  { value: "featured", label: "Featured" },
-  { value: "newest", label: "Newest" },
-  { value: "oldest", label: "Oldest" },
-  { value: "name", label: "A–Z" },
-];
-
 export const DEFAULT_PROJECT_STATUS: ProjectStatus = "active";
 
 /** The label a status renders as, including the untagged default. */
@@ -107,15 +95,6 @@ export function normalizeProjectCategory(
     : "all";
 }
 
-/** Narrow an arbitrary query string to a sort mode. */
-export function normalizeProjectSort(
-  value: string | undefined
-): ProjectSortMode {
-  return PROJECT_SORT_OPTIONS.some((option) => option.value === value)
-    ? (value as ProjectSortMode)
-    : "featured";
-}
-
 /* ------------------------------------------------------------------ *
  * Queries
  * ------------------------------------------------------------------ */
@@ -135,19 +114,21 @@ export interface ProjectQuery {
   category?: ProjectCategory | "all";
   /** Exact match against an entry in the project's `stack`. */
   tech?: string;
-  sort?: ProjectSortMode;
 }
 
 /**
- * The filtered, sorted catalogue. "featured" puts featured projects first
- * and orders each group newest-first, which is the ordering the projects
- * page has always used but never stated anywhere a test could reach.
+ * The filtered catalogue in the one order it has.
+ *
+ * Featured projects first, each group newest-first. There used to be four
+ * orderings behind a toggle, for eighteen items — an admin UI on a page whose
+ * job is to make someone open one project. The alternatives are gone; this is
+ * the ordering the page has always opened with.
  */
 export function listProjects(
   query: ProjectQuery = {},
   catalogue: readonly Product[] = products
 ): Product[] {
-  const { category = "all", tech = "", sort = "featured" } = query;
+  const { category = "all", tech = "" } = query;
 
   const filtered = catalogue.filter((project) => {
     const categoryMatch =
@@ -157,10 +138,6 @@ export function listProjects(
   });
 
   return filtered.sort((a, b) => {
-    if (sort === "name") return a.title.localeCompare(b.title);
-    if (sort === "oldest") return startedAt(a.startDate) - startedAt(b.startDate);
-    if (sort === "newest") return startedAt(b.startDate) - startedAt(a.startDate);
-
     const featuredDelta = Number(!!b.featured) - Number(!!a.featured);
     if (featuredDelta !== 0) return featuredDelta;
     return startedAt(b.startDate) - startedAt(a.startDate);

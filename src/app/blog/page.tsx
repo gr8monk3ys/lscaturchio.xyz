@@ -3,12 +3,10 @@ import { getAllBlogs } from "@/lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
 import { ThemedBlogSections } from "@/components/blog/ThemedBlogSections";
 import { filterByStage } from "@/lib/blog-stage";
-import { BlogArchiveStats } from "@/components/blog/blog-archive-stats";
 import Link from "next/link";
 import { Tag } from "lucide-react";
 import type { Metadata } from "next";
 import { toBlogPreview } from "@/lib/blog-data";
-import { Suspense } from "react";
 import { buildPageMetadata } from "@/lib/seo";
 import { spellCount, pluralize } from "@/lib/spell-count";
 import {
@@ -115,10 +113,6 @@ export default async function Blog({
         ) : (
           <ThemedBlogSections posts={themedBlogs} />
         )}
-
-        <Suspense fallback={<div className="min-h-[260px]" />}>
-          <BlogArchiveStats />
-        </Suspense>
       </div>
     </Container>
   );

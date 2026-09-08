@@ -6,9 +6,6 @@ import { m } from '@/lib/motion'
 import {
   ExternalLink,
   Calendar,
-  Target,
-  Lightbulb,
-  CheckCircle2,
   Lock,
 } from 'lucide-react'
 import { IconBrandGithub } from '@tabler/icons-react'
@@ -189,38 +186,37 @@ export function HeroSection({ activeImage, product, shared }: HeroSectionProps):
 export function CaseStudyOverview({ caseStudy }: { caseStudy: CaseStudy | undefined }): React.ReactNode {
   if (!caseStudy) return null
 
+  // Stacked hairline rows, not a three-column tile grid.
+  //
+  // This was the purest piece of SaaS case-study furniture on the site: three
+  // cards headed "The Challenge / The Approach / What Changed", with an orange
+  // Target icon and a yellow Lightbulb — two accents the palette does not
+  // contain — beside a block filled with `bg-primary/5`, which spends Forest
+  // Ink as area rather than as a mark. DESIGN.md names all three as failure
+  // modes by name.
   return (
-    <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)]">
-      <section id="challenge" className="rounded-2xl border border-border/50 bg-card/50 p-6">
-        <div className="mb-3 flex items-center gap-2">
-          <Target className="h-5 w-5 text-orange-500" />
-          <h3 className="font-semibold">The Challenge</h3>
-        </div>
-        <p className="text-sm leading-relaxed text-muted-foreground">{caseStudy.challenge}</p>
-      </section>
+    <section className="border-t border-border">
+      <div id="challenge" className="border-b border-border py-8">
+        <h3 className="label-mono">The constraint</h3>
+        <p className="mt-3 leading-relaxed text-muted-foreground">{caseStudy.challenge}</p>
+      </div>
 
-      <section id="solution" className="rounded-2xl border border-border/50 bg-card/50 p-6">
-        <div className="mb-3 flex items-center gap-2">
-          <Lightbulb className="h-5 w-5 text-yellow-500" />
-          <h3 className="font-semibold">The Approach</h3>
-        </div>
-        <p className="text-sm leading-relaxed text-muted-foreground">{caseStudy.solution}</p>
-      </section>
+      <div id="solution" className="border-b border-border py-8">
+        <h3 className="label-mono">The approach</h3>
+        <p className="mt-3 leading-relaxed text-muted-foreground">{caseStudy.solution}</p>
+      </div>
 
-      <section className="rounded-2xl border border-primary/18 bg-primary/5 p-6">
-        <div className="mb-3 flex items-center gap-2">
-          <CheckCircle2 className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold">What Changed</h3>
-        </div>
-        <ul className="space-y-2">
+      <div className="py-8">
+        <h3 className="label-mono">What changed</h3>
+        <ul className="mt-3 space-y-2">
           {caseStudy.results.slice(0, 3).map((result) => (
-            <li key={result} className="flex items-start gap-2 text-sm text-foreground">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+            <li key={result} className="flex items-start gap-3 text-foreground">
+              <span className="mt-2.5 h-px w-3 shrink-0 bg-primary" />
               <span>{result}</span>
             </li>
           ))}
         </ul>
-      </section>
+      </div>
     </section>
   )
 }
@@ -240,7 +236,7 @@ export function ArchitectureSection({ slug }: { slug?: string }): React.ReactNod
 export function ProcessSection({ processSteps }: { processSteps: CaseStudyProcessStep[] }): React.ReactNode {
   return (
     <section id="process" className="rounded-2xl border border-border/50 bg-card/50 p-6">
-      <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Process</div>
+      <div className="label-mono">Process</div>
       <ol className="mt-5 relative border-l border-border/60 pl-6 space-y-6">
         {processSteps.map((step, index) => (
           <li key={`${step.title}-${step.description}`} className="relative">
@@ -260,11 +256,8 @@ export function OutcomesSection({ caseStudy }: { caseStudy: CaseStudy | undefine
   if (!caseStudy) return null
 
   return (
-    <section id="outcomes" className="rounded-2xl border border-primary/18 bg-primary/5 p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <CheckCircle2 className="h-5 w-5 text-primary" />
-        <h3 className="font-semibold">Outcomes</h3>
-      </div>
+    <section id="outcomes" className="rounded-2xl border border-border/50 bg-card/50 p-6">
+      <h3 className="label-mono mb-4">Outcomes</h3>
 
       <ul className="space-y-2">
         {caseStudy.results.map((result) => (
@@ -277,7 +270,7 @@ export function OutcomesSection({ caseStudy }: { caseStudy: CaseStudy | undefine
 
       {caseStudy.whatIdDoNext && caseStudy.whatIdDoNext.length > 0 && (
         <div className="mt-6 rounded-xl border border-border/50 bg-background/60 p-4">
-          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="label-mono">
             What I&apos;d do next
           </div>
           <ul className="mt-2 space-y-2">
@@ -299,7 +292,7 @@ export function DetailsSection({ details }: { details: string[] | undefined }): 
 
   return (
     <section id="details" className="rounded-2xl border border-border/50 bg-card/50 p-6">
-      <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-4">Details</div>
+      <div className="label-mono mb-4">Details</div>
       <div className="prose prose-sm md:prose-base max-w-none text-muted-foreground prose-headings:text-foreground prose-p:text-muted-foreground">
         {details.map((paragraph, index) => (
           <p key={index}>{paragraph}</p>
@@ -312,30 +305,33 @@ export function DetailsSection({ details }: { details: string[] | undefined }): 
 export function RelatedProjectsSection({ relatedProjects }: { relatedProjects: Product[] }): React.ReactNode {
   if (relatedProjects.length === 0) return null
 
+  // Hairline rows, sentence case, no zooming thumbnails. The Flat Paper Rule
+  // forbids a lift on hover, and `group-hover:scale-105` on an image is one.
   return (
-    <div className="border-t border-border/50 pt-12">
-      <h3 className="text-xl font-semibold mb-6">Related Projects</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="border-t border-border pt-12">
+      <h3 className="label-mono">Related projects</h3>
+      <ul className="mt-4">
         {relatedProjects.map((relatedProject) => (
-          <Link
-            key={relatedProject.slug}
-            href={`/projects/${relatedProject.slug}`}
-            className="group block p-4 rounded-xl border border-border/50 bg-card/50 transition-colors hover:border-primary/45 hover:bg-primary/6"
-          >
-            <div className="relative aspect-video rounded-lg overflow-hidden mb-3">
-              <Image
-                src={relatedProject.thumbnail}
-                alt={relatedProject.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-                sizes="(max-width: 640px) 100vw, 33vw"
-              />
-            </div>
-            <h4 className="font-semibold group-hover:text-primary transition-colors">{relatedProject.title}</h4>
-            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{relatedProject.description}</p>
-          </Link>
+          <li key={relatedProject.slug} className="border-b border-border last:border-b-0">
+            <Link
+              href={`/projects/${relatedProject.slug}`}
+              className="group flex items-baseline justify-between gap-6 py-5"
+            >
+              <div className="min-w-0">
+                <h4 className="font-semibold transition-colors group-hover:text-primary">
+                  {relatedProject.title}
+                </h4>
+                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                  {relatedProject.description}
+                </p>
+              </div>
+              <span className="label-mono shrink-0 transition-colors group-hover:text-primary">
+                Read →
+              </span>
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   )
 }
@@ -347,7 +343,7 @@ function SidebarLinks({ product }: { product: Product }): React.ReactNode {
 
   return (
     <div className="rounded-2xl border border-border/50 bg-card/50 p-5">
-      <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Links</div>
+      <div className="label-mono">Links</div>
       <div className="mt-4 flex flex-col gap-2">
         {product.demoUrl && (
           <a
@@ -395,7 +391,7 @@ export function ProjectSidebar({ pageSections, product }: SidebarProps): React.R
     <aside className="hidden xl:block">
       <div className="sticky top-24 space-y-4">
         <div className="rounded-2xl border border-border/50 bg-card/50 p-5">
-          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Tech stack</div>
+          <div className="label-mono">Tech stack</div>
           {product.stack && product.stack.length > 0 ? (
             <div className="mt-4 flex flex-wrap gap-2">
               {product.stack.map((tech) => (
@@ -410,7 +406,7 @@ export function ProjectSidebar({ pageSections, product }: SidebarProps): React.R
         </div>
 
         <div className="rounded-2xl border border-border/50 bg-card/50 p-5">
-          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">On this page</div>
+          <div className="label-mono">On this page</div>
           <nav className="mt-4 space-y-1 text-sm">
             {pageSections.map((section) => (
               <a

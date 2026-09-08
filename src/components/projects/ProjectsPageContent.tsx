@@ -1,48 +1,45 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ProjectCategory } from "@/types/products";
-import {
-  listProjects,
-  summarizeCatalogue,
-  type ProjectSortMode,
-} from "@/lib/project-catalogue";
+import { listProjects, summarizeCatalogue } from "@/lib/project-catalogue";
 import { ProjectFilters } from "./ProjectFilters";
 import { ProjectGallery } from "./ProjectGallery";
-import { ProjectGrid } from "./ProjectGrid";
-import { ProjectTimeline } from "./ProjectTimeline";
-import { ProjectViewToggle, ProjectViewWrapper } from "./ProjectViewToggle";
-import { ProjectSortToggle } from "./ProjectSortToggle";
-
-type ViewMode = "gallery" | "grid" | "timeline";
 
 interface ProjectsPageContentProps {
   initialCategory: ProjectCategory | "all";
   initialTech: string;
-  initialSort: ProjectSortMode;
 }
 
+/**
+ * Eighteen projects, one filter row, one view.
+ *
+ * This used to offer a category row, a four-way sort toggle and a three-way
+ * view toggle — twelve or thirteen controls for eighteen items, which is an
+ * admin UI on a page whose only job is to get someone to open one project.
+ * The view mode was also local `useState` while the filters were URL params,
+ * so going back dropped one of the reader's choices and kept the others.
+ *
+ * Gallery is the view. Category is the filter. Tech arrives from a project
+ * page and shows as a removable chip rather than a control.
+ */
 export function ProjectsPageContent({
   initialCategory,
   initialTech,
-  initialSort,
 }: ProjectsPageContentProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [viewMode, setViewMode] = useState<ViewMode>("gallery");
   const category = initialCategory;
   const tech = initialTech;
-  const sort = initialSort;
 
   const pushFilters = useCallback(
-    (nextCategory: ProjectCategory | "all", nextTech: string, nextSort: ProjectSortMode) => {
+    (nextCategory: ProjectCategory | "all", nextTech: string) => {
       const params = new URLSearchParams();
 
       if (nextCategory !== "all") params.set("category", nextCategory);
       if (nextTech) params.set("tech", nextTech);
-      if (nextSort !== "featured") params.set("sort", nextSort);
 
       const query = params.toString();
       router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
@@ -51,24 +48,13 @@ export function ProjectsPageContent({
   );
 
   const handleCategoryChange = useCallback(
-    (nextCategory: ProjectCategory | "all") => {
-      pushFilters(nextCategory, tech, sort);
-    },
-    [pushFilters, sort, tech]
+    (nextCategory: ProjectCategory | "all") => pushFilters(nextCategory, tech),
+    [pushFilters, tech]
   );
 
   const handleTechChange = useCallback(
-    (nextTech: string) => {
-      pushFilters(category, nextTech, sort);
-    },
-    [category, pushFilters, sort]
-  );
-
-  const handleSortChange = useCallback(
-    (nextSort: ProjectSortMode) => {
-      pushFilters(category, tech, nextSort);
-    },
-    [category, pushFilters, tech]
+    (nextTech: string) => pushFilters(category, nextTech),
+    [category, pushFilters]
   );
 
   const handleClearFilters = useCallback(() => {
@@ -76,43 +62,45 @@ export function ProjectsPageContent({
   }, [pathname, router]);
 
   const filteredProjects = useMemo(
-    () => listProjects({ category, tech, sort }),
-    [category, tech, sort]
+    () => listProjects({ category, tech }),
+    [category, tech]
   );
 
   const catalogueTotal = summarizeCatalogue().total;
-
   const hasFilters = category !== "all" || !!tech;
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-        <ProjectFilters
-          className="flex-1"
-          currentCategory={category}
-          currentTech={tech}
-          onCategoryChange={handleCategoryChange}
-          onTechChange={handleTechChange}
-          onClearFilters={handleClearFilters}
-        />
-        <div className="flex flex-wrap items-center gap-3">
-          <ProjectSortToggle value={sort} onChange={handleSortChange} />
-          <ProjectViewToggle mode={viewMode} onModeChange={setViewMode} />
-        </div>
-      </div>
+      <ProjectFilters
+        currentCategory={category}
+        currentTech={tech}
+        onCategoryChange={handleCategoryChange}
+        onTechChange={handleTechChange}
+        onClearFilters={handleClearFilters}
+      />
 
       {hasFilters && (
-        <div className="text-sm text-muted-foreground">
-          Showing {filteredProjects.length} of {catalogueTotal} projects
-        </div>
+        <p className="label-mono text-muted-foreground">
+          {filteredProjects.length} of {catalogueTotal}
+        </p>
       )}
 
-      <ProjectViewWrapper
-        mode={viewMode}
-        galleryView={<ProjectGallery projects={filteredProjects} />}
-        gridView={<ProjectGrid projects={filteredProjects} />}
-        timelineView={<ProjectTimeline projects={filteredProjects} />}
-      />
+      {filteredProjects.length > 0 ? (
+        <ProjectGallery projects={filteredProjects} />
+      ) : (
+        /* An empty filter result used to render nothing at all. */
+        <p className="border-t border-border pt-8 text-muted-foreground">
+          Nothing in this category yet.{" "}
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="text-foreground underline underline-offset-4 transition-colors hover:text-primary"
+          >
+            Show everything
+          </button>
+          .
+        </p>
+      )}
     </div>
   );
 }
