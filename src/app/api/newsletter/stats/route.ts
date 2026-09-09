@@ -1,35 +1,18 @@
 import { NextRequest } from 'next/server';
-import { getDb, isDatabaseConfigured } from '@/lib/db';
 import { withRateLimit } from '@/lib/with-rate-limit';
 import { RATE_LIMITS } from '@/lib/rate-limit';
-import { logError } from '@/lib/logger';
 import { apiSuccess, ApiErrors } from '@/lib/api-response';
-
-const UNAVAILABLE_MESSAGE = 'Newsletter subscriber counts are unavailable right now.';
+import { getNewsletterStats } from '@/lib/stats-data';
 
 const handleGet = async (request: NextRequest) => {
   void request;
 
-  if (!isDatabaseConfigured()) {
-    return apiSuccess({
-      activeSubscribers: null,
-      available: false,
-      message: UNAVAILABLE_MESSAGE,
-    });
-  }
+  // Shared with the /stats server component, which reads getNewsletterStats()
+  // directly. An unconfigured database is a 200 "unavailable"; an unexpected
+  // failure (already logged inside getNewsletterStats) is reported as a 500.
+  const stats = await getNewsletterStats();
 
-  try {
-    const sql = getDb();
-    const rows = await sql`SELECT count_active_subscribers()`;
-
-    return apiSuccess({
-      activeSubscribers: rows[0].count_active_subscribers || 0,
-      available: true,
-    });
-  } catch (error) {
-    logError('Newsletter Stats: Unexpected error', error, { component: 'newsletter/stats', action: 'GET' });
-    return ApiErrors.internalError('Failed to fetch stats');
-  }
+  return stats.error ? ApiErrors.internalError(stats.error) : apiSuccess(stats);
 };
 
 // Export with rate limiting (100 requests per minute - public read-only endpoint)

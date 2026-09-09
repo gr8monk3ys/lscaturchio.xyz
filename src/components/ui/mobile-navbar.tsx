@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
@@ -103,6 +104,29 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
 
   return (
     <>
+      {/* The wordmark is the brand on mobile — the desktop <header> that
+          normally carries it is `hidden md:block`, so without this the small
+          screens had no mark and no way home from the top of the page. Same
+          asset and same dark-mode inversion as the desktop treatment, scaled
+          to the height of the menu button it sits opposite. */}
+      <div className="fixed left-0 top-0 z-60 p-4 md:hidden">
+        <Link
+          href="/"
+          prefetch={false}
+          aria-label="Lorenzo Scaturchio — home"
+          className="flex h-10 items-center rounded-xl bg-background/80 px-3 backdrop-blur-md focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        >
+          <Image
+            src="/cursive.svg"
+            /* The link carries the accessible name; the mark itself is decorative. */
+            alt=""
+            width={200}
+            height={40}
+            className="h-9 w-auto dark:invert"
+          />
+        </Link>
+      </div>
+
       {/* z-60: above the menu overlay (z-55) so this button can close it,
           below the photo lightbox (z-70). Site chrome otherwise lives at z-40/50. */}
       <div className="fixed right-0 top-0 z-60 p-4 md:hidden">

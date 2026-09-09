@@ -11,14 +11,22 @@ interface PopularPostsPayload {
   views?: Array<{ slug: string; title: string; views: number }>
 }
 
-export function PopularPosts() {
+export function PopularPosts({
+  fallbackData,
+}: {
+  fallbackData?: ApiEnvelope<PopularPostsPayload>
+}) {
   const { data, isLoading, error } = useSWR<ApiEnvelope<PopularPostsPayload>>(
     '/api/views?format=detailed',
     fetchJson,
-    { revalidateOnFocus: false }
+    { fallbackData, revalidateOnFocus: false }
   )
 
   const payload = data?.data ?? null
+
+  // `isLoading` stays true through the first request even when the server
+  // supplied fallbackData, so the skeleton keys off having nothing to show.
+  const showSkeleton = isLoading && !data
 
   const posts = useMemo(() => {
     if (!payload?.available || !Array.isArray(payload.views)) return []
@@ -38,7 +46,7 @@ export function PopularPosts() {
     <div>
       <h3 className="label-mono mb-4">Popular Posts</h3>
 
-      {isLoading ? (
+      {showSkeleton ? (
         <div className="border-t border-border" aria-busy="true" aria-label="Loading popular posts">
           {[1, 2, 3, 4, 5].map((slot) => (
             <div key={`popular-skeleton-${slot}`} className="animate-pulse flex items-center justify-between border-b border-border py-3" role="presentation">
@@ -47,9 +55,9 @@ export function PopularPosts() {
             </div>
           ))}
         </div>
-      ) : error ? (
+      ) : error && !payload ? (
         <div className="text-sm text-muted-foreground py-4">
-          {error instanceof Error ? error.message : 'Failed to load popular posts'}
+          The view-count endpoint did not answer, so this list is empty rather than estimated.
         </div>
       ) : !payload?.available ? (
         <div className="text-sm text-muted-foreground py-4">

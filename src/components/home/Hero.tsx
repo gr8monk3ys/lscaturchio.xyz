@@ -59,7 +59,10 @@ export function Hero() {
               required
               placeholder="It's read everything I've written…"
               autoComplete="off"
-              className="h-14 w-full rounded-none border-0 border-b border-border bg-transparent pr-28 text-lg text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-0"
+              // text-base below sm: at 18px the placeholder measures 261.5px against a
+              // 246px content box on a 390px screen and clips mid-word. 16px also
+              // stops iOS Safari zooming the viewport on focus.
+              className="h-14 w-full rounded-none border-0 border-b border-border bg-transparent pr-28 text-base text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-0 sm:text-lg"
             />
             <Button
               type="submit"
