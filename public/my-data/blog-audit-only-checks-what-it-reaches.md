@@ -1,0 +1,59 @@
+# The Audit Only Checks What It Can Reach
+
+## Six books, three books
+
+For most of a year, the books page on this site told Google that it held "the three books I gave full marks."
+
+The export from Goodreads says six. Siddhartha, The Master and Margarita, Brave New World, Man's Search for Meaning, The Iliad, Notes from the Underground. Six.
+
+Four lines below that description, in the code that draws the page, sat this:
+
+> Derived, not hardcoded: this said "Three books" until a fourth five-star arrived with a data refresh and made it a lie.
+
+So the bug had already happened. Someone hit it, understood it, fixed the part that renders, and wrote a note explaining the lesson to whoever came next. Then the count went from four to five to six while the sentence describing the page stayed at three.
+
+The page was, at the same moment, correct and false. Correct in the body, where a function counted the shelf. False in the metadata, where a person had typed a number in 2025 and no one had reason to look at it again.
+
+## The guard was there. It was looking somewhere else.
+
+The obvious reading is carelessness, and the obvious fix is to be more careful. Both are wrong, and the comment is what proves it. Care had already been applied. It landed on the count that a test could see.
+
+Tests render pages. They assert that a heading appears, that a list has the right number of items, that a button says what it should. Nothing in any normal test suite renders a `<meta name="description">` and reads it back, because meta descriptions have no behavior. They are not for users. They are for crawlers, which is to say they are the part of the page that gets read most and looked at least.
+
+That is the whole mechanism, and it has nothing to do with attention. The number in the body was verified because it lived where verification happens. The number in the description was unverified because it lived just outside, in a string that nothing executes.
+
+An audit is not a test of whether something is true. It is a record of where somebody was willing to look. Which means the safest place to keep a false claim is directly beside a verified one, close enough to borrow its credibility, far enough to escape its scrutiny.
+
+## Where claims go to live
+
+Once you have the shape, you start finding it in places with much higher stakes than a reading list.
+
+The audited part of an annual report is the financial statements. The letter from the chief executive at the front is not audited. Neither, in any comparable sense, is the discussion section where management explains what the numbers mean. So the assertions a shareholder actually reads, the narrative ones, sit in the unexamined half of a document whose credibility comes entirely from the examined half. Enron's financial statements had an auditor's signature on them. That was, in the end, the problem: the signature was on the part nobody needed convincing about.
+
+The Nutrition Facts panel on a box of cereal is specified down to the rounding rules. The front of the same box is where you find "supports immune health," and that phrasing exists because it is a structure-function claim, which in the United States requires no pre-approval, only a small disclaimer somewhere the eye does not go. The regulated surface and the persuasive surface are on the same cardboard, an inch apart, and only one of them was ever going to be checked.
+
+Clinical trials pre-register their primary outcome, which is the entire point of pre-registration: you say what would count as success before you find out what happened. Ben Goldacre's COMPare project spent 2015 and 2016 comparing published trials in the major medical journals against those registrations. Trials had quietly reported outcomes they had never planned to measure, and quietly dropped the ones they had. The registry was public the whole time. It just took a team deciding to read it.
+
+None of these are failures of a verification system. In each case the verification system worked on its own terms. The claims simply moved to the part of the page that the system does not cover, the way water finds the gap in a seal.
+
+## The fix is structural, and the structure is boring
+
+What actually fixed the books page was not resolve. It was moving the number.
+
+The count now comes from one function that reads the shelf, and both the page body and the page description call it. There is no longer a place to type three, because there is no longer typing. Then a check that runs on every pull request greps the source for a hand-written count of anything the site owns, and fails if it finds one. It has already caught me: writing the replacement copy for another page, I typed "the six I gave full marks," which would have been true for about a month.
+
+That is the unglamorous version of honesty, and it is the only version that survives contact with time. Not a person resolving to be accurate. A structure in which the inaccurate version is harder to write than the accurate one.
+
+You can hear how weak that sounds compared to the alternative. Institutions prefer the strong-sounding version, which is why the response to a scandal is usually a commitment, a set of principles, a new officer with the word integrity in the title. Those are all claims about future care. The thing that would actually work is duller: find the sentence nobody checks, and wire it to the number somebody does.
+
+## The shoreline
+
+Here is the part I cannot resolve.
+
+Every verification boundary creates a shore. Inside it, things are checked. Immediately outside, things are not, and they are still on the same page, in the same typeface, carrying the same implied warrant. That gap is not a defect in any particular system. It is what a boundary is.
+
+Move the guard outward and you do not remove the shore. You relocate it. My drift check reads counts now. It does not read adjectives. It has nothing to say about whether "stingy with the fifth star" is a fair description of a person who gives out six, or whether the covers on this site flatter the essays underneath. Those are claims too. They are simply the next thing over.
+
+I think the honest position is that you cannot verify your way to a trustworthy document, and that anyone promising otherwise is selling the strong-sounding version. What you can do is know where your shoreline is, and be suspicious of your own sentences in proportion to their distance from it.
+
+For most of a year, mine ran between a page body and its description. Four lines. I had written the warning myself and put it in the wrong file.
