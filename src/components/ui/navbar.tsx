@@ -5,6 +5,7 @@ import { primaryNavigation } from "@/constants/navlinks";
 
 import { ActiveNavLink } from "./active-nav-link";
 import { NavbarControlsGate } from "./navbar-controls-gate";
+import { AskDrawerTrigger } from "@/components/chat/ask-drawer-trigger";
 
 const navLinkBaseClass =
   "relative block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-left after:rounded-full after:bg-primary after:transition-transform after:duration-200";
@@ -19,7 +20,7 @@ const accentLinkClass =
 export function Navbar() {
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 hidden border-b border-border/40 bg-background/90 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md md:block">
+      <header className="site-header fixed top-0 z-50 hidden border-b border-border/40 bg-background/90 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md md:block">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-20 items-center justify-between">
             <div className="w-[200px]">
@@ -68,7 +69,10 @@ export function Navbar() {
               </ul>
             </nav>
 
-            <NavbarControlsGate />
+            <div className="flex items-center gap-3">
+              <AskDrawerTrigger />
+              <NavbarControlsGate />
+            </div>
           </div>
         </div>
       </header>

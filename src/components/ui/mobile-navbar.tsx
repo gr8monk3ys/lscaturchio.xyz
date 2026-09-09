@@ -15,6 +15,7 @@ import {
 import { isPathActive } from "@/lib/navigation-path";
 
 import { ThemeToggle } from "./theme-toggle";
+import { AskDrawerTrigger } from "@/components/chat/ask-drawer-trigger";
 
 const CommandPalette = dynamic(
   () => import("./command-palette").then((module) => module.CommandPalette),
@@ -260,7 +261,12 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
               {contactLink.name}
             </Link>
 
+            {/* The ask drawer's only entry point below md. It lives here
+                rather than as a floating button because the Two Sheets Rule
+                has no room for another one, and the scroll-to-top control is
+                already borrowing the space. */}
             <div className="flex items-center justify-center gap-4 pt-6">
+              <AskDrawerTrigger onActivate={closeMenu} />
               <CommandPalette />
               <ThemeToggle />
             </div>

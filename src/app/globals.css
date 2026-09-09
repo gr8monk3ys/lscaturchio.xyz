@@ -675,3 +675,58 @@ body {
   background: transparent !important;
   box-shadow: none !important;
 }
+
+/* ── Ask drawer ────────────────────────────────────────────────────────────
+   The drawer pushes the page instead of covering it, so a reader can keep the
+   essay in view while arguing with it. One custom property drives the shift,
+   because the fixed header has to move too and it renders on the server.
+
+   Logical properties throughout: under RTL the drawer and the shift both flip,
+   which the multilingual commitment in PRODUCT.md requires. */
+:root {
+  --ask-drawer-w: 0rem;
+}
+
+@media (min-width: 768px) {
+  :root[data-ask-open="true"] {
+    --ask-drawer-w: 24rem;
+  }
+}
+
+.site-shell {
+  padding-inline-end: var(--ask-drawer-w);
+  transition: padding-inline-end 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-header {
+  inset-inline-start: 0;
+  inset-inline-end: var(--ask-drawer-w);
+  transition: inset-inline-end 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ask-drawer {
+  inset-inline-end: 0;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 300ms step-end;
+}
+
+:root[data-ask-open="true"] .ask-drawer {
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s;
+}
+
+/* Below md the drawer covers rather than pushes, so the page beneath it must
+   not scroll away underneath the panel. */
+@media (max-width: 767px) {
+  :root[data-ask-open="true"] body {
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-shell,
+  .site-header,
+  .ask-drawer {
+    transition: none;
+  }
+}
