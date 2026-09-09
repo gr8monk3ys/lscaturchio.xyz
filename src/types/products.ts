@@ -40,6 +40,15 @@ export interface ProjectHomeCard {
 
 export type Product = {
   title: string;
+  /**
+   * The claim the project makes, in the project's own words.
+   *
+   * Index cards lead with this and demote the product name to a wall label,
+   * because "Cocoon" tells a visitor nothing and "Lower the sensory load of the
+   * web" tells them whether to click. Every one of these is lifted from the
+   * opening clause of `description`; none is a new assertion.
+   */
+  thesis?: string;
   description: string;
   thumbnail: StaticImageData;
   href: string;

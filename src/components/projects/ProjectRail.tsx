@@ -97,7 +97,13 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
                 </span>
               )}
             </span>
-            <div className="font-display text-xl font-semibold tracking-tight">{title}</div>
+            {/* Same order as the card: the claim, then the name as a label. */}
+            <div className="font-display text-xl font-semibold tracking-tight text-balance">
+              {project.thesis ?? title}
+            </div>
+            {project.thesis && (
+              <span className="label-mono text-foreground">{title}</span>
+            )}
             <p className="text-sm text-muted-foreground">{description}</p>
           </div>
 
