@@ -7,7 +7,17 @@ interface Album {
   title: string;
   artist: string;
   year: number;
+  /**
+   * A factual claim about the record. Required to carry a `source`, because the
+   * first version of these was written from memory and the commit shipping it
+   * said so — which is not enforcement, it is a confession with a git hash.
+   * PRODUCT.md's binding constraint is "no unverifiable claims, ever", and the
+   * timeline already meets it by reconciling every figure against a source.
+   * This is the same standard applied to prose about other people.
+   */
   description: string;
+  /** Where the claim in `description` can be checked. Not optional. */
+  source: { label: string; href: string };
   imageUrl: string;
 }
 
@@ -16,29 +26,33 @@ const favoriteAlbums: Album[] = [
     title: "Vespertine",
     artist: "Björk",
     year: 2001,
-    description: "Built with Matmos out of microbeats made from domestic noise — shuffled cards, cracking ice, footsteps — with Zeena Parkins on harp. Björk has said she mixed it for laptop speakers and headphones, because that was where people were about to hear everything.",
-    imageUrl: "/images/music/vespertine.webp"
+    description: "Built with Matmos out of beats made from crushing ice and shuffling cards, with footsteps in snow carrying one track and Zeena Parkins on harp. Björk picked sounds that would survive being downloaded off Napster.",
+    imageUrl: "/images/music/vespertine.webp",
+    source: { label: "Vespertine, Wikipedia", href: "https://en.wikipedia.org/wiki/Vespertine_(album)" }
   },
   {
     title: "Cosmogramma",
     artist: "Flying Lotus",
     year: 2010,
-    description: "Steven Ellison made it after his mother died, and it plays like grief with the seams left in. Thundercat on bass throughout, Thom Yorke on one track, and the harp lineage of his great-aunt Alice Coltrane running underneath the drum programming.",
-    imageUrl: "/images/music/cosmogramma.webp"
+    description: "Recorded from October 2008, while Ellison was grieving his mother. Thundercat plays bass on half of it, Thom Yorke sings on one track, and the title comes from his great-aunt Alice Coltrane. It is the first of his records to lean on live players rather than programming.",
+    imageUrl: "/images/music/cosmogramma.webp",
+    source: { label: "Cosmogramma, Wikipedia", href: "https://en.wikipedia.org/wiki/Cosmogramma" }
   },
   {
     title: "Hunky Dory",
     artist: "David Bowie",
     year: 1971,
-    description: "Rick Wakeman on piano, a year before Ziggy. \"Life on Mars?\" exists because Bowie wrote an English lyric for the French song that became \"My Way\", lost the job to Paul Anka, and wrote his own over the same shape. \"Kooks\" he wrote for his newborn son.",
-    imageUrl: "/images/music/hunky-dory.webp"
+    description: "Rick Wakeman on piano, a year before Ziggy. \"Life on Mars?\" is a parody of \"My Way\" and borrows its opening chords, which reached Sinatra from a French song called \"Comme d'habitude\". \"Kooks\" he finished days after his son was born, and dedicated to him.",
+    imageUrl: "/images/music/hunky-dory.webp",
+    source: { label: "Hunky Dory, Wikipedia", href: "https://en.wikipedia.org/wiki/Hunky_Dory" }
   },
   {
     title: "Titanic Rising",
     artist: "Weyes Blood",
     year: 2019,
-    description: "Natalie Mering co-produced it with Jonathan Rado. The cover — a bedroom furnished and then flooded — was shot in a water tank, which is about as literal as an album about climate dread and drowning nostalgia can get.",
-    imageUrl: "/images/music/titanic-rising.webp"
+    description: "Mering produced it with Jonathan Rado. The cover — her submerged in a furnished bedroom — was shot by Brett Stanley in a Long Beach pool, which is about as literal as a record about climate dread gets.",
+    imageUrl: "/images/music/titanic-rising.webp",
+    source: { label: "Titanic Rising, Wikipedia", href: "https://en.wikipedia.org/wiki/Titanic_Rising" }
   }
 ];
 
@@ -121,6 +135,18 @@ export function Music() {
                   {album.artist} · {album.year}
                 </p>
                 <p className="mt-3 text-muted-foreground">{album.description}</p>
+                {/* Rendered, not filed in a comment. The timeline's figures are
+                    reconciled against a source the reader never sees, which the
+                    design review called out; a claim a reader cannot check is
+                    not sourced. */}
+                <a
+                  href={album.source.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="label-mono mt-3 inline-flex min-h-6 items-center normal-case tracking-normal text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                >
+                  Source: {album.source.label}
+                </a>
               </m.div>
             ))}
           </m.div>
