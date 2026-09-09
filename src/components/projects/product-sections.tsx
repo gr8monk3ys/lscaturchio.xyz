@@ -175,13 +175,13 @@ export function CaseStudyOverview({ caseStudy }: { caseStudy: CaseStudy | undefi
   return (
     <section className="border-t border-border">
       <div id="challenge" className="border-b border-border py-8">
-        <h3 className="label-mono">The constraint</h3>
-        <p className="mt-3 leading-relaxed text-muted-foreground">{caseStudy.challenge}</p>
+        <h2 className="label-mono">The constraint</h2>
+        <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">{caseStudy.challenge}</p>
       </div>
 
       <div id="solution" className="py-8">
-        <h3 className="label-mono">The approach</h3>
-        <p className="mt-3 leading-relaxed text-muted-foreground">{caseStudy.solution}</p>
+        <h2 className="label-mono">The approach</h2>
+        <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">{caseStudy.solution}</p>
       </div>
 
     </section>
@@ -211,7 +211,7 @@ export function ProcessSection({ processSteps }: { processSteps: CaseStudyProces
               {index + 1}
             </span>
             <div className="font-semibold">{step.title}</div>
-            <p className="mt-1 text-sm text-muted-foreground">{step.description}</p>
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{step.description}</p>
           </li>
         ))}
       </ol>
@@ -224,7 +224,7 @@ export function OutcomesSection({ caseStudy }: { caseStudy: CaseStudy | undefine
 
   return (
     <section id="outcomes" className="border-t border-border pt-8">
-      <h3 className="label-mono mb-4">Outcomes</h3>
+      <h2 className="label-mono mb-4">Outcomes</h2>
 
       <ul className="space-y-2">
         {caseStudy.results.map((result) => (
@@ -276,7 +276,7 @@ export function RelatedProjectsSection({ relatedProjects }: { relatedProjects: P
   // forbids a lift on hover, and `group-hover:scale-105` on an image is one.
   return (
     <div className="border-t border-border pt-12">
-      <h3 className="label-mono">Related projects</h3>
+      <h2 className="label-mono">Related projects</h2>
       <ul className="mt-4">
         {relatedProjects.map((relatedProject) => (
           <li key={relatedProject.slug} className="border-b border-border last:border-b-0">
@@ -285,9 +285,9 @@ export function RelatedProjectsSection({ relatedProjects }: { relatedProjects: P
               className="group flex items-baseline justify-between gap-6 py-5"
             >
               <div className="min-w-0">
-                <h4 className="font-semibold transition-colors group-hover:text-primary">
+                <h3 className="font-semibold transition-colors group-hover:text-primary">
                   {relatedProject.title}
-                </h4>
+                </h3>
                 <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                   {relatedProject.description}
                 </p>

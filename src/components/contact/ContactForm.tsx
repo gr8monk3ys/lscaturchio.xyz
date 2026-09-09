@@ -190,7 +190,7 @@ export function ContactForm() {
               {isSubmitting ? "Sending..." : "Send Project Details"}
             </button>
 
-            <div aria-live="polite" className="min-h-6">
+            <div id="contact-form-status" role="status" aria-live="polite" className="min-h-6">
               {submitStatus === "success" && (
                 <p className="text-center text-primary">
                   Message sent. I&apos;ll follow up by email after I review the brief.

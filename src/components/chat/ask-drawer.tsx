@@ -154,7 +154,12 @@ export function AskDrawer() {
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col" aria-live="polite" aria-busy={isLoading}>
+      <div
+        className="flex min-h-0 flex-1 flex-col"
+        aria-live="polite"
+        aria-busy={isLoading}
+        aria-label="Conversation"
+      >
       {isEmpty ? (
         <div className="flex-1 overflow-y-auto px-5 py-8">
           <p className="font-display text-2xl font-semibold tracking-tight text-foreground">

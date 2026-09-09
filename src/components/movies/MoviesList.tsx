@@ -108,7 +108,7 @@ function FilmRow({ movie }: { movie: LetterboxdMovie }) {
       </div>
 
       {movie.review ? (
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
           &ldquo;{movie.review}&rdquo;
         </p>
       ) : null}

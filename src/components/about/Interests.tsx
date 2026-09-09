@@ -83,7 +83,7 @@ export function Interests() {
               <h2 className="font-display text-3xl md:text-5xl tracking-tight font-bold">
                 Interests & Hobbies
               </h2>
-              <p className="text-lg max-w-prose">
+              <p className="max-w-2xl text-lg">
                 A glimpse into what keeps me curious and motivated beyond the code.
               </p>
             </div>
