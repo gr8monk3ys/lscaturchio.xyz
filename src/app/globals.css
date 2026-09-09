@@ -340,11 +340,18 @@
   position: relative;
   text-decoration: none;
 
+  /* Anchored to the text, not to the box.
+   *
+   * `bottom: -0.18em` assumed the element's box hugged its line. Once
+   * `label-link` raised links to a 24px (or 44px) tap target, the box grew
+   * taller than the text and the rule drew up to 14px beneath it — worst on
+   * the footer site map, on every page. Positioning from the vertical centre
+   * keeps the rule under the glyphs whatever the target height. */
   &::after {
     content: '';
     position: absolute;
     inset-inline: 0;
-    bottom: -0.18em;
+    top: calc(50% + 0.62em);
     height: 1px;
     background: currentColor;
     transform: scaleX(0);

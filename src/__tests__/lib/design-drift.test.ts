@@ -1,0 +1,142 @@
+import { describe, it, expect } from "vitest";
+import fs from "node:fs";
+import path from "node:path";
+
+/**
+ * A drift check for the design system, modelled on `count-drift.test.ts`.
+ *
+ * Five review cycles found the same classes of defect in different files: a raw
+ * size class overriding a heading's clamp, a cold grey where a sand hairline
+ * belongs, a shadow on a content surface, an image that lifts on hover, two
+ * names for one destination. Each cycle they were fixed at the coordinates the
+ * review supplied, and each following cycle found the siblings.
+ *
+ * DESIGN.md is a good document; the gap between it and the site was never
+ * ambition, it was enforcement. `Heading`, `PageHead` and `label-link` are all
+ * opt-in, and an opt-in system maintained by fixing named instances drifts back
+ * at exactly the rate it is not checked. These rules are the ones worth making
+ * mechanical: each maps to a named rule in DESIGN.md, and each has already been
+ * violated more than once.
+ *
+ * Every allowance carries a reason. A growing ALLOWED list is the signal that a
+ * rule is wrong; a shrinking one is the signal that it is working.
+ */
+
+const SCAN_ROOTS = ["src/app", "src/components"];
+
+interface Rule {
+  id: string;
+  /** What DESIGN.md says, so a failure explains itself. */
+  because: string;
+  test: RegExp;
+  /** Narrow the rule to markup that matters, when the raw regex is too broad. */
+  appliesTo?: (line: string) => boolean;
+}
+
+const SIZE_CLASS = String.raw`(?:sm:|md:|lg:|xl:|2xl:)?text-(?:xs|sm|base|lg|[2-9]?xl)`;
+
+const RULES: Rule[] = [
+  {
+    id: "heading-size-override",
+    because:
+      "Heading and PageHead supply text-page-title. A size class in the same className lands in the same tailwind-merge group and silently replaces the clamp — the /books and /projects bug, twice.",
+    test: new RegExp(String.raw`<Heading[^>]*className="[^"]*\b${SIZE_CLASS}\b`),
+  },
+  {
+    id: "neutral-grey",
+    because:
+      "The Sand Hairline Rule: every neutral is warm paper in light mode and cool night in dark. Tailwind's grey/slate/zinc/stone scales are neither.",
+    test: /\b(?:bg|text|border|divide|ring)-(?:gray|grey|slate|zinc|stone|neutral)-\d{2,3}\b/,
+  },
+  {
+    id: "content-shadow",
+    because:
+      "The Two Sheets Rule: the fixed navbar and the cta-primary ledge are the only elevated objects. A ring is a box-shadow too.",
+    test: /\b(?:hover:)?(?:shadow-(?:sm|md|lg|xl|2xl|\[)|ring-2\b)/,
+    appliesTo: (line) => !line.includes("focus") && !line.includes("site-header"),
+  },
+  {
+    id: "image-hover-lift",
+    because:
+      "The Flat Paper Rule: a hovered surface changes tint and border colour, it does not rise. Scale on an image is a lift.",
+    test: /\b(?:group-)?hover:scale-/,
+  },
+];
+
+/** Each entry needs a reason. If you cannot write one, fix the code instead. */
+const ALLOWED: Array<{ file: string; rule: string; reason: string }> = [];
+
+function stripComments(source: string): string {
+  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[ \t]*\/\/.*$/gm, "");
+}
+
+function walk(dir: string): string[] {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) return entry.name === "__tests__" ? [] : walk(full);
+    return /\.tsx?$/.test(entry.name) ? [full] : [];
+  });
+}
+
+describe("design drift", () => {
+  it.each(RULES)("$id", (rule) => {
+    const offenders: string[] = [];
+
+    for (const root of SCAN_ROOTS) {
+      const dir = path.join(process.cwd(), root);
+      if (!fs.existsSync(dir)) continue;
+
+      for (const file of walk(dir)) {
+        const relative = path.relative(process.cwd(), file);
+        if (ALLOWED.some((a) => a.file === relative && a.rule === rule.id)) continue;
+
+        const lines = stripComments(fs.readFileSync(file, "utf-8")).split("\n");
+        lines.forEach((line, index) => {
+          if (!rule.test.test(line)) return;
+          if (rule.appliesTo && !rule.appliesTo(line)) return;
+          offenders.push(`${relative}:${index + 1} — ${line.trim().slice(0, 110)}`);
+        });
+      }
+    }
+
+    expect(offenders, [`${rule.id}: ${rule.because}`, "", ...offenders].join("\n")).toEqual([]);
+  });
+});
+
+describe("navigation vocabulary", () => {
+  it("gives every destination exactly one name", async () => {
+    const navlinks = await import("@/constants/navlinks");
+    const namesByHref = new Map<string, Set<string>>();
+
+    const collect = (items: unknown): void => {
+      if (Array.isArray(items)) {
+        items.forEach(collect);
+        return;
+      }
+      if (!items || typeof items !== "object") return;
+      const record = items as Record<string, unknown>;
+      if (typeof record.href === "string" && typeof record.name === "string") {
+        const set = namesByHref.get(record.href) ?? new Set<string>();
+        set.add(record.name);
+        namesByHref.set(record.href, set);
+      }
+      Object.values(record).forEach(collect);
+    };
+
+    Object.values(navlinks).forEach(collect);
+
+    const conflicts = [...namesByHref.entries()]
+      .filter(([, names]) => names.size > 1)
+      .map(([href, names]) => `${href} is called ${[...names].map((n) => `"${n}"`).join(" and ")}`);
+
+    expect(
+      conflicts,
+      [
+        "One destination, two names, in two persistent navigations.",
+        "The header said Writing and Hire me; the footer said Blog and Work With Me.",
+        "",
+        ...conflicts,
+      ].join("\n")
+    ).toEqual([]);
+  });
+});

@@ -35,7 +35,7 @@ export function AskDrawerTrigger({
       aria-label={drawer.isOpen ? "Close the ask panel" : "Ask this site"}
       aria-expanded={drawer.isOpen}
       aria-controls="ask-drawer"
-      className="label-mono inline-flex min-h-11 items-center gap-2 px-2 text-muted-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:min-h-0"
+      className="label-mono label-link gap-2 px-2 text-muted-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
     >
       <MessageCircle className="h-3.5 w-3.5 shrink-0" aria-hidden />
       <span aria-hidden className={drawer.isOpen ? "sr-only" : "hidden lg:inline"}>

@@ -151,7 +151,7 @@ export function ContributionGraph() {
                       key={dayIndex}
                       onMouseEnter={() => setHoveredDay(day)}
                       onMouseLeave={() => setHoveredDay(null)}
-                      className="relative h-3 w-3 cursor-pointer rounded-sm ring-primary/45 transition-shadow hover:ring-2"
+                      className="relative h-3 w-3 cursor-pointer rounded-sm transition-colors hover:outline hover:outline-1 hover:outline-offset-1 hover:outline-primary/45"
                       style={{
                         backgroundColor: inkFor(day.contributionCount),
                       }}

@@ -98,9 +98,10 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
               )}
             </span>
             {/* Same order as the card: the claim, then the name as a label. */}
-            <div className="font-display text-xl font-semibold tracking-tight text-balance">
-              {project.thesis ?? title}
-            </div>
+            {/* A heading, not a div. /projects stopped skipping levels when
+                this became a div, which removed the document outline instead of
+                fixing it: eighteen projects, one heading on the page. */}
+            <h2 className="text-card-title text-balance">{project.thesis ?? title}</h2>
             {project.thesis && (
               <span className="label-mono text-foreground">{title}</span>
             )}

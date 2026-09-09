@@ -62,7 +62,7 @@ export function HeroAsk() {
             required
             placeholder="It's read everything I've written…"
             autoComplete="off"
-            className="h-14 w-full rounded-none border-0 border-b border-border bg-transparent pr-28 text-lg text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-0"
+            className="h-14 w-full rounded-none border-0 border-b border-border bg-transparent pr-28 text-lg text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-0"
           />
           <Button
             type="submit"

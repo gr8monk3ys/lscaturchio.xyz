@@ -74,7 +74,8 @@ export function ProgressBar({
         aria-valuenow={Math.round(progress)}
         aria-valuemin={0}
         aria-valuemax={100}
-        className="group relative h-2 w-full cursor-pointer rounded-full bg-muted bg-primary"
+        aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
+        className="group relative h-2 w-full cursor-pointer rounded-full bg-muted"
       >
         <div
           className="absolute inset-y-0 left-0 rounded-full bg-primary transition-[width] duration-100"
@@ -138,7 +139,6 @@ export function TransportControls({
           onClick={onTogglePlay}
           className={cn(
             "rounded-xl p-3 transition-colors",
-            "bg-primary text-primary-foreground hover:bg-primary/90",
             "bg-primary text-primary-foreground hover:bg-primary/90"
           )}
           aria-label={isPlaying ? "Pause" : "Play"}

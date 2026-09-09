@@ -65,7 +65,7 @@ export default async function TopicHubPage({ params }: Props) {
             <span className="text-foreground">{hub.title}</span>
           </div>
 
-          <Heading className="text-4xl font-bold">{hub.title}</Heading>
+          <Heading>{hub.title}</Heading>
           <Paragraph className="text-lg text-muted-foreground">{hub.description}</Paragraph>
         </div>
 

@@ -77,7 +77,7 @@ function useEssayHeadings(slug?: string) {
 }
 
 function scrollToHeading(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  document.getElementById(id)?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
 }
 
 /** Ask about this essay. Shared by the desktop rail and the mobile end matter. */
@@ -98,8 +98,8 @@ function ContentsList({
             className={cn(
               "block w-full py-1 text-left transition-colors hover:text-primary",
               activeId === heading.id
-                ? "text-primary font-medium border-l-2 border-primary pl-3 -ml-3"
-                : "text-muted-foreground hover:border-l-2 hover:border-gray-300 dark:hover:border-gray-700 pl-3 -ml-3"
+                ? "text-primary font-medium border-l border-primary pl-3 -ml-3"
+                : "text-muted-foreground hover:border-l hover:border-border pl-3 -ml-3"
             )}
           >
             {heading.text}

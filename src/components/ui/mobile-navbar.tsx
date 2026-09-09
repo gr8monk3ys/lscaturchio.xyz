@@ -113,7 +113,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
           onClick={() =>
             isMenuOpen ? closeMenu() : setIsMenuOpen(true)
           }
-          className="flex h-10 w-10 items-center justify-center rounded-xl neu-button transition-transform hover:scale-[1.02] active:scale-[0.98] focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          className="flex h-10 w-10 items-center justify-center rounded-xl neu-button transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           aria-label="Toggle menu"
           aria-expanded={isMenuOpen}
           aria-controls="mobile-navigation-menu"

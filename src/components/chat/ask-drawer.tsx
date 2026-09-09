@@ -254,7 +254,7 @@ export function AskDrawer() {
                turning Forest Ink (see focus-within on the wrapper). The element
                itself previously had `focus:outline-hidden` and nothing else,
                which left it with no visible focused state at all. */
-            className="max-h-32 min-h-11 flex-1 resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-muted-foreground/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="max-h-32 min-h-11 flex-1 resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           />
           <button
             type="submit"

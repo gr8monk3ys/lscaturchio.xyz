@@ -112,7 +112,7 @@ export function HeaderSection({ metrics, product, shared, status }: HeaderSectio
       </div>
 
       <m.div layoutId={shared ? `project-title-${product.slug}` : undefined}>
-        <Heading className="font-bold text-3xl md:text-5xl leading-[1.05]">{product.title}</Heading>
+        <Heading className="leading-[1.05]">{product.title}</Heading>
       </m.div>
 
       <Paragraph className="text-lg text-muted-foreground">{product.description}</Paragraph>
@@ -179,22 +179,11 @@ export function CaseStudyOverview({ caseStudy }: { caseStudy: CaseStudy | undefi
         <p className="mt-3 leading-relaxed text-muted-foreground">{caseStudy.challenge}</p>
       </div>
 
-      <div id="solution" className="border-b border-border py-8">
+      <div id="solution" className="py-8">
         <h3 className="label-mono">The approach</h3>
         <p className="mt-3 leading-relaxed text-muted-foreground">{caseStudy.solution}</p>
       </div>
 
-      <div className="py-8">
-        <h3 className="label-mono">What changed</h3>
-        <ul className="mt-3 space-y-2">
-          {caseStudy.results.slice(0, 3).map((result) => (
-            <li key={result} className="flex items-start gap-3 text-foreground">
-              <span className="mt-2.5 h-px w-3 shrink-0 bg-primary" />
-              <span>{result}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
     </section>
   )
 }

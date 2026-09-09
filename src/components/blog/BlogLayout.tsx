@@ -142,7 +142,7 @@ export async function BlogLayout({
                 <ViewCounter slug={slug} />
               </div>
 
-              <Heading className="mt-5 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
+              <Heading className="mt-5 text-balance tracking-tight">
                 {meta.title}
               </Heading>
 
