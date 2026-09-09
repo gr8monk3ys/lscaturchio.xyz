@@ -10,13 +10,6 @@ import { AskDrawerTrigger } from "@/components/chat/ask-drawer-trigger";
 const navLinkBaseClass =
   "relative block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-left after:rounded-full after:bg-primary after:transition-transform after:duration-200";
 
-// The one accent action in the header — hiring is the commercial CTA, so it
-// gets the filled treatment while everything else stays quiet. Breadth lives
-// in the footer site map and ⌘K search, not in dropdowns.
-const ACCENT_HREF = "";
-const accentLinkClass =
-  "block whitespace-nowrap rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2";
-
 export function Navbar() {
   return (
     <>
@@ -39,35 +32,24 @@ export function Navbar() {
             </div>
 
             <nav aria-label="Primary" className="flex items-center">
-              <ul className="flex items-center space-x-2 rounded-full border border-border bg-background/80 px-3 py-2 shadow-[inset_0_1px_0_hsl(var(--border))] backdrop-blur-sm">
-                {primaryNavigation.map((item) =>
-                  item.href === ACCENT_HREF ? (
-                    <li key={item.href}>
-                      {/* Route through ActiveNavLink so the accent item still
-                          emits aria-current="page"; it stays filled in both
-                          states (active/inactive class identical). */}
-                      <ActiveNavLink
-                        href={item.href}
-                        className={accentLinkClass}
-                        activeClassName=""
-                        inactiveClassName=""
-                      >
-                        {item.name}
-                      </ActiveNavLink>
-                    </li>
-                  ) : (
-                    <li key={item.href}>
-                      <ActiveNavLink
-                        href={item.href}
-                        className={navLinkBaseClass}
-                        activeClassName="text-foreground after:scale-x-100"
-                        inactiveClassName="text-foreground/70 hover:text-foreground/90 after:scale-x-0 hover:after:scale-x-100"
-                      >
-                        {item.name}
-                      </ActiveNavLink>
-                    </li>
-                  )
-                )}
+              <ul className="flex items-center space-x-2 rounded-full border border-border bg-background/80 px-3 py-2 backdrop-blur-sm">
+                {/* One treatment. The branch that used to sit here compared
+                    each href to `ACCENT_HREF`, which was the empty string, so
+                    no item ever matched and the filled-CTA path never ran — a
+                    dead branch with an eight-line comment describing a button
+                    the header does not have. */}
+                {primaryNavigation.map((item) => (
+                  <li key={item.href}>
+                    <ActiveNavLink
+                      href={item.href}
+                      className={navLinkBaseClass}
+                      activeClassName="text-foreground after:scale-x-100"
+                      inactiveClassName="text-foreground/70 hover:text-foreground/90 after:scale-x-0 hover:after:scale-x-100"
+                    >
+                      {item.name}
+                    </ActiveNavLink>
+                  </li>
+                ))}
               </ul>
             </nav>
 

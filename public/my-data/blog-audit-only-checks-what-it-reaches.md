@@ -16,7 +16,7 @@ The page was, at the same moment, correct and false. Correct in the body, where 
 
 ## The guard was there. It was looking somewhere else.
 
-The obvious reading is carelessness, and the obvious fix is to be more careful. Both are wrong, and the comment is what proves it. Care had already been applied. It landed on the count that a test could see.
+The obvious reading is carelessness, and the obvious fix is to be more careful. The comment is what rules that out. Care had already been applied here; it simply landed on the count that a test could see.
 
 Tests render pages. They assert that a heading appears, that a list has the right number of items, that a button says what it should. Nothing in any normal test suite renders a `<meta name="description">` and reads it back, because meta descriptions have no behavior. They are not for users. They are for crawlers, which is to say they are the part of the page that gets read most and looked at least.
 
@@ -44,7 +44,7 @@ The count now comes from one function that reads the shelf, and both the page bo
 
 That second catch is the honest measure of the thing. The guard reads a list of nouns I wrote down. It knows about essays and books and films because those are what I thought of. It does not know about anything I did not think of.
 
-That is the unglamorous version of honesty, and it is the only version that survives contact with time. Not a person resolving to be accurate. A structure in which the inaccurate version is harder to write than the accurate one.
+That is the unglamorous version of honesty, and the only version that survives contact with time. It asks for a structure in which the inaccurate version is harder to write than the accurate one, rather than for a person who resolves to be accurate.
 
 You can hear how weak that sounds compared to the alternative. Institutions prefer the strong-sounding version, which is why the response to a scandal is usually a commitment, a set of principles, a new officer with the word integrity in the title. Those are all claims about future care. The thing that would actually work is duller: find the sentence nobody checks, and wire it to the number somebody does.
 

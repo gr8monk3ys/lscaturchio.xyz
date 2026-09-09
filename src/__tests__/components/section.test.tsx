@@ -28,8 +28,13 @@ describe('Section', () => {
     const { container } = render(
       <Section divider topDivider><span>x</span></Section>
     );
-    // Two hairline divider elements (top + bottom).
-    expect(container.querySelectorAll('.bg-border\\/70').length).toBe(2);
+    // Two full-width hairlines (top + bottom). Asserted on `bg-border`, the
+    // token, rather than the old `bg-border/70` partial-width ornament.
+    const rules = container.querySelectorAll('.bg-border');
+    expect(rules.length).toBe(2);
+    for (const rule of rules) {
+      expect(rule).toHaveClass('inset-x-0');
+    }
   });
 
   it('renders no dividers unless asked', () => {

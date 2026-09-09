@@ -56,13 +56,11 @@ export function Section({
         className
       )}
     >
-      {topDivider && (
-        <div
-          className={cn(
-            "absolute top-0 left-1/2 h-px w-1/2 max-w-lg -translate-x-1/2 bg-border/70"
-          )}
-        />
-      )}
+      {/* Full-width hairlines. These were centred partial-width rules — half
+          and a third of the section, capped at max-w-lg — which read as
+          ornament. DESIGN.md specifies a full-width hairline between sections
+          and gives it a name, `gallery-rule`. */}
+      {topDivider && <div className="absolute inset-x-0 top-0 h-px bg-border" />}
       <div
         className={cn(
           "mx-auto px-4 sm:px-6 lg:px-8",
@@ -72,13 +70,7 @@ export function Section({
       >
         {children}
       </div>
-      {divider && (
-        <div
-          className={cn(
-            "absolute bottom-0 left-1/2 h-px w-1/3 max-w-md -translate-x-1/2 bg-border/70"
-          )}
-        />
-      )}
+      {divider && <div className="absolute inset-x-0 bottom-0 h-px bg-border" />}
     </section>
   );
 }

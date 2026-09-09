@@ -10,7 +10,6 @@ import { Product } from '@/types/products'
 import { hasArchitectureDiagram } from '@/components/projects/ProjectArchitectureDiagram'
 import { findRelatedProjects } from '@/lib/project-catalogue'
 import {
-  defaultProcessSteps,
   HeaderSection,
   HeroSection,
   CaseStudyOverview,
@@ -32,16 +31,18 @@ export const SingleProduct = ({ product }: { product: Product }) => {
 
   const caseStudy = product.caseStudy
   const metrics = caseStudy?.metrics ?? []
-  const processSteps =
-    caseStudy?.process && caseStudy.process.length > 0
-      ? caseStudy.process
-      : defaultProcessSteps(product.title)
+  // No fallback. `defaultProcessSteps` generated four generic sentences —
+  // "Sketched a simple architecture and chose pragmatic tradeoffs for
+  // reliability" — and asserted them as facts about a specific build, on a site
+  // whose first principle is that every claim has a source. A project without
+  // an authored process now shows no process section.
+  const processSteps = caseStudy?.process ?? []
 
   const pageSections = [
     { id: 'overview', label: 'Overview' },
     ...(caseStudy ? [{ id: 'challenge', label: 'Challenge' }, { id: 'solution', label: 'Approach' }] : []),
     ...(hasArchitectureDiagram(product.slug) ? [{ id: 'architecture', label: 'Architecture' }] : []),
-    { id: 'process', label: 'Process' },
+    ...(processSteps.length > 0 ? [{ id: 'process', label: 'Process' }] : []),
     ...(caseStudy ? [{ id: 'outcomes', label: 'Outcomes' }] : []),
     ...(product.details && product.details.length > 0 ? [{ id: 'details', label: 'Details' }] : []),
   ]
@@ -74,7 +75,7 @@ export const SingleProduct = ({ product }: { product: Product }) => {
           />
           <CaseStudyOverview caseStudy={caseStudy} />
           <ArchitectureSection slug={product.slug} />
-          <ProcessSection processSteps={processSteps} />
+          {processSteps.length > 0 && <ProcessSection processSteps={processSteps} />}
           <OutcomesSection caseStudy={caseStudy} />
           <DetailsSection details={product.details} />
           <RelatedProjectsSection relatedProjects={relatedProjects} />

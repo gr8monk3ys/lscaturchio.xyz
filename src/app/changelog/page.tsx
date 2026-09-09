@@ -53,8 +53,9 @@ export default async function ChangelogPage() {
               Changelog
             </Heading>
             <p className="text-lg text-muted-foreground">
-              What changed here, and when. Hand-picked rather than generated from commits, so
-              it records the things worth telling you about rather than every push.
+              Three sections, in this order: what is planned, then every pull request that
+              has landed, then the milestones worth calling out. The shipped list reads itself
+              from the repository; the milestones are hand-picked.
             </p>
             <div className="mt-4">
               <Link
@@ -116,8 +117,7 @@ export default async function ChangelogPage() {
               <div className="mb-6">
                 <h2 className="text-2xl font-semibold">Shipped</h2>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Every change to this site lands as a pull request, so this feed reads straight
-                  from the repository — it cannot fall behind the way a hand-written list does.
+                  Every change lands as a pull request, so this list cannot fall behind.
                 </p>
               </div>
               <ul className="divide-y divide-border border-y border-border">

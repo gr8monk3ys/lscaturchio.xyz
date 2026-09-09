@@ -80,7 +80,7 @@ export default async function TopicHubPage({ params }: Props) {
                 <Link
                   key={p.slug}
                   href={`/projects/${p.slug}`}
-                  className="neu-flat-sm rounded-xl p-4 hover:shadow-md transition-shadow"
+                  className="neu-flat-sm rounded-xl p-4 transition-colors hover:border-primary/45"
                 >
                   <div className="font-semibold">{p.title}</div>
                   <div className="mt-1 text-sm text-muted-foreground line-clamp-2">

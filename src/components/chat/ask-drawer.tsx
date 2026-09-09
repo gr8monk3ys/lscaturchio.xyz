@@ -154,6 +154,7 @@ export function AskDrawer() {
         </div>
       </header>
 
+      <div className="flex min-h-0 flex-1 flex-col" aria-live="polite" aria-busy={isLoading}>
       {isEmpty ? (
         <div className="flex-1 overflow-y-auto px-5 py-8">
           <p className="font-display text-2xl font-semibold tracking-tight text-foreground">
@@ -162,6 +163,10 @@ export function AskDrawer() {
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             Answers come from what is published here, quoted where they can be.
             {contextSlug ? " Right now it will read this essay first." : ""}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            It has not read anything Lorenzo has not published, so it cannot tell
+            you what he is working on now, and it will say so rather than guess.
           </p>
 
           <ul className="mt-8 space-y-3">
@@ -228,6 +233,7 @@ export function AskDrawer() {
           </ChatMessageList>
         </div>
       )}
+      </div>
 
       {/* The masthead's underline field, at drawer scale: a rule on the paper
           rather than a box floating on it. */}
