@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, FormEvent, KeyboardEvent } from "react";
+import { FormEvent, KeyboardEvent } from "react";
+import { useAskConversation } from "@/hooks/use-ask-conversation";
 import { CornerDownLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { logError } from "@/lib/logger";
 import {
   ChatBubble,
   ChatBubbleAvatar,
@@ -13,14 +13,6 @@ import { ChatMessageList } from "@/components/chat/chat-message-list";
 import { ChatInput } from "@/components/chat/chat-input";
 import Link from "next/link";
 
-interface ChatMessage {
-  id: number;
-  content: string;
-  sender: "user" | "ai";
-  /** Set on a failed turn so the reader can resend the question that failed. */
-  failedQuery?: string;
-}
-
 // POV-forward openers — the chat is an interactive version of Lorenzo's
 // thinking, not a search box. Lead with provocation, not "how can I help".
 const STARTER_PROMPTS = [
@@ -29,15 +21,6 @@ const STARTER_PROMPTS = [
   "What did you used to believe that you've since changed your mind on?",
   "Pick a fight with Silicon Valley for me.",
 ];
-
-// Honest about the mechanism: this is retrieval over the essays, not a
-// model trained on them. The site's one rule is that nothing on it claims
-// more than it can show.
-const OPENER =
-  "I answer from Lorenzo's essays and the notes on this site, in his words where I can find them. Ask what he thinks. Or push back and argue.";
-
-const ERROR_COPY =
-  "That one didn't get through. The essays are still here; try the question again, or ask it another way.";
 
 interface ChatPageClientProps {
   contextSlug?: string;
@@ -51,88 +34,14 @@ export function ChatPageClient({
   initialQuery = "",
 }: ChatPageClientProps) {
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: 1, content: OPENER, sender: "ai" },
-  ]);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Seed the input from URL params (non-destructive)
-  useEffect(() => {
-    if (!initialQuery) return;
-    setInput((prev) => (prev.trim().length > 0 ? prev : initialQuery));
-  }, [initialQuery]);
-
-  const sendMessage = async (raw: string) => {
-    const query = raw.trim();
-    if (!query || isLoading) return;
-
-    const userMessage: ChatMessage = {
-      id: messages.length + 1,
-      content: query,
-      sender: "user",
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query, contextSlug: contextSlug || undefined }),
-      });
-
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(
-          data?.message ||
-          data?.error ||
-          `Chat request failed with status ${response.status}`
-        );
-      }
-      const payload = data?.data ?? data;
-      const answer =
-        typeof payload?.answer === "string" && payload.answer.trim().length > 0
-          ? payload.answer
-          : null;
-      if (!answer) {
-        throw new Error("Chat response missing answer");
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: prev.length + 1,
-          content: answer,
-          sender: "ai",
-        },
-      ]);
-    } catch (error) {
-      logError("Chat request failed", error, {
-        component: "ChatPageClient",
-        action: "handleSubmit",
-      });
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: prev.length + 1,
-          content: ERROR_COPY,
-          sender: "ai",
-          failedQuery: query,
-        },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // The conversation itself lives in `useAskConversation`, shared with the ask
+  // drawer. This route is now one of two presentations of the same thing.
+  const { messages, input, setInput, isLoading, send, reset, isEmpty } =
+    useAskConversation({ contextSlug, initialQuery });
 
   const handleSubmit = (e?: FormEvent) => {
     e?.preventDefault();
-    void sendMessage(input);
+    void send(input);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -145,7 +54,20 @@ export function ChatPageClient({
   return (
     <div className="flex min-h-[70vh] flex-col border-y border-border">
       <div className="px-1 py-5">
-        <span className="label-mono block">Ask the site</span>
+        <div className="flex items-baseline justify-between gap-4">
+          <span className="label-mono block">Ask the site</span>
+          {/* A way out of a thread that went nowhere. The design review filed
+              the absence of this as a user-control failure. */}
+          {!isEmpty && (
+            <button
+              type="button"
+              onClick={reset}
+              className="label-mono text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            >
+              Start over
+            </button>
+          )}
+        </div>
         <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight">Chat with Lorenzo</h1>
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">
           Answers come from the essays, not from a model that made them up. Enter sends;
@@ -191,7 +113,7 @@ export function ChatPageClient({
                 {message.failedQuery && !isLoading && (
                   <button
                     type="button"
-                    onClick={() => void sendMessage(message.failedQuery ?? "")}
+                    onClick={() => void send(message.failedQuery ?? "")}
                     className="label-mono mt-3 block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   >
                     Try again →
@@ -209,7 +131,7 @@ export function ChatPageClient({
                   <button
                     key={prompt}
                     type="button"
-                    onClick={() => void sendMessage(prompt)}
+                    onClick={() => void send(prompt)}
                     className="border border-border px-3 py-2 text-left text-sm text-foreground transition-colors hover:border-primary/45 hover:text-primary focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   >
                     {prompt}

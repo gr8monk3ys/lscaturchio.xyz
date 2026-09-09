@@ -18,7 +18,7 @@ import { SeriesNavigation } from "./series-navigation";
 import { Webmentions } from "./webmentions";
 import { GiscusComments } from "./giscus-comments";
 import { RelatedPosts } from "./related-posts";
-import { BlogSidebar, EssayContentsInline, EssayAskInline } from "./blog-sidebar";
+import { BlogSidebar, EssayContentsInline } from "./blog-sidebar";
 import Link from "next/link";
 import { getTopicHubsForTags } from "@/constants/topics";
 import { getSiteUrl } from "@/lib/site-url";
@@ -234,7 +234,6 @@ export async function BlogLayout({
               currentUrl={pathname}
             />
 
-            <EssayAskInline slug={slug} title={meta.title} />
 
             <NewsletterCTA
               defaultTopics={relatedHubs.map((hub) => hub.slug)}
@@ -248,7 +247,7 @@ export async function BlogLayout({
         </div>
 
         {/* Sidebar (AI + TOC) - only visible on xl screens */}
-        <BlogSidebar slug={slug} title={meta.title} />
+        <BlogSidebar slug={slug} />
       </div>
     </Container>
     </>
