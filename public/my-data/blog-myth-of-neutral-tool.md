@@ -54,7 +54,7 @@ Others understand it just as well and prefer to pretend otherwise. It's easier. 
 
 Start by dropping the frame that technical and political questions live in separate rooms. They don't. Every conversation about how to build something is also a conversation about how power gets distributed and which values end up baked into the systems people depend on.
 
-Then ask different questions of the work. Not only "what's technically possible" or "what's most efficient" but "who does this serve?" Not only "will users engage" but "what does this train them to do?"
+Then ask different questions of the work. Not only "what's technically possible" or "what's most efficient" but "who does this serve?" And when the answer is that users will engage: engage with what, and what does that train them to do?
 
 And demand that the systems shaping public life be accountable to that life. The algorithms that decide what information people see, what prices they pay, what opportunities reach them, shouldn't be trade secrets immune to scrutiny. Where the dominant tools concentrate control, alternatives built on other assumptions already exist, often made by people working without corporate resources, precisely because they understand that design is politics.
 

@@ -37,10 +37,12 @@ export default async function ChangelogPage() {
     later: ROADMAP.filter((item) => item.status === 'later'),
   } as const
 
-  const statusMeta: Record<RoadmapStatus, { label: string; description: string }> = {
-    now: { label: 'Now', description: 'Current implementation focus' },
-    next: { label: 'Next', description: 'Near-term planned work' },
-    later: { label: 'Later', description: 'Backlog and exploratory ideas' },
+  const statusMeta: Record<RoadmapStatus, { label: string }> = {
+    // No descriptions. "Now / Current implementation focus" restated the
+    // label in longer words; the three columns explain themselves.
+    now: { label: 'Now' },
+    next: { label: 'Next' },
+    later: { label: 'Later' },
   }
 
   return (
@@ -52,7 +54,8 @@ export default async function ChangelogPage() {
               Changelog
             </Heading>
             <p className="text-lg text-muted-foreground">
-              A transparent record of all additions, changes, and improvements to this website.
+              What changed here, and when. Hand-picked rather than generated from commits, so
+              it records the things worth telling you about rather than every push.
             </p>
             <div className="mt-4">
               <Link
@@ -81,13 +84,10 @@ export default async function ChangelogPage() {
                       {grouped[status].length}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1 mb-4">
-                    {statusMeta[status].description}
-                  </p>
 
                   <div className="space-y-4">
                     {grouped[status].length === 0 && (
-                      <p className="text-sm text-muted-foreground">No items yet.</p>
+                      <p className="text-sm text-muted-foreground">Nothing queued here right now.</p>
                     )}
                     {grouped[status].map((item) => (
                       <article key={item.id} className="rounded-xl border border-border/60 bg-background/70 p-4">

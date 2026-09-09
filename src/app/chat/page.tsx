@@ -10,7 +10,7 @@ const ChatPageClient = dynamic(() => import("@/components/chat/chat-page-client"
 
 export const metadata = {
   title: "Chat",
-  description: "Chat with an AI version of Lorenzo, grounded in blog and site content.",
+  description: "Ask a question and get an answer drawn from the essays on this site, with the passages it read.",
 };
 
 export default async function ChatPage({

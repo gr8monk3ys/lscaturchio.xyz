@@ -35,10 +35,10 @@ export default function AboutPage() {
             <div className="flex-1">
               <span className="label-mono block">Garden · Reading</span>
               <h3 className="mt-2 font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                Books I Love
+                Books
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Philosophy, psychology, and meaningful reads
+                What I am reading, what I finished, and the ones I gave full marks
               </p>
             </div>
             <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-[transform,color]" />
@@ -51,10 +51,10 @@ export default function AboutPage() {
             <div className="flex-1">
               <span className="label-mono block">Garden · Cinema</span>
               <h3 className="mt-2 font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                Films I Cherish
+                Films
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Cinema that shaped my perspective
+                Logged as I watch them, synced from Letterboxd
               </p>
             </div>
             <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-[transform,color]" />

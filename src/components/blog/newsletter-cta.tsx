@@ -16,8 +16,8 @@ export function NewsletterCTA({
         Enjoyed this?
       </h3>
       <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
-        Get notified when I publish — new essays on AI, systems, and the world
-        they land in. No spam, just the writing.
+        An email when I publish something new. That is the whole list; I have never
+        sent it for any other reason.
       </p>
       <div className="mt-6">
         <NewsletterForm defaultTopics={defaultTopics} sourcePath={sourcePath} />

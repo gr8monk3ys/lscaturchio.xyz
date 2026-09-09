@@ -139,11 +139,13 @@ export function NewHereSection({ popularPosts, essayCount }: NewHereSectionProps
   return (
     <Section padding="compact" size="wide" divider topDivider>
       <div className="mx-auto max-w-4xl">
+        {/* No description prop. "A quick path to get the most out of this
+            site" was the third restatement of the same nothing, after the
+            eyebrow and the title. */}
         <SectionHeader
           index="04"
           eyebrow="Start here"
           title="New here? Start with these"
-          description="A quick path to get the most out of this site."
         />
 
         <LedgerRows items={steps} numbered className="border-t border-border">

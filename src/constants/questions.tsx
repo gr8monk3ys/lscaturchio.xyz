@@ -6,7 +6,7 @@ interface FaqItem {
 export const questions: FaqItem[] = [
   {
     question: "What is your typical project engagement process?",
-    answer: "I start with a free 30-minute discovery call to understand your goals and challenges. From there, I provide a detailed scope document outlining deliverables, timeline, and pricing. Once aligned, we kick off with a deeper technical discovery phase, followed by iterative development with regular check-ins. I prioritize clear communication and transparency throughout.",
+    answer: "A 30-minute call first, free, to find out what the constraint actually is. Then a written scope with deliverables, timeline and a price, so you can say no to a document rather than to a meeting. After that the work runs in short passes with something you can look at each time. If the smallest useful version turns out to be cheaper than you expected, I will say so on the call.",
   },
   {
     question: "What industries have you worked with?",
@@ -14,7 +14,7 @@ export const questions: FaqItem[] = [
   },
   {
     question: "How do you handle pricing and estimates?",
-    answer: "I offer both project-based and hourly pricing depending on the scope. For well-defined projects, I provide fixed-price quotes with clear milestones. For exploratory or ongoing work, I bill hourly with detailed time tracking. I always discuss budget constraints upfront to find an approach that works for both of us.",
+    answer: "Engagements start around $5,000 for a scoped first sprint: one end-to-end slice, with real data and a measurement you can argue with. Fixed price when the scope is clear, hourly when it genuinely is not. I do not quote a number before I understand the constraint, so the first call is the estimate.",
   },
   {
     question: "What deliverables can clients expect?",

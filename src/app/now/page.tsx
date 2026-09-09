@@ -35,7 +35,7 @@ export default async function NowPage() {
         <PageHead
           className="mb-12"
           kicker="Garden · Now"
-          title={<>What I&apos;m Doing Now</>}
+          title={<>What I&apos;m doing now</>}
           blurb={
             <>
               A snapshot of current focus, in the sense of{" "}
@@ -213,13 +213,9 @@ export default async function NowPage() {
             . It is a short answer to what I am focused on, not a complete list of everything I
             could be doing.
           </p>
-          <p className="text-sm text-muted-foreground mt-3">
-            Want to collaborate on something?{" "}
-            <Link href="/contact" className="text-primary hover:underline">
-              Get in touch
-            </Link>
-            .
-          </p>
+          {/* The page already ended above. A closing "Want to collaborate?
+              Get in touch" was a call-to-action bolted onto a paragraph that
+              had said its piece. */}
         </div>
       </div>
     </Container>
