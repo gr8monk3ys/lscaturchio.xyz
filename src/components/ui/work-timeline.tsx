@@ -42,13 +42,13 @@ export const WorkTimeline = () => {
               <div className="h-10 absolute left-3 md:left-3 w-10 rounded-full bg-background border border-border flex items-center justify-center">
                 <div className="h-2.5 w-2.5 rounded-full bg-primary" />
               </div>
-              <h3 className="hidden md:block md:pl-20 font-display text-xl md:text-5xl font-bold text-muted-foreground">
+              <h3 className="hidden md:block md:pl-20 text-card-title text-muted-foreground">
                 {item.company}
               </h3>
             </div>
 
             <div className="relative pl-20 pr-4 md:pl-4 w-full">
-              <h3 className="md:hidden block font-display text-2xl mb-4 text-left font-bold text-muted-foreground">
+              <h3 className="md:hidden block text-section-title mb-4 text-left text-muted-foreground">
                 {item.company}
               </h3>
               <div className="space-y-4">

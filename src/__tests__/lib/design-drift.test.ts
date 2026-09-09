@@ -56,6 +56,33 @@ const RULES: Rule[] = [
     appliesTo: (line) => !line.includes("focus") && !line.includes("site-header"),
   },
   {
+    id: "heading-ramp",
+    because:
+      "The Fluid Heading Rule: headings scale with clamp(), not breakpoints, and the ramp lives in text-page-title / -section-title / -card-title / -subsection. A raw Tailwind step beside font-display is a sixth scale. The existing heading-size-override rule guards a door PageHead already bolted shut; this is the 44 open windows.",
+    test: new RegExp(
+      String.raw`font-display[^"]*\b(?:sm:|md:|lg:|xl:|2xl:)?text-(?:xs|sm|base|lg|[2-9]?xl|\[)`
+    ),
+    // `prose-*` variants are the typography plugin styling essay content, not
+    // headings the ramp governs. The pull-quote is allowed its own size.
+    appliesTo: (line) => !line.includes("prose-"),
+  },
+  {
+    id: "width-scale",
+    because:
+      "page-width.ts defines three widths. A max-w-* outside that set inside a layout container is a fourth or fifth, and it silently overrides the Container size prop it is nested in.",
+    // Named tiers only. An arbitrary value (`max-w-[300px]` on a portrait
+    // plate) is an explicit one-off with intent; a fourth *named* tier is the
+    // drift, because it reads as part of a scale that does not contain it.
+    test: /\bmax-w-(?:3xl|5xl|7xl)\b/,
+    appliesTo: (line) => /className/.test(line) && !/prose/.test(line),
+  },
+  {
+    id: "raw-signal-colour",
+    because:
+      "The four signal colours are tokens (--destructive, --success, --warning, --info). A raw Tailwind red/green/amber/blue on a public route bypasses them and usually has no dark-mode variant.",
+    test: /\b(?:text|bg|border|ring)-(?:red|green|emerald|amber|yellow|blue|sky|indigo|violet|purple|pink|rose|orange|teal|cyan|lime|fuchsia)-\d{2,3}\b/,
+  },
+  {
     id: "image-hover-lift",
     because:
       "The Flat Paper Rule: a hovered surface changes tint and border colour, it does not rise. Scale on an image is a lift.",

@@ -11,7 +11,7 @@ export default async function AdminNowPage() {
       {data ? (
         <NowEditor initial={data} />
       ) : (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-destructive">{error}</p>
       )}
     </main>
   );

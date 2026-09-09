@@ -58,6 +58,7 @@
   --color-success: hsl(var(--success));
   --color-success-foreground: hsl(var(--success-foreground));
   --color-success-muted: hsl(var(--success-muted));
+  --color-destructive-muted: hsl(var(--destructive-muted));
 
   --color-warning: hsl(var(--warning));
   --color-warning-foreground: hsl(var(--warning-foreground));
@@ -87,7 +88,7 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: hsl(var(--border));
   }
 }
 
@@ -144,7 +145,7 @@
  * hardware that reported a coarse pointer. A viewport query is testable, and
  * `any-pointer: coarse` catches touch laptops and large tablets that report a
  * fine pointer as well. */
-@media (max-width: 767px), (any-pointer: coarse) {
+@media (max-width: 767px), (hover: none) and (pointer: coarse) {
   .label-link {
     min-height: 2.75rem;
   }
@@ -485,6 +486,7 @@
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
     --success-muted: 142 76% 36% / 0.1;
+    --destructive-muted: 0 84.2% 60.2% / 0.1;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 0%;
     --warning-muted: 38 92% 50% / 0.1;
@@ -526,6 +528,7 @@
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
     --success-muted: 142 71% 45% / 0.15;
+    --destructive-muted: 0 84.2% 60.2% / 0.1;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 0%;
     --warning-muted: 38 92% 50% / 0.15;

@@ -162,7 +162,7 @@ export function AskDrawer() {
       >
       {isEmpty ? (
         <div className="flex-1 overflow-y-auto px-5 py-8">
-          <p className="font-display text-2xl font-semibold tracking-tight text-foreground">
+          <p className="text-section-title tracking-tight text-foreground">
             Ask the essays anything.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">

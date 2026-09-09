@@ -30,7 +30,7 @@ export default async function NowPage() {
 
   return (
     <Container className="mt-16 lg:mt-32">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-2xl mx-auto">
         {/* Header — gallery masthead */}
         <PageHead
           className="mb-12"
@@ -69,7 +69,7 @@ export default async function NowPage() {
 
         {/* Location */}
         <section className="mb-16">
-          <h2 className="font-display text-2xl font-semibold tracking-tight mb-4">Location</h2>
+          <h2 className="text-section-title tracking-tight mb-4">Location</h2>
           <p className="text-muted-foreground leading-relaxed">
             Currently based in{" "}
             <span className="font-medium text-foreground">{nowData.location.label}</span>,{" "}
@@ -79,7 +79,7 @@ export default async function NowPage() {
 
         {/* Building */}
         <section className="mb-16">
-          <h2 className="font-display text-2xl font-semibold tracking-tight mb-6">Building</h2>
+          <h2 className="text-section-title tracking-tight mb-6">Building</h2>
           <div className="divide-y divide-border border-y border-border">
             {nowData.building.map((item) => (
               <div key={item.title} className="py-6">
@@ -99,7 +99,7 @@ export default async function NowPage() {
         {reading.length > 0 && (
           <section className="mb-16">
             <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="font-display text-2xl font-semibold tracking-tight">Reading</h2>
+              <h2 className="text-section-title tracking-tight">Reading</h2>
               <Link href="/books" className="label-mono label-link hover:text-primary">
                 All books →
               </Link>
@@ -126,7 +126,7 @@ export default async function NowPage() {
         {watching.length > 0 && (
           <section className="mb-16">
             <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="font-display text-2xl font-semibold tracking-tight">Last watched</h2>
+              <h2 className="text-section-title tracking-tight">Last watched</h2>
               <Link href="/movies" className="label-mono label-link hover:text-primary">
                 All films →
               </Link>
@@ -163,7 +163,7 @@ export default async function NowPage() {
         {recentPosts.length > 0 && (
           <section className="mb-16">
             <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="font-display text-2xl font-semibold tracking-tight">Writing</h2>
+              <h2 className="text-section-title tracking-tight">Writing</h2>
               <Link href="/blog" className="label-mono label-link hover:text-primary">
                 All posts →
               </Link>
@@ -185,7 +185,7 @@ export default async function NowPage() {
 
         {/* Thinking About */}
         <section className="mb-16">
-          <h2 className="font-display text-2xl font-semibold tracking-tight mb-6">
+          <h2 className="text-section-title tracking-tight mb-6">
             Thinking about
           </h2>
           <ul className="space-y-3 text-muted-foreground">

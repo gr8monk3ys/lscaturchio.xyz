@@ -48,7 +48,7 @@ export function PersonalFavorites() {
           <m.div variants={itemVariants} className="flex gap-4 flex-col items-start">
             <span className="label-mono block">The essentials</span>
             <div className="flex gap-2 flex-col">
-              <h2 className="font-display text-3xl md:text-5xl tracking-tight font-bold">
+              <h2 className="text-section-title tracking-tight">
                 Personal Favorites
               </h2>
               <p className="text-lg max-w-prose text-muted-foreground">

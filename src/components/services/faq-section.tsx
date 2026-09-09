@@ -32,7 +32,7 @@ interface FaqSectionProps {
 // stuck at opacity 0. The content is visible by default.
 export function FaqSection({ title, description, items, contactInfo }: FaqSectionProps) {
   return (
-    <div className="mx-auto max-w-5xl py-16 sm:py-24">
+    <div className="mx-auto max-w-6xl py-16 sm:py-24">
       <FAQStructuredData questions={items} />
       <div className="px-6 lg:px-8">
         <div className="mx-auto max-w-4xl divide-y divide-border">

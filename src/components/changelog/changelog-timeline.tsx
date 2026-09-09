@@ -60,7 +60,7 @@ export function ChangelogTimeline() {
               return (
                 <div
                   key={changeIndex}
-                  className="grid grid-cols-[6rem_1fr] items-baseline gap-x-4 border-b border-border py-2.5 last:border-b-0"
+                  className="grid max-w-2xl grid-cols-[6rem_1fr] items-baseline gap-x-4 border-b border-border py-2.5 last:border-b-0"
                 >
                   <span className="label-mono">{label}</span>
                   <p className={`text-sm ${change.type === 'highlight' ? 'font-medium text-foreground' : ''}`}>

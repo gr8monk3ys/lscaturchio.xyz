@@ -56,7 +56,7 @@ export function SemanticSearchDemo() {
 
   return (
     <section className="border border-border p-6">
-      <h3 className="font-display text-xl font-semibold">Semantic search demo</h3>
+      <h3 className="text-card-title">Semantic search demo</h3>
       <p className="text-sm text-muted-foreground mt-1">
         Try a query. This is hybrid retrieval over my essays: results are fused
         from vector similarity and keyword search, so a post can rank on meaning,
@@ -83,7 +83,7 @@ export function SemanticSearchDemo() {
       </div>
 
       {error && (
-        <div className="mt-4 text-sm text-red-600">
+        <div className="mt-4 text-sm text-destructive">
           Search is unavailable right now.
         </div>
       )}

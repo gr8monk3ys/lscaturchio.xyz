@@ -11,7 +11,7 @@ export function PublishResult({ result }: { result: PublishState }) {
   }
   if (result.state === "error") {
     return (
-      <p className="mt-4 whitespace-pre-wrap text-sm text-red-600 dark:text-red-400">
+      <p className="mt-4 whitespace-pre-wrap text-sm text-destructive">
         {result.message}
       </p>
     );

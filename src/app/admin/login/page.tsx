@@ -30,7 +30,7 @@ export default async function AdminLoginPage({
     <main>
       <h1 className="text-2xl font-bold">Admin</h1>
       {error && (
-        <p className="mt-4 text-sm text-red-600 dark:text-red-400">
+        <p className="mt-4 text-sm text-destructive">
           {ERROR_MESSAGES[error] || "Sign-in failed."}
         </p>
       )}

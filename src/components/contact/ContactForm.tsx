@@ -69,7 +69,7 @@ export function ContactForm() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       {/* Contact Methods — no entrance animation: an `initial={{ opacity: 0 }}`
           mount under `LazyMotion strict` can be missed, hiding the whole page. */}
       <div className="grid md:grid-cols-3 divide-border border-y border-border md:divide-x mb-16">

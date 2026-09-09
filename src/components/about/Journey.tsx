@@ -37,7 +37,7 @@ export function AboutJourney() {
           <SectionHeading>Philosophy & Learning</SectionHeading>
           <m.div
             variants={itemVariants}
-            className="space-y-4 text-lg w-full"
+            className="w-full max-w-2xl space-y-4 text-lg"
           >
             <m.p variants={itemVariants}>
               I would like to say that I fall under the camp of absurdism. Authors like Camus, Nietzsche,

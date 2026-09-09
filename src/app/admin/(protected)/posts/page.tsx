@@ -22,7 +22,7 @@ export default async function AdminPostsPage() {
         </Link>
       </div>
       {loadError ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{loadError}</p>
+        <p className="text-sm text-destructive">{loadError}</p>
       ) : (
         <ul className="divide-y divide-border border-t border-border">
           {slugs.map((slug) => (

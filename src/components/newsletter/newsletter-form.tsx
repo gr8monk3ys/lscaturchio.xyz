@@ -151,8 +151,8 @@ export function NewsletterForm({
         <div
           className={`mt-3 p-3 rounded-xl text-sm flex items-start gap-2 neu-pressed-sm ${
             status === 'success'
-              ? 'text-green-700 dark:text-green-300'
-              : 'text-red-700 dark:text-red-300'
+              ? 'text-success'
+              : 'text-destructive'
           }`}
         >
           {status === 'success' ? (

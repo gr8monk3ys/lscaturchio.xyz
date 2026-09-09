@@ -7,7 +7,7 @@ export default function NotFound() {
       <div className="w-full max-w-2xl">
         <span className="label-mono block">Gallery · Error 404</span>
 
-        <h1 className="mt-5 font-display text-5xl font-semibold leading-[1.02] tracking-tight sm:text-6xl">
+        <h1 className="mt-5 text-page-title leading-[1.02] tracking-tight sm:text-6xl">
           This room is empty.
         </h1>
 

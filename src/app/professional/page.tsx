@@ -38,7 +38,7 @@ export default function ProfessionalPage() {
 
         {/* Skills Section */}
         <section>
-          <h2 className="font-display text-3xl font-bold tracking-tight mb-8">Technical skills</h2>
+          <h2 className="text-section-title tracking-tight mb-8">Technical skills</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <SkillCategory
               title="Machine Learning & AI"
@@ -96,13 +96,13 @@ export default function ProfessionalPage() {
 
         {/* Work Experience */}
         <section>
-          <h2 className="font-display text-3xl font-bold tracking-tight mb-8">Work experience</h2>
+          <h2 className="text-section-title tracking-tight mb-8">Work experience</h2>
           <WorkTimeline />
         </section>
 
         {/* Philosophy & Approach */}
         <section className="border-y border-border py-10">
-          <h2 className="font-display text-2xl font-bold tracking-tight mb-4">How I work</h2>
+          <h2 className="text-section-title tracking-tight mb-4">How I work</h2>
           <div className="max-w-2xl space-y-4 text-muted-foreground">
             <p>
               Most of this field is locked behind academic papers and tooling that assumes
@@ -122,7 +122,7 @@ export default function ProfessionalPage() {
 
         {/* Current Focus */}
         <section>
-          <h2 className="font-display text-3xl font-bold tracking-tight mb-6">Current focus</h2>
+          <h2 className="text-section-title tracking-tight mb-6">Current focus</h2>
           <div className="grid grid-cols-1 divide-border border-y border-border md:grid-cols-2 md:divide-x">
             <div className="px-0 py-6 md:pr-8">
               <h3 className="label-mono">RAG Systems</h3>
@@ -143,7 +143,7 @@ export default function ProfessionalPage() {
 
         {/* Download Resume */}
         <section className="flex flex-col items-center gap-4 py-8">
-          <h2 className="font-display text-2xl font-bold tracking-tight">The resume</h2>
+          <h2 className="text-section-title tracking-tight">The resume</h2>
           <p className="text-muted-foreground text-center max-w-2xl">
             The same history as a PDF, kept in sync with this page. A call works too if you
             would rather ask than read.

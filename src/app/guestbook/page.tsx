@@ -12,7 +12,7 @@ export const metadata = buildPageMetadata({
 export default function GuestbookPage() {
   return (
     <Container className="mt-16 lg:mt-32">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-2xl mx-auto">
         <PageHead
           className="mb-12"
           kicker="Garden · Guestbook"
