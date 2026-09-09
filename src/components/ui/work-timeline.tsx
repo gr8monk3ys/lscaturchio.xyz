@@ -32,7 +32,7 @@ export const WorkTimeline = () => {
       className="w-full bg-background font-sans"
       ref={containerRef}
     >
-      <div ref={ref} className="relative max-w-7xl mx-auto pb-20">
+      <div ref={ref} className="relative max-w-6xl mx-auto pb-20">
         {timeline.map((item) => (
           <div
             key={`${item.company}-${item.title}-${item.date}`}

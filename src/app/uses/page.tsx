@@ -27,7 +27,7 @@ const Item = ({ title, children }: { title: string; children: React.ReactNode })
 
 export default function UsesPage() {
   return (
-    <Container size="large">
+    <Container size="wide">
       <div className="max-w-4xl mx-auto py-12">
         <PageHead
           kicker="Garden · Setup"

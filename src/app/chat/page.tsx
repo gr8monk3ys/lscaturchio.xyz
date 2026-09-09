@@ -24,7 +24,7 @@ export default async function ChatPage({
   const initialQuery = readSearchParam(params, "q");
 
   return (
-    <Container size="small">
+    <Container size="medium">
       <Suspense fallback={<div className="neu-card min-h-[70vh] rounded-2xl p-6 text-sm text-muted-foreground">Loading chat...</div>}>
         <ChatPageClient
           contextSlug={contextSlug}

@@ -26,7 +26,7 @@ export default async function TopicsPage() {
   }).sort((a, b) => b.count - a.count);
 
   return (
-    <Container className="mt-16 lg:mt-32" size="large">
+    <Container className="mt-16 lg:mt-32" size="wide">
       <div className="max-w-5xl mx-auto">
         {/* Header — gallery masthead */}
         <PageHead

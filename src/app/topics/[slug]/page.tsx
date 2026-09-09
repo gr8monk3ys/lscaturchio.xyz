@@ -53,7 +53,7 @@ export default async function TopicHubPage({ params }: Props) {
   );
 
   return (
-    <Container className="mt-16 lg:mt-32" size="large">
+    <Container className="mt-16 lg:mt-32" size="wide">
       <div className="space-y-10">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

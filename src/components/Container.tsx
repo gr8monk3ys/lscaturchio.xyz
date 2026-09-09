@@ -1,13 +1,18 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import { PAGE_WIDTHS, type PageWidth } from "@/lib/page-width";
 
 interface ContainerProps {
   children: React.ReactNode;
   className?: string;
-  size?: "default" | "small" | "large";
+  /**
+   * Which of the page's three widths this route uses. See `@/lib/page-width`.
+   * Defaults to `wide` (72rem), the widest the design system allows.
+   */
+  size?: PageWidth;
 }
 
-export const Container = ({ children, className, size = "default" }: ContainerProps) => {
+export const Container = ({ children, className, size = "wide" }: ContainerProps) => {
   return (
     <div
       className={cn(
@@ -18,16 +23,7 @@ export const Container = ({ children, className, size = "default" }: ContainerPr
         className
       )}
     >
-      <div 
-        className={cn(
-          "mx-auto w-full",
-          size === "small" && "max-w-4xl",
-          size === "default" && "max-w-7xl",
-          size === "large" && "max-w-400"
-        )}
-      >
-        {children}
-      </div>
+      <div className={cn("mx-auto w-full", PAGE_WIDTHS[size])}>{children}</div>
     </div>
   );
 };

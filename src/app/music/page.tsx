@@ -17,7 +17,7 @@ export const metadata = buildPageMetadata({
  */
 export default function MusicPage() {
   return (
-    <Container size="large">
+    <Container size="wide">
       <div className="py-10">
         <PageHead
           kicker="Garden · Music"

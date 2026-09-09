@@ -75,7 +75,7 @@ export default async function Blog({
   const themedBlogs = filteredBlogs.map(toBlogPreview);
 
   return (
-    <Container size="large">
+    <Container size="wide">
       <div className="space-y-10">
         <header className="pt-4">
           <span className="label-mono block">Essays, Notes &amp; Experiments</span>

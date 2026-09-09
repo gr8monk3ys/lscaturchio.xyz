@@ -1,6 +1,6 @@
 export default function ProjectsLoading() {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Header skeleton */}
       <div className="mb-12 text-center">
         <div className="h-10 w-56 mx-auto animate-pulse rounded-lg bg-muted mb-4" />

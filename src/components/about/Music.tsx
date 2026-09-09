@@ -77,7 +77,7 @@ const cardVariants = {
 export function Music() {
   return (
     <section className="w-full px-4 md:px-6 py-12 lg:py-24">
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full max-w-6xl mx-auto">
         <m.div
           variants={containerVariants}
           initial={false}

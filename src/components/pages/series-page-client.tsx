@@ -25,7 +25,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
 
   if (allSeries.length === 0) {
     return (
-      <Container size="large">
+      <Container size="wide">
         <div className="max-w-5xl mx-auto">
           {/* Header — gallery masthead */}
           <header className="mb-12">
@@ -56,7 +56,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
   }
 
   return (
-    <Container size="large">
+    <Container size="wide">
       <div className="max-w-5xl mx-auto">
           {/* Header — gallery masthead */}
           <header className="mb-12">
