@@ -62,7 +62,7 @@ export function ContributionGraph() {
       <div className="p-6 rounded-lg border border-border">
         <div className="flex items-center gap-2 mb-6">
           <IconBrandGithub className="h-5 w-5 text-primary" />
-          <h2 className="text-xl font-semibold">GitHub Contributions</h2>
+          <h2 className="text-xl font-semibold">GitHub contributions</h2>
         </div>
         <div className="h-32 bg-muted animate-pulse rounded" />
       </div>
@@ -74,7 +74,7 @@ export function ContributionGraph() {
       <div className="p-6 rounded-lg border border-border">
         <div className="flex items-center gap-2 mb-4">
           <IconBrandGithub className="h-5 w-5 text-primary" />
-          <h2 className="text-xl font-semibold">GitHub Contributions</h2>
+          <h2 className="text-xl font-semibold">GitHub contributions</h2>
         </div>
         <p className="text-sm text-muted-foreground">
           GitHub contribution data is temporarily unavailable.
@@ -90,7 +90,7 @@ export function ContributionGraph() {
       <div className="p-6 rounded-lg border border-border">
         <div className="flex items-center gap-2 mb-4">
           <IconBrandGithub className="h-5 w-5 text-primary" />
-          <h2 className="text-xl font-semibold">GitHub Contributions</h2>
+          <h2 className="text-xl font-semibold">GitHub contributions</h2>
         </div>
         <p className="text-sm text-muted-foreground">
           {data.message || 'GitHub contribution data is temporarily unavailable.'}
@@ -112,7 +112,7 @@ export function ContributionGraph() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <IconBrandGithub className="h-5 w-5 text-primary" />
-          <h2 className="text-xl font-semibold">GitHub Contributions</h2>
+          <h2 className="text-xl font-semibold">GitHub contributions</h2>
         </div>
         <p className="text-sm text-muted-foreground">
           <span className="font-semibold text-foreground">{data.totalContributions}</span> contributions in the last year

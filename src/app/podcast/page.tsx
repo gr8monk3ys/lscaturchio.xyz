@@ -63,7 +63,7 @@ async function Episodes() {
   return (
     <div>
       <div>
-        <h2 className="font-display text-2xl font-bold">Latest Episodes</h2>
+        <h2 className="font-display text-2xl font-bold">Latest episodes</h2>
         <p className="text-muted-foreground mt-1">
           Each episode is an audio version of a blog post.
         </p>

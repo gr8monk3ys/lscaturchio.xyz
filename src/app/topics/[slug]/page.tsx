@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Layers, FolderKanban } from "lucide-react";
+import { ArrowRight, Layers } from "lucide-react";
 
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
@@ -69,26 +69,30 @@ export default async function TopicHubPage({ params }: Props) {
           <Paragraph className="text-lg text-muted-foreground">{hub.description}</Paragraph>
         </div>
 
+        {/* Hairline rows. This was a neu-card containing a grid of neu-flat-sm
+            tiles — cards inside cards, the pattern the changelog roadmap was
+            rebuilt to stop using. The green folder icon went with them; the
+            wall label says what the section is. */}
         {relatedProjects.length > 0 && (
-          <section className="neu-card p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <FolderKanban className="h-5 w-5 text-primary" />
-              <h2 className="text-xl font-semibold">Featured Projects</h2>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <section className="border-t border-border pt-6">
+            <span className="label-mono block">Featured projects</span>
+            <ul className="mt-4">
               {relatedProjects.map((p) => (
-                <Link
-                  key={p.slug}
-                  href={`/projects/${p.slug}`}
-                  className="neu-flat-sm rounded-xl p-4 transition-colors hover:border-primary/45"
-                >
-                  <div className="font-semibold">{p.title}</div>
-                  <div className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                    {p.description}
-                  </div>
-                </Link>
+                <li key={p.slug} className="border-b border-border last:border-b-0">
+                  <Link
+                    href={`/projects/${p.slug}`}
+                    className="group block py-4 transition-colors"
+                  >
+                    <span className="block font-semibold transition-colors group-hover:text-primary">
+                      {p.title}
+                    </span>
+                    <span className="mt-1 block text-sm text-muted-foreground line-clamp-2">
+                      {p.description}
+                    </span>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </section>
         )}
 

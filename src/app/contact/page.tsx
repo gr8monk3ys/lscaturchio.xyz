@@ -54,13 +54,13 @@ export default function Contact() {
             </p>
           </div>
           <div className="px-5 py-6">
-            <h2 className="label-mono">Architecture Reviews</h2>
+            <h2 className="label-mono">Architecture reviews</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Reliability, retrieval quality, cost, latency, and rollout risk.
             </p>
           </div>
           <div className="px-5 py-6">
-            <h2 className="label-mono">Fast Decisions</h2>
+            <h2 className="label-mono">Fast decisions</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Short calls or async briefs both work if the problem is already clear enough.
             </p>
@@ -79,7 +79,7 @@ export default function Contact() {
           </div>
 
           <div>
-            <h2 className="label-mono">Response Expectations</h2>
+            <h2 className="label-mono">Response expectations</h2>
             <p className="mt-4 text-sm text-muted-foreground">
               I usually reply within one to two business days. Remote worldwide. If something is
               urgent, say why and when the decision needs to happen.

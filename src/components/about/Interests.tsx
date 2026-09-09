@@ -78,7 +78,7 @@ export function Interests() {
           className="flex flex-col gap-10"
         >
           <m.div variants={itemVariants} className="flex gap-4 flex-col items-start">
-            <span className="label-mono block">What I Love</span>
+            <span className="label-mono block">What I love</span>
             <div className="flex gap-2 flex-col">
               <h2 className="font-display text-3xl md:text-5xl tracking-tight font-bold">
                 Interests & Hobbies

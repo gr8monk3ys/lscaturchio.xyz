@@ -11,6 +11,8 @@ import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Fraunces, IBM_Plex_Mono } from "next/font/google";
 import { SITE_URL } from "@/lib/site-url";
 import { IDENTITY } from "@/constants/identity";
+import { cookies } from "next/headers";
+import { getActiveLanguage, isRtlLanguage } from "@/lib/site-language";
 import { DeferredLayoutExtras } from "@/components/layout/deferred-layout-extras";
 import { AskDrawerProvider } from "@/components/chat/ask-drawer-provider";
 import { AskDrawer } from "@/components/chat/ask-drawer";
@@ -88,7 +90,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
@@ -126,10 +128,20 @@ export default function RootLayout({
     ],
   };
 
+  // Resolved on the server from the locale cookie. This was hardcoded to
+  // `lang="en" dir="ltr"` and corrected in a client effect, so Arabic shipped
+  // mirrored-wrong on first paint and stayed wrong with JavaScript off —
+  // against PRODUCT.md's "multilingual is real, not a toy".
+  const cookieHeader = (await cookies())
+    .getAll()
+    .map(({ name, value }) => `${name}=${value}`)
+    .join("; ");
+  const language = getActiveLanguage({ cookies: cookieHeader });
+
   return (
     <html
-      lang="en"
-      dir="ltr"
+      lang={language}
+      dir={isRtlLanguage(language) ? "rtl" : "ltr"}
       suppressHydrationWarning
       className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable}`}
     >
