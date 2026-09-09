@@ -39,7 +39,9 @@ export function AskDrawer() {
     useAskConversation({ contextSlug });
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
   const isOpen = drawer?.isOpen ?? false;
+  const isOverlay = drawer?.isOverlay ?? true;
   const seed = drawer?.seed ?? "";
   const clearSeed = drawer?.clearSeed;
 
@@ -57,6 +59,38 @@ export function AskDrawer() {
     return () => window.cancelAnimationFrame(id);
   }, [isOpen]);
 
+  // Trap focus only while the drawer covers the page. In push mode it sits
+  // beside fully usable content and trapping would strand the reader; in
+  // overlay mode the panel is modal, and without this Tab walked straight out
+  // of it into content hidden behind the scrim.
+  useEffect(() => {
+    if (!isOpen || !isOverlay) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+      const focusables = panel.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && (active === first || !panel.contains(active))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => document.removeEventListener("keydown", onKeyDown, true);
+  }, [isOpen, isOverlay]);
+
   if (!drawer) return null;
 
   const submit = (e?: FormEvent) => {
@@ -72,10 +106,21 @@ export function AskDrawer() {
   };
 
   return (
+    <>
+      {/* Dismiss by tapping outside, the affordance a covering panel implies. */}
+      <div
+        className="ask-scrim"
+        aria-hidden
+        onClick={drawer.close}
+      />
+
     <aside
       id="ask-drawer"
+      ref={panelRef}
       aria-label="Ask this site"
       aria-hidden={!isOpen}
+      role={isOverlay ? "dialog" : undefined}
+      aria-modal={isOverlay && isOpen ? true : undefined}
       // No shadow: the Two Sheets Rule spends both of its elevated objects
       // already. The drawer separates from the page with a hairline, the way
       // every other surface here does.
@@ -125,7 +170,7 @@ export function AskDrawer() {
                 <button
                   type="button"
                   onClick={() => void send(question)}
-                  className="label-mono group flex items-start gap-2 text-start normal-case tracking-normal text-foreground transition-colors hover:text-primary"
+                  className="label-mono label-link group items-start gap-2 text-start normal-case tracking-normal text-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   <span aria-hidden className="text-muted-foreground group-hover:text-primary">
                     ↳
@@ -160,7 +205,7 @@ export function AskDrawer() {
                     <button
                       type="button"
                       onClick={() => void send(message.failedQuery ?? "")}
-                      className="label-mono mt-3 block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                      className="label-mono label-link mt-3 text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
                     >
                       Try again →
                     </button>
@@ -199,7 +244,11 @@ export function AskDrawer() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="Ask about the writing…"
-            className="max-h-32 min-h-11 flex-1 resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-hidden"
+            /* The underline is the field, so the focus ring is the underline
+               turning Forest Ink (see focus-within on the wrapper). The element
+               itself previously had `focus:outline-hidden` and nothing else,
+               which left it with no visible focused state at all. */
+            className="max-h-32 min-h-11 flex-1 resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-muted-foreground/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           />
           <button
             type="submit"
@@ -212,5 +261,6 @@ export function AskDrawer() {
         </div>
       </form>
     </aside>
+    </>
   );
 }

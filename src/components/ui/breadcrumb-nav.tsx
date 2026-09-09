@@ -80,7 +80,7 @@ export function BreadcrumbNav({
             ) : (
               <Link
                 href={item.path}
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="label-link text-muted-foreground hover:text-foreground transition-colors"
               >
                 {item.name}
               </Link>

@@ -20,7 +20,7 @@ export function AboutHero() {
         variants={staggerItemVariants}
         className="space-y-6"
       >
-        <SectionHeading>
+        <SectionHeading as="h1">
           I&apos;m Lorenzo Scaturchio, just another person with too many things to say and too little time to say it.
         </SectionHeading>
         <m.p

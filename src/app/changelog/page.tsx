@@ -126,7 +126,7 @@ export default async function ChangelogPage() {
                       href={pr.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group flex flex-wrap items-baseline gap-x-4 gap-y-1"
+                      className="label-link group flex-wrap items-baseline gap-x-4 gap-y-1"
                     >
                       <span className="label-mono w-24 shrink-0 tabular-nums">{pr.mergedAt}</span>
                       <span className="label-mono w-14 shrink-0 text-primary">

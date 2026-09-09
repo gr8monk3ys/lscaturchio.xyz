@@ -125,6 +125,38 @@
   font-feature-settings: 'tnum' 1;
 }
 
+/* A wall label that is also a tap target.
+ *
+ * `label-mono` is 0.72rem with no padding, so its line box is ~19px tall. That
+ * is correct for a caption and wrong for a link: a browser audit found 32
+ * standalone controls at 19px, well under WCAG 2.5.8's 24px floor, every one of
+ * them a wall label doing double duty as a link. Raising them one component at
+ * a time is what produced that number in the first place, so the height lives
+ * in the class instead.
+ *
+ * Desktop keeps the compact caption metrics: pointer input has no 24px floor,
+ * and 44px of leading between mono links would break the ledger rhythm. */
+@utility label-link {
+  display: inline-flex;
+  align-items: center;
+  /* 24px is WCAG 2.5.8's floor and it applies to every pointer, not just
+   * touch. Against a 19px mono line box that costs five pixels, which the
+   * ledger rhythm absorbs without noticing. */
+  min-height: 1.5rem;
+}
+
+/* Deterministic, not device-sniffed. The first version of this gated the
+ * height behind `pointer: fine`, which meant the floor silently vanished on
+ * every desktop browser — including the one auditing it — and only appeared on
+ * hardware that reported a coarse pointer. A viewport query is testable, and
+ * `any-pointer: coarse` catches touch laptops and large tablets that report a
+ * fine pointer as well. */
+@media (max-width: 767px), (any-pointer: coarse) {
+  .label-link {
+    min-height: 2.75rem;
+  }
+}
+
 /* Full-width architectural divider between gallery sections. */
 @utility gallery-rule {
   border: 0;
@@ -687,7 +719,11 @@ body {
   --ask-drawer-w: 0rem;
 }
 
-@media (min-width: 768px) {
+/* The page only yields where there is room to yield. At 1280px, pushing the
+   shell took the essay's prose column from 672px to about 492px and reflowed
+   the paragraph the reader was in the middle of — the drawer crushed the thing
+   it exists to keep in view. Below 2xl it overlays instead. */
+@media (min-width: 1536px) {
   :root[data-ask-open="true"] {
     --ask-drawer-w: 24rem;
   }
@@ -715,11 +751,36 @@ body {
     visibility 0s;
 }
 
-/* Below md the drawer covers rather than pushes, so the page beneath it must
-   not scroll away underneath the panel. */
-@media (max-width: 767px) {
+/* Wherever the drawer overlays rather than pushes, the page beneath it must not
+   scroll away underneath the panel. */
+@media (max-width: 1535px) {
   :root[data-ask-open="true"] body {
     overflow: hidden;
+  }
+}
+
+/* The scrim only exists in overlay mode; in push mode the page is still fully
+   usable beside the drawer and must not be dimmed or blocked. */
+.ask-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 54;
+  background: hsl(var(--foreground) / 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 1535px) {
+  :root[data-ask-open="true"] .ask-scrim {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-scrim {
+    transition: none;
   }
 }
 

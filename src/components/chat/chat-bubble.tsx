@@ -48,8 +48,14 @@ export function ChatBubbleMessage({
   return (
     <div
       className={cn(
-        "max-w-[78ch] rounded-2xl px-4 py-3 text-sm leading-relaxed",
-        variant === "sent" ? "bg-primary text-primary-foreground" : "bg-muted",
+        // Paper, not speech bubbles. `bg-primary` on every user turn spent
+        // Forest Ink as area — the One Pen Rule's named failure — and the
+        // received turn had no hairline, which the Tinted Paper Rule requires
+        // of any contained surface. Radius drops to the card step (12px).
+        "max-w-[78ch] rounded-xl border px-4 py-3 text-sm leading-relaxed",
+        variant === "sent"
+          ? "border-primary/25 bg-primary/8 text-foreground"
+          : "border-border bg-card",
         className
       )}
     >

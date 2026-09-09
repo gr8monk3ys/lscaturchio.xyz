@@ -10,8 +10,17 @@ import {
   useState,
 } from "react";
 
+/** Below this the drawer overlays the page; at or above it, the page yields. */
+const PUSH_BREAKPOINT = "(min-width: 1536px)";
+
 interface AskDrawerValue {
   isOpen: boolean;
+  /**
+   * True when the drawer is covering the page rather than sitting beside it.
+   * Overlaying is modal behaviour, so the panel takes modal semantics — focus
+   * trap, aria-modal, scrim dismiss — only in this mode.
+   */
+  isOverlay: boolean;
   open: (seedQuestion?: string) => void;
   close: () => void;
   toggle: () => void;
@@ -36,6 +45,7 @@ const AskDrawerContext = createContext<AskDrawerValue | null>(null);
  */
 export function AskDrawerProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isOverlay, setIsOverlay] = useState(true);
   const [seed, setSeed] = useState("");
   const restoreFocusTo = useRef<HTMLElement | null>(null);
 
@@ -63,6 +73,16 @@ export function AskDrawerProvider({ children }: { children: React.ReactNode }) {
 
   const clearSeed = useCallback(() => setSeed(""), []);
 
+  // Matches the CSS in globals.css. Kept in JS as well because the semantics
+  // differ by mode, and a media query cannot set aria-modal.
+  useEffect(() => {
+    const query = window.matchMedia(PUSH_BREAKPOINT);
+    const sync = () => setIsOverlay(!query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
   // The page shift is keyed off the document element so server-rendered,
   // position-fixed chrome can respond to it without knowing this hook exists.
   useEffect(() => {
@@ -82,8 +102,8 @@ export function AskDrawerProvider({ children }: { children: React.ReactNode }) {
   }, [isOpen, close]);
 
   const value = useMemo(
-    () => ({ isOpen, open, close, toggle, seed, clearSeed }),
-    [isOpen, open, close, toggle, seed, clearSeed]
+    () => ({ isOpen, isOverlay, open, close, toggle, seed, clearSeed }),
+    [isOpen, isOverlay, open, close, toggle, seed, clearSeed]
   );
 
   return <AskDrawerContext.Provider value={value}>{children}</AskDrawerContext.Provider>;

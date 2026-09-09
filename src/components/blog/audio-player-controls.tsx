@@ -74,18 +74,18 @@ export function ProgressBar({
         aria-valuenow={Math.round(progress)}
         aria-valuemin={0}
         aria-valuemax={100}
-        className="group relative h-2 w-full cursor-pointer rounded-full bg-stone-200 dark:bg-stone-700"
+        className="group relative h-2 w-full cursor-pointer rounded-full bg-muted bg-primary"
       >
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-stone-600 transition-[width] duration-100 dark:bg-stone-400"
+          className="absolute inset-y-0 left-0 rounded-full bg-primary transition-[width] duration-100"
           style={{ width: `${progress}%` }}
         />
         <div
-          className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-stone-700 opacity-0 shadow-xs transition-opacity group-hover:opacity-100 dark:bg-stone-300"
+          className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-primary opacity-0 transition-opacity group-hover:opacity-100"
           style={{ left: `calc(${progress}% - 8px)` }}
         />
       </div>
-      <div className="flex justify-between text-xs tabular-nums text-stone-500 dark:text-stone-400">
+      <div className="flex justify-between text-xs tabular-nums text-muted-foreground">
         <span>{formatTime(currentTime)}</span>
         <span>{formatTime(duration)}</span>
       </div>
@@ -127,7 +127,7 @@ export function TransportControls({
       <div className="flex items-center gap-1">
         <button
           onClick={onSkipBackward}
-          className="rounded-lg p-2 text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+          className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-primary/6 hover:text-primary"
           aria-label={`Skip back ${SKIP_SECONDS} seconds`}
           title={`-${SKIP_SECONDS}s`}
         >
@@ -138,8 +138,8 @@ export function TransportControls({
           onClick={onTogglePlay}
           className={cn(
             "rounded-xl p-3 transition-colors",
-            "bg-stone-800 text-white hover:bg-stone-700",
-            "dark:bg-stone-200 dark:text-stone-900 dark:hover:bg-stone-300"
+            "bg-primary text-primary-foreground hover:bg-primary/90",
+            "bg-primary text-primary-foreground hover:bg-primary/90"
           )}
           aria-label={isPlaying ? "Pause" : "Play"}
         >
@@ -148,7 +148,7 @@ export function TransportControls({
 
         <button
           onClick={onSkipForward}
-          className="rounded-lg p-2 text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+          className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-primary/6 hover:text-primary"
           aria-label={`Skip forward ${SKIP_SECONDS} seconds`}
           title={`+${SKIP_SECONDS}s`}
         >
@@ -159,7 +159,7 @@ export function TransportControls({
       <div className="flex items-center gap-1">
         <button
           onClick={onChangeSpeed}
-          className="min-w-12 rounded-lg px-2 py-1 text-center font-mono text-xs font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+          className="min-w-12 rounded-lg px-2 py-1 text-center font-mono text-xs font-medium text-muted-foreground transition-colors hover:bg-primary/6 hover:text-primary"
           aria-label={`Playback speed: ${speed}x. Click to change.`}
           title="Change playback speed"
         >
@@ -168,7 +168,7 @@ export function TransportControls({
 
         <button
           onClick={onToggleMute}
-          className="rounded-lg p-2 text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+          className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-primary/6 hover:text-primary"
           aria-label={isMuted ? "Unmute" : "Mute"}
         >
           {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}

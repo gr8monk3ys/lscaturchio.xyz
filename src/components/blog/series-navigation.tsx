@@ -78,7 +78,7 @@ export function SeriesNavigation({
               ) : (
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="text-sm text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                  className="label-link text-sm text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
                 >
                   {post.title}
                 </Link>
@@ -107,7 +107,7 @@ export function SeriesNavigation({
           {nextPost && (
             <Link
               href={`/blog/${nextPost.slug}`}
-              className="label-mono min-w-0 text-right text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+              className="label-mono label-link min-w-0 text-right text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
             >
               <span className="sr-only">Next</span>
               <span aria-hidden className="normal-case tracking-normal">Next · {nextPost.title}</span>

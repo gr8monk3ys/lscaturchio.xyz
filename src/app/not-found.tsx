@@ -22,19 +22,19 @@ export default function NotFound() {
         <nav className="flex flex-wrap items-center gap-x-8 gap-y-3" aria-label="Recover from 404">
           <Link
             href="/"
-            className="label-mono text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
             ← Back to the entrance
           </Link>
           <Link
             href="/blog"
-            className="label-mono text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
             Browse the writing
           </Link>
           <Link
             href="/chat"
-            className="label-mono text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
             Ask the site where it went
           </Link>

@@ -93,7 +93,7 @@ export function ProjectFilters({
           )}
           <button
             onClick={onClearFilters}
-            className="label-mono inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
+            className="label-mono label-link inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
           >
             <X className="h-3.5 w-3.5" />
             Clear all

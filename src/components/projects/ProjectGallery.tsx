@@ -204,7 +204,7 @@ function ProjectGalleryCard({
             src={project.thumbnail}
             alt={project.title}
             fill
-            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+            className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             priority={isActive}
           />
@@ -221,9 +221,11 @@ function ProjectGalleryCard({
             tells a visitor nothing, "Lower the sensory load of the web" tells
             them whether to click. */}
         <m.div layoutId={shared ? `project-title-${project.slug}` : undefined}>
-          <h3 className="text-card-title text-balance transition-colors group-hover:text-primary">
+          {/* h2, not h3: each card is a top-level section of this page, and an
+              h3 under the page h1 skipped a level with no h2 to hold it. */}
+          <h2 className="text-card-title text-balance transition-colors group-hover:text-primary">
             {project.thesis ?? project.title}
-          </h3>
+          </h2>
         </m.div>
 
         <p className="label-mono mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
