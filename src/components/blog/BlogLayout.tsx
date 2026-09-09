@@ -92,7 +92,12 @@ export async function BlogLayout({
           tags={meta.tags}
           url={fullUrl}
         />
-      <div className="xl:relative xl:grid xl:grid-cols-[1fr_300px] xl:gap-8 xl:items-start">
+      {/* Contents rail on the left, prose on the right. The rail is also first
+          in the DOM, so the visual order and the focus order agree: a keyboard
+          reader tabs the section list before the essay rather than after it. */}
+      <div className="xl:relative xl:grid xl:grid-cols-[260px_1fr] xl:gap-12 xl:items-start">
+        <BlogSidebar slug={slug} />
+
         <div className="mx-auto max-w-2xl xl:mx-0">
           <BreadcrumbNav customSegments={{ blog: "Blog" }} />
 
@@ -246,8 +251,6 @@ export async function BlogLayout({
           </article>
         </div>
 
-        {/* Sidebar (AI + TOC) - only visible on xl screens */}
-        <BlogSidebar slug={slug} />
       </div>
     </Container>
     </>
