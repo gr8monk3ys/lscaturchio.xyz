@@ -58,7 +58,7 @@ export default async function TagPage({ params }: Props) {
   }
 
   return (
-    <Container className="mt-16 lg:mt-32" size="large">
+    <Container className="mt-16 lg:mt-32" size="wide">
       <div className="space-y-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-2">

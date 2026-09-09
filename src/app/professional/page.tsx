@@ -21,7 +21,7 @@ const SkillCategory = ({ title, skills }: { title: string; skills: string[] }) =
 
 export default function ProfessionalPage() {
   return (
-    <Container size="large">
+    <Container size="wide">
       <div className="max-w-4xl mx-auto py-12 space-y-20">
         {/* Header — gallery masthead */}
         <PageHead

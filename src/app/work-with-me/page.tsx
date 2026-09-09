@@ -89,7 +89,7 @@ function LedgerList({ items, numbered = false }: { items: string[]; numbered?: b
 export default function WorkWithMePage() {
   return (
     <Container className="mt-16 lg:mt-24">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-6xl">
         {/* Masthead: one headline, one thesis, one action. */}
         <header className="max-w-3xl px-4 sm:px-6 lg:px-8">
           <span className="label-mono block">Work with me · Remote · Los Angeles</span>

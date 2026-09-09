@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Section } from '@/components/ui/Section';
+import { PAGE_WIDTHS } from '@/lib/page-width';
 
 describe('Section', () => {
   it('renders its children', () => {
@@ -8,9 +9,19 @@ describe('Section', () => {
     expect(screen.getByText('hello')).toBeInTheDocument();
   });
 
-  it('applies the size container class', () => {
-    const { container } = render(<Section size="narrow"><span>x</span></Section>);
-    expect(container.querySelector('.max-w-3xl')).not.toBeNull();
+  // Asserted against the shared scale, not a hardcoded class. The previous
+  // version pinned `.max-w-3xl` and so silently encoded a width DESIGN.md
+  // never specified.
+  it.each(Object.entries(PAGE_WIDTHS))('applies the %s width class', (size, cls) => {
+    const { container } = render(
+      <Section size={size as keyof typeof PAGE_WIDTHS}><span>x</span></Section>
+    );
+    expect(container.querySelector(`.${cls}`)).not.toBeNull();
+  });
+
+  it('defaults to the medium width', () => {
+    const { container } = render(<Section><span>x</span></Section>);
+    expect(container.querySelector(`.${PAGE_WIDTHS.medium}`)).not.toBeNull();
   });
 
   it('renders top and bottom dividers when requested', () => {

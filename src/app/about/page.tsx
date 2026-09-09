@@ -18,7 +18,7 @@ export const metadata = buildPageMetadata({
 
 export default function AboutPage() {
   return (
-    <Container size="large">
+    <Container size="wide">
       <div className="space-y-8">
         <AboutHero />
         <PersonalFavorites />

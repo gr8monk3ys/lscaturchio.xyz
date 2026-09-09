@@ -53,7 +53,7 @@ const Section = ({ data }: { data: SectionData }) => {
 
 export default function LinksPage() {
   return (
-    <Container size="large">
+    <Container size="wide">
       <div className="max-w-4xl mx-auto py-12">
         <PageHead
           className="mb-12"

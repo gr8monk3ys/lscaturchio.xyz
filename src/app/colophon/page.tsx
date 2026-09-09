@@ -30,7 +30,7 @@ const STAGES = [
 
 export default function ColophonPage() {
   return (
-    <Container size="large">
+    <Container size="wide">
       <div className="py-10">
         <PageHead
           kicker="Colophon"

@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { PAGE_WIDTHS, type PageWidth } from "@/lib/page-width";
 
 interface SectionProps {
   children: ReactNode;
   className?: string;
-  /** Container width variant */
-  size?: "narrow" | "default" | "wide" | "full";
+  /** Container width variant. See `@/lib/page-width`. */
+  size?: PageWidth;
   /** Vertical padding variant */
   padding?: "none" | "compact" | "default" | "large";
   /** Optional ID for anchor links */
@@ -18,13 +19,6 @@ interface SectionProps {
   /** Background variant */
   background?: "default" | "muted" | "card";
 }
-
-const sizeClasses = {
-  narrow: "max-w-3xl",
-  default: "max-w-5xl",
-  wide: "max-w-7xl",
-  full: "max-w-none",
-};
 
 const paddingClasses = {
   none: "py-0",
@@ -46,7 +40,7 @@ const backgroundClasses = {
 export function Section({
   children,
   className,
-  size = "default",
+  size = "medium",
   padding = "default",
   id,
   divider = false,
@@ -72,7 +66,7 @@ export function Section({
       <div
         className={cn(
           "mx-auto px-4 sm:px-6 lg:px-8",
-          sizeClasses[size],
+          PAGE_WIDTHS[size],
           paddingClasses[padding]
         )}
       >
