@@ -136,7 +136,7 @@ export default function GardenPage() {
                 <Link
                   href={item.href}
                   prefetch={false}
-                  className="label-mono inline-flex min-h-11 items-center normal-case tracking-normal text-foreground ink-underline transition-colors hover:text-primary sm:min-h-0"
+                  className="label-mono label-link inline-flex items-center normal-case tracking-normal text-foreground ink-underline transition-colors hover:text-primary"
                 >
                   {item.name}
                 </Link>

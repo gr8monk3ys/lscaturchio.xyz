@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { useAskDrawer } from "@/components/chat/ask-drawer-provider";
 
 /**
@@ -27,13 +27,20 @@ export function AskDrawerTrigger({
         onActivate?.();
         drawer.toggle();
       }}
+      /* An explicit name, because the visible label is `hidden lg:inline` and
+         `display: none` removes text from the accessible name computation. Below
+         1024px the icon is aria-hidden and the label is gone, so this button
+         announced as an unnamed "button" — on the only persistent route to the
+         feature. */
+      aria-label={drawer.isOpen ? "Close the ask panel" : "Ask this site"}
       aria-expanded={drawer.isOpen}
       aria-controls="ask-drawer"
       className="label-mono inline-flex min-h-11 items-center gap-2 px-2 text-muted-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary md:min-h-0"
     >
-      <Sparkle className="h-3.5 w-3.5 shrink-0" aria-hidden />
-      <span className={drawer.isOpen ? "sr-only" : "hidden lg:inline"}>Ask</span>
-      <span className="sr-only">{drawer.isOpen ? "Close the ask panel" : ""}</span>
+      <MessageCircle className="h-3.5 w-3.5 shrink-0" aria-hidden />
+      <span aria-hidden className={drawer.isOpen ? "sr-only" : "hidden lg:inline"}>
+        Ask
+      </span>
     </button>
   );
 }

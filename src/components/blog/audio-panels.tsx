@@ -35,8 +35,8 @@ export function AudioPanels({
             className={cn(
               "inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors",
               showChapters
-                ? "neu-pressed text-stone-900 dark:text-stone-100"
-                : "neu-button text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200"
+                ? "neu-pressed text-foreground text-foreground"
+                : "neu-button text-muted-foreground hover:text-primary text-muted-foreground hover:text-primary"
             )}
           >
             <List className="h-3.5 w-3.5" />
@@ -48,15 +48,15 @@ export function AudioPanels({
             className={cn(
               "inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors",
               showTranscript
-                ? "neu-pressed text-stone-900 dark:text-stone-100"
-                : "neu-button text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200"
+                ? "neu-pressed text-foreground text-foreground"
+                : "neu-button text-muted-foreground hover:text-primary text-muted-foreground hover:text-primary"
             )}
           >
             <FileText className="h-3.5 w-3.5" />
             Transcript
           </button>
         </div>
-        <span className="text-xs text-stone-500 dark:text-stone-400">
+        <span className="text-xs text-muted-foreground">
           {chapters.length > 1 ? "Chapters are approximate" : ""}
         </span>
       </div>
@@ -76,13 +76,13 @@ export function AudioPanels({
                     className={cn(
                       "min-w-0 truncate",
                       chapter.level === 3
-                        ? "pl-3 text-stone-700 dark:text-stone-300"
-                        : "text-stone-900 dark:text-stone-100"
+                        ? "pl-3 text-foreground text-muted-foreground"
+                        : "text-foreground text-foreground"
                     )}
                   >
                     {chapter.title}
                   </div>
-                  <div className="shrink-0 font-mono text-xs text-stone-500 dark:text-stone-400">
+                  <div className="shrink-0 font-mono text-xs text-muted-foreground">
                     {formatTime(chapter.startTime)}
                   </div>
                 </div>

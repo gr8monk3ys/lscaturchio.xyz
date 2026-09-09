@@ -62,7 +62,7 @@ export function ChatPageClient({
             <button
               type="button"
               onClick={reset}
-              className="label-mono text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+              className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
             >
               Start over
             </button>

@@ -16,7 +16,7 @@ export function WhoIAm() {
           <Link
             href="/about"
             prefetch={false}
-            className="label-mono mt-8 inline-block text-foreground underline-offset-4 ink-underline hover:text-primary"
+            className="label-mono label-link mt-8 inline-block text-foreground underline-offset-4 ink-underline hover:text-primary"
           >
             More about me →
           </Link>

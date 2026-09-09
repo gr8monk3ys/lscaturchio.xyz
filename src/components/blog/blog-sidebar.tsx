@@ -143,7 +143,7 @@ export function EssayContentsInline({ slug }: { slug: string }) {
 
   return (
     <details className="mt-8 border-y border-border py-3 xl:hidden">
-      <summary className="label-mono cursor-pointer list-none text-foreground marker:content-['']">
+      <summary className="label-mono label-link cursor-pointer list-none text-foreground marker:content-['']">
         On this page · {headings.length} sections
       </summary>
       <nav className="mt-3" aria-label="Table of contents">

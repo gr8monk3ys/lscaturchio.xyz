@@ -120,7 +120,7 @@ export async function BlogLayout({
                       <span key={tag} className="inline-flex items-center">
                         <Link
                           href={`/tag/${encodeURIComponent(tag)}`}
-                          className="transition-colors hover:text-primary"
+                          className="label-link transition-colors hover:text-primary"
                         >
                           {tag}
                         </Link>

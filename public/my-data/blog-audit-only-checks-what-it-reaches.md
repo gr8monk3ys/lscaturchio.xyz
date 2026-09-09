@@ -40,7 +40,9 @@ None of these are failures of a verification system. In each case the verificati
 
 What actually fixed the books page was not resolve. It was moving the number.
 
-The count now comes from one function that reads the shelf, and both the page body and the page description call it. There is no longer a place to type three, because there is no longer typing. Then a check that runs on every pull request greps the source for a hand-written count of anything the site owns, and fails if it finds one. It has already caught me: writing the replacement copy for another page, I typed "the six I gave full marks," which would have been true for about a month.
+The count now comes from one function that reads the shelf, and both the page body and the page description call it. There is no longer a place to type three, because there is no longer typing. Then a check that runs on every pull request reads the source for a hand-written count of the things this site keeps track of, and fails if it finds one. It has already caught me twice. Once while writing replacement copy for another page, where I typed "the six I gave full marks," which would have been true for about a month. Once when I widened it and it immediately turned up five more counts I had never looked at, including one about my own hardware that exists in two files and will eventually disagree with itself.
+
+That second catch is the honest measure of the thing. The guard reads a list of nouns I wrote down. It knows about essays and books and films because those are what I thought of. It does not know about anything I did not think of.
 
 That is the unglamorous version of honesty, and it is the only version that survives contact with time. Not a person resolving to be accurate. A structure in which the inaccurate version is harder to write than the accurate one.
 
