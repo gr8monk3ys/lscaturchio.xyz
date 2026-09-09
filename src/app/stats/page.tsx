@@ -7,7 +7,6 @@ import { buildPageMetadata } from "@/lib/seo";
 const StatsOverview = dynamic(() => import('@/components/stats/stats-overview').then(m => m.StatsOverview))
 const VisitorChart = dynamic(() => import('@/components/stats/visitor-chart').then(m => m.VisitorChart))
 const ContributionGraph = dynamic(() => import('@/components/github/contribution-graph').then(m => m.ContributionGraph))
-const PopularPosts = dynamic(() => import('@/components/stats/popular-posts').then(m => m.PopularPosts))
 const TechStack = dynamic(() => import('@/components/stats/tech-stack').then(m => m.TechStack))
 
 export const metadata: Metadata = buildPageMetadata({
@@ -36,12 +35,12 @@ export default function StatsPage() {
 
           <div className="space-y-8">
             <StatsOverview />
+            {/* One ranking, not two. `VisitorChart` and `PopularPosts` both
+                read /api/views?format=detailed and both ranked it — the same
+                numbers, twice, under two headings. */}
             <div className="grid gap-8 xl:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
               <VisitorChart />
-              <div className="space-y-8">
-                <PopularPosts />
-                <TechStack />
-              </div>
+              <TechStack />
             </div>
             <ContributionGraph />
           </div>

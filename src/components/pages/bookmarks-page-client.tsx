@@ -205,7 +205,7 @@ export function BookmarksPageClient() {
                         src={bookmark.image || "/images/blog/default.webp"}
                         alt={bookmark.title}
                         fill
-                        className="object-cover transition-transform group-hover:scale-105"
+                        className="object-cover"
                       />
                       <div className="absolute inset-0 bg-linear-to-t from-background/60 to-transparent" />
                     </div>

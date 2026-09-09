@@ -37,7 +37,10 @@ export function ChatMessageList({
           }}
           size="icon"
           variant="outline"
-          className="absolute bottom-2 left-1/2 transform -translate-x-1/2 inline-flex rounded-full shadow-md"
+          // No shadow. The Two Sheets Rule spends both of its elevated objects on the
+          // fixed navbar and the CTA ledge; this button is neither, and the drawer
+          // that mounts it carries a comment saying exactly that.
+          className="absolute bottom-2 left-1/2 transform -translate-x-1/2 inline-flex rounded-full border border-border bg-card"
           aria-label="Scroll to bottom"
         >
           <ArrowDown className="h-4 w-4" />

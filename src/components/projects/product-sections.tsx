@@ -27,27 +27,6 @@ import {
 } from '@/lib/project-catalogue' 
 
 
-export function defaultProcessSteps(title: string): CaseStudyProcessStep[] {
-  return [
-    {
-      title: 'Scope',
-      description: `Clarified goals, constraints, and success criteria for ${title}.`,
-    },
-    {
-      title: 'Design',
-      description: 'Sketched a simple architecture and chose pragmatic tradeoffs for reliability.',
-    },
-    {
-      title: 'Build',
-      description: 'Implemented the core loop end-to-end, then hardened edges and failure paths.',
-    },
-    {
-      title: 'Evaluate',
-      description: 'Validated outcomes, cleaned up UX, and documented decisions for reuse.',
-    },
-  ]
-}
-
 function PrimaryProjectLinks({ product }: { product: Product }): React.ReactNode {
   if (!product.demoUrl && !product.sourceUrl && !product.sourcePrivate) {
     return null
@@ -133,7 +112,7 @@ export function HeaderSection({ metrics, product, shared, status }: HeaderSectio
       </div>
 
       <m.div layoutId={shared ? `project-title-${product.slug}` : undefined}>
-        <Heading className="font-bold text-3xl md:text-5xl leading-[1.05]">{product.title}</Heading>
+        <Heading className="leading-[1.05]">{product.title}</Heading>
       </m.div>
 
       <Paragraph className="text-lg text-muted-foreground">{product.description}</Paragraph>
@@ -141,14 +120,13 @@ export function HeaderSection({ metrics, product, shared, status }: HeaderSectio
       <PrimaryProjectLinks product={product} />
 
       {metrics.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+        <div className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-4 sm:divide-x">
           {metrics.slice(0, 4).map((metric) => (
-            <div
-              key={`${metric.label}-${metric.value}`}
-              className="rounded-2xl border border-border/50 bg-card/50 px-4 py-3"
-            >
-              <div className="text-xl font-semibold tracking-tight tabular-nums">{metric.value}</div>
-              <div className="mt-1 text-xs text-muted-foreground line-clamp-2">{metric.label}</div>
+            <div key={`${metric.label}-${metric.value}`} className="px-5 py-5 first:pl-0">
+              <div className="font-display text-2xl font-semibold tracking-tight tabular-nums">
+                {metric.value}
+              </div>
+              <div className="label-mono mt-2 line-clamp-2">{metric.label}</div>
             </div>
           ))}
         </div>
@@ -197,26 +175,15 @@ export function CaseStudyOverview({ caseStudy }: { caseStudy: CaseStudy | undefi
   return (
     <section className="border-t border-border">
       <div id="challenge" className="border-b border-border py-8">
-        <h3 className="label-mono">The constraint</h3>
-        <p className="mt-3 leading-relaxed text-muted-foreground">{caseStudy.challenge}</p>
+        <h2 className="label-mono">The constraint</h2>
+        <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">{caseStudy.challenge}</p>
       </div>
 
-      <div id="solution" className="border-b border-border py-8">
-        <h3 className="label-mono">The approach</h3>
-        <p className="mt-3 leading-relaxed text-muted-foreground">{caseStudy.solution}</p>
+      <div id="solution" className="py-8">
+        <h2 className="label-mono">The approach</h2>
+        <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">{caseStudy.solution}</p>
       </div>
 
-      <div className="py-8">
-        <h3 className="label-mono">What changed</h3>
-        <ul className="mt-3 space-y-2">
-          {caseStudy.results.slice(0, 3).map((result) => (
-            <li key={result} className="flex items-start gap-3 text-foreground">
-              <span className="mt-2.5 h-px w-3 shrink-0 bg-primary" />
-              <span>{result}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
     </section>
   )
 }
@@ -235,16 +202,16 @@ export function ArchitectureSection({ slug }: { slug?: string }): React.ReactNod
 
 export function ProcessSection({ processSteps }: { processSteps: CaseStudyProcessStep[] }): React.ReactNode {
   return (
-    <section id="process" className="rounded-2xl border border-border/50 bg-card/50 p-6">
+    <section id="process" className="border-t border-border pt-8">
       <div className="label-mono">Process</div>
       <ol className="mt-5 relative border-l border-border/60 pl-6 space-y-6">
         {processSteps.map((step, index) => (
           <li key={`${step.title}-${step.description}`} className="relative">
-            <span className="absolute -left-[13px] top-0 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary tabular-nums">
+            <span className="label-mono absolute -left-[13px] top-0 inline-flex h-6 w-6 items-center justify-center bg-background tabular-nums text-foreground">
               {index + 1}
             </span>
             <div className="font-semibold">{step.title}</div>
-            <p className="mt-1 text-sm text-muted-foreground">{step.description}</p>
+            <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{step.description}</p>
           </li>
         ))}
       </ol>
@@ -256,8 +223,8 @@ export function OutcomesSection({ caseStudy }: { caseStudy: CaseStudy | undefine
   if (!caseStudy) return null
 
   return (
-    <section id="outcomes" className="rounded-2xl border border-border/50 bg-card/50 p-6">
-      <h3 className="label-mono mb-4">Outcomes</h3>
+    <section id="outcomes" className="border-t border-border pt-8">
+      <h2 className="label-mono mb-4">Outcomes</h2>
 
       <ul className="space-y-2">
         {caseStudy.results.map((result) => (
@@ -291,7 +258,7 @@ export function DetailsSection({ details }: { details: string[] | undefined }): 
   if (!details || details.length === 0) return null
 
   return (
-    <section id="details" className="rounded-2xl border border-border/50 bg-card/50 p-6">
+    <section id="details" className="border-t border-border pt-8">
       <div className="label-mono mb-4">Details</div>
       <div className="prose prose-sm md:prose-base max-w-none text-muted-foreground prose-headings:text-foreground prose-p:text-muted-foreground">
         {details.map((paragraph, index) => (
@@ -309,7 +276,7 @@ export function RelatedProjectsSection({ relatedProjects }: { relatedProjects: P
   // forbids a lift on hover, and `group-hover:scale-105` on an image is one.
   return (
     <div className="border-t border-border pt-12">
-      <h3 className="label-mono">Related projects</h3>
+      <h2 className="label-mono">Related projects</h2>
       <ul className="mt-4">
         {relatedProjects.map((relatedProject) => (
           <li key={relatedProject.slug} className="border-b border-border last:border-b-0">
@@ -318,9 +285,9 @@ export function RelatedProjectsSection({ relatedProjects }: { relatedProjects: P
               className="group flex items-baseline justify-between gap-6 py-5"
             >
               <div className="min-w-0">
-                <h4 className="font-semibold transition-colors group-hover:text-primary">
+                <h3 className="font-semibold transition-colors group-hover:text-primary">
                   {relatedProject.title}
-                </h4>
+                </h3>
                 <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                   {relatedProject.description}
                 </p>
@@ -342,7 +309,7 @@ function SidebarLinks({ product }: { product: Product }): React.ReactNode {
   }
 
   return (
-    <div className="rounded-2xl border border-border/50 bg-card/50 p-5">
+    <div className="border-t border-border pt-6">
       <div className="label-mono">Links</div>
       <div className="mt-4 flex flex-col gap-2">
         {product.demoUrl && (
@@ -390,7 +357,7 @@ export function ProjectSidebar({ pageSections, product }: SidebarProps): React.R
   return (
     <aside className="hidden xl:block">
       <div className="sticky top-24 space-y-4">
-        <div className="rounded-2xl border border-border/50 bg-card/50 p-5">
+        <div className="border-t border-border pt-6">
           <div className="label-mono">Tech stack</div>
           {product.stack && product.stack.length > 0 ? (
             <div className="mt-4 flex flex-wrap gap-2">
@@ -405,7 +372,7 @@ export function ProjectSidebar({ pageSections, product }: SidebarProps): React.R
           )}
         </div>
 
-        <div className="rounded-2xl border border-border/50 bg-card/50 p-5">
+        <div className="border-t border-border pt-6">
           <div className="label-mono">On this page</div>
           <nav className="mt-4 space-y-1 text-sm">
             {pageSections.map((section) => (

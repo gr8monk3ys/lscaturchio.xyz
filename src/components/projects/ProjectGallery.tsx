@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import { AnimatePresence, m, useMotionPreset, useReducedMotion } from '@/lib/motion'
 import { cn } from '@/lib/utils'
-import { Keyboard, ArrowRight } from 'lucide-react'
+import { Keyboard } from 'lucide-react'
 import type { Product } from '@/types/products'
 import { useGalleryKeyboard } from '@/hooks/use-gallery-keyboard'
 import { ProjectRail } from './ProjectRail'
@@ -204,43 +204,43 @@ function ProjectGalleryCard({
             src={project.thumbnail}
             alt={project.title}
             fill
-            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+            className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             priority={isActive}
           />
         </m.div>
-        {/* Covers are real screenshots and range from near-white (HealthCalc,
-            Cocoon) to near-black (merge-gate). Theme-coloured text over that is
-            unreadable half the time, so the caption band is always a dark scrim
-            with light type regardless of theme. */}
-        <div className="absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-t from-black/90 via-black/55 to-transparent" />
-
-        <div className="absolute left-4 right-4 bottom-4 flex items-end justify-between gap-3 text-white">
-          <div className="min-w-0">
-            <span className="label-mono block truncate text-white/75">
-              {[
-                ...(project.categories || []).slice(0, 2).map((c) => PROJECT_CATEGORY_LABELS[c]),
-                ...(project.status ? [PROJECT_STATUS_LABELS[project.status]] : []),
-              ].join("  ·  ")}
-            </span>
-            <m.div layoutId={shared ? `project-title-${project.slug}` : undefined}>
-              <div className="mt-1.5 truncate text-lg font-semibold tracking-tight">
-                {project.title}
-              </div>
-            </m.div>
-          </div>
-          <ArrowRight className="h-4 w-4 shrink-0 text-white/70 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
-        </div>
+        {/* No scrim, and no type over the cover. The caption used to sit on a
+            dark gradient because the screenshots run from near-white to
+            near-black and theme-coloured text over them was unreadable half the
+            time. With the caption moved off the image, the gradient overlay
+            goes too. */}
       </div>
 
       <div className="p-4">
-        <p className="text-sm text-muted-foreground line-clamp-2">{project.description}</p>
-        {project.stack && project.stack.length > 0 && (
-          <p className="label-mono mt-3 normal-case tracking-normal text-muted-foreground">
-            {project.stack.slice(0, 4).join("  ·  ")}
-            {project.stack.length > 4 && `  ·  +${project.stack.length - 4}`}
-          </p>
-        )}
+        {/* The claim leads; the product name is a wall label under it. "Cocoon"
+            tells a visitor nothing, "Lower the sensory load of the web" tells
+            them whether to click. */}
+        <m.div layoutId={shared ? `project-title-${project.slug}` : undefined}>
+          {/* h2, not h3: each card is a top-level section of this page, and an
+              h3 under the page h1 skipped a level with no h2 to hold it. */}
+          <h2 className="text-card-title text-balance transition-colors group-hover:text-primary">
+            {project.thesis ?? project.title}
+          </h2>
+        </m.div>
+
+        <p className="label-mono mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="text-foreground">{project.title}</span>
+          {[
+            ...(project.categories || []).slice(0, 1).map((c) => PROJECT_CATEGORY_LABELS[c]),
+            ...(project.status ? [PROJECT_STATUS_LABELS[project.status]] : []),
+          ].map((bit) => (
+            <span key={bit} className="text-muted-foreground">
+              · {bit}
+            </span>
+          ))}
+        </p>
+
+        <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{project.description}</p>
       </div>
     </Link>
   )

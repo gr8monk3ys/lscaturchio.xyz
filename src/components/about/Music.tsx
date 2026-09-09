@@ -56,36 +56,22 @@ const favoriteAlbums: Album[] = [
   }
 ];
 
+// Static, and no hover lift.
+//
+// The `hover: { y: -10 }` variant was a lift on a content surface, which the
+// Flat Paper Rule forbids outright: a hovered surface changes tint and border
+// colour, it does not rise. The opacity-0 entrance states went with it — five
+// other components on this site carry comments about that exact pattern
+// stranding a block at zero opacity, and there is no reason to keep the last
+// copy of it for a list of four albums.
 const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2
-    }
-  }
+  hidden: { opacity: 1 },
+  visible: { opacity: 1 },
 };
 
 const cardVariants = {
-  hidden: {
-    opacity: 0,
-    y: 20
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut" as const
-    }
-  },
-  hover: {
-    y: -10,
-    transition: {
-      duration: 0.2,
-      ease: "easeInOut" as const
-    }
-  }
+  hidden: { opacity: 1 },
+  visible: { opacity: 1 },
 };
 
 export function Music() {
@@ -124,7 +110,7 @@ export function Music() {
                     src={album.imageUrl}
                     alt={`${album.title} album cover`}
                     fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="object-cover"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>

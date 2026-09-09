@@ -247,7 +247,13 @@ Two exceptions exist and are structural, not decorative: the fixed navigation ba
 
 The old neumorphic shadow tokens (`--neu-shadow-*`) are **gone** from the stylesheet, and every `neu-*` utility is now flat: background, hairline, tint. `neu-card` no longer lifts on hover either — it warms its border and tints the paper, like everything else. What survives is only the naming: 26 files still reference `neu-*` class names that no longer mean anything neumorphic. Treat the names as debt to be renamed, not as vocabulary to extend.
 
-Two inset hairline shadows remain in components, both violations rather than exceptions: the navigation's control pill (`navbar.tsx`) and the `/blog` stat tiles (`blog-stats.tsx`). Neither is sanctioned by the Two Sheets Rule.
+No unsanctioned shadow remains. The navigation's control pill lost its inset hairline, the command palette lost `shadow-2xl`, `/topics/<slug>` lost a `hover:shadow-md`, and the `/blog` stat tiles left with the component that carried them. A browser enumeration of every non-`none` `box-shadow` returns exactly the two objects this rule permits, plus one all-transparent Tailwind ring stack on the chat textarea that paints nothing. Two *visible* shadows is the assertion.
+
+One animated layout property is sanctioned, and only one: `.site-shell`'s
+`padding-inline-end`, which is how the ask drawer pushes the page open above
+2xl. There is no transform that reproduces "the shell narrows and the content
+reflows", so the cost is taken deliberately. The detector flags it; that is
+correct, and this paragraph is the answer.
 
 ### Named Rules
 **The Flat Paper Rule.** No shadow on any content surface, at rest or on hover. A hovered surface changes tint and border colour; it does not rise.

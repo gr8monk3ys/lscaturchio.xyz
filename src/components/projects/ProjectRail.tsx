@@ -97,7 +97,14 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
                 </span>
               )}
             </span>
-            <div className="font-display text-xl font-semibold tracking-tight">{title}</div>
+            {/* Same order as the card: the claim, then the name as a label. */}
+            {/* A heading, not a div. /projects stopped skipping levels when
+                this became a div, which removed the document outline instead of
+                fixing it: eighteen projects, one heading on the page. */}
+            <h2 className="text-card-title text-balance">{project.thesis ?? title}</h2>
+            {project.thesis && (
+              <span className="label-mono text-foreground">{title}</span>
+            )}
             <p className="text-sm text-muted-foreground">{description}</p>
           </div>
 
@@ -108,14 +115,16 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
           )}
 
           {highlights.length > 0 && (
-            <div className="rounded-xl border border-primary/15 bg-primary/5 p-4">
-              <div className="text-xs font-semibold uppercase tracking-wide text-primary">
-                Highlights
-              </div>
-              <ul className="mt-2 space-y-1.5 text-sm text-foreground">
+            /* Hairline, not a tinted panel. `bg-primary/5` under an uppercase
+               `text-primary` heading spent Forest Ink as area and as a heading
+               colour in the same block — the One Pen Rule's named failure, twice.
+               The ink stays on the marks. */
+            <div className="border-t border-border pt-4">
+              <span className="label-mono block">Highlights</span>
+              <ul className="mt-3 space-y-2 text-sm text-foreground">
                 {highlights.map((result) => (
-                  <li key={result.key} className="flex items-start gap-2">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary" />
+                  <li key={result.key} className="flex items-start gap-3">
+                    <span className="mt-2.5 h-px w-3 shrink-0 bg-primary" />
                     <span>{result.value}</span>
                   </li>
                 ))}

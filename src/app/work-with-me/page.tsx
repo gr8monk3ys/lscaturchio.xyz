@@ -114,7 +114,7 @@ export default function WorkWithMePage() {
             </Link>
             <Link
               href="/contact"
-              className="label-mono text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+              className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
             >
               Or send a brief →
             </Link>

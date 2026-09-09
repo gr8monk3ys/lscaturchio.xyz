@@ -40,7 +40,7 @@ export default function ApiDocsPage() {
             <div className="neu-flat-sm rounded-xl p-3">
               <Code2 className="h-7 w-7 text-primary" />
             </div>
-            <Heading className="text-4xl font-bold">Public API</Heading>
+            <Heading>Public API</Heading>
           </div>
           <Paragraph className="text-lg text-muted-foreground">
             These endpoints are read-only and intended for integrations, personal tooling, and community remixing.

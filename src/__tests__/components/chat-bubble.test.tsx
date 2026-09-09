@@ -32,8 +32,20 @@ describe('ChatBubble', () => {
         <ChatBubbleMessage>theirs</ChatBubbleMessage>
       </>
     );
-    expect(screen.getByText('mine')).toHaveClass('bg-primary');
-    expect(screen.getByText('theirs')).toHaveClass('bg-muted');
+    const sent = screen.getByText('mine');
+    const received = screen.getByText('theirs');
+
+    // Distinguishable, and both on paper. The previous assertion pinned
+    // `bg-primary` on the sent bubble, which encoded Forest Ink as area — the
+    // One Pen Rule's named failure — into the test suite. Assert the rule
+    // instead of the class.
+    expect(sent.className).not.toEqual(received.className);
+    expect(sent).toHaveClass('bg-primary/8');
+    expect(received).toHaveClass('bg-card');
+    for (const bubble of [sent, received]) {
+      expect(bubble).toHaveClass('border');
+      expect(bubble.className).not.toMatch(/\bbg-primary\b(?!\/)/);
+    }
   });
 
   it('swaps children for a loading indicator while streaming', () => {

@@ -10,16 +10,22 @@ export const metadata = buildPageMetadata({
 });
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <section className="mb-16">
-    <h2 className="font-display text-2xl font-semibold tracking-tight mb-6">{title}</h2>
+  /* 42rem on the whole section. The body copy here is `text-sm`, so a 56rem
+     column ran it to ~125 characters a line — small type makes a wide column
+     worse, not better. */
+  <section className="mb-16 max-w-2xl">
+    <h2 className="text-section-title mb-6">{title}</h2>
     {children}
   </section>
 );
 
 const Item = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="mb-8 border-b border-border pb-8 last:mb-0 last:border-b-0 last:pb-0">
-    <h3 className="font-display text-lg font-semibold mb-2">{title}</h3>
-    <div className="text-muted-foreground space-y-2">
+    <h3 className="text-card-title mb-2">{title}</h3>
+    {/* 42rem, the reading width DESIGN.md specifies for prose. These blocks
+        were running the full 56rem column at roughly 112-125 characters a
+        line, well past the 45-75 a reader tracks comfortably. */}
+    <div className="max-w-2xl space-y-2 text-muted-foreground">
       {children}
     </div>
   </div>
@@ -31,7 +37,7 @@ export default function UsesPage() {
       <div className="max-w-4xl mx-auto py-12">
         <PageHead
           kicker="Garden · Setup"
-          title="What I Use"
+          title="What I use"
           blurb={
             <>
               The following is the way in which I am currently using my setup. My philosophy is usually
@@ -43,7 +49,7 @@ export default function UsesPage() {
         />
         <div className="mt-8 mb-12 border-l-2 border-border pl-4">
           <p className="label-mono">Disclosure</p>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             Many of the links here are affiliate links to services and products I use. I would never use affiliate links for products that I don&apos;t personally use.
           </p>
         </div>

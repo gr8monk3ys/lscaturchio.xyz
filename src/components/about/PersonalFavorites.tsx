@@ -46,7 +46,7 @@ export function PersonalFavorites() {
           className="flex flex-col gap-10"
         >
           <m.div variants={itemVariants} className="flex gap-4 flex-col items-start">
-            <span className="label-mono block">The Essentials</span>
+            <span className="label-mono block">The essentials</span>
             <div className="flex gap-2 flex-col">
               <h2 className="font-display text-3xl md:text-5xl tracking-tight font-bold">
                 Personal Favorites
@@ -75,7 +75,7 @@ export function PersonalFavorites() {
           </div>
 
           <m.div variants={itemVariants} className="mt-4">
-            <p className="text-lg text-muted-foreground italic">
+            <p className="max-w-2xl text-lg text-muted-foreground italic">
               &quot;What are some of the topics I write about as well as enjoy reading? Generally you&apos;ll see me covering: Mindfulness, the state of media (Indie Art, Sci-Fi), consumerism and privacy, and anything else that strikes my fancy.&quot;
             </p>
           </m.div>

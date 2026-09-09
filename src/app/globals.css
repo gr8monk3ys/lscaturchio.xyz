@@ -71,13 +71,6 @@
   --default-transition-duration: var(--duration-default);
   --transition-duration-slow: var(--duration-slow);
 
-  --z-index-dropdown: var(--z-dropdown);
-  --z-index-sticky: var(--z-sticky);
-  --z-index-fixed: var(--z-fixed);
-  --z-index-modal-backdrop: var(--z-modal-backdrop);
-  --z-index-modal: var(--z-modal);
-  --z-index-popover: var(--z-popover);
-  --z-index-tooltip: var(--z-tooltip);
 }
 
 /*
@@ -123,6 +116,38 @@
   text-transform: uppercase;
   color: hsl(var(--muted-foreground));
   font-feature-settings: 'tnum' 1;
+}
+
+/* A wall label that is also a tap target.
+ *
+ * `label-mono` is 0.72rem with no padding, so its line box is ~19px tall. That
+ * is correct for a caption and wrong for a link: a browser audit found 32
+ * standalone controls at 19px, well under WCAG 2.5.8's 24px floor, every one of
+ * them a wall label doing double duty as a link. Raising them one component at
+ * a time is what produced that number in the first place, so the height lives
+ * in the class instead.
+ *
+ * Desktop keeps the compact caption metrics: pointer input has no 24px floor,
+ * and 44px of leading between mono links would break the ledger rhythm. */
+@utility label-link {
+  display: inline-flex;
+  align-items: center;
+  /* 24px is WCAG 2.5.8's floor and it applies to every pointer, not just
+   * touch. Against a 19px mono line box that costs five pixels, which the
+   * ledger rhythm absorbs without noticing. */
+  min-height: 1.5rem;
+}
+
+/* Deterministic, not device-sniffed. The first version of this gated the
+ * height behind `pointer: fine`, which meant the floor silently vanished on
+ * every desktop browser — including the one auditing it — and only appeared on
+ * hardware that reported a coarse pointer. A viewport query is testable, and
+ * `any-pointer: coarse` catches touch laptops and large tablets that report a
+ * fine pointer as well. */
+@media (max-width: 767px), (any-pointer: coarse) {
+  .label-link {
+    min-height: 2.75rem;
+  }
 }
 
 /* Full-width architectural divider between gallery sections. */
@@ -284,9 +309,6 @@
   }
 }
 
-@utility cta-link {
-  @apply text-primary font-semibold;
-}
 
 /* ============================================================
  * MOTION — paper does not move, ink is drawn.
@@ -308,11 +330,18 @@
   position: relative;
   text-decoration: none;
 
+  /* Anchored to the text, not to the box.
+   *
+   * `bottom: -0.18em` assumed the element's box hugged its line. Once
+   * `label-link` raised links to a 24px (or 44px) tap target, the box grew
+   * taller than the text and the rule drew up to 14px beneath it — worst on
+   * the footer site map, on every page. Positioning from the vertical centre
+   * keeps the rule under the glyphs whatever the target height. */
   &::after {
     content: '';
     position: absolute;
     inset-inline: 0;
-    bottom: -0.18em;
+    top: calc(50% + 0.62em);
     height: 1px;
     background: currentColor;
     transform: scaleX(0);
@@ -406,41 +435,18 @@
   @apply text-sm font-medium text-foreground;
 }
 
-@utility section-padding {
-  /* ============================================
-   * LAYOUT COMPONENT CLASSES
-   * Consistent spacing patterns
-   * ============================================ */
-
-  /* Section spacing */
-  @apply py-16 sm:py-20 lg:py-24;
-}
 
 @utility section-padding-sm {
   @apply py-8 sm:py-12 lg:py-16;
 }
 
-@utility card-padding {
-  /* Card padding */
-  @apply p-6 sm:p-8;
-}
 
 @utility card-padding-sm {
   @apply p-4 sm:p-6;
 }
 
-@utility content-narrow {
-  /* Content max-width containers */
-  @apply max-w-2xl mx-auto;
-}
 
-@utility content-medium {
-  @apply max-w-4xl mx-auto;
-}
 
-@utility content-wide {
-  @apply max-w-6xl mx-auto;
-}
 
 @utility focus-ring {
   /* ============================================
@@ -492,13 +498,6 @@
     --duration-slow: 300ms;
 
     /* Z-index scale for layering */
-    --z-dropdown: 1000;
-    --z-sticky: 1020;
-    --z-fixed: 1030;
-    --z-modal-backdrop: 1040;
-    --z-modal: 1050;
-    --z-popover: 1060;
-    --z-tooltip: 1070;
 
   }
 
@@ -540,13 +539,6 @@
     --duration-slow: 300ms;
 
     /* Z-index scale (same in dark mode) */
-    --z-dropdown: 1000;
-    --z-sticky: 1020;
-    --z-fixed: 1030;
-    --z-modal-backdrop: 1040;
-    --z-modal: 1050;
-    --z-popover: 1060;
-    --z-tooltip: 1070;
 
   }
 
@@ -674,4 +666,88 @@ body {
 .goog-text-highlight {
   background: transparent !important;
   box-shadow: none !important;
+}
+
+/* ── Ask drawer ────────────────────────────────────────────────────────────
+   The drawer pushes the page instead of covering it, so a reader can keep the
+   essay in view while arguing with it. One custom property drives the shift,
+   because the fixed header has to move too and it renders on the server.
+
+   Logical properties throughout: under RTL the drawer and the shift both flip,
+   which the multilingual commitment in PRODUCT.md requires. */
+:root {
+  --ask-drawer-w: 0rem;
+}
+
+/* The page only yields where there is room to yield. At 1280px, pushing the
+   shell took the essay's prose column from 672px to about 492px and reflowed
+   the paragraph the reader was in the middle of — the drawer crushed the thing
+   it exists to keep in view. Below 2xl it overlays instead. */
+@media (min-width: 1536px) {
+  :root[data-ask-open="true"] {
+    --ask-drawer-w: 24rem;
+  }
+}
+
+.site-shell {
+  padding-inline-end: var(--ask-drawer-w);
+  transition: padding-inline-end 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-header {
+  inset-inline-start: 0;
+  inset-inline-end: var(--ask-drawer-w);
+  transition: inset-inline-end 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ask-drawer {
+  inset-inline-end: 0;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 300ms step-end;
+}
+
+:root[data-ask-open="true"] .ask-drawer {
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s;
+}
+
+/* Wherever the drawer overlays rather than pushes, the page beneath it must not
+   scroll away underneath the panel. */
+@media (max-width: 1535px) {
+  :root[data-ask-open="true"] body {
+    overflow: hidden;
+  }
+}
+
+/* The scrim only exists in overlay mode; in push mode the page is still fully
+   usable beside the drawer and must not be dimmed or blocked. */
+.ask-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 54;
+  background: hsl(var(--foreground) / 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 1535px) {
+  :root[data-ask-open="true"] .ask-scrim {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ask-scrim {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-shell,
+  .site-header,
+  .ask-drawer {
+    transition: none;
+  }
 }

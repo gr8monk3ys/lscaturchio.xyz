@@ -102,7 +102,7 @@ export function BlogGrid({
           <Link
             href={getBlogArchiveHref(1, "", stageFilter)}
             prefetch={false}
-            className="label-mono inline-flex items-center gap-1.5 text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            className="label-mono label-link inline-flex items-center gap-1.5 text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
             <X className="h-3.5 w-3.5" />
             Clear filter
@@ -118,7 +118,7 @@ export function BlogGrid({
           <Link
             href="/blog"
             prefetch={false}
-            className="label-mono mt-4 inline-block text-primary underline-offset-4 hover:underline"
+            className="label-mono label-link mt-4 inline-block text-primary underline-offset-4 hover:underline"
           >
             View all posts →
           </Link>
@@ -152,7 +152,7 @@ export function BlogGrid({
               <Link
                 href={getBlogArchiveHref(currentPage - 1, normalizedTag, stageFilter)}
                 prefetch={false}
-                className="label-mono text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
               >
                 ← Prev
               </Link>
@@ -168,7 +168,7 @@ export function BlogGrid({
               <Link
                 href={getBlogArchiveHref(currentPage + 1, normalizedTag, stageFilter)}
                 prefetch={false}
-                className="label-mono text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
               >
                 Next →
               </Link>

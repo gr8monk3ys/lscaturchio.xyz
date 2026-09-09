@@ -179,7 +179,7 @@ export function BooksList({
                       href={book.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block text-sm transition-colors hover:text-primary"
+                      className="label-link block w-full text-sm transition-colors hover:text-primary"
                     >
                       {book.title}
                       <span className="text-muted-foreground"> — {book.author}</span>

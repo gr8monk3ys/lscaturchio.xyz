@@ -57,7 +57,9 @@ export const PROJECT_STATUS_TONE: Record<
   ProjectStatus,
   { bg: string; text: string; dot: string }
 > = {
-  active: { bg: "bg-success-muted", text: "text-success", dot: "bg-success" },
+  // Ink on the tint, colour on the dot: `text-success` at 12px over its own
+  // 10% background measured 2.82:1, under AA. The dot still carries the status.
+  active: { bg: "bg-success-muted", text: "text-foreground", dot: "bg-success" },
   maintained: {
     bg: "bg-warning-muted",
     text: "text-warning",

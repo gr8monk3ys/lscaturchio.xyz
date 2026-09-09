@@ -21,10 +21,13 @@ describe('ErrorPage', () => {
 
   it('renders default copy when no overrides are given', () => {
     render(<ErrorPage error={error} reset={() => {}} />);
-    expect(
-      screen.getByRole('heading', { name: 'Something went wrong' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'This page broke' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Go home' })).toHaveAttribute('href', '/');
+  });
+
+  it('surfaces the digest so a reader can quote it in a report', () => {
+    render(<ErrorPage error={error} reset={() => {}} />);
+    expect(screen.getByText(/abc123/)).toBeInTheDocument();
   });
 
   it('calls reset when "Try again" is clicked', async () => {

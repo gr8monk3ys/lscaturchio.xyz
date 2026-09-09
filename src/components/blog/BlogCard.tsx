@@ -42,7 +42,7 @@ export function BlogCard({
             fill
             quality={65}
             priority={priority}
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 30vw"
           />
         </div>

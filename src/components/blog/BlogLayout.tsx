@@ -18,7 +18,7 @@ import { SeriesNavigation } from "./series-navigation";
 import { Webmentions } from "./webmentions";
 import { GiscusComments } from "./giscus-comments";
 import { RelatedPosts } from "./related-posts";
-import { BlogSidebar, EssayContentsInline, EssayAskInline } from "./blog-sidebar";
+import { BlogSidebar, EssayContentsInline } from "./blog-sidebar";
 import Link from "next/link";
 import { getTopicHubsForTags } from "@/constants/topics";
 import { getSiteUrl } from "@/lib/site-url";
@@ -92,7 +92,12 @@ export async function BlogLayout({
           tags={meta.tags}
           url={fullUrl}
         />
-      <div className="xl:relative xl:grid xl:grid-cols-[1fr_300px] xl:gap-8 xl:items-start">
+      {/* Contents rail on the left, prose on the right. The rail is also first
+          in the DOM, so the visual order and the focus order agree: a keyboard
+          reader tabs the section list before the essay rather than after it. */}
+      <div className="xl:relative xl:grid xl:grid-cols-[260px_1fr] xl:gap-12 xl:items-start">
+        <BlogSidebar slug={slug} />
+
         <div className="mx-auto max-w-2xl xl:mx-0">
           <BreadcrumbNav customSegments={{ blog: "Blog" }} />
 
@@ -115,7 +120,7 @@ export async function BlogLayout({
                       <span key={tag} className="inline-flex items-center">
                         <Link
                           href={`/tag/${encodeURIComponent(tag)}`}
-                          className="transition-colors hover:text-primary"
+                          className="label-link transition-colors hover:text-primary"
                         >
                           {tag}
                         </Link>
@@ -137,7 +142,7 @@ export async function BlogLayout({
                 <ViewCounter slug={slug} />
               </div>
 
-              <Heading className="mt-5 text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
+              <Heading className="mt-5 text-balance tracking-tight">
                 {meta.title}
               </Heading>
 
@@ -234,7 +239,6 @@ export async function BlogLayout({
               currentUrl={pathname}
             />
 
-            <EssayAskInline slug={slug} title={meta.title} />
 
             <NewsletterCTA
               defaultTopics={relatedHubs.map((hub) => hub.slug)}
@@ -247,8 +251,6 @@ export async function BlogLayout({
           </article>
         </div>
 
-        {/* Sidebar (AI + TOC) - only visible on xl screens */}
-        <BlogSidebar slug={slug} title={meta.title} />
       </div>
     </Container>
     </>

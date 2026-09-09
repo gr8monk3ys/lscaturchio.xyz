@@ -190,7 +190,7 @@ export function ContactForm() {
               {isSubmitting ? "Sending..." : "Send Project Details"}
             </button>
 
-            <div aria-live="polite" className="min-h-6">
+            <div id="contact-form-status" role="status" aria-live="polite" className="min-h-6">
               {submitStatus === "success" && (
                 <p className="text-center text-primary">
                   Message sent. I&apos;ll follow up by email after I review the brief.
@@ -214,7 +214,7 @@ export function ContactForm() {
         <div className="space-y-8">
           {/* What to Expect */}
           <div>
-            <h3 className="label-mono mb-4">What Helps Me Reply Fast</h3>
+            <h3 className="label-mono mb-4">What helps me reply fast</h3>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary mt-1">→</span>
@@ -237,7 +237,7 @@ export function ContactForm() {
 
           {/* Current Availability */}
           <div className="border-t border-border pt-8">
-            <h3 className="label-mono mb-2">Current Availability</h3>
+            <h3 className="label-mono mb-2">Current availability</h3>
             <p className="text-muted-foreground mb-4">
               I&apos;m currently accepting new consulting and build engagements.
             </p>

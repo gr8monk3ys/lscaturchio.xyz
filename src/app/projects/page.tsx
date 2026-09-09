@@ -49,7 +49,7 @@ export default async function Projects({
               taxonomy, reported to a visitor who has no use for it. */}
           <Link
             href="/contact"
-            className="label-mono mt-6 inline-block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            className="label-mono label-link mt-6 inline-block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
             Discuss a similar build →
           </Link>

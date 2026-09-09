@@ -9,7 +9,7 @@ const iconLinkClass =
 /** `min-h-11` on phones: this row measured 20px tall against WCAG 2.5.8's
  *  24px floor. The site map links below already carry `min-h-6`. */
 const utilityLinkClass =
-  "inline-flex min-h-11 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary sm:min-h-0";
+  "inline-flex min-h-11 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-primary";
 
 /**
  * The footer is the site map: the header stays slim, so every page in the
@@ -23,7 +23,7 @@ function Footer() {
 
   return (
     <footer className="relative border-t border-border/60 bg-background text-foreground transition-colors duration-300">
-      <div className="container mx-auto px-4 py-12 md:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-6xl px-4 py-12 md:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_2fr]">
           {/* Colophon */}
           <div className="max-w-sm space-y-5">
@@ -35,7 +35,7 @@ function Footer() {
             <p className="text-sm">
               <a
                 href="mailto:lorenzosca7@protonmail.ch"
-                className="inline-flex min-h-11 items-center text-muted-foreground transition-colors hover:text-primary sm:min-h-0"
+                className="inline-flex min-h-11 items-center text-muted-foreground transition-colors hover:text-primary"
               >
                 lorenzosca7@protonmail.ch
               </a>
@@ -90,7 +90,7 @@ function Footer() {
                       <Link
                         href={item.href}
                         prefetch={false}
-                        className="ink-underline inline-flex min-h-11 items-center py-1 transition-colors hover:text-primary sm:min-h-6"
+                        className="ink-underline inline-flex min-h-11 items-center py-1 transition-colors hover:text-primary"
                       >
                         {item.name}
                       </Link>
@@ -110,21 +110,21 @@ function Footer() {
             <Link
               href="/stats"
               prefetch={false}
-              className="label-mono ink-underline inline-flex min-h-6 items-center px-1 transition-colors hover:text-primary"
+              className="label-mono label-link ink-underline inline-flex items-center px-1 transition-colors hover:text-primary"
             >
               Stats
             </Link>
             <Link
               href="/privacy-policy"
               prefetch={false}
-              className="label-mono ink-underline inline-flex min-h-6 items-center px-1 transition-colors hover:text-primary"
+              className="label-mono label-link ink-underline inline-flex items-center px-1 transition-colors hover:text-primary"
             >
               Privacy
             </Link>
             <Link
               href="/terms-of-service"
               prefetch={false}
-              className="label-mono ink-underline inline-flex min-h-6 items-center px-1 transition-colors hover:text-primary"
+              className="label-mono label-link ink-underline inline-flex items-center px-1 transition-colors hover:text-primary"
             >
               Terms
             </Link>

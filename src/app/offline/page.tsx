@@ -37,7 +37,7 @@ export default function OfflinePage() {
             </Link>
             <Link
               href="/blog"
-              className="px-6 py-3 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-accent transition-colors"
+              className="px-6 py-3 rounded-md border border-border hover:bg-accent transition-colors"
             >
               View Blog
             </Link>

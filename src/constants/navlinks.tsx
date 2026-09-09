@@ -38,7 +38,7 @@ export const navigationCategories: NavCategory[] = [
     name: 'About',
     icon: User,
     items: [
-      { name: 'About Me', href: '/about', icon: User, description: 'Who I am' },
+      { name: 'About', href: '/about', icon: User, description: 'Who I am' },
       { name: 'Now', href: '/now', icon: Clock, description: 'What I\'m up to' },
       { name: 'Experience', href: '/professional', icon: Briefcase, description: 'Skills and work history' },
     ],
@@ -48,14 +48,14 @@ export const navigationCategories: NavCategory[] = [
     icon: Briefcase,
     items: [
       { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
-      { name: 'Work With Me', href: '/work-with-me', icon: Sparkles, description: 'Hire me for AI/RAG work' },
+      { name: 'Hire me', href: '/work-with-me', icon: Sparkles, description: 'Consulting and build work' },
     ],
   },
   {
     name: 'Content',
     icon: FileText,
     items: [
-      { name: 'Blog', href: '/blog', icon: BookOpen, description: 'Articles and thoughts' },
+      { name: 'Writing', href: '/blog', icon: BookOpen, description: 'Essays and engineering notes' },
       { name: 'Topics', href: '/topics', icon: Layers, description: 'Curated topic hubs' },
       { name: 'Changelog', href: '/changelog', icon: TrendingUp, description: 'Roadmap + release notes' },
       { name: 'Podcast', href: '/podcast', icon: Mic, description: 'Audio episodes' },
@@ -122,7 +122,7 @@ export const footerColumns: NavCategory[] = [
   {
     name: 'Writing',
     items: [
-      { name: 'Blog', href: '/blog' },
+      { name: 'Writing', href: '/blog' },
       { name: 'Topics', href: '/topics' },
       { name: 'Series', href: '/series' },
       { name: 'Podcast', href: '/podcast' },
@@ -133,7 +133,7 @@ export const footerColumns: NavCategory[] = [
     name: 'Work',
     items: [
       { name: 'Projects', href: '/projects' },
-      { name: 'Work With Me', href: '/work-with-me' },
+      { name: 'Hire me', href: '/work-with-me' },
       { name: 'Uses', href: '/uses' },
     ],
   },
@@ -153,7 +153,7 @@ export const footerColumns: NavCategory[] = [
   {
     name: 'About',
     items: [
-      { name: 'About Me', href: '/about' },
+      { name: 'About', href: '/about' },
       { name: 'Experience', href: '/professional' },
       { name: 'Chat', href: '/chat' },
       { name: 'Contact', href: '/contact' },

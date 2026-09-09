@@ -44,7 +44,7 @@ export function VisitorChart() {
   return (
     <div>
       <div className="mb-6">
-        <h3 className="label-mono">Most Viewed Posts</h3>
+        <h2 className="label-mono">Most viewed posts</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Aggregate public post views, ranked by total reads.
         </p>

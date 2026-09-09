@@ -71,14 +71,14 @@ export function HowIWorkSection() {
             <Link
               href="/contact"
               prefetch={false}
-              className="label-mono text-foreground underline-offset-4 ink-underline hover:text-primary"
+              className="label-mono label-link text-foreground ink-underline hover:text-primary"
             >
               Start a project →
             </Link>
             <Link
               href="/projects"
               prefetch={false}
-              className="label-mono text-foreground underline-offset-4 ink-underline hover:text-primary"
+              className="label-mono label-link text-foreground ink-underline hover:text-primary"
             >
               See case studies →
             </Link>

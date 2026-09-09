@@ -1,13 +1,5 @@
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
-const SUGGESTED_QUESTIONS = [
-  "What do you actually do?",
-  "How would you build a RAG system?",
-  "Why do you write about politics?",
-];
+import { HeroAsk } from "@/components/home/hero-ask";
 
 export function Hero() {
   return (
@@ -43,55 +35,7 @@ export function Hero() {
         </figure>
       </div>
 
-      {/* Ask band — sits below the masthead with its own air. Plain GET form
-          so this stays a zero-JS server component; /chat reads ?q=. */}
-      <div className="mx-auto max-w-6xl border-t border-border py-10">
-        <div className="flex flex-col gap-4">
-          <span className="label-mono">Ask the site anything</span>
-          <form action="/chat" method="get" className="relative max-w-2xl">
-            <label htmlFor="hero-ask" className="sr-only">
-              Ask my site anything
-            </label>
-            <input
-              id="hero-ask"
-              name="q"
-              type="text"
-              required
-              placeholder="It's read everything I've written…"
-              autoComplete="off"
-              className="h-14 w-full rounded-none border-0 border-b border-border bg-transparent pr-28 text-lg text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-0"
-            />
-            <Button
-              type="submit"
-              size="lg"
-              variant="primary"
-              className="absolute right-0 top-1/2 h-10 -translate-y-1/2 rounded-full px-5"
-            >
-              Ask
-              <ArrowRight className="ml-1.5 h-4 w-4" />
-            </Button>
-          </form>
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
-            {SUGGESTED_QUESTIONS.map((question) => (
-              <Link
-                key={question}
-                href={`/chat?q=${encodeURIComponent(question)}`}
-                prefetch={false}
-                className="label-mono normal-case tracking-normal text-muted-foreground ink-underline transition-colors hover:text-primary"
-              >
-                {question}
-              </Link>
-            ))}
-            <Link
-              href="/projects"
-              prefetch={false}
-              className="label-mono ml-auto text-foreground ink-underline transition-colors hover:text-primary"
-            >
-              View work →
-            </Link>
-          </div>
-        </div>
-      </div>
+      <HeroAsk />
     </section>
   );
 }

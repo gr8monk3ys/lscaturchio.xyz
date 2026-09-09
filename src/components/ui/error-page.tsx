@@ -23,8 +23,11 @@ interface ErrorPageProps {
 export function ErrorPage({
   error,
   reset,
-  title = 'Something went wrong',
-  description = 'An unexpected error occurred. Please try again or return to the homepage.',
+  // The house voice, which PRODUCT.md says governs error messages as much as
+  // essays. The old defaults were the only copy on the site that read like a
+  // dialog box.
+  title = 'This page broke',
+  description = 'Something on this page failed to load. Reloading usually works; if it does not, the rest of the site is still fine.',
   icon,
   homeLabel = 'Go home',
 }: ErrorPageProps) {
@@ -58,8 +61,11 @@ export function ErrorPage({
         </div>
 
         {/* Error message */}
-        <h1 className="text-section-title mb-3">{title}</h1>
+        <h1 className="text-page-title mb-3">{title}</h1>
         <p className="text-description mb-6">{description}</p>
+        {error.digest && (
+          <p className="label-mono mb-6">Reference {error.digest}</p>
+        )}
 
         {/* Error details in development */}
         {process.env.NODE_ENV === 'development' && error.message && (

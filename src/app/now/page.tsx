@@ -100,7 +100,7 @@ export default async function NowPage() {
           <section className="mb-16">
             <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="font-display text-2xl font-semibold tracking-tight">Reading</h2>
-              <Link href="/books" className="label-mono hover:text-primary">
+              <Link href="/books" className="label-mono label-link hover:text-primary">
                 All books →
               </Link>
             </div>
@@ -127,7 +127,7 @@ export default async function NowPage() {
           <section className="mb-16">
             <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="font-display text-2xl font-semibold tracking-tight">Last watched</h2>
-              <Link href="/movies" className="label-mono hover:text-primary">
+              <Link href="/movies" className="label-mono label-link hover:text-primary">
                 All films →
               </Link>
             </div>
@@ -164,7 +164,7 @@ export default async function NowPage() {
           <section className="mb-16">
             <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="font-display text-2xl font-semibold tracking-tight">Writing</h2>
-              <Link href="/blog" className="label-mono hover:text-primary">
+              <Link href="/blog" className="label-mono label-link hover:text-primary">
                 All posts →
               </Link>
             </div>

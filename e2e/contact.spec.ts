@@ -42,7 +42,7 @@ test.describe('Contact Form', () => {
 
     await page.locator('button[type="submit"]').first().click()
 
-    await expect(page.locator('[aria-live="polite"]')).toContainText('Message sent', {
+    await expect(page.locator('#contact-form-status')).toContainText('Message sent', {
       timeout: 15000,
     })
   })
@@ -70,7 +70,7 @@ test.describe('Contact Form', () => {
 
     await page.locator('button[type="submit"]').first().click()
 
-    await expect(page.locator('[aria-live="polite"]')).toContainText('Message failed to send', {
+    await expect(page.locator('#contact-form-status')).toContainText('Message failed to send', {
       timeout: 15000,
     })
   })

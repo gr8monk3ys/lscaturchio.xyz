@@ -17,7 +17,7 @@ export function Prose({
         "prose-p:text-foreground/90 prose-p:leading-relaxed",
         "prose-strong:text-foreground",
         // Links: ink with a green underline, not a loud color swap.
-        "prose-a:text-foreground prose-a:underline prose-a:decoration-primary/40 prose-a:underline-offset-2 hover:prose-a:decoration-primary",
+        "prose-a:text-foreground prose-a:underline prose-a:decoration-primary/70 prose-a:underline-offset-2 hover:prose-a:decoration-primary",
         // Pull-quote: flat left rule + Fraunces, no italic, no card.
         "prose-blockquote:border-l-2 prose-blockquote:border-primary prose-blockquote:pl-5 prose-blockquote:not-italic prose-blockquote:font-display prose-blockquote:text-xl prose-blockquote:font-medium prose-blockquote:text-foreground",
         // Inline code in the wall-label mono.

@@ -15,7 +15,7 @@ export default function PrivacyPolicyPage() {
           Last updated: September 2, 2026
         </p>
         
-        <h2>Transparency Statement</h2>
+        <h2>Transparency statement</h2>
         <p>
           I believe in being transparent about how I operate and handle data. This page outlines my practices
           and gives you insight into how I maintain sustainability while providing value to the community.
@@ -57,7 +57,7 @@ export default function PrivacyPolicyPage() {
           None of these tell me who you are. I cannot see which essays a specific person read.
         </p>
 
-        <h2>Information Collection</h2>
+        <h2>Information collection</h2>
         <p>
           I collect minimal information, only what&apos;s necessary to provide my services:
         </p>
@@ -96,7 +96,7 @@ export default function PrivacyPolicyPage() {
           my GitHub repository. I believe in transparency through code.
         </p>
 
-        <h2>Sustainability Practices</h2>
+        <h2>Sustainability practices</h2>
         <p>
           I strive to make my digital services environmentally conscious by:
         </p>
@@ -106,7 +106,7 @@ export default function PrivacyPolicyPage() {
           <li>Choosing eco-friendly hosting providers</li>
         </ul>
 
-        <h2>Your Rights</h2>
+        <h2>Your rights</h2>
         <p>
           You have the right to:
         </p>
@@ -117,7 +117,7 @@ export default function PrivacyPolicyPage() {
           <li>Know how your data is being used</li>
         </ul>
 
-        <h2>Contact Information</h2>
+        <h2>Contact information</h2>
         <p>
           For any questions about this privacy policy or data handling practices, please contact me at{" "}
           <a href="mailto:lorenzosca7@protonmail.ch">lorenzosca7@protonmail.ch</a>.

@@ -103,7 +103,7 @@ export default function ProfessionalPage() {
         {/* Philosophy & Approach */}
         <section className="border-y border-border py-10">
           <h2 className="font-display text-2xl font-bold tracking-tight mb-4">How I work</h2>
-          <div className="space-y-4 text-muted-foreground">
+          <div className="max-w-2xl space-y-4 text-muted-foreground">
             <p>
               Most of this field is locked behind academic papers and tooling that assumes
               you already know the answer. The work I like best takes something that only
@@ -154,9 +154,9 @@ export default function ProfessionalPage() {
               href="https://calendly.com/gr8monk3ys/30min"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-md bg-secondary text-secondary-foreground hover:opacity-90 transition-opacity font-medium"
+              className="cta-primary inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-medium"
             >
-              Schedule a Call
+              Schedule a call
             </a>
           </div>
           <p className="text-sm text-muted-foreground">
