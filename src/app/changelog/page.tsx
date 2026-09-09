@@ -4,7 +4,6 @@ import { Metadata } from 'next'
 import { ChangelogTimeline } from '@/components/changelog/changelog-timeline'
 import Link from 'next/link'
 import { ROADMAP, type RoadmapStatus } from '@/constants/roadmap'
-import { Badge } from '@/components/ui/badge'
 import { getShippedPrs } from '@/lib/changelog'
 import { buildPageMetadata } from '@/lib/seo'
 
@@ -75,36 +74,38 @@ export default async function ChangelogPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Three hairline stacks, not a three-column tile grid with cards
+                nested inside cards. This was the second banned `neu-card` grid
+                on the site after /projects lost its own; the roadmap is a list
+                of three lists and reads as one. */}
+            <div className="grid grid-cols-1 gap-x-10 lg:grid-cols-3">
               {(Object.keys(grouped) as Array<RoadmapStatus>).map((status) => (
-                <div key={status} className="neu-card p-5 rounded-2xl">
-                  <div className="flex items-center justify-between gap-2">
-                    <h3 className="font-semibold">{statusMeta[status].label}</h3>
-                    <span className="text-xs text-muted-foreground">
+                <div key={status} className="border-t border-border pt-4">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <h3 className="label-mono">{statusMeta[status].label}</h3>
+                    <span className="label-mono tabular-nums">
                       {grouped[status].length}
                     </span>
                   </div>
 
-                  <div className="space-y-4">
+                  <ul className="mt-4">
                     {grouped[status].length === 0 && (
-                      <p className="text-sm text-muted-foreground">Nothing queued here right now.</p>
+                      <li className="py-3 text-sm text-muted-foreground">
+                        Nothing queued here right now.
+                      </li>
                     )}
                     {grouped[status].map((item) => (
-                      <article key={item.id} className="rounded-xl border border-border/60 bg-background/70 p-4">
+                      <li key={item.id} className="border-b border-border py-4 last:border-b-0">
                         <h4 className="font-medium leading-tight">{item.title}</h4>
-                        <p className="text-sm text-muted-foreground mt-2">{item.description}</p>
+                        <p className="mt-2 text-sm text-muted-foreground">{item.description}</p>
                         {item.tags?.length ? (
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {item.tags.map((tag) => (
-                              <Badge key={tag} variant="secondary" className="text-[0.72rem]">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
+                          <p className="label-mono mt-3 normal-case tracking-normal text-muted-foreground">
+                            {item.tags.join("  ·  ")}
+                          </p>
                         ) : null}
-                      </article>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
               ))}
             </div>

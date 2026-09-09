@@ -36,7 +36,7 @@ export function PopularPosts() {
 
   return (
     <div>
-      <h3 className="label-mono mb-4">Popular Posts</h3>
+      <h2 className="label-mono mb-4">Popular Posts</h2>
 
       {isLoading ? (
         <div className="border-t border-border" aria-busy="true" aria-label="Loading popular posts">

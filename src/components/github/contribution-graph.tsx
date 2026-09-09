@@ -8,7 +8,33 @@ import { fetchJson, type ApiEnvelope } from '@/lib/fetcher'
 interface ContributionDay {
   contributionCount: number
   date: string
+  /** GitHub's own green. Kept in the type because the API sends it; not used. */
   color: string
+}
+
+/**
+ * The heatmap in one ink.
+ *
+ * GitHub returns five hardcoded greens (#ebedf0 through #216e39) and this
+ * component used to paint them directly, which put a third colour system on
+ * the site beside Forest Ink and the changelog's four accents. The ramp is now
+ * opacity on the one pen, derived from the count rather than the palette the
+ * API happens to ship.
+ */
+const RAMP = [
+  "hsl(var(--muted))",
+  "hsl(var(--primary) / 0.25)",
+  "hsl(var(--primary) / 0.45)",
+  "hsl(var(--primary) / 0.7)",
+  "hsl(var(--primary))",
+] as const
+
+function inkFor(count: number): string {
+  if (count <= 0) return RAMP[0]
+  if (count < 3) return RAMP[1]
+  if (count < 6) return RAMP[2]
+  if (count < 10) return RAMP[3]
+  return RAMP[4]
 }
 
 interface ContributionWeek {
@@ -33,10 +59,10 @@ export function ContributionGraph() {
 
   if (isLoading) {
     return (
-      <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
+      <div className="p-6 rounded-lg border border-border">
         <div className="flex items-center gap-2 mb-6">
           <IconBrandGithub className="h-5 w-5 text-primary" />
-          <h3 className="text-xl font-semibold">GitHub Contributions</h3>
+          <h2 className="text-xl font-semibold">GitHub Contributions</h2>
         </div>
         <div className="h-32 bg-muted animate-pulse rounded" />
       </div>
@@ -45,10 +71,10 @@ export function ContributionGraph() {
 
   if (error) {
     return (
-      <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
+      <div className="p-6 rounded-lg border border-border">
         <div className="flex items-center gap-2 mb-4">
           <IconBrandGithub className="h-5 w-5 text-primary" />
-          <h3 className="text-xl font-semibold">GitHub Contributions</h3>
+          <h2 className="text-xl font-semibold">GitHub Contributions</h2>
         </div>
         <p className="text-sm text-muted-foreground">
           GitHub contribution data is temporarily unavailable.
@@ -61,10 +87,10 @@ export function ContributionGraph() {
 
   if (data.degraded || data.weeks.length === 0) {
     return (
-      <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
+      <div className="p-6 rounded-lg border border-border">
         <div className="flex items-center gap-2 mb-4">
           <IconBrandGithub className="h-5 w-5 text-primary" />
-          <h3 className="text-xl font-semibold">GitHub Contributions</h3>
+          <h2 className="text-xl font-semibold">GitHub Contributions</h2>
         </div>
         <p className="text-sm text-muted-foreground">
           {data.message || 'GitHub contribution data is temporarily unavailable.'}
@@ -82,11 +108,11 @@ export function ContributionGraph() {
   }))
 
   return (
-    <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800">
+    <div className="p-6 rounded-lg border border-border">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <IconBrandGithub className="h-5 w-5 text-primary" />
-          <h3 className="text-xl font-semibold">GitHub Contributions</h3>
+          <h2 className="text-xl font-semibold">GitHub Contributions</h2>
         </div>
         <p className="text-sm text-muted-foreground">
           <span className="font-semibold text-foreground">{data.totalContributions}</span> contributions in the last year
@@ -125,10 +151,9 @@ export function ContributionGraph() {
                       key={dayIndex}
                       onMouseEnter={() => setHoveredDay(day)}
                       onMouseLeave={() => setHoveredDay(null)}
-                      className="w-3 h-3 rounded-sm cursor-pointer transition-transform hover:scale-150 hover:z-10 relative"
+                      className="relative h-3 w-3 cursor-pointer rounded-sm ring-primary/45 transition-shadow hover:ring-2"
                       style={{
-                        backgroundColor: day.color,
-                        border: '1px solid rgba(0,0,0,0.1)',
+                        backgroundColor: inkFor(day.contributionCount),
                       }}
                       title={`${day.contributionCount} contributions on ${day.date}`}
                     />
@@ -153,11 +178,11 @@ export function ContributionGraph() {
             <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
               <span>Less</span>
               <div className="flex gap-1">
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#ebedf0' }} />
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#9be9a8' }} />
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#40c463' }} />
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#30a14e' }} />
-                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#216e39' }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: RAMP[0] }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: RAMP[1] }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: RAMP[2] }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: RAMP[3] }} />
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: RAMP[4] }} />
               </div>
               <span>More</span>
             </div>

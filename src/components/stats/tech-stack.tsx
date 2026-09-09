@@ -16,7 +16,7 @@ export function TechStack() {
 
   return (
     <div>
-      <h3 className="label-mono mb-4">Tech Stack</h3>
+      <h2 className="label-mono mb-4">Tech Stack</h2>
 
       <div className="grid grid-cols-2 divide-x divide-y divide-border border-y border-border">
         {stack.map((tech) => (

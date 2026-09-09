@@ -1,13 +1,20 @@
 "use client"
 
-import { Plus, Edit, Bug, Sparkles } from 'lucide-react'
 import { CHANGELOG } from '@/constants/changelog'
 
-const CHANGE_ICONS = {
-  added: { icon: Plus, color: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-900/20' },
-  changed: { icon: Edit, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-900/20' },
-  fixed: { icon: Bug, color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-100 dark:bg-orange-900/20' },
-  highlight: { icon: Sparkles, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-100 dark:bg-purple-900/20' },
+/**
+ * A wall label per change type, in one ink.
+ *
+ * This used to be four icons on four tinted backgrounds — green, blue, orange
+ * and purple, none of which are in the palette — plus a Sparkles glyph on the
+ * highlight row. That was a second colour system carrying information the word
+ * already carries.
+ */
+const CHANGE_LABELS: Record<string, string> = {
+  added: 'Added',
+  changed: 'Changed',
+  fixed: 'Fixed',
+  highlight: 'Highlight',
 }
 
 export function ChangelogTimeline() {
@@ -23,7 +30,9 @@ export function ChangelogTimeline() {
         >
           {/* Timeline line */}
           {index < CHANGELOG.length - 1 && (
-            <div className="absolute left-[15px] top-12 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-800" />
+            /* 1px sand, not 2px grey. The Sand Hairline Rule says rules are
+               1px Hairline, "never thicker" and never neutral grey. */
+            <div className="absolute left-[15px] top-12 bottom-0 w-px bg-border" />
           )}
 
           {/* Version header */}
@@ -44,22 +53,17 @@ export function ChangelogTimeline() {
           </div>
 
           {/* Changes list */}
-          <div className="ml-12 space-y-3">
+          <div className="ml-12 border-t border-border">
             {entry.changes.map((change, changeIndex) => {
-              const config = CHANGE_ICONS[change.type]
-              const Icon = config.icon
+              const label = CHANGE_LABELS[change.type] ?? change.type
 
               return (
                 <div
                   key={changeIndex}
-                  className={`flex items-start gap-3 p-3 rounded-lg ${
-                    change.type === 'highlight' ? 'border-2 border-primary' : ''
-                  }`}
+                  className="grid grid-cols-[6rem_1fr] items-baseline gap-x-4 border-b border-border py-2.5 last:border-b-0"
                 >
-                  <div className={`p-1.5 rounded ${config.bg} shrink-0`}>
-                    <Icon className={`h-4 w-4 ${config.color}`} />
-                  </div>
-                  <p className={`text-sm ${change.type === 'highlight' ? 'font-semibold' : ''}`}>
+                  <span className="label-mono">{label}</span>
+                  <p className={`text-sm ${change.type === 'highlight' ? 'font-medium text-foreground' : ''}`}>
                     {change.text}
                   </p>
                 </div>
