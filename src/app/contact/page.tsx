@@ -81,7 +81,7 @@ export default function Contact() {
 
         <div className="grid gap-10 lg:grid-cols-2">
           <div>
-            <h2 className="label-mono">Fastest Way to Get a Useful Reply</h2>
+            <h2 className="label-mono">Fastest way to get a useful reply</h2>
             <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
               <li>Describe the outcome you want, not just the tool you want to use.</li>
               <li>Mention the data, systems, or constraints that make the problem real.</li>
