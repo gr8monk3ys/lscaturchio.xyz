@@ -4,30 +4,6 @@ import { IconBrandGithub, IconBrandLinkedin, IconBrandTwitter } from "@tabler/ic
 import Link from "next/link";
 import { useState } from "react";
 
-const contactMethods = [
-  {
-    title: "Discovery Call",
-    description: "Best for scoped projects, audits, and fast go or no-go decisions",
-    action: "Book 30 Minutes",
-    href: "https://calendly.com/gr8monk3ys/30min",
-    external: true,
-  },
-  {
-    title: "Async Brief",
-    description: "Best if you already have links, context, and constraints to share",
-    action: "Send a Brief",
-    href: "mailto:lorenzosca7@protonmail.ch",
-    external: true,
-  },
-  {
-    title: "Remote Collaboration",
-    description: "Based in Southern California and available for remote work worldwide",
-    action: "Remote-first delivery",
-    href: null,
-    external: false,
-  },
-];
-
 const socialLinks = [
   { icon: IconBrandGithub, href: "https://github.com/gr8monk3ys", label: "GitHub" },
   { icon: IconBrandLinkedin, href: "https://linkedin.com/in/lorenzo-scaturchio", label: "LinkedIn" },
@@ -108,29 +84,15 @@ export function ContactForm() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      {/* Contact Methods — no entrance animation: an `initial={{ opacity: 0 }}`
-          mount under `LazyMotion strict` can be missed, hiding the whole page. */}
-      <div className="grid md:grid-cols-3 divide-border border-y border-border md:divide-x mb-16">
-        {contactMethods.map((method) => (
-          <div key={method.title} className="px-5 py-6">
-            <h3 className="label-mono">{method.title}</h3>
-            <p className="text-muted-foreground text-sm mt-2 mb-4">{method.description}</p>
-            {method.href ? (
-              <Link
-                href={method.href}
-                target={method.external ? "_blank" : undefined}
-                rel={method.external ? "noopener noreferrer" : undefined}
-                className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-              >
-                {method.action}
-              </Link>
-            ) : (
-              <span className="text-sm text-muted-foreground">{method.action}</span>
-            )}
-          </div>
-        ))}
-      </div>
-
+      {/* The three-tile "contact methods" band that sat here is gone. Every
+          actionable item in it duplicated a CTA in the page masthead above —
+          "Book 30 Minutes" was the same Calendly link as "Book a call", "Send
+          a Brief" the same mailto as "Email Directly" — and the third tile
+          ("Remote-first delivery") was not an action at all; the response
+          expectations beside this form already say "Remote worldwide". A
+          reviewer counted seven ways to make contact on this page, two of them
+          the same action under two names. It was also the second of two
+          three-column bands, which DESIGN.md's Don't list bans outright. */}
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-2 gap-12">
         {/* Contact Form */}

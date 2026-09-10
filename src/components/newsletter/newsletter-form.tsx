@@ -147,22 +147,35 @@ export function NewsletterForm({
         </button>
       </form>
 
-      {message && (
-        <div
-          className={`mt-3 p-3 rounded-xl text-sm flex items-start gap-2 neu-pressed-sm ${
-            status === 'success'
-              ? 'text-success'
-              : 'text-destructive'
-          }`}
-        >
-          {status === 'success' ? (
-            <Check className="h-4 w-4 mt-0.5 shrink-0" />
-          ) : (
-            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-          )}
-          <span>{message}</span>
-        </div>
-      )}
+      {/* The region has to exist before the message does, or a screen reader
+          announces nothing: `aria-live` is watched for changes to a node that
+          is already in the tree, and this block used to be mounted only once
+          there was something to say. So neither the confirmation nor the
+          failure reached anyone not looking at it. Named, because the site now
+          has more than one live region and an unnamed selector matched two. */}
+      <div
+        id="newsletter-form-status"
+        role="status"
+        aria-live="polite"
+        className="min-h-0"
+      >
+        {message && (
+          <div
+            className={`mt-3 p-3 rounded-xl text-sm flex items-start gap-2 neu-pressed-sm ${
+              status === 'success'
+                ? 'text-success'
+                : 'text-destructive'
+            }`}
+          >
+            {status === 'success' ? (
+              <Check aria-hidden="true" className="h-4 w-4 mt-0.5 shrink-0" />
+            ) : (
+              <AlertCircle aria-hidden="true" className="h-4 w-4 mt-0.5 shrink-0" />
+            )}
+            <span>{message}</span>
+          </div>
+        )}
+      </div>
 
       <p className="mt-3 text-xs text-muted-foreground">
         Get notified when I publish new articles. Unsubscribe anytime.

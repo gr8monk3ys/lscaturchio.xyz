@@ -240,22 +240,28 @@ export async function BlogLayout({
               )}
             </footer>
 
-            {/* The reader's next step is another essay; everything else
-                comes after it. */}
+            {/* End matter, ordered by what the reader is most likely to want.
+                Another essay comes first, because that is the site's stated
+                success condition — "a reader who stays, reads a second essay".
+                Then the two ways to respond, together: replies from other sites
+                and replies here are the same act, and they were separated by a
+                newsletter pitch. The subscribe ask goes last, because it is the
+                one thing that asks the reader for something rather than
+                offering them something, and because a personal essay should not
+                close on a GitHub-login iframe. */}
             <RelatedPosts
               currentTitle={meta.title}
               currentUrl={pathname}
             />
 
+            <Webmentions path={pathname} />
+
+            <GiscusComments />
 
             <NewsletterCTA
               defaultTopics={relatedHubs.map((hub) => hub.slug)}
               sourcePath={pathname}
             />
-
-            <Webmentions path={pathname} />
-
-            <GiscusComments />
           </article>
         </div>
 
