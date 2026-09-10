@@ -99,7 +99,15 @@ export async function BlogLayout({
         <BlogSidebar slug={slug} />
 
         <div className="mx-auto max-w-2xl xl:mx-0">
-          <BreadcrumbNav customSegments={{ blog: "Blog" }} />
+          {/* The leaf is the essay's own title. Without it the crumb read
+                  "Building rag systems" above an h1 saying "Building RAG
+                  Systems in Production" — and the same string went into the
+                  BreadcrumbList JSON-LD, so search engines got it too.
+                  The parent is "Writing" because that is what the header calls
+                  /blog; this breadcrumb said "Blog", which is the one-
+                  destination-two-names bug the nav-vocabulary rule exists for,
+                  in a nav that rule cannot see. */}
+              <BreadcrumbNav customSegments={{ blog: "Writing", [slug]: meta.title }} />
 
           {previousPathname && <BackButton />}
           <article>

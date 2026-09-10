@@ -94,7 +94,11 @@ export default function ProfessionalPage() {
               href="https://calendly.com/gr8monk3ys/30min"
               target="_blank"
               rel="noopener noreferrer"
-              className="cta-primary inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-medium"
+              /* Secondary: `ResumeDownloadButton` beside this is the page's
+                 one filled CTA. DESIGN.md also grants the round pill only to
+                 the masthead's Ask, so this takes the 14px corner every other
+                 control on the site uses. */
+              className="cta-secondary inline-flex h-11 items-center justify-center rounded-xl px-6 text-sm font-medium"
             >
               Schedule a call
             </a>

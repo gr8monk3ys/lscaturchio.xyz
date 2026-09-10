@@ -30,20 +30,31 @@ export function BreadcrumbNav({
     .map((segment) => {
       // Check if this segment is a dynamic route parameter (e.g., [slug])
       const isDynamicSegment = segment.startsWith("[") && segment.endsWith("]");
-      
-      // If it's a dynamic segment, use a placeholder or custom label
+      const custom = customSegments[segment];
+
       return {
-        name: customSegments[segment] || 
-              (isDynamicSegment ? segment.replace(/[\[\]]/g, "") : segment),
+        name: custom ?? (isDynamicSegment ? segment.replace(/[\[\]]/g, "") : segment),
+        // A caller-supplied name is already the words it wants; the slug
+        // transform below must not touch it. Before this flag, a custom
+        // "Trade-offs" came out as "Trade offs".
+        isCustom: custom !== undefined,
         path: segment,
       };
     });
-  
+
   // Build the breadcrumb items with cumulative paths
   const breadcrumbItems = segments.map((segment, index) => {
     const path = `/${segments.slice(0, index + 1).map(s => s.path).join("/")}`;
     return {
-      name: segment.name.charAt(0).toUpperCase() + segment.name.slice(1).replace(/-/g, " "),
+      // Sentence-casing a de-hyphenated slug is a guess, and on essays it was
+      // wrong more often than right: "Ai art death of process" above an h1
+      // reading "AI Art and the Death of Process", "Carceral state working"
+      // above "The Prison System Isn't Broken". The slug is a URL, not a
+      // title. Any route that knows its own title passes it in, and this
+      // fallback is only for segments that have no better name available.
+      name: segment.isCustom
+        ? segment.name
+        : segment.name.charAt(0).toUpperCase() + segment.name.slice(1).replace(/-/g, " "),
       path,
     };
   });

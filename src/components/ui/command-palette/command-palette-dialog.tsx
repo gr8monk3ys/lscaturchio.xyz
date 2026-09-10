@@ -68,7 +68,7 @@ export function CommandPaletteDialog({
           role="dialog"
           aria-modal="true"
           aria-label="Search and navigate"
-          className="overflow-hidden rounded-xl border border-border bg-popover focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
+          className="overflow-hidden rounded-xl border border-border bg-popover focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ring-offset-background"
         >
           <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
             <Search className="h-5 w-5 text-muted-foreground shrink-0" />

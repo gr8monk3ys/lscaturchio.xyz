@@ -1,5 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
+
+/**
+ * Without this, a 404 inherited the root layout's title, so a dead link's tab
+ * and history entry were indistinguishable from the front door — the reader
+ * could not tell from the tab strip which of their pages had failed.
+ *
+ * `robots: noindex` because a soft 404 in an index is worse than no entry.
+ */
+export const metadata: Metadata = {
+  title: "This room is empty",
+  description:
+    "The page you came for was moved, renamed, or never hung here in the first place.",
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (

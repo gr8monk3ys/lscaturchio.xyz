@@ -475,7 +475,11 @@
     --muted-foreground: 215 10% 42%;
     --accent: 32 50% 92%;
     --accent-foreground: 215 15% 16%;
-    --destructive: 0 84.2% 60.2%;
+    /* 38%, not shadcn's 60.2%. At 60.2% this is #ef4444, which measures
+       3.58:1 on Paper — under the 4.5:1 body-text floor, and the site renders
+       it as body copy (form validation, search failures). 38% measures
+       7.10:1, in the same band as --primary's 9.15:1. */
+    --destructive: 0 72% 38%;
     --destructive-foreground: 0 0% 98%;
     --border: 30 18% 86%;
     --input: 30 18% 86%;
@@ -483,9 +487,12 @@
     --radius: 0.75rem;
 
     /* Status colors - for badges, alerts, notifications */
-    --success: 142 76% 36%;
+    /* 26%, not 36%. At 36% this measures 3.18:1 on Paper, and the site
+       paints it as body copy in the newsletter form's status line. 26% is
+       5.54:1. The dark value already clears at 8.10:1 and is unchanged. */
+    --success: 142 76% 26%;
     --success-foreground: 0 0% 100%;
-    --success-muted: 142 76% 36% / 0.1;
+    --success-muted: 142 76% 26% / 0.1;
     --destructive-muted: 0 84.2% 60.2% / 0.1;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 0%;
@@ -518,7 +525,13 @@
     --muted-foreground: 220 10% 70%;
     --accent: 210 16% 16%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    /* Lighter at night, like every other token here. This was 30.6% — the
+       unmodified shadcn default — which made it the only token that got
+       *darker* in dark mode while --primary lifted 20%→46% and
+       --muted-foreground 42%→70%. #7f1d1d on #111317 measures 1.86:1, failing
+       even the 3:1 large-text floor. 70% measures 6.79:1, matching
+       --primary's 6.36:1. */
+    --destructive: 0 70% 70%;
     --destructive-foreground: 0 0% 98%;
     --border: 220 10% 18%;
     --input: 220 10% 18%;

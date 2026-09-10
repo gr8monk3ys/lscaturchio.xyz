@@ -5,7 +5,7 @@ import { footerColumns } from "@/constants/navlinks";
 import { socials } from "@/constants/socials";
 
 const iconLinkClass =
-  "inline-flex h-10 w-10 items-center justify-center rounded-xl neu-button text-foreground transition-all duration-200 hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  "inline-flex h-10 w-10 items-center justify-center rounded-xl neu-button text-foreground transition-all duration-200 hover:text-primary focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background";
 /** `min-h-11` on phones: this row measured 20px tall against WCAG 2.5.8's
  *  24px floor. The site map links below already carry `min-h-6`. */
 const utilityLinkClass =
