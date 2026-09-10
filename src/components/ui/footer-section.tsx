@@ -27,7 +27,7 @@ function Footer() {
         <div className="grid gap-12 lg:grid-cols-[1.1fr_2fr]">
           {/* Colophon */}
           <div className="max-w-sm space-y-5">
-            <h2 className="text-2xl font-bold tracking-tight">Lorenzo Scaturchio</h2>
+            <h2 className="text-section-title">Lorenzo Scaturchio</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               AI systems by day, essays about the world they land in the rest of
               the time. Built with Next.js and Neon — and rebuilt often.

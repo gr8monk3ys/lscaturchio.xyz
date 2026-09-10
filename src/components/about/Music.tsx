@@ -87,7 +87,7 @@ export function Music() {
           <m.div variants={cardVariants} className="flex gap-4 flex-col items-start">
             <span className="label-mono block">Soundscapes</span>
             <div className="flex gap-2 flex-col">
-              <h2 className="text-section-title tracking-tight text-foreground">
+              <h2 className="text-section-title text-foreground">
                 Favorite albums
               </h2>
               <p className="text-lg max-w-prose">
@@ -114,7 +114,7 @@ export function Music() {
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
-                <h3 className="mt-4 text-card-title tracking-tight text-foreground">
+                <h3 className="mt-4 text-card-title text-foreground">
                   {album.title}
                 </h3>
                 <p className="label-mono mt-2">

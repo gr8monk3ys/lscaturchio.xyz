@@ -69,7 +69,7 @@ export default async function ChangelogPage() {
 
           <section id="roadmap" className="mb-12 scroll-mt-28">
             <div className="mb-4">
-              <h2 className="text-2xl font-semibold">Roadmap</h2>
+              <h2 className="text-section-title">Roadmap</h2>
               <p className="text-sm text-muted-foreground mt-2">
                 Strategy lives here. Release notes stay below.
               </p>
@@ -115,7 +115,7 @@ export default async function ChangelogPage() {
           {shipped.length > 0 && (
             <section id="shipped" className="mb-12 scroll-mt-28">
               <div className="mb-6">
-                <h2 className="text-2xl font-semibold">Shipped</h2>
+                <h2 className="text-section-title">Shipped</h2>
                 <p className="text-sm text-muted-foreground mt-2">
                   Every change lands as a pull request, so this list cannot fall behind.
                 </p>
@@ -145,7 +145,7 @@ export default async function ChangelogPage() {
           )}
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">Milestones</h2>
+            <h2 className="mb-4 text-section-title">Milestones</h2>
             <p className="text-sm text-muted-foreground mb-6">
               The hand-picked turning points, with the granular trail above.
             </p>

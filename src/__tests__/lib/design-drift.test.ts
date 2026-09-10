@@ -67,6 +67,27 @@ const RULES: Rule[] = [
     appliesTo: (line) => !line.includes("prose-"),
   },
   {
+    id: "display-scale-outside-ramp",
+    because:
+      "Above text-card-title (1.25rem) there is nothing but headings, so text-2xl and up belong to the ramp entirely. The heading-ramp rule only sees a size beside font-display, which misses every heading that never reached for the display font in the first place — section-heading.tsx, /tag, /secret and eighteen others set their own scale with font-bold and were invisible to it.",
+    test: /\b(?:sm:|md:|lg:|xl:|2xl:)?text-(?:[2-9]xl)\b/,
+    // Two voices legitimately reach this size without being headings: a mono
+    // step number in the label voice, and a figure set in tabular numerals.
+    // Neither borrows the heading ramp, so neither drifts from it.
+    appliesTo: (line) =>
+      !line.includes("prose-") &&
+      !line.includes("label-mono") &&
+      !line.includes("tabular-nums"),
+  },
+  {
+    id: "heading-tracking-override",
+    because:
+      "The Fluid Heading Rule sets tracking per step and loosens it as size falls (-0.035 / -0.03 / -0.026 / -0.02 / -0.01em). A tracking-tight beside a ramp token replaces all five with one value, which is the size-override bug in a different property.",
+    test: new RegExp(
+      String.raw`(?:(?:text-(?:page|section|card)-title|text-subsection|text-display)[^"]*\btracking-(?:tight|tighter)\b|\btracking-(?:tight|tighter)\b[^"]*(?:text-(?:page|section|card)-title|text-subsection|text-display))`
+    ),
+  },
+  {
     id: "width-scale",
     because:
       "page-width.ts defines three widths. A max-w-* outside that set inside a layout container is a fourth or fifth, and it silently overrides the Container size prop it is nested in.",

@@ -7,7 +7,7 @@ export default async function AdminLinksPage() {
 
   return (
     <main>
-      <h1 className="mb-6 text-2xl font-bold">Links</h1>
+      <h1 className="mb-6 text-page-title">Links</h1>
       {data ? (
         <LinksEditor initial={data} />
       ) : (

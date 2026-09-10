@@ -57,7 +57,7 @@ export function SeriesNavigation({
         <span className="label-mono">
           Series · <span>{`Part ${currentOrder} of ${seriesPosts.length}`}</span>
         </span>
-        <h3 className="text-card-title tracking-tight">
+        <h3 className="text-card-title">
           {seriesName} Series
         </h3>
       </div>

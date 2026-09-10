@@ -9,7 +9,7 @@ export function Hero() {
         <div className="min-w-0 space-y-6">
           <span className="label-mono block">Essays · Systems · Los Angeles</span>
 
-          <h1 className="text-balance text-5xl font-semibold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
+          <h1 className="text-balance text-display">
             Hey, I&apos;m <span className="text-primary">Lorenzo Scaturchio</span>
           </h1>
 

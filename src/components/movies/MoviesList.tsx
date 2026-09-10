@@ -45,7 +45,7 @@ function FavoriteFilm({ movie, index }: { movie: LetterboxdMovie; index: number 
             rel="noopener noreferrer"
             className="group inline-flex flex-wrap items-baseline gap-x-3"
           >
-            <h3 className="text-section-title tracking-tight transition-colors group-hover:text-primary md:text-3xl">
+            <h3 className="text-section-title transition-colors group-hover:text-primary">
               {movie.title}
             </h3>
             <span className="label-mono">{movie.year}</span>
@@ -164,7 +164,7 @@ export function MoviesList({
           { value: reviewed.length, label: "Written About" },
         ].map((stat) => (
           <div key={stat.label} className="px-5 py-6">
-            <p className="text-section-title tracking-tight">{stat.value}</p>
+            <p className="text-section-title">{stat.value}</p>
             <p className="label-mono mt-2">{stat.label}</p>
           </div>
         ))}

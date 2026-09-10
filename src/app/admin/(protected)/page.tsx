@@ -10,7 +10,7 @@ const SECTIONS = [
 export default function AdminDashboard() {
   return (
     <main>
-      <h1 className="text-2xl font-bold">What are you publishing?</h1>
+      <h1 className="text-page-title">What are you publishing?</h1>
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {SECTIONS.map((s) => (
           <Link

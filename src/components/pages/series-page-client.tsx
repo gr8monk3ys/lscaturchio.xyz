@@ -30,7 +30,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
           {/* Header — gallery masthead */}
           <header className="mb-12">
             <span className="label-mono block">Garden · Series</span>
-            <h1 className="mt-4 text-page-title tracking-tight text-foreground md:text-5xl">
+            <h1 className="mt-4 text-page-title">
               Blog Series
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
@@ -61,7 +61,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
           {/* Header — gallery masthead */}
           <header className="mb-12">
             <span className="label-mono block">Garden · Series</span>
-            <h1 className="mt-4 text-page-title tracking-tight text-foreground md:text-5xl">
+            <h1 className="mt-4 text-page-title">
               Blog Series
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-muted-foreground">

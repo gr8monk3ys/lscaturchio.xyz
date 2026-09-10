@@ -68,7 +68,7 @@ export function ChatPageClient({
             </button>
           )}
         </div>
-        <h1 className="mt-2 text-section-title tracking-tight">Chat with Lorenzo</h1>
+        <h1 className="mt-2 text-section-title">Chat with Lorenzo</h1>
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">
           Answers come from the essays, not from a model that made them up. Enter sends;
           Shift+Enter starts a new line.

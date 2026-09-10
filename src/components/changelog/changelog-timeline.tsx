@@ -41,7 +41,7 @@ export function ChangelogTimeline() {
               {entry.version.split('.')[0]}
             </div>
             <div>
-              <h3 className="text-2xl font-bold">Version {entry.version}</h3>
+              <h3 className="text-card-title">Version {entry.version}</h3>
               <p className="text-sm text-muted-foreground">
                 {new Date(entry.date).toLocaleDateString('en-US', {
                   month: 'long',

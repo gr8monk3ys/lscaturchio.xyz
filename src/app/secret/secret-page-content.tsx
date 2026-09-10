@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 
+import { Container } from "@/components/Container";
+import { PageHead } from "@/components/ui/page-head";
+
 // Hidden projects/experiments that aren't on the main portfolio
 const HIDDEN_PROJECTS = [
   {
@@ -14,10 +17,9 @@ const HIDDEN_PROJECTS = [
 
 // Easter egg hints for other hidden features
 const EASTER_EGG_HINTS = [
-  "Try the Konami code anywhere on the site...",
-  "Check the browser console for a message",
-  "There might be more secrets hiding in plain sight",
-  "Some things are only visible in dark mode",
+  "Try the Konami code anywhere on the site.",
+  "Check the browser console for a message.",
+  "Some things are only visible in dark mode.",
 ];
 
 /**
@@ -25,92 +27,64 @@ const EASTER_EGG_HINTS = [
  * framer-motion mount, and under `LazyMotion strict` that animation can be
  * missed entirely — leaving the whole page blank. Page content never mounts
  * hidden (DESIGN.md: the page is paper and does not move).
+ *
+ * It is also a room in the same gallery. It used to be the last page still
+ * wearing the pre-redesign template — centred emoji headings, Title Case, a
+ * hand-rolled `text-4xl md:text-5xl` — which is a strange thing to hide behind
+ * an easter egg: the reward for finding it was the old site.
  */
 export function SecretPageContent() {
   return (
-    <div className="min-h-screen py-24 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="text-6xl mb-4">🎉</div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            You Found the Secret Page!
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Welcome to the hidden corner of my website. Here are some things that
-            didn&apos;t quite make it to the main pages.
-          </p>
-        </div>
+    <Container className="mt-16 lg:mt-32">
+      <PageHead
+        className="mb-14"
+        kicker="Gallery · Back room"
+        title="You found the back room"
+        blurb="Nothing here made it to the main pages, which is the whole reason it is here."
+      />
 
-        {/* Hidden Projects */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <span>🔬</span> Hidden Experiments
-          </h2>
-          <div className="grid gap-4">
-            {HIDDEN_PROJECTS.map((project) => (
-              <div
-                key={project.name}
-                className="bg-muted/30 border border-border rounded-xl p-5"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="font-semibold text-lg">{project.name}</h3>
-                    <p className="text-muted-foreground text-sm mt-1">
-                      {project.description}
-                    </p>
-                    <div className="flex gap-2 mt-3">
-                      {project.tech.map((tech) => (
-                        <span
-                          key={tech}
-                          className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {project.status}
-                  </span>
-                </div>
+      <section className="mb-14">
+        <h2 className="text-section-title">Hidden experiments</h2>
+        <ul className="mt-6 divide-y divide-border border-y border-border">
+          {HIDDEN_PROJECTS.map((project) => (
+            <li key={project.name} className="py-5">
+              <div className="label-mono flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                <span>{project.status}</span>
+                <span aria-hidden className="text-foreground/25">·</span>
+                <span>{project.tech.join(" · ")}</span>
               </div>
-            ))}
-          </div>
-        </section>
+              <h3 className="mt-2 text-card-title">{project.name}</h3>
+              <p className="mt-1 text-muted-foreground">{project.description}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-        {/* Easter Egg Hints */}
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <span>🥚</span> More Secrets?
-          </h2>
-          <div className="bg-muted/30 border border-border rounded-xl p-6">
-            <p className="text-muted-foreground mb-4">
-              This isn&apos;t the only hidden feature on the site. Here are some
-              hints:
-            </p>
-            <ul className="space-y-2">
-              {EASTER_EGG_HINTS.map((hint) => (
-                <li key={hint} className="flex items-center gap-2 text-sm">
-                  <span className="text-primary">→</span>
-                  <span>{hint}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+      <section className="mb-14">
+        <h2 className="text-section-title">More secrets</h2>
+        <p className="mt-4 max-w-2xl text-muted-foreground">
+          This isn&apos;t the only hidden feature on the site. Three hints:
+        </p>
+        <ul className="mt-6 max-w-2xl space-y-3">
+          {EASTER_EGG_HINTS.map((hint) => (
+            <li key={hint} className="flex gap-3">
+              <span aria-hidden className="text-primary">→</span>
+              <span>{hint}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-        {/* Back to home */}
-        <div className="text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-primary hover:underline"
-          >
-            <span>←</span>
-            <span>Back to the regular website</span>
-          </Link>
-        </div>
-      </div>
-    </div>
+      <hr className="gallery-rule" />
+
+      <nav className="mt-8" aria-label="Leave the back room">
+        <Link
+          href="/"
+          className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+        >
+          ← Back to the regular website
+        </Link>
+      </nav>
+    </Container>
   );
 }

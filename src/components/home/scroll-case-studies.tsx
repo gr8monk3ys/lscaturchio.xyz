@@ -69,7 +69,7 @@ export function ScrollCaseStudies() {
                 <span className="label-mono">
                   {ordinal(index)} — {item.kicker}
                 </span>
-                <h3 className="mt-4 text-section-title tracking-tight sm:text-4xl">
+                <h3 className="mt-4 text-section-title">
                   {item.title}
                 </h3>
                 <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">

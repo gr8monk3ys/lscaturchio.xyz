@@ -123,7 +123,7 @@ export function HeaderSection({ metrics, product, shared, status }: HeaderSectio
         <div className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-4 sm:divide-x">
           {metrics.slice(0, 4).map((metric) => (
             <div key={`${metric.label}-${metric.value}`} className="px-5 py-5 first:pl-0">
-              <div className="text-section-title tracking-tight tabular-nums">
+              <div className="text-section-title tabular-nums">
                 {metric.value}
               </div>
               <div className="label-mono mt-2 line-clamp-2">{metric.label}</div>
