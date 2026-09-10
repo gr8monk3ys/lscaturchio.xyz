@@ -7,8 +7,15 @@ const themeMocks = vi.hoisted(() => ({
   setTheme: vi.fn(),
 }));
 
+// `resolvedTheme` is what the component reads: it is the value actually
+// applied, so a user on "system" toggles from what they can see rather than
+// from the literal string "system".
 vi.mock('next-themes', () => ({
-  useTheme: () => ({ theme: themeMocks.theme, setTheme: themeMocks.setTheme }),
+  useTheme: () => ({
+    theme: themeMocks.theme,
+    resolvedTheme: themeMocks.theme,
+    setTheme: themeMocks.setTheme,
+  }),
 }));
 
 describe('ThemeToggle', () => {
@@ -17,7 +24,7 @@ describe('ThemeToggle', () => {
     themeMocks.setTheme.mockClear();
   });
 
-  it('renders a button with an accessible name once mounted', () => {
+  it('renders a button with an accessible name on the first paint', () => {
     render(<ThemeToggle />);
     expect(
       screen.getByRole('button', { name: 'Toggle theme' })

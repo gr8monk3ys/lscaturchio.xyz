@@ -2,7 +2,8 @@ import { Container } from "@/components/Container";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
 import { ThemedBlogSections } from "@/components/blog/ThemedBlogSections";
-import { filterByStage } from "@/lib/blog-stage";
+import { BLOG_STAGES, STAGE_LABELS, filterByStage } from "@/lib/blog-stage";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Tag } from "lucide-react";
 import type { Metadata } from "next";
@@ -73,6 +74,13 @@ export default async function Blog({
     .map(toBlogPreview);
   const hasActiveFilter = Boolean(normalizedTag || stageFilter);
   const themedBlogs = filteredBlogs.map(toBlogPreview);
+  // Counted off the tag-filtered list, so the numbers describe what a click
+  // would actually return rather than the whole corpus.
+  const stageCounts = BLOG_STAGES.map((stage) => ({
+    stage,
+    label: STAGE_LABELS[stage].label,
+    count: tagFilteredBlogs.filter((blog) => blog.stage === stage).length,
+  })).filter(({ count }) => count > 0);
 
   return (
     <Container size="wide">
@@ -87,7 +95,14 @@ export default async function Blog({
             build in between. Grouped by what they are about; filter by tag or stage for the
             date-ordered archive.
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+          {/* The lede has always said "filter by stage for the date-ordered
+              archive", and the page rendered no control that could set one:
+              `hasActiveFilter` gated a real paginated archive reachable only
+              by typing ?stage= into the URL. A promise in the copy with no
+              affordance under it is worse than no promise. Counts are derived,
+              so a stage with no essays says so rather than offering a dead
+              filter. */}
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link
               href="/topics"
               prefetch={false}
@@ -96,6 +111,28 @@ export default async function Blog({
               <Tag className="h-3.5 w-3.5" />
               Browse by topic
             </Link>
+
+            <span aria-hidden className="label-mono text-foreground/25">·</span>
+
+            <nav aria-label="Filter by stage" className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              {stageCounts.map(({ stage, label, count }) => {
+                const active = stageFilter === stage;
+                return (
+                  <Link
+                    key={stage}
+                    href={active ? "/blog" : `/blog?stage=${stage}`}
+                    prefetch={false}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "label-mono label-link underline-offset-4 transition-colors hover:text-primary hover:underline",
+                      active ? "text-primary underline" : "text-muted-foreground"
+                    )}
+                  >
+                    {label} {count}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
           <hr className="gallery-rule mt-8" />
         </header>

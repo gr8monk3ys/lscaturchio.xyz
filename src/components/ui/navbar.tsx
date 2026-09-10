@@ -4,7 +4,7 @@ import Link from "next/link";
 import { primaryNavigation } from "@/constants/navlinks";
 
 import { ActiveNavLink } from "./active-nav-link";
-import { NavbarControlsGate } from "./navbar-controls-gate";
+import { NavbarControls } from "./navbar-controls";
 import { AskDrawerTrigger } from "@/components/chat/ask-drawer-trigger";
 
 const navLinkBaseClass =
@@ -55,7 +55,7 @@ export function Navbar() {
 
             <div className="flex items-center gap-3">
               <AskDrawerTrigger />
-              <NavbarControlsGate />
+              <NavbarControls />
             </div>
           </div>
         </div>
