@@ -117,17 +117,28 @@ export function BlogSidebar({ slug }: { slug: string }) {
   // Contents only. The Ask panel that used to sit above this moved into the
   // site-wide drawer: it was a form whose submit navigated the reader away from
   // the essay to /chat, and below xl it did not exist at all.
-  if (headings.length === 0) return null;
-
+  //
+  // The `aside` renders whether or not there are headings yet, and this is the
+  // whole point of the component. Headings are read from the DOM in an effect,
+  // so on first paint there are none — and returning null left the parent
+  // `xl:grid-cols-[260px_1fr]` with exactly one child, which grid puts in the
+  // *first* track. The essay rendered 260px wide in the rail's column and then
+  // jumped into `1fr` when this mounted. Lighthouse measured 0.257 cumulative
+  // layout shift on the essay route and attributed all of it to the prose
+  // column; the budget is 0.15. An empty cell that holds its width costs
+  // nothing and is invisible, because the rail has no border until it has
+  // something in it.
   return (
     <aside
       className="hidden xl:block xl:sticky xl:top-24 xl:max-h-[calc(100vh-6rem)] xl:overflow-y-auto xl:py-8"
       aria-label="Article sidebar"
     >
-      <nav className="border border-border p-5" aria-label="Table of contents">
-        <span className="label-mono mb-4 block">On this page</span>
-        <ContentsList headings={headings} activeId={activeId} />
-      </nav>
+      {headings.length > 0 && (
+        <nav className="border border-border p-5" aria-label="Table of contents">
+          <span className="label-mono mb-4 block">On this page</span>
+          <ContentsList headings={headings} activeId={activeId} />
+        </nav>
+      )}
     </aside>
   );
 }

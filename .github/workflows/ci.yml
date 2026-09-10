@@ -262,6 +262,27 @@ jobs:
 
       - name: Run Lighthouse Budget Assertions
         run: bun run perf:lighthouse
+        # lhci starts its own server, so this step needs the same runtime env
+        # as Build — the same reason the E2E job does. Without DATABASE_URL the
+        # server it measures is the site running without its database, which
+        # reported 0.26 cumulative layout shift against a 0.15 budget while the
+        # shipped site measured 0.006. A budget job that measures a different
+        # site than the one deployed fails for reasons nobody can act on.
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OLLAMA_BASE_URL: http://localhost:11434
+          OLLAMA_EMBED_MODEL: nomic-embed-text
+          OLLAMA_CHAT_MODEL: llama3.2
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
 
   postdeploy-chat-smoke:
     name: Post-Deploy Chat Smoke

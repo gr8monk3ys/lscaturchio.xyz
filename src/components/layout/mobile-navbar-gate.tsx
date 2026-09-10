@@ -7,7 +7,9 @@ const MobileNavbar = dynamic(
   () => import("@/components/ui/mobile-navbar").then((module) => module.MobileNavbar),
   {
     ssr: false,
-    loading: () => <div className="min-h-[64px] md:hidden" />,
+    // The mobile navbar is `fixed` and takes no space in flow, so a
+    // 64px placeholder here is 64px of shift when it resolves.
+    loading: () => null,
   }
 );
 

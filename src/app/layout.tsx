@@ -203,10 +203,17 @@ export default async function RootLayout({
                   header moves separately, via .site-header, because a padded
                   ancestor cannot shift a position-fixed child. */}
               <div className="site-shell">
-                <Suspense fallback={<div className="min-h-[64px]" />}>
+                {/* Each fallback reserves exactly what its component occupies
+                    in flow, or the swap is a layout shift on every route.
+                    `Navbar` renders a fixed header plus a `hidden h-20 md:block`
+                    spacer, so the fallback is that same spacer — the old
+                    `min-h-[64px]` was 16px short of it. `MobileNavbarGate` is
+                    fixed and occupies nothing, so its fallback reserved 64px
+                    that the resolved component gave straight back. */}
+                <Suspense fallback={<div className="hidden h-20 md:block" />}>
                   <Navbar />
                 </Suspense>
-                <Suspense fallback={<div className="min-h-[64px] md:hidden" />}>
+                <Suspense fallback={null}>
                   <MobileNavbarGate />
                 </Suspense>
                 <main id="main-content" tabIndex={-1} className="overflow-x-clip focus:outline-hidden">
