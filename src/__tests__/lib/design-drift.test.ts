@@ -40,7 +40,15 @@ const RULES: Rule[] = [
     id: "heading-size-override",
     because:
       "Heading and PageHead supply text-page-title. A size class in the same className lands in the same tailwind-merge group and silently replaces the clamp — the /books and /projects bug, twice.",
-    test: new RegExp(String.raw`<Heading[^>]*className="[^"]*\b${SIZE_CLASS}\b`),
+    test: new RegExp(
+      String.raw`<(?:Heading|PageHead)[^>]*className="[^"]*\b${SIZE_CLASS}\b`
+    ),
+  },
+  {
+    id: "heading-component-tracking-override",
+    because:
+      "The same bug in the letter-spacing group. `heading-tracking-override` can only see a tracking class beside a ramp *token*, and Heading supplies its token internally — so `<Heading className=\"tracking-tight\">` slipped past both rules for the essay title on all 83 posts.",
+    test: /<(?:Heading|PageHead)[^>]*className="[^"]*\btracking-(?:tight|tighter|wide|wider|widest)\b/,
   },
   {
     id: "neutral-grey",
