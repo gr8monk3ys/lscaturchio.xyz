@@ -35,7 +35,7 @@ const PLOTS = [
   },
   {
     href: "/photos",
-    title: "Photographs",
+    title: "Photography",
     blurb: "Travel and landscape work, shot on a Fuji X-T30 II.",
   },
   {

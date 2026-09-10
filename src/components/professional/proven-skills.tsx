@@ -11,9 +11,15 @@ const NAMED_LIMIT = 3;
  *
  * This replaces four hand-typed columns of thirty-one tool names. The list is
  * derived from the project catalogue's `stack` fields, so it cannot claim a
- * tool no project uses — several of the hand-typed ones were exactly that —
- * and cannot fall behind the catalogue either. A short row is a weaker claim
- * than a long one, and showing that is the point.
+ * tool no project uses — nine of the thirty-one were exactly that — and cannot
+ * fall behind the catalogue either. A short row is a weaker claim than a long
+ * one, and showing that is the point.
+ *
+ * One link per row, on the tool, pointing at the catalogue filtered to it. The
+ * first version linked each project name instead, which put up to three 19px
+ * targets in every row — fifty-four controls under WCAG 2.5.8's 24px floor on
+ * one page, the largest count anywhere on the site. The tool is also the better
+ * target: it is what the row is about, and `/projects?tech=` already filters.
  */
 export function ProvenSkills() {
   const skills = listProvenSkills();
@@ -37,30 +43,21 @@ export function ProvenSkills() {
         {skills.map((skill) => {
           const named = skill.usedIn.slice(0, NAMED_LIMIT);
           const remaining = skill.usedIn.length - named.length;
+          const evidence = named.map((project) => project.title).join(" · ");
 
           return (
-            <li
-              key={skill.name}
-              className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-border py-4"
-            >
-              <span className="text-foreground">{skill.name}</span>
-              <span className="label-mono flex flex-wrap items-center gap-x-2 normal-case tracking-normal">
-                {named.map((project, index) => (
-                  <span key={project.slug} className="flex items-center gap-x-2">
-                    {index > 0 && (
-                      <span aria-hidden className="text-foreground/25">·</span>
-                    )}
-                    <Link
-                      href={`/projects/${project.slug}`}
-                      prefetch={false}
-                      className="underline-offset-4 transition-colors hover:text-primary hover:underline"
-                    >
-                      {project.title}
-                    </Link>
-                  </span>
-                ))}
-                {remaining > 0 && <span>+{remaining}</span>}
-              </span>
+            <li key={skill.name} className="border-b border-border">
+              <Link
+                href={`/projects?tech=${encodeURIComponent(skill.name)}`}
+                prefetch={false}
+                className="label-link flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-4 underline-offset-4 transition-colors hover:text-primary"
+              >
+                <span className="text-foreground">{skill.name}</span>
+                <span className="label-mono normal-case tracking-normal">
+                  {evidence}
+                  {remaining > 0 && ` +${remaining}`}
+                </span>
+              </Link>
             </li>
           );
         })}

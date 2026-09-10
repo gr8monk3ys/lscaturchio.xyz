@@ -22,7 +22,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="group relative inline-flex h-10 w-10 items-center justify-center rounded-xl neu-button transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+      className="group relative inline-flex h-10 w-10 items-center justify-center rounded-xl neu-button transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background"
       aria-label="Toggle theme"
     >
       {/* One Pen Rule: muted at rest, Forest Ink on hover/focus. */}

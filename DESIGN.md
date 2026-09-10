@@ -18,7 +18,7 @@ colors:
   night-ink: "#fafafa"
   night-ink-muted: "#abb0ba"
   night-hairline: "#292c32"
-  signal-error: "#ef4444"
+  signal-error: "#a61b1b"
   signal-success: "#16a249"
   signal-warning: "#f59f0a"
   signal-info: "#3c83f6"
@@ -194,7 +194,8 @@ A warm, low-chroma paper palette with one deep green ink and a sand-toned hairli
 - **Night** (#111317), **Night Card** (#16181d), **Night Tinted** (#25272d), **Night Ink** (#fafafa), **Night Ink Muted** (#abb0ba), **Night Hairline** (#292c32): the dark-mode counterparts, hue 220, cool rather than warm.
 
 ### Signal
-- **Error** (#ef4444), **Success** (#16a249), **Warning** (#f59f0a), **Info** (#3c83f6): status colours for form errors, toasts and badges only. Each has a 10–15% tinted background variant. They never appear as decoration.
+- **Error** (#a61b1b light / #e87c7c dark), **Success** (#16a249), **Warning** (#f59f0a), **Info** (#3c83f6): status colours for form errors, toasts and badges only. Each has a 10–15% tinted background variant. They never appear as decoration.
+- Error was #ef4444 in both this document and the stylesheet, which measures **3.58:1 on Paper** — under the 4.5:1 body floor, and this palette renders error text as body copy. Its dark value was shadcn's untouched #7f1d1d at **1.86:1 on night paper**, the only token in the set that got *darker* at night. Both are corrected; the rule they broke is the one below.
 
 ### Named Rules
 **The One Pen Rule.** Forest Ink is the only chromatic accent on any surface, and it marks action or emphasis, never area. If a screen has green in more than a few places, it has too many.

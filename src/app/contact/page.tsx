@@ -32,9 +32,13 @@ export default function Contact() {
               href="https://calendly.com/gr8monk3ys/30min"
               target="_blank"
               rel="noopener noreferrer"
-              className="cta-primary inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
+              /* Secondary, not primary. DESIGN.md allows one filled CTA per
+                 view, and on this page that is the form's submit button — the
+                 action the page is built around. Two fills also read as two
+                 equally weighted asks, which is the opposite of guidance. */
+              className="cta-secondary inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
             >
-              Book a Call
+              Book a call
               <ArrowUpRight className="h-4 w-4" />
             </Link>
             <Link

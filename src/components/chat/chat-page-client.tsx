@@ -114,7 +114,7 @@ export function ChatPageClient({
                   <button
                     type="button"
                     onClick={() => void send(message.failedQuery ?? "")}
-                    className="label-mono mt-3 block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    className="label-mono mt-3 block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background"
                   >
                     Try again →
                   </button>
@@ -132,7 +132,7 @@ export function ChatPageClient({
                     key={prompt}
                     type="button"
                     onClick={() => void send(prompt)}
-                    className="border border-border px-3 py-2 text-left text-sm text-foreground transition-colors hover:border-primary/45 hover:text-primary focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    className="border border-border px-3 py-2 text-left text-sm text-foreground transition-colors hover:border-primary/45 hover:text-primary focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background"
                   >
                     {prompt}
                   </button>

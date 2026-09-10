@@ -98,12 +98,19 @@ const RULES: Rule[] = [
   {
     id: "width-scale",
     because:
-      "page-width.ts defines three widths. A max-w-* outside that set inside a layout container is a fourth or fifth, and it silently overrides the Container size prop it is nested in.",
+      "page-width.ts defines the page scale as 2xl / 4xl / 6xl / none. These three are the tiers that were removed from it — 7xl and max-w-400 laid eleven routes out to 1280 and 1600px, 3xl and 5xl were a fourth and fifth scale — so this is a regression guard, not a coverage rule: it holds at zero matches by design and exists to stop them coming back. It does NOT check the smaller steps (xl, lg, md, sm, xs, prose, 36 uses), which are element measures rather than page widths and are correct where they appear.",
     // Named tiers only. An arbitrary value (`max-w-[300px]` on a portrait
     // plate) is an explicit one-off with intent; a fourth *named* tier is the
     // drift, because it reads as part of a scale that does not contain it.
     test: /\bmax-w-(?:3xl|5xl|7xl)\b/,
     appliesTo: (line) => /className/.test(line) && !/prose/.test(line),
+  },
+  {
+    id: "ring-offset-without-paper",
+    because:
+      "Tailwind's default --tw-ring-offset-color is #fff, so `ring-offset-2` alone paints a pure-white gap between the element and its ring. On the night page that is a cold white halo around every focused nav item — the one place DESIGN.md is most specific (\"the same notebook at night\"). 13 of 15 sites had it; the two that did not were the skip link and the Button variants.",
+    test: /\bring-offset-\d/,
+    appliesTo: (line) => !line.includes("ring-offset-background"),
   },
   {
     id: "raw-signal-colour",
@@ -123,7 +130,16 @@ const RULES: Rule[] = [
 const ALLOWED: Array<{ file: string; rule: string; reason: string }> = [];
 
 function stripComments(source: string): string {
-  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[ \t]*\/\/.*$/gm, "");
+  return (
+    source
+      // Keep one newline per line removed, or every line number this file
+      // reports below the first block comment is wrong. A 13-line comment in
+      // `globals.css`-adjacent components shifted reported coordinates by 13,
+      // which sends the reader to an innocent line and makes the gate look
+      // like it is hallucinating.
+      .replace(/\/\*[\s\S]*?\*\//g, (match) => "\n".repeat((match.match(/\n/g) ?? []).length))
+      .replace(/^[ \t]*\/\/.*$/gm, "")
+  );
 }
 
 function walk(dir: string): string[] {
