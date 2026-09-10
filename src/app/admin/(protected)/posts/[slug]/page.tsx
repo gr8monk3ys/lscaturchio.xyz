@@ -12,7 +12,7 @@ export default async function AdminEditPostPage({
   if (!file) {
     return (
       <main>
-        <h1 className="text-2xl font-bold">Edit post</h1>
+        <h1 className="text-page-title">Edit post</h1>
         <p className="mt-4 text-muted-foreground">No post found for &ldquo;{slug}&rdquo;.</p>
       </main>
     );
@@ -22,7 +22,7 @@ export default async function AdminEditPostPage({
   if (!meta) {
     return (
       <main>
-        <h1 className="text-2xl font-bold">Edit post</h1>
+        <h1 className="text-page-title">Edit post</h1>
         <p className="mt-4 text-muted-foreground">
           This post&apos;s meta block isn&apos;t in the machine-editable shape, so the portal
           won&apos;t edit it. Edit it in the repository instead.
@@ -33,7 +33,7 @@ export default async function AdminEditPostPage({
 
   return (
     <main>
-      <h1 className="mb-6 text-2xl font-bold">Edit: {meta.title}</h1>
+      <h1 className="mb-6 text-page-title">Edit: {meta.title}</h1>
       <PostEditor initial={{ ...meta, slug, body: extractBody(file.text) }} />
     </main>
   );

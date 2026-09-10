@@ -97,7 +97,7 @@ export default async function TopicHubPage({ params }: Props) {
         )}
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold">Posts</h2>
+          <h2 className="text-section-title">Posts</h2>
           {posts.length === 0 ? (
             <div className="neu-card p-8 text-center">
               <p className="text-muted-foreground">

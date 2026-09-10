@@ -1,29 +1,30 @@
+import { Container } from "@/components/Container";
+import { SkeletonBar, SkeletonRows } from "@/components/ui/skeleton-primitives";
+
+/**
+ * /about opens on a two-column split with a square hairline-bordered
+ * photograph, not a 192px circle. The circle was the last avatar on the site.
+ */
 export default function AboutLoading() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Profile section skeleton */}
-      <div className="flex flex-col md:flex-row gap-8 items-center mb-12">
-        <div className="h-48 w-48 rounded-full animate-pulse bg-muted shrink-0" />
-        <div className="flex-1 text-center md:text-left">
-          <div className="h-10 w-64 animate-pulse rounded-lg bg-muted mb-4" />
-          <div className="h-5 w-full animate-pulse rounded bg-muted mb-2" />
-          <div className="h-5 w-full animate-pulse rounded bg-muted mb-2" />
-          <div className="h-5 w-3/4 animate-pulse rounded bg-muted" />
+    <Container size="wide">
+      <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
+        <div className="space-y-5">
+          <SkeletonBar className="h-9 w-full max-w-lg sm:h-11" />
+          <SkeletonBar className="h-9 w-3/4 max-w-sm sm:h-11" />
+          <div className="space-y-2.5 pt-2">
+            {[0, 1, 2, 3].map((line) => (
+              <SkeletonBar key={line} className={line === 3 ? "h-5 w-2/3" : "h-5 w-full"} />
+            ))}
+          </div>
         </div>
+        <SkeletonBar className="aspect-square w-full" />
       </div>
 
-      {/* Bio sections skeleton */}
-      <div className="space-y-8">
-        {[1, 2, 3].map((slot) => (
-          <div key={`about-loading-section-${slot}`} className="neu-card p-6">
-            <div className="h-7 w-48 animate-pulse rounded bg-muted mb-4" />
-            <div className="h-4 w-full animate-pulse rounded bg-muted mb-2" />
-            <div className="h-4 w-full animate-pulse rounded bg-muted mb-2" />
-            <div className="h-4 w-full animate-pulse rounded bg-muted mb-2" />
-            <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
-          </div>
-        ))}
+      <div className="mt-16 space-y-6">
+        <SkeletonBar className="h-8 w-64" />
+        <SkeletonRows count={3} />
       </div>
-    </div>
+    </Container>
   );
 }

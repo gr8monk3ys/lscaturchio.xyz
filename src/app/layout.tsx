@@ -159,7 +159,11 @@ export default async function RootLayout({
         {/* Core Meta Tags */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="theme-color" content="#2c5530" />
+        {/* Forest Ink, not the pre-palette green. #2c5530 is hue 126; the
+            token is #184e35, hue 152. This is the colour framing the site in
+            mobile browser chrome. */}
+        <meta name="theme-color" content="#184e35" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#111317" media="(prefers-color-scheme: dark)" />
 
         {/* PWA Meta Tags */}
         <link rel="manifest" href="/manifest.json" />

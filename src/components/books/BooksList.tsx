@@ -45,7 +45,7 @@ function PerfectScore({ book, index }: { book: GoodreadsBook; index: number }) {
             rel="noopener noreferrer"
             className="group inline-flex flex-wrap items-baseline gap-x-3"
           >
-            <h3 className="font-display text-2xl font-semibold tracking-tight transition-colors group-hover:text-primary md:text-3xl">
+            <h3 className="text-section-title transition-colors group-hover:text-primary">
               {book.title}
             </h3>
             {book.yearPublished ? (
@@ -151,7 +151,7 @@ export function BooksList({
           { value: stats.totalPages.toLocaleString(), label: "Pages Read" },
         ].map((stat) => (
           <div key={stat.label} className="px-5 py-6">
-            <p className="font-display text-3xl font-semibold tracking-tight">{stat.value}</p>
+            <p className="text-section-title">{stat.value}</p>
             <p className="label-mono mt-2">{stat.label}</p>
           </div>
         ))}

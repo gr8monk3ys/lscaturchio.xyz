@@ -70,9 +70,12 @@ test.describe('Contact Form', () => {
 
     await page.locator('button[type="submit"]').first().click()
 
-    await expect(page.locator('#contact-form-status')).toContainText('Message failed to send', {
-      timeout: 15000,
-    })
+    // The status region relays the server's own sentence now, rather than
+    // replacing every failure with one generic line.
+    await expect(page.locator('#contact-form-status')).toContainText(
+      'Internal server error',
+      { timeout: 15000 }
+    )
   })
 
   test('submit button shows loading state', async ({ page }) => {

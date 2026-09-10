@@ -42,6 +42,16 @@ export const contactFormSchema = z.object({
     .max(100, 'Name is too long')
     .transform((name) => name.trim()),
   email: emailSchema,
+  /**
+   * The form has always collected this, marked it required, and had it thrown
+   * away here — `z.object` strips unknown keys silently, so a reader typed a
+   * subject, the request succeeded, and the line never reached the inbox.
+   */
+  subject: z
+    .string()
+    .min(1, 'Subject is required')
+    .max(200, 'Subject is too long')
+    .transform((subject) => subject.trim()),
   message: z
     .string()
     .min(1, 'Message is required')
@@ -91,16 +101,32 @@ export const slugQuerySchema = z.object({
 export function parseBody<T extends z.ZodSchema>(
   schema: T,
   data: unknown
-): { success: true; data: z.infer<T> } | { success: false; error: string } {
+):
+  | { success: true; data: z.infer<T> }
+  | { success: false; error: string; field?: string } {
   const result = schema.safeParse(data);
   if (result.success) {
     return { success: true, data: result.data };
   }
   // Return the first error message for simplicity
   // Zod 4 uses .issues, earlier versions use .errors
-  const issues = result.error.issues || (result.error as { errors?: Array<{ message?: string }> }).errors;
+  const issues =
+    result.error.issues ||
+    (
+      result.error as {
+        errors?: Array<{ message?: string; path?: Array<string | number> }>;
+      }
+    ).errors;
   const firstError = issues?.[0];
-  return { success: false, error: firstError?.message || 'Validation failed' };
+  // The path travels with the message so a form can put "Subject is required"
+  // under the subject field instead of at the bottom of the form, where the
+  // reader has to work out which of four inputs it is about.
+  const field = firstError?.path?.[0];
+  return {
+    success: false,
+    error: firstError?.message || 'Validation failed',
+    ...(typeof field === 'string' ? { field } : {}),
+  };
 }
 
 /**

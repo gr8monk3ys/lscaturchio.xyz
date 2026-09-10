@@ -16,7 +16,7 @@ export const metadata = buildPageMetadata({
 export default function LabPage() {
   return (
     <Container className="mt-16 lg:mt-32">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header — gallery masthead */}
         <PageHead
           className="mb-12"
@@ -61,7 +61,7 @@ export default function LabPage() {
                   className="group flex h-full flex-col p-6 transition-colors hover:bg-muted/40"
                 >
                   <span className="label-mono">{experiment.tag}</span>
-                  <span className="mt-3 flex items-start gap-1.5 font-display text-lg font-semibold tracking-tight transition-colors group-hover:text-primary">
+                  <span className="mt-3 flex items-start gap-1.5 text-card-title transition-colors group-hover:text-primary">
                     {experiment.title}
                     <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
                   </span>

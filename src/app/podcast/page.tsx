@@ -63,7 +63,7 @@ async function Episodes() {
   return (
     <div>
       <div>
-        <h2 className="font-display text-2xl font-bold">Latest episodes</h2>
+        <h2 className="text-section-title">Latest episodes</h2>
         <p className="text-muted-foreground mt-1">
           Each episode is an audio version of a blog post.
         </p>
@@ -75,7 +75,7 @@ async function Episodes() {
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div className="min-w-0">
                 <Link href={`/blog/${post.slug}`} className="group">
-                  <h3 className="font-display text-xl font-semibold group-hover:text-primary transition-colors">
+                  <h3 className="text-card-title group-hover:text-primary transition-colors">
                     {post.title}
                   </h3>
                 </Link>

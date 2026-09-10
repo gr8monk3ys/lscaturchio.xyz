@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { permanentRedirect } from "next/navigation";
-import { Tag } from "lucide-react";
 
 import { Container } from "@/components/Container";
+import { PageHead } from "@/components/ui/page-head";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { getAllBlogs } from "@/lib/getAllBlogs";
+import { spellCount, pluralize } from "@/lib/spell-count";
 import { buildPageMetadata } from "@/lib/seo";
 
 type Props = {
@@ -59,60 +60,48 @@ export default async function TagPage({ params }: Props) {
 
   return (
     <Container className="mt-16 lg:mt-32" size="wide">
-      <div className="space-y-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-              <Tag className="h-4 w-4 text-primary" />
-              <span>Tag</span>
-            </div>
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-foreground">
-              {tag}
-            </h1>
-            <p className="text-muted-foreground">
-              {filtered.length} {filtered.length === 1 ? "post" : "posts"} tagged with &quot;{tag}&quot;.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/topics"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl neu-button hover:text-primary transition-all"
-            >
-              Browse topics
-            </Link>
-            <Link
-              href="/blog"
-              className="flex items-center gap-2 rounded-xl px-4 py-2 cta-secondary hover:text-primary transition-all"
-            >
-              View all posts
-            </Link>
-          </div>
-        </div>
+      <PageHead
+        className="mb-12"
+        kicker="Writing · Tag"
+        title={tag}
+        blurb={`${spellCount(filtered.length)} ${pluralize(
+          filtered.length,
+          "post"
+        )} ${filtered.length === 1 ? "carries" : "carry"} this tag.`}
+      >
+        <nav
+          className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-3"
+          aria-label={`Leave the ${tag} tag`}
+        >
+          <Link
+            href="/topics"
+            className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            Browse topics
+          </Link>
+          <Link
+            href="/blog"
+            className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            All writing
+          </Link>
+        </nav>
+      </PageHead>
 
-        {filtered.length === 0 ? (
-          <div className="text-center py-16 neu-card rounded-2xl">
-            <p className="text-lg text-muted-foreground">
-              No blog posts found with the tag &quot;{tag}&quot;.
-            </p>
-            <Link href="/topics" className="mt-4 inline-block px-6 py-2 rounded-xl cta-secondary">
-              Browse topics
-            </Link>
-          </div>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((blog) => (
-              <BlogCard
-                key={blog.slug}
-                slug={blog.slug}
-                title={blog.title}
-                description={blog.description}
-                date={blog.date}
-                image={blog.image}
-                tags={blog.tags}
-              />
-            ))}
-          </div>
-        )}
+      {/* No empty branch: a tag with no posts redirected to /tags above, so the
+          only state this page can reach is a populated one. */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {filtered.map((blog) => (
+          <BlogCard
+            key={blog.slug}
+            slug={blog.slug}
+            title={blog.title}
+            description={blog.description}
+            date={blog.date}
+            image={blog.image}
+            tags={blog.tags}
+          />
+        ))}
       </div>
     </Container>
   );

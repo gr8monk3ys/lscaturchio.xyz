@@ -173,7 +173,7 @@ The system deliberately is not three things. It is not neumorphic: the soft doub
 - One ink accent, Forest Ink, spent sparingly: links, text selection, the single primary CTA.
 - Hairline rules and tint shifts structure the page; there are no floating cards and no decorative shadows.
 - Three type voices with fixed jobs: Fraunces speaks, Instrument Sans reads, IBM Plex Mono catalogues.
-- Motion is a soft settle, never a performance: 150–300ms hover, a 650ms reveal, all off under reduced motion.
+- Motion is a soft settle, never a performance: 150–300ms on hover and focus, one 300ms drawer, nothing that animates the page in, all off under reduced motion.
 
 ## Colors
 
@@ -302,19 +302,29 @@ The controls are refined and restrained: hairline borders, tint on hover, a fill
 ### Navigation
 - **Desktop:** fixed 80px bar, 90% Paper with 12px blur, 40% hairline beneath, the one structural shadow. Logo at left (inverted in dark mode), links across, a fully round hairline pill at right holding the theme toggle and controls. Hovered links grow a 2px Forest Ink underline from the left over 300ms; the active link keeps it. Links use the body font, not mono.
 - **Mobile:** below md the bar is replaced by a mobile navbar.
-- **Footer:** hairline above at 60%, a `1.1fr / 2fr` grid, column headings as small uppercase tracked sans in Ink Muted, links in wall-label mono that turn Forest Ink on hover, a hairline before the legal line.
+- **Footer:** hairline above at 60%, a `1.1fr / 2fr` grid, column headings in wall-label mono, links in body sans with the ink underline, turning Forest Ink on hover, and a hairline before the legal line. (This document had the two voices the other way round for a while. The implementation is the correct one: the column name is metadata, and the Wall Label Rule says metadata is mono, while the links are the thing you actually read.)
 
 ### Wall Label (signature)
 The `label-mono` utility: IBM Plex Mono 500, 0.72rem, 0.16em tracking, uppercase, tabular numerals, Ink Muted. It is the placard beside every piece of work: the masthead kicker and portrait caption, the "Ask the site anything" heading, section counts, dates on rows, footer links. With `normal-case tracking-normal` it becomes the small mono link. Any new section should introduce itself with one.
 
 ### Masthead (signature)
-Wall-label kicker, a Fraunces name at 5xl–7xl with the surname in Forest Ink, a one-sentence muted thesis, and a square hairline-bordered portrait with a mono caption at the right edge. Below a hairline, the underline ask field with a round primary "Ask" inside it and three mono suggested questions. It is the notebook's title page.
+Wall-label kicker, a Fraunces name at the Display step with the surname in Forest Ink, a one-sentence muted thesis, and a square hairline-bordered portrait with a mono caption at the right edge. Below a hairline, the underline ask field with a round primary "Ask" inside it and three mono suggested questions. It is the notebook's title page.
 
 ### Essay Body (signature)
 `prose prose-lg` at the reading width, Fraunces headings with 6rem scroll margin, hairline rules between sections.
 
 ### Motion
-Hover and focus transitions are 150ms (fast), 200ms (default) or 300ms (slow) with `ease`. Entrance and layout motion is framer-motion at 0.2/0.35/0.5s on the standard curve `cubic-bezier(0.22, 1, 0.36, 1)`. Below-fold content uses the `reveal` utility: 14px rise, 650ms, same curve, staggered by a delay variable. Skeletons shimmer once per 1.5s. Every motion collapses to none under `prefers-reduced-motion`.
+**Content does not animate itself in.** Nothing on a page mounts hidden and waits for a scroll observer, a mount transition or an idle callback to become readable — the failure mode is a blank page, and it has happened here twice under `LazyMotion strict`. Six components still carry entrance variants; all six pass `initial={false}`, which is the doctrine written as a prop.
+
+What moves is the interface responding to the reader, not the page introducing itself:
+
+- **Hover and focus** transition at 150ms (fast), 200ms (default) or 300ms (slow) with `ease`, from `--duration-fast` / `-default` / `-slow`.
+- **The ask drawer** — the one composed movement on the site — pushes the shell and the header at 300ms on `cubic-bezier(0.22, 1, 0.36, 1)`. That curve is the site's standard ease; anything larger than a hover uses it.
+- **Scroll-linked progress** (the work timeline's rail) is driven by scroll position rather than by a timer, so it has no duration to specify.
+
+Every motion collapses to none under `prefers-reduced-motion`.
+
+This section previously specified a `reveal` utility — 14px rise, 650ms, staggered by a delay variable — and a 1.5s skeleton shimmer. Neither exists: `reveal` has no match anywhere in `src/`, and skeletons use Tailwind's `animate-pulse`. They were removed from the stylesheet when the motion doctrine changed and left behind in this document, which is the more dangerous half of that pair, because a spec nobody implements still gets implemented eventually.
 
 ## Do's and Don'ts
 

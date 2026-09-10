@@ -41,7 +41,7 @@ export function ChangelogTimeline() {
               {entry.version.split('.')[0]}
             </div>
             <div>
-              <h3 className="text-2xl font-bold">Version {entry.version}</h3>
+              <h3 className="text-card-title">Version {entry.version}</h3>
               <p className="text-sm text-muted-foreground">
                 {new Date(entry.date).toLocaleDateString('en-US', {
                   month: 'long',
@@ -60,7 +60,7 @@ export function ChangelogTimeline() {
               return (
                 <div
                   key={changeIndex}
-                  className="grid grid-cols-[6rem_1fr] items-baseline gap-x-4 border-b border-border py-2.5 last:border-b-0"
+                  className="grid max-w-2xl grid-cols-[6rem_1fr] items-baseline gap-x-4 border-b border-border py-2.5 last:border-b-0"
                 >
                   <span className="label-mono">{label}</span>
                   <p className={`text-sm ${change.type === 'highlight' ? 'font-medium text-foreground' : ''}`}>

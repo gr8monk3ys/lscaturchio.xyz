@@ -22,7 +22,10 @@ describe('ErrorPage', () => {
   it('renders default copy when no overrides are given', () => {
     render(<ErrorPage error={error} reset={() => {}} />);
     expect(screen.getByRole('heading', { name: 'This page broke' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Go home' })).toHaveAttribute('href', '/');
+    // Same wording as not-found.tsx and /offline: one destination, one name.
+    expect(
+      screen.getByRole('link', { name: '← Back to the entrance' })
+    ).toHaveAttribute('href', '/');
   });
 
   it('surfaces the digest so a reader can quote it in a report', () => {

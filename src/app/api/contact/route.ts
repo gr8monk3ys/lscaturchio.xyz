@@ -22,7 +22,7 @@ export const POST = withWriteRoute(
     },
   },
   async ({ data }) => {
-    const { name, email, message } = data;
+    const { name, email, subject, message } = data;
 
     // Check if Resend API key is configured
     const resendApiKey = process.env.RESEND_API_KEY;
@@ -51,11 +51,14 @@ export const POST = withWriteRoute(
         from: fromEmail, // Must be verified domain in Resend
         to: contactEmail, // Destination email
         reply_to: email,
-        subject: sanitizeEmailSubject(`Contact Form: ${name}`),
+        // The reader's own subject leads; the name qualifies it. It used to
+        // be discarded before it reached here.
+        subject: sanitizeEmailSubject(`${subject} — ${name}`),
         html: `
           <h2>New Contact Form Submission</h2>
           <p><strong>From:</strong> ${escapeHtml(name)}</p>
           <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+          <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
           <p><strong>Message:</strong></p>
           <p>${sanitizeForHtmlEmail(message)}</p>
           <hr>

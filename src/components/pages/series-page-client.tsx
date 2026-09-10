@@ -26,11 +26,11 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
   if (allSeries.length === 0) {
     return (
       <Container size="wide">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           {/* Header — gallery masthead */}
           <header className="mb-12">
             <span className="label-mono block">Garden · Series</span>
-            <h1 className="mt-4 font-display text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+            <h1 className="mt-4 text-page-title">
               Blog Series
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
@@ -57,11 +57,11 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
 
   return (
     <Container size="wide">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
           {/* Header — gallery masthead */}
           <header className="mb-12">
             <span className="label-mono block">Garden · Series</span>
-            <h1 className="mt-4 font-display text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+            <h1 className="mt-4 text-page-title">
               Blog Series
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
@@ -77,7 +77,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
               <div key={series.name}>
                 {/* Series Header */}
                 <div>
-                  <h2 className="font-display text-2xl font-bold">{series.name}</h2>
+                  <h2 className="text-section-title">{series.name}</h2>
                   <p className="label-mono mt-2">
                     {series.totalPosts}{" "}
                     {series.totalPosts === 1 ? "part" : "parts"}
@@ -96,7 +96,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
                     >
                       {/* Post Number */}
                       <div className="shrink-0">
-                        <span className="font-display text-2xl font-semibold tabular-nums text-muted-foreground group-hover:text-primary transition-colors">
+                        <span className="text-section-title tabular-nums text-muted-foreground group-hover:text-primary transition-colors">
                           {String(post.seriesOrder).padStart(2, "0")}
                         </span>
                       </div>

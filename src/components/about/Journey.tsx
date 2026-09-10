@@ -1,7 +1,7 @@
 "use client";
 
 import { m } from '@/lib/motion';
-import { SectionHeading } from "@/components/ui/section-heading";
+import { Heading } from "@/components/Heading";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -34,10 +34,10 @@ export function AboutJourney() {
           animate="visible"
           className="space-y-6"
         >
-          <SectionHeading>Philosophy & Learning</SectionHeading>
+          <Heading as="h2">Philosophy &amp; Learning</Heading>
           <m.div
             variants={itemVariants}
-            className="space-y-4 text-lg w-full"
+            className="w-full max-w-2xl space-y-4 text-lg"
           >
             <m.p variants={itemVariants}>
               I would like to say that I fall under the camp of absurdism. Authors like Camus, Nietzsche,

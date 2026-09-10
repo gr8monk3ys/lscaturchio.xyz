@@ -83,6 +83,7 @@ describe('/api/contact', () => {
     it('returns 400 when name is missing', async () => {
       const request = createMockRequest({
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       const response = await POST(request);
@@ -97,6 +98,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: '',
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       const response = await POST(request);
@@ -111,6 +113,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'a'.repeat(101),
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       const response = await POST(request);
@@ -138,6 +141,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'not-an-email',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       const response = await POST(request);
@@ -152,6 +156,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'test@invalid',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       const response = await POST(request);
@@ -179,6 +184,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: '',
       });
       const response = await POST(request);
@@ -193,6 +199,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: 'a'.repeat(5001),
       });
       const response = await POST(request);
@@ -209,6 +216,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: 'Hello, this is my message.',
       });
       const response = await POST(request);
@@ -223,6 +231,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'Jane Doe',
         email: 'jane@example.com',
+        subject: 'Project scoping',
         message: 'Test message content',
       });
       await POST(request);
@@ -253,6 +262,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: 'Test message',
       });
       await POST(request);
@@ -268,6 +278,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: 'Test message',
       });
       await POST(request);
@@ -281,6 +292,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: '  John Doe  ',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: '  Hello world  ',
       });
       await POST(request);
@@ -295,6 +307,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'JOHN@EXAMPLE.COM',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       await POST(request);
@@ -308,6 +321,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: '<script>alert("xss")</script>',
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: 'Test message',
       });
       await POST(request);
@@ -322,6 +336,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: '<img src=x onerror="alert(1)">Hello\nWorld',
       });
       await POST(request);
@@ -337,6 +352,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: "John\r\nBcc: attacker@evil.com",
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: 'Test message',
       });
       await POST(request);
@@ -357,6 +373,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       const response = await POST(request);
@@ -371,6 +388,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       await POST(request);
@@ -389,6 +407,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       await POST(request);
@@ -407,6 +426,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       const response = await POST(request);
@@ -426,6 +446,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       await POST(request);
@@ -443,6 +464,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       const response = await POST(request);
@@ -459,6 +481,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       await POST(request);
@@ -482,6 +505,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: '   ',
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       const response = await POST(request);
@@ -497,6 +521,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: '   ',
       });
       const response = await POST(request);
@@ -530,6 +555,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: '\n\n\n',
       });
       const response = await POST(request);
@@ -544,6 +570,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: 'a'.repeat(5000),
       });
       const response = await POST(request);
@@ -557,6 +584,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'a'.repeat(100),
         email: 'test@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       const response = await POST(request);
@@ -570,6 +598,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'Jose Garcia',
         email: 'jose@example.com',
+        subject: 'Project scoping',
         message: 'Hello from Tokyo! Greetings.',
       });
       const response = await POST(request);
@@ -589,6 +618,7 @@ describe('/api/contact', () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'john@example.com',
+        subject: 'Project scoping',
         message: 'Hello world',
       });
       const response = await POST(request);

@@ -145,7 +145,7 @@ export function StatsOverview() {
 
             return (
               <div key={card.label} className="px-5 py-6">
-                <p className="font-display text-3xl font-semibold tracking-tight tabular-nums">
+                <p className="text-section-title tabular-nums">
                   {formatMetricValue(card.metric, 'suffix' in card ? card.suffix : undefined)}
                 </p>
                 <p className="label-mono mt-2">{card.label}</p>

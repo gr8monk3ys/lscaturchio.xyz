@@ -40,7 +40,15 @@ const RULES: Rule[] = [
     id: "heading-size-override",
     because:
       "Heading and PageHead supply text-page-title. A size class in the same className lands in the same tailwind-merge group and silently replaces the clamp — the /books and /projects bug, twice.",
-    test: new RegExp(String.raw`<Heading[^>]*className="[^"]*\b${SIZE_CLASS}\b`),
+    test: new RegExp(
+      String.raw`<(?:Heading|PageHead)[^>]*className="[^"]*\b${SIZE_CLASS}\b`
+    ),
+  },
+  {
+    id: "heading-component-tracking-override",
+    because:
+      "The same bug in the letter-spacing group. `heading-tracking-override` can only see a tracking class beside a ramp *token*, and Heading supplies its token internally — so `<Heading className=\"tracking-tight\">` slipped past both rules for the essay title on all 83 posts.",
+    test: /<(?:Heading|PageHead)[^>]*className="[^"]*\btracking-(?:tight|tighter|wide|wider|widest)\b/,
   },
   {
     id: "neutral-grey",
@@ -54,6 +62,54 @@ const RULES: Rule[] = [
       "The Two Sheets Rule: the fixed navbar and the cta-primary ledge are the only elevated objects. A ring is a box-shadow too.",
     test: /\b(?:hover:)?(?:shadow-(?:sm|md|lg|xl|2xl|\[)|ring-2\b)/,
     appliesTo: (line) => !line.includes("focus") && !line.includes("site-header"),
+  },
+  {
+    id: "heading-ramp",
+    because:
+      "The Fluid Heading Rule: headings scale with clamp(), not breakpoints, and the ramp lives in text-page-title / -section-title / -card-title / -subsection. A raw Tailwind step beside font-display is a sixth scale. The existing heading-size-override rule guards a door PageHead already bolted shut; this is the 44 open windows.",
+    test: new RegExp(
+      String.raw`font-display[^"]*\b(?:sm:|md:|lg:|xl:|2xl:)?text-(?:xs|sm|base|lg|[2-9]?xl|\[)`
+    ),
+    // `prose-*` variants are the typography plugin styling essay content, not
+    // headings the ramp governs. The pull-quote is allowed its own size.
+    appliesTo: (line) => !line.includes("prose-"),
+  },
+  {
+    id: "display-scale-outside-ramp",
+    because:
+      "Above text-card-title (1.25rem) there is nothing but headings, so text-2xl and up belong to the ramp entirely. The heading-ramp rule only sees a size beside font-display, which misses every heading that never reached for the display font in the first place — section-heading.tsx, /tag, /secret and eighteen others set their own scale with font-bold and were invisible to it.",
+    test: /\b(?:sm:|md:|lg:|xl:|2xl:)?text-(?:[2-9]xl)\b/,
+    // Two voices legitimately reach this size without being headings: a mono
+    // step number in the label voice, and a figure set in tabular numerals.
+    // Neither borrows the heading ramp, so neither drifts from it.
+    appliesTo: (line) =>
+      !line.includes("prose-") &&
+      !line.includes("label-mono") &&
+      !line.includes("tabular-nums"),
+  },
+  {
+    id: "heading-tracking-override",
+    because:
+      "The Fluid Heading Rule sets tracking per step and loosens it as size falls (-0.035 / -0.03 / -0.026 / -0.02 / -0.01em). A tracking-tight beside a ramp token replaces all five with one value, which is the size-override bug in a different property.",
+    test: new RegExp(
+      String.raw`(?:(?:text-(?:page|section|card)-title|text-subsection|text-display)[^"]*\btracking-(?:tight|tighter)\b|\btracking-(?:tight|tighter)\b[^"]*(?:text-(?:page|section|card)-title|text-subsection|text-display))`
+    ),
+  },
+  {
+    id: "width-scale",
+    because:
+      "page-width.ts defines three widths. A max-w-* outside that set inside a layout container is a fourth or fifth, and it silently overrides the Container size prop it is nested in.",
+    // Named tiers only. An arbitrary value (`max-w-[300px]` on a portrait
+    // plate) is an explicit one-off with intent; a fourth *named* tier is the
+    // drift, because it reads as part of a scale that does not contain it.
+    test: /\bmax-w-(?:3xl|5xl|7xl)\b/,
+    appliesTo: (line) => /className/.test(line) && !/prose/.test(line),
+  },
+  {
+    id: "raw-signal-colour",
+    because:
+      "The four signal colours are tokens (--destructive, --success, --warning, --info). A raw Tailwind red/green/amber/blue on a public route bypasses them and usually has no dark-mode variant.",
+    test: /\b(?:text|bg|border|ring)-(?:red|green|emerald|amber|yellow|blue|sky|indigo|violet|purple|pink|rose|orange|teal|cyan|lime|fuchsia)-\d{2,3}\b/,
   },
   {
     id: "image-hover-lift",

@@ -18,7 +18,7 @@ const Section = ({ data }: { data: SectionData }) => {
 
   return (
     <section className="mb-16">
-      <h2 className="text-2xl font-bold">{data.title}</h2>
+      <h2 className="text-section-title">{data.title}</h2>
       <p className="mt-2 text-muted-foreground">{data.description}</p>
 
       <div className="mt-6 border-t border-border">

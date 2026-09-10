@@ -161,7 +161,7 @@ export function NewHereSection({ popularPosts, essayCount }: NewHereSectionProps
                 </span>
                 <span className="label-mono">{step.label}</span>
                 <span className="min-w-0">
-                  <span className="block font-display text-lg font-semibold tracking-tight transition-colors group-hover:text-primary">
+                  <span className="block text-card-title transition-colors group-hover:text-primary">
                     {step.title}
                   </span>
                   <span className="mt-1 block max-w-lg text-sm leading-relaxed text-muted-foreground">

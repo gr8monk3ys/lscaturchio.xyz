@@ -80,7 +80,7 @@ export function Interests() {
           <m.div variants={itemVariants} className="flex gap-4 flex-col items-start">
             <span className="label-mono block">What I love</span>
             <div className="flex gap-2 flex-col">
-              <h2 className="font-display text-3xl md:text-5xl tracking-tight font-bold">
+              <h2 className="text-section-title">
                 Interests & Hobbies
               </h2>
               <p className="max-w-2xl text-lg">
@@ -96,7 +96,7 @@ export function Interests() {
                 variants={itemVariants}
                 className="px-5 py-8"
               >
-                <h3 className="font-display text-xl font-semibold tracking-tight">
+                <h3 className="text-card-title">
                   {interest.title}
                 </h3>
                 <p className="mt-2 text-lg text-muted-foreground">

@@ -17,7 +17,7 @@ export default async function AdminLoginPage({
   if (!isAdminConfigured()) {
     return (
       <main>
-        <h1 className="text-2xl font-bold">Admin</h1>
+        <h1 className="text-page-title">Admin</h1>
         <p className="mt-4 text-muted-foreground">
           The portal is not configured on this deployment. Set the admin environment
           variables (see .env.example) to enable it.
@@ -28,9 +28,9 @@ export default async function AdminLoginPage({
 
   return (
     <main>
-      <h1 className="text-2xl font-bold">Admin</h1>
+      <h1 className="text-page-title">Admin</h1>
       {error && (
-        <p className="mt-4 text-sm text-red-600 dark:text-red-400">
+        <p className="mt-4 text-sm text-destructive">
           {ERROR_MESSAGES[error] || "Sign-in failed."}
         </p>
       )}

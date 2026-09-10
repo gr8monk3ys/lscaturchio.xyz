@@ -84,7 +84,7 @@ export function GiscusComments({
     // author, and they were rendering on the public guestbook.
     return (
       <div className="mt-12 pt-8">
-        <h3 className="text-2xl font-bold mb-6 text-foreground">Comments</h3>
+        <h3 className="mb-6 text-section-title">Comments</h3>
         <div className="neu-flat rounded-2xl p-6">
           <p className="text-sm text-muted-foreground leading-relaxed">
             Comments aren&apos;t open here yet. If you wanted to say something,{" "}
@@ -100,7 +100,7 @@ export function GiscusComments({
 
   return (
     <div className="mt-12 pt-8">
-      <h3 className="text-2xl font-bold mb-6 text-foreground">Comments</h3>
+      <h3 className="mb-6 text-section-title">Comments</h3>
       <div ref={ref} className="neu-flat rounded-2xl p-6" />
     </div>
   )

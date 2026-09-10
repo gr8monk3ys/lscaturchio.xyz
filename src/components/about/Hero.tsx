@@ -2,7 +2,7 @@
 
 import { m } from '@/lib/motion';
 import Image from "next/image";
-import { SectionHeading } from "@/components/ui/section-heading";
+import { Heading } from "@/components/Heading";
 import {
   staggerContainerVariants,
   staggerItemVariants
@@ -20,9 +20,9 @@ export function AboutHero() {
         variants={staggerItemVariants}
         className="space-y-6"
       >
-        <SectionHeading as="h1">
+        <Heading as="h1">
           I&apos;m Lorenzo Scaturchio, just another person with too many things to say and too little time to say it.
-        </SectionHeading>
+        </Heading>
         <m.p
           variants={staggerItemVariants}
           className="text-lg"

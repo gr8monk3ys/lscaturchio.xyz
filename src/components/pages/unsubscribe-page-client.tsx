@@ -16,13 +16,13 @@ export function UnsubscribePageClient({ status, message }: { status: Unsubscribe
           <div>
               <div className="mb-6 flex justify-center">
                 {status === 'success' && (
-                  <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
-                    <Check className="h-8 w-8 text-green-600 dark:text-green-400" />
+                  <div className="h-16 w-16 rounded-full bg-success-muted flex items-center justify-center">
+                    <Check className="h-8 w-8 text-success" />
                   </div>
                 )}
                 {(status === 'error' || status === 'no-token') && (
-                  <div className="h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
-                    <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
+                  <div className="h-16 w-16 rounded-full bg-destructive-muted flex items-center justify-center">
+                    <AlertCircle className="h-8 w-8 text-destructive" />
                   </div>
                 )}
               </div>

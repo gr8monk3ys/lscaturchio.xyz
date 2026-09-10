@@ -1,33 +1,27 @@
+import { Container } from "@/components/Container";
+import {
+  SkeletonBar,
+  SkeletonCard,
+  SkeletonPageHead,
+} from "@/components/ui/skeleton-primitives";
+
+/** The essay index: left-aligned placard, one utility link, then the grid. */
 export default function BlogLoading() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Header skeleton */}
-      <div className="mb-12 text-center">
-        <div className="h-10 w-48 mx-auto animate-pulse rounded-lg bg-muted mb-4" />
-        <div className="h-5 w-96 max-w-full mx-auto animate-pulse rounded-lg bg-muted" />
-      </div>
+    <Container size="wide">
+      <div className="space-y-10">
+        <header className="pt-4">
+          <SkeletonPageHead blurbLines={3} rule={false} />
+          <SkeletonBar className="mt-6 h-3 w-40" />
+          <hr className="gallery-rule mt-8" />
+        </header>
 
-      {/* Blog grid skeleton */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((slot) => (
-          <article key={`blog-loading-card-${slot}`} className="neu-card overflow-hidden">
-            <div className="h-48 w-full animate-pulse bg-muted" />
-            <div className="p-6">
-              <div className="flex gap-2 mb-3">
-                <div className="h-5 w-16 animate-pulse rounded-full bg-muted" />
-                <div className="h-5 w-20 animate-pulse rounded-full bg-muted" />
-              </div>
-              <div className="h-6 w-full animate-pulse rounded bg-muted mb-2" />
-              <div className="h-4 w-full animate-pulse rounded bg-muted mb-1" />
-              <div className="h-4 w-3/4 animate-pulse rounded bg-muted mb-4" />
-              <div className="flex justify-between items-center">
-                <div className="h-4 w-24 animate-pulse rounded bg-muted" />
-                <div className="h-4 w-16 animate-pulse rounded bg-muted" />
-              </div>
-            </div>
-          </article>
-        ))}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2, 3, 4, 5].map((slot) => (
+            <SkeletonCard key={slot} />
+          ))}
+        </div>
       </div>
-    </div>
+    </Container>
   );
 }

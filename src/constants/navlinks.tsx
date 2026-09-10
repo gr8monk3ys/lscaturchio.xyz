@@ -40,7 +40,7 @@ export const navigationCategories: NavCategory[] = [
     items: [
       { name: 'About', href: '/about', icon: User, description: 'Who I am' },
       { name: 'Now', href: '/now', icon: Clock, description: 'What I\'m up to' },
-      { name: 'Experience', href: '/professional', icon: Briefcase, description: 'Skills and work history' },
+      { name: 'Hire me', href: '/professional', icon: Briefcase, description: 'Experience, tools and the resume' },
     ],
   },
   {
@@ -48,7 +48,7 @@ export const navigationCategories: NavCategory[] = [
     icon: Briefcase,
     items: [
       { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
-      { name: 'Hire me', href: '/work-with-me', icon: Sparkles, description: 'Consulting and build work' },
+      { name: 'Consulting', href: '/work-with-me', icon: Sparkles, description: 'Contract and build engagements' },
     ],
   },
   {
@@ -82,29 +82,23 @@ export const primaryNavigation: NavItem[] = [
   { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
   { name: 'Garden', href: '/garden', icon: Sparkles, description: 'Books, films, music, experiments' },
   { name: 'About', href: '/about', icon: User, description: 'Who I am' },
-  { name: 'Hire me', href: '/work-with-me', icon: Briefcase, description: 'Consulting and build work' },
+  { name: 'Hire me', href: '/professional', icon: Briefcase, description: 'Experience, tools and the resume' },
 ];
 
+/**
+ * Everything the header does not already carry, for the mobile drawer.
+ *
+ * This used to name the three hrefs in `primaryNavigation` literally, in a
+ * filter that had to be edited whenever the header changed — and was not, so
+ * retargeting "Hire me" would have shown it twice.
+ */
+const primaryHrefs = new Set(primaryNavigation.map((item) => item.href));
+
 export const secondaryNavigationCategories: NavCategory[] = navigationCategories
-  .map((category) => {
-    if (category.name === 'Work') {
-      return {
-        ...category,
-        items: category.items.filter(
-          (item) => item.href !== '/projects' && item.href !== '/work-with-me'
-        ),
-      };
-    }
-
-    if (category.name === 'Content') {
-      return {
-        ...category,
-        items: category.items.filter((item) => item.href !== '/blog'),
-      };
-    }
-
-    return category;
-  })
+  .map((category) => ({
+    ...category,
+    items: category.items.filter((item) => !primaryHrefs.has(item.href)),
+  }))
   .filter((category) => category.items.length > 0);
 
 // Contact link (always visible)
@@ -133,7 +127,7 @@ export const footerColumns: NavCategory[] = [
     name: 'Work',
     items: [
       { name: 'Projects', href: '/projects' },
-      { name: 'Hire me', href: '/work-with-me' },
+      { name: 'Consulting', href: '/work-with-me' },
       { name: 'Uses', href: '/uses' },
     ],
   },
@@ -154,7 +148,7 @@ export const footerColumns: NavCategory[] = [
     name: 'About',
     items: [
       { name: 'About', href: '/about' },
-      { name: 'Experience', href: '/professional' },
+      { name: 'Hire me', href: '/professional' },
       { name: 'Chat', href: '/chat' },
       { name: 'Contact', href: '/contact' },
     ],

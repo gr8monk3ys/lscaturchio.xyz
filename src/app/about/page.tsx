@@ -34,7 +34,7 @@ export default function AboutPage() {
           >
             <div className="flex-1">
               <span className="label-mono block">Garden · Reading</span>
-              <h3 className="mt-2 font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+              <h3 className="mt-2 text-card-title text-foreground group-hover:text-primary transition-colors">
                 Books
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -50,7 +50,7 @@ export default function AboutPage() {
           >
             <div className="flex-1">
               <span className="label-mono block">Garden · Cinema</span>
-              <h3 className="mt-2 font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+              <h3 className="mt-2 text-card-title text-foreground group-hover:text-primary transition-colors">
                 Films
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">

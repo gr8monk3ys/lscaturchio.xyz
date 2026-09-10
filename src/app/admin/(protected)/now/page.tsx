@@ -7,11 +7,11 @@ export default async function AdminNowPage() {
 
   return (
     <main>
-      <h1 className="mb-6 text-2xl font-bold">Now page</h1>
+      <h1 className="mb-6 text-page-title">Now page</h1>
       {data ? (
         <NowEditor initial={data} />
       ) : (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-destructive">{error}</p>
       )}
     </main>
   );

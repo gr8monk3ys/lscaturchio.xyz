@@ -27,7 +27,7 @@ export default async function TopicsPage() {
 
   return (
     <Container className="mt-16 lg:mt-32" size="wide">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header — gallery masthead */}
         <PageHead
           className="mb-12"

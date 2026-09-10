@@ -4,8 +4,8 @@ import { ContactForm } from "@/components/contact/ContactForm";
 
 const fetchMock = vi.fn<typeof fetch>();
 
-function jsonResponse(body: unknown, ok = true): Response {
-  return { ok, json: async () => body } as Response;
+function jsonResponse(body: unknown, ok = true, status = ok ? 200 : 400): Response {
+  return { ok, status, json: async () => body } as Response;
 }
 
 function fillForm() {
@@ -100,21 +100,54 @@ describe("ContactForm", () => {
     expect(screen.getByLabelText("Message")).toHaveValue("");
   });
 
-  it("shows the error message when the server responds with a failure", async () => {
-    fetchMock.mockResolvedValueOnce(jsonResponse({}, false));
+  it("relays the server's own reason instead of a generic one", async () => {
+    // The API diagnoses each failure separately — a rate limit, a missing mail
+    // key, a rejected field, an upstream outage — and this component used to
+    // print "Message failed to send. Please try again" over all of them.
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(
+        { error: "Contact form is temporarily unavailable. Please try again later." },
+        false,
+        500
+      )
+    );
     render(<ContactForm />);
 
     fillForm();
     submitForm();
 
     await waitFor(() => {
-      expect(screen.getByText(/message failed to send/i)).toBeInTheDocument();
+      expect(screen.getByText(/temporarily unavailable/i)).toBeInTheDocument();
     });
-    // Fields are not cleared on failure.
+    // Fields are not cleared on failure: the typed message is the most
+    // expensive thing on the page to retype.
     expect(screen.getByLabelText("Name")).toHaveValue("Ada Lovelace");
+    expect(screen.getByLabelText("Message")).toHaveValue(
+      "We need retrieval evaluated before launch."
+    );
   });
 
-  it("shows the error message when the request throws", async () => {
+  it("puts a field error beside the field it names, not under the button", async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({ error: "Invalid email format", field: "email" }, false, 400)
+    );
+    render(<ContactForm />);
+
+    fillForm();
+    submitForm();
+
+    await waitFor(() => {
+      expect(screen.getByText("Invalid email format")).toBeInTheDocument();
+    });
+
+    const email = screen.getByLabelText("Email");
+    expect(email).toHaveAttribute("aria-invalid", "true");
+    expect(email).toHaveAttribute("aria-describedby", "email-error");
+    // Said once, beside the input — not repeated in the status region.
+    expect(screen.getAllByText("Invalid email format")).toHaveLength(1);
+  });
+
+  it("names a dropped connection as such when the request throws", async () => {
     fetchMock.mockRejectedValueOnce(new Error("network down"));
     render(<ContactForm />);
 
@@ -122,7 +155,19 @@ describe("ContactForm", () => {
     submitForm();
 
     await waitFor(() => {
-      expect(screen.getByText(/message failed to send/i)).toBeInTheDocument();
+      expect(screen.getByText(/never reached the server/i)).toBeInTheDocument();
+    });
+  });
+
+  it("falls back to its own sentence when the body carries no reason", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({}, false, 429));
+    render(<ContactForm />);
+
+    fillForm();
+    submitForm();
+
+    await waitFor(() => {
+      expect(screen.getByText(/too many messages/i)).toBeInTheDocument();
     });
   });
 

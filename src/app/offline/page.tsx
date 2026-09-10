@@ -1,53 +1,52 @@
-import { Container } from '@/components/Container'
-import { Heading } from '@/components/Heading'
-import { WifiOff } from 'lucide-react'
-import Link from 'next/link'
+import Link from "next/link";
+
+import { Container } from "@/components/Container";
 
 export const metadata = {
-  title: 'Offline',
-  description: 'You are currently offline',
-}
+  title: "Offline",
+  description: "You are currently offline",
+};
 
+/**
+ * Composed like `not-found.tsx`: wall label, one Fraunces line, a hairline,
+ * and a mono row of doorways. It used to be a centred stack with a 96px round
+ * icon well and Title Case buttons — the shape of every 404 template, on the
+ * one page a reader reaches when the network has already failed them.
+ */
 export default function OfflinePage() {
   return (
-    <div className="min-h-screen flex items-center justify-center py-20">
-      <Container>
-        <div className="max-w-md mx-auto text-center">
-          <div className="mb-6 flex justify-center">
-            <div className="h-24 w-24 rounded-full bg-muted flex items-center justify-center">
-              <WifiOff className="h-12 w-12 text-muted-foreground" />
-            </div>
-          </div>
+    <Container className="flex min-h-[72vh] items-center">
+      <div className="w-full max-w-2xl">
+        <span className="label-mono block">Gallery · No connection</span>
 
-          <Heading as="h1" className="mb-4">
-            You&apos;re Offline
-          </Heading>
+        <h1 className="mt-5 text-display">The lights are still on.</h1>
 
-          <p className="text-muted-foreground mb-8">
-            It looks like you&apos;ve lost your internet connection.
-            Some cached pages may still be available.
-          </p>
+        <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+          Your connection dropped, not the site. Pages you have already read are
+          cached and will open; anything new has to wait. Nothing needs doing —
+          when the network comes back, so does the rest of this.
+        </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/"
-              className="px-6 py-3 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-            >
-              Go to Home
-            </Link>
-            <Link
-              href="/blog"
-              className="px-6 py-3 rounded-md border border-border hover:bg-accent transition-colors"
-            >
-              View Blog
-            </Link>
-          </div>
+        <hr className="gallery-rule my-8" />
 
-          <p className="mt-8 text-sm text-muted-foreground">
-            Your connection will be restored automatically when you&apos;re back online.
-          </p>
-        </div>
-      </Container>
-    </div>
-  )
+        <nav
+          className="flex flex-wrap items-center gap-x-8 gap-y-3"
+          aria-label="Pages that may still be cached"
+        >
+          <Link
+            href="/"
+            className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            ← Back to the entrance
+          </Link>
+          <Link
+            href="/blog"
+            className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            Browse the writing
+          </Link>
+        </nav>
+      </div>
+    </Container>
+  );
 }

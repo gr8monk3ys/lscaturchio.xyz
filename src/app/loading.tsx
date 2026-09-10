@@ -1,32 +1,42 @@
+import { Container } from "@/components/Container";
+import { SkeletonBar, SkeletonCard } from "@/components/ui/skeleton-primitives";
+
+/**
+ * The masthead is an asymmetric `1fr / 300px` split with a square portrait
+ * plate at the right edge, not a centred stack. This skeleton holds that
+ * shape so nothing jumps sideways when the page arrives.
+ */
 export default function HomeLoading() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-between">
-      <div className="w-full max-w-6xl mx-auto px-4 py-8">
-        {/* Hero skeleton */}
-        <div className="h-[60vh] flex flex-col items-center justify-center gap-6">
-          <div className="h-12 w-3/4 max-w-2xl animate-pulse rounded-lg bg-muted" />
-          <div className="h-6 w-1/2 max-w-lg animate-pulse rounded-lg bg-muted" />
-          <div className="flex gap-4 mt-4">
-            <div className="h-12 w-32 animate-pulse rounded-xl bg-muted" />
-            <div className="h-12 w-32 animate-pulse rounded-xl bg-muted" />
+    <section className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-6xl gap-12 py-16 md:grid-cols-[1fr_minmax(0,300px)] md:items-end md:py-24 lg:py-28">
+        <div className="min-w-0 space-y-6">
+          <SkeletonBar className="h-3 w-56" />
+          <div className="space-y-3">
+            <SkeletonBar className="h-11 w-full max-w-lg sm:h-14" />
+            <SkeletonBar className="h-11 w-3/4 max-w-md sm:h-14" />
+          </div>
+          <div className="max-w-xl space-y-2.5">
+            <SkeletonBar className="h-5 w-full" />
+            <SkeletonBar className="h-5 w-4/5" />
           </div>
         </div>
 
-        {/* Cards skeleton */}
-        <div className="my-16 px-4">
-          <div className="h-8 w-64 mx-auto animate-pulse rounded-lg bg-muted mb-8" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((slot) => (
-              <div key={`home-loading-card-${slot}`} className="neu-card p-6">
-                <div className="h-14 w-14 animate-pulse rounded-xl bg-muted mb-4" />
-                <div className="h-6 w-3/4 animate-pulse rounded bg-muted mb-2" />
-                <div className="h-20 w-full animate-pulse rounded bg-muted mb-4" />
-                <div className="h-4 w-32 animate-pulse rounded bg-muted" />
-              </div>
-            ))}
-          </div>
+        {/* Square plate with its mono caption below, like a placard. */}
+        <div className="mx-auto w-44 sm:w-52 md:mx-0 md:w-full md:max-w-[300px]">
+          <SkeletonBar className="aspect-square w-full" />
+          <SkeletonBar className="mt-3 h-3 w-3/4" />
         </div>
       </div>
-    </div>
+
+      <Container className="mt-4">
+        <hr className="gallery-rule" />
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {[0, 1, 2].map((slot) => (
+            <SkeletonCard key={slot} plate="h-40" />
+          ))}
+        </div>
+      </Container>
+    </section>
   );
 }
