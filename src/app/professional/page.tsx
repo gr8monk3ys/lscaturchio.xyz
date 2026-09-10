@@ -63,14 +63,14 @@ export default function ProfessionalPage() {
           <h2 className="text-section-title mb-6">Current focus</h2>
           <div className="grid grid-cols-1 divide-border border-y border-border md:grid-cols-2 md:divide-x">
             <div className="px-0 py-6 md:pr-8">
-              <h3 className="label-mono">RAG Systems</h3>
+              <h3 className="label-mono">RAG systems</h3>
               <p className="mt-3 text-muted-foreground">
                 Exploring different use cases for retrieval-augmented generation and making them more
                 marketable. Basically trying to get paid for doing cool stuff.
               </p>
             </div>
             <div className="px-0 py-6 md:pl-8">
-              <h3 className="label-mono">Open Source</h3>
+              <h3 className="label-mono">Open source</h3>
               <p className="mt-3 text-muted-foreground">
                 Contributing to open-source projects and building tools that make data science more
                 accessible. FOSS is how the internet should work.

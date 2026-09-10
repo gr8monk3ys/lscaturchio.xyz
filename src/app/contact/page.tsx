@@ -50,30 +50,38 @@ export default function Contact() {
           </div>
         </PageHead>
 
-        <div className="grid gap-6 sm:grid-cols-3 divide-border border-y border-border sm:divide-x">
-          <div className="px-5 py-6">
-            <h2 className="label-mono">RAG + ML Delivery</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              New builds, thin-slice prototypes, and scoped production systems.
-            </p>
-          </div>
-          <div className="px-5 py-6">
-            <h2 className="label-mono">Architecture reviews</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Reliability, retrieval quality, cost, latency, and rollout risk.
-            </p>
-          </div>
-          <div className="px-5 py-6">
-            <h2 className="label-mono">Fast decisions</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Short calls or async briefs both work if the problem is already clear enough.
-            </p>
-          </div>
-        </div>
+        {/* Stacked hairline rows, not a three-up band. DESIGN.md's Don't list
+            names "three-column feature tiles" as SaaS landing-page furniture,
+            and its Layout section asks for "stacked rows separated by hairlines
+            with the label above the title and the description below". This page
+            had two such bands; the other one was removed entirely because every
+            actionable item in it repeated a CTA from this masthead. */}
+        <ul className="divide-y divide-border border-y border-border">
+          {[
+            {
+              label: "RAG + ML delivery",
+              blurb: "New builds, thin-slice prototypes, and scoped production systems.",
+            },
+            {
+              label: "Architecture reviews",
+              blurb: "Reliability, retrieval quality, cost, latency, and rollout risk.",
+            },
+            {
+              label: "Fast decisions",
+              blurb:
+                "Short calls or async briefs both work if the problem is already clear enough.",
+            },
+          ].map((row) => (
+            <li key={row.label} className="py-5">
+              <h2 className="label-mono">{row.label}</h2>
+              <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{row.blurb}</p>
+            </li>
+          ))}
+        </ul>
 
         <div className="grid gap-10 lg:grid-cols-2">
           <div>
-            <h2 className="label-mono">Fastest Way to Get a Useful Reply</h2>
+            <h2 className="label-mono">Fastest way to get a useful reply</h2>
             <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
               <li>Describe the outcome you want, not just the tool you want to use.</li>
               <li>Mention the data, systems, or constraints that make the problem real.</li>

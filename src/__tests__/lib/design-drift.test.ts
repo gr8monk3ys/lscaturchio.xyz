@@ -175,6 +175,79 @@ describe("design drift", () => {
   });
 });
 
+describe("heading case", () => {
+  /**
+   * `docs/writing-style.md:72`: "Title Case Headings. Headings are sentence
+   * case." Nine UI headings were Title Case anyway, six of which I fixed by
+   * eye and then found three more on the same page — which is the argument for
+   * checking rather than reading.
+   *
+   * Literal headings only. An interpolated one (`{row.label}`, `{meta.title}`)
+   * carries content, and essay titles are the author's own casing decision,
+   * not this rule's business.
+   *
+   * The signal is capitalised words that are not proper nouns: a heading of
+   * four or more words with three or more of them capitalised past the first.
+   * Two-word headings are excluded because most of them are names.
+   */
+  const FUNCTION_WORDS = new Set([
+    "a", "an", "the", "and", "or", "but", "of", "in", "on", "at", "to", "for",
+    "is", "as", "by", "with", "from", "not", "this", "that", "your", "its",
+  ]);
+
+  /** Each entry needs a reason. Proper nouns belong here, nothing else does. */
+  const ALLOWED_HEADINGS: Array<{ text: string; reason: string }> = [
+    { text: "Lorenzo Scaturchio", reason: "A person's name." },
+  ];
+
+  it("writes UI headings in sentence case", () => {
+    const offenders: string[] = [];
+
+    for (const root of SCAN_ROOTS) {
+      const dir = path.join(process.cwd(), root);
+      if (!fs.existsSync(dir)) continue;
+
+      for (const file of walk(dir)) {
+        const relative = path.relative(process.cwd(), file);
+        // API routes build email bodies, not pages. The one heading in there
+        // ("New Contact Form Submission") is an internal notification to the
+        // site's owner, and the site's style guide governs the site.
+        if (relative.startsWith(path.join("src", "app", "api"))) continue;
+
+        const source = fs.readFileSync(file, "utf-8");
+
+        for (const match of source.matchAll(/<h[1-6][^>]*>([^<>{}]+)<\/h[1-6]>/g)) {
+          const text = match[1].replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+          if (!text) continue;
+          if (ALLOWED_HEADINGS.some((a) => a.text === text)) continue;
+
+          const words = text.split(" ").filter(Boolean);
+          if (words.length < 4) continue;
+
+          const past = words.slice(1).filter((w) => /^[A-Za-z]/.test(w));
+          const capitalised = past.filter(
+            (w) => !FUNCTION_WORDS.has(w.toLowerCase()) && /^[A-Z]/.test(w)
+          );
+
+          if (capitalised.length >= 3) {
+            const line = source.slice(0, match.index).split("\n").length;
+            offenders.push(`${relative}:${line} — "${text}"`);
+          }
+        }
+      }
+    }
+
+    expect(
+      offenders,
+      [
+        'writing-style.md: "Headings are sentence case."',
+        "",
+        ...offenders,
+      ].join("\n")
+    ).toEqual([]);
+  });
+});
+
 describe("navigation vocabulary", () => {
   it("gives every destination exactly one name", async () => {
     const navlinks = await import("@/constants/navlinks");

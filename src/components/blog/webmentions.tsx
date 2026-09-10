@@ -84,20 +84,24 @@ export function Webmentions({ path }: { path: string }) {
     .map((type) => `${counts[type]} ${typeLabel(type, counts[type])}`)
     .join(" · ");
 
+  // With JavaScript disabled, SWR never resolves and `isLoading` stays true
+  // forever, so this section closed every essay with a permanent "Checking…".
+  // Claiming nothing is better than claiming to be checking: the block is not
+  // rendered until the request has actually settled. It also cannot say "no
+  // mentions yet" in that state, because that would be an assertion the page
+  // has no basis for.
+  if (isLoading) return null;
+
   return (
     <section className="mt-12 border-t border-border pt-6" aria-label="Responses from the open web">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <span className="label-mono">From the open web</span>
-        {isLoading ? (
-          <span className="label-mono normal-case tracking-normal text-muted-foreground" aria-live="polite">
-            Checking…
-          </span>
-        ) : hasAnything ? (
+        {hasAnything && (
           <span className="label-mono normal-case tracking-normal text-foreground/70">{summary}</span>
-        ) : null}
+        )}
       </div>
 
-      {!isLoading && !hasAnything && (
+      {!hasAnything && (
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
           No mentions yet. Reply to this essay from your own site and it will show up here.
         </p>

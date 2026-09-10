@@ -10,7 +10,7 @@ export default function PrivacyPolicyPage() {
   return (
     <Container>
       <div className="prose prose-neutral dark:prose-invert max-w-none">
-        <h1>Privacy Policy & Transparency</h1>
+        <h1>Privacy policy &amp; transparency</h1>
         <p className="lead">
           Last updated: September 2, 2026
         </p>
@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
           and gives you insight into how I maintain sustainability while providing value to the community.
         </p>
 
-        <h2>Analytics &amp; Tracking</h2>
+        <h2>Analytics &amp; tracking</h2>
         <p>
           Five third-party services run on this site. Naming two of them and leaving the
           others out would be the kind of omission the essays here complain about, so here
@@ -67,7 +67,7 @@ export default function PrivacyPolicyPage() {
           <li>Project-related communications</li>
         </ul>
 
-        <h2>Data Storage & Security</h2>
+        <h2>Data storage &amp; security</h2>
         <p>
           All data is stored securely using modern encryption standards. I use:
         </p>
@@ -77,7 +77,7 @@ export default function PrivacyPolicyPage() {
           <li>Industry-standard security practices for all stored data</li>
         </ul>
 
-        <h2>Third-Party Services</h2>
+        <h2>Third-party services</h2>
         <p>
           I use several third-party services to enhance functionality:
         </p>
@@ -90,7 +90,7 @@ export default function PrivacyPolicyPage() {
           Each service has its own privacy policy, and I encourage you to review them.
         </p>
 
-        <h2>Open Source</h2>
+        <h2>Open source</h2>
         <p>
           This website is open source, and you can verify how your data is handled by reviewing the code on
           my GitHub repository. I believe in transparency through code.
@@ -123,7 +123,7 @@ export default function PrivacyPolicyPage() {
           <a href="mailto:lorenzosca7@protonmail.ch">lorenzosca7@protonmail.ch</a>.
         </p>
 
-        <h2>Updates to This Policy</h2>
+        <h2>Updates to this policy</h2>
         <p>
           This privacy policy may be updated periodically to reflect changes in practices or regulations.
           Significant changes will be communicated through the website or email if necessary.
