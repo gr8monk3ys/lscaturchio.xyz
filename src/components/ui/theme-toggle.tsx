@@ -1,27 +1,32 @@
 "use client"
 
-import * as React from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
+/**
+ * Renders the real control on the first paint, not a box shaped like one.
+ *
+ * This used to hold a `mounted` flag and render `<div className="w-10 h-10
+ * rounded-xl neu-flat" />` until an effect ran: a toggle-shaped object with no
+ * accessible name, not focusable, not in the a11y tree. A review found it and
+ * the identical box one layer up and called them decoys, which is right — they
+ * looked interactive and were not.
+ *
+ * The flag was never needed for the icons: the sun/moon swap is CSS (`dark:`
+ * variants), not state. It existed only so the click handler could read the
+ * theme after hydration — but the handler cannot run before hydration, so
+ * nothing had to be deferred to make that safe.
+ */
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
-
-  // Avoid hydration mismatch
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return (
-      <div className="w-10 h-10 rounded-xl neu-flat" />
-    )
-  }
+  // `resolvedTheme`, not `theme`: it is the value actually applied, so
+  // "system" resolves rather than falling through to the wrong branch. It is
+  // undefined during SSR, which costs nothing — a click cannot happen before
+  // hydration, and the button's markup does not depend on it.
+  const { resolvedTheme, setTheme } = useTheme()
 
   return (
     <button
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       className="group relative inline-flex h-10 w-10 items-center justify-center rounded-xl neu-button transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background"
       aria-label="Toggle theme"
     >

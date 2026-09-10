@@ -117,6 +117,127 @@ test.describe('design invariants, in the DOM', () => {
     ).toEqual([])
   })
 
+  test('the stage filter /blog promises actually filters', async ({ page }) => {
+    // The lede has always said "filter by tag or stage for the date-ordered
+    // archive", and the page rendered nothing that could set one: the archive
+    // existed and was reachable only by typing ?stage= into the URL.
+    //
+    // Written as behaviour, not as shape. The first version of this test
+    // scanned for an <a> carrying the param or a named form control, and
+    // reported /projects as broken — where the category buttons are real and
+    // push the param through the router, which no attribute scan can see.
+    // Clicking the thing is both correct and a stronger claim.
+    await page.goto('/blog', { waitUntil: 'networkidle' })
+
+    const unfiltered = await page.locator('a[href^="/blog/"]').count()
+    expect(unfiltered, '/blog should list essays').toBeGreaterThan(1)
+
+    const stageFilter = page.getByRole('navigation', { name: 'Filter by stage' })
+    await expect(stageFilter, '/blog must render the filter its lede promises').toBeVisible()
+
+    const firstStage = stageFilter.getByRole('link').first()
+    const label = (await firstStage.textContent())?.trim() ?? ''
+
+    // `waitForURL`, not `waitForLoadState('networkidle')`: this is a client-side
+    // navigation, and networkidle can resolve before the router has committed
+    // the new URL. The first version of this test read the old URL and blamed
+    // the page.
+    await Promise.all([page.waitForURL(/[?&]stage=/, { timeout: 15000 }), firstStage.click()])
+
+    expect(page.url(), `clicking "${label}" should set ?stage=`).toContain('stage=')
+    await page.waitForLoadState('networkidle')
+
+    const filtered = await page.locator('a[href^="/blog/"]').count()
+    expect(
+      filtered,
+      `"${label}" returned ${filtered} of ${unfiltered} essays — a filter that changes nothing is not a filter`
+    ).toBeLessThan(unfiltered)
+    expect(filtered, 'and it should return something').toBeGreaterThan(0)
+  })
+
+  test('the index shows the stage it authors on every essay', async ({ page }) => {
+    // Every essay declares a stage and the index showed none of them, so a
+    // seedling and an evergreen looked identical. writing-style.md is explicit
+    // that "the label is the honesty"; the reader saw it only after clicking.
+    await page.goto('/blog', { waitUntil: 'networkidle' })
+
+    const rows = page.locator('a[href^="/blog/"]')
+    const total = await rows.count()
+    const dated = await page.locator('a[href^="/blog/"] time[datetime]').count()
+
+    expect(dated, `${dated} of ${total} rows carry a date`).toBe(total)
+
+    // At least one stage badge must be present, or the signal is still hidden.
+    const staged = await page
+      .locator('a[href^="/blog/"]')
+      .filter({ hasText: /SEEDLING|BUDDING|EVERGREEN/ })
+      .count()
+    expect(staged, 'no row shows a stage').toBeGreaterThan(0)
+  })
+
+  test('the header ships its controls in the HTML, not placeholders for them', async ({
+    page,
+  }) => {
+    // The search trigger and theme toggle used to sit behind
+    // `requestIdleCallback(…, {timeout: 1200})`, and until it fired the header
+    // rendered `aria-hidden` boxes that mirrored them class for class — a
+    // search field with the ⌘K chip, a toggle-shaped square. They looked
+    // interactive, were not focusable, and were absent from the accessibility
+    // tree. DESIGN.md's motion doctrine already forbids the mechanism —
+    // "nothing waits for a scroll observer, a mount transition or an idle
+    // callback to become readable" — but it was written about content, so the
+    // chrome kept doing it.
+    //
+    // Asserted against the raw server HTML, because that is the state a decoy
+    // hides in: post-hydration everything looks fine.
+    const response = await page.goto('/', { waitUntil: 'commit' })
+    const html = (await response?.text()) ?? ''
+
+    const required = [
+      { name: 'search trigger', pattern: />Search</ },
+      { name: 'theme toggle', pattern: /aria-label="Toggle theme"/ },
+      { name: 'ask trigger', pattern: /Ask this site/ },
+    ]
+
+    const missing = required
+      .filter(({ pattern }) => !pattern.test(html))
+      .map(({ name }) => `${name} is not in the server HTML`)
+
+    expect(
+      missing,
+      [
+        'A control the header shows must be a control, from the first byte.',
+        '',
+        ...missing,
+      ].join('\n')
+    ).toEqual([])
+
+    // And nothing aria-hidden may still be impersonating one.
+    const decoys = await page.evaluate(() => {
+      const header = document.querySelector('.site-header')
+      if (!header) return []
+      return Array.from(header.querySelectorAll<HTMLElement>('[aria-hidden="true"]'))
+        .filter((el) => {
+          const style = getComputedStyle(el)
+          const box = el.getBoundingClientRect()
+          // A bordered, filled box the size of a control, holding content.
+          return (
+            style.borderStyle !== 'none' &&
+            style.backgroundColor !== 'rgba(0, 0, 0, 0)' &&
+            box.width >= 32 &&
+            box.height >= 24 &&
+            (el.textContent ?? '').trim().length > 0
+          )
+        })
+        .map((el) => `${el.tagName.toLowerCase()}.${String(el.className).split(/\s+/)[0]}: "${(el.textContent ?? '').trim().slice(0, 24)}"`)
+    })
+
+    expect(
+      decoys,
+      ['An aria-hidden box that looks like a control is a decoy.', '', ...decoys].join('\n')
+    ).toEqual([])
+  })
+
   test('every declared grid track is occupied', async ({ page }) => {
     const offenders: string[] = []
 

@@ -7,8 +7,8 @@ vi.mock('next/navigation', () => ({
   usePathname: vi.fn(() => '/'),
 }));
 
-vi.mock('@/components/ui/navbar-controls-gate', () => ({
-  NavbarControlsGate: () => <div data-testid="navbar-controls" />,
+vi.mock('@/components/ui/navbar-controls', () => ({
+  NavbarControls: () => <div data-testid="navbar-controls" />,
 }));
 
 describe('Navbar', () => {
