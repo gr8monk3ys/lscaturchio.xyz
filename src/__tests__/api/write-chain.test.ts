@@ -87,6 +87,7 @@ function makeRequest(url: string, options: ReqOptions = {}): NextRequest {
 const validContact = {
   name: 'Jane Doe',
   email: 'jane@example.com',
+  subject: 'Project scoping',
   message: 'Hello there.',
 };
 
@@ -206,7 +207,13 @@ describe('schema layer (real Zod schemas)', () => {
     );
 
     expect(res.status).toBe(400);
-    expect(await res.json()).toEqual({ error: 'Invalid email format', success: false });
+    // `field` travels with the message so the form can render it beside the
+    // input it is about rather than as a banner under the submit button.
+    expect(await res.json()).toEqual({
+      error: 'Invalid email format',
+      field: 'email',
+      success: false,
+    });
     expect(mailer).not.toHaveBeenCalled();
   });
 
@@ -241,8 +248,11 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
     const res = await contactPost(
       makeRequest('http://localhost:3000/api/contact', {
         body: {
-          name: 'Jane\r\nBcc: attacker@evil.example',
+          name: 'Jane Doe',
           email: 'jane@example.com',
+          // The subject is reader-controlled and now leads the header line, so
+          // this is where a header-injection attempt would go.
+          subject: 'Audit\r\nBcc: attacker@evil.example',
           message: '<script>alert("xss")</script>\nsecond line',
         },
       })
@@ -257,7 +267,7 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
     expect(payload.subject).not.toMatch(/[\r\n]/);
     // Each of CR and LF becomes its own space — this is the real
     // sanitizeEmailSubject's output, not a paraphrase of it.
-    expect(payload.subject).toBe('Contact Form: Jane  Bcc: attacker@evil.example');
+    expect(payload.subject).toBe('Audit  Bcc: attacker@evil.example — Jane Doe');
 
     // XSS: the script tag is escaped, not stripped-and-forgotten.
     expect(payload.html).not.toContain('<script>');
@@ -350,6 +360,12 @@ describe('envelope layer', () => {
       })
     );
 
-    expect(await res.json()).toEqual({ error: 'Invalid email format', success: false });
+    // `field` travels with the message so the form can render it beside the
+    // input it is about rather than as a banner under the submit button.
+    expect(await res.json()).toEqual({
+      error: 'Invalid email format',
+      field: 'email',
+      success: false,
+    });
   });
 });

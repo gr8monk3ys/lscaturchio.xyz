@@ -316,3 +316,53 @@ export function listHomeCaseStudies(
 
   return cards;
 }
+
+/* ------------------------------------------------------------------ *
+ * Skills, derived
+ * ------------------------------------------------------------------ */
+
+export interface ProvenSkill {
+  /** The tool, exactly as the projects spell it in their own stacks. */
+  name: string;
+  /** Projects that use it, in catalogue order. */
+  usedIn: Array<{ title: string; slug: string }>;
+}
+
+/**
+ * The tools this catalogue can prove, each carrying the projects that use it.
+ *
+ * /professional used to hand-maintain thirty-one tool names in four columns —
+ * "Python · PyTorch · Scikit-learn · LangChain · …" — which is the most
+ * generic pattern in the genre and, worse, unfalsifiable: nothing on the site
+ * connected any of those names to work, and nine of them had no project behind
+ * them at all. Deriving the list from `stack` means the page cannot claim a
+ * tool the catalogue does not demonstrate, and cannot fall behind it either.
+ *
+ * Deliberately flat. Grouping by `categories` was tried first and produced
+ * eighty-two rows for thirty-five tools, because a project carries several
+ * categories and so its whole stack was counted under each — "Tools" and
+ * "Open Source" came back as near-duplicates of one another. The count of
+ * projects is the only ordering that means anything here.
+ */
+export function listProvenSkills(
+  catalogue: readonly Product[] = products
+): ProvenSkill[] {
+  const byName = new Map<string, ProvenSkill>();
+
+  for (const product of catalogue) {
+    if (!product.slug) continue;
+
+    for (const name of product.stack ?? []) {
+      const use = { title: product.title, slug: product.slug };
+      const existing = byName.get(name);
+      if (existing) existing.usedIn.push(use);
+      else byName.set(name, { name, usedIn: [use] });
+    }
+  }
+
+  // Most-demonstrated first, then alphabetical, so the order is a fact about
+  // the catalogue rather than the order the data file happens to be in.
+  return [...byName.values()].sort(
+    (a, b) => b.usedIn.length - a.usedIn.length || a.name.localeCompare(b.name)
+  );
+}

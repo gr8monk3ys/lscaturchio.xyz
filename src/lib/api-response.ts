@@ -54,7 +54,10 @@ export function apiError(
  * Common error responses for reuse
  */
 export const ApiErrors = {
-  badRequest: (message = "Bad request") => apiError(message, 400),
+  // `field` names the input the message belongs to, when there is one, so a
+  // form can render it beside that input rather than as a page-level banner.
+  badRequest: (message = "Bad request", field?: string) =>
+    apiError(message, 400, field ? { field } : undefined),
   unauthorized: (message = "Unauthorized") => apiError(message, 401),
   forbidden: (message = "Forbidden") => apiError(message, 403),
   notFound: (message = "Not found") => apiError(message, 404),

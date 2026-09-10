@@ -43,10 +43,24 @@ export function ContactForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  /**
+   * What actually went wrong, and which input it was about.
+   *
+   * The API already diagnoses every failure separately — a rate limit, a
+   * missing Resend key, a rejected field, a Resend outage each return their own
+   * sentence — and this component used to discard all of it and print "Message
+   * failed to send. Please try again" over the top. A reader whose message was
+   * one character over the limit was told to try again, and trying again did
+   * the same thing.
+   */
+  const [failure, setFailure] = useState<{ message: string; field?: string } | null>(
+    null
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setFailure(null);
 
     try {
       const response = await fetch("/api/contact", {
@@ -58,15 +72,39 @@ export function ContactForm() {
       if (response.ok) {
         setSubmitStatus("success");
         setFormData({ name: "", email: "", subject: "", message: "" });
-      } else {
-        setSubmitStatus("error");
+        return;
       }
+
+      // The typed message is never cleared on failure; it is the most expensive
+      // thing on the page to retype.
+      const body = (await response.json().catch(() => null)) as {
+        error?: string;
+        field?: string;
+      } | null;
+
+      setSubmitStatus("error");
+      setFailure({
+        message:
+          body?.error ??
+          (response.status === 429
+            ? "Too many messages from this address in a short window. Try again in a few minutes."
+            : "The message did not send."),
+        field: body?.field,
+      });
     } catch {
       setSubmitStatus("error");
+      setFailure({
+        message:
+          "The request never reached the server — usually a dropped connection rather than anything you typed.",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  /** The message rendered under a field, when the failure named that field. */
+  const fieldError = (name: string) =>
+    submitStatus === "error" && failure?.field === name ? failure.message : null;
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -116,9 +154,16 @@ export function ContactForm() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary"
+                  aria-invalid={fieldError("name") ? true : undefined}
+                  aria-describedby={fieldError("name") ? "name-error" : undefined}
+                  className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary aria-invalid:border-destructive"
                   placeholder="Your name..."
                 />
+                {fieldError("name") && (
+                  <p id="name-error" className="mt-2 text-sm text-destructive">
+                    {fieldError("name")}
+                  </p>
+                )}
               </div>
               <div>
                 <div className="mb-2 flex items-baseline gap-2">
@@ -137,9 +182,16 @@ export function ContactForm() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary"
+                  aria-invalid={fieldError("email") ? true : undefined}
+                  aria-describedby={fieldError("email") ? "email-error" : undefined}
+                  className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary aria-invalid:border-destructive"
                   placeholder="you@example.com..."
                 />
+                {fieldError("email") && (
+                  <p id="email-error" className="mt-2 text-sm text-destructive">
+                    {fieldError("email")}
+                  </p>
+                )}
               </div>
             </div>
             <div>
@@ -158,9 +210,16 @@ export function ContactForm() {
                 required
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary"
+                aria-invalid={fieldError("subject") ? true : undefined}
+                aria-describedby={fieldError("subject") ? "subject-error" : undefined}
+                className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary aria-invalid:border-destructive"
                 placeholder="What is the decision or project?..."
               />
+              {fieldError("subject") && (
+                <p id="subject-error" className="mt-2 text-sm text-destructive">
+                  {fieldError("subject")}
+                </p>
+              )}
             </div>
             <div>
               <div className="mb-2 flex items-baseline gap-2">
@@ -178,9 +237,16 @@ export function ContactForm() {
                 autoComplete="off"
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary resize-none"
+                aria-invalid={fieldError("message") ? true : undefined}
+                aria-describedby={fieldError("message") ? "message-error" : undefined}
+                className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary resize-none aria-invalid:border-destructive"
                 placeholder="Share the goal, the users, the data, and the constraint that matters most..."
               />
+              {fieldError("message") && (
+                <p id="message-error" className="mt-2 text-sm text-destructive">
+                  {fieldError("message")}
+                </p>
+              )}
             </div>
             <button
               type="submit"
@@ -192,14 +258,15 @@ export function ContactForm() {
 
             <div id="contact-form-status" role="status" aria-live="polite" className="min-h-6">
               {submitStatus === "success" && (
-                <p className="text-center text-primary">
+                <p className="text-primary">
                   Message sent. I&apos;ll follow up by email after I review the brief.
                 </p>
               )}
-              {submitStatus === "error" && (
-                <p className="text-center text-destructive">
-                  Message failed to send. Please try again or email me directly at
-                  {" "}
+              {/* A failure that named a field is already rendered beside that
+                  field; repeating it here would say it twice. */}
+              {submitStatus === "error" && !failure?.field && (
+                <p className="text-destructive">
+                  {failure?.message} You can also email me directly at{" "}
                   <Link href="mailto:lorenzosca7@protonmail.ch" className="underline">
                     lorenzosca7@protonmail.ch
                   </Link>

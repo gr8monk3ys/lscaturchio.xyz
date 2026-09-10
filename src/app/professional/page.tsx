@@ -5,19 +5,13 @@ import { buildPageMetadata } from "@/lib/seo";
 import { WorkTimeline } from "@/components/ui/work-timeline";
 import { ResumeDownloadButton } from "@/components/ui/resume-download-button";
 import { PageHead } from "@/components/ui/page-head";
+import { ProvenSkills } from "@/components/professional/proven-skills";
 
 export const metadata = buildPageMetadata({
   title: "Professional",
   description: "Where Lorenzo Scaturchio has worked, what he shipped there, and the numbers each claim is sourced against.",
   path: "/professional",
 });
-
-const SkillCategory = ({ title, skills }: { title: string; skills: string[] }) => (
-  <div className="space-y-3">
-    <h3 className="label-mono">{title}</h3>
-    <p className="text-lg text-foreground">{skills.join("  ·  ")}</p>
-  </div>
-);
 
 export default function ProfessionalPage() {
   return (
@@ -36,63 +30,7 @@ export default function ProfessionalPage() {
           }
         />
 
-        {/* Skills Section */}
-        <section>
-          <h2 className="text-section-title mb-8">Technical skills</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <SkillCategory
-              title="Machine Learning & AI"
-              skills={[
-                "Python",
-                "PyTorch",
-                "Scikit-learn",
-                "LangChain",
-                "OpenAI API",
-                "RAG Systems",
-                "Vector Databases",
-                "Hugging Face",
-              ]}
-            />
-            <SkillCategory
-              title="Data Science & Analytics"
-              skills={[
-                "Pandas",
-                "NumPy",
-                "SQL",
-                "PostgreSQL",
-                "Apache Kafka",
-                "Spark Streaming",
-                "Snowflake",
-                "Statistical Modeling",
-              ]}
-            />
-            <SkillCategory
-              title="Web Development"
-              skills={[
-                "TypeScript",
-                "React",
-                "Next.js",
-                "Tailwind CSS",
-                "Node.js",
-                "FastAPI",
-                "REST APIs",
-                "GraphQL",
-              ]}
-            />
-            <SkillCategory
-              title="Tools & Infrastructure"
-              skills={[
-                "Git",
-                "Docker",
-                "Linux (Arch btw)",
-                "Neovim",
-                "Vercel",
-                "AWS",
-                "CI/CD",
-              ]}
-            />
-          </div>
-        </section>
+        <ProvenSkills />
 
         {/* Work Experience */}
         <section>

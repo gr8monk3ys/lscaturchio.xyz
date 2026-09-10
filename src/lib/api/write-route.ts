@@ -162,14 +162,14 @@ export function withWriteRoute<S extends ZodSchema>(
 
       if (body.kind === "json") {
         const parsed = parseBody(body.schema, await req.json());
-        if (!parsed.success) return ApiErrors.badRequest(parsed.error);
+        if (!parsed.success) return ApiErrors.badRequest(parsed.error, parsed.field);
         data = parsed.data;
       } else if (body.kind === "formData") {
         form = await req.formData();
         const raw = form.get(body.jsonField);
         if (typeof raw !== "string") return ApiErrors.missingField(body.jsonField);
         const parsed = parseBody(body.schema, JSON.parse(raw));
-        if (!parsed.success) return ApiErrors.badRequest(parsed.error);
+        if (!parsed.success) return ApiErrors.badRequest(parsed.error, parsed.field);
         data = parsed.data;
       }
 

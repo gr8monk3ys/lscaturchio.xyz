@@ -65,6 +65,7 @@ describe('contactFormSchema', () => {
     const result = contactFormSchema.safeParse({
       name: 'John Doe',
       email: 'john@example.com',
+      subject: 'Project scoping',
       message: 'Hello, this is a test message.',
     });
     expect(result.success).toBe(true);
@@ -78,6 +79,7 @@ describe('contactFormSchema', () => {
     const result = contactFormSchema.safeParse({
       name: '  John Doe  ',
       email: 'john@example.com',
+      subject: 'Project scoping',
       message: '  Hello  ',
     });
     expect(result.success).toBe(true);
@@ -87,10 +89,39 @@ describe('contactFormSchema', () => {
     }
   });
 
+  it('requires the subject the form has always collected', () => {
+    // z.object strips unknown keys, so before `subject` was in the schema a
+    // reader typed one, the request succeeded, and the line never reached the
+    // inbox. The form marked the field required the whole time.
+    const result = contactFormSchema.safeParse({
+      name: 'John Doe',
+      email: 'john@example.com',
+      message: 'Hello.',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues.some((i) => i.path[0] === 'subject')).toBe(true);
+    }
+  });
+
+  it('carries the failing field back with the message', () => {
+    const result = parseBody(contactFormSchema, {
+      name: 'John Doe',
+      email: 'not-an-email',
+      subject: 'Project scoping',
+      message: 'Hello.',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.field).toBe('email');
+    }
+  });
+
   it('rejects empty name', () => {
     const result = contactFormSchema.safeParse({
       name: '',
       email: 'john@example.com',
+      subject: 'Project scoping',
       message: 'Hello',
     });
     expect(result.success).toBe(false);
@@ -108,6 +139,7 @@ describe('contactFormSchema', () => {
     const result = contactFormSchema.safeParse({
       name: 'John',
       email: 'john@example.com',
+      subject: 'Project scoping',
       message: 'a'.repeat(5001),
     });
     expect(result.success).toBe(false);
