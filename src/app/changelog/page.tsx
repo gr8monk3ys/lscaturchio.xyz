@@ -52,7 +52,7 @@ export default async function ChangelogPage() {
             <Heading as="h1" className="mb-4">
               Changelog
             </Heading>
-            <p className="text-lg text-muted-foreground">
+            <p className="max-w-2xl text-lg text-muted-foreground">
               Three sections, in this order: what is planned, then every pull request that
               has landed, then the milestones worth calling out. The shipped list reads itself
               from the repository; the milestones are hand-picked.
@@ -60,7 +60,7 @@ export default async function ChangelogPage() {
             <div className="mt-4">
               <Link
                 href="/changelog/rss.xml"
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                className="label-link inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Subscribe via RSS
               </Link>

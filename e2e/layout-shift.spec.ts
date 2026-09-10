@@ -20,10 +20,32 @@ import { test, expect } from '@playwright/test'
 /** Google's "good" threshold. The Lighthouse budget is the looser 0.15. */
 const CLS_BUDGET = 0.1
 
+/**
+ * Several essays, not one.
+ *
+ * The Lighthouse budget tests `building-rag-systems`, and so did this spec.
+ * A measurement across six essays found four at 0.115–0.119 — forty times the
+ * number the gate reports — and the two clean ones were the two the gates
+ * happened to test. The variable was whether the header's meta row already
+ * wrapped: the view counter grew from a 45px placeholder to ~101px, which
+ * flips the row between one and two lines on essays where it nearly fits.
+ *
+ * A guard that samples one member of a population of 84 is a guard aimed at a
+ * sample, and this is the cost of that. These four were the observed
+ * offenders; `building-rag-systems` stays as the previously-clean control.
+ */
+const ESSAYS = [
+  'building-rag-systems',
+  'against-optimization',
+  'algorithmic-culture',
+  'abolition-isnt-what-you-think',
+  'actual-reformation',
+]
+
 const ROUTES = [
   { name: 'home', path: '/' },
-  { name: 'essay', path: '/blog/building-rag-systems' },
   { name: 'blog index', path: '/blog' },
+  ...ESSAYS.map((slug) => ({ name: `essay: ${slug}`, path: `/blog/${slug}` })),
 ]
 
 async function measureCls(page: import('@playwright/test').Page, path: string) {

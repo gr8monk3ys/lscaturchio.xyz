@@ -89,15 +89,17 @@ export default function ProfessionalPage() {
             would rather ask than read.
           </p>
           <div className="mt-6 flex flex-wrap gap-4">
-            <ResumeDownloadButton />
+            <ResumeDownloadButton variant="primary" />
             <a
               href="https://calendly.com/gr8monk3ys/30min"
               target="_blank"
               rel="noopener noreferrer"
-              /* Secondary: `ResumeDownloadButton` beside this is the page's
-                 one filled CTA. DESIGN.md also grants the round pill only to
-                 the masthead's Ask, so this takes the 14px corner every other
-                 control on the site uses. */
+              /* Secondary. `ResumeDownloadButton` beside this is the page's one
+                 filled CTA — it renders `variant="primary"` now, which it did
+                 not when this comment was first written, so for a while this
+                 page had no primary action at all. DESIGN.md also grants the
+                 round pill only to the masthead's Ask, so this takes the 14px
+                 corner every other control uses. */
               className="cta-secondary inline-flex h-11 items-center justify-center rounded-xl px-6 text-sm font-medium"
             >
               Schedule a call
