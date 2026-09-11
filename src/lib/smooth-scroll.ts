@@ -68,7 +68,10 @@ export function scrollToElement(
   const offset = options?.offset ?? HEADER_OFFSET;
 
   if (instance && !immediate) {
-    instance.scrollTo(element as HTMLElement, { offset: -offset });
+    // `-offset` rather than `0 - offset` would hand Lenis `-0` for a zero
+    // offset. Harmless to the scroll, but it leaks into equality checks and
+    // reads as a bug to the next person.
+    instance.scrollTo(element as HTMLElement, { offset: offset === 0 ? 0 : -offset });
     return;
   }
 
