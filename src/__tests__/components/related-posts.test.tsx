@@ -49,14 +49,25 @@ describe('RelatedPosts', () => {
     expect(container.querySelectorAll('.animate-pulse')).toHaveLength(3);
   });
 
-  it('renders nothing on error or empty results', () => {
+  // Error and empty are different states and no longer share an assertion.
+  // They used to: both rendered nothing, so a 429 from the rate limiter made
+  // the server-rendered section vanish after hydration. The reader saw a
+  // heading, looked away, and looked back to nothing — which is worse than
+  // content that never arrived, because it reads as the page breaking.
+  it('keeps the section and says so when the request fails', () => {
     swrState({ error: new Error('nope') });
     const { container } = render(<RelatedPosts currentTitle="T" currentUrl="/u" />);
-    expect(container).toBeEmptyDOMElement();
 
+    expect(container).not.toBeEmptyDOMElement();
+    expect(screen.getByText(/could not be loaded/i)).toBeInTheDocument();
+  });
+
+  it('renders nothing when there genuinely are no related essays', () => {
+    // Real emptiness needs no placard: an essay with no relatives should not
+    // announce that it has none.
     swrState({ data: { data: { related: [] }, success: true } });
-    const { container: empty } = render(<RelatedPosts currentTitle="T" currentUrl="/u" />);
-    expect(empty).toBeEmptyDOMElement();
+    const { container } = render(<RelatedPosts currentTitle="T" currentUrl="/u" />);
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('reads the one API envelope ({ data: { related } })', () => {

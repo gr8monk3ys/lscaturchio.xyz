@@ -2,7 +2,7 @@ import { Container } from "@/components/Container";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy & Transparency",
+  title: "Privacy policy",
   description: "Transparency about data handling, analytics, and business practices for Lorenzo Scaturchio's services.",
 };
 

@@ -81,7 +81,7 @@ function readTokens(): Map<string, { light?: [number, number, number]; dark?: [n
  * usage means the rule covers what ships and nothing else.
  */
 function inksPaintedAsText(): string[] {
-  const roots = ["src/app", "src/components"];
+  const roots = ["src/app", "src/components", "src/lib"];
   const found = new Set<string>();
 
   const walk = (dir: string): string[] =>

@@ -8,7 +8,7 @@ import { PageHead } from "@/components/ui/page-head";
 import { ProvenSkills } from "@/components/professional/proven-skills";
 
 export const metadata = buildPageMetadata({
-  title: "Professional",
+  title: "Hire me",
   description: "Where Lorenzo Scaturchio has worked, what he shipped there, and the numbers each claim is sourced against.",
   path: "/professional",
 });
@@ -20,7 +20,7 @@ export default function ProfessionalPage() {
         {/* Header — gallery masthead */}
         <PageHead
           kicker="Professional"
-          title="Work and skills"
+          title="Hire me"
           blurb={
             <>
               Where I have worked and what I shipped there. Every number below is

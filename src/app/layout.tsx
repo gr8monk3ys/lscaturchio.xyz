@@ -39,7 +39,27 @@ const bodyFont = Instrument_Sans({
 const monoFont = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  display: "swap",
+  /**
+   * `optional`, not `swap`.
+   *
+   * This font only ever paints the wall label — 11.5px, uppercase, tracked —
+   * and `swap` means the browser renders a fallback, then re-lays-out when
+   * IBM Plex Mono arrives. The essay header's meta row (date · reading time ·
+   * tags · stage · views) measures 654px in a 672px column: 97% full. So that
+   * swap flipped it between one line and two, and the h1, the description and
+   * the 16:9 hero plate moved 26px with it.
+   *
+   * Measured at 0.135 cumulative layout shift on three essays against a 0.15
+   * budget — after the view counter, which was a contributor but not the
+   * cause. `optional` gives the font about 100ms to arrive and otherwise keeps
+   * the fallback for that page load, which for a small uppercase label is a
+   * difference almost nobody will notice and nobody will notice twice, since
+   * it is cached from then on.
+   *
+   * `preload: false` stays: preloading it would compete with the body font on
+   * the critical path to buy back a difference this small.
+   */
+  display: "optional",
   preload: false,
   variable: "--site-font-mono",
 });

@@ -487,9 +487,14 @@
     --success-foreground: 0 0% 100%;
     --success-muted: 142 76% 26% / 0.1;
     --destructive-muted: 0 84.2% 60.2% / 0.1;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 0%;
-    --warning-muted: 38 92% 50% / 0.1;
+    /* 30%, not 50%. Amber at 50% measures 2.03:1 on Paper — worse than the
+       3.58:1 that prompted this palette audit — and `project-catalogue.ts`
+       paints it as `text-warning` the moment a project stops being Active.
+       Latent today because all eighteen are. 30% is 5.13:1. The dark value
+       already clears at 8.71:1 and is unchanged. */
+    --warning: 38 92% 30%;
+    --warning-foreground: 0 0% 100%;
+    --warning-muted: 38 92% 30% / 0.1;
     --info: 217 91% 60%;
     --info-foreground: 0 0% 100%;
     --info-muted: 217 91% 60% / 0.1;

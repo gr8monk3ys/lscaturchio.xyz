@@ -73,11 +73,11 @@ export function NewsletterForm({
       setMessage('Network error. Please try again.')
     }
 
-    // Reset status after 5 seconds
-    setTimeout(() => {
-      setStatus('idle')
-      setMessage('')
-    }, 5000)
+    // No timer. This used to clear the confirmation after five seconds, which
+    // takes the receipt away from anyone who looked up mid-sentence and leaves
+    // them unable to tell whether they subscribed. A status message should
+    // outlive the moment it describes; it is replaced by the next submission,
+    // which is the only event that makes it untrue.
   }
 
   return (

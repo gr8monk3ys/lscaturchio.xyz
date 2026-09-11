@@ -64,7 +64,24 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
     )
   }
 
-  if (error || posts.length === 0) {
+  // A 429 from the rate limiter used to make this section vanish after
+  // hydration — the server had rendered "Connected by idea, not tag" and the
+  // client deleted it. Content that arrives and then disappears is worse than
+  // content that never came: the reader saw a heading, looked away, and looked
+  // back to nothing. Failure keeps the section and says so; genuine emptiness
+  // is still nothing, because an essay with no relatives needs no placard.
+  if (error) {
+    return (
+      <section className="mt-12 border-t border-border pt-6" aria-label="Related essays">
+        <span className="label-mono">Connected by idea, not tag</span>
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          Related essays could not be loaded just now. Refreshing usually finds them.
+        </p>
+      </section>
+    )
+  }
+
+  if (posts.length === 0) {
     return null
   }
 
