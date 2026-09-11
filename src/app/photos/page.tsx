@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { buildPageMetadata } from "@/lib/seo";
+import Link from "next/link";
 import { Container } from "@/components/Container";
 import { PhotosGrid } from "@/components/photos/PhotosGrid";
 import { Loader2 } from "lucide-react";
@@ -53,6 +54,37 @@ export default async function PhotosPage({
         <Suspense fallback={<PhotosGridSkeleton />}>
           <PhotosGrid initialCategory={initialCategory} />
         </Suspense>
+
+        {/* A measurement found this page rendering zero interactive controls
+            inside `main` — the 404 offers three ways out and this real page
+            offered none. The grid's own links exist only once photos load, so
+            a reader who arrives before that, or with images failing, is
+            stranded. `not-found.tsx` closes this way and so does /music. */}
+        <hr className="gallery-rule mt-16" />
+
+        <nav
+          className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3"
+          aria-label="Elsewhere in the garden"
+        >
+          <Link
+            href="/garden"
+            className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            ← Back to the garden
+          </Link>
+          <Link
+            href="/uses"
+            className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            The camera and the recipes
+          </Link>
+          <Link
+            href="/about"
+            className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            Who is holding it
+          </Link>
+        </nav>
       </div>
     </Container>
   );

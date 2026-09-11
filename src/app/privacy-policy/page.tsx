@@ -1,4 +1,5 @@
 import { Container } from "@/components/Container";
+import { Prose } from "@/components/blog/Prose";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <Container>
-      <div className="prose prose-neutral dark:prose-invert max-w-none">
+      <Prose>
         <h1>Privacy policy &amp; transparency</h1>
         <p className="lead">
           Last updated: September 2, 2026
@@ -128,7 +129,7 @@ export default function PrivacyPolicyPage() {
           This privacy policy may be updated periodically to reflect changes in practices or regulations.
           Significant changes will be communicated through the website or email if necessary.
         </p>
-      </div>
+      </Prose>
     </Container>
   );
 }

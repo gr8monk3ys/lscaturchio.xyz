@@ -68,7 +68,7 @@ export function CommandPaletteDialog({
           role="dialog"
           aria-modal="true"
           aria-label="Search and navigate"
-          className="overflow-hidden rounded-xl border border-border bg-popover focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ring-offset-background"
+          className="overflow-hidden rounded-xl border border-border bg-popover"
         >
           <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
             <Search className="h-5 w-5 text-muted-foreground shrink-0" />
@@ -84,7 +84,7 @@ export function CommandPaletteDialog({
               aria-autocomplete="list"
               aria-controls={LISTBOX_ID}
               aria-activedescendant={activeOptionId}
-              className="flex-1 bg-transparent text-base outline-hidden placeholder:text-muted-foreground"
+              className="flex-1 bg-transparent text-base placeholder:text-muted-foreground"
             />
             {isSearching && <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />}
             {query && !isSearching && (

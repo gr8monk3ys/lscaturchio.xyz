@@ -103,11 +103,19 @@ test.describe('design invariants, in the DOM', () => {
 
     for (const route of ROUTES) {
       await page.goto(route, { waitUntil: 'networkidle' })
-      // Only links inside a <nav>: the surfaces that NAME a destination.
-      // Unscoped, this counted prose calls to action as names — "Read
-      // everything →" pointing at /blog, "Discuss a similar build →" at
-      // /contact — which is good copy, not a collision.
-      const links = await page.locator('nav a[href^="/"]').evaluateAll((nodes) =>
+      // The site's *persistent* navigation only: the header and the footer.
+      //
+      // Scoping to every `<nav>` was still too broad, which took three tries to
+      // get right. A page's closing exits are wrapped in `<nav>` because that is
+      // correct for a screen reader, but their text is editorial — /music ends
+      // with "Back to the garden" and "What I am making instead", /photos with
+      // "Who is holding it", the 404 with "Ask the site where it went". Those
+      // are calls to action, and copy is allowed to be copy.
+      //
+      // A destination's *name* is what the header and footer call it, and that
+      // is the pair a reader compares when they arrive from search and then
+      // look at the nav. Nothing else on the page is making a naming claim.
+      const links = await page.locator('header nav a[href^="/"], footer a[href^="/"]').evaluateAll((nodes) =>
         nodes.map((node) => ({
           href: (node as HTMLAnchorElement).getAttribute('href') ?? '',
           // The visible label, not the accessible name: an icon-only link has

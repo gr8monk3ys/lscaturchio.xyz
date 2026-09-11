@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from 'react'
 import { m, AnimatePresence } from '@/lib/motion'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   X,
@@ -285,16 +286,50 @@ function PhotoLightbox({
 /**
  * Shown while the photos array is empty. This page once padded its walls with
  * Unsplash stock labelled as my own shots; an honest bare wall beats that.
+ *
+ * The bare wall stayed; the dead end did not. A browser pass counted zero
+ * interactive controls inside <main> here and on /music, so a reader who walked
+ * in had no way out but the back button. The doorways below are the closing
+ * move `not-found.tsx` and `/offline` already use — a gallery rule, then a mono
+ * row — pointed at the garden these plots belong to.
  */
 function EmptyGallery(): React.ReactNode {
   return (
-    <div className="border-y border-border py-20 text-center">
-      <CameraIcon className="mx-auto mb-6 h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
-      <p className="label-mono">Nothing hung yet</p>
-      <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-        The first set is still being culled from the camera roll. Until it is, the walls stay
-        bare — an empty gallery beats a borrowed one.
-      </p>
+    <div>
+      <div className="border-y border-border py-20 text-center">
+        <CameraIcon className="mx-auto mb-6 h-10 w-10 text-muted-foreground/40" aria-hidden="true" />
+        <p className="label-mono">Nothing hung yet</p>
+        <p className="mx-auto mt-3 max-w-md text-muted-foreground">
+          The first set is still being culled from the camera roll. Until it is, the walls stay
+          bare — an empty gallery beats a borrowed one.
+        </p>
+      </div>
+
+      <hr className="gallery-rule my-10" />
+
+      <nav
+        className="flex flex-wrap items-center gap-x-8 gap-y-3"
+        aria-label="Elsewhere in the garden"
+      >
+        <Link
+          href="/garden"
+          className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+        >
+          ← Back to the garden
+        </Link>
+        <Link
+          href="/movies"
+          className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+        >
+          Frames somebody else shot
+        </Link>
+        <Link
+          href="/blog"
+          className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+        >
+          Browse the writing
+        </Link>
+      </nav>
     </div>
   )
 }

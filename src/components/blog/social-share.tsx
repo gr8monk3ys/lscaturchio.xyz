@@ -26,7 +26,7 @@ interface SocialShareProps {
  * tap height on phones, collapsing to the compact mono link row from `sm:` up.
  */
 const shareLinkClass =
-  "label-mono inline-flex min-h-11 items-center gap-1.5 normal-case tracking-normal text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+  "label-mono inline-flex min-h-11 items-center gap-1.5 normal-case tracking-normal text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline";
 
 export function SocialShare({ title, description, url }: SocialShareProps) {
   const [copied, setCopied] = useState(false);

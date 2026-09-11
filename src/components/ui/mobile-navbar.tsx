@@ -113,7 +113,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
           onClick={() =>
             isMenuOpen ? closeMenu() : setIsMenuOpen(true)
           }
-          className="flex h-10 w-10 items-center justify-center rounded-xl neu-button transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background"
+          className="flex h-10 w-10 items-center justify-center rounded-xl neu-button transition-colors"
           aria-label="Toggle menu"
           aria-expanded={isMenuOpen}
           aria-controls="mobile-navigation-menu"
@@ -142,7 +142,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
                     href={item.href}
                     prefetch={false}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background ${
+                    className={`flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors ${
                       isActive
                         ? "border-primary/30 bg-primary/10 text-primary"
                         : "border-border/70 bg-background/80 text-foreground hover:border-primary/30 hover:text-primary"
@@ -183,7 +183,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
                     onClick={() => toggleCategory(category.name)}
                     aria-expanded={isExpanded}
                     aria-controls={panelId}
-                    className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-lg font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background ${
+                    className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-lg font-medium transition-colors ${
                       hasActiveItem
                         ? "text-primary"
                         : "text-foreground/80 hover:bg-muted/50"
@@ -252,7 +252,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
               href={contactLink.href}
               prefetch={false}
               onClick={() => setIsMenuOpen(false)}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-lg font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background ${
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-lg font-medium transition-colors ${
                 isPathActive(pathname, contactLink.href)
                   ? "neu-pressed bg-primary/10 text-primary"
                   : "hover:bg-muted/50"

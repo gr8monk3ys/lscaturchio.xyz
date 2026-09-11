@@ -119,7 +119,7 @@ export function Webmentions({ path }: { path: string }) {
                 href={e.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="inline-flex"
                 aria-label={`${e.type === "like" ? "Like" : "Repost"}${e.author?.name ? ` by ${e.author.name}` : ""}`}
                 title={e.author?.name ?? undefined}
               >

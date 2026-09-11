@@ -2,13 +2,27 @@
 
 import { IconBrandGithub, IconBrandLinkedin, IconBrandTwitter } from "@tabler/icons-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { CONTACT_FIELD_LIMITS } from "@/lib/validations";
 
 const socialLinks = [
   { icon: IconBrandGithub, href: "https://github.com/gr8monk3ys", label: "GitHub" },
   { icon: IconBrandLinkedin, href: "https://linkedin.com/in/lorenzo-scaturchio", label: "LinkedIn" },
   { icon: IconBrandTwitter, href: "https://twitter.com/gr8monk3ys", label: "Twitter" },
 ];
+
+type ContactField = keyof typeof CONTACT_FIELD_LIMITS;
+
+/**
+ * How close to the cap a field has to be before the countdown appears.
+ *
+ * A counter that is always on is noise for the 99% of messages nowhere near
+ * 5000 characters, and a counter that appears only at the cap arrives after the
+ * browser has already started dropping keystrokes. The last tenth is the window
+ * where the number is worth reading.
+ */
+const COUNTDOWN_THRESHOLD = 0.9;
 
 export function ContactForm() {
   const [formData, setFormData] = useState({
@@ -32,6 +46,39 @@ export function ContactForm() {
   const [failure, setFailure] = useState<{ message: string; field?: string } | null>(
     null
   );
+
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const subjectRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
+
+  /**
+   * Send focus to the input the server rejected.
+   *
+   * A field-scoped error is rendered beside its input and wired up with
+   * `aria-describedby`, which is only read out when that input has focus. After
+   * a failed submit focus is still on the submit button, and the status region
+   * deliberately stays silent for these (the message is already on screen once,
+   * beside the field). So a screen-reader user heard nothing at all: the form
+   * simply did not respond. Moving focus both announces the error — label,
+   * value, invalid state and description, in one utterance — and puts the
+   * caret where the correction has to be typed.
+   *
+   * In an effect rather than in the submit handler so the run happens after
+   * React has committed `aria-invalid` and `aria-describedby`; focusing before
+   * that commit announces the field as if nothing were wrong.
+   */
+  useEffect(() => {
+    const field = failure?.field;
+    if (!field) return;
+    const inputs: Record<string, HTMLElement | null> = {
+      name: nameRef.current,
+      email: emailRef.current,
+      subject: subjectRef.current,
+      message: messageRef.current,
+    };
+    inputs[field]?.focus();
+  }, [failure]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,6 +129,52 @@ export function ContactForm() {
   const fieldError = (name: string) =>
     submitStatus === "error" && failure?.field === name ? failure.message : null;
 
+  /** Characters left in a field, once it is close enough to the cap to matter. */
+  const charactersLeft = (name: ContactField) => {
+    const limit = CONTACT_FIELD_LIMITS[name];
+    const used = formData[name].length;
+    return used >= limit * COUNTDOWN_THRESHOLD ? limit - used : null;
+  };
+
+  /**
+   * The error and the countdown are separate nodes, and a field can carry
+   * either, both or neither — `aria-describedby` takes the ids that exist.
+   */
+  const describedBy = (name: ContactField) => {
+    const ids = [
+      fieldError(name) ? `${name}-error` : null,
+      charactersLeft(name) === null ? null : `${name}-count`,
+    ].filter(Boolean);
+    return ids.length ? ids.join(" ") : undefined;
+  };
+
+  /**
+   * `maxLength` stops the browser accepting the 5001st character, which is the
+   * point — but it does it silently, and a paste longer than the cap is cut
+   * without a word. The countdown is what makes that visible: it names the
+   * number of characters left while there is still room, and says plainly what
+   * happens at zero rather than letting the reader discover it by losing a
+   * paragraph.
+   *
+   * Not a live region. It changes on every keystroke, and an `aria-live` node
+   * updating per character talks over the person typing into it. It is in the
+   * field's description instead, so it is read on focus and on demand.
+   */
+  const countdown = (name: ContactField) => {
+    const left = charactersLeft(name);
+    if (left === null) return null;
+    return (
+      <p
+        id={`${name}-count`}
+        className={`mt-2 text-sm ${left === 0 ? "text-destructive" : "text-muted-foreground"}`}
+      >
+        {left === 0
+          ? `No characters left. Anything pasted beyond ${CONTACT_FIELD_LIMITS[name]} characters is dropped.`
+          : `${left} characters left`}
+      </p>
+    );
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
       {/* The three-tile "contact methods" band that sat here is gone. Every
@@ -109,16 +202,18 @@ export function ContactForm() {
                   <span aria-hidden="true" className="label-mono">Required</span>
                 </div>
                 <input
+                  ref={nameRef}
                   type="text"
                   id="name"
                   name="name"
                   autoComplete="name"
                   required
+                  maxLength={CONTACT_FIELD_LIMITS.name}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   aria-invalid={fieldError("name") ? true : undefined}
-                  aria-describedby={fieldError("name") ? "name-error" : undefined}
-                  className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary aria-invalid:border-destructive"
+                  aria-describedby={describedBy("name")}
+                  className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
                   placeholder="Your name..."
                 />
                 {fieldError("name") && (
@@ -126,6 +221,7 @@ export function ContactForm() {
                     {fieldError("name")}
                   </p>
                 )}
+                {countdown("name")}
               </div>
               <div>
                 <div className="mb-2 flex items-baseline gap-2">
@@ -136,17 +232,19 @@ export function ContactForm() {
                   <span aria-hidden="true" className="label-mono">Required</span>
                 </div>
                 <input
+                  ref={emailRef}
                   type="email"
                   id="email"
                   name="email"
                   autoComplete="email"
                   spellCheck={false}
                   required
+                  maxLength={CONTACT_FIELD_LIMITS.email}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   aria-invalid={fieldError("email") ? true : undefined}
-                  aria-describedby={fieldError("email") ? "email-error" : undefined}
-                  className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary aria-invalid:border-destructive"
+                  aria-describedby={describedBy("email")}
+                  className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
                   placeholder="you@example.com..."
                 />
                 {fieldError("email") && (
@@ -154,6 +252,7 @@ export function ContactForm() {
                     {fieldError("email")}
                   </p>
                 )}
+                {countdown("email")}
               </div>
             </div>
             <div>
@@ -165,16 +264,18 @@ export function ContactForm() {
                 <span aria-hidden="true" className="label-mono">Required</span>
               </div>
               <input
+                ref={subjectRef}
                 type="text"
                 id="subject"
                 name="subject"
                 autoComplete="off"
                 required
+                maxLength={CONTACT_FIELD_LIMITS.subject}
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 aria-invalid={fieldError("subject") ? true : undefined}
-                aria-describedby={fieldError("subject") ? "subject-error" : undefined}
-                className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary aria-invalid:border-destructive"
+                aria-describedby={describedBy("subject")}
+                className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
                 placeholder="What is the decision or project?..."
               />
               {fieldError("subject") && (
@@ -182,6 +283,7 @@ export function ContactForm() {
                   {fieldError("subject")}
                 </p>
               )}
+              {countdown("subject")}
             </div>
             <div>
               <div className="mb-2 flex items-baseline gap-2">
@@ -192,16 +294,18 @@ export function ContactForm() {
                 <span aria-hidden="true" className="label-mono">Required</span>
               </div>
               <textarea
+                ref={messageRef}
                 id="message"
                 name="message"
                 required
                 rows={5}
                 autoComplete="off"
+                maxLength={CONTACT_FIELD_LIMITS.message}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 aria-invalid={fieldError("message") ? true : undefined}
-                aria-describedby={fieldError("message") ? "message-error" : undefined}
-                className="neu-input w-full px-4 py-3 rounded-xl focus:ring-2 focus:ring-primary resize-none aria-invalid:border-destructive"
+                aria-describedby={describedBy("message")}
+                className="neu-input w-full px-4 py-3 rounded-xl resize-none aria-invalid:border-destructive"
                 placeholder="Share the goal, the users, the data, and the constraint that matters most..."
               />
               {fieldError("message") && (
@@ -209,6 +313,7 @@ export function ContactForm() {
                   {fieldError("message")}
                 </p>
               )}
+              {countdown("message")}
             </div>
             <button
               type="submit"
@@ -218,23 +323,40 @@ export function ContactForm() {
               {isSubmitting ? "Sending..." : "Send Project Details"}
             </button>
 
-            <div id="contact-form-status" role="status" aria-live="polite" className="min-h-6">
-              {submitStatus === "success" && (
-                <p className="text-primary">
-                  Message sent. I&apos;ll follow up by email after I review the brief.
-                </p>
-              )}
+            {/* Two regions, not one, because the two outcomes have different
+                urgency. A confirmation can wait for a gap in what the screen
+                reader is already saying; a failure cannot — the reader is about
+                to walk away believing the message went. One `aria-live="polite"`
+                region served both, so the failure queued behind whatever else
+                was speaking.
+
+                Both are mounted empty from the first render and filled later:
+                `aria-live` is watched for changes inside a node already in the
+                tree, and a region that appears at the same moment as its text
+                announces nothing. That is the bug the newsletter form hit.
+
+                The wrapper keeps the `contact-form-status` id, which names this
+                one region for tests and for e2e — an unnamed selector once
+                matched two. */}
+            <div id="contact-form-status" className="min-h-6">
+              <p role="status" aria-live="polite" className="text-primary">
+                {submitStatus === "success" &&
+                  "Message sent. I'll follow up by email after I review the brief."}
+              </p>
               {/* A failure that named a field is already rendered beside that
-                  field; repeating it here would say it twice. */}
-              {submitStatus === "error" && !failure?.field && (
-                <p className="text-destructive">
-                  {failure?.message} You can also email me directly at{" "}
-                  <Link href="mailto:lorenzosca7@protonmail.ch" className="underline">
-                    lorenzosca7@protonmail.ch
-                  </Link>
-                  .
-                </p>
-              )}
+                  field, and focus has moved there, which announces it. Repeating
+                  it here would say it twice. */}
+              <p role="alert" aria-live="assertive" className="text-destructive">
+                {submitStatus === "error" && !failure?.field && (
+                  <>
+                    {failure?.message} You can also email me directly at{" "}
+                    <Link href="mailto:lorenzosca7@protonmail.ch" className="underline">
+                      lorenzosca7@protonmail.ch
+                    </Link>
+                    .
+                  </>
+                )}
+              </p>
             </div>
           </form>
         </div>

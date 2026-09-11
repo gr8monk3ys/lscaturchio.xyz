@@ -85,8 +85,7 @@ export function ToySimilarity() {
             rows={5}
             className={cn(
               "w-full rounded-xl px-3 py-2 text-sm",
-              "neu-input text-foreground placeholder:text-muted-foreground",
-              "focus:outline-hidden focus:ring-2 focus:ring-primary"
+              "neu-input text-foreground placeholder:text-muted-foreground"
             )}
           />
         </div>
@@ -101,8 +100,7 @@ export function ToySimilarity() {
             rows={5}
             className={cn(
               "w-full rounded-xl px-3 py-2 text-sm",
-              "neu-input text-foreground placeholder:text-muted-foreground",
-              "focus:outline-hidden focus:ring-2 focus:ring-primary"
+              "neu-input text-foreground placeholder:text-muted-foreground"
             )}
           />
         </div>

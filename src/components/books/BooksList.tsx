@@ -98,6 +98,76 @@ function BookRow({ book }: { book: GoodreadsBook }) {
   );
 }
 
+/**
+ * Six titles a shelf, then a fold.
+ *
+ * The Goodreads export caps nothing: a browser pass counted 228 interactive
+ * controls inside <main> on this page, 212 of them shelf links, and the largest
+ * shelf alone put 100 links in a single <dd> at one size with no count anywhere
+ * — a reader could not learn a shelf was that deep until they had scrolled past
+ * it. Six is the step where ten of the sixteen shelves open flat with nothing
+ * hidden at all, and the deepest one costs six rows and a disclosure.
+ */
+const SHELF_PREVIEW = 6;
+
+/** One title on a shelf. Leaves for Goodreads, so it opens in its own tab. */
+function ShelfBook({ book }: { book: GoodreadsBook }) {
+  return (
+    <Link
+      href={book.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="label-link block w-full text-sm transition-colors hover:text-primary"
+    >
+      {book.title}
+      <span className="text-muted-foreground"> — {book.author}</span>
+    </Link>
+  );
+}
+
+/**
+ * A shelf as a stacked hairline row rather than a tile, with the count as a
+ * wall label beside it and everything past the preview folded into a
+ * disclosure — the same `<details>` idiom as `EssayContentsInline`.
+ *
+ * Both counts are read off the array. A typed one fails `count-drift`, and it
+ * would be wrong within a data refresh anyway.
+ */
+function Shelf({ shelf }: { shelf: GoodreadsShelf }) {
+  const preview = shelf.books.slice(0, SHELF_PREVIEW);
+  const folded = shelf.books.slice(SHELF_PREVIEW);
+
+  return (
+    <div className="border-b border-border py-6">
+      <dt className="flex items-baseline justify-between gap-4">
+        <span className="label-mono">{shelf.label}</span>
+        <span className="label-mono tabular-nums">{shelf.books.length}</span>
+      </dt>
+      <dd className="mt-3 space-y-1.5">
+        {preview.map((book) => (
+          <ShelfBook key={book.id} book={book} />
+        ))}
+
+        {folded.length > 0 ? (
+          <details className="pt-1.5">
+            {/* Named, not "show more": the summary is the only thing a reader
+                sees of the folded titles, so it says how many and whose shelf
+                they are on. */}
+            <summary className="label-mono label-link cursor-pointer list-none text-foreground marker:content-['']">
+              {folded.length} more in {shelf.label}
+            </summary>
+            <div className="mt-1.5 space-y-1.5">
+              {folded.map((book) => (
+                <ShelfBook key={book.id} book={book} />
+              ))}
+            </div>
+          </details>
+        ) : null}
+      </dd>
+    </div>
+  );
+}
+
 export function BooksList({
   stats,
   perfectScores,
@@ -168,25 +238,12 @@ export function BooksList({
               These are the ones I made up, which are the only ones that say anything.
             </p>
           </div>
-          <dl className="grid gap-px border border-border bg-border sm:grid-cols-2">
+          {/* Stacked hairline rows, not a two-column tile grid: a shelf that
+              folds changes height, and unequal tiles in a grid drag their
+              neighbours around when one opens. */}
+          <dl className="border-t border-border">
             {shelves.map((shelf) => (
-              <div key={shelf.name} className="bg-background p-6">
-                <dt className="label-mono">{shelf.label}</dt>
-                <dd className="mt-3 space-y-1.5">
-                  {shelf.books.map((book) => (
-                    <Link
-                      key={book.id}
-                      href={book.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="label-link block w-full text-sm transition-colors hover:text-primary"
-                    >
-                      {book.title}
-                      <span className="text-muted-foreground"> — {book.author}</span>
-                    </Link>
-                  ))}
-                </dd>
-              </div>
+              <Shelf key={shelf.name} shelf={shelf} />
             ))}
           </dl>
         </section>

@@ -72,8 +72,7 @@ export function SemanticSearchDemo() {
             placeholder="Search posts..."
             className={cn(
               "w-full rounded-xl pl-10 pr-10 py-3 text-sm",
-              "neu-input text-foreground placeholder:text-muted-foreground",
-              "focus:outline-hidden focus:ring-2 focus:ring-primary"
+              "neu-input text-foreground placeholder:text-muted-foreground"
             )}
           />
           {isLoading && (
