@@ -97,7 +97,7 @@ export function ContactForm() {
       <div className="grid lg:grid-cols-2 gap-12">
         {/* Contact Form */}
         <div>
-          <h2 className="label-mono mb-6">Send a Message</h2>
+          <h2 className="text-section-title mb-6">Send a Message</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
@@ -243,7 +243,7 @@ export function ContactForm() {
         <div className="space-y-8">
           {/* What to Expect */}
           <div>
-            <h3 className="label-mono mb-4">What helps me reply fast</h3>
+            <h3 className="text-card-title mb-4">What helps me reply fast</h3>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary mt-1">→</span>
@@ -266,7 +266,7 @@ export function ContactForm() {
 
           {/* Current Availability */}
           <div className="border-t border-border pt-8">
-            <h3 className="label-mono mb-2">Current availability</h3>
+            <h3 className="text-card-title mb-2">Current availability</h3>
             <p className="text-muted-foreground mb-4">
               I&apos;m currently accepting new consulting and build engagements.
             </p>
@@ -278,7 +278,7 @@ export function ContactForm() {
 
           {/* Social Links */}
           <div className="border-t border-border pt-8">
-            <h3 className="label-mono mb-4">Connect on Social</h3>
+            <h3 className="text-card-title mb-4">Connect on Social</h3>
             <div className="flex gap-3">
               {socialLinks.map((social) => (
                 <Link
