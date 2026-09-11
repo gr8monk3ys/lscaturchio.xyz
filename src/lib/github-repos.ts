@@ -1,6 +1,6 @@
 import type { GitHubRepo } from '@/types/github'
 import type { PortfolioRepo } from '@/types/github'
-import { logError } from '@/lib/logger'
+import { logWarn } from '@/lib/logger'
 
 const GITHUB_USERNAME = 'gr8monk3ys'
 
@@ -59,7 +59,10 @@ export async function getGithubPortfolioRepos(): Promise<PortfolioRepo[]> {
 
     return portfolioRepos.sort((a, b) => b.stars - a.stars)
   } catch (error) {
-    logError('GitHub repos: fetch failed', error, {
+    // Warning, not error: the caller falls back to an empty list and the page
+    // renders without it. Same reasoning as the Letterboxd feed.
+    logWarn('GitHub repos: fetch failed', {
+      cause: error instanceof Error ? error.message : String(error),
       component: 'github-repos',
       action: 'getGithubPortfolioRepos',
     })
