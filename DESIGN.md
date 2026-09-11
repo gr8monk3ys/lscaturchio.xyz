@@ -325,6 +325,30 @@ What moves is the interface responding to the reader, not the page introducing i
 
 Every motion collapses to none under `prefers-reduced-motion`.
 
+**Scroll carries momentum.** The document scrolls through Lenis at 1.05s with an
+exponential ease-out, which is the one place the site animates continuously
+rather than in response to a discrete event. Three constraints define the
+implementation and are not negotiable:
+
+- **It drives the real scroll position, never a transformed wrapper.** Nine
+  `sticky` elements do load-bearing work here — the essay contents rail, the
+  ledger rails, the project gallery's detail pane, the work timeline's date
+  column — and a wrapper transform breaks `position: sticky` outright. It would
+  also break the reading-progress bar, the timeline's `useScroll`, and the
+  rail's `IntersectionObserver`, all of which read native scroll.
+- **One owner.** Everything that moves the page goes through `scrollToY` or
+  `scrollToElement` in `lib/smooth-scroll.ts`. Two things easing the same scroll
+  position is a stutter, and a raw `behavior: "smooth"` also skips the
+  reduced-motion check — three of the four original call sites did exactly that.
+  The `raw-smooth-scroll` drift rule enforces it.
+- **Under `prefers-reduced-motion` the scroller is never constructed.** Not
+  created and stopped: never created, so a reader who asks for no motion has
+  none of this code in the path.
+
+Nested scroll areas opt out with `data-lenis-prevent` — the mobile nav panel,
+both drawer panes, the chat transcript, the command palette list, the contents
+rail. The ask drawer pauses the scroller while `body` is locked.
+
 This section previously specified a `reveal` utility — 14px rise, 650ms, staggered by a delay variable — and a 1.5s skeleton shimmer. Neither exists: `reveal` has no match anywhere in `src/`, and skeletons use Tailwind's `animate-pulse`. They were removed from the stylesheet when the motion doctrine changed and left behind in this document, which is the more dangerous half of that pair, because a spec nobody implements still gets implemented eventually.
 
 ## Do's and Don'ts

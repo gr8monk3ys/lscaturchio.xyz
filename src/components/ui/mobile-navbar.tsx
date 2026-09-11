@@ -127,6 +127,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
           id="mobile-navigation-menu"
           ref={menuRef}
           aria-label="Mobile"
+          data-lenis-prevent
           className="fixed inset-0 z-55 flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
         >
           <div className="mx-auto flex w-full max-w-md flex-col space-y-2 p-6 pt-20">

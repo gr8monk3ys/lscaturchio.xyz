@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import { AnimatePresence, m, useMotionPreset, useReducedMotion } from '@/lib/motion'
 import { cn } from '@/lib/utils'
+import { scrollToElement } from '@/lib/smooth-scroll'
 import { Keyboard } from 'lucide-react'
 import type { Product } from '@/types/products'
 import { useGalleryKeyboard } from '@/hooks/use-gallery-keyboard'
@@ -71,7 +72,10 @@ export function ProjectGallery({ projects }: { projects: Product[] }): React.Rea
     if (!browseMode) return
     if (!active?.slug) return
     const el = linkRefs.current[active.slug]
-    el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' })
+    // `block: 'nearest'` inside a scroll pane of its own: no header offset to
+    // clear, and reduced motion is handled by the shared helper rather than
+    // ignored, which is what this call used to do.
+    if (el) scrollToElement(el, { offset: 0 })
   }, [active?.slug, browseMode])
 
   const handleSetSlug = useCallback((slug: string) => {

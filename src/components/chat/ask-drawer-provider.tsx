@@ -10,6 +10,8 @@ import {
   useState,
 } from "react";
 
+import { pauseScroller, resumeScroller } from "@/lib/smooth-scroll";
+
 /** Below this the drawer overlays the page; at or above it, the page yields. */
 const PUSH_BREAKPOINT = "(min-width: 1536px)";
 
@@ -87,9 +89,21 @@ export function AskDrawerProvider({ children }: { children: React.ReactNode }) {
   // position-fixed chrome can respond to it without knowing this hook exists.
   useEffect(() => {
     const root = document.documentElement;
-    if (isOpen) root.setAttribute("data-ask-open", "true");
-    else root.removeAttribute("data-ask-open");
-    return () => root.removeAttribute("data-ask-open");
+    if (isOpen) {
+      root.setAttribute("data-ask-open", "true");
+      // `globals.css` locks `body { overflow: hidden }` below 2xl while this is
+      // open. A smooth scroller left running behind that lock keeps moving a
+      // page the reader cannot see, and hands back the wrong position when the
+      // drawer closes.
+      pauseScroller();
+    } else {
+      root.removeAttribute("data-ask-open");
+      resumeScroller();
+    }
+    return () => {
+      root.removeAttribute("data-ask-open");
+      resumeScroller();
+    };
   }, [isOpen]);
 
   useEffect(() => {
