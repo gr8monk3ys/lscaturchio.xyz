@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { parseCsv } from './csv';
-import { logError } from './logger';
+import { logError, logWarn } from './logger';
 
 export interface LetterboxdMovie {
   title: string;
@@ -76,7 +76,22 @@ export async function getLiveLastWatch(): Promise<{
     }
     return null;
   } catch (error) {
-    logError('Letterboxd RSS fetch failed', error, { module: 'letterboxd' });
+    // `logWarn`, not `logError`. An optional third-party feed with a designed
+    // fallback — this function's own comment calls it "a nicety, not a
+    // dependency" — and Letterboxd sits behind Cloudflare, which closes the
+    // socket often enough that Vercel's runtime-error dashboard showed one
+    // error group for the entire site: 13 occurrences, 12 users, seven
+    // routes, all of it this. An expected failure that degrades correctly is
+    // not an error, and filing it as one teaches the reader of that dashboard
+    // to ignore it.
+    //
+    // The signal survives — `logWarn` still sends `Sentry.captureMessage` at
+    // warning level in production. It stops writing `console.error`, which is
+    // what Vercel groups on.
+    logWarn('Letterboxd RSS fetch failed', {
+      module: 'letterboxd',
+      cause: error instanceof Error ? error.message : String(error),
+    });
     return null;
   }
 }

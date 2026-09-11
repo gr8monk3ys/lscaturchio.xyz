@@ -1,4 +1,4 @@
-import { logError } from './logger';
+import { logWarn } from './logger';
 
 export interface ShippedPr {
   number: number;
@@ -67,7 +67,12 @@ export async function getShippedPrs(limit: number = 30): Promise<ShippedPr[]> {
         };
       });
   } catch (error) {
-    logError('Error fetching merged PRs for changelog', error, { module: 'changelog' });
+    // Warning, not error: this returns [] and /changelog renders its other
+    // two sections. Same reasoning as the Letterboxd feed.
+    logWarn('Changelog: merged-PR fetch failed', {
+      module: 'changelog',
+      cause: error instanceof Error ? error.message : String(error),
+    });
     return [];
   }
 }
