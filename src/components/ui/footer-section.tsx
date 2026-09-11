@@ -90,7 +90,7 @@ function Footer() {
                       <Link
                         href={item.href}
                         prefetch={false}
-                        className="ink-underline inline-flex min-h-11 items-center py-1 transition-colors hover:text-primary"
+                        className="ink-underline label-link inline-flex min-h-11 items-center py-1 transition-colors hover:text-primary"
                       >
                         {item.name}
                       </Link>

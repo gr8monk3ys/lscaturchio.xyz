@@ -369,6 +369,58 @@ test.describe('design invariants, in the DOM', () => {
     ).toEqual([])
   })
 
+  test('every scroll opt-out actually contains its scroll', async ({ page }) => {
+    // `data-lenis-prevent` is half JS and half CSS. The JS half hands the wheel
+    // back to the browser; the CSS half — `.lenis [data-lenis-prevent] {
+    // overscroll-behavior: contain }` — stops a nested region from chaining
+    // into the document when it reaches its end. That rule lives in the
+    // package's own stylesheet, which shipped unimported: the attribute was on
+    // six elements and DESIGN.md called the problem solved.
+    //
+    // So this asserts the *effect* rather than the attribute, which is the only
+    // version that could have caught it. A regex sees the attribute present and
+    // concludes the opt-out exists.
+    const offenders: string[] = []
+
+    // Each region needs the interaction that reveals it.
+    const reveals: Array<{ route: string; open?: () => Promise<void>; label: string }> = [
+      { route: '/chat', label: 'chat transcript' },
+      { route: '/blog/building-rag-systems', label: 'essay contents rail' },
+    ]
+
+    for (const { route, label } of reveals) {
+      await page.goto(route, { waitUntil: 'networkidle' })
+
+      const found = await page.evaluate(() => {
+        const out: Array<{ sel: string; behavior: string }> = []
+        for (const el of Array.from(document.querySelectorAll<HTMLElement>('[data-lenis-prevent]'))) {
+          if (getComputedStyle(el).display === 'none') continue
+          out.push({
+            sel: `${el.tagName.toLowerCase()}.${String(el.className).split(/\s+/)[0]}`,
+            behavior: getComputedStyle(el).overscrollBehaviorY,
+          })
+        }
+        return out
+      })
+
+      for (const { sel, behavior } of found) {
+        if (behavior !== 'contain' && behavior !== 'none') {
+          offenders.push(`${route} (${label}) ${sel} computes overscroll-behavior-y: ${behavior}`)
+        }
+      }
+    }
+
+    expect(
+      offenders,
+      [
+        'A [data-lenis-prevent] region must contain its own scroll, not just intercept the wheel.',
+        "If this fails with `auto`, the package's stylesheet is not imported.",
+        '',
+        ...offenders,
+      ].join('\n')
+    ).toEqual([])
+  })
+
   test('every declared grid track is occupied', async ({ page }) => {
     const offenders: string[] = []
 

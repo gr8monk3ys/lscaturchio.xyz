@@ -63,14 +63,14 @@ export default function ProfessionalPage() {
           <h2 className="text-section-title mb-6">Current focus</h2>
           <div className="grid grid-cols-1 divide-border border-y border-border md:grid-cols-2 md:divide-x">
             <div className="px-0 py-6 md:pr-8">
-              <h3 className="label-mono">RAG systems</h3>
+              <h3 className="text-card-title">RAG systems</h3>
               <p className="mt-3 text-muted-foreground">
                 Exploring different use cases for retrieval-augmented generation and making them more
                 marketable. Basically trying to get paid for doing cool stuff.
               </p>
             </div>
             <div className="px-0 py-6 md:pl-8">
-              <h3 className="label-mono">Open source</h3>
+              <h3 className="text-card-title">Open source</h3>
               <p className="mt-3 text-muted-foreground">
                 Contributing to open-source projects and building tools that make data science more
                 accessible. FOSS is how the internet should work.
@@ -89,21 +89,27 @@ export default function ProfessionalPage() {
             would rather ask than read.
           </p>
           <div className="mt-6 flex flex-wrap gap-4">
-            <ResumeDownloadButton variant="primary" />
+            {/* The call is the primary action, not the download.
+                This went the other way for two commits, and the way it happened
+                is worth recording. A DOM assertion found the page had zero
+                filled CTAs; the assertion's own comment said the Calendly link
+                had been demoted "on the belief that the résumé button was
+                primary, which it was not" — and the fix promoted the résumé
+                button anyway, satisfying a count of one with the element the
+                comment had just named as wrong. The guard went green and the
+                conversion path got worse.
+                A PDF is a thing to take away. A call is the conversation the
+                page exists to start, and no rule that counts to one can tell
+                the difference. */}
             <a
               href="https://calendly.com/gr8monk3ys/30min"
               target="_blank"
               rel="noopener noreferrer"
-              /* Secondary. `ResumeDownloadButton` beside this is the page's one
-                 filled CTA — it renders `variant="primary"` now, which it did
-                 not when this comment was first written, so for a while this
-                 page had no primary action at all. DESIGN.md also grants the
-                 round pill only to the masthead's Ask, so this takes the 14px
-                 corner every other control uses. */
-              className="cta-secondary inline-flex h-11 items-center justify-center rounded-xl px-6 text-sm font-medium"
+              className="cta-primary inline-flex h-11 items-center justify-center rounded-xl px-6 text-sm font-medium"
             >
               Schedule a call
             </a>
+            <ResumeDownloadButton />
           </div>
           <p className="mt-6 text-sm text-muted-foreground">
             Hiring for a project?{" "}

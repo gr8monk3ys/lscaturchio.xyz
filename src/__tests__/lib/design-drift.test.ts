@@ -95,6 +95,12 @@ const RULES: Rule[] = [
       !line.includes("tabular-nums"),
   },
   {
+    id: "heading-in-label-voice",
+    because:
+      "DESIGN.md: mono \"is the label beside the work, never headings or body copy\", and the Serif Speaks rule gives headings to Fraunces. 26 h2/h3 elements were set in `label-mono` — 11.52px uppercase #606976, quieter and smaller than the body they introduced, and on /colophon pixel-identical to the field labels nested inside them. An inverted hierarchy on the three pages that explain the work. DESIGN.md:309's \"any new section should introduce itself with one\" means a label ABOVE the heading, not instead of it.",
+    test: /<h[1-6][^>]*className="[^"]*\blabel-mono\b/,
+  },
+  {
     id: "heading-tracking-override",
     because:
       "The Fluid Heading Rule sets tracking per step and loosens it as size falls (-0.035 / -0.03 / -0.026 / -0.02 / -0.01em). A tracking-tight beside a ramp token replaces all five with one value, which is the size-override bug in a different property.",
@@ -142,7 +148,14 @@ const RULES: Rule[] = [
 ];
 
 /** Each entry needs a reason. If you cannot write one, fix the code instead. */
-const ALLOWED: Array<{ file: string; rule: string; reason: string }> = [];
+const ALLOWED: Array<{ file: string; rule: string; reason: string }> = [
+  {
+    file: "src/components/ui/footer-section.tsx",
+    rule: "heading-in-label-voice",
+    reason:
+      "DESIGN.md:305 specifies the footer's column headings in wall-label mono, and the Wall Label Rule agrees: a column name is metadata, not a section heading. The only heading on the site the label voice is documented to own.",
+  },
+];
 
 function stripComments(source: string): string {
   return (

@@ -120,7 +120,7 @@ export function BooksList({
       {perfectScores.length > 0 ? (
         <section aria-labelledby="perfect-heading">
           <div className="mb-8">
-            <h2 id="perfect-heading" className="label-mono">
+            <h2 id="perfect-heading" className="text-section-title">
               Full marks
             </h2>
             <p className="mt-3 max-w-2xl text-muted-foreground">
@@ -160,7 +160,7 @@ export function BooksList({
       {shelves.length > 0 ? (
         <section aria-labelledby="shelves-heading">
           <div className="mb-8">
-            <h2 id="shelves-heading" className="label-mono">
+            <h2 id="shelves-heading" className="text-section-title">
               Shelves
             </h2>
             <p className="mt-3 max-w-2xl text-muted-foreground">

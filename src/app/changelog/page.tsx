@@ -83,7 +83,7 @@ export default async function ChangelogPage() {
               {(Object.keys(grouped) as Array<RoadmapStatus>).map((status) => (
                 <div key={status} className="border-t border-border pt-4">
                   <div className="flex items-baseline justify-between gap-2">
-                    <h3 className="label-mono">{statusMeta[status].label}</h3>
+                    <h3 className="text-card-title">{statusMeta[status].label}</h3>
                     <span className="label-mono tabular-nums">
                       {grouped[status].length}
                     </span>

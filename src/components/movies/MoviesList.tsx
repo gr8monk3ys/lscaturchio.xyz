@@ -139,7 +139,7 @@ export function MoviesList({
       {favorites.length > 0 ? (
         <section aria-labelledby="favorites-heading">
           <div className="mb-8">
-            <h2 id="favorites-heading" className="label-mono">
+            <h2 id="favorites-heading" className="text-section-title">
               The Four
             </h2>
             <p className="mt-3 max-w-2xl text-muted-foreground">

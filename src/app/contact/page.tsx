@@ -73,7 +73,7 @@ export default function Contact() {
             },
           ].map((row) => (
             <li key={row.label} className="py-5">
-              <h2 className="label-mono">{row.label}</h2>
+              <h2 className="text-card-title">{row.label}</h2>
               <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{row.blurb}</p>
             </li>
           ))}
@@ -81,7 +81,7 @@ export default function Contact() {
 
         <div className="grid gap-10 lg:grid-cols-2">
           <div>
-            <h2 className="label-mono">Fastest way to get a useful reply</h2>
+            <h2 className="text-section-title">Fastest way to get a useful reply</h2>
             <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
               <li>Describe the outcome you want, not just the tool you want to use.</li>
               <li>Mention the data, systems, or constraints that make the problem real.</li>
@@ -91,7 +91,7 @@ export default function Contact() {
           </div>
 
           <div>
-            <h2 className="label-mono">Response expectations</h2>
+            <h2 className="text-section-title">Response expectations</h2>
             <p className="mt-4 text-sm text-muted-foreground">
               I usually reply within one to two business days. Remote worldwide. If something is
               urgent, say why and when the decision needs to happen.

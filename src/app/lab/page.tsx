@@ -31,7 +31,7 @@ export default function LabPage() {
         />
 
         <section aria-labelledby="demos-heading" className="mb-20">
-          <h2 id="demos-heading" className="label-mono mb-6">
+          <h2 id="demos-heading" className="text-section-title mb-6">
             Running here
           </h2>
           <div className="grid grid-cols-1 gap-6">
@@ -42,7 +42,7 @@ export default function LabPage() {
 
         <section aria-labelledby="experiments-heading">
           <div className="mb-8">
-            <h2 id="experiments-heading" className="label-mono">
+            <h2 id="experiments-heading" className="text-section-title">
               Elsewhere
             </h2>
             <p className="mt-3 max-w-2xl text-muted-foreground">

@@ -2,6 +2,15 @@
 
 import { useEffect } from "react";
 import Lenis from "lenis";
+// The package's own stylesheet, and it is not optional. It carries
+// `.lenis [data-lenis-prevent] { overscroll-behavior: contain }` and
+// `.lenis.lenis-stopped { overflow: clip }`. Without it the six opt-out regions
+// keep the JS wheel handback but lose scroll-chaining containment, so reaching
+// the bottom of the chat transcript or the command palette list scrolls the
+// document behind it. Shipping the attribute without the rule it depends on is
+// worse than not shipping the opt-out: DESIGN.md then states as settled fact
+// something that is half true.
+import "lenis/dist/lenis.css";
 
 import { prefersReducedMotion, setScroller } from "@/lib/smooth-scroll";
 

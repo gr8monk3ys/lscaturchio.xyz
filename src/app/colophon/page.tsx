@@ -51,7 +51,7 @@ export default function ColophonPage() {
         />
 
         <section className="mt-10" aria-labelledby="stack">
-          <h2 id="stack" className="label-mono">The stack</h2>
+          <h2 id="stack" className="text-section-title">The stack</h2>
           <dl className="mt-5 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
             {STACK.map((row) => (
               <div key={row.label} className="border-b border-border pb-3">
@@ -63,7 +63,7 @@ export default function ColophonPage() {
         </section>
 
         <section className="mt-14" aria-labelledby="search">
-          <h2 id="search" className="label-mono">Why the search works the way it does</h2>
+          <h2 id="search" className="text-section-title">Why the search works the way it does</h2>
           <Paragraph className="mt-4 max-w-2xl text-muted-foreground">
             Every essay is chunked, embedded, and stored in Postgres. A query runs
             two searches at once — one over the embeddings for meaning, one over the
@@ -78,7 +78,7 @@ export default function ColophonPage() {
         </section>
 
         <section className="mt-14" aria-labelledby="stages">
-          <h2 id="stages" className="label-mono">What the stages mean</h2>
+          <h2 id="stages" className="text-section-title">What the stages mean</h2>
           <Paragraph className="mt-4 max-w-2xl text-muted-foreground">
             Posts carry a stage instead of pretending every piece arrived finished.
             A digital garden grows unevenly; the label says how much weight to put
@@ -95,7 +95,7 @@ export default function ColophonPage() {
         </section>
 
         <section className="mt-14" aria-labelledby="principles">
-          <h2 id="principles" className="label-mono">Rules I kept</h2>
+          <h2 id="principles" className="text-section-title">Rules I kept</h2>
           <ul className="mt-5 space-y-3 text-muted-foreground">
             <li className="border-b border-border pb-3">
               No stock photography passed off as my own. The photography page stays

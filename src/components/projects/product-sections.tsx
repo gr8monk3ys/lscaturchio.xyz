@@ -175,12 +175,12 @@ export function CaseStudyOverview({ caseStudy }: { caseStudy: CaseStudy | undefi
   return (
     <section className="border-t border-border">
       <div id="challenge" className="border-b border-border py-8">
-        <h2 className="label-mono">The constraint</h2>
+        <h2 className="text-section-title">The constraint</h2>
         <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">{caseStudy.challenge}</p>
       </div>
 
       <div id="solution" className="py-8">
-        <h2 className="label-mono">The approach</h2>
+        <h2 className="text-section-title">The approach</h2>
         <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">{caseStudy.solution}</p>
       </div>
 
@@ -224,7 +224,7 @@ export function OutcomesSection({ caseStudy }: { caseStudy: CaseStudy | undefine
 
   return (
     <section id="outcomes" className="border-t border-border pt-8">
-      <h2 className="label-mono mb-4">Outcomes</h2>
+      <h2 className="text-section-title mb-4">Outcomes</h2>
 
       <ul className="space-y-2">
         {caseStudy.results.map((result) => (
@@ -276,7 +276,7 @@ export function RelatedProjectsSection({ relatedProjects }: { relatedProjects: P
   // forbids a lift on hover, and `group-hover:scale-105` on an image is one.
   return (
     <div className="border-t border-border pt-12">
-      <h2 className="label-mono">Related projects</h2>
+      <h2 className="text-section-title">Related projects</h2>
       <ul className="mt-4">
         {relatedProjects.map((relatedProject) => (
           <li key={relatedProject.slug} className="border-b border-border last:border-b-0">
