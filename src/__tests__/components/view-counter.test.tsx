@@ -91,12 +91,32 @@ describe("ViewCounter", () => {
     });
   });
 
+  // The placeholder is "— views", not "---", and it occupies the same width as
+  // the settled value. It sits in the essay header's flex-wrap meta row, and a
+  // placeholder narrower than the value it replaces re-wrapped that row on any
+  // essay where it nearly fit — 26px of layout shift on four of six essays
+  // sampled, against a 0.15 budget.
   it("renders a placeholder while the count is still loading", () => {
     mockFetch.mockImplementation(() => new Promise(() => {}));
 
     renderWithSWR(<ViewCounter slug="slow-post" />);
 
-    expect(screen.getByText("---")).toBeInTheDocument();
+    expect(screen.getByText("— views")).toBeInTheDocument();
+  });
+
+  it("reserves the same footprint before and after the count arrives", () => {
+    // jsdom has no layout, so the guard is the reserved width itself: without
+    // it the placeholder was ~45px and the settled value ~101px, and that 56px
+    // difference is what re-wrapped the meta row. `e2e/layout-shift.spec.ts`
+    // measures the consequence across five essays; this catches the cause.
+    const { container, rerender } = render(<ViewCounter slug="x" />);
+    const box = () => container.querySelector("div");
+
+    expect(box()?.className).toContain("min-w-[6.5rem]");
+    expect(box()?.className).toContain("tabular-nums");
+
+    rerender(<ViewCounter slug="x" />);
+    expect(box()?.className).toContain("min-w-[6.5rem]");
   });
 
   it("degrades gracefully to the placeholder when fetching fails", async () => {
@@ -107,6 +127,6 @@ describe("ViewCounter", () => {
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith("/api/views?slug=broken-post", undefined);
     });
-    expect(screen.getByText("---")).toBeInTheDocument();
+    expect(screen.getByText("— views")).toBeInTheDocument();
   });
 });

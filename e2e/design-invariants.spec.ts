@@ -46,6 +46,37 @@ const ROUTES = [
 ]
 
 test.describe('design invariants, in the DOM', () => {
+  // Pages whose whole job is to get the reader to do one thing. These must
+  // paint exactly one filled CTA — not at most one. /professional shipped with
+  // *zero* after a change demoted its Calendly link on the belief that the
+  // résumé button was primary, which it was not; the old assertion was blind
+  // to that because it only ever counted downward.
+  const CONVERSION_ROUTES = ['/contact', '/professional', '/work-with-me']
+
+  test('a conversion route paints exactly one filled CTA', async ({ page }) => {
+    const offenders: string[] = []
+
+    for (const route of CONVERSION_ROUTES) {
+      await page.goto(route, { waitUntil: 'networkidle' })
+      const found = await page.locator('.cta-primary').evaluateAll((nodes) =>
+        nodes
+          .filter((node) => {
+            const style = getComputedStyle(node)
+            return style.display !== 'none' && style.visibility !== 'hidden'
+          })
+          .map((node) => `${node.tagName.toLowerCase()}: ${node.textContent?.trim().slice(0, 40)}`)
+      )
+      if (found.length !== 1) {
+        offenders.push(`${route} paints ${found.length}${found.length ? `: ${found.join(' | ')}` : ' — no primary action at all'}`)
+      }
+    }
+
+    expect(
+      offenders,
+      ['A page that asks for something must have one thing to press.', '', ...offenders].join('\n')
+    ).toEqual([])
+  })
+
   test('every route paints at most one filled CTA', async ({ page }) => {
     const offenders: string[] = []
 
@@ -235,6 +266,61 @@ test.describe('design invariants, in the DOM', () => {
     expect(
       decoys,
       ['An aria-hidden box that looks like a control is a decoy.', '', ...decoys].join('\n')
+    ).toEqual([])
+  })
+
+  test('a ramp token computes the tracking it declares', async ({ page }) => {
+    // The Fluid Heading Rule sets tracking per step and loosens it as size
+    // falls: -0.035 / -0.03 / -0.026 / -0.02 / -0.01em. Anything that also
+    // applies `tracking-tight` flattens all five to -0.025em.
+    //
+    // Three source rules have chased this and all three key on a literal class
+    // string, so none of them could see `tracking-tight` sitting in
+    // `Heading.tsx`'s own base classes beside the token it overrode — two
+    // arguments of one `cn()` call, concatenated at runtime. The DOM does not
+    // care how the string was assembled.
+    const EXPECTED: Record<string, string> = {
+      'text-display': '-0.035em',
+      'text-page-title': '-0.03em',
+      'text-section-title': '-0.026em',
+      'text-card-title': '-0.02em',
+      'text-subsection': '-0.01em',
+    }
+
+    const offenders: string[] = []
+
+    for (const route of ROUTES) {
+      await page.goto(route, { waitUntil: 'networkidle' })
+
+      const bad = await page.evaluate((expected) => {
+        const out: string[] = []
+        for (const [token, want] of Object.entries(expected)) {
+          for (const el of Array.from(document.querySelectorAll<HTMLElement>(`.${token}`))) {
+            const size = parseFloat(getComputedStyle(el).fontSize)
+            const got = getComputedStyle(el).letterSpacing
+            // Compare in ems: the token declares em, the DOM reports px.
+            const gotEm = got === 'normal' ? 0 : parseFloat(got) / size
+            const wantEm = parseFloat(want)
+            if (Math.abs(gotEm - wantEm) > 0.002) {
+              out.push(
+                `${token} on ${el.tagName.toLowerCase()} computes ${gotEm.toFixed(4)}em, declares ${want}`
+              )
+            }
+          }
+        }
+        return [...new Set(out)]
+      }, EXPECTED)
+
+      if (bad.length) offenders.push(`${route}: ${bad.join(' | ')}`)
+    }
+
+    expect(
+      offenders,
+      [
+        'A ramp token must compute the tracking it declares — nothing may flatten the ramp.',
+        '',
+        ...offenders,
+      ].join('\n')
     ).toEqual([])
   })
 

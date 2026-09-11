@@ -171,7 +171,7 @@ export async function BlogLayout({
                 <span aria-hidden className="text-foreground/25">·</span>
                 <Link
                   href="/about"
-                  className="text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                  className="label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
                 >
                   About the author →
                 </Link>
@@ -184,7 +184,7 @@ export async function BlogLayout({
                     <Link
                       key={hub.slug}
                       href={`/topics/${hub.slug}`}
-                      className="text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                      className="label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
                     >
                       {hub.title}
                     </Link>

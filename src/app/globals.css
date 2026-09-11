@@ -137,6 +137,11 @@
    * touch. Against a 19px mono line box that costs five pixels, which the
    * ledger rhythm absorbs without noticing. */
   min-height: 1.5rem;
+  /* And on width, which this utility did not cover for two years of short
+   * labels: the essay tag "AI" measured 17.5px, /garden's "Map" and "API"
+   * 20.8px, and the nav's "Lab" 23.8px — failing the same floor by a fifth of
+   * a pixel. A floor that only applies to one axis is not a floor. */
+  min-width: 1.5rem;
 }
 
 /* Deterministic, not device-sniffed. The first version of this gated the
@@ -210,10 +215,6 @@
     transform: translateY(1px);
   }
 
-  &:focus-visible {
-    outline: 2px solid hsl(var(--primary));
-    outline-offset: 2px;
-  }
 }
 
 @utility neu-card {
@@ -260,10 +261,6 @@
     transform: translateY(1px);
   }
 
-  &:focus-visible {
-    outline: 2px solid hsl(var(--primary));
-    outline-offset: 2px;
-  }
 
   &:disabled {
     background-color: hsl(var(--muted));
@@ -292,10 +289,6 @@
     background: hsl(var(--primary) / 0.05);
   }
 
-  &:focus-visible {
-    outline: 2px solid hsl(var(--primary));
-    outline-offset: 2px;
-  }
 
   &:disabled {
     color: hsl(var(--muted-foreground));
@@ -581,6 +574,35 @@
     letter-spacing: -0.02em;
     line-height: 1.1;
     font-optical-sizing: auto;
+  }
+
+  /* Focus, as a default rather than an opt-in.
+   *
+   * DESIGN.md:281 specifies one focus treatment — "a 2px Forest Ink outline
+   * offset 2px" — and it was written three times, each scoped to a utility
+   * (cta-primary, cta-secondary, neu-button). Everything else fell through to
+   * Chrome's UA ring: `outline: rgb(0, 95, 204) auto 1px`. A measurement put
+   * that at 58 of 76 focusable elements on the home page alone — the skip
+   * link, the masthead ask field, the suggested questions, every essay row,
+   * every project row.
+   *
+   * Two reasons that is worse than it sounds. #005FCC is a saturated cold
+   * blue, and this document's own Don't list forbids both a non-warm neutral
+   * and a second accent. And it is visible only to keyboard users, which is
+   * why six review cycles never saw it: nothing renders differently unless you
+   * are tabbing.
+   *
+   * One rule, applying to everything, is also the structural point. The drift
+   * test's header says an opt-in system "drifts back at exactly the rate it is
+   * not checked"; the fix for an opt-in system is not another check, it is to
+   * stop it being opt-in.
+   *
+   * `#main-content` keeps its `focus:outline-hidden` — it is focused
+   * programmatically by the skip link, which does not match :focus-visible
+   * anyway, and the class outranks this on specificity. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
   }
 
   /* Browser surfaces the design system should own too: a caret in the

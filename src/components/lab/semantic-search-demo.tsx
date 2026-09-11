@@ -57,7 +57,7 @@ export function SemanticSearchDemo() {
   return (
     <section className="border border-border p-6">
       <h3 className="text-card-title">Semantic search demo</h3>
-      <p className="text-sm text-muted-foreground mt-1">
+      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
         Try a query. This is hybrid retrieval over my essays: results are fused
         from vector similarity and keyword search, so a post can rank on meaning,
         on wording, or both. Each result says which one caught it.

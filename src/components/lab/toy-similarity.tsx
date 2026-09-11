@@ -68,7 +68,7 @@ export function ToySimilarity() {
   return (
     <section className="border border-border p-6">
       <h3 className="text-card-title">Toy text similarity</h3>
-      <p className="text-sm text-muted-foreground mt-1">
+      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
         A tiny cosine-similarity demo (word-frequency based). This is not embeddings, but it helps explain
         why retrieval works.
       </p>
