@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { scrollToElement } from "@/lib/smooth-scroll";
 
 interface Heading {
   id: string;
@@ -77,7 +78,10 @@ function useEssayHeadings(slug?: string) {
 }
 
 function scrollToHeading(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  // Was a direct `scrollIntoView`, which fights the global scroller: both
+  // animate the same scroll position and the reader sees a stutter. The
+  // reduced-motion check this used to do inline now lives in one place.
+  scrollToElement(id);
 }
 
 /** Ask about this essay. Shared by the desktop rail and the mobile end matter. */
@@ -130,6 +134,7 @@ export function BlogSidebar({ slug }: { slug: string }) {
   // something in it.
   return (
     <aside
+      data-lenis-prevent
       className="hidden xl:block xl:sticky xl:top-24 xl:max-h-[calc(100vh-6rem)] xl:overflow-y-auto xl:py-8"
       aria-label="Article sidebar"
     >

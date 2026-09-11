@@ -19,6 +19,7 @@ import { AskDrawer } from "@/components/chat/ask-drawer";
 import { ConsoleGreeting } from "@/components/layout/console-greeting";
 import { MobileNavbarGate } from "@/components/layout/mobile-navbar-gate";
 import { MotionProvider } from "@/components/layout/motion-provider";
+import { SmoothScrollProvider } from "@/components/layout/smooth-scroll-provider";
 const WEBMENTION_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, "");
 const ENABLE_VERCEL_ANALYTICS = process.env.VERCEL === "1";
 
@@ -218,6 +219,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <MotionProvider>
+            <SmoothScrollProvider />
             <AskDrawerProvider>
               {/* Everything the drawer pushes lives in .site-shell. The fixed
                   header moves separately, via .site-header, because a padded

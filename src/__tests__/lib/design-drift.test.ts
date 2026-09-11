@@ -126,6 +126,14 @@ const RULES: Rule[] = [
     test: /\b(?:text|bg|border|ring)-(?:red|green|emerald|amber|yellow|blue|sky|indigo|violet|purple|pink|rose|orange|teal|cyan|lime|fuchsia)-\d{2,3}\b/,
   },
   {
+    id: "raw-smooth-scroll",
+    because:
+      "Scroll has one owner: `scrollToY` / `scrollToElement` in lib/smooth-scroll.ts. A raw `behavior: \"smooth\"` animates the same scroll position the global scroller is animating, and the reader sees a stutter. It also skips the reduced-motion check — three of the four original call sites did exactly that, against DESIGN.md's line that every motion collapses to none.",
+    test: /behavior:\s*["'`]smooth["'`]/,
+    // The module that owns scrolling is allowed to say the word.
+    appliesTo: (line) => !line.includes("immediate"),
+  },
+  {
     id: "image-hover-lift",
     because:
       "The Flat Paper Rule: a hovered surface changes tint and border colour, it does not rise. Scale on an image is a lift.",

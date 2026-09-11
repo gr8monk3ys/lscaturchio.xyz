@@ -1,5 +1,7 @@
 "use client";
 
+import { scrollToY } from "@/lib/smooth-scroll";
+
 import { useState, useEffect } from "react";
 import { ArrowUp } from "lucide-react";
 import { Button } from "./button";
@@ -25,10 +27,7 @@ export function ScrollToTop() {
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    scrollToY(0);
   };
 
   if (!isVisible) return null;

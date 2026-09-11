@@ -21,6 +21,7 @@ export function ChatMessageList({
   return (
     <div className="relative w-full h-full">
       <div
+        data-lenis-prevent
         className={`flex flex-col w-full h-full p-4 overflow-y-auto ${className}`}
         ref={scrollRef}
         onWheel={disableAutoScroll}
