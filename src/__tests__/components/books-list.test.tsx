@@ -51,6 +51,17 @@ const shelves: GoodreadsShelf[] = [
   },
 ];
 
+/** A shelf deeper than the preview, the way `21st century` is in the real export. */
+function deepShelf(size: number): GoodreadsShelf {
+  return {
+    name: '21st-century',
+    label: '21st century',
+    books: Array.from({ length: size }, (_, index) =>
+      book({ title: `Shelved title ${index + 1}` })
+    ),
+  };
+}
+
 function renderList() {
   return render(
     <BooksList
@@ -121,6 +132,76 @@ describe('BooksList', () => {
     expect(screen.getByText('15,982')).toBeInTheDocument();
     expect(screen.getByText('Pages Read')).toBeInTheDocument();
     expect(screen.getByText('Queued')).toBeInTheDocument();
+  });
+
+  it('sets a derived count beside every shelf label', () => {
+    render(
+      <BooksList
+        stats={stats}
+        perfectScores={perfectScores}
+        currentlyReading={currentlyReading}
+        recentlyRead={recentlyRead}
+        toRead={toRead}
+        shelves={[deepShelf(10)]}
+      />
+    );
+
+    const label = screen.getByText('21st century');
+    expect(label.parentElement).toHaveTextContent('10');
+  });
+
+  it('shows only the first six titles of a deep shelf and folds the rest', () => {
+    render(
+      <BooksList
+        stats={stats}
+        perfectScores={perfectScores}
+        currentlyReading={currentlyReading}
+        recentlyRead={recentlyRead}
+        toRead={toRead}
+        shelves={[deepShelf(10)]}
+      />
+    );
+
+    // The first six sit in the open row; the other four are inside a closed
+    // disclosure, so they are in the DOM but not painted.
+    expect(screen.getByText(/Shelved title 6/).closest('details')).toBeNull();
+    const folded = screen.getByText(/Shelved title 7/).closest('details');
+    expect(folded).not.toBeNull();
+    expect(folded).not.toHaveAttribute('open');
+    expect(screen.getByText(/Shelved title 10/).closest('details')).toBe(folded);
+  });
+
+  it('names the shelf and the remainder in the disclosure summary', () => {
+    render(
+      <BooksList
+        stats={stats}
+        perfectScores={perfectScores}
+        currentlyReading={currentlyReading}
+        recentlyRead={recentlyRead}
+        toRead={toRead}
+        shelves={[deepShelf(100)]}
+      />
+    );
+
+    // 100 minus the six on show. Derived from the array in the component, so a
+    // data refresh cannot make this line a lie.
+    expect(screen.getByText('94 more in 21st century')).toBeInTheDocument();
+  });
+
+  it('leaves a shelf at or under the preview unfolded', () => {
+    render(
+      <BooksList
+        stats={stats}
+        perfectScores={perfectScores}
+        currentlyReading={currentlyReading}
+        recentlyRead={recentlyRead}
+        toRead={toRead}
+        shelves={[deepShelf(6)]}
+      />
+    );
+
+    expect(screen.queryByText(/more in 21st century/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Shelved title 6/)).toBeInTheDocument();
   });
 
   it('omits full-marks and shelves sections when their data is empty', () => {

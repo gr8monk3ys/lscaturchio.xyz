@@ -20,6 +20,31 @@ function normalizeTopics(topics: string[] | undefined): NewsletterTopicId[] {
     .slice(0, 6);
 }
 
+/** One plate, two tones — the confirmation and the failure look alike on purpose. */
+function StatusBanner({
+  tone,
+  children,
+}: {
+  tone: 'success' | 'error';
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        'mt-3 p-3 rounded-xl text-sm flex items-start gap-2 neu-pressed-sm',
+        tone === 'success' ? 'text-success' : 'text-destructive'
+      )}
+    >
+      {tone === 'success' ? (
+        <Check aria-hidden="true" className="h-4 w-4 mt-0.5 shrink-0" />
+      ) : (
+        <AlertCircle aria-hidden="true" className="h-4 w-4 mt-0.5 shrink-0" />
+      )}
+      <span>{children}</span>
+    </div>
+  );
+}
+
 export function NewsletterForm({
   defaultTopics,
   sourcePath,
@@ -120,7 +145,7 @@ export function NewsletterForm({
             required
             aria-label="Email address"
             disabled={status === 'loading' || status === 'success'}
-            className="w-full pl-11 pr-4 py-3 rounded-xl neu-input text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full pl-11 pr-4 py-3 rounded-xl neu-input text-foreground placeholder:text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -152,29 +177,25 @@ export function NewsletterForm({
           is already in the tree, and this block used to be mounted only once
           there was something to say. So neither the confirmation nor the
           failure reached anyone not looking at it. Named, because the site now
-          has more than one live region and an unnamed selector matched two. */}
-      <div
-        id="newsletter-form-status"
-        role="status"
-        aria-live="polite"
-        className="min-h-0"
-      >
-        {message && (
-          <div
-            className={`mt-3 p-3 rounded-xl text-sm flex items-start gap-2 neu-pressed-sm ${
-              status === 'success'
-                ? 'text-success'
-                : 'text-destructive'
-            }`}
-          >
-            {status === 'success' ? (
-              <Check aria-hidden="true" className="h-4 w-4 mt-0.5 shrink-0" />
-            ) : (
-              <AlertCircle aria-hidden="true" className="h-4 w-4 mt-0.5 shrink-0" />
-            )}
-            <span>{message}</span>
-          </div>
-        )}
+          has more than one live region and an unnamed selector matched two.
+
+          Two regions inside that name, because the two outcomes are not equally
+          urgent. "Successfully subscribed" can wait for a gap in speech.
+          "Email already subscribed" cannot: the reader is about to walk away
+          believing they are on the list. Both were `polite`, which queues the
+          failure behind whatever else is speaking, so `role="alert"` carries
+          the failure and `role="status"` keeps the confirmation polite. */}
+      <div id="newsletter-form-status" className="min-h-0">
+        <div role="status" aria-live="polite">
+          {status === 'success' && message && (
+            <StatusBanner tone="success">{message}</StatusBanner>
+          )}
+        </div>
+        <div role="alert" aria-live="assertive">
+          {status === 'error' && message && (
+            <StatusBanner tone="error">{message}</StatusBanner>
+          )}
+        </div>
       </div>
 
       <p className="mt-3 text-xs text-muted-foreground">

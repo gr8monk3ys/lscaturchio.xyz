@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { buildPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/Container";
 import { Music as MusicIcon } from "lucide-react";
@@ -43,6 +44,37 @@ export default function MusicPage() {
             padded one.
           </p>
         </div>
+
+        {/* A browser pass counted zero interactive controls inside <main> on
+            this page and on /photos: the empty wall is deliberate, the dead end
+            was not. The 404 and /offline pages both close the same way — a
+            gallery rule, then a mono row of doorways — and the garden is the
+            room these two hang in. */}
+        <hr className="gallery-rule my-10" />
+
+        <nav
+          className="flex flex-wrap items-center gap-x-8 gap-y-3"
+          aria-label="Elsewhere in the garden"
+        >
+          <Link
+            href="/garden"
+            className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            ← Back to the garden
+          </Link>
+          <Link
+            href="/now"
+            className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            What I am making instead
+          </Link>
+          <Link
+            href="/about"
+            className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+          >
+            Albums I keep going back to
+          </Link>
+        </nav>
       </div>
     </Container>
   );

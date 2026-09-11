@@ -139,7 +139,7 @@ export function AskDrawer() {
             onClick={reset}
             disabled={isEmpty}
             aria-label="Start a new conversation"
-            className="inline-flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-40"
+            className="inline-flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-primary disabled:opacity-40"
           >
             <RotateCcw className="h-4 w-4" aria-hidden />
           </button>
@@ -147,7 +147,7 @@ export function AskDrawer() {
             type="button"
             onClick={drawer.close}
             aria-label="Close the ask panel"
-            className="inline-flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="inline-flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-primary"
           >
             <X className="h-4 w-4" aria-hidden />
           </button>
@@ -180,7 +180,7 @@ export function AskDrawer() {
                 <button
                   type="button"
                   onClick={() => void send(question)}
-                  className="label-mono label-link group items-start gap-2 text-start normal-case tracking-normal text-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  className="label-mono label-link group items-start gap-2 text-start normal-case tracking-normal text-foreground transition-colors hover:text-primary"
                 >
                   <span aria-hidden className="text-muted-foreground group-hover:text-primary">
                     ↳
@@ -255,17 +255,19 @@ export function AskDrawer() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="Ask about the writing…"
-            /* The underline is the field, so the focus ring is the underline
-               turning Forest Ink (see focus-within on the wrapper). The element
-               itself previously had `focus:outline-hidden` and nothing else,
-               which left it with no visible focused state at all. */
-            className="max-h-32 min-h-11 flex-1 resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            /* No focus classes: the global `:focus-visible` in globals.css
+               draws the outline. The wrapper's `focus-within:border-primary`
+               stays as a second, ambient cue — DESIGN.md:299 grants the
+               no-ring underline treatment to the masthead ask field by name,
+               and this is a different component, so it takes the house
+               indicator like everything else. */
+            className="max-h-32 min-h-11 flex-1 resize-none bg-transparent py-2 text-sm text-foreground placeholder:text-muted-foreground"
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
             aria-label="Send question"
-            className="mb-1 inline-flex h-9 w-9 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-40"
+            className="mb-1 inline-flex h-9 w-9 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:text-primary disabled:opacity-40"
           >
             <ArrowUp className="h-4 w-4" aria-hidden />
           </button>

@@ -205,10 +205,17 @@ export default async function RootLayout({
       <body>
         {/* Skip to content link. Positioned off-screen by transform rather than
             clipped with sr-only, so the focused state has a real, measurable box:
-            a paper card on a hairline with the Forest Ink focus ring. */}
+            a paper card on a hairline, outlined by the global `:focus-visible`
+            rule in globals.css like every other control.
+
+            The reveal stays on `focus:`, not `focus-visible:`. A skip link is
+            the one control that can be reached without the heuristic agreeing
+            it should be — script, a restored focus position, a browser's own
+            "skip to content" affordance — and a link that is focused but still
+            translated 300% off-screen is a keyboard trap. */}
         <a
           href="#main-content"
-          className="fixed left-4 top-4 z-[200] -translate-y-[300%] rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-transform duration-200 focus:translate-y-0 focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+          className="fixed left-4 top-4 z-[200] -translate-y-[300%] rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-transform duration-200 focus:translate-y-0"
         >
           Skip to content
         </a>
@@ -238,6 +245,11 @@ export default async function RootLayout({
                 <Suspense fallback={null}>
                   <MobileNavbarGate />
                 </Suspense>
+                {/* `focus:outline-hidden` is deliberate, and allowlisted in
+                    design-drift.test.ts: this element exists to receive
+                    programmatic focus from the skip link, and the global
+                    `:focus-visible` outline would draw a 2px box around the
+                    whole page when it did. */}
                 <main id="main-content" tabIndex={-1} className="overflow-x-clip focus:outline-hidden">
                   {children}
                 </main>

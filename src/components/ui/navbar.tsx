@@ -8,7 +8,7 @@ import { NavbarControls } from "./navbar-controls";
 import { AskDrawerTrigger } from "@/components/chat/ask-drawer-trigger";
 
 const navLinkBaseClass =
-  "relative block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-left after:rounded-full after:bg-primary after:transition-transform after:duration-200";
+  "relative block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-left after:rounded-full after:bg-primary after:transition-transform after:duration-200";
 
 export function Navbar() {
   return (

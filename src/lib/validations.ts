@@ -20,6 +20,28 @@ export const slugSchema = z
   .regex(slugPattern, 'Invalid slug format');
 
 /**
+ * The caps the contact form is judged against, in one place because the form
+ * itself has to know them.
+ *
+ * These lived only in the schemas below, so the inputs carried no `maxLength`
+ * and a reader learned that their message was one character over the limit by
+ * writing it, sending it, and waiting for a round trip to say no. The form now
+ * reads these for `maxLength` and for the countdown it shows near the cap;
+ * `validations.test.ts` asserts the schema still rejects at limit + 1 and
+ * accepts at the limit, so the two cannot drift apart silently.
+ *
+ * Declared above `emailSchema` because that schema reads it at module
+ * evaluation time, and a `const` below it would still be in the temporal dead
+ * zone.
+ */
+export const CONTACT_FIELD_LIMITS = {
+  name: 100,
+  email: 254,
+  subject: 200,
+  message: 5000,
+} as const;
+
+/**
  * Email validation with proper format checking
  * Uses preprocess to trim before validation
  */
@@ -28,7 +50,7 @@ export const emailSchema = z.preprocess(
   z
     .string()
     .min(1, 'Email is required')
-    .max(254, 'Email is too long')
+    .max(CONTACT_FIELD_LIMITS.email, 'Email is too long')
     .email('Invalid email format')
 );
 
@@ -39,7 +61,7 @@ export const contactFormSchema = z.object({
   name: z
     .string()
     .min(1, 'Name is required')
-    .max(100, 'Name is too long')
+    .max(CONTACT_FIELD_LIMITS.name, 'Name is too long')
     .transform((name) => name.trim()),
   email: emailSchema,
   /**
@@ -50,12 +72,15 @@ export const contactFormSchema = z.object({
   subject: z
     .string()
     .min(1, 'Subject is required')
-    .max(200, 'Subject is too long')
+    .max(CONTACT_FIELD_LIMITS.subject, 'Subject is too long')
     .transform((subject) => subject.trim()),
   message: z
     .string()
     .min(1, 'Message is required')
-    .max(5000, 'Message is too long (max 5000 characters)')
+    .max(
+      CONTACT_FIELD_LIMITS.message,
+      `Message is too long (max ${CONTACT_FIELD_LIMITS.message} characters)`
+    )
     .transform((msg) => msg.trim()),
 });
 

@@ -1,4 +1,5 @@
 import { Container } from "@/components/Container";
+import { Prose } from "@/components/blog/Prose";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,8 +10,8 @@ export const metadata: Metadata = {
 export default function TermsOfServicePage() {
   return (
     <Container>
-      <div className="prose prose-neutral dark:prose-invert max-w-none">
-        <h1>Terms of Service</h1>
+      <Prose>
+        <h1>Terms of service</h1>
         <p className="lead">
           Last updated: January 17, 2025
         </p>
@@ -83,7 +84,7 @@ export default function TermsOfServicePage() {
           For questions about these terms, please contact me at{" "}
           <a href="mailto:lorenzosca7@protonmail.ch">lorenzosca7@protonmail.ch</a>.
         </p>
-      </div>
+      </Prose>
     </Container>
   );
 }

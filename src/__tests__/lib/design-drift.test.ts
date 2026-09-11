@@ -64,6 +64,12 @@ const RULES: Rule[] = [
     test: /\b(?:bg|text|border|divide|ring)-(?:gray|grey|slate|zinc|stone|neutral)-\d{2,3}\b/,
   },
   {
+    id: "raw-prose-palette",
+    because:
+      "Every essay renders through `Prose`, which layers the site's own `prose-gallery` on top of Tailwind typography. `prose-neutral`, `prose-gray` and friends pull in Tailwind's cold neutral ramp — the exact family the Sand Hairline Rule forbids — so a page using one is warm paper everywhere except its own body text. /privacy-policy and /terms-of-service were the last two.",
+    test: /\bprose-(?:gray|grey|slate|zinc|stone|neutral)\b/,
+  },
+  {
     id: "content-shadow",
     because:
       "The Two Sheets Rule: the fixed navbar and the cta-primary ledge are the only elevated objects. A ring is a box-shadow too.",
@@ -119,6 +125,12 @@ const RULES: Rule[] = [
     appliesTo: (line) => /className/.test(line) && !/prose/.test(line),
   },
   {
+    id: "focus-opt-out",
+    because:
+      "DESIGN.md:281 specifies one focus treatment and `globals.css` now implements it globally. `focus:outline-hidden` sets `outline-style: none` from @layer utilities, which beats the @layer base rule regardless of specificity — so any element carrying it silently leaves the default and needs its own indicator. A measurement of 120 tab stops found 53 on a Tailwind ring and 66 on the outline: two vocabularies where the document names one. This rule is only writable now that the default exists; before, it would have been guarding an absence.",
+    test: /focus(?:-visible)?:(?:outline-hidden|outline-none|ring-\d)/,
+  },
+  {
     id: "ring-offset-without-paper",
     because:
       "Tailwind's default --tw-ring-offset-color is #fff, so `ring-offset-2` alone paints a pure-white gap between the element and its ring. On the night page that is a cold white halo around every focused nav item — the one place DESIGN.md is most specific (\"the same notebook at night\"). 13 of 15 sites had it; the two that did not were the skip link and the Button variants.",
@@ -154,6 +166,18 @@ const ALLOWED: Array<{ file: string; rule: string; reason: string }> = [
     rule: "heading-in-label-voice",
     reason:
       "DESIGN.md:305 specifies the footer's column headings in wall-label mono, and the Wall Label Rule agrees: a column name is metadata, not a section heading. The only heading on the site the label voice is documented to own.",
+  },
+  {
+    file: "src/components/home/hero-ask.tsx",
+    rule: "focus-opt-out",
+    reason:
+      "DESIGN.md:299 specifies the underline field's focus outright: \"Focus turns the rule Forest Ink with no ring.\" It is the one control the document gives its own treatment. Worth revisiting — a 1px border colour change is the weakest indicator on the site, and WCAG 2.4.11 wants more area than 672px of hairline — but that is a change to the design system, not drift from it.",
+  },
+  {
+    file: "src/app/layout.tsx",
+    rule: "focus-opt-out",
+    reason:
+      "`#main-content` exists to receive programmatic focus from the skip link. The global :focus-visible outline would draw a 2px box around the entire page when it did — and :focus-visible does not match programmatic focus anyway, so the opt-out costs no keyboard user anything.",
   },
 ];
 

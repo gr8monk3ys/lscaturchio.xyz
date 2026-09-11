@@ -3,6 +3,7 @@ import {
   slugSchema,
   emailSchema,
   contactFormSchema,
+  CONTACT_FIELD_LIMITS,
   viewTrackingSchema,
   newsletterSubscribeSchema,
   slugQuerySchema,
@@ -143,6 +144,46 @@ describe('contactFormSchema', () => {
       message: 'a'.repeat(5001),
     });
     expect(result.success).toBe(false);
+  });
+
+  it('caps each text field exactly where CONTACT_FIELD_LIMITS says it does', () => {
+    // The contact form reads these numbers for its `maxLength` attributes, so a
+    // limit edited here and not there would put the browser's cap and the
+    // server's cap in different places — which is the failure this constant
+    // exists to prevent. Accepting at the limit matters as much as rejecting
+    // past it: a `maxLength` one character tight silently eats the last one.
+    const valid = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      subject: 'Project scoping',
+      message: 'Hello.',
+    };
+
+    for (const field of ['name', 'subject', 'message'] as const) {
+      const limit = CONTACT_FIELD_LIMITS[field];
+      expect(
+        contactFormSchema.safeParse({ ...valid, [field]: 'a'.repeat(limit) }).success,
+        `${field} should accept exactly ${limit} characters`
+      ).toBe(true);
+      expect(
+        contactFormSchema.safeParse({ ...valid, [field]: 'a'.repeat(limit + 1) }).success,
+        `${field} should reject ${limit + 1} characters`
+      ).toBe(false);
+    }
+  });
+
+  it('caps the email field where CONTACT_FIELD_LIMITS.email says it does', () => {
+    // Separate because an over-long email has to stay a valid address to prove
+    // the length rule fired rather than the format rule.
+    const domain = '@example.com';
+    const atLimit = 'a'.repeat(CONTACT_FIELD_LIMITS.email - domain.length) + domain;
+    expect(atLimit).toHaveLength(CONTACT_FIELD_LIMITS.email);
+
+    const valid = { name: 'John', subject: 'Project scoping', message: 'Hello.' };
+    expect(contactFormSchema.safeParse({ ...valid, email: atLimit }).success).toBe(true);
+    expect(
+      contactFormSchema.safeParse({ ...valid, email: `a${atLimit}` }).success
+    ).toBe(false);
   });
 });
 

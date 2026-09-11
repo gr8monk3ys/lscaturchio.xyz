@@ -72,7 +72,7 @@ export function ErrorPage({
           <button
             type="button"
             onClick={() => reset()}
-            className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline focus-ring"
+            className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
             Try again
           </button>

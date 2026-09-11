@@ -12,7 +12,7 @@ export function BackButton() {
       type="button"
       onClick={() => window.history.back()}
       aria-label="Go back to blogs"
-      className="mb-8 flex h-10 w-10 items-center justify-center border border-border bg-transparent text-muted-foreground transition-colors hover:border-primary/45 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      className="mb-8 flex h-10 w-10 items-center justify-center border border-border bg-transparent text-muted-foreground transition-colors hover:border-primary/45 hover:text-primary"
     >
       <ArrowLeft className="h-4 w-4" aria-hidden="true" />
     </button>

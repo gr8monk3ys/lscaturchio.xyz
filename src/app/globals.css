@@ -439,19 +439,6 @@
   @apply p-4 sm:p-6;
 }
 
-
-
-
-@utility focus-ring {
-  /* ============================================
-   * INTERACTIVE COMPONENT CLASSES
-   * Consistent hover/focus states
-   * ============================================ */
-
-  /* Focus ring for accessibility */
-  @apply focus:outline-hidden focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
-}
-
 @layer base {
   :root {
     --background: 38 25% 97%;
@@ -604,7 +591,18 @@
    *
    * `#main-content` keeps its `focus:outline-hidden` — it is focused
    * programmatically by the skip link, which does not match :focus-visible
-   * anyway, and the class outranks this on specificity. */
+   * anyway, and the class outranks this on specificity.
+   *
+   * Adding this rule was necessary and not sufficient. A second measurement,
+   * over 120 real Tab stops, found it reaching only 66 of them: the other 53
+   * paired a Tailwind ring with `focus:outline-hidden`, and an
+   * `@layer utilities` declaration of `outline-style: none` beats an
+   * `@layer base` rule whatever the specificity. So the site had two focus
+   * vocabularies — a 2px line at a 2px gap, and a 4px radius-following halo —
+   * both in the right ink and therefore both looking deliberate. The ring
+   * stacks are gone; the only remaining suppressions are `#main-content` above
+   * and the masthead ask field, which DESIGN.md:299 gives its own indicator.
+   * `src/__tests__/lib/design-drift.test.ts` holds the door shut. */
   :focus-visible {
     outline: 2px solid hsl(var(--primary));
     outline-offset: 2px;
