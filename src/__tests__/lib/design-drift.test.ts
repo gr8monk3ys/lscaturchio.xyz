@@ -22,7 +22,14 @@ import path from "node:path";
  * rule is wrong; a shrinking one is the signal that it is working.
  */
 
-const SCAN_ROOTS = ["src/app", "src/components"];
+/**
+ * Three roots, not two. `src/lib` was outside the scan, and a `text-warning`
+ * in `project-catalogue.ts` measuring 2.03:1 sat there unseen — including by
+ * the contrast rule, which derives its own scope from `text-*` usage and so
+ * inherited the same blind spot. A scan root is an escape hatch; this one had
+ * a live defect behind it.
+ */
+const SCAN_ROOTS = ["src/app", "src/components", "src/lib"];
 
 interface Rule {
   id: string;

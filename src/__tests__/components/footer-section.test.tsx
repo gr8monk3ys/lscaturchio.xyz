@@ -25,11 +25,11 @@ describe('Footer', () => {
 
   it('keeps the legal links in the bottom bar', () => {
     render(<Footer />);
-    expect(screen.getByRole('link', { name: 'Privacy' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute(
       'href',
       '/privacy-policy'
     );
-    expect(screen.getByRole('link', { name: 'Terms' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Terms of service' })).toHaveAttribute(
       'href',
       '/terms-of-service'
     );

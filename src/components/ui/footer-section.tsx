@@ -119,14 +119,14 @@ function Footer() {
               prefetch={false}
               className="label-mono label-link ink-underline inline-flex items-center px-1 transition-colors hover:text-primary"
             >
-              Privacy
+              Privacy policy
             </Link>
             <Link
               href="/terms-of-service"
               prefetch={false}
               className="label-mono label-link ink-underline inline-flex items-center px-1 transition-colors hover:text-primary"
             >
-              Terms
+              Terms of service
             </Link>
           </nav>
         </div>

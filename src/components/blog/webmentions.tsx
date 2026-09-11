@@ -53,7 +53,7 @@ function Avatar({ entry }: { entry: WebmentionEntry }) {
  */
 export function Webmentions({ path }: { path: string }) {
   const requestUrl = path ? `/api/webmentions?path=${encodeURIComponent(path)}` : null;
-  const { data, isLoading } = useSWR<ApiEnvelope<WebmentionsResponse>>(requestUrl, fetchJson, {
+  const { data, isLoading, error } = useSWR<ApiEnvelope<WebmentionsResponse>>(requestUrl, fetchJson, {
     revalidateOnFocus: false,
   });
 
@@ -90,7 +90,11 @@ export function Webmentions({ path }: { path: string }) {
   // rendered until the request has actually settled. It also cannot say "no
   // mentions yet" in that state, because that would be an assertion the page
   // has no basis for.
-  if (isLoading) return null;
+  // `error` was destructured off nowhere and the failure path fell through to
+  // the empty state, so a failed request told the reader "No mentions yet" —
+  // an assertion the page has no basis for. The comment below already said
+  // this was the thing to avoid, which is how it read for months.
+  if (isLoading || error) return null;
 
   return (
     <section className="mt-12 border-t border-border pt-6" aria-label="Responses from the open web">

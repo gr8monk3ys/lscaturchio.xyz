@@ -269,6 +269,51 @@ test.describe('design invariants, in the DOM', () => {
     ).toEqual([])
   })
 
+  test("a route's tab title matches what the nav calls it", async ({ page }) => {
+    // The existing name check reads `nav a` labels, so it sees the header and
+    // the footer agreeing with each other and nothing else. /professional was
+    // "Hire me" in the nav, "Professional" in the tab and "Work and skills" in
+    // its own h1 — three names for one destination, none of which the guard
+    // could compare. /blog was "Writing" and "Blog".
+    //
+    // A reader arriving from search sees the tab; a reader already on the site
+    // sees the nav. If those disagree, the two halves of the audience are on
+    // different sites.
+    const offenders: string[] = []
+
+    // Collect every nav label per href once, from the home page.
+    await page.goto('/', { waitUntil: 'networkidle' })
+    const navNames = await page.locator('nav a[href^="/"]').evaluateAll((nodes) => {
+      const map: Record<string, string[]> = {}
+      for (const node of nodes) {
+        const href = (node as HTMLAnchorElement).getAttribute('href') ?? ''
+        if (!/^\/[a-z-]+$/.test(href)) continue
+        const text = (node.textContent ?? '').replace(/\s+/g, ' ').trim()
+        if (!text || text.length > 24) continue
+        map[href] = [...new Set([...(map[href] ?? []), text])]
+      }
+      return map
+    })
+
+    for (const [href, names] of Object.entries(navNames)) {
+      await page.goto(href, { waitUntil: 'domcontentloaded' })
+      // The layout appends " | Lorenzo Scaturchio"; the route owns the first part.
+      const tab = (await page.title()).split('|')[0].trim()
+      if (!tab) continue
+      const matches = names.some(
+        (name) => tab.toLowerCase() === name.toLowerCase()
+      )
+      if (!matches) {
+        offenders.push(`${href}: nav says ${names.map((n) => `"${n}"`).join('/')}, tab says "${tab}"`)
+      }
+    }
+
+    expect(
+      offenders,
+      ['A destination should have the same name in the tab and in the nav.', '', ...offenders].join('\n')
+    ).toEqual([])
+  })
+
   test('a ramp token computes the tracking it declares', async ({ page }) => {
     // The Fluid Heading Rule sets tracking per step and loosens it as size
     // falls: -0.035 / -0.03 / -0.026 / -0.02 / -0.01em. Anything that also

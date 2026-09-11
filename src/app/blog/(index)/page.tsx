@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const published = (await getAllBlogs()).filter((blog) => blog.published);
 
   return buildPageMetadata({
-    title: "Blog",
+    title: "Writing",
     description: `${spellCount(published.length)} ${pluralize(
       published.length,
       "essay"

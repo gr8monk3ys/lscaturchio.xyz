@@ -9,7 +9,7 @@ import { ArrowUpRight } from "lucide-react";
 import { LedgerRows, ordinal } from "@/components/ui/ledger-section";
 
 export const metadata: Metadata = {
-  title: "Work with me",
+  title: "Consulting",
   description:
     "AI engineering, RAG systems, and practical automation. Clear scope, fast iteration, production-ready delivery.",
 };

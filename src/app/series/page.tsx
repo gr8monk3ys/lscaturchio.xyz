@@ -4,7 +4,7 @@ import { getAllBlogs } from "@/lib/getAllBlogs";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Blog Series",
+  title: "Series",
   description:
     "Multi-part writing series from Lorenzo Scaturchio, organized by topic and reading order.",
   path: "/series",
