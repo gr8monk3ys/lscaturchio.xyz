@@ -57,23 +57,42 @@ export function CommandPaletteDialog({
     commandCount > 0 ? `${LISTBOX_ID}-option-${selectedIndex}` : undefined
 
   /**
-   * Keep Tab inside the dialog.
+   * Keep Tab inside the dialog, and hand focus back on the way out.
    *
-   * It declares `aria-modal="true"` and had no trap, so Tab from the input ran
-   * Clear search -> <body> -> the skip link -> the nav links behind the scrim:
-   * focus landing on content that is visually obscured and semantically inert.
-   * `aria-modal` is a promise to assistive tech that the rest of the page is
-   * unavailable, and the tab order has to keep it.
+   * It declares `aria-modal="true"`, which is a promise to assistive tech that
+   * the rest of the page is unavailable, so the tab order has to keep it.
+   *
+   * The first version of this trap did not. Its selector clause
+   * `button:not([disabled])` matched the result rows — which are
+   * `<button tabIndex={-1}>`, driven by `aria-activedescendant` rather than by
+   * focus — so `last` resolved to the final *result*, never the last tabbable
+   * thing, and Tab ran input -> Clear search -> <body> -> the skip link -> the
+   * nav behind the scrim. It only looked correct on an empty query, where
+   * `first === last === input`. Selector-based tabbability is the trap here:
+   * `[tabindex="-1"]` is excluded by one clause and let back in by another.
+   * Filtering on the resolved `tabIndex` cannot be fooled that way.
+   *
+   * Focus restoration lives in `useCommandPalette`, not here. Capturing the
+   * opener in an effect on this component looked right and was not: effects
+   * run after commit, and React has already applied the input's `autoFocus`
+   * by then — so the "opener" resolved to the input itself, and closing
+   * restored focus to a node that had just been unmounted, landing on
+   * `<body>`. Measured. The only place the trigger is still focused is inside
+   * `openPalette`, before it dispatches.
    */
   const panelRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
+    const tabbable = (panel: HTMLElement) =>
+      Array.from(
+        panel.querySelectorAll<HTMLElement>('a[href], button, input, textarea, select, [tabindex]')
+      ).filter((el) => el.tabIndex >= 0 && !el.hasAttribute('disabled'))
+
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'Tab') return
       const panel = panelRef.current
       if (!panel) return
-      const focusable = panel.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
+      const focusable = tabbable(panel)
       if (focusable.length === 0) return
       const first = focusable[0]
       const last = focusable[focusable.length - 1]
@@ -112,11 +131,16 @@ export function CommandPaletteDialog({
    */
   return createPortal(
     <>
-      {/* The scrim: ink at 25%, and a div.
+      {/* The scrim: `.overlay-scrim`, and a div.
           The colour was `bg-background/80` — the page's own colour laid over
           the page, so it lightened instead of separating and the masthead read
-          straight through it. It is now the ink-at-25% that `.ask-scrim`
-          already used, which DESIGN.md names as the Scrim Rule: the palette
+          straight through it. The replacement, `bg-foreground/25`, fixed the
+          day page and broke the night one, because `--foreground` inverts
+          between themes: a white veil at 25% washed the dark page out until
+          the panel was darker than its own backdrop. Both scrims now share
+          `--scrim`, which is ink in both themes at a per-theme alpha, and
+          DESIGN.md's Scrim Rule names that token rather than `--foreground`.
+          The palette
           correctly carries no shadow (the Two Sheets Rule spends both of its
           elevated objects elsewhere), so a scrim is the only separation
           mechanism left to it, and a scrim is not elevation.
@@ -128,7 +152,7 @@ export function CommandPaletteDialog({
       <div
         aria-hidden="true"
         onClick={onClose}
-        className="fixed inset-0 z-50 bg-foreground/25 backdrop-blur-xs"
+        className="overlay-scrim fixed inset-0 z-50 backdrop-blur-xs"
       />
 
       <div
@@ -187,11 +211,18 @@ export function CommandPaletteDialog({
             role="listbox"
             aria-label="Search results"
           >
-            {commandCount === 0 ? (
-              /* Two states, two messages. A failed request used to render the
-                 "no results" copy, so an unavailable search was indistinguishable
-                 from an empty one — and the sparkle glyph read as magic
-                 happening at the moment nothing had. */
+            {/* Three states, because there are three things that can be true.
+                A request in flight used to render the same definitive "No
+                results found for X" as a genuine miss — spinner turning and a
+                negative answer on screen at once, which on a cold serverless
+                function is the state a reader actually reads and acts on. And
+                a *failed* request rendered it too, so a 429 claimed the corpus
+                was empty. Searching, failed, and empty are now distinct. */}
+            {isSearching && commandCount === 0 ? (
+              <p className="py-8 text-center text-muted-foreground" aria-live="polite">
+                Searching the essays…
+              </p>
+            ) : commandCount === 0 ? (
               <div className="py-8 text-center text-muted-foreground">
                 {searchFailed ? (
                   <>

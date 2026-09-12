@@ -15,13 +15,19 @@ export function ThemedBlogSections({ posts }: { posts: BlogPreview[] }) {
       {groups.map(({ theme, posts: themePosts }) => (
         <section key={theme.slug} aria-labelledby={`theme-${theme.slug}`}>
           <div className="flex items-baseline justify-between gap-4 border-b border-border pb-3">
-            {/* `text-subsection`, below the essay titles it contains.
-                This was `text-card-title` — the same step the row titles now
-                use — while the rows themselves were 16px sans. So the shelf
-                was louder than the books: a reader scanning 83 essays saw five
-                theme names first and the thing they were choosing between
-                second. The group is orientation; the essay is the decision. */}
-            <h2 id={`theme-${theme.slug}`} className="text-subsection">
+            {/* `text-section-title`, which is what this actually is.
+                Two wrong answers preceded it. Originally the group was
+                `text-card-title` while its essays were 16px sans spans — the
+                shelf louder than the books. Dropping the group to
+                `text-subsection` fixed that inversion and created another: it
+                became the quietest heading on a page where it divides 84
+                essays into five sections, which a third review duly caught.
+                The real problem was never the group's size, it was that the
+                titles were not headings. Now that they are `h3` at
+                `text-card-title`, the ordinary hierarchy works: page `h1` at
+                the page-title step, section `h2` here, item `h3` below it,
+                each step quieter than its parent. */}
+            <h2 id={`theme-${theme.slug}`} className="text-section-title">
               {theme.title}
             </h2>
             <span className="label-mono shrink-0">{themePosts.length}</span>
@@ -66,7 +72,11 @@ export function ThemedBlogSections({ posts }: { posts: BlogPreview[] }) {
                   <h3 className="text-card-title mt-2 text-foreground group-hover:text-primary">
                     {post.title}
                   </h3>
-                  <span className="mt-1 block text-sm text-muted-foreground line-clamp-2">
+                  {/* `max-w-prose`. This ran the full 1152px — measured at
+                      121 characters per line at 1440px, against a Measure Rule
+                      this same session wrote into DESIGN.md and then did not
+                      apply to the page with the most running text on it. */}
+                  <span className="mt-1 block max-w-prose text-sm text-muted-foreground line-clamp-2">
                     {post.description}
                   </span>
                 </Link>

@@ -50,6 +50,22 @@ describe("stripMarkdown", () => {
     );
   });
 
+  it("leaves underscores inside identifiers alone", () => {
+    // A /lab snippet rendered `def init(self, privacymode="strict"): self.
+    // privacymode = privacymode` — that is `__init__`, `privacy_mode` and
+    // `local_inference` with their underscores eaten by the italics rule.
+    expect(stripMarkdown("def __init__(self, privacy_mode): self.local_inference(x)")).toBe(
+      "def __init__(self, privacy_mode): self.local_inference(x)"
+    );
+    expect(stripMarkdown("a snake_case name and MAX_RETRIES")).toBe(
+      "a snake_case name and MAX_RETRIES"
+    );
+  });
+
+  it("still unwraps real underscore emphasis at word boundaries", () => {
+    expect(stripMarkdown("this is _emphatic_ prose")).toBe("this is emphatic prose");
+  });
+
   it("strips blockquote and list markers", () => {
     expect(stripMarkdown("> A quote")).toBe("A quote");
     expect(stripMarkdown("- one\n- two")).toBe("one two");

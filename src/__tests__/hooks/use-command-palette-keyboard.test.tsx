@@ -140,6 +140,54 @@ describe("command palette keyboard contract", () => {
     expect(result.current.query).toBe("");
   });
 
+  it("hands focus back to whatever opened it", async () => {
+    // A first attempt captured the opener in an effect inside the dialog, which
+    // runs after commit — by which point React had applied the input's
+    // `autoFocus`, so the "opener" was the input and closing restored focus to
+    // a node that had just unmounted. Focus landed on <body>. The capture has
+    // to happen synchronously in `openPalette`.
+    const trigger = document.createElement("button");
+    document.body.appendChild(trigger);
+    trigger.focus();
+    expect(document.activeElement).toBe(trigger);
+
+    const { result } = renderHook(() => useCommandPalette());
+    act(() => {
+      result.current.openPalette();
+    });
+    act(() => {
+      result.current.closePalette();
+    });
+    // The restore is deferred a frame so the dialog has unmounted first.
+    await act(async () => {
+      await new Promise((r) => requestAnimationFrame(() => r(null)));
+    });
+
+    expect(document.activeElement).toBe(trigger);
+    trigger.remove();
+  });
+
+  it("does not throw when the opener has left the document", async () => {
+    // Executing a command closes the palette and navigates; the trigger may be
+    // gone by the time the restore runs.
+    const trigger = document.createElement("button");
+    document.body.appendChild(trigger);
+    trigger.focus();
+
+    const { result } = renderHook(() => useCommandPalette());
+    act(() => {
+      result.current.openPalette();
+    });
+    trigger.remove();
+    act(() => {
+      result.current.closePalette();
+    });
+    await act(async () => {
+      await new Promise((r) => requestAnimationFrame(() => r(null)));
+    });
+    expect(result.current.isOpen).toBe(false);
+  });
+
   it("groups destinations under navigation and the theme toggle under action", () => {
     const { result } = renderHook(() => useCommandPalette());
     press("k", { metaKey: true });

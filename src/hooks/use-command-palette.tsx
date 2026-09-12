@@ -145,6 +145,18 @@ export function useCommandPalette(): CommandPaletteModel {
   const [state, dispatch] = useReducer(paletteReducer, INITIAL_STATE)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  /**
+   * Whatever had focus when the palette opened, so Escape can give it back.
+   *
+   * It has to be captured here, synchronously inside `openPalette`, because
+   * that is the last moment the trigger still holds focus: by the time any
+   * effect in the dialog runs, React has applied the input's `autoFocus` and
+   * `document.activeElement` is the input. A first attempt captured it there
+   * and restored focus to an element that had just unmounted, which is how a
+   * keyboard user ended up on `<body>` having to tab from the top of the
+   * document — the state the scrim's comment claimed was already solved.
+   */
+  const openerRef = useRef<HTMLElement | null>(null)
   const router = useRouter()
   const { theme, setTheme } = useTheme()
 
@@ -235,12 +247,23 @@ export function useCommandPalette(): CommandPaletteModel {
   }, [])
 
   const openPalette = useCallback(() => {
+    const active = document.activeElement
+    openerRef.current = active instanceof HTMLElement && active !== document.body ? active : null
     dispatch({ type: 'OPEN' })
     focusInput()
   }, [focusInput])
 
   const closePalette = useCallback(() => {
     dispatch({ type: 'CLOSE' })
+    const opener = openerRef.current
+    openerRef.current = null
+    if (!opener) return
+    // After the dialog has unmounted, or the focus call lands on a node React
+    // is about to remove. `isConnected` guards the case where executing a
+    // command navigated away and the trigger no longer exists.
+    focusNextFrame(() => {
+      if (opener.isConnected) opener.focus()
+    })
   }, [])
 
   const clearQuery = useCallback(() => {

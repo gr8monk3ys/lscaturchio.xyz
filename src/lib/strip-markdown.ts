@@ -30,8 +30,21 @@ export function stripMarkdown(text: string): string {
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1") // images -> alt
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")  // links -> text
     .replace(/^\s{0,3}>\s?/gm, "")      // blockquotes
-    .replace(/(\*\*|__)(.*?)\1/g, "$2")  // bold
-    .replace(/(\*|_)(.*?)\1/g, "$2")     // italics
+    // Bold. `**` is unambiguous; `__` is not, because a dunder is spelled the
+    // same way. CommonMark really would read `__init__` as strong "init", so
+    // the discriminator has to come from context: a dunder is a method name
+    // and is followed by its call paren, while emphasis is followed by a
+    // space or punctuation. `__init__(self` therefore survives and
+    // `__really__.` still unwraps.
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/__(.*?)__(?!\()/g, "$1")
+    // Italics, but not identifiers. `_` only opens emphasis at a word
+    // boundary: `__init__`, `privacy_mode` and `local_inference` are single
+    // words, and stripping their underscores turned a /lab snippet into
+    // "def init(self, privacymode=...): self. privacymode = privacymode",
+    // which reads as a typo rather than as code. `*` has no such ambiguity.
+    .replace(/\*(\S(?:.*?\S)?)\*/g, "$1")
+    .replace(/(?<![A-Za-z0-9_])_(\S(?:.*?\S)?)_(?![A-Za-z0-9_(])/g, "$1")
     .replace(/^\s{0,3}([-*+]|\d+\.)\s+/gm, "") // list markers
     .replace(/\s+/g, " ")
     .trim();
