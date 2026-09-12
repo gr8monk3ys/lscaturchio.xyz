@@ -83,3 +83,16 @@ skills-lock.json
 .impeccable/live/
 .impeccable/hook.cache.json
 .impeccable/*.local.json
+
+# Screenshots dropped at the repo root by browser-driving agents.
+#
+# Four of these (2.5MB) reached main in #232, swept up by a `git add -A` in a
+# session that had a review agent taking screenshots alongside it. The agents'
+# own scratch directory (.playwright-mcp/) is already ignored; this covers the
+# ones written to the working directory instead. Real screenshots live in
+# docs/ or public/, which these patterns do not touch.
+/*.png
+/*.jpg
+/*.jpeg
+/*.webp
+/*.gif
