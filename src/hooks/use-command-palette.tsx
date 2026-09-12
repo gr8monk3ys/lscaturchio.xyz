@@ -257,12 +257,25 @@ export function useCommandPalette(): CommandPaletteModel {
     dispatch({ type: 'CLOSE' })
     const opener = openerRef.current
     openerRef.current = null
-    if (!opener) return
-    // After the dialog has unmounted, or the focus call lands on a node React
-    // is about to remove. `isConnected` guards the case where executing a
-    // command navigated away and the trigger no longer exists.
+
+    // Fall back to the trigger when there was no opener to remember.
+    //
+    // Cmd+K works from anywhere, so it is routinely pressed while focus is on
+    // `<body>` — and then there is nothing to give focus back to. The previous
+    // version returned early there, which a review read, correctly, as "the
+    // palette does not restore focus on Escape": it restored focus from the
+    // button path and not from the accelerator that the header advertises.
+    //
+    // The trigger is the honest destination. It is where the palette lives, it
+    // is on every page, and landing there leaves a keyboard user one Tab from
+    // the nav instead of at the top of the document.
     focusNextFrame(() => {
-      if (opener.isConnected) opener.focus()
+      if (opener?.isConnected) {
+        opener.focus()
+        return
+      }
+      const trigger = document.querySelector<HTMLElement>('[data-command-palette-trigger]')
+      trigger?.focus()
     })
   }, [])
 

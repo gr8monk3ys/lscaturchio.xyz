@@ -130,8 +130,11 @@ export function SemanticSearchDemo() {
                   {/* `text-muted-foreground`, not `/80`.
                       The opacity modifier put this at 3.48:1 against Warm Paper
                       in light mode — measured, against a 4.5:1 requirement for
-                      12px text. It was the only WCAG contrast failure anywhere
-                      on the site. Full strength is the same token at 5.23:1;
+                      12px text. I claimed at the time that this was the only
+                      WCAG contrast failure on the site; a later review found
+                      code-block line numbers at 2.43:1 in both themes, so the
+                      claim was wrong and the sweep that produced it was not a
+                      sweep. Full strength is the same token at 5.23:1;
                       the snippet is already distinguished from the description
                       by size and italics, so the extra fade bought nothing and
                       cost compliance. */}
