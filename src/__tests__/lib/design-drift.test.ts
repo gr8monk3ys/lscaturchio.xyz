@@ -253,8 +253,20 @@ describe("heading case", () => {
    * not this rule's business.
    *
    * The signal is capitalised words that are not proper nouns: a heading of
-   * four or more words with three or more of them capitalised past the first.
+   * three or more words with two or more of them capitalised past the first.
    * Two-word headings are excluded because most of them are names.
+   *
+   * The floor was four words and three capitals, and a review found
+   * "Send a Message" and "Connect on Social" sitting under it on /contact —
+   * three-word Title Case was structurally invisible, not allowed. Three and
+   * two catches the second of those.
+   *
+   * It does not catch the first, and that limit is worth stating rather than
+   * papering over: "Send a Message" has exactly one capitalised word past the
+   * first, because "a" is a function word. One capital is not mechanically
+   * separable from a proper noun — "Built with Next.js" and "Deployed on
+   * Vercel" have the same shape and are correct. So a single-capital heading
+   * stays a human review item; both /contact headings were fixed by hand.
    */
   const FUNCTION_WORDS = new Set([
     "a", "an", "the", "and", "or", "but", "of", "in", "on", "at", "to", "for",
@@ -275,10 +287,15 @@ describe("heading case", () => {
 
       for (const file of walk(dir)) {
         const relative = path.relative(process.cwd(), file);
-        // API routes build email bodies, not pages. The one heading in there
-        // ("New Contact Form Submission") is an internal notification to the
-        // site's owner, and the site's style guide governs the site.
+        // Email bodies are not pages. The headings in there ("New Contact
+        // Form Submission", "Welcome to My Newsletter!") are transactional mail
+        // — one an internal notification to the site's owner — and the site's
+        // style guide governs the site. `src/lib/email.ts` joins the API
+        // routes here for the same reason, and because it is HTML in a
+        // template string that no page renders; it surfaced only when the
+        // word-count floor dropped to three.
         if (relative.startsWith(path.join("src", "app", "api"))) continue;
+        if (relative === path.join("src", "lib", "email.ts")) continue;
 
         const source = fs.readFileSync(file, "utf-8");
 
@@ -288,14 +305,14 @@ describe("heading case", () => {
           if (ALLOWED_HEADINGS.some((a) => a.text === text)) continue;
 
           const words = text.split(" ").filter(Boolean);
-          if (words.length < 4) continue;
+          if (words.length < 3) continue;
 
           const past = words.slice(1).filter((w) => /^[A-Za-z]/.test(w));
           const capitalised = past.filter(
             (w) => !FUNCTION_WORDS.has(w.toLowerCase()) && /^[A-Z]/.test(w)
           );
 
-          if (capitalised.length >= 3) {
+          if (capitalised.length >= 2) {
             const line = source.slice(0, match.index).split("\n").length;
             offenders.push(`${relative}:${line} — "${text}"`);
           }

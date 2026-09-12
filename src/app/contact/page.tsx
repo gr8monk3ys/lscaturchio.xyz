@@ -41,11 +41,21 @@ export default function Contact() {
               Book a call
               <ArrowUpRight className="h-4 w-4" />
             </Link>
+            {/* Sentence case, and the same `↗` as its sibling.
+                "Email Directly" was the only Title Case control on the page,
+                beside "Book a call" — and the heading-case rule cannot see it,
+                because that rule only fires at four words or more.
+
+                The arrow now appears on both. It was on the Calendly link and
+                not the mailto, though both hand the visitor to something that
+                is not this site; on this page the glyph means "leaves here",
+                and it has to mean one thing to mean anything. */}
             <Link
               href="mailto:lorenzosca7@protonmail.ch"
               className="neu-button inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors hover:text-primary"
             >
-              Email Directly
+              Email directly
+              <ArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
         </PageHead>

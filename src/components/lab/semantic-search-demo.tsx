@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Loader2, ArrowUpRight, Calendar } from "lucide-react";
+import { Search, Loader2, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useSWR from "swr";
 import { fetchJson, type ApiEnvelope } from "@/lib/fetcher";
+import { stripMarkdown } from "@/lib/strip-markdown";
 
 interface SearchResult {
   title: string;
@@ -66,7 +67,17 @@ export function SemanticSearchDemo() {
       <div className="mt-5">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          {/* A real label. The field had no `id`, no `<label>` and no
+              `aria-label`, so its only accessible name was the placeholder —
+              which disappears the moment anyone types, leaving a screen-reader
+              user with an unnamed text box mid-query. WCAG 1.3.1 and 3.3.2.
+              Visually hidden rather than printed, because the section heading
+              and the Search glyph already say what this is on screen. */}
+          <label htmlFor="lab-semantic-search" className="sr-only">
+            Search the essays
+          </label>
           <input
+            id="lab-semantic-search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search posts..."
@@ -111,14 +122,25 @@ export function SemanticSearchDemo() {
                       {r.description}
                     </div>
                   )}
+                  {/* `text-muted-foreground`, not `/80`.
+                      The opacity modifier put this at 3.48:1 against Warm Paper
+                      in light mode — measured, against a 4.5:1 requirement for
+                      12px text. It was the only WCAG contrast failure anywhere
+                      on the site. Full strength is the same token at 5.23:1;
+                      the snippet is already distinguished from the description
+                      by size and italics, so the extra fade bought nothing and
+                      cost compliance. */}
                   {r.snippets?.[0] && (
-                    <div className="mt-2 text-xs text-muted-foreground/80 italic line-clamp-2">
-                      &ldquo;{r.snippets[0]}&rdquo;
+                    <div className="mt-2 text-xs text-muted-foreground italic line-clamp-2">
+                      &ldquo;{stripMarkdown(r.snippets[0])}&rdquo;
                     </div>
                   )}
+                  {/* The wall label, like every other date here. This was body
+                      sans plus a calendar glyph — the one date on the site not
+                      set in the mono voice DESIGN.md assigns to metadata, and
+                      an icon doing a label's job. */}
                   {r.date && (
-                    <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-                      <Calendar className="h-3 w-3" />
+                    <div className="label-mono mt-2 flex items-center gap-2">
                       <span>
                         {new Date(r.date).toLocaleDateString("en-US", {
                           year: "numeric",

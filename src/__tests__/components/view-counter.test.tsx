@@ -91,17 +91,40 @@ describe("ViewCounter", () => {
     });
   });
 
-  // The placeholder is "— views", not "---", and it occupies the same width as
-  // the settled value. It sits in the essay header's flex-wrap meta row, and a
+  // The placeholder reserves the width of the settled value but paints
+  // nothing. It sits in the essay header's flex-wrap meta row, and a
   // placeholder narrower than the value it replaces re-wrapped that row on any
   // essay where it nearly fit — 26px of layout shift on four of six essays
-  // sampled, against a 0.15 budget.
-  it("renders a placeholder while the count is still loading", () => {
+  // sampled, against a 0.15 budget. So the footprint has to stay.
+  //
+  // What changed is that it is no longer *visible*. `useViewCount` returns 0
+  // on failure and null only in flight, so the old literal "— views" was a
+  // loading state that lasted as long as the request: with `/api/views`
+  // blocked by a tracker blocker it never resolved, and the header showed an
+  // em dash followed by VIEWS for the whole visit.
+  it("reserves the placeholder but hides it while the count is loading", () => {
     mockFetch.mockImplementation(() => new Promise(() => {}));
 
-    renderWithSWR(<ViewCounter slug="slow-post" />);
+    const { container } = renderWithSWR(<ViewCounter slug="slow-post" />);
 
-    expect(screen.getByText("— views")).toBeInTheDocument();
+    const counter = container.querySelector("div");
+    expect(counter).toHaveClass("invisible");
+    expect(counter).toHaveAttribute("aria-hidden", "true");
+    // Still reserving the footprint that the CLS fix depends on.
+    expect(counter?.className).toContain("min-w-[6.5rem]");
+  });
+
+  it("reveals the counter once a real number arrives", async () => {
+    mockFetch.mockImplementation(async () => jsonResponse({ views: 7 }));
+
+    const { container } = renderWithSWR(<ViewCounter slug="fast-post" />);
+
+    await waitFor(() => {
+      expect(screen.getByText("7 views")).toBeInTheDocument();
+    });
+    const counter = container.querySelector("div");
+    expect(counter).not.toHaveClass("invisible");
+    expect(counter).not.toHaveAttribute("aria-hidden");
   });
 
   it("reserves the same footprint before and after the count arrives", () => {

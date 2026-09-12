@@ -190,7 +190,7 @@ export function ContactForm() {
       <div className="grid lg:grid-cols-2 gap-12">
         {/* Contact Form */}
         <div>
-          <h2 className="text-section-title mb-6">Send a Message</h2>
+          <h2 className="text-section-title mb-6">Send a message</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
@@ -400,7 +400,7 @@ export function ContactForm() {
 
           {/* Social Links */}
           <div className="border-t border-border pt-8">
-            <h3 className="text-card-title mb-4">Connect on Social</h3>
+            <h3 className="text-card-title mb-4">Connect on social</h3>
             <div className="flex gap-3">
               {socialLinks.map((social) => (
                 <Link

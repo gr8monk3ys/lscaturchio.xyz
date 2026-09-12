@@ -43,7 +43,13 @@ export function ScrollCaseStudies() {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="label-mono block">{item.kicker}</span>
-                    <span className="block truncate text-base font-semibold text-foreground group-hover:text-primary">
+                    {/* Same reason as the other two truncating rows on this
+                        page: the ellipsis says text is missing without saying
+                        what it was. */}
+                    <span
+                      title={item.title}
+                      className="block truncate text-base font-semibold text-foreground group-hover:text-primary"
+                    >
                       {item.title}
                     </span>
                   </span>

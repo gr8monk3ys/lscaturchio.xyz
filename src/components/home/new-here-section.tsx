@@ -209,7 +209,13 @@ export function NewHereSection({ popularPosts, essayCount }: NewHereSectionProps
                     <span className="label-mono tabular-nums" aria-hidden>
                       {entryNumber}
                     </span>
-                    <span className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+                    {/* Same reason as the currently-strip: a truncated
+                        essay title with no `title` attribute is unrecoverable
+                        by hover or by screen reader. */}
+                    <span
+                      title={post.title}
+                      className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary"
+                    >
                       {post.title}
                     </span>
                   </Link>

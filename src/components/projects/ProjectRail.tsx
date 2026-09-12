@@ -98,10 +98,27 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
               )}
             </span>
             {/* Same order as the card: the claim, then the name as a label. */}
-            {/* A heading, not a div. /projects stopped skipping levels when
-                this became a div, which removed the document outline instead of
-                fixing it: eighteen projects, one heading on the page. */}
-            <h2 className="text-card-title text-balance">{project.thesis ?? title}</h2>
+            {/* Not a heading — and this element has been flipped once already,
+                so the reasoning matters.
+
+                It became an `h2` when the rail was the only thing on /projects
+                supplying a document outline ("eighteen projects, one heading on
+                the page"). `ProjectGalleryCard` then grew its own `h2`, with
+                its own comment saying each card is a top-level section of this
+                page — which is right, and which made this one redundant rather
+                than load-bearing.
+
+                The rail is a *preview of the active card*. It repeats a heading
+                the page already has, and because the rail is mounted twice
+                (desktop `aside`, mobile `compact`) the active project's thesis
+                rendered as an `h2` three times: measured 21 `h2`s on a page
+                whose own filter chip correctly reads "All 18", with "Decide
+                what merges without a human" appearing at positions 1, 19 and
+                20. A review read that as the portfolio shipping a duplicate.
+
+                A preview echoing a heading is not a section, so it is styled
+                text. The outline is the eighteen cards. */}
+            <p className="text-card-title text-balance">{project.thesis ?? title}</p>
             {project.thesis && (
               <span className="label-mono text-foreground">{title}</span>
             )}

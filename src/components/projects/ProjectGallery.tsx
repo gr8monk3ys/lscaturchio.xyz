@@ -112,14 +112,24 @@ export function ProjectGallery({ projects }: { projects: Product[] }): React.Rea
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="label-mono">
+        {/* Shown only where hovering and a B key exist.
+            This instructed every phone to "Hover to preview · press B to
+            keyboard-browse", beside a "Browse mode" button with a keyboard
+            glyph — three affordances a touch device does not have, announced
+            as if it did. `(hover: hover)` and `(pointer: fine)` are the media
+            queries that actually describe a mouse, so Tailwind's `can-hover`
+            variant gates the hint on the capability it describes rather than
+            on a width, which is what `sm:` would have guessed at. Tapping a
+            card still previews it; the copy simply stops naming a gesture the
+            reader hasn't got. */}
+        <div className="label-mono hidden can-hover:block">
           Hover to preview · press <span className="text-foreground">B</span> to keyboard-browse
         </div>
         <button
           type="button"
           onClick={handleToggleBrowse}
           className={cn(
-            'label-mono inline-flex items-center justify-center gap-2 border px-4 py-2 transition-colors',
+            'label-mono hidden can-hover:inline-flex items-center justify-center gap-2 border px-4 py-2 transition-colors',
             browseMode
               ? 'border-primary text-primary'
               : 'border-border text-muted-foreground hover:text-foreground'
