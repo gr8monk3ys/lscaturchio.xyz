@@ -59,7 +59,7 @@ export function LinksEditor({ initial }: { initial: LinksContent }) {
     >
       {Object.entries(content).map(([key, section]) => (
         <section key={key} className="mb-8">
-          <h2 className="text-lg font-semibold">{section.title}</h2>
+          <h2 className="text-subsection">{section.title}</h2>
           <p className="mb-3 text-sm text-muted-foreground">{section.description}</p>
           {section.links.map((l, i) => (
             <fieldset key={i} className="mb-3 rounded-md border border-border p-4">

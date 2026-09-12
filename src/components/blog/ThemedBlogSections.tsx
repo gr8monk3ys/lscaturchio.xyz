@@ -15,7 +15,13 @@ export function ThemedBlogSections({ posts }: { posts: BlogPreview[] }) {
       {groups.map(({ theme, posts: themePosts }) => (
         <section key={theme.slug} aria-labelledby={`theme-${theme.slug}`}>
           <div className="flex items-baseline justify-between gap-4 border-b border-border pb-3">
-            <h2 id={`theme-${theme.slug}`} className="text-card-title">
+            {/* `text-subsection`, below the essay titles it contains.
+                This was `text-card-title` — the same step the row titles now
+                use — while the rows themselves were 16px sans. So the shelf
+                was louder than the books: a reader scanning 83 essays saw five
+                theme names first and the thing they were choosing between
+                second. The group is orientation; the essay is the decision. */}
+            <h2 id={`theme-${theme.slug}`} className="text-subsection">
               {theme.title}
             </h2>
             <span className="label-mono shrink-0">{themePosts.length}</span>
@@ -45,9 +51,21 @@ export function ThemedBlogSections({ posts }: { posts: BlogPreview[] }) {
                       </>
                     )}
                   </span>
-                  <span className="mt-2 block font-semibold text-foreground group-hover:text-primary">
+                  {/* An `h3` on the ramp, not a `<span>` at body size.
+                      The heading outline of the site's most important index
+                      was H1 plus five H2s and nothing else: 83 essay titles
+                      were `<span>`s, so a screen-reader user could not use the
+                      heading rotor to skim them at all, and sighted readers got
+                      them at 16px Instrument Sans — body copy, in the body
+                      voice, for the one element the whole page exists to let
+                      you choose between.
+                      `text-card-title` is the step DESIGN.md defines for a
+                      heading inside a list row, and it is Fraunces, so the
+                      title now reads in the display voice against its mono
+                      label and sans description. */}
+                  <h3 className="text-card-title mt-2 text-foreground group-hover:text-primary">
                     {post.title}
-                  </span>
+                  </h3>
                   <span className="mt-1 block text-sm text-muted-foreground line-clamp-2">
                     {post.description}
                   </span>

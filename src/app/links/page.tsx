@@ -32,7 +32,7 @@ const Section = ({ data }: { data: SectionData }) => {
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
-                <h3 className="mb-1 flex items-center gap-2 text-lg font-semibold transition-colors group-hover:text-primary">
+                <h3 className="text-card-title mb-1 flex items-center gap-2 transition-colors group-hover:text-primary">
                   {link.title}
                   <ExternalLink className="size-4 opacity-0 transition-opacity group-hover:opacity-100" />
                   {link.rss && (

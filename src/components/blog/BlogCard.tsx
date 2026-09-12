@@ -55,7 +55,13 @@ export function BlogCard({
             </>
           ) : null}
         </span>
-        <h2 className="mt-2 line-clamp-2 text-xl font-semibold leading-tight tracking-tight transition-colors group-hover:text-primary">
+        {/* `text-card-title`, the same step the index rows use. This was
+          `text-xl font-semibold tracking-tight` — a self-invented scale in
+          the body voice, with a tracking override on top, for the archive
+          view of the same essays. `display-scale-outside-ramp` only fires
+          from `text-2xl` up, so both this and the index's 16px spans sat
+          one step under every rule. */}
+        <h2 className="text-card-title mt-2 line-clamp-2 transition-colors group-hover:text-primary">
           {title}
         </h2>
         <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">

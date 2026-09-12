@@ -58,7 +58,7 @@ export default function ApiDocsPage() {
             <div key={e.path} className="neu-card p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-xl font-semibold">{e.name}</h2>
+                  <h2 className="text-card-title">{e.name}</h2>
                   <p className="text-sm text-muted-foreground mt-1">{e.description}</p>
                   <div className="mt-3 text-sm font-mono">
                     <Link href={e.path} className="text-primary hover:underline">

@@ -3,6 +3,7 @@ import { getAllBlogs } from "@/lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
 import { ThemedBlogSections } from "@/components/blog/ThemedBlogSections";
 import { BLOG_STAGES, STAGE_LABELS, filterByStage } from "@/lib/blog-stage";
+import { getBlogArchiveHref } from "@/lib/blog-archive-href";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Tag } from "lucide-react";
@@ -79,6 +80,7 @@ export default async function Blog({
   const stageCounts = BLOG_STAGES.map((stage) => ({
     stage,
     label: STAGE_LABELS[stage].label,
+    blurb: STAGE_LABELS[stage].blurb,
     count: tagFilteredBlogs.filter((blog) => blog.stage === stage).length,
   })).filter(({ count }) => count > 0);
 
@@ -114,13 +116,38 @@ export default async function Blog({
 
             <span aria-hidden className="label-mono text-foreground/25">·</span>
 
+            {/* The site's one stage filter.
+                There were two, 97px apart, disagreeing about what selected
+                looks like: this row used forest ink plus an underline and
+                carried counts but had no "All", while `BlogGrid` rendered its
+                own `Stage · All · SEEDLING · …` nav below, selecting with
+                ink-versus-muted at 11.52px — the weakest signal the system
+                has. Same word, same href, same concept, one screen, two
+                answers, which teaches a reader that neither is authoritative.
+                This one keeps the counts and the stronger affordance and gains
+                the "All" the other had; the duplicate is gone.
+
+                The hrefs now go through `getBlogArchiveHref`, so choosing a
+                stage preserves an active tag and resets to page 1 instead of
+                dropping the tag on the floor. */}
             <nav aria-label="Filter by stage" className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <Link
+                href={getBlogArchiveHref(1, normalizedTag, "")}
+                prefetch={false}
+                aria-current={stageFilter ? undefined : "page"}
+                className={cn(
+                  "label-mono label-link underline-offset-4 transition-colors hover:text-primary hover:underline",
+                  stageFilter ? "text-muted-foreground" : "text-primary underline"
+                )}
+              >
+                All {tagFilteredBlogs.length}
+              </Link>
               {stageCounts.map(({ stage, label, count }) => {
                 const active = stageFilter === stage;
                 return (
                   <Link
                     key={stage}
-                    href={active ? "/blog" : `/blog?stage=${stage}`}
+                    href={getBlogArchiveHref(1, normalizedTag, active ? "" : stage)}
                     prefetch={false}
                     aria-current={active ? "page" : undefined}
                     className={cn(
@@ -134,6 +161,34 @@ export default async function Blog({
               })}
             </nav>
           </div>
+          {/* The vocabulary, printed.
+              SEEDLING / BUDDING / EVERGREEN is the site's most distinctive
+              editorial idea and its least legible control: the gloss lived
+              only in a native `title=` tooltip and in `sr-only` text, so on a
+              phone — where there is no hover — the words were unlearnable, and
+              a reader met "BUDDING" on an essay with no way to find out what
+              it claimed. One line costs less than a vocabulary nobody can
+              read. */}
+          <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+            {stageCounts.map(({ stage, label, blurb }, index) => (
+              <span key={stage} className="inline-flex items-center gap-x-3">
+                {index > 0 && (
+                  <span aria-hidden className="text-foreground/25">·</span>
+                )}
+                <span>
+                  {/* The name is a label; the gloss is a sentence.
+                      Wrapping the whole line in `label-mono` uppercased the
+                      explanation too — "ROUGH NOTES, STILL FORMING" — which is
+                      the Wall Label Rule absorbing the content it exists to
+                      caption, the exact failure a review named on the essay
+                      masthead. Only the name wears the label voice. */}
+                  <span className="label-mono text-foreground">{label}</span>{" "}
+                  {blurb.replace(/\.$/, "")}
+                </span>
+              </span>
+            ))}
+          </p>
+
           <hr className="gallery-rule mt-8" />
         </header>
 

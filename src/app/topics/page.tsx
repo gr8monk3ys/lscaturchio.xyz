@@ -44,7 +44,7 @@ export default async function TopicsPage() {
               className="group border-t border-border py-6 transition-colors"
             >
               <div className="flex items-baseline justify-between gap-3">
-                <h2 className="text-xl font-semibold group-hover:text-primary transition-colors">
+                <h2 className="text-card-title transition-colors group-hover:text-primary">
                   {hub.title}
                 </h2>
                 <span className="label-mono shrink-0">{hub.count}</span>

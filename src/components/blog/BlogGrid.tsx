@@ -1,7 +1,7 @@
 import { BlogCard } from "@/components/blog/BlogCard";
 import { X } from "lucide-react";
 import Link from "next/link";
-import { BLOG_STAGES, STAGE_LABELS, isBlogStage } from "@/lib/blog-stage";
+import { getBlogArchiveHref } from "@/lib/blog-archive-href";
 
 interface Blog {
   slug: string;
@@ -22,28 +22,6 @@ interface BlogGridProps {
   totalPages: number;
 }
 
-function getBlogArchiveHref(
-  page: number,
-  tagFilter: string,
-  stageFilter: string
-): string {
-  const params = new URLSearchParams();
-
-  if (tagFilter) {
-    params.set("tag", tagFilter);
-  }
-
-  if (stageFilter) {
-    params.set("stage", stageFilter);
-  }
-
-  if (page > 1) {
-    params.set("page", String(page));
-  }
-
-  const query = params.toString();
-  return query ? `/blog?${query}` : "/blog";
-}
 
 export function BlogGrid({
   blogs,
@@ -60,39 +38,13 @@ export function BlogGrid({
 
   return (
     <>
-      <nav
-        aria-label="Filter by growth stage"
-        className="mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border pb-4"
-      >
-        <span className="label-mono text-foreground/70">Stage</span>
-        <Link
-          href={getBlogArchiveHref(1, normalizedTag, "")}
-          prefetch={false}
-          aria-current={isBlogStage(stageFilter) ? undefined : "page"}
-          className={`label-mono underline-offset-4 transition-colors hover:text-primary hover:underline ${
-            isBlogStage(stageFilter) ? "text-muted-foreground" : "text-foreground"
-          }`}
-        >
-          All
-        </Link>
-        {BLOG_STAGES.map((stage) => {
-          const active = stageFilter === stage;
-          return (
-            <Link
-              key={stage}
-              href={getBlogArchiveHref(1, normalizedTag, stage)}
-              prefetch={false}
-              aria-current={active ? "page" : undefined}
-              title={STAGE_LABELS[stage].blurb}
-              className={`label-mono underline-offset-4 transition-colors hover:text-primary hover:underline ${
-                active ? "text-foreground" : "text-muted-foreground"
-              }`}
-            >
-              {STAGE_LABELS[stage].label}
-            </Link>
-          );
-        })}
-      </nav>
+      {/* The stage filter lives in the page header, once.
+          This component rendered a second one — `Stage · All · SEEDLING · …`
+          — 97px below it, selecting with ink-versus-muted where the header row
+          uses forest ink and an underline, and without the counts. Two
+          controls for one concept that disagree about their own state are
+          worse than either alone. The header row absorbed the "All" this one
+          had, and its links now preserve an active tag. */}
 
       {normalizedTag && (
         <div className="mb-8 flex flex-col items-start justify-between gap-3 border-b border-border pb-4 sm:flex-row sm:items-center">
