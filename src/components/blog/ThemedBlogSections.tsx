@@ -20,7 +20,10 @@ export function ThemedBlogSections({ posts }: { posts: BlogPreview[] }) {
             </h2>
             <span className="label-mono shrink-0">{themePosts.length}</span>
           </div>
-          <p className="mt-3 max-w-2xl text-sm text-muted-foreground">{theme.description}</p>
+          {/* `max-w-prose` (65ch), not `max-w-2xl`: 672px of 14px text runs to
+              about 96 characters, and these five section descriptions are
+              the widest running text on the index. */}
+          <p className="mt-3 max-w-prose text-sm text-muted-foreground">{theme.description}</p>
           <ul className="mt-6 divide-y divide-border border-b border-border">
             {themePosts.map((post) => (
               <li key={post.slug}>

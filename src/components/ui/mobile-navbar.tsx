@@ -125,12 +125,20 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
           isMenuOpen ? "border-transparent bg-transparent backdrop-blur-none" : "",
         ].join(" ")}
       >
+        {/* `flex items-center` with the bar's full height, not a bare inline
+            link. As shipped this measured 183 x 20px — the line box of
+            `text-card-title` and nothing more, which is 4px under WCAG 2.5.8's
+            24px floor on the one control a phone reader needs most. It is a
+            standalone nav element, not a link inside a sentence, so the
+            inline-exception does not cover it.
+            Stretching to the 64px bar costs no layout: the bar is already that
+            tall and the text stays vertically centred in it. */}
         <Link
           href="/"
           prefetch={false}
           aria-label="Lorenzo Scaturchio — home"
           className={[
-            "text-card-title leading-none text-foreground transition-opacity hover:opacity-70",
+            "flex h-full items-center pr-2 text-card-title leading-none text-foreground transition-opacity hover:opacity-70",
             isMenuOpen ? "invisible" : "",
           ].join(" ")}
         >
