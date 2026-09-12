@@ -32,6 +32,8 @@ export type PaletteState = {
   recentSearches: string[]
   searchResults: SearchResult[]
   isSearching: boolean
+  /** The last search failed, as opposed to matching nothing. */
+  searchFailed: boolean
 }
 
 export type PaletteAction =
@@ -41,6 +43,7 @@ export type PaletteAction =
   | { type: 'SET_SELECTED_INDEX'; index: number }
   | { type: 'SET_RECENT_SEARCHES'; searches: string[] }
   | { type: 'SET_SEARCH_RESULTS'; results: SearchResult[] }
+  | { type: 'SET_SEARCH_ERROR' }
   | { type: 'SET_SEARCHING'; value: boolean }
   | { type: 'CLEAR_QUERY' }
   | { type: 'CLEAR_RESULTS' }
