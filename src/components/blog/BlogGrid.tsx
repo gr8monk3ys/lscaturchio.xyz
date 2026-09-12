@@ -87,19 +87,24 @@ export function BlogGrid({
           not exist before, measured at 1. It is also the "showing X of Y at
           the top" a review asked for: the pagination line says it at the
           bottom, where a reader deciding whether to scroll cannot see it. */}
-      {totalBlogs > 0 && (
-        <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-border pb-3">
-          <h2 className="text-section-title">
-            {stageFilter && isBlogStage(stageFilter)
-              ? STAGE_LABELS[stageFilter].label.charAt(0) +
-                STAGE_LABELS[stageFilter].label.slice(1).toLowerCase()
-              : normalizedTag
-                ? `Tagged ${normalizedTag}`
-                : 'Every essay'}
-          </h2>
-          <span className="label-mono shrink-0">{totalBlogs}</span>
-        </div>
-      )}
+      {/* Not gated on `totalBlogs > 0` any more.
+          Gating it there meant the one state that most needs a landmark was
+          the state that lost it: a zero-result filter dropped the `h2`
+          entirely, so the page went `h1` straight to the empty-state
+          paragraph with nothing naming what had been searched. A review put it
+          exactly right — the heading should say "Tagged zzznotatag · 0", which
+          is the answer to the reader's question. */}
+      <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-border pb-3">
+        <h2 className="text-section-title">
+          {stageFilter && isBlogStage(stageFilter)
+            ? STAGE_LABELS[stageFilter].label.charAt(0) +
+              STAGE_LABELS[stageFilter].label.slice(1).toLowerCase()
+            : normalizedTag
+              ? `Tagged ${normalizedTag}`
+              : 'Every essay'}
+        </h2>
+        <span className="label-mono shrink-0">{totalBlogs}</span>
+      </div>
 
       {/* The same rows the unfiltered index renders.
           This was a three-column grid of full-bleed stock photography, so

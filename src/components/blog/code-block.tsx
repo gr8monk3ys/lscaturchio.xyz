@@ -194,7 +194,20 @@ export function CodeBlock({
             <code className="flex">
               {/* Line numbers */}
               <div
-                className="select-none pr-4 text-right text-muted-foreground/60 border-r border-border mr-4"
+                /* Full-strength `text-muted-foreground`, not `/60`.
+                    The opacity modifier measured 2.43:1 at 12.6px in BOTH
+                    themes, against a 4.5:1 floor — a real WCAG 1.4.3 failure
+                    on every essay that shows code, and one I had already
+                    claimed did not exist: the note in semantic-search-demo.tsx
+                    asserted /lab's snippet was "the only WCAG contrast failure
+                    anywhere on the site". It was not, and the claim is
+                    corrected there too.
+                    Line numbers are content, not a disabled control. The two
+                    other `/60` uses in this repo are the exhausted Prev/Next
+                    spans, which carry `aria-disabled="true"` and are exempt
+                    from 1.4.3 — which is why a blanket ban would be wrong and
+                    this is the one instance that moves. */
+                className="select-none pr-4 text-right text-muted-foreground border-r border-border mr-4"
                 aria-hidden="true"
               >
                 {lineNumbers.map((lineNumber) => (
