@@ -58,7 +58,12 @@ export function SemanticSearchDemo() {
   return (
     <section className="border border-border p-6">
       <h3 className="text-card-title">Semantic search demo</h3>
-      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+      {/* `max-w-prose` (65ch), not `max-w-2xl`. 672px of 14px text measures
+          about 96 characters per line, well past the 65-75 a reader tracks
+          comfortably; the essay body already runs at ~72. A `ch` unit also
+          holds that measure if the type scale ever moves, which a px cap
+          does not. */}
+      <p className="mt-1 max-w-prose text-sm text-muted-foreground">
         Try a query. This is hybrid retrieval over my essays: results are fused
         from vector similarity and keyword search, so a post can rank on meaning,
         on wording, or both. Each result says which one caught it.

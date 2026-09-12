@@ -392,8 +392,18 @@ export function ContactForm() {
             <p className="text-muted-foreground mb-4">
               I&apos;m currently accepting new consulting and build engagements.
             </p>
+            {/* Static, and hidden from assistive tech.
+                This was a 10x10px dot on `animate-pulse`, animating forever.
+                DESIGN.md:360 sanctions `animate-pulse` for skeletons — things
+                that are waiting on data — and DESIGN.md:337 states the site
+                animates continuously in exactly one place. An availability dot
+                is not waiting for anything; it is decoration that had appointed
+                itself the second perpetual motion on the site, on the page a
+                visitor is most likely to be reading carefully.
+                The sentence beside it carries the entire meaning, so the dot is
+                `aria-hidden` rather than being announced as an unnamed bullet. */}
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 bg-primary rounded-full animate-pulse" />
+              <span aria-hidden className="h-2.5 w-2.5 rounded-full bg-primary" />
               <span className="text-sm font-medium text-primary">Available for new work</span>
             </div>
           </div>

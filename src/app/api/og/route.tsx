@@ -46,13 +46,25 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
   const label =
     type === 'blog' ? 'Blog' : type === 'project' ? 'Project' : 'lscaturchio.xyz';
 
-  // Flat editorial palette — matches the site: warm ivory paper, forest-green
-  // ink accent, near-black text, hairline borders. No gradients, no orange.
-  const INK = '#1b1b17';
-  const MUTED = '#5c574c';
-  const GREEN = '#135c34';
-  const HAIRLINE = 'rgba(27, 27, 23, 0.14)';
-  const PAPER = '#f7f4ed';
+  // The site's palette, by its documented values.
+  //
+  // This block used to declare four near-misses — `#1b1b17` for Ink `#1a1f23`,
+  // `#5c574c` for Ink Muted `#606976`, `#135c34` for Forest Ink `#184e35`,
+  // `#f7f4ed` for Paper `#f9f8f5`. The comment above it claimed the palette
+  // "matches the site", and nobody had checked; a review found a whole
+  // parallel palette here, on the image every link preview of this site
+  // renders. Four colours that are almost right are harder to spot than one
+  // that is obviously wrong, which is why it survived.
+  //
+  // Values are literals rather than CSS variables because Satori rasterises
+  // this outside the document and cannot read `var(--…)`. That is the reason
+  // the drift was possible, so the token names are in the comments: if
+  // DESIGN.md changes, this is the file that will not follow on its own.
+  const INK = '#1a1f23';            // ink
+  const MUTED = '#606976';          // ink-muted
+  const GREEN = '#184e35';          // forest-ink
+  const HAIRLINE = '#e2dbd5';       // hairline
+  const PAPER = '#f9f8f5';          // paper
   const SERIF = "'Fraunces', Georgia, 'Times New Roman', serif";
   const SANS = "ui-sans-serif, system-ui, sans-serif";
 
@@ -208,14 +220,14 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
                 height: '400px',
                 borderRadius: '16px',
                 border: `1px solid ${HAIRLINE}`,
-                backgroundColor: 'rgba(19, 92, 52, 0.05)',
+                backgroundColor: 'rgba(24, 78, 53, 0.05)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontFamily: SERIF,
                 fontSize: '120px',
                 fontWeight: 600,
-                color: 'rgba(19, 92, 52, 0.22)',
+                color: 'rgba(24, 78, 53, 0.22)',
               }}
               aria-hidden
             >

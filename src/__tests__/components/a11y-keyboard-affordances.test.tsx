@@ -38,6 +38,7 @@ function renderDialog(selectedIndex: number) {
       onClearQuery={vi.fn()}
       onClose={vi.fn()}
       onHoverIndex={vi.fn()}
+      searchFailed={false}
       onSelectCommand={vi.fn()}
       query=""
       selectedIndex={selectedIndex}

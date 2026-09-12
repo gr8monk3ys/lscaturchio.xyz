@@ -19,6 +19,7 @@ export function CommandPalette({ className }: CommandPaletteProps): React.ReactE
     listRef,
     openPalette,
     query,
+    searchFailed,
     setQuery,
     setSelectedIndex,
   } = useCommandPalette()
@@ -40,6 +41,7 @@ export function CommandPalette({ className }: CommandPaletteProps): React.ReactE
           onHoverIndex={setSelectedIndex}
           onSelectCommand={executeCommand}
           query={query}
+          searchFailed={searchFailed}
           selectedIndex={activeSelectedIndex}
         />
       )}

@@ -23,8 +23,8 @@ export function ConsoleGreeting() {
     const log = window.console?.log?.bind(window.console);
     if (!log) return;
 
-    const head = "font: 600 15px ui-monospace, 'IBM Plex Mono', monospace; color: #135c34;";
-    const body = "font: 13px ui-monospace, 'IBM Plex Mono', monospace; color: #6b6557; line-height: 1.7;";
+    const head = "font: 600 15px ui-monospace, 'IBM Plex Mono', monospace; color: #184e35;";
+    const body = "font: 13px ui-monospace, 'IBM Plex Mono', monospace; color: #606976; line-height: 1.7;";
 
     log("%cYou opened the console. I like you already.", head);
     log(

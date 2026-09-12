@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { Search, X, Sparkles, Loader2, ArrowRight } from 'lucide-react'
+import { Search, X, Loader2, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { CommandCategory, CommandGroups, CommandItem } from './types'
 
@@ -33,6 +33,7 @@ type DialogProps = {
   onHoverIndex: (index: number) => void
   onSelectCommand: (command: CommandItem) => void
   query: string
+  searchFailed: boolean
   selectedIndex: number
 }
 
@@ -48,6 +49,7 @@ export function CommandPaletteDialog({
   onHoverIndex,
   onSelectCommand,
   query,
+  searchFailed,
   selectedIndex,
 }: DialogProps): React.ReactElement {
   let globalIndex = -1
@@ -55,43 +57,82 @@ export function CommandPaletteDialog({
     commandCount > 0 ? `${LISTBOX_ID}-option-${selectedIndex}` : undefined
 
   /**
+   * Keep Tab inside the dialog.
+   *
+   * It declares `aria-modal="true"` and had no trap, so Tab from the input ran
+   * Clear search -> <body> -> the skip link -> the nav links behind the scrim:
+   * focus landing on content that is visually obscured and semantically inert.
+   * `aria-modal` is a promise to assistive tech that the rest of the page is
+   * unavailable, and the tab order has to keep it.
+   */
+  const panelRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== 'Tab') return
+      const panel = panelRef.current
+      if (!panel) return
+      const focusable = panel.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      const active = document.activeElement
+
+      if (event.shiftKey && (active === first || !panel.contains(active))) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && (active === last || !panel.contains(active))) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+    document.addEventListener('keydown', onKeyDown, true)
+    return () => document.removeEventListener('keydown', onKeyDown, true)
+  }, [])
+
+  /**
    * Portalled to `document.body`, and it has to be.
    *
    * This dialog renders inside the header, and `.site-header` carries
    * `backdrop-filter: blur(12px)` — which makes it the containing block for
    * `position: fixed` descendants. So `inset-0` resolved to the header's 81px
-   * box instead of the viewport: the scrim was measured at 1429x80 and covered
-   * the nav bar only, and `top-[20%]` of 81px put the panel at ~16px, flush
-   * under the top edge. A design review reported the palette "sits flush at
-   * y=8 over the fixed nav" and that the masthead "reads through around it",
-   * and this is why — the overlay was trapped in the bar that opened it.
+   * box instead of the viewport: the scrim measured 1429x80 and covered the
+   * nav bar only, and `top-[20%]` of 81px put the panel at ~16px, flush under
+   * the top edge. The overlay was trapped in the bar that opened it.
    *
-   * A scrim that covers 80px of a 900px viewport is not a scrim, so this is
-   * the other half of the Scrim Rule: the colour was wrong *and* the
-   * containing block was.
+   * Straight to `document.body`, with no `portalTarget` state in between.
+   * That state is what broke keyboard opening: it started null, so the first
+   * commit rendered nothing, and `openPalette`'s single
+   * `requestAnimationFrame` fired before the input existed — so
+   * `inputRef.current?.focus()` no-oped and every keystroke after Cmd+K went
+   * to `<body>`. The dialog is only ever rendered when `isOpen`, which is
+   * never true on the server, so `document` is always there and the state
+   * bought nothing but a wasted render and that bug.
    */
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null)
-  useEffect(() => setPortalTarget(document.body), [])
-  if (!portalTarget) return <></>
-
   return createPortal(
     <>
-      {/* Ink at 25%, the value `.ask-scrim` already uses — not paper at 80%.
-          This was `bg-background/80`, which is the page's own colour laid over
+      {/* The scrim: ink at 25%, and a div.
+          The colour was `bg-background/80` — the page's own colour laid over
           the page, so it lightened instead of separating and the masthead read
-          straight through it. The palette has no shadow (correctly: the Two
-          Sheets Rule spends both of its elevated objects elsewhere), which left
-          it with nothing at all to say it was a layer. A scrim is not a shadow,
-          so the Flat Paper Rule survives — DESIGN.md now names it as the third
-          sanctioned separation mechanism. */}
-      <button
-        type="button"
+          straight through it. It is now the ink-at-25% that `.ask-scrim`
+          already used, which DESIGN.md names as the Scrim Rule: the palette
+          correctly carries no shadow (the Two Sheets Rule spends both of its
+          elevated objects elsewhere), so a scrim is the only separation
+          mechanism left to it, and a scrim is not elevation.
+          The element was a full-viewport `<button aria-label="Close search">`,
+          which made the backdrop a tab stop announced as a button — a keyboard
+          user's first Tab inside the dialog landed on it. A scrim is
+          decoration with a convenience click; Escape is the keyboard
+          affordance, and it already works and restores focus to the trigger. */}
+      <div
+        aria-hidden="true"
         onClick={onClose}
-        aria-label="Close search"
         className="fixed inset-0 z-50 bg-foreground/25 backdrop-blur-xs"
       />
 
       <div
+        ref={panelRef}
         className="fixed left-1/2 top-[20%] z-50 w-full max-w-xl -translate-x-1/2 px-4"
       >
         <div
@@ -102,8 +143,14 @@ export function CommandPaletteDialog({
         >
           <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
             <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+            {/* `autoFocus`: mounting and focusing in one step.
+                Focus was driven from `openPalette` through a single
+                `requestAnimationFrame`, which is a race against this element
+                existing — and the portal lost it. Letting the element that
+                needs focus ask for it removes the timing question entirely. */}
             <input
               ref={inputRef}
+              autoFocus
               type="text"
               value={query}
               onChange={(e) => onChangeQuery(e.target.value)}
@@ -141,10 +188,25 @@ export function CommandPaletteDialog({
             aria-label="Search results"
           >
             {commandCount === 0 ? (
+              /* Two states, two messages. A failed request used to render the
+                 "no results" copy, so an unavailable search was indistinguishable
+                 from an empty one — and the sparkle glyph read as magic
+                 happening at the moment nothing had. */
               <div className="py-8 text-center text-muted-foreground">
-                <Sparkles className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>No results found for &quot;{query}&quot;</p>
-                <p className="text-sm mt-1">Try searching for something else</p>
+                {searchFailed ? (
+                  <>
+                    <p className="text-foreground">Search is unavailable right now.</p>
+                    <p className="mt-1 text-sm">
+                      It may be rate limited. Try again in a moment, or browse from the
+                      footer.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p>No results found for &quot;{query}&quot;</p>
+                    <p className="text-sm mt-1">Try searching for something else</p>
+                  </>
+                )}
               </div>
             ) : (
               (Object.entries(groupedCommands) as [CommandCategory, CommandItem[]][]).map(
@@ -226,6 +288,6 @@ export function CommandPaletteDialog({
         </div>
       </div>
     </>,
-    portalTarget
+    document.body
   )
 }

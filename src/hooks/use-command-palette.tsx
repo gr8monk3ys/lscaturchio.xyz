@@ -55,6 +55,7 @@ const INITIAL_STATE: PaletteState = {
   recentSearches: [],
   searchResults: [],
   isSearching: false,
+  searchFailed: false,
 }
 
 function paletteReducer(state: PaletteState, action: PaletteAction): PaletteState {
@@ -69,15 +70,18 @@ function paletteReducer(state: PaletteState, action: PaletteAction): PaletteStat
         searchResults: [],
         selectedIndex: 0,
         isSearching: false,
+        searchFailed: false,
       }
     case 'SET_QUERY':
-      return { ...state, query: action.query, selectedIndex: 0 }
+      return { ...state, query: action.query, selectedIndex: 0, searchFailed: false }
     case 'SET_SELECTED_INDEX':
       return { ...state, selectedIndex: action.index }
     case 'SET_RECENT_SEARCHES':
       return { ...state, recentSearches: action.searches }
     case 'SET_SEARCH_RESULTS':
-      return { ...state, searchResults: action.results, selectedIndex: 0 }
+      return { ...state, searchResults: action.results, selectedIndex: 0, searchFailed: false }
+    case 'SET_SEARCH_ERROR':
+      return { ...state, searchResults: [], selectedIndex: 0, searchFailed: true }
     case 'SET_SEARCHING':
       return { ...state, isSearching: action.value }
     case 'CLEAR_QUERY':
@@ -132,6 +136,7 @@ export type CommandPaletteModel = {
   listRef: React.RefObject<HTMLDivElement | null>
   openPalette: () => void
   query: string
+  searchFailed: boolean
   setQuery: (value: string) => void
   setSelectedIndex: (index: number) => void
 }
@@ -143,7 +148,7 @@ export function useCommandPalette(): CommandPaletteModel {
   const router = useRouter()
   const { theme, setTheme } = useTheme()
 
-  const { isOpen, isSearching, query, recentSearches, searchResults, selectedIndex } = state
+  const { isOpen, isSearching, query, recentSearches, searchFailed, searchResults, selectedIndex } = state
 
   useEffect(() => {
     const saved = safeStorage.getJSON<string[]>('command-palette-recent')
@@ -177,14 +182,37 @@ export function useCommandPalette(): CommandPaletteModel {
       })
 
       if (!response.ok) {
-        dispatch({ type: 'SET_SEARCH_RESULTS', results: [] })
+        // A failure is not an empty corpus. This branch rendered the same
+        // "No results found for X" as a genuine miss, so a 429 from the
+        // AI_HEAVY limiter — which the fourth query in ten seconds earns —
+        // told the reader their search matched nothing.
+        dispatch({ type: 'SET_SEARCH_ERROR' })
         return
       }
 
-      const data = (await response.json()) as { results?: SearchResult[] }
-      dispatch({ type: 'SET_SEARCH_RESULTS', results: data.results ?? [] })
+      /**
+       * `data.data.results`, not `data.results`.
+       *
+       * `/api/search` answers through `apiSuccess`, which wraps its payload:
+       * `{ data: { query, results, count }, success: true }`. This read the
+       * top level, so `data.results` was `undefined` on every response and
+       * `?? []` turned it into "No results found" — for every query, for every
+       * user, since the envelope was introduced. Verified against the live
+       * route: POST /api/search with {"query":"boredom"} returns 2 results and
+       * the palette showed none.
+       *
+       * Page names kept working and hid it, because those come from
+       * `paletteDestinations` and never touch the network. So the failure was
+       * invisible to anyone typing "projects" and total for anyone typing a
+       * word from an essay. `/lab`'s demo reads the same endpoint correctly,
+       * which is why search appeared to work there and nowhere else.
+       */
+      const payload = (await response.json()) as {
+        data?: { results?: SearchResult[] }
+      }
+      dispatch({ type: 'SET_SEARCH_RESULTS', results: payload.data?.results ?? [] })
     } catch {
-      dispatch({ type: 'SET_SEARCH_RESULTS', results: [] })
+      dispatch({ type: 'SET_SEARCH_ERROR' })
     } finally {
       dispatch({ type: 'SET_SEARCHING', value: false })
     }
@@ -388,6 +416,7 @@ export function useCommandPalette(): CommandPaletteModel {
     listRef,
     openPalette,
     query,
+    searchFailed,
     setQuery: (value: string) => dispatch({ type: 'SET_QUERY', query: value }),
     setSelectedIndex: (index: number) => dispatch({ type: 'SET_SELECTED_INDEX', index }),
   }
