@@ -212,7 +212,7 @@ function PhotoLightbox({
             <div className="mt-4 bg-white/5 backdrop-blur-xs rounded-xl p-4 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
-                  <h3 className="text-white text-lg font-medium mb-2">{currentPhoto.alt}</h3>
+                  <h3 className="text-card-title mb-2 text-white">{currentPhoto.alt}</h3>
                   <div className="flex flex-wrap gap-x-4 gap-y-2 text-white/70 text-sm">
                     {currentPhoto.location && (
                       <span className="flex items-center gap-1.5">

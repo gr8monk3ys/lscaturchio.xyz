@@ -100,6 +100,10 @@ const RULES: Rule[] = [
     because:
       "Above text-card-title (1.25rem) there is nothing but headings, so text-2xl and up belong to the ramp entirely. The heading-ramp rule only sees a size beside font-display, which misses every heading that never reached for the display font in the first place — section-heading.tsx, /tag, /secret and eighteen others set their own scale with font-bold and were invisible to it.",
     test: /\b(?:sm:|md:|lg:|xl:|2xl:)?text-(?:[2-9]xl)\b/,
+    // `text-lg`/`text-xl` are deliberately NOT in this pattern: both are
+    // legitimate body steps (`text-body-lg` builds on `text-lg`). The sibling
+    // rule `heading-scale-outside-ramp` below catches them where they are
+    // actually wrong — on an element that is a heading.
     // Two voices legitimately reach this size without being headings: a mono
     // step number in the label voice, and a figure set in tabular numerals.
     // Neither borrows the heading ramp, so neither drifts from it.
@@ -164,6 +168,12 @@ const RULES: Rule[] = [
     because:
       "The Flat Paper Rule: a hovered surface changes tint and border colour, it does not rise. Scale on an image is a lift.",
     test: /\b(?:group-)?hover:scale-/,
+  },
+  {
+    id: "heading-scale-outside-ramp",
+    because:
+      "A heading takes a ramp token, not a raw size. `display-scale-outside-ramp` starts at text-2xl because everything above text-card-title is a heading — which leaves text-lg and text-xl, where a heading can invent its own scale in the body voice and pass every rule. /blog did exactly that twice: 83 essay titles as `<span>` at 16px, and the archive's `<h2 class=\"text-xl font-semibold tracking-tight\">`. Both were the most important text on the page, set as body copy, one step under the threshold.",
+    test: /<h[1-6][^>]*className="[^"]*\b(?:sm:|md:|lg:|xl:|2xl:)?text-(?:lg|xl)\b/,
   },
   {
     id: "hardcoded-destination",

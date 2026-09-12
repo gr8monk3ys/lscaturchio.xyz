@@ -115,7 +115,15 @@ test.describe('design invariants, in the DOM', () => {
       // A destination's *name* is what the header and footer call it, and that
       // is the pair a reader compares when they arrive from search and then
       // look at the nav. Nothing else on the page is making a naming claim.
-      const links = await page.locator('header nav a[href^="/"], footer a[href^="/"]').evaluateAll((nodes) =>
+      //
+      // Fourth correction, same lesson: `header nav` matches a `<nav>` inside
+      // ANY `<header>`, including the page's own. /blog's stage filter lives
+      // there, so consolidating two filters into one — which gave the survivor
+      // an "All 84" option pointing at /blog — made this rule report that
+      // /blog is called both "Writing" and "All 84". A filter option names a
+      // subset of a list, not a destination. `header.site-header` is the site
+      // chrome and nothing else.
+      const links = await page.locator('header.site-header nav a[href^="/"], footer a[href^="/"]').evaluateAll((nodes) =>
         nodes.map((node) => ({
           href: (node as HTMLAnchorElement).getAttribute('href') ?? '',
           // The visible label, not the accessible name: an icon-only link has
@@ -174,7 +182,12 @@ test.describe('design invariants, in the DOM', () => {
     const stageFilter = page.getByRole('navigation', { name: 'Filter by stage' })
     await expect(stageFilter, '/blog must render the filter its lede promises').toBeVisible()
 
-    const firstStage = stageFilter.getByRole('link').first()
+    // Not `.first()`: the filter now opens with an "All" option, which hrefs
+    // back to the unfiltered route and so can never set `?stage=`. That "All"
+    // came from consolidating two competing stage filters into one, and it
+    // made this test click the reset link and wait for a param that was never
+    // coming.
+    const firstStage = stageFilter.getByRole('link', { name: /^(SEEDLING|BUDDING|EVERGREEN)/ }).first()
     const label = (await firstStage.textContent())?.trim() ?? ''
 
     // `waitForURL`, not `waitForLoadState('networkidle')`: this is a client-side
@@ -479,5 +492,43 @@ test.describe('design invariants, in the DOM', () => {
         ...offenders,
       ].join('\n')
     ).toEqual([])
+  })
+  test('one concept, one control: /blog has a single stage filter', async ({ page }) => {
+    // /blog shipped two. The page header rendered `SEEDLING 23 BUDDING 49
+    // EVERGREEN 12` selecting with forest ink and an underline, and `BlogGrid`
+    // rendered its own `Stage · All · SEEDLING · …` 97px below it, selecting
+    // with ink-versus-muted at 11.52px and carrying no counts. Same word, same
+    // href, same concept, one screen, two answers — which teaches a reader
+    // that neither is authoritative.
+    //
+    // A regex cannot see this: both navs were correct in isolation. Counting
+    // the rendered controls is the only check that could have caught it, which
+    // is why it belongs here and not in the drift suite.
+    for (const url of ['/blog', '/blog?stage=seedling', '/blog?tag=attention&stage=budding']) {
+      await page.goto(url)
+
+      const stageNavs = await page
+        .locator('nav[aria-label*="stage" i]')
+        .evaluateAll((navs) => navs.filter((n) => (n as HTMLElement).offsetParent !== null).length)
+      expect(stageNavs, `${url} should render exactly one stage filter`).toBe(1)
+
+      // And it must say which option is chosen, in the filter itself.
+      const current = await page
+        .locator('nav[aria-label*="stage" i] [aria-current="page"]')
+        .count()
+      expect(current, `${url} should mark exactly one stage option current`).toBe(1)
+    }
+  })
+
+  test('the stage vocabulary is printed, not only hovered', async ({ page }) => {
+    // SEEDLING / BUDDING / EVERGREEN is the site's most distinctive editorial
+    // idea, and its gloss lived only in a native `title=` attribute — which
+    // does not exist on a touch device, where most readers arrive. A control
+    // whose vocabulary cannot be learned is decoration.
+    await page.goto('/blog')
+    const body = await page.locator('main').innerText()
+    for (const gloss of ['Rough notes', 'Developing', 'Considered finished']) {
+      expect(body, `"${gloss}" should be printed on /blog`).toContain(gloss)
+    }
   })
 })

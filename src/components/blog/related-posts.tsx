@@ -99,7 +99,7 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
             />
           </div>
           {post.date && <span className="label-mono mt-4 block">{formatDate(post.date)}</span>}
-          <h4 className="mt-2 line-clamp-2 text-lg font-semibold leading-tight tracking-tight transition-colors group-hover:text-primary">
+          <h4 className="text-subsection mt-2 line-clamp-2 transition-colors group-hover:text-primary">
             {post.title}
           </h4>
           <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">

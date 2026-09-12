@@ -43,7 +43,7 @@ export function NowEditor({ initial }: { initial: NowContent }) {
         void publish();
       }}
     >
-      <h2 className="mb-2 text-lg font-semibold">Location</h2>
+      <h2 className="text-subsection mb-2">Location</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className={fieldClass}>
           <label className={labelClass}>Label</label>
@@ -65,7 +65,7 @@ export function NowEditor({ initial }: { initial: NowContent }) {
         </div>
       </div>
 
-      <h2 className="mb-2 mt-6 text-lg font-semibold">Building</h2>
+      <h2 className="text-subsection mb-2 mt-6">Building</h2>
       {building.map((b, i) => (
         <fieldset key={i} className="mb-4 rounded-md border border-border p-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -115,7 +115,7 @@ export function NowEditor({ initial }: { initial: NowContent }) {
         + Add project
       </button>
 
-      <h2 className="mb-2 text-lg font-semibold">Thinking about</h2>
+      <h2 className="text-subsection mb-2">Thinking about</h2>
       {thinkingAbout.map((t, i) => (
         <div key={i} className="mb-2 flex gap-2">
           <textarea

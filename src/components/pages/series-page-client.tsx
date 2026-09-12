@@ -113,7 +113,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
 
                       {/* Post Content */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors line-clamp-1">
+                        <h3 className="text-card-title mb-1 line-clamp-1 transition-colors group-hover:text-primary">
                           {post.title}
                         </h3>
                         <p className="text-sm text-muted-foreground line-clamp-2 mb-2">

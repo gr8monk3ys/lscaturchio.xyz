@@ -54,7 +54,7 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
         {groups.map(({ theme, posts: themePosts }) => (
           <section key={theme.slug}>
             <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-              <h3 className="text-lg font-semibold tracking-tight">{theme.title}</h3>
+              <h3 className="text-subsection">{theme.title}</h3>
               <span className="label-mono shrink-0">{themePosts.length}</span>
             </div>
             <ul className="mt-4 space-y-3">
