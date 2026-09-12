@@ -3,6 +3,7 @@
 import { IconBrandGithub, IconBrandLinkedin, IconBrandTwitter } from "@tabler/icons-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { contactFormSchema } from "@/lib/validations";
 
 import { CONTACT_FIELD_LIMITS } from "@/lib/validations";
 
@@ -82,6 +83,31 @@ export function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    /**
+     * Validate here, with the schema the API validates against.
+     *
+     * The form carried `required` and nothing else, so the first failure a
+     * visitor met was the browser's own bubble — a grey box in the platform
+     * font, positioned by the browser, gone on the next keystroke, on a site
+     * that otherwise owns every surface down to its scrollbars. It also
+     * bypassed the field-scoped error rendering that already exists here,
+     * complete with `aria-invalid`, `aria-describedby` and the focus move.
+     *
+     * `noValidate` is only safe because this reuses `contactFormSchema` —
+     * literally the object `/api/contact` parses. A hand-written client copy
+     * would be a second source of truth for what a valid message is, and the
+     * two would drift.
+     */
+    const parsed = contactFormSchema.safeParse(formData);
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      const field = typeof issue?.path[0] === "string" ? issue.path[0] : undefined;
+      setSubmitStatus("error");
+      setFailure({ message: issue?.message ?? "Check the fields above.", field });
+      return;
+    }
+
     setIsSubmitting(true);
     setFailure(null);
 
@@ -191,7 +217,7 @@ export function ContactForm() {
         {/* Contact Form */}
         <div>
           <h2 className="text-section-title mb-6">Send a message</h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <div className="mb-2 flex items-baseline gap-2">

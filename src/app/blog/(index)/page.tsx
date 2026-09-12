@@ -109,8 +109,8 @@ export default async function Blog({
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
             Mostly arguments about power, money, and attention — with notes on the systems I
-            build in between. Grouped by what they are about; filter by tag or stage for the
-            date-ordered archive.
+            build in between. Grouped by what they are about; filter by stage for the
+            date-ordered archive, or browse by topic.
           </p>
           {/* The lede has always said "filter by stage for the date-ordered
               archive", and the page rendered no control that could set one:
