@@ -1,9 +1,6 @@
-import Link from "next/link";
-
 import { groupByTheme } from "@/lib/blog-themes";
 import type { BlogPreview } from "@/lib/blog-data";
-import { formatDate } from "@/lib/formatDate";
-import { StageBadge } from "@/components/blog/stage-badge";
+import { EssayRows } from "@/components/blog/essay-rows";
 
 // BlogPreview already carries slug/title/description/tags; declaring a local
 // structural type here would silently drift from it.
@@ -36,53 +33,9 @@ export function ThemedBlogSections({ posts }: { posts: BlogPreview[] }) {
               about 96 characters, and these five section descriptions are
               the widest running text on the index. */}
           <p className="mt-3 max-w-prose text-sm text-muted-foreground">{theme.description}</p>
-          <ul className="mt-6 divide-y divide-border border-b border-border">
-            {themePosts.map((post) => (
-              <li key={post.slug}>
-                <Link href={`/blog/${post.slug}`} prefetch={false} className="group block py-4">
-                  {/* The wall label DESIGN.md's row pattern asks for, and this
-                      index omitted: "a mono label, a semibold title…, a
-                      two-line clamped description". Every essay authors a
-                      stage, and until now the index showed none of them — a
-                      seedling and an evergreen looked identical, which is the
-                      one thing writing-style.md says the label is for: "the
-                      label is the honesty". The reader saw it only after
-                      committing to the click. */}
-                  <span className="label-mono flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <time dateTime={post.date}>{formatDate(post.date)}</time>
-                    {post.stage && (
-                      <>
-                        <span aria-hidden className="text-foreground/25">·</span>
-                        <StageBadge stage={post.stage} />
-                      </>
-                    )}
-                  </span>
-                  {/* An `h3` on the ramp, not a `<span>` at body size.
-                      The heading outline of the site's most important index
-                      was H1 plus five H2s and nothing else: 83 essay titles
-                      were `<span>`s, so a screen-reader user could not use the
-                      heading rotor to skim them at all, and sighted readers got
-                      them at 16px Instrument Sans — body copy, in the body
-                      voice, for the one element the whole page exists to let
-                      you choose between.
-                      `text-card-title` is the step DESIGN.md defines for a
-                      heading inside a list row, and it is Fraunces, so the
-                      title now reads in the display voice against its mono
-                      label and sans description. */}
-                  <h3 className="text-card-title mt-2 text-foreground group-hover:text-primary">
-                    {post.title}
-                  </h3>
-                  {/* `max-w-prose`. This ran the full 1152px — measured at
-                      121 characters per line at 1440px, against a Measure Rule
-                      this same session wrote into DESIGN.md and then did not
-                      apply to the page with the most running text on it. */}
-                  <span className="mt-1 block max-w-prose text-sm text-muted-foreground line-clamp-2">
-                    {post.description}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-6">
+            <EssayRows posts={themePosts} />
+          </div>
         </section>
       ))}
     </div>
