@@ -61,6 +61,53 @@ describe("ContactForm", () => {
     expect(screen.getByLabelText("Email")).toHaveAttribute("type", "email");
   });
 
+  /**
+   * The form used to carry `required` and nothing else, so an empty submit
+   * produced the browser's own bubble and never reached the field-scoped error
+   * rendering this component already has. It now validates against
+   * `contactFormSchema` — the same object `/api/contact` parses, so a client
+   * copy cannot drift from the server's idea of a valid message.
+   */
+  it("does not post an empty form, and says which field is wrong", async () => {
+    render(<ContactForm />);
+    submitForm();
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("moves focus to the first field that fails client validation", async () => {
+    render(<ContactForm />);
+    submitForm();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Name")).toHaveFocus();
+    });
+  });
+
+  it("does not post when only the email is malformed", async () => {
+    render(<ContactForm />);
+    fillForm();
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "not-an-address" },
+    });
+    submitForm();
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("Email")).toHaveFocus();
+  });
+
+  it("carries noValidate so its own errors are the ones a visitor sees", () => {
+    render(<ContactForm />);
+    const form = screen.getByRole("button", { name: /send project details/i }).closest("form");
+    expect(form).toHaveAttribute("novalidate");
+  });
+
   it("posts the form data to /api/contact and shows the success message", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({}));
     render(<ContactForm />);

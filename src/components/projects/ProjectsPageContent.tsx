@@ -67,7 +67,6 @@ export function ProjectsPageContent({
   );
 
   const catalogueTotal = summarizeCatalogue().total;
-  const hasFilters = category !== "all" || !!tech;
 
   return (
     <div className="space-y-8">
@@ -79,11 +78,16 @@ export function ProjectsPageContent({
         onClearFilters={handleClearFilters}
       />
 
-      {hasFilters && (
-        <p className="label-mono text-muted-foreground">
-          {filteredProjects.length} of {catalogueTotal}
-        </p>
-      )}
+      {/* `role="status"`, so a filter change is heard and not only seen.
+          The six category buttons got `aria-pressed` in #235 and a group name
+          in #237, which told a screen-reader user *which* filter was on — and
+          still left the result silent: clicking AI/ML swaps 18 cards for 6
+          with no announcement that anything happened. The visible count was
+          already here; it just was not a live region. Also unconditional now,
+          because "18 of 18" is the answer to "did my click do anything". */}
+      <p role="status" className="label-mono text-muted-foreground">
+        {filteredProjects.length} of {catalogueTotal}
+      </p>
 
       {filteredProjects.length > 0 ? (
         <ProjectGallery projects={filteredProjects} />

@@ -169,7 +169,13 @@ export function ProjectGallery({ projects }: { projects: Product[] }): React.Rea
           </AnimatePresence>
         </div>
 
-        <aside className="hidden lg:block">
+        {/* `aria-hidden`: this is a visual echo, not new content.
+            The rail shows whichever card is hovered or focused, so everything
+            in it is already in the list beside it — and it had no name and no
+            live region, which meant assistive tech met an unnamed panel whose
+            contents silently changed. A preview of content that is already
+            announced is decoration. */}
+        <aside aria-hidden="true" className="hidden lg:block">
           <div className="sticky top-24">
             <ProjectRail project={active} />
           </div>
