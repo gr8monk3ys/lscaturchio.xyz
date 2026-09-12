@@ -59,6 +59,16 @@ export function ProjectFilters({
           return (
             <button
               key={category.value}
+              type="button"
+              /* `aria-pressed`, because Forest Ink is not an announcement.
+                 These six carried their selected state in colour and border
+                 alone — no `aria-pressed`, `aria-selected` or `aria-current` —
+                 so a screen-reader user heard six identical buttons and could
+                 not tell which filter was applied. The `Browse mode` toggle
+                 beside them already does this, and /blog's stage row does it
+                 with `aria-current="page"`; this row was the one that said
+                 nothing. */
+              aria-pressed={isActive}
               onClick={() => onCategoryChange(category.value)}
               className={cn(
                 "label-mono flex items-center gap-1.5 border px-3.5 py-2 transition-colors",

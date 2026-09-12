@@ -26,11 +26,24 @@ describe("stripMarkdown", () => {
     expect(stripMarkdown("Written in C# for issue #1.")).toBe("Written in C# for issue #1.");
   });
 
-  it("removes an UNMATCHED code fence", () => {
+  it("removes an UNMATCHED code fence, and its language tag with it", () => {
     // The likelier case by far, and the one that shipped: a snippet is a window
     // cut out of the middle of a document, so its fence usually has no partner.
     expect(stripMarkdown("``` The result is that vague queries still land…")).toBe(
       "The result is that vague queries still land…"
+    );
+    // An opening fence carries a language, which was left sitting inline as if
+    // it were prose: the live demo read "} python class AIService: …".
+    expect(stripMarkdown("```python class AIService: pass")).toBe("class AIService: pass");
+    // …including when the newline between fence and tag flattened to a space.
+    expect(stripMarkdown("``` python class AIService: pass")).toBe("class AIService: pass");
+    // But a capitalised sentence after a bare fence is prose, not a language.
+    expect(stripMarkdown("``` The result is that vague queries still land…")).toBe(
+      "The result is that vague queries still land…"
+    );
+    // And a lowercase ordinary word is not a language either.
+    expect(stripMarkdown("``` the audit only checks what it can reach")).toBe(
+      "the audit only checks what it can reach"
     );
   });
 
@@ -44,8 +57,8 @@ describe("stripMarkdown", () => {
     );
   });
 
-  it("unwraps bold, italics and inline code", () => {
-    expect(stripMarkdown("Read **the essay** and _then_ `npm run x`.")).toBe(
+  it("unwraps asterisk emphasis and inline code, and leaves underscores alone", () => {
+    expect(stripMarkdown("Read **the essay** and *then* `npm run x`.")).toBe(
       "Read the essay and then npm run x."
     );
   });
@@ -62,8 +75,21 @@ describe("stripMarkdown", () => {
     );
   });
 
-  it("still unwraps real underscore emphasis at word boundaries", () => {
-    expect(stripMarkdown("this is _emphatic_ prose")).toBe("this is emphatic prose");
+  it("leaves underscore emphasis markers visible, by design", () => {
+    // The trade this module makes. Two attempts tried to tell `__bold__` from
+    // `__init__` with lookaheads; the second passed its tests and still
+    // shipped `def init__(self` to the live page. A visible `_marker_` in a
+    // plain-text preview is far cheaper than a corrupted identifier on the
+    // page whose job is to prove the author can build retrieval.
+    expect(stripMarkdown("this is _emphatic_ prose")).toBe("this is _emphatic_ prose");
+  });
+
+  it("survives TWO dunders in one snippet — the case that shipped broken", () => {
+    // `__(.*?)__(?!\()` backtracks to the later delimiter and strips across
+    // the pair. Verified in the browser this time, not only here.
+    expect(
+      stripMarkdown('class AIService: def __init__(self, privacy_mode="strict"): self.__init__')
+    ).toBe('class AIService: def __init__(self, privacy_mode="strict"): self.__init__');
   });
 
   it("strips blockquote and list markers", () => {

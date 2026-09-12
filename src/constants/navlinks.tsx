@@ -1,6 +1,5 @@
 import {
   User,
-  FileText,
   Briefcase,
   BookOpen,
   Bookmark,
@@ -18,7 +17,6 @@ import {
   Camera,
   Mic,
   MessageSquare,
-  Heart,
   TrendingUp
 } from 'lucide-react';
 
@@ -101,18 +99,24 @@ function item(href: string): NavItem {
  */
 const SITE_GROUPS: Array<{ name: string; icon: NavCategory['icon']; hrefs: string[] }> = [
   {
+    /* Group glyphs match their namesake destination's.
+       The mobile drawer shows both on one screen, so "Writing" appeared as a
+       book-open card and a file-text accordion, "Garden" as sparkles and a
+       heart, and `briefcase` did double duty as the Work group *and* the
+       "Hire me" destination. Unifying the names left the icons disagreeing,
+       which undoes half of it: a reader learns a glyph as fast as a word. */
     name: 'Writing',
-    icon: FileText,
+    icon: BookOpen,
     hrefs: ['/blog', '/topics', '/series', '/podcast', '/changelog'],
   },
   {
     name: 'Work',
-    icon: Briefcase,
+    icon: FolderKanban,
     hrefs: ['/projects', '/work-with-me', '/uses'],
   },
   {
     name: 'Garden',
-    icon: Heart,
+    icon: Sparkles,
     hrefs: ['/books', '/music', '/movies', '/photos', '/now', '/lab', '/guestbook', '/links'],
   },
   {
