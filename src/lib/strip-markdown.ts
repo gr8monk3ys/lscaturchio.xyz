@@ -18,7 +18,20 @@ export function stripMarkdown(text: string): string {
     // A snippet is a window cut out of the middle of a document, so a
     // fence is more often unmatched than matched: the observed defect was
     // literally `"``` The result is that vague queries still land…"`.
-    .replace(/`{3,}/g, " ")             // and any fence left over
+    // A fence and its language tag go together: an unmatched opening fence
+    // left `python` sitting inline as if it were prose.
+    // A fence, and the language tag that belongs to it.
+    //
+    // The tag is usually glued to the fence (```python) but a snippet is a
+    // flattened window, so the newline between them can become a space and
+    // leave `python` sitting inline as prose — which is what the live demo
+    // rendered. Matching any following word fixed that and broke the opposite
+    // case: "``` The result is…" lost the word "The". A closed list is the
+    // only version that can tell a language from a sentence.
+    .replace(
+      /`{3,}[ \t]*(?:python|ts|typescript|js|javascript|tsx|jsx|bash|sh|shell|zsh|json|ya?ml|toml|css|scss|html|sql|go|rust|rs|java|kotlin|swift|rb|ruby|php|c|cpp|csharp|diff|text|txt|md|mdx)?\b/gi,
+      " "
+    )
     .replace(/`([^`]+)`/g, "$1")        // inline code
     // ATX headings, at a line start *or* mid-string. The `m` flag alone was
     // not enough: a snippet is a flattened window of a document, so a
@@ -30,21 +43,25 @@ export function stripMarkdown(text: string): string {
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1") // images -> alt
     .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")  // links -> text
     .replace(/^\s{0,3}>\s?/gm, "")      // blockquotes
-    // Bold. `**` is unambiguous; `__` is not, because a dunder is spelled the
-    // same way. CommonMark really would read `__init__` as strong "init", so
-    // the discriminator has to come from context: a dunder is a method name
-    // and is followed by its call paren, while emphasis is followed by a
-    // space or punctuation. `__init__(self` therefore survives and
-    // `__really__.` still unwraps.
+    // Asterisk emphasis only. `*` cannot appear inside an identifier, so
+    // unwrapping it is safe.
     .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/__(.*?)__(?!\()/g, "$1")
-    // Italics, but not identifiers. `_` only opens emphasis at a word
-    // boundary: `__init__`, `privacy_mode` and `local_inference` are single
-    // words, and stripping their underscores turned a /lab snippet into
-    // "def init(self, privacymode=...): self. privacymode = privacymode",
-    // which reads as a typo rather than as code. `*` has no such ambiguity.
     .replace(/\*(\S(?:.*?\S)?)\*/g, "$1")
-    .replace(/(?<![A-Za-z0-9_])_(\S(?:.*?\S)?)_(?![A-Za-z0-9_(])/g, "$1")
+    // Underscore emphasis is NOT unwrapped, deliberately.
+    //
+    // Two attempts tried to tell `__bold__` from `__init__` with lookaheads,
+    // and the second one passed its unit tests and still shipped broken: with
+    // two dunders in one snippet, `__(.*?)__(?!\()` backtracks to the later
+    // delimiter and strips across the pair, so the live demo rendered
+    // `def init__(self, privacy_mode=...)`. It was verified in source and in
+    // tests and never in the browser, which is the whole reason it survived.
+    //
+    // The right answer is to stop trying. These are retrieval *snippets* —
+    // plain-text previews of prose, never rendered as markdown — so there is
+    // no emphasis to unwrap and nothing is lost by leaving `_` alone, while
+    // every identifier in a quoted code sample survives intact. A visible
+    // `_emphasis_` in a preview is a far cheaper defect than a corrupted
+    // symbol on the page that exists to prove the author can build retrieval.
     .replace(/^\s{0,3}([-*+]|\d+\.)\s+/gm, "") // list markers
     .replace(/\s+/g, " ")
     .trim();
