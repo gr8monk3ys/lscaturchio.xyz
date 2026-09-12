@@ -342,6 +342,42 @@ describe("heading case", () => {
 });
 
 describe("navigation vocabulary", () => {
+  it("files every destination under one group", async () => {
+    // The sibling of the rule below, and the gap it left. That one asserts one
+    // *name* per href; this one asserts one *place*. A third review found the
+    // footer filing /blog under "Writing" while the mobile drawer filed it
+    // under "Content" — twelve of twenty destinations disagreed, and /now was
+    // "Garden" in one and "About" in the other. Every name was correct, so a
+    // name check could not see it.
+    const { navigationCategories, footerColumns } = await import("@/constants/navlinks");
+
+    const groupOf = (categories: typeof footerColumns) => {
+      const map = new Map<string, string>();
+      for (const category of categories) {
+        for (const navItem of category.items) map.set(navItem.href, category.name);
+      }
+      return map;
+    };
+
+    const drawer = groupOf(navigationCategories);
+    const footer = groupOf(footerColumns);
+
+    const conflicts = [...drawer.entries()]
+      .filter(([href, group]) => footer.has(href) && footer.get(href) !== group)
+      .map(([href, group]) => `${href} is filed under "${group}" and "${footer.get(href)}"`);
+
+    expect(
+      conflicts,
+      [
+        "One destination, one group, in every navigation that groups things.",
+        "Both taxonomies derive from SITE_GROUPS; declaring a second one brings this back.",
+        "",
+        ...conflicts,
+      ].join("\n")
+    ).toEqual([]);
+  });
+
+
   it("gives every destination exactly one name", async () => {
     const navlinks = await import("@/constants/navlinks");
     const namesByHref = new Map<string, Set<string>>();

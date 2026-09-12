@@ -20,7 +20,13 @@ export function Hero() {
         </div>
 
         {/* Framed portrait plate with a mono caption, like a gallery placard. */}
-        <figure className="mx-auto w-44 sm:w-52 md:mx-0 md:w-full md:max-w-[300px]">
+        {/* Flush left below md, not centred.
+            `mx-auto` put the plate at x=102 on a 390px screen while the
+            kicker, the h1 and the lede all start at x=16 — the documented
+            `1fr / 300px` editorial split collapses to one column on a phone,
+            and a centred plate in a left-aligned stack reads as a stray
+            snapshot rather than as the masthead's other half. */}
+        <figure className="w-44 sm:w-52 md:w-full md:max-w-[300px]">
           <div className="relative aspect-square overflow-hidden border border-border">
             <Image
               src="/images/portrait.webp"
