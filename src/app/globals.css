@@ -456,6 +456,18 @@
   :root {
     --background: 38 25% 97%;
     --foreground: 210 15% 12%;
+    /* Scrim: ink, in both themes, and never `--foreground`.
+       A scrim exists to push the page back behind a modal, which means it has
+       to be darker than the page in light mode AND in dark mode.
+       `--foreground` inverts between them — 12% lightness on paper, 98% at
+       night — so `foreground/25` darkened the day page correctly and laid a
+       white veil over the night one, washing it to mid-grey until the popover
+       panel (10% lightness) was darker than its own backdrop. Same failure the
+       original `bg-background/80` had, token-flipped.
+       Dark mode needs more alpha, not less: the gap between a 4% scrim and a
+       10% panel is small, so 55% does the separating that 25% cannot. */
+    --scrim: 0 0% 4%;
+    --scrim-alpha: 0.25;
     --card: 38 25% 98%;
     --card-foreground: 210 15% 12%;
     --popover: 38 25% 98%;
@@ -511,6 +523,7 @@
   .dark {
     --background: 220 15% 8%;
     --foreground: 0 0% 98%;
+    --scrim-alpha: 0.55;
     --card: 220 15% 10%;
     --card-foreground: 0 0% 98%;
     --popover: 220 15% 10%;
@@ -795,11 +808,15 @@ body {
 
 /* The scrim only exists in overlay mode; in push mode the page is still fully
    usable beside the drawer and must not be dimmed or blocked. */
+.overlay-scrim {
+  background: hsl(var(--scrim) / var(--scrim-alpha));
+}
+
 .ask-scrim {
   position: fixed;
   inset: 0;
   z-index: 54;
-  background: hsl(var(--foreground) / 0.25);
+  background: hsl(var(--scrim) / var(--scrim-alpha));
   opacity: 0;
   pointer-events: none;
   transition: opacity 300ms cubic-bezier(0.22, 1, 0.36, 1);
