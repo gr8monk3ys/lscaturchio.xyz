@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Check, Copy, ChevronDown, ChevronUp, Hash, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -76,6 +76,41 @@ export function CodeBlock({
 
   // Get language info
   const languageInfo = languageMap[language] || { label: language.toUpperCase() };
+
+  /**
+   * Is this block actually scrollable?
+   *
+   * The keyboard affordance below has to be conditional. Applying it
+   * unconditionally — which is what I did first — put `tabIndex={0}` and a
+   * named `role="region"` on all eight blocks of an essay, and at 1440px
+   * every one of them measured `scrollWidth === clientWidth`: eight Tab stops
+   * that cannot scroll and eight phantom landmarks in the rotor, to fix a
+   * problem that only exists when a line is too long for the column.
+   *
+   * Measured after layout and on resize, because whether a block overflows is
+   * a function of the viewport, not of the code.
+   *
+   * And measured on the `<pre>`, which is the element that actually scrolls.
+   * The wrapper div also carries `overflow-x-auto`, so there are two nested
+   * scroll containers and the inner one wins: at 390px the wrapper measured
+   * 345/345 on every block while the `pre` measured 533/345, 465/345, 444/345.
+   * A first attempt put the affordance on the wrapper, which meant it was
+   * unreachable where it mattered and — once the condition was added — silently
+   * did nothing at all. Two wrong versions of the same fix, both of which
+   * looked right in the diff.
+   */
+  const scrollRef = useRef<HTMLPreElement>(null);
+  const [canScroll, setCanScroll] = useState(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const measure = () => setCanScroll(el.scrollWidth > el.clientWidth + 1);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Get code content - extract text from children recursively
   const codeText = useMemo(() => {
@@ -175,26 +210,27 @@ export function CodeBlock({
 
       {/* Code content.
 
-          `tabIndex={0}` and a label, because this scrolls. WCAG 2.1.1: a
-          region that can be scrolled has to be reachable by keyboard, and a
-          plain `overflow-x-auto` div is not — measured at 390px with 550px of
-          content in a 390px box, unreachable by Tab. Long code lines are
-          exactly the content a keyboard or screen-reader user most needs to
-          pan through.
+          Reachable by keyboard when — and only when — it scrolls. WCAG 2.1.1:
+          a scrollable region has to be operable by keyboard, and a plain
+          `overflow-x-auto` div is not; measured at 390px with 550px of content
+          in a 390px box, unreachable by Tab.
 
-          `role="region"` with `aria-label` so it is announced as something
-          worth entering rather than as an anonymous focus stop, and
-          `focus-visible` inherits the site's one focus treatment. */}
+          The condition is the point. Unconditional `tabIndex` traded one real
+          defect for eight dead focus stops and eight phantom landmarks on
+          every essay, since at 1440px none of these blocks overflow. The label
+          uses `languageInfo.label` ("Python") rather than the raw token
+          ("python") — it is read aloud. */}
       <div
-        tabIndex={0}
-        role="region"
-        aria-label={`${language || "Code"} snippet, scrollable`}
         className={cn(
           "relative overflow-x-auto",
           shouldCollapse && "max-h-[400px] overflow-hidden"
         )}
       >
         <pre
+          ref={scrollRef}
+          tabIndex={canScroll ? 0 : undefined}
+          role={canScroll ? "region" : undefined}
+          aria-label={canScroll ? `${languageInfo.label} code, scrollable` : undefined}
           className={cn(
             // The typography plugin paints .prose pre with gray-200 on a dark
             // ground; the frame is paper now, so force the paper ink instead.

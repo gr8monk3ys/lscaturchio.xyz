@@ -90,6 +90,70 @@ describe('Search API Route', () => {
       expect(json.data.count).toBe(1);
     });
 
+    /**
+     * Snippets are embedding chunks shown verbatim to a reader, and the corpus
+     * is chunked for retrieval rather than for preview. /lab rendered two
+     * consequences: an excerpt that opened with the post's own title, so it
+     * read "…in Production People who've shipped…", and an excerpt that was a
+     * fenced code block on a prose essay. Both are filtered at the read layer,
+     * because rechunking would mean regenerating embeddings.
+     */
+    it('drops a snippet that is a fenced code block', async () => {
+      (searchEmbeddings as ReturnType<typeof vi.fn>).mockResolvedValue([
+        createMockEmbeddingResult({ content: 'A real sentence about the topic.' }),
+        createMockEmbeddingResult({
+          id: 'embed-code',
+          content: '```typescript\nconst x = 1;\n```',
+          similarity: 0.8,
+        }),
+      ]);
+
+      const response = await GET(new NextRequest('http://localhost/api/search?q=typescript'));
+      const json = await response.json();
+
+      expect(json.data.results[0].snippets).toEqual(['A real sentence about the topic.']);
+    });
+
+    it('drops a snippet that merely opens with a fence', async () => {
+      // The likelier shape: a chunk cut from inside a code block, so the
+      // opening fence has no partner.
+      (searchEmbeddings as ReturnType<typeof vi.fn>).mockResolvedValue([
+        createMockEmbeddingResult({ content: '```python class AIService: pass' }),
+      ]);
+
+      const response = await GET(new NextRequest('http://localhost/api/search?q=python'));
+      const json = await response.json();
+
+      expect(json.data.results[0].snippets).toEqual([]);
+    });
+
+    it("strips a leading copy of the post's own title", async () => {
+      (searchEmbeddings as ReturnType<typeof vi.fn>).mockResolvedValue([
+        createMockEmbeddingResult({
+          content: 'Test Blog Post People who have shipped this know better.',
+        }),
+      ]);
+
+      const response = await GET(new NextRequest('http://localhost/api/search?q=shipped'));
+      const json = await response.json();
+
+      expect(json.data.results[0].snippets).toEqual([
+        'People who have shipped this know better.',
+      ]);
+    });
+
+    it('leaves an ordinary snippet untouched', async () => {
+      const prose = 'Institutions are built to do what they actually do.';
+      (searchEmbeddings as ReturnType<typeof vi.fn>).mockResolvedValue([
+        createMockEmbeddingResult({ content: prose }),
+      ]);
+
+      const response = await GET(new NextRequest('http://localhost/api/search?q=institutions'));
+      const json = await response.json();
+
+      expect(json.data.results[0].snippets).toEqual([prose]);
+    });
+
     it('returns multiple grouped results from different posts', async () => {
       const mockResults = [
         createMockEmbeddingResult(),
