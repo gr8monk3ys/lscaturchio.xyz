@@ -28,8 +28,29 @@ import { StageBadge } from "@/components/blog/stage-badge";
 export function EssayRows({ posts }: { posts: BlogPreview[] }) {
   if (posts.length === 0) return null;
 
+  /* `max-w-3xl` on the list, not on the page.
+     A review measured the hairline dividers at 1152px under 606px of text —
+     546px of rule past the content it divides, on the most-seen composition on
+     the site. It is an unreconciled collision between two DESIGN.md rules:
+     Layout assigns index pages the wide 72rem column (:233), and the Measure
+     Rule caps running text at 65ch (:264). Both were applied literally and
+     nobody asked what the container was for once the text could not fill it.
+
+     The obvious-looking fix — move the date and stage to the right edge so the
+     width is used — breaks the other half of :237, which puts the label above
+     the title and the description below. So the list caps instead.
+
+     `max-w-2xl`, not `3xl`: the first attempt reached for 48rem and the
+     `width-scale` drift rule rejected it, correctly. `page-width.ts` defines
+     the scale as 2xl / 4xl / 6xl / none, and 3xl was removed from it
+     deliberately — the rule holds at zero matches by design and exists to stop
+     a fourth named tier coming back. 42rem is both a sanctioned tier and the
+     tighter fit: it is the documented *reading* width, which is the right
+     measure for a list whose whole purpose is choosing what to read. The page
+     header and the galleries keep the wide column; DESIGN.md records the
+     distinction rather than leaving the two rules to collide again. */
   return (
-    <ul className="divide-y divide-border border-b border-border">
+    <ul className="max-w-2xl divide-y divide-border border-b border-border">
       {posts.map((post) => (
         <li key={post.slug}>
           <Link href={`/blog/${post.slug}`} prefetch={false} className="group block py-4">
