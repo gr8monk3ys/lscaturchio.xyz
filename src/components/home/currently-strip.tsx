@@ -99,7 +99,18 @@ export async function CurrentlyStrip({ latestPost, latestRepo }: CurrentlyStripP
                   <span className="label-mono block">
                     {item.label}
                   </span>
-                  <span className="block truncate text-sm text-foreground transition-colors group-hover:text-primary">
+                  {/* `title`, because `truncate` throws the rest away.
+                      Measured on the home page: "Designing Data-Intensive
+                      Applications — Martin Kleppmann" is a 385px string in a
+                      236px box, so 39% of it — including the author — was
+                      discarded with no way to recover it. The ellipsis says
+                      text is missing; it does not say what. A `title` gives it
+                      back on hover and to assistive tech, and costs nothing
+                      when the string does fit. */}
+                  <span
+                    title={item.text}
+                    className="block truncate text-sm text-foreground transition-colors group-hover:text-primary"
+                  >
                     {item.text}
                   </span>
                 </span>

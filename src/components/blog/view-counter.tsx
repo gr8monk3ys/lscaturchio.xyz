@@ -50,10 +50,31 @@ export function ViewCounter({ slug }: ViewCounterProps) {
   //
   // `tabular-nums` keeps the digits from changing width as the count grows;
   // the min-width keeps the whole element from changing the row's line count.
+  // Reserved, but blank, until the number is real.
+  //
+  // The unsettled state used to render the literal string "— views", which a
+  // design review flagged as a visible degraded state — and it was worse than
+  // it looked. `useViewCount` returns `0` when the request fails and `null`
+  // only while it is in flight, so "— views" is a *loading* placeholder, not a
+  // failure one. That means it persists for as long as the request does: on a
+  // browser with a tracker blocker, `/api/views` never answers, and the essay
+  // header shows an em dash followed by the word VIEWS for the entire visit.
+  // A reader cannot tell that from a broken counter, because it is one.
+  //
+  // `invisible` keeps every pixel of the footprint the comment above is about
+  // — the element still occupies its 6.5rem, so the meta row's line count and
+  // therefore the CLS guarantee are untouched — while showing nothing until
+  // there is something true to show. `aria-hidden` while unsettled so a screen
+  // reader is not handed a count that does not exist yet.
   const settled = viewCount !== null;
 
   return (
-    <div className="flex min-w-[6.5rem] items-center gap-2 text-sm text-muted-foreground tabular-nums">
+    <div
+      className={`flex min-w-[6.5rem] items-center gap-2 text-sm text-muted-foreground tabular-nums ${
+        settled ? "" : "invisible"
+      }`}
+      aria-hidden={settled ? undefined : true}
+    >
       <Eye aria-hidden="true" className="h-4 w-4 shrink-0" />
       <span>
         {settled

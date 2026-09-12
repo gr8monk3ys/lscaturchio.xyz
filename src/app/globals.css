@@ -3,6 +3,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/**
+ * `can-hover:` — a real mouse, not a wide screen.
+ *
+ * /projects told every phone to "Hover to preview · press B to keyboard-browse"
+ * beside a keyboard-glyph button, naming three affordances a touch device does
+ * not have. The instinct is to gate that on `sm:`, but width is a proxy: a
+ * touch laptop is wide and a desktop window can be narrow. `hover: hover` plus
+ * `pointer: fine` is the pair that actually describes a pointer which can rest
+ * on a thing without pressing it, so copy about hovering is gated on the
+ * capability it describes.
+ */
+@custom-variant can-hover (@media (hover: hover) and (pointer: fine));
+
 @theme {
   --font-display:
     var(--site-font-display), ui-sans-serif, system-ui, sans-serif,
@@ -603,6 +616,26 @@
    * stacks are gone; the only remaining suppressions are `#main-content` above
    * and the masthead ask field, which DESIGN.md:299 gives its own indicator.
    * `src/__tests__/lib/design-drift.test.ts` holds the door shut. */
+  /* The ring is already Forest Ink before it is ever shown.
+   *
+   * `outline-color` initialises to `currentColor`, and Tailwind v4's
+   * `transition-colors` includes `outline-color` in its property list — which
+   * most focusable things here carry for their hover treatment. So when the
+   * outline became visible it interpolated from the control's *own* text
+   * colour to Forest Ink over 150ms; on the primary CTA that start colour is
+   * white. A review measured it and found every stop mid-interpolation when
+   * tabbing faster than the transition.
+   *
+   * Pre-setting the colour is the surgical fix: there is nothing left to
+   * animate, so the ring is correct in its first frame, and every element
+   * keeps whatever other transitions it declared. Suppressing
+   * `transition-property` here instead would have killed those too.
+   *
+   * `:where()` so this adds no specificity and nothing has to fight it. */
+  :where(a, button, input, textarea, select, summary, [tabindex]) {
+    outline-color: hsl(var(--primary));
+  }
+
   :focus-visible {
     outline: 2px solid hsl(var(--primary));
     outline-offset: 2px;

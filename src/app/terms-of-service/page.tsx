@@ -27,7 +27,7 @@ export default function TermsOfServicePage() {
           <li>Technical consulting and advisory</li>
         </ul>
 
-        <h2>2. Project Terms</h2>
+        <h2>2. Project terms</h2>
         <p>
           All projects are governed by the following terms:
         </p>
@@ -38,7 +38,7 @@ export default function TermsOfServicePage() {
           <li>Changes to scope will require written agreement from both parties</li>
         </ul>
 
-        <h2>3. Intellectual Property</h2>
+        <h2>3. Intellectual property</h2>
         <p>
           Upon full payment, clients receive:
         </p>
@@ -58,7 +58,7 @@ export default function TermsOfServicePage() {
           <li>Proprietary methodologies and technologies</li>
         </ul>
 
-        <h2>5. Payment Terms</h2>
+        <h2>5. Payment terms</h2>
         <p>
           Standard payment terms include:
         </p>
@@ -69,7 +69,7 @@ export default function TermsOfServicePage() {
           <li>Late payments may incur additional fees</li>
         </ul>
 
-        <h2>6. Limitation of Liability</h2>
+        <h2>6. Limitation of liability</h2>
         <p>
           While I strive for excellence in all projects, I cannot guarantee specific business outcomes. My liability is limited to the amount paid for services.
         </p>
