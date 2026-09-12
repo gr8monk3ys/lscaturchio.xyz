@@ -35,58 +35,117 @@ export interface NavCategory {
   items: NavItem[];
 }
 
-// Categorized navigation with dropdowns - reorganized into 4 cleaner categories
-export const navigationCategories: NavCategory[] = [
+/**
+ * Every destination, named once, with its icon and its one-line description.
+ *
+ * This is the flat half of the module: what a thing is called, not where it
+ * sits. Three separate maps used to hold these facts — one inside
+ * `navigationCategories`, one inside `primaryNavigation`, and `PALETTE_ICONS`
+ * bolted on for the destinations only the footer carried — so an icon or a
+ * description could be right in one nav and absent in another.
+ */
+const NAV_META: Record<string, { name: string; icon: NavCategory['icon']; description?: string }> = {
+  '/': { name: 'Home', icon: Home, description: 'The front door' },
+  '/about': { name: 'About', icon: User, description: 'Who I am' },
+  '/professional': { name: 'Hire me', icon: Briefcase, description: 'Experience, tools and the resume' },
+  '/projects': { name: 'Projects', icon: FolderKanban, description: 'Things I built' },
+  '/work-with-me': { name: 'Consulting', icon: Sparkles, description: 'Contract and build engagements' },
+  '/uses': { name: 'Uses', icon: Wrench, description: 'My setup and tools' },
+  '/blog': { name: 'Writing', icon: BookOpen, description: 'Essays and engineering notes' },
+  '/topics': { name: 'Topics', icon: Layers, description: 'Curated topic hubs' },
+  '/series': { name: 'Series', icon: Layers, description: 'Essays that run in sequence' },
+  '/podcast': { name: 'Podcast', icon: Mic, description: 'Audio episodes' },
+  '/changelog': { name: 'Changelog', icon: TrendingUp, description: 'Roadmap and release notes' },
+  '/garden': { name: 'Garden', icon: Sparkles, description: 'Books, films, music, experiments' },
+  '/books': { name: 'Books', icon: Book, description: "What I'm reading" },
+  '/movies': { name: 'Movies', icon: Film, description: "Films I've watched" },
+  '/music': { name: 'Music', icon: Music, description: 'What is on the turntable' },
+  '/photos': { name: 'Photography', icon: Camera, description: 'Travel and landscape work' },
+  '/now': { name: 'Now', icon: Clock, description: "What I'm up to" },
+  '/lab': { name: 'Lab', icon: Sparkles, description: 'Interactive demos' },
+  '/guestbook': { name: 'Guestbook', icon: MessageSquare, description: 'Leave a note' },
+  '/links': { name: 'Links', icon: Link2, description: 'Elsewhere on the internet' },
+  '/chat': { name: 'Ask', icon: MessageSquare, description: 'A conversation with the essays' },
+  '/contact': { name: 'Contact', icon: Mail, description: 'Start a conversation' },
+  '/bookmarks': { name: 'Bookmarks', icon: Bookmark, description: 'Essays saved for later' },
+};
+
+/** One destination, resolved from the single naming source. */
+function item(href: string): NavItem {
+  const meta = NAV_META[href];
+  if (!meta) throw new Error(`navlinks: no NAV_META entry for ${href}`);
+  return { name: meta.name, href, icon: meta.icon, description: meta.description };
+}
+
+/**
+ * The site's one grouping of itself.
+ *
+ * There were two, and they disagreed about twelve of twenty destinations.
+ * The footer filed `/blog` under "Writing" while the mobile panel filed it
+ * under "Content"; `/now` was "Garden" in one and "About" in the other;
+ * `/uses` was "Work" and "Personal"; `/lab`, `/chat`, `/books`, `/movies`,
+ * `/photos`, `/links`, `/topics`, `/podcast`, `/changelog` and `/guestbook`
+ * all split the same way. "Garden" was a primary destination and a footer
+ * group but did not exist in the mobile panel at all.
+ *
+ * That is invisible to `design-drift.test.ts`'s navigation-vocabulary rule,
+ * which asserts one *name* per href and cannot see the same href sitting in
+ * two differently-named groups — the drift suite's own lesson, one level up
+ * the tree: a rule that cannot reach a fact is indistinguishable from a rule
+ * that passes it.
+ *
+ * Group names come from the site's own vocabulary, which is why they match the
+ * header: Writing, Work, Garden, About are the words the primary nav already
+ * uses. "Content" and "Personal" were a fifth and sixth vocabulary that
+ * existed only in the mobile drawer.
+ */
+const SITE_GROUPS: Array<{ name: string; icon: NavCategory['icon']; hrefs: string[] }> = [
   {
-    name: 'About',
-    icon: User,
-    items: [
-      { name: 'About', href: '/about', icon: User, description: 'Who I am' },
-      { name: 'Now', href: '/now', icon: Clock, description: 'What I\'m up to' },
-      { name: 'Hire me', href: '/professional', icon: Briefcase, description: 'Experience, tools and the resume' },
-    ],
+    name: 'Writing',
+    icon: FileText,
+    hrefs: ['/blog', '/topics', '/series', '/podcast', '/changelog'],
   },
   {
     name: 'Work',
     icon: Briefcase,
-    items: [
-      { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
-      { name: 'Consulting', href: '/work-with-me', icon: Sparkles, description: 'Contract and build engagements' },
-    ],
+    hrefs: ['/projects', '/work-with-me', '/uses'],
   },
   {
-    name: 'Content',
-    icon: FileText,
-    items: [
-      { name: 'Writing', href: '/blog', icon: BookOpen, description: 'Essays and engineering notes' },
-      { name: 'Topics', href: '/topics', icon: Layers, description: 'Curated topic hubs' },
-      { name: 'Changelog', href: '/changelog', icon: TrendingUp, description: 'Roadmap + release notes' },
-      { name: 'Podcast', href: '/podcast', icon: Mic, description: 'Audio episodes' },
-      { name: 'Ask', href: '/chat', icon: MessageSquare, description: 'A conversation with the essays' },
-      { name: 'Lab', href: '/lab', icon: Sparkles, description: 'Interactive demos' },
-      { name: 'Guestbook', href: '/guestbook', icon: MessageSquare, description: 'Leave a note' },
-    ],
-  },
-  {
-    name: 'Personal',
+    name: 'Garden',
     icon: Heart,
-    items: [
-      { name: 'Books', href: '/books', icon: Book, description: 'What I\'m reading' },
-      { name: 'Movies', href: '/movies', icon: Film, description: 'Films I\'ve watched' },
-      { name: 'Uses', href: '/uses', icon: Wrench, description: 'My setup & tools' },
-      { name: 'Photography', href: '/photos', icon: Camera, description: 'Travel and landscape work' },
-      { name: 'Links', href: '/links', icon: Link2, description: 'External links' },
-    ],
+    hrefs: ['/books', '/music', '/movies', '/photos', '/now', '/lab', '/guestbook', '/links'],
+  },
+  {
+    name: 'About',
+    icon: User,
+    hrefs: ['/about', '/professional', '/chat', '/contact'],
   },
 ];
 
+/**
+ * Categorised navigation, derived rather than declared.
+ *
+ * The mobile drawer renders this (through `secondaryNavigationCategories`) and
+ * the footer renders `footerColumns`. Both now come from `SITE_GROUPS`, so a
+ * destination cannot be filed in one place and refiled in another.
+ */
+export const navigationCategories: NavCategory[] = SITE_GROUPS.map((group) => ({
+  name: group.name,
+  icon: group.icon,
+  items: group.hrefs.map(item),
+}));
+
+/**
+ * The header. Deliberately explicit and deliberately short: five destinations
+ * chosen for a slim bar, not a slice of the taxonomy.
+ */
 export const primaryNavigation: NavItem[] = [
-  { name: 'Writing', href: '/blog', icon: BookOpen, description: 'Essays and engineering notes' },
-  { name: 'Projects', href: '/projects', icon: FolderKanban, description: 'Things I built' },
-  { name: 'Garden', href: '/garden', icon: Sparkles, description: 'Books, films, music, experiments' },
-  { name: 'About', href: '/about', icon: User, description: 'Who I am' },
-  { name: 'Hire me', href: '/professional', icon: Briefcase, description: 'Experience, tools and the resume' },
-];
+  '/blog',
+  '/projects',
+  '/garden',
+  '/about',
+  '/professional',
+].map(item);
 
 /**
  * Everything the header does not already carry, for the mobile drawer.
@@ -95,101 +154,33 @@ export const primaryNavigation: NavItem[] = [
  * filter that had to be edited whenever the header changed — and was not, so
  * retargeting "Hire me" would have shown it twice.
  */
-const primaryHrefs = new Set(primaryNavigation.map((item) => item.href));
+const primaryHrefs = new Set(primaryNavigation.map((navItem) => navItem.href));
 
 export const secondaryNavigationCategories: NavCategory[] = navigationCategories
   .map((category) => ({
     ...category,
-    items: category.items.filter((item) => !primaryHrefs.has(item.href)),
+    items: category.items.filter((navItem) => !primaryHrefs.has(navItem.href)),
   }))
   .filter((category) => category.items.length > 0);
 
 // Contact link (always visible)
-export const contactLink: NavItem = {
-  name: 'Contact',
-  href: '/contact',
-  icon: Mail
-};
-
-// Footer site map. The header stays slim (primaryNavigation); the footer
-// carries the full breadth of the garden so no page loses a doorway.
-// Curated separately from navigationCategories because the groupings differ
-// (Content → Writing, Personal → Garden, Uses lives under Work, etc.).
-export const footerColumns: NavCategory[] = [
-  {
-    name: 'Writing',
-    items: [
-      { name: 'Writing', href: '/blog' },
-      { name: 'Topics', href: '/topics' },
-      { name: 'Series', href: '/series' },
-      { name: 'Podcast', href: '/podcast' },
-      { name: 'Changelog', href: '/changelog' },
-    ],
-  },
-  {
-    name: 'Work',
-    items: [
-      { name: 'Projects', href: '/projects' },
-      { name: 'Consulting', href: '/work-with-me' },
-      { name: 'Uses', href: '/uses' },
-    ],
-  },
-  {
-    name: 'Garden',
-    items: [
-      { name: 'Books', href: '/books' },
-      { name: 'Music', href: '/music' },
-      { name: 'Movies', href: '/movies' },
-      { name: 'Photography', href: '/photos' },
-      { name: 'Now', href: '/now' },
-      { name: 'Lab', href: '/lab' },
-      { name: 'Guestbook', href: '/guestbook' },
-      { name: 'Links', href: '/links' },
-    ],
-  },
-  {
-    name: 'About',
-    items: [
-      { name: 'About', href: '/about' },
-      { name: 'Hire me', href: '/professional' },
-      { name: 'Ask', href: '/chat' },
-      { name: 'Contact', href: '/contact' },
-    ],
-  },
-];
+export const contactLink: NavItem = item('/contact');
 
 /**
- * Icons for destinations that only the footer carries.
+ * Footer site map. The header stays slim (primaryNavigation); the footer
+ * carries the full breadth of the garden so no page loses a doorway — in the
+ * same groups the mobile drawer uses, because both read SITE_GROUPS.
  *
- * `footerColumns` is deliberately iconless — a footer site map is a text list.
- * The command palette needs a glyph per row, so the mapping lives here rather
- * than forcing icons into the footer data or letting the palette invent them.
+ * Derived separately rather than aliased to `navigationCategories`. Aliasing
+ * them made the two exports the same value, which knip correctly reports as a
+ * duplicate export — and it also erased a real distinction: a footer site map
+ * is a text list and carries no icons, while the drawer's accordion headers
+ * do. Same grouping, different rendering needs, one source.
  */
-const PALETTE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  '/': Home,
-  '/blog': BookOpen,
-  '/topics': Layers,
-  '/series': Layers,
-  '/podcast': Mic,
-  '/changelog': TrendingUp,
-  '/projects': FolderKanban,
-  '/work-with-me': Sparkles,
-  '/uses': Wrench,
-  '/books': Book,
-  '/music': Music,
-  '/movies': Film,
-  '/photos': Camera,
-  '/now': Clock,
-  '/lab': Sparkles,
-  '/guestbook': MessageSquare,
-  '/links': Link2,
-  '/about': User,
-  '/professional': Briefcase,
-  '/chat': MessageSquare,
-  '/contact': Mail,
-  '/garden': Sparkles,
-  '/bookmarks': Bookmark,
-};
+export const footerColumns: NavCategory[] = SITE_GROUPS.map((group) => ({
+  name: group.name,
+  items: group.hrefs.map(item),
+}));
 
 /**
  * Every destination the command palette can reach, with the name the rest of
@@ -207,36 +198,19 @@ const PALETTE_ICONS: Record<string, React.ComponentType<{ className?: string }>>
  * for free, because the palette no longer has a vocabulary of its own.
  * `no-hardcoded-destination` in design-drift.test.ts keeps it that way.
  */
-const DESCRIPTIONS_BY_HREF = new Map<string, string>([
-  ...[...navigationCategories.flatMap((category) => category.items), ...primaryNavigation]
-    .filter((item): item is NavItem & { description: string } => Boolean(item.description))
-    .map((item): [string, string] => [item.href, item.description]),
-  // Footer-only destinations, which carry no description of their own because
-  // a footer site map does not print one. Every palette row shows one, so the
-  // three that would otherwise render bare get theirs here.
-  ['/series', 'Essays that run in sequence'],
-  ['/music', 'What is on the turntable'],
-  ['/contact', 'Start a conversation'],
-]);
-
 export const paletteDestinations: NavItem[] = (() => {
-  const ordered: NavItem[] = [
-    { name: 'Home', href: '/', description: 'The front door' },
-    ...primaryNavigation,
-    ...footerColumns.flatMap((column) => column.items),
-    contactLink,
-    { name: 'Bookmarks', href: '/bookmarks', description: 'Essays saved for later' },
+  const ordered = [
+    '/',
+    ...primaryNavigation.map((navItem) => navItem.href),
+    ...SITE_GROUPS.flatMap((group) => group.hrefs),
+    '/bookmarks',
   ];
 
   const seen = new Set<string>();
-  return ordered.reduce<NavItem[]>((items, item) => {
-    if (seen.has(item.href)) return items;
-    seen.add(item.href);
-    items.push({
-      ...item,
-      icon: item.icon ?? PALETTE_ICONS[item.href],
-      description: item.description ?? DESCRIPTIONS_BY_HREF.get(item.href),
-    });
+  return ordered.reduce<NavItem[]>((items, href) => {
+    if (seen.has(href)) return items;
+    seen.add(href);
+    items.push(item(href));
     return items;
   }, []);
 })();

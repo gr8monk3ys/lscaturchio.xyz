@@ -131,6 +131,14 @@ export default async function Blog({
                 stage preserves an active tag and resets to page 1 instead of
                 dropping the tag on the floor. */}
             <nav aria-label="Filter by stage" className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              {/* A visible label, because the row had one and it was the wrong
+                  one. "BROWSE BY TOPIC" sat immediately left of these four
+                  controls, in the same mono and in `text-foreground` — darker
+                  than the stage links — so it read as their caption: a label
+                  naming *topics* over controls that filter *stages*. It is a
+                  link to another page, not a heading for this one. Naming the
+                  stage row takes the caption role away from it. */}
+              <span className="label-mono text-foreground/70">Stage</span>
               <Link
                 href={getBlogArchiveHref(1, normalizedTag, "")}
                 prefetch={false}

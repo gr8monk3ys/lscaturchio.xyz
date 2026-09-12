@@ -44,8 +44,22 @@ function cosineSimilarity(a: Map<string, number>, b: Map<string, number>): numbe
 }
 
 export function ToySimilarity() {
-  const [a, setA] = useState("RAG systems ground answers in retrieved sources.");
-  const [b, setB] = useState("Semantic search uses embeddings to find relevant context.");
+  /**
+   * Defaults that the demo can actually score.
+   *
+   * These were "RAG systems ground answers in retrieved sources." and
+   * "Semantic search uses embeddings to find relevant context." — two
+   * sentences a reader recognises as being about the same thing, which share
+   * no content words and therefore scored **0%** on a word-frequency metric.
+   * The page opened by presenting a related pair and reporting no relation, on
+   * a demo whose stated purpose is to "explain why retrieval works".
+   *
+   * These overlap heavily, so the number means something on arrival. The
+   * limitation is still the interesting part, so the copy now invites the
+   * reader to produce it deliberately instead of shipping it as the default.
+   */
+  const [a, setA] = useState("Retrieval works because similar documents share words.");
+  const [b, setB] = useState("Documents that share words are similar, which is why retrieval works.");
 
   const { score, overlap } = useMemo(() => {
     const ta = tokenize(a);
@@ -68,9 +82,12 @@ export function ToySimilarity() {
   return (
     <section className="border border-border p-6">
       <h3 className="text-card-title">Toy text similarity</h3>
-      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-        A tiny cosine-similarity demo (word-frequency based). This is not embeddings, but it helps explain
-        why retrieval works.
+      {/* `max-w-prose`, per the Measure Rule. */}
+      <p className="mt-1 max-w-prose text-sm text-muted-foreground">
+        A tiny cosine-similarity demo, scored on word frequency rather than on
+        embeddings. Reword one of these to mean the same thing without reusing
+        its words and the score collapses — that gap is the whole reason
+        retrieval uses embeddings instead of this.
       </p>
 
       <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
