@@ -105,15 +105,45 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
   return (
     <>
       {/* z-60: above the menu overlay (z-55) so this button can close it,
-          below the photo lightbox (z-70). Site chrome otherwise lives at z-40/50. */}
-      <div className="fixed right-0 top-0 z-60 p-4 md:hidden">
+          below the photo lightbox (z-70). Site chrome otherwise lives at z-40/50.
+
+          A bar, and a wordmark inside it. This was a single floating button at
+          `right-0 top-0` with nothing behind it, which meant that at 390px —
+          the width most visitors arrive at, from a shared link — `a[href="/"]`
+          had `offsetParent === null` on every route. A reader could not learn
+          whose site they were on, or reach the home page in one tap, until the
+          footer roughly 7,700px down. The desktop header carries a wordmark
+          and a hairline; the phone got the hamburger and nothing else.
+
+          The structure now mirrors the desktop bar: paper at 90% with the same
+          backdrop blur and the 40% hairline beneath, wordmark left, controls
+          right. It hides while the menu overlay is open, because the overlay
+          is full-screen and paints its own header area. */}
+      <div
+        className={[
+          "fixed inset-x-0 top-0 z-60 flex h-16 items-center justify-between gap-3 border-b border-border/40 bg-background/90 px-4 backdrop-blur-sm md:hidden",
+          isMenuOpen ? "border-transparent bg-transparent backdrop-blur-none" : "",
+        ].join(" ")}
+      >
+        <Link
+          href="/"
+          prefetch={false}
+          aria-label="Lorenzo Scaturchio — home"
+          className={[
+            "text-card-title leading-none text-foreground transition-opacity hover:opacity-70",
+            isMenuOpen ? "invisible" : "",
+          ].join(" ")}
+        >
+          Lorenzo Scaturchio
+        </Link>
+
         <button
           type="button"
           ref={toggleRef}
           onClick={() =>
             isMenuOpen ? closeMenu() : setIsMenuOpen(true)
           }
-          className="flex h-10 w-10 items-center justify-center rounded-xl neu-button transition-colors"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl neu-button transition-colors"
           aria-label="Toggle menu"
           aria-expanded={isMenuOpen}
           aria-controls="mobile-navigation-menu"

@@ -23,13 +23,21 @@ import path from "node:path";
  */
 
 /**
- * Three roots, not two. `src/lib` was outside the scan, and a `text-warning`
+ * Four roots, not two. `src/lib` was outside the scan, and a `text-warning`
  * in `project-catalogue.ts` measuring 2.03:1 sat there unseen — including by
  * the contrast rule, which derives its own scope from `text-*` usage and so
  * inherited the same blind spot. A scan root is an escape hatch; this one had
  * a live defect behind it.
+ *
+ * `src/hooks` is the second instance of the same lesson, and the more
+ * expensive one. `use-command-palette.tsx` declared a third navigation with
+ * its own labels for eight destinations, and every rule here missed it — not
+ * because any rule allowed it, but because no rule could read the file. The
+ * review that found it put the point sharply: the sharpest defects were
+ * invisible by *scope*, not by allowance. A rule that cannot reach a file is
+ * indistinguishable from a rule that passes it.
  */
-const SCAN_ROOTS = ["src/app", "src/components", "src/lib"];
+const SCAN_ROOTS = ["src/app", "src/components", "src/hooks", "src/lib"];
 
 interface Rule {
   id: string;
@@ -156,6 +164,12 @@ const RULES: Rule[] = [
     because:
       "The Flat Paper Rule: a hovered surface changes tint and border colour, it does not rise. Scale on an image is a lift.",
     test: /\b(?:group-)?hover:scale-/,
+  },
+  {
+    id: "hardcoded-destination",
+    because:
+      "Navigation destinations live in src/constants/navlinks.tsx, which is the only module the `gives every destination exactly one name` rule collects from. The command palette declared its own eight — so /blog was \"Blog\" beside the navs' \"Writing\", /chat was \"AI Chat\" beside \"Chat\", and /professional was unreachable although both navs promote it. That rule was written after exactly this bug and could not see it, because the third navigation was out of *scope* rather than allowed. A literal route in router.push is how a module starts keeping its own vocabulary; template pushes (filters, slugs) are fine.",
+    test: /router\.push\(\s*['"]\//,
   },
 ];
 

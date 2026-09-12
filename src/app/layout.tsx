@@ -236,9 +236,12 @@ export default async function RootLayout({
                     in flow, or the swap is a layout shift on every route.
                     `Navbar` renders a fixed header plus a `hidden h-20 md:block`
                     spacer, so the fallback is that same spacer — the old
-                    `min-h-[64px]` was 16px short of it. `MobileNavbarGate` is
-                    fixed and occupies nothing, so its fallback reserved 64px
-                    that the resolved component gave straight back. */}
+                    `min-h-[64px]` was 16px short of it.
+
+                    `MobileNavbarGate` is fixed and occupies nothing, so its
+                    fallback stays `null` — the 64px the mobile bar overlays is
+                    reserved by `Navbar`'s own server-rendered spacer, which is
+                    the only place it can be held without shifting. */}
                 <Suspense fallback={<div className="hidden h-20 md:block" />}>
                   <Navbar />
                 </Suspense>

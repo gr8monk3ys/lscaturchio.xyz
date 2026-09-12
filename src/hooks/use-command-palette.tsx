@@ -3,19 +3,8 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import {
-  FileText,
-  Home,
-  User,
-  Briefcase,
-  Mail,
-  Moon,
-  Sun,
-  MessageSquare,
-  BookOpen,
-  Bookmark,
-  TrendingUp,
-} from 'lucide-react'
+import { FileText, Moon, Sun } from 'lucide-react'
+import { paletteDestinations } from '@/constants/navlinks'
 import { safeStorage } from '@/lib/storage'
 import type {
   CommandGroups,
@@ -24,6 +13,40 @@ import type {
   PaletteState,
   SearchResult,
 } from '@/components/ui/command-palette/types'
+
+/**
+ * Extra search terms per destination, keyed by href.
+ *
+ * These are deliberately *not* names. A keyword lets "portfolio" or "gpt" find
+ * a row without printing either word on screen, which is how the palette can
+ * stay searchable by the words people guess while still showing only the one
+ * name the rest of the site uses. Anything absent here simply has no synonyms.
+ */
+const SEARCH_KEYWORDS: Record<string, string[]> = {
+  '/': ['main', 'index', 'start', 'homepage'],
+  '/about': ['bio', 'profile', 'me', 'who'],
+  '/professional': ['hire', 'resume', 'cv', 'work with me', 'experience'],
+  '/projects': ['work', 'portfolio', 'showcase', 'built'],
+  '/blog': ['articles', 'posts', 'writing', 'essays'],
+  '/series': ['collection', 'tutorials'],
+  '/topics': ['tags', 'subjects', 'hubs'],
+  '/contact': ['email', 'message', 'reach', 'get in touch'],
+  '/chat': ['ai', 'assistant', 'ask', 'gpt'],
+  '/bookmarks': ['saved', 'favorites', 'later', 'reading list'],
+  '/garden': ['media', 'logs'],
+  '/lab': ['demos', 'experiments', 'playground'],
+  '/uses': ['setup', 'tools', 'gear'],
+  '/now': ['current', 'lately'],
+  '/books': ['reading', 'goodreads'],
+  '/movies': ['films', 'letterboxd'],
+  '/music': ['listening', 'spotify', 'records'],
+  '/photos': ['photography', 'pictures'],
+  '/podcast': ['audio', 'episodes'],
+  '/changelog': ['releases', 'roadmap', 'updates'],
+  '/work-with-me': ['consulting', 'contract', 'freelance'],
+  '/links': ['elsewhere', 'social'],
+  '/guestbook': ['sign', 'note'],
+}
 
 const INITIAL_STATE: PaletteState = {
   isOpen: false,
@@ -197,81 +220,35 @@ export function useCommandPalette(): CommandPaletteModel {
     focusInput()
   }, [focusInput])
 
+  /**
+   * Built from `paletteDestinations`, not from a list of its own.
+   *
+   * This hook used to declare eight destinations with its own labels and its
+   * own copy, which made it a third navigation: `/blog` was "Blog" here and
+   * "Writing" in the header and footer, `/chat` was "AI Chat" against the
+   * footer's "Chat", and `/professional` — promoted as "Hire me" by both navs —
+   * could not be reached at all. Twenty-two of roughly thirty destinations were
+   * missing. The descriptions ("View my portfolio projects", "Read my
+   * articles") were in a possessive-marketing voice that appears nowhere else
+   * on a site whose own register is "Mostly arguments."
+   *
+   * Keywords stay here because they are a search concern, not a naming one:
+   * they let "portfolio" find Projects without putting that word on screen.
+   */
   const navigationCommands = useMemo<CommandItem[]>(
-    () => [
-      {
-        id: 'home',
-        title: 'Home',
-        description: 'Go to homepage',
-        icon: <Home className="h-4 w-4" />,
-        category: 'navigation',
-        action: () => router.push('/'),
-        keywords: ['main', 'index', 'start'],
-      },
-      {
-        id: 'about',
-        title: 'About',
-        description: 'Learn more about me',
-        icon: <User className="h-4 w-4" />,
-        category: 'navigation',
-        action: () => router.push('/about'),
-        keywords: ['bio', 'profile', 'me'],
-      },
-      {
-        id: 'projects',
-        title: 'Projects',
-        description: 'View my portfolio projects',
-        icon: <Briefcase className="h-4 w-4" />,
-        category: 'navigation',
-        action: () => router.push('/projects'),
-        keywords: ['work', 'portfolio', 'showcase'],
-      },
-      {
-        id: 'blog',
-        title: 'Blog',
-        description: 'Read my articles',
-        icon: <BookOpen className="h-4 w-4" />,
-        category: 'navigation',
-        action: () => router.push('/blog'),
-        keywords: ['articles', 'posts', 'writing'],
-      },
-      {
-        id: 'series',
-        title: 'Series',
-        description: 'Browse blog series',
-        icon: <TrendingUp className="h-4 w-4" />,
-        category: 'navigation',
-        action: () => router.push('/series'),
-        keywords: ['collection', 'tutorials'],
-      },
-      {
-        id: 'contact',
-        title: 'Contact',
-        description: 'Get in touch',
-        icon: <Mail className="h-4 w-4" />,
-        category: 'navigation',
-        action: () => router.push('/contact'),
-        keywords: ['email', 'message', 'reach'],
-      },
-      {
-        id: 'chat',
-        title: 'AI Chat',
-        description: 'Chat with my AI assistant',
-        icon: <MessageSquare className="h-4 w-4" />,
-        category: 'navigation',
-        action: () => router.push('/chat'),
-        keywords: ['ai', 'assistant', 'help', 'gpt'],
-      },
-      {
-        id: 'bookmarks',
-        title: 'Bookmarks',
-        description: 'View saved posts',
-        icon: <Bookmark className="h-4 w-4" />,
-        category: 'navigation',
-        action: () => router.push('/bookmarks'),
-        keywords: ['saved', 'favorites', 'later'],
-      },
-    ],
+    () =>
+      paletteDestinations.map((destination) => {
+        const Icon = destination.icon ?? FileText
+        return {
+          id: `nav-${destination.href}`,
+          title: destination.name,
+          description: destination.description,
+          icon: <Icon className="h-4 w-4" />,
+          category: 'navigation' as const,
+          action: () => router.push(destination.href),
+          keywords: SEARCH_KEYWORDS[destination.href] ?? [],
+        }
+      }),
     [router]
   )
 
@@ -279,8 +256,10 @@ export function useCommandPalette(): CommandPaletteModel {
     () => [
       {
         id: 'toggle-theme',
-        title: theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode',
-        description: 'Toggle theme appearance',
+        // Sentence case. These were the palette's two Title Case strings, and
+        // the heading-case rule cannot see a command title.
+        title: theme === 'dark' ? 'Switch to light' : 'Switch to dark',
+        description: 'Change the paper',
         icon: theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />,
         category: 'action',
         action: () => setTheme(theme === 'dark' ? 'light' : 'dark'),

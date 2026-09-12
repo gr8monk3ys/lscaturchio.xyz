@@ -9,7 +9,7 @@ import {
 const ChatPageClient = dynamic(() => import("@/components/chat/chat-page-client").then(m => m.ChatPageClient));
 
 export const metadata = {
-  title: "Chat",
+  title: "Ask",
   description: "Ask a question and get an answer drawn from the essays on this site, with the passages it read.",
 };
 

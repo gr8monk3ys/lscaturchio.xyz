@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAskDrawer } from "@/components/chat/ask-drawer-provider";
+import { SuggestedQuestions } from "@/components/chat/suggested-questions";
 
 const SUGGESTED_QUESTIONS = [
   "What do you actually do?",
@@ -65,7 +66,12 @@ export function HeroAsk() {
             name="q"
             type="text"
             required
-            placeholder="What have you changed your mind about?"
+            /* Three characters shorter than "…changed your mind about?",
+               which measured 309px against the 291px this field actually
+               offers at 390px. Shrinking the button and the type recovered
+               most of the gap; the rest had to come out of the copy, because a
+               placeholder that does not fit is not an example, it is a defect. */
+            placeholder="What have you changed your mind on?"
             autoComplete="off"
             /* The site's one documented exception to the global focus outline.
                DESIGN.md:299: "Focus turns the rule Forest Ink with no ring" —
@@ -79,34 +85,35 @@ export function HeroAsk() {
                weight without making it a ring, which is what the spec actually
                forbids. The field is a fixed h-14 box, so the extra pixel comes
                out of the content box and shifts nothing. */
-            className="h-14 w-full rounded-none border-0 border-b border-border bg-transparent pr-28 text-lg text-foreground placeholder:text-muted-foreground focus:border-b-2 focus:border-primary focus:outline-none"
+            /* `pr-12 sm:pr-28` and `text-base sm:text-lg`.
+               At 390px the button's 112px reservation left roughly 240px for
+               an 18px placeholder, so the site's signature field rendered
+               "What have you changed you" — hard-clipped mid-word, with no
+               ellipsis, against the overlapping button. The reservation now
+               matches what the control actually occupies at each width: the
+               submit is 40px there, so 48px of padding clears it with 8px to
+               spare. Measured at 390px: 285px of placeholder into 299px of
+               room. 16px, not 14px, because a sub-16px input font makes iOS
+               zoom the whole page on focus. */
+            className="h-14 w-full rounded-none border-0 border-b border-border bg-transparent pr-12 text-base text-foreground placeholder:text-muted-foreground focus:border-b-2 focus:border-primary focus:outline-none sm:pr-28 sm:text-lg"
           />
+          {/* Icon-only below sm, labelled. The word "Ask" costs ~64px of the
+              placeholder's line on a phone, and the wall label directly above
+              already says "Ask the site anything" — so the text is redundant
+              at exactly the width where it is most expensive. */}
           <Button
             type="submit"
             size="lg"
             variant="primary"
-            className="absolute right-0 top-1/2 h-10 -translate-y-1/2 rounded-full px-5"
+            aria-label="Ask"
+            className="absolute right-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full p-0 sm:w-auto sm:px-5"
           >
-            Ask
-            <ArrowRight className="ml-1.5 h-4 w-4" />
+            <span className="hidden sm:inline">Ask</span>
+            <ArrowRight className="h-4 w-4 sm:ml-1.5" />
           </Button>
         </form>
 
-        <div className="flex flex-wrap gap-x-5 gap-y-2">
-          {SUGGESTED_QUESTIONS.map((question) => (
-            <Link
-              key={question}
-              href={`/chat?q=${encodeURIComponent(question)}`}
-              prefetch={false}
-              onClick={(event) => {
-                if (handOver(question)) event.preventDefault();
-              }}
-              className="label-mono label-link normal-case tracking-normal text-muted-foreground ink-underline transition-colors hover:text-primary"
-            >
-              {question}
-            </Link>
-          ))}
-        </div>
+        <SuggestedQuestions questions={SUGGESTED_QUESTIONS} onSelect={handOver} />
 
         {/* Not in the chip row, and not in the chip costume.
             This carried the same `label-mono label-link ink-underline` stack as

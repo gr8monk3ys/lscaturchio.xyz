@@ -32,7 +32,7 @@ export function AskDrawerTrigger({
          1024px the icon is aria-hidden and the label is gone, so this button
          announced as an unnamed "button" — on the only persistent route to the
          feature. */
-      aria-label={drawer.isOpen ? "Close the ask panel" : "Ask this site"}
+      aria-label={drawer.isOpen ? "Close the ask panel" : "Ask the site"}
       aria-expanded={drawer.isOpen}
       aria-controls="ask-drawer"
       className="label-mono label-link gap-2 px-2 text-muted-foreground transition-colors hover:text-primary"

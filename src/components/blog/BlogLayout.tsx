@@ -113,39 +113,42 @@ export async function BlogLayout({
           <article>
             <header className="flex flex-col">
               {/* Wall-label meta line: date · reading time · tags · views */}
+              {/* Every separator travels with the item *after* it.
+                  These used to be standalone flex children, so a `·` could be
+                  the last thing on a wrapped line: at 390px this row rendered
+                  "FEBRUARY 11, 2026 · 7 MIN · PHILOSOPHY · ATTENTION ·" and
+                  broke, leaving the dot hanging. The tag loop already got this
+                  right by keeping each tag with its own trailing dot; the three
+                  group separators did not. A leading separator cannot orphan,
+                  because it has something glued to its right. */}
               <div className="label-mono flex flex-wrap items-center gap-x-3 gap-y-1.5">
                 <time dateTime={safeDate}>{formatDate(safeDate)}</time>
                 {readingTime !== undefined && (
-                  <>
+                  <span className="inline-flex items-center gap-x-3">
                     <span aria-hidden className="text-foreground/25">·</span>
                     <span>{readingTime} min</span>
-                  </>
+                  </span>
                 )}
                 {meta.tags.length > 0 && (
                   <>
-                    <span aria-hidden className="text-foreground/25">·</span>
-                    {meta.tags.map((tag, tagIndex) => (
-                      <span key={tag} className="inline-flex items-center">
+                    {meta.tags.map((tag) => (
+                      <span key={tag} className="inline-flex items-center gap-x-3">
+                        <span aria-hidden className="text-foreground/25">·</span>
                         <Link
                           href={`/tag/${encodeURIComponent(tag)}`}
                           className="label-link transition-colors hover:text-primary"
                         >
                           {tag}
                         </Link>
-                        {tagIndex < meta.tags.length - 1 && (
-                          <span aria-hidden className="ml-3 text-foreground/25">
-                            ·
-                          </span>
-                        )}
                       </span>
                     ))}
                   </>
                 )}
                 {meta.stage && (
-                  <>
+                  <span className="inline-flex items-center gap-x-3">
                     <span aria-hidden className="text-foreground/25">·</span>
                     <StageBadge stage={meta.stage} />
-                  </>
+                  </span>
                 )}
                 <ViewCounter slug={slug} />
               </div>
@@ -177,17 +180,25 @@ export async function BlogLayout({
                 </Link>
               </p>
 
+              {/* Separated, like the byline row directly above it.
+                  Two hub links in the same uppercase tracked mono with only a
+                  gap between them read as one phrase, not two destinations:
+                  "EXPLORE PHILOSOPHY & THE SELF TECHNOLOGY & ATTENTION" is six
+                  words and two links, and nothing on screen said where one
+                  ended. The row above already used `·` for exactly this job. */}
               {relatedHubs.length > 0 && (
-                <p className="label-mono mt-5 flex flex-wrap items-center gap-x-4 gap-y-1">
+                <p className="label-mono mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
                   <span className="text-foreground/70">Explore</span>
                   {relatedHubs.map((hub) => (
-                    <Link
-                      key={hub.slug}
-                      href={`/topics/${hub.slug}`}
-                      className="label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
-                    >
-                      {hub.title}
-                    </Link>
+                    <span key={hub.slug} className="inline-flex items-center gap-x-3">
+                      <span aria-hidden className="text-foreground/25">·</span>
+                      <Link
+                        href={`/topics/${hub.slug}`}
+                        className="label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                      >
+                        {hub.title}
+                      </Link>
+                    </span>
                   ))}
                 </p>
               )}

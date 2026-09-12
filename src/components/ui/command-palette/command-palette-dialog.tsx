@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Search, X, Sparkles, Loader2, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { CommandCategory, CommandGroups, CommandItem } from './types'
@@ -52,13 +54,41 @@ export function CommandPaletteDialog({
   const activeOptionId =
     commandCount > 0 ? `${LISTBOX_ID}-option-${selectedIndex}` : undefined
 
-  return (
+  /**
+   * Portalled to `document.body`, and it has to be.
+   *
+   * This dialog renders inside the header, and `.site-header` carries
+   * `backdrop-filter: blur(12px)` — which makes it the containing block for
+   * `position: fixed` descendants. So `inset-0` resolved to the header's 81px
+   * box instead of the viewport: the scrim was measured at 1429x80 and covered
+   * the nav bar only, and `top-[20%]` of 81px put the panel at ~16px, flush
+   * under the top edge. A design review reported the palette "sits flush at
+   * y=8 over the fixed nav" and that the masthead "reads through around it",
+   * and this is why — the overlay was trapped in the bar that opened it.
+   *
+   * A scrim that covers 80px of a 900px viewport is not a scrim, so this is
+   * the other half of the Scrim Rule: the colour was wrong *and* the
+   * containing block was.
+   */
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null)
+  useEffect(() => setPortalTarget(document.body), [])
+  if (!portalTarget) return <></>
+
+  return createPortal(
     <>
+      {/* Ink at 25%, the value `.ask-scrim` already uses — not paper at 80%.
+          This was `bg-background/80`, which is the page's own colour laid over
+          the page, so it lightened instead of separating and the masthead read
+          straight through it. The palette has no shadow (correctly: the Two
+          Sheets Rule spends both of its elevated objects elsewhere), which left
+          it with nothing at all to say it was a layer. A scrim is not a shadow,
+          so the Flat Paper Rule survives — DESIGN.md now names it as the third
+          sanctioned separation mechanism. */}
       <button
         type="button"
         onClick={onClose}
         aria-label="Close search"
-        className="fixed inset-0 z-50 bg-background/80 backdrop-blur-xs"
+        className="fixed inset-0 z-50 bg-foreground/25 backdrop-blur-xs"
       />
 
       <div
@@ -195,6 +225,7 @@ export function CommandPaletteDialog({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    portalTarget
   )
 }
