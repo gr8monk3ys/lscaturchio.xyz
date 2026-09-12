@@ -232,10 +232,18 @@ test.describe('design invariants, in the DOM', () => {
     const response = await page.goto('/', { waitUntil: 'commit' })
     const html = (await response?.text()) ?? ''
 
+    // The ask trigger is matched on `aria-controls`, not on its label. It was
+    // matched on the literal "Ask this site", which is a *name* — and the one
+    // feature it names had five of them across the site ("Ask this site",
+    // "Ask the site anything", "Ask the essays anything.", "Chat with
+    // Lorenzo", "AI Chat"). Unifying them to one broke this assertion, which
+    // is the wrong way round: the test should fail when the control is missing,
+    // not when the copy improves. `aria-controls="ask-drawer"` is what makes it
+    // that control, and it is what the drawer's own `id` has to agree with.
     const required = [
       { name: 'search trigger', pattern: />Search</ },
       { name: 'theme toggle', pattern: /aria-label="Toggle theme"/ },
-      { name: 'ask trigger', pattern: /Ask this site/ },
+      { name: 'ask trigger', pattern: /aria-controls="ask-drawer"/ },
     ]
 
     const missing = required

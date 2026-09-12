@@ -31,7 +31,21 @@ export function Hero() {
               className="object-cover"
             />
           </div>
-          <figcaption className="label-mono mt-3">Lorenzo Scaturchio · Los Angeles</figcaption>
+          {/* Two deliberate lines, not three ragged ones.
+              "LORENZO SCATURCHIO · LOS ANGELES" is 32 characters of 11.52px
+              uppercase mono at 0.16em tracking — about 285px — set beneath a
+              176px plate. It wrapped to "LORENZO / SCATURCHIO · LOS / ANGELES"
+              and was wider than the thing it labels, on the site's signature
+              element. A placard names the work and then the place on its own
+              line, so stacking is the metaphor rather than a concession, and
+              the longest line is now ~160px against that 176px plate.
+
+              No `/80` on the second line: an opacity modifier on
+              `text-muted-foreground` is what put /lab's snippets at 3.48:1. */}
+          <figcaption className="label-mono mt-3 space-y-0.5">
+            <span className="block">Lorenzo Scaturchio</span>
+            <span className="block">Los Angeles</span>
+          </figcaption>
         </figure>
       </div>
 

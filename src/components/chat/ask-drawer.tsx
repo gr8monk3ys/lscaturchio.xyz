@@ -12,11 +12,9 @@ import {
   ChatBubbleMessage,
 } from "@/components/chat/chat-bubble";
 import { ChatMessageList } from "@/components/chat/chat-message-list";
+import { SuggestedQuestions } from "@/components/chat/suggested-questions";
 
-/**
- * Wall-label links rather than chips. The suggestions are the same register as
- * a footer link or a date: mono, normal case, underline on hover.
- */
+/** Rendered by `SuggestedQuestions`, which owns the one form these take. */
 const SUGGESTIONS = [
   "What's your most contrarian take?",
   "Argue with me: isn't meritocracy basically fair?",
@@ -117,7 +115,7 @@ export function AskDrawer() {
     <aside
       id="ask-drawer"
       ref={panelRef}
-      aria-label="Ask this site"
+      aria-label="Ask the site"
       aria-hidden={!isOpen}
       role={isOverlay ? "dialog" : undefined}
       aria-modal={isOverlay && isOpen ? true : undefined}
@@ -163,7 +161,7 @@ export function AskDrawer() {
       {isEmpty ? (
         <div data-lenis-prevent className="flex-1 overflow-y-auto px-5 py-8">
           <p className="text-section-title text-foreground">
-            Ask the essays anything.
+            Ask the site anything.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
             Answers come from what is published here, quoted where they can be.
@@ -174,22 +172,17 @@ export function AskDrawer() {
             you what he is working on now, and it will say so rather than guess.
           </p>
 
-          <ul className="mt-8 space-y-3">
-            {SUGGESTIONS.map((question) => (
-              <li key={question}>
-                <button
-                  type="button"
-                  onClick={() => void send(question)}
-                  className="label-mono label-link group items-start gap-2 text-start normal-case tracking-normal text-foreground transition-colors hover:text-primary"
-                >
-                  <span aria-hidden className="text-muted-foreground group-hover:text-primary">
-                    ↳
-                  </span>
-                  <span className="underline-offset-4 group-hover:underline">{question}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-8">
+            <SuggestedQuestions
+              questions={SUGGESTIONS}
+              onSelect={(question) => {
+                void send(question);
+                return true;
+              }}
+              layout="column"
+              as="button"
+            />
+          </div>
         </div>
       ) : (
         <div data-lenis-prevent className="flex-1 overflow-y-auto px-3 py-4">

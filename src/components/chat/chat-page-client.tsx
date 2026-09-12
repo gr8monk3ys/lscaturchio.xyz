@@ -11,6 +11,7 @@ import {
 } from "@/components/chat/chat-bubble";
 import { ChatMessageList } from "@/components/chat/chat-message-list";
 import { ChatInput } from "@/components/chat/chat-input";
+import { SuggestedQuestions } from "@/components/chat/suggested-questions";
 import Link from "next/link";
 
 // POV-forward openers — the chat is an interactive version of Lorenzo's
@@ -68,7 +69,7 @@ export function ChatPageClient({
             </button>
           )}
         </div>
-        <h1 className="mt-2 text-section-title">Chat with Lorenzo</h1>
+        <h1 className="mt-2 text-section-title">Ask the site anything</h1>
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">
           Answers come from the essays, not from a model that made them up. Enter sends;
           Shift+Enter starts a new line.
@@ -125,19 +126,16 @@ export function ChatPageClient({
 
           {messages.length === 1 && !isLoading && (
             <div className="px-2 pt-2">
-              <span className="label-mono mb-3 block">Try arguing</span>
-              <div className="flex flex-col items-start gap-2">
-                {STARTER_PROMPTS.map((prompt) => (
-                  <button
-                    key={prompt}
-                    type="button"
-                    onClick={() => void send(prompt)}
-                    className="border border-border px-3 py-2 text-left text-sm text-foreground transition-colors hover:border-primary/45 hover:text-primary"
-                  >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
+              <SuggestedQuestions
+                questions={STARTER_PROMPTS}
+                onSelect={(prompt) => {
+                  void send(prompt);
+                  return true;
+                }}
+                label="Try arguing"
+                layout="column"
+                as="button"
+              />
             </div>
           )}
 

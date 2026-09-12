@@ -261,13 +261,21 @@ correct, and this paragraph is the answer.
 
 **The Two Sheets Rule.** The only elevated objects are the fixed navigation and the primary CTA's 1px ledge. Nothing else may add a shadow without changing this file first.
 
+**The Scrim Rule.** A modal separates with a scrim, not a shadow. Ink at 25% (`hsl(var(--foreground) / 0.25)`) covering the viewport, with an optional small blur, is the third sanctioned separation mechanism alongside the two sheets — and the only one available to an overlay, since the Two Sheets Rule has already spent both of its shadows.
+
+This exists because the previous two rules, read together, left a hole. The command palette correctly carried no shadow and was therefore a bordered paper rectangle on a bordered paper page, backed by `bg-background/80`: the page's own colour laid over the page, which lightens rather than separates. A design review found the masthead reading through around it and concluded, reasonably, that it did not look like a modal. The drawer had already solved the same problem with `.ask-scrim` at ink-25% without anyone writing the rule down, so the pattern existed in the code and not in the document — which is how two overlays in one system ended up with two different answers.
+
+A scrim is not elevation: nothing rises, nothing casts. Flat paper holds.
+
 ## Shapes
 
 The form language is soft-cornered paper with one square exception. Buttons and controls use 14px corners (the xl step); small buttons 10px; the shadcn-style Card wrapper 18px; the raw `neu-card` utility 12px. Chips, badges, the ask button and the navigation's control pill are fully round. Radius never goes below 6px on a control, and never above 18px on a container.
 
 Two elements are deliberately square: the portrait plate in the masthead (a hairline-bordered square photograph with a mono caption below, like a placard) and the underline input, which has no radius and no box, only a bottom rule. Squareness marks the work; roundness marks the interface.
 
-Borders are always 1px Hairline, frequently at reduced opacity (40% under the nav, 60% above the footer, 70–90% on tinted surfaces). Glass utilities (`glass`, `glass-subtle`, `glass-heavy`: 40–75% paper with 8–20px blur) exist for overlays such as the command palette and are not for content surfaces.
+Borders are always 1px Hairline, frequently at reduced opacity (40% under the nav, 60% above the footer, 70–90% on tinted surfaces). Glass utilities (`glass`, `glass-subtle`, `glass-heavy`: 40–75% paper with 8–20px blur) exist for overlays and are not for content surfaces.
+
+This paragraph used to name the command palette as the example, and the palette does not use them: it is opaque `bg-popover` inside a 1px hairline, and it is better that way — glass over body copy at the palette's size smears the text behind it into noise. The implementation was right and the document was wrong, so the document follows it. What the palette needs to read as a layer is the scrim (see the Scrim Rule), not translucency. Glass remains available for chrome that sits over *itself* — the fixed navigation bar's 90% paper and 12px blur is the real instance.
 
 ## Components
 

@@ -3,10 +3,13 @@ import {
   FileText,
   Briefcase,
   BookOpen,
+  Bookmark,
   FolderKanban,
+  Home,
   Layers,
   Clock,
   Link2,
+  Music,
   Wrench,
   Mail,
   Sparkles,
@@ -59,7 +62,7 @@ export const navigationCategories: NavCategory[] = [
       { name: 'Topics', href: '/topics', icon: Layers, description: 'Curated topic hubs' },
       { name: 'Changelog', href: '/changelog', icon: TrendingUp, description: 'Roadmap + release notes' },
       { name: 'Podcast', href: '/podcast', icon: Mic, description: 'Audio episodes' },
-      { name: 'Chat', href: '/chat', icon: MessageSquare, description: 'Talk with AI Lorenzo' },
+      { name: 'Ask', href: '/chat', icon: MessageSquare, description: 'A conversation with the essays' },
       { name: 'Lab', href: '/lab', icon: Sparkles, description: 'Interactive demos' },
       { name: 'Guestbook', href: '/guestbook', icon: MessageSquare, description: 'Leave a note' },
     ],
@@ -149,8 +152,91 @@ export const footerColumns: NavCategory[] = [
     items: [
       { name: 'About', href: '/about' },
       { name: 'Hire me', href: '/professional' },
-      { name: 'Chat', href: '/chat' },
+      { name: 'Ask', href: '/chat' },
       { name: 'Contact', href: '/contact' },
     ],
   },
 ];
+
+/**
+ * Icons for destinations that only the footer carries.
+ *
+ * `footerColumns` is deliberately iconless — a footer site map is a text list.
+ * The command palette needs a glyph per row, so the mapping lives here rather
+ * than forcing icons into the footer data or letting the palette invent them.
+ */
+const PALETTE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  '/': Home,
+  '/blog': BookOpen,
+  '/topics': Layers,
+  '/series': Layers,
+  '/podcast': Mic,
+  '/changelog': TrendingUp,
+  '/projects': FolderKanban,
+  '/work-with-me': Sparkles,
+  '/uses': Wrench,
+  '/books': Book,
+  '/music': Music,
+  '/movies': Film,
+  '/photos': Camera,
+  '/now': Clock,
+  '/lab': Sparkles,
+  '/guestbook': MessageSquare,
+  '/links': Link2,
+  '/about': User,
+  '/professional': Briefcase,
+  '/chat': MessageSquare,
+  '/contact': Mail,
+  '/garden': Sparkles,
+  '/bookmarks': Bookmark,
+};
+
+/**
+ * Every destination the command palette can reach, with the name the rest of
+ * the site already uses for it.
+ *
+ * The palette used to hardcode its own eight entries with its own labels, so
+ * `/blog` was "Blog" there and "Writing" in both persistent navigations,
+ * `/chat` was "AI Chat" against the footer's "Chat", and `/professional` — the
+ * page both navs promote as "Hire me" — was unreachable. The drift suite has a
+ * rule named "gives every destination exactly one name" that was written after
+ * exactly that bug, but it collects from this module, so a third navigation
+ * declared in a hook was invisible to it by *scope* rather than by allowance.
+ *
+ * Deriving the list here is the fix: the existing rule now covers the palette
+ * for free, because the palette no longer has a vocabulary of its own.
+ * `no-hardcoded-destination` in design-drift.test.ts keeps it that way.
+ */
+const DESCRIPTIONS_BY_HREF = new Map<string, string>([
+  ...[...navigationCategories.flatMap((category) => category.items), ...primaryNavigation]
+    .filter((item): item is NavItem & { description: string } => Boolean(item.description))
+    .map((item): [string, string] => [item.href, item.description]),
+  // Footer-only destinations, which carry no description of their own because
+  // a footer site map does not print one. Every palette row shows one, so the
+  // three that would otherwise render bare get theirs here.
+  ['/series', 'Essays that run in sequence'],
+  ['/music', 'What is on the turntable'],
+  ['/contact', 'Start a conversation'],
+]);
+
+export const paletteDestinations: NavItem[] = (() => {
+  const ordered: NavItem[] = [
+    { name: 'Home', href: '/', description: 'The front door' },
+    ...primaryNavigation,
+    ...footerColumns.flatMap((column) => column.items),
+    contactLink,
+    { name: 'Bookmarks', href: '/bookmarks', description: 'Essays saved for later' },
+  ];
+
+  const seen = new Set<string>();
+  return ordered.reduce<NavItem[]>((items, item) => {
+    if (seen.has(item.href)) return items;
+    seen.add(item.href);
+    items.push({
+      ...item,
+      icon: item.icon ?? PALETTE_ICONS[item.href],
+      description: item.description ?? DESCRIPTIONS_BY_HREF.get(item.href),
+    });
+    return items;
+  }, []);
+})();

@@ -48,7 +48,16 @@ export const WorkTimeline = () => {
             </div>
 
             <div className="relative pl-20 pr-4 md:pl-4 w-full">
-              <h3 className="md:hidden block text-section-title mb-4 text-left text-muted-foreground">
+              {/* `text-card-title`, matching the desktop copy of this same
+                  heading four lines up. It was `text-section-title` here and
+                  `text-card-title` there — one heading rendered at two ramp
+                  steps across a breakpoint, 34.56px on a phone and 20px on a
+                  laptop, against the Fluid Heading Rule. Both classes are
+                  legitimate ramp tokens, which is why `heading-ramp` and
+                  `display-scale-outside-ramp` could not see it: the rules check
+                  that a heading uses the ramp, not that it picks one step and
+                  keeps it. A company name is a card title at every width. */}
+              <h3 className="md:hidden block text-card-title mb-4 text-left text-muted-foreground">
                 {item.company}
               </h3>
               <div className="space-y-4">

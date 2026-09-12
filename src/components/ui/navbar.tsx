@@ -20,11 +20,23 @@ export function Navbar() {
           <div className="flex h-20 items-center justify-between">
             <div className="w-[200px]">
               <Link href="/" prefetch={false} className="flex items-center">
+                {/* `priority`, and the asset's real dimensions.
+                    Two defects sat on this one element. It is the Largest
+                    Contentful Paint on the home page — Next said so by name in
+                    the console — and it was lazy-loaded, because that is
+                    next/image's default and nothing overrode it. The site's
+                    own wordmark was therefore deprioritised against content
+                    below the fold.
+                    And the declared 200×40 claimed a 5:1 ratio for a file that
+                    is 818×198, or 4.13:1. Next warned about the mismatch on
+                    every route, not just the one. The numbers now match the
+                    asset, so `h-14 w-auto` scales it without distorting it. */}
                 <Image
                   src="/cursive.svg"
                   alt="Lorenzo Scaturchio"
-                  width={200}
-                  height={40}
+                  width={818}
+                  height={198}
+                  priority
                   className="h-14 w-auto dark:invert"
                   unoptimized
                 />
@@ -60,7 +72,19 @@ export function Navbar() {
           </div>
         </div>
       </header>
-      <div className="hidden h-20 md:block" />
+      {/* Header space, reserved for both breakpoints by the one server-rendered
+          component, so it is in the first byte of HTML.
+
+          The 64px mobile half is new, and it belongs here rather than in
+          `MobileNavbar`. That component is loaded through `MobileNavbarGate`,
+          which is `ssr: false` and returns null until a media-query effect
+          runs — so a spacer inside it would appear one frame after paint and
+          shift every mobile page down 64px. The gate's own comment records the
+          mirror-image of that trap from when the mobile chrome was a floating
+          button that occupied nothing. Reservation is layout, and layout has to
+          be server-rendered; the bar itself stays client-only chrome that
+          overlays the space held here. */}
+      <div className="h-16 md:h-20" />
     </>
   );
 }
