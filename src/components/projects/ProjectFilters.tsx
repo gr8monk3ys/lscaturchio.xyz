@@ -48,7 +48,10 @@ export function ProjectFilters({
   return (
     <div className={cn("space-y-4", className)}>
       {/* Category Tabs */}
-      <div className="flex flex-wrap gap-2">
+      {/* A named group. The six buttons now say which of them is pressed,
+          but the set itself had no name, so a screen-reader user met six
+          toggles with no indication of what they filtered. */}
+      <div role="group" aria-label="Filter projects by category" className="flex flex-wrap gap-2">
         {categories.map((category) => {
           const count = categoryCounts[category.value] || 0;
           const isActive = currentCategory === category.value;

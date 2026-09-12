@@ -237,7 +237,22 @@ function ProjectGalleryCard({
         <m.div layoutId={shared ? `project-title-${project.slug}` : undefined}>
           {/* h2, not h3: each card is a top-level section of this page, and an
               h3 under the page h1 skipped a level with no h2 to hold it. */}
+          {/* The name leads the *accessible* name; the claim still leads the
+              page.
+              Two reviews made the same complaint: eighteen sibling `h2`s whose
+              text is each project's thesis, so a heading rotor reads eighteen
+              sentences and never a product name — "Decide what merges without
+              a human" with `merge-gate` in the label underneath.
+              The obvious fix is to swap them, and that is wrong: leading with
+              the claim is a deliberate editorial choice this codebase states
+              out loud ("the claim, then the name as a label"). So the visible
+              composition is untouched and the heading gains a screen-reader
+              prefix, which is the half that was actually broken. ⌘F already
+              worked, because the name is visible in the row below. */}
           <h2 className="text-card-title text-balance transition-colors group-hover:text-primary">
+            {project.thesis ? (
+              <span className="sr-only">{project.title}: </span>
+            ) : null}
             {project.thesis ?? project.title}
           </h2>
         </m.div>
