@@ -77,11 +77,26 @@ export default async function Blog({
   const themedBlogs = filteredBlogs.map(toBlogPreview);
   // Counted off the tag-filtered list, so the numbers describe what a click
   // would actually return rather than the whole corpus.
+  /**
+   * Counts scope to the tag — unless the tag matches nothing.
+   *
+   * Scoping to `tagFilteredBlogs` is right: the numbers then describe what a
+   * click would actually return. But when a tag matches nothing that set is
+   * empty, so every stage count was 0, the `count > 0` filter removed all
+   * three chips, and "All" read `ALL 0` on a site with 84 essays. The one
+   * control that could recover from a dead filter deleted itself, and the
+   * remaining chip lied about the corpus.
+   *
+   * Falling back to the whole corpus keeps the escape usable and the numbers
+   * honest: with nothing matching the tag, the stage counts describe the
+   * thing they would take you to.
+   */
+  const stageScope = tagFilteredBlogs.length > 0 ? tagFilteredBlogs : blogs;
   const stageCounts = BLOG_STAGES.map((stage) => ({
     stage,
     label: STAGE_LABELS[stage].label,
     blurb: STAGE_LABELS[stage].blurb,
-    count: tagFilteredBlogs.filter((blog) => blog.stage === stage).length,
+    count: stageScope.filter((blog) => blog.stage === stage).length,
   })).filter(({ count }) => count > 0);
 
   return (
@@ -148,7 +163,7 @@ export default async function Blog({
                   stageFilter ? "text-muted-foreground" : "text-primary underline"
                 )}
               >
-                All {tagFilteredBlogs.length}
+                All {stageScope.length}
               </Link>
               {stageCounts.map(({ stage, label, count }) => {
                 const active = stageFilter === stage;

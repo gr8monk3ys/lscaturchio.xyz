@@ -9,6 +9,29 @@ import { apiSuccess, ApiErrors } from '@/lib/api-response';
 import { withWriteRoute } from '@/lib/api/write-route';
 
 /**
+ * Turn an embedding chunk into something worth showing a reader.
+ *
+ * Returns null for chunks that are mostly code: a preview is prose, and a
+ * fenced block tells a visitor nothing about the essay it came from.
+ */
+function presentableSnippet(content: string | null | undefined, title: string): string | null {
+  if (!content) return null;
+  let text = content.trim();
+
+  // Opens with a fence, or contains a whole fenced block.
+  if (/^`{3}/.test(text)) return null;
+  if ((text.match(/`{3}/g) || []).length >= 2) return null;
+
+  // A leading copy of the post's own title, which the reader can already see
+  // directly above the snippet.
+  if (title && title !== 'Untitled' && text.toLowerCase().startsWith(title.toLowerCase())) {
+    text = text.slice(title.length).replace(/^[\s:.\u2014-]+/, '');
+  }
+
+  return text.length > 0 ? text : null;
+}
+
+/**
  * Groups raw embedding results by blog post URL, keeping only unique snippets
  * and tracking the highest similarity score per post.
  *
@@ -43,9 +66,22 @@ function groupEmbeddingResults(
         };
       }
 
-      // Add content snippet if it's unique
-      if (result.content && !acc[blogUrl].snippets.includes(result.content)) {
-        acc[blogUrl].snippets.push(result.content);
+      // Add content snippet if it's unique — and if it reads as prose.
+      //
+      // A snippet is an embedding chunk shown verbatim to a reader, and the
+      // corpus is chunked for retrieval rather than for preview. /lab showed
+      // two consequences: a chunk beginning with the post's own title, so the
+      // excerpt read "…in Production People who've shipped…" with the heading
+      // fused to the body; and a chunk that was a fenced code block, so the
+      // representative excerpt for a prose essay was TypeScript.
+      //
+      // Fixed here rather than at index time on purpose. Rechunking means
+      // regenerating embeddings, and a corpus whose embeddings no longer match
+      // its text is a worse defect than an ugly snippet. This is the read
+      // layer — the last place the text is still text.
+      const snippet = presentableSnippet(result.content, acc[blogUrl].title);
+      if (snippet && !acc[blogUrl].snippets.includes(snippet)) {
+        acc[blogUrl].snippets.push(snippet);
       }
 
       // Track the highest cosine (display) and fused score (ranking) per post.

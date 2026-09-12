@@ -49,62 +49,53 @@ export function BlogGrid({
           worse than either alone. The header row absorbed the "All" this one
           had, and its links now preserve an active tag. */}
 
-      {normalizedTag && (
-        <div className="mb-8 flex flex-col items-start justify-between gap-3 border-b border-border pb-4 sm:flex-row sm:items-center">
-          <span className="label-mono">
-            Filtered — {normalizedTag} · {totalBlogs} {totalBlogs === 1 ? "post" : "posts"}
+      {/* One heading, one count, one escape, one message.
+          This block said the same thing four times. A "Filtered — zzznotatag
+          · 0 posts" banner with a "Clear filter" link, then a "No blog posts
+          found with the tag" paragraph with a *second* escape worded
+          differently ("View all posts"), then the `h2` I added in #234 with
+          its count orphaned beside it — and under all of that, at zero
+          results, a 2.25rem section heading with nothing beneath it.
+
+          A review called that fix "fixed badly" and was right: it satisfied
+          the letter (the heading exists, the count is there, no heading skip)
+          and left the composition worse than the defect. The heading *is* the
+          banner. It names what was searched, carries the count, and holds the
+          one escape. */}
+      <div className="mb-6 flex flex-col items-start justify-between gap-3 border-b border-border pb-3 sm:flex-row sm:items-baseline">
+        <div className="flex min-w-0 items-baseline gap-4">
+          <h2 className="text-section-title">
+            {stageFilter && isBlogStage(stageFilter)
+              ? STAGE_LABELS[stageFilter].label.charAt(0) +
+                STAGE_LABELS[stageFilter].label.slice(1).toLowerCase()
+              : normalizedTag
+                ? `Tagged ${normalizedTag}`
+                : "Every essay"}
+          </h2>
+          {/* `role="status"`, so the count is announced when a filter changes
+              rather than only being visible — the same node a review asked for
+              beside the /projects chips. */}
+          <span role="status" className="label-mono shrink-0">
+            {totalBlogs}
           </span>
+        </div>
+        {(normalizedTag || stageFilter) && (
           <Link
-            href={getBlogArchiveHref(1, "", stageFilter)}
+            href="/blog"
             prefetch={false}
-            className="label-mono label-link inline-flex items-center gap-1.5 text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            className="label-mono label-link inline-flex shrink-0 items-center gap-1.5 text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
             <X className="h-3.5 w-3.5" />
             Clear filter
           </Link>
-        </div>
-      )}
+        )}
+      </div>
 
       {totalBlogs === 0 && (
-        <div className="border-y border-border py-20 text-center">
-          <p className="text-lg text-muted-foreground">
-            No blog posts found with the tag &quot;{normalizedTag}&quot;.
-          </p>
-          <Link
-            href="/blog"
-            prefetch={false}
-            className="label-mono label-link mt-4 inline-block text-primary underline-offset-4 hover:underline"
-          >
-            View all posts →
-          </Link>
-        </div>
+        <p className="border-b border-border py-16 text-muted-foreground">
+          Nothing here yet. The filter above will take you back.
+        </p>
       )}
-
-      {/* A heading for the section, and the outline needs one.
-          The themed index divides its essays under five `h2`s; this flat
-          archive had none, so replacing the card grid with rows took the page
-          from `h1` straight to the row `h3`s — a heading-order skip that did
-          not exist before, measured at 1. It is also the "showing X of Y at
-          the top" a review asked for: the pagination line says it at the
-          bottom, where a reader deciding whether to scroll cannot see it. */}
-      {/* Not gated on `totalBlogs > 0` any more.
-          Gating it there meant the one state that most needs a landmark was
-          the state that lost it: a zero-result filter dropped the `h2`
-          entirely, so the page went `h1` straight to the empty-state
-          paragraph with nothing naming what had been searched. A review put it
-          exactly right — the heading should say "Tagged zzznotatag · 0", which
-          is the answer to the reader's question. */}
-      <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-border pb-3">
-        <h2 className="text-section-title">
-          {stageFilter && isBlogStage(stageFilter)
-            ? STAGE_LABELS[stageFilter].label.charAt(0) +
-              STAGE_LABELS[stageFilter].label.slice(1).toLowerCase()
-            : normalizedTag
-              ? `Tagged ${normalizedTag}`
-              : 'Every essay'}
-        </h2>
-        <span className="label-mono shrink-0">{totalBlogs}</span>
-      </div>
 
       {/* The same rows the unfiltered index renders.
           This was a three-column grid of full-bleed stock photography, so

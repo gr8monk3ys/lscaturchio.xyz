@@ -122,8 +122,12 @@ export function SemanticSearchDemo() {
                   <div className="font-semibold text-foreground truncate">
                     {r.title}
                   </div>
+                  {/* `max-w-prose`, per the Measure Rule — which cites this
+                      exact page as the reason it was written. The lede above
+                      was capped and the results underneath were not: measured
+                      at 112 characters per line against a 65ch cap. */}
                   {r.description && (
-                    <div className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                    <div className="mt-1 max-w-prose text-sm text-muted-foreground line-clamp-2">
                       {r.description}
                     </div>
                   )}
@@ -139,7 +143,7 @@ export function SemanticSearchDemo() {
                       by size and italics, so the extra fade bought nothing and
                       cost compliance. */}
                   {r.snippets?.[0] && (
-                    <div className="mt-2 text-xs text-muted-foreground italic line-clamp-2">
+                    <div className="mt-2 max-w-prose text-xs text-muted-foreground italic line-clamp-2">
                       &ldquo;{stripMarkdown(r.snippets[0])}&rdquo;
                     </div>
                   )}
