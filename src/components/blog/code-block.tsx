@@ -173,8 +173,22 @@ export function CodeBlock({
         </div>
       </div>
 
-      {/* Code content */}
+      {/* Code content.
+
+          `tabIndex={0}` and a label, because this scrolls. WCAG 2.1.1: a
+          region that can be scrolled has to be reachable by keyboard, and a
+          plain `overflow-x-auto` div is not — measured at 390px with 550px of
+          content in a 390px box, unreachable by Tab. Long code lines are
+          exactly the content a keyboard or screen-reader user most needs to
+          pan through.
+
+          `role="region"` with `aria-label` so it is announced as something
+          worth entering rather than as an anonymous focus stop, and
+          `focus-visible` inherits the site's one focus treatment. */}
       <div
+        tabIndex={0}
+        role="region"
+        aria-label={`${language || "Code"} snippet, scrollable`}
         className={cn(
           "relative overflow-x-auto",
           shouldCollapse && "max-h-[400px] overflow-hidden"

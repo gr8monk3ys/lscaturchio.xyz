@@ -230,7 +230,9 @@ A warm, low-chroma paper palette with one deep green ink and a sand-toned hairli
 
 ## Layout
 
-The page is a single centred column on open paper, with three widths: narrow (42rem) for reading, medium (56rem) for mixed content, wide (72rem) for the masthead, galleries and index pages. Horizontal padding is 16px, rising to 24px and 32px at the sm and lg breakpoints.
+The page is a single centred column on open paper, with three widths: narrow (42rem) for reading, medium (56rem) for mixed content, wide (72rem) for the masthead, galleries and index pages.
+
+An index page's *header* is wide; its **row list caps at 42rem** (the `2xl` tier). This is the resolution of a collision this document created: the width above and the Measure Rule were both applied literally to `/blog`, and a review measured the result at 1152px of hairline divider under 606px of text — 546px of rule past the content it divides, on every one of 84 rows, on the most-seen composition on the site. Moving the date and stage to the right edge would have used the width, but that contradicts the row pattern below, which puts the label above the title and the description under it. 42rem is a sanctioned tier — `width-scale` in the drift suite rejects a fourth named one, and rejected a first attempt at 48rem — and it is the reading width, which is the right measure for a list whose purpose is choosing what to read. Galleries with a preview rail keep the full 72rem, because they have something at the right edge to justify it. Horizontal padding is 16px, rising to 24px and 32px at the sm and lg breakpoints.
 
 Vertical rhythm is generous. Sections breathe at 64px, then 80px at sm and 96px at lg; small sections at 32/48/64px. Cards and list rows pad at 24px (32px at sm) or 16px (24px at sm). Between sections sits a full-width hairline, the gallery rule, rather than a background change.
 
