@@ -164,7 +164,10 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
         <nav
           id="mobile-navigation-menu"
           ref={menuRef}
-          aria-label="Mobile"
+          /* "Mobile navigation", not "Mobile". A landmark's accessible name
+             is read as a noun phrase — "Mobile, navigation" announced the
+             adjective and left the reader to infer the noun. */
+          aria-label="Mobile navigation"
           data-lenis-prevent
           className="fixed inset-0 z-55 flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
         >

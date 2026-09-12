@@ -74,7 +74,7 @@ describe('mobile navbar keyboard affordances', () => {
     render(<MobileNavbar />);
     fireEvent.click(screen.getByRole('button', { name: 'Toggle menu' }));
 
-    const nav = screen.getByRole('navigation', { name: 'Mobile' });
+    const nav = screen.getByRole('navigation', { name: 'Mobile navigation' });
     const disclosures = within(nav)
       .getAllByRole('button')
       .filter((button) => button.hasAttribute('aria-controls'));
@@ -96,11 +96,11 @@ describe('mobile navbar keyboard affordances', () => {
     const toggle = screen.getByRole('button', { name: 'Toggle menu' });
     fireEvent.click(toggle);
 
-    expect(screen.getByRole('navigation', { name: 'Mobile' })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: 'Mobile navigation' })).toBeInTheDocument();
 
     fireEvent.keyDown(document, { key: 'Escape' });
 
-    expect(screen.queryByRole('navigation', { name: 'Mobile' })).toBeNull();
+    expect(screen.queryByRole('navigation', { name: 'Mobile navigation' })).toBeNull();
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
     expect(document.activeElement).toBe(toggle);
   });
