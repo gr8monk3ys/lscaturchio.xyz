@@ -166,11 +166,21 @@ export const secondaryNavigationCategories: NavCategory[] = navigationCategories
 // Contact link (always visible)
 export const contactLink: NavItem = item('/contact');
 
-// Footer site map. The header stays slim (primaryNavigation); the footer
-// carries the full breadth of the garden so no page loses a doorway — and it
-// carries it in the same groups the mobile drawer uses, because both read
-// SITE_GROUPS.
-export const footerColumns: NavCategory[] = navigationCategories;
+/**
+ * Footer site map. The header stays slim (primaryNavigation); the footer
+ * carries the full breadth of the garden so no page loses a doorway — in the
+ * same groups the mobile drawer uses, because both read SITE_GROUPS.
+ *
+ * Derived separately rather than aliased to `navigationCategories`. Aliasing
+ * them made the two exports the same value, which knip correctly reports as a
+ * duplicate export — and it also erased a real distinction: a footer site map
+ * is a text list and carries no icons, while the drawer's accordion headers
+ * do. Same grouping, different rendering needs, one source.
+ */
+export const footerColumns: NavCategory[] = SITE_GROUPS.map((group) => ({
+  name: group.name,
+  items: group.hrefs.map(item),
+}));
 
 /**
  * Every destination the command palette can reach, with the name the rest of
