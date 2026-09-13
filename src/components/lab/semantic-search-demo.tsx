@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Loader2, ArrowUpRight } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
+import { LinkArrow } from "@/components/ui/link-arrow";
 import { cn } from "@/lib/utils";
 import useSWR from "swr";
 import { fetchJson, type ApiEnvelope } from "@/lib/fetcher";
@@ -168,7 +169,7 @@ export function SemanticSearchDemo() {
                     </div>
                   )}
                 </div>
-                <ArrowUpRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
+                <LinkArrow href={r.url} className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
               </div>
             </Link>
           ))}

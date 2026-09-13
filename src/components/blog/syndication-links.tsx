@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { LinkArrow } from "@/components/ui/link-arrow";
 import { IconBrandBluesky, IconBrandMastodon } from "@tabler/icons-react";
 import type { ComponentType } from "react";
 
@@ -32,7 +32,7 @@ export function SyndicationLinks({ links }: { links?: string[] }) {
           >
             {Icon ? <Icon className="size-3.5" /> : null}
             <span className="font-semibold text-foreground/80">{label}</span>
-            <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <LinkArrow href={href} className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
         );
       })}

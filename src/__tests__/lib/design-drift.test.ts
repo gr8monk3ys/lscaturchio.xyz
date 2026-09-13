@@ -128,6 +128,12 @@ const RULES: Rule[] = [
     ),
   },
   {
+    id: "no-direct-arrow-up-right",
+    because:
+      "`↗` promises the click leaves this site. It was on all eight `/garden` cells (every one an internal route), on home's \"Read the case study\", on the `/lab` search results, and on a *same-page anchor* that scrolls a few hundred pixels down the page the reader is already on — while `/contact` used it correctly for Calendly and a mailto. One glyph, both meanings, so no meaning. `LinkArrow` derives it from the href, which is why this rule bans naming the icon directly rather than trying to pair an arrow with an href two lines away.",
+    test: /\bArrowUpRight\b/,
+  },
+  {
     id: "heading-in-label-voice",
     because:
       "DESIGN.md: mono \"is the label beside the work, never headings or body copy\", and the Serif Speaks rule gives headings to Fraunces. 26 h2/h3 elements were set in `label-mono` — 11.52px uppercase #606976, quieter and smaller than the body they introduced, and on /colophon pixel-identical to the field labels nested inside them. An inverted hierarchy on the three pages that explain the work. DESIGN.md:309's \"any new section should introduce itself with one\" means a label ABOVE the heading, not instead of it.",
@@ -200,6 +206,12 @@ const RULES: Rule[] = [
 
 /** Each entry needs a reason. If you cannot write one, fix the code instead. */
 const ALLOWED: Array<{ file: string; rule: string; reason: string }> = [
+  {
+    file: "src/components/ui/link-arrow.tsx",
+    rule: "no-direct-arrow-up-right",
+    reason:
+      "The one module allowed to name the glyph, because it is the module that decides when the glyph is true.",
+  },
   {
     file: "src/lib/email.ts",
     rule: "inline-css-type-ramp",
