@@ -4,8 +4,9 @@ import { permanentRedirect } from "next/navigation";
 
 import { Container } from "@/components/Container";
 import { PageHead } from "@/components/ui/page-head";
-import { BlogCard } from "@/components/blog/BlogCard";
+import { EssayRows } from "@/components/blog/essay-rows";
 import { getAllBlogs } from "@/lib/getAllBlogs";
+import { toBlogPreview } from "@/lib/blog-data";
 import { spellCount, pluralize } from "@/lib/spell-count";
 import { buildPageMetadata } from "@/lib/seo";
 
@@ -89,20 +90,15 @@ export default async function TagPage({ params }: Props) {
       </PageHead>
 
       {/* No empty branch: a tag with no posts redirected to /tags above, so the
-          only state this page can reach is a populated one. */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((blog) => (
-          <BlogCard
-            key={blog.slug}
-            slug={blog.slug}
-            title={blog.title}
-            description={blog.description}
-            date={blog.date}
-            image={blog.image}
-            tags={blog.tags}
-          />
-        ))}
-      </div>
+          only state this page can reach is a populated one.
+
+          The one essay row, not a card grid. DESIGN.md states the pattern
+          twice — index pages are "stacked rows separated by hairlines with the
+          label above the title and the description below, not tiled cards" —
+          and this route was one of the last two still answering a *narrowing*
+          with a different-looking page. Filtering a list should remove items
+          from it, not hand the reader three columns of stock photography. */}
+      <EssayRows posts={filtered.map(toBlogPreview)} />
     </Container>
   );
 }

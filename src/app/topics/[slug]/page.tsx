@@ -6,9 +6,10 @@ import { ArrowRight, Layers } from "lucide-react";
 import { Container } from "@/components/Container";
 import { Heading } from "@/components/Heading";
 import { Paragraph } from "@/components/Paragraph";
-import { BlogCard } from "@/components/blog/BlogCard";
+import { EssayRows } from "@/components/blog/essay-rows";
 import { listRoutableProjects } from "@/lib/project-catalogue";
 import { getAllBlogs } from "@/lib/getAllBlogs";
+import { toBlogPreview } from "@/lib/blog-data";
 import { buildPageMetadata } from "@/lib/seo";
 import { findTopicHub, TOPIC_HUBS } from "@/constants/topics";
 
@@ -98,29 +99,26 @@ export default async function TopicHubPage({ params }: Props) {
 
         <section className="space-y-4">
           <h2 className="text-section-title">Posts</h2>
+          {/* Hairline rows, like the Featured projects list directly above.
+              This section was a three-column grid of BlogCards, so a topic hub
+              rendered the site's index pattern and its anti-pattern on one
+              screen — rows for the projects, tiles for the essays, six
+              centimetres apart. DESIGN.md assigns index pages "stacked rows
+              separated by hairlines ... not tiled cards"; the projects list
+              was already obeying it. */}
           {posts.length === 0 ? (
-            <div className="neu-card p-8 text-center">
-              <p className="text-muted-foreground">
-                No posts found for this topic yet.
-              </p>
-              <Link href="/blog" className="mt-4 inline-block px-6 py-2 rounded-xl cta-secondary">
-                Browse all posts
+            <p className="max-w-prose text-muted-foreground">
+              Nothing filed here yet.{" "}
+              <Link
+                href="/blog"
+                className="label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+              >
+                Browse all writing
               </Link>
-            </div>
+              .
+            </p>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {posts.map((blog) => (
-                <BlogCard
-                  key={blog.slug}
-                  slug={blog.slug}
-                  title={blog.title}
-                  description={blog.description}
-                  date={blog.date}
-                  image={blog.image}
-                  tags={blog.tags}
-                />
-              ))}
-            </div>
+            <EssayRows posts={posts.map(toBlogPreview)} />
           )}
         </section>
       </div>
