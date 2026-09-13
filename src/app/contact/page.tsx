@@ -52,7 +52,13 @@ export default function Contact() {
                 and it has to mean one thing to mean anything. */}
             <Link
               href="mailto:lorenzosca7@protonmail.ch"
-              className="neu-button inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors hover:text-primary"
+              /* `cta-secondary`, like its sibling. These two sat adjacent
+                 under two different contracts that differ by a 0.01 alpha on
+                 hover background — both `hsl(var(--card))` on
+                 `hsl(var(--border))`, both 42px. One visual, two contracts,
+                 side by side; `cta-secondary` is the one with real disabled
+                 and `aria-disabled` states, so it is the one that stays. */
+              className="cta-secondary inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
             >
               Email directly
               <LinkArrow href="mailto:lorenzosca7@protonmail.ch" className="h-4 w-4" />
