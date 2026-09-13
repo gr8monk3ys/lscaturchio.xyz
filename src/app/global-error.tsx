@@ -87,7 +87,7 @@ const paletteCss = `
   }
   .ge-digest {
     font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--ge-ink-muted);
     word-break: break-all;
     margin: 0 0 24px;
@@ -108,7 +108,7 @@ const paletteCss = `
     background: var(--ge-forest);
     color: var(--ge-forest-contrast);
     font: inherit;
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 500;
     line-height: 1;
     cursor: pointer;

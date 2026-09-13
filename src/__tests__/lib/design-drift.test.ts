@@ -113,6 +113,21 @@ const RULES: Rule[] = [
       !line.includes("tabular-nums"),
   },
   {
+    id: "inline-css-type-ramp",
+    because:
+      "The type ramp is 4.9 / 3.2 / 2.25 / 1.25 / 1 / 0.72rem, and every rule that guards it reads Tailwind `text-*` classes. `global-error.tsx` cannot use them: it renders outside the root layout, so it hand-inlines a stylesheet in a template literal — and every existing type rule scanned the file and matched nothing in it. It had drifted to `0.75rem` for a mono label and `0.875rem` for a button DESIGN.md specifies as `typography.body`. Not allowed, and not caught: invisible, which is the more expensive kind of wrong.",
+    test: new RegExp(
+      // The `\s*` lives INSIDE the lookahead deliberately. Outside it, the
+      // quantifier backtracks to zero width and re-tests the assertion at the
+      // space, where no ramp value can match — so the negative lookahead
+      // succeeds and the rule flags every font-size on the ramp as drift.
+      String.raw`font-size:(?!\s*(?:0\.72rem|1rem|1\.25rem|2\.25rem|3\.2rem|4\.9rem` +
+        String.raw`|clamp\(2\.4rem, 5\.2vw, 4\.9rem\)` +
+        String.raw`|clamp\(1\.9rem, 3\.6vw, 3\.2rem\)` +
+        String.raw`|clamp\(1\.55rem, 2\.4vw, 2\.25rem\))\s*(?:[;}]|$))`
+    ),
+  },
+  {
     id: "heading-in-label-voice",
     because:
       "DESIGN.md: mono \"is the label beside the work, never headings or body copy\", and the Serif Speaks rule gives headings to Fraunces. 26 h2/h3 elements were set in `label-mono` — 11.52px uppercase #606976, quieter and smaller than the body they introduced, and on /colophon pixel-identical to the field labels nested inside them. An inverted hierarchy on the three pages that explain the work. DESIGN.md:309's \"any new section should introduce itself with one\" means a label ABOVE the heading, not instead of it.",
@@ -185,6 +200,12 @@ const RULES: Rule[] = [
 
 /** Each entry needs a reason. If you cannot write one, fix the code instead. */
 const ALLOWED: Array<{ file: string; rule: string; reason: string }> = [
+  {
+    file: "src/lib/email.ts",
+    rule: "inline-css-type-ramp",
+    reason:
+      "Email is a different coordinate space, not a lapse. Mail clients strip <style> blocks and treat rem unreliably, so an HTML email has to inline px on every element — the same reason the Satori OG card is allowed its own literals. The site's ramp has no jurisdiction inside a message Gmail will re-render; the rule's scope is CSS a browser paints as part of this document.",
+  },
   {
     file: "src/components/ui/footer-section.tsx",
     rule: "heading-in-label-voice",
