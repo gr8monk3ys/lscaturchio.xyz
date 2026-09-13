@@ -3,7 +3,7 @@ import { Container } from "@/components/Container";
 import { SemanticSearchDemo } from "@/components/lab/semantic-search-demo";
 import { ToySimilarity } from "@/components/lab/toy-similarity";
 import { EXPERIMENTS } from "@/constants/experiments";
-import { ArrowUpRight } from "lucide-react";
+import { LinkArrow } from "@/components/ui/link-arrow";
 import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
@@ -63,7 +63,7 @@ export default function LabPage() {
                   <span className="label-mono">{experiment.tag}</span>
                   <span className="mt-3 flex items-start gap-1.5 text-card-title transition-colors group-hover:text-primary">
                     {experiment.title}
-                    <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+                    <LinkArrow href={experiment.href} className="mt-1 h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
                   </span>
                   <span className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     {experiment.description}

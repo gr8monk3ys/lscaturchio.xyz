@@ -31,7 +31,6 @@ export interface CaseStudy {
  */
 export interface ProjectHomeCard {
   kicker: string;
-  title: string;
   blurb: string;
   /** Rendered as a single wall-label line, joined with separators. */
   metrics: string[];

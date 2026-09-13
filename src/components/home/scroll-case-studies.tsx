@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
+import { LinkArrow } from "@/components/ui/link-arrow";
 
 import { listHomeCaseStudies } from "@/lib/project-catalogue";
 import {
@@ -53,7 +53,14 @@ export function ScrollCaseStudies() {
                       {item.title}
                     </span>
                   </span>
-                  <ArrowUpRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                  {/* A same-page anchor — this scrolls a few hundred pixels
+                      down the page the reader is already on, and it carried
+                      the leaves-the-site arrow. Horizontal motion only, for
+                      the same reason as the garden cells. */}
+                  <LinkArrow
+                    href={`#case-study-${item.slug}`}
+                    className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+                  />
                 </a>
               </li>
             )}
@@ -91,7 +98,10 @@ export function ScrollCaseStudies() {
                   className="label-link group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary underline-offset-4"
                 >
                   Read the case study
-                  <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                  <LinkArrow
+                    href={item.href}
+                    className="size-4 transition-transform group-hover:translate-x-0.5"
+                  />
                 </Link>
               </div>
 

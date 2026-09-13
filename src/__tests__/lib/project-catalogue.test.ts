@@ -226,7 +226,6 @@ describe("listHomeCaseStudies", () => {
       ...fixture[0],
       homeCard: {
         kicker: "Kicker",
-        title: "Card title",
         blurb: "Card blurb",
         metrics: ["one", "two"],
         coverSrc: "/images/projects/covers/beta.webp",
@@ -240,13 +239,28 @@ describe("listHomeCaseStudies", () => {
       {
         slug: "beta",
         kicker: "Kicker",
-        title: "Card title",
+        // Falls back to the bare name: this fixture declares no thesis.
+        title: "Beta",
         blurb: "Card blurb",
         metrics: ["one", "two"],
         href: "/projects/beta",
         coverSrc: "/images/projects/covers/beta.webp",
       },
     ]);
+  });
+
+  it("composes the card title from the catalogue's own name and thesis", () => {
+    // The home card used to store its own descriptor, so the same project was
+    // "Cocoon: A Calmer Internet" on home and "Lower the sensory load of the
+    // web" on /projects. One source now, so the two cannot diverge again.
+    const withThesis: Product[] = [
+      { ...withCard[0], thesis: "Lower the sensory load of the web" },
+      withCard[1],
+    ];
+
+    expect(listHomeCaseStudies(["beta"], withThesis)[0].title).toBe(
+      "Beta: Lower the sensory load of the web"
+    );
   });
 
   it("skips a slug with no record and a record with no card", () => {

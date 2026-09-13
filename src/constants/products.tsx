@@ -34,7 +34,6 @@ export const products: Product[] = [
     thesis: "Lower the sensory load of the web",
     homeCard: {
       kicker: "Accessibility",
-      title: "Cocoon: A Calmer Internet",
       blurb:
         "Softens algorithmic feeds and reduces motion for people who find the web overwhelming. No accounts, no analytics, nothing leaves the device.",
       metrics: ["Local-only storage", "Zero network calls", "4 presets"],
@@ -107,7 +106,6 @@ export const products: Product[] = [
     thesis: "A diary for artworks, not visits",
     homeCard: {
       kicker: "Product Thinking",
-      title: "Verso: A Diary for Artworks",
       blurb:
         "Letterboxd where the unit is the work, not the visit — a frequency bet, stated up front so it can be falsified.",
       metrics: ["10k works seeded", "Offline-first capture", "Thesis measured, not assumed"],
@@ -767,7 +765,6 @@ export const products: Product[] = [
     thesis: "Decide what merges without a human",
     homeCard: {
       kicker: "Policy Engine",
-      title: "merge-gate: Automated Review",
       blurb:
         "Decides which of ~100 open pull requests may merge without a human. Shape is computed from the diff, never eyeballed.",
       metrics: ["49 passing tests", "~70 repos governed", "Zero arms granted"],

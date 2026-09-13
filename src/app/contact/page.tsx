@@ -2,7 +2,7 @@ import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
 import { ContactForm } from "@/components/contact/ContactForm";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { LinkArrow } from "@/components/ui/link-arrow";
 import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
@@ -39,7 +39,7 @@ export default function Contact() {
               className="cta-secondary inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold"
             >
               Book a call
-              <ArrowUpRight className="h-4 w-4" />
+              <LinkArrow href="https://calendly.com/gr8monk3ys/30min" className="h-4 w-4" />
             </Link>
             {/* Sentence case, and the same `↗` as its sibling.
                 "Email Directly" was the only Title Case control on the page,
@@ -55,7 +55,7 @@ export default function Contact() {
               className="neu-button inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors hover:text-primary"
             >
               Email directly
-              <ArrowUpRight className="h-4 w-4" />
+              <LinkArrow href="mailto:lorenzosca7@protonmail.ch" className="h-4 w-4" />
             </Link>
           </div>
         </PageHead>

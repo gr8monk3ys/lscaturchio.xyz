@@ -306,7 +306,20 @@ export function listHomeCaseStudies(
     cards.push({
       slug,
       kicker: product.homeCard.kicker,
-      title: product.homeCard.title,
+      // Composed, not stored. `homeCard.title` used to hold a second
+      // hand-written descriptor per project — "Cocoon: A Calmer Internet"
+      // against the catalogue's own "Lower the sensory load of the web" — so
+      // the same three projects had two names and two casing conventions one
+      // click apart, both out of this one file. `src/types/products.ts`
+      // already argues which is better: "Cocoon" tells a visitor nothing.
+      //
+      // `/projects` shows the thesis alone as its visible heading and puts the
+      // name in a mono label below (plus an sr-only prefix, so its accessible
+      // name is this same string). Home's card is a row with a kicker above
+      // and no separate label line, so it keeps the "Name: claim" shape — the
+      // composition differs because the surrounding composition differs; the
+      // words no longer do.
+      title: product.thesis ? `${product.title}: ${product.thesis}` : product.title,
       blurb: product.homeCard.blurb,
       metrics: product.homeCard.metrics,
       href: `/projects/${slug}`,

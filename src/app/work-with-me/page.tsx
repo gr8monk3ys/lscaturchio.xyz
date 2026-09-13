@@ -5,7 +5,7 @@ import { HowIWorkSection } from "@/components/home/how-i-work-section";
 import { FaqSection } from "@/components/services/faq-section";
 import { questions } from "@/constants/questions";
 import { SERVICES } from "@/constants/services";
-import { ArrowUpRight } from "lucide-react";
+import { LinkArrow } from "@/components/ui/link-arrow";
 import { LedgerRows, ordinal } from "@/components/ui/ledger-section";
 
 export const metadata: Metadata = {
@@ -110,7 +110,7 @@ export default function WorkWithMePage() {
               className="cta-primary inline-flex h-11 items-center gap-2 rounded-full px-5 text-sm"
             >
               Schedule a call
-              <ArrowUpRight className="h-4 w-4" aria-hidden />
+              <LinkArrow href={CALL_URL} className="h-4 w-4" />
             </Link>
             <Link
               href="/contact"

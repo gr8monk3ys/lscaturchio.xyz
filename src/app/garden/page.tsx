@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { buildPageMetadata } from "@/lib/seo";
 import { Container } from "@/components/Container";
-import { ArrowUpRight } from "lucide-react";
+import { LinkArrow } from "@/components/ui/link-arrow";
 import { footerColumns, primaryNavigation } from "@/constants/navlinks";
 import { PageHead } from "@/components/ui/page-head";
 
@@ -117,7 +117,15 @@ export default function GardenPage() {
                     {plot.blurb}
                   </span>
                 </span>
-                <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary" />
+                {/* The hover gesture moves with the glyph. These eight are
+                    internal, so the arrow is now `→` and the motion is
+                    horizontal only — the old `-translate-y-0.5` animated an
+                    up-and-away departure, which is the same false promise the
+                    glyph was making. */}
+                <LinkArrow
+                  href={plot.href}
+                  className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+                />
               </Link>
             </li>
           ))}
