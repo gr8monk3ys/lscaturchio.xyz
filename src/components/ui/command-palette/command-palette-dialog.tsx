@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Search, X, Loader2, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -53,6 +53,38 @@ export function CommandPaletteDialog({
   selectedIndex,
 }: DialogProps): React.ReactElement {
   let globalIndex = -1
+  /* The list held 24 destinations in a 540px window (`max-h-[60vh]` at a
+     900px viewport) over 1681px of content, and said nothing about it. Row 9
+     clipped mid-row at the panel edge, which is the only cue the reader got —
+     and a half-row reads as a rendering seam, not as "there is more".
+     Fifteen of the palette's 24 destinations existed with no signal that they
+     did, on the surface whose whole value is its coverage.
+
+     Measured rather than assumed, like the code-block scroll affordance: a
+     hairline that appears because the content actually overflows, and
+     disappears at the bottom of the scroll. A gradient fade is the usual
+     answer and is the wrong one here — DESIGN.md:169 rules out SaaS chrome,
+     and this system separates surfaces with hairlines everywhere else. */
+  const [moreBelow, setMoreBelow] = useState(false)
+
+  useEffect(() => {
+    const el = listRef.current
+    if (!el) return
+
+    const measure = () =>
+      setMoreBelow(el.scrollHeight > el.clientHeight + 1 && el.scrollTop + el.clientHeight < el.scrollHeight - 1)
+
+    measure()
+    el.addEventListener('scroll', measure, { passive: true })
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => {
+      el.removeEventListener('scroll', measure)
+      observer.disconnect()
+    }
+    // Re-measures when the list's length changes, not just its box.
+  }, [listRef, commandCount, isSearching])
+
   const activeOptionId =
     commandCount > 0 ? `${LISTBOX_ID}-option-${selectedIndex}` : undefined
 
@@ -203,6 +235,13 @@ export function CommandPaletteDialog({
             </kbd>
           </div>
 
+          <div className="relative">
+          {moreBelow && (
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 z-10 border-b border-border"
+            />
+          )}
           <div
             ref={listRef}
             id={LISTBOX_ID}
@@ -297,6 +336,7 @@ export function CommandPaletteDialog({
               )
             )}
           </div>
+          </div>
 
           <div className="px-4 py-2 border-t border-border bg-muted/30">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -310,9 +350,21 @@ export function CommandPaletteDialog({
                   select
                 </span>
               </div>
-              <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 rounded border bg-muted font-mono">esc</kbd>
-                close
+              <span className="flex items-center gap-3">
+                {/* The extent, stated. The hairline says "there is more"; this
+                    says how much more, which is the half a scroll indicator
+                    cannot express. Hidden while searching, because then the
+                    count is a result tally and `role="status"` elsewhere in
+                    the list already owns announcing that. */}
+                {!isSearching && commandCount > 0 && (
+                  <span className="label-mono normal-case tracking-normal">
+                    {commandCount} {commandCount === 1 ? 'destination' : 'destinations'}
+                  </span>
+                )}
+                <span className="flex items-center gap-1">
+                  <kbd className="px-1.5 py-0.5 rounded border bg-muted font-mono">esc</kbd>
+                  close
+                </span>
               </span>
             </div>
           </div>
