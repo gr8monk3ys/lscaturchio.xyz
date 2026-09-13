@@ -13,6 +13,21 @@ interface PageHeadProps {
   blurb?: ReactNode;
   /** Draw the closing hairline. */
   rule?: boolean;
+  /**
+   * How far the closing hairline runs.
+   *
+   * `"full"` spans the container, which is right when a wide gallery follows.
+   * `"measure"` caps it at the 42rem reading measure, which is right when a
+   * capped list follows — and matches the blurb directly above it, which is
+   * already `max-w-2xl`.
+   *
+   * A review measured this twice. The first time it found index rows dividing
+   * 606px of text with 1152px hairlines; the fix capped the *list* and left
+   * this rule at full width, so the same 480px of rule past its content
+   * survived one element higher up. The rule has to end where its content
+   * ends, and only the caller knows how wide that is.
+   */
+  ruleWidth?: "full" | "measure";
   /** Extra head content (a CTA row, a status banner) placed above the rule. */
   children?: ReactNode;
   /** Outer spacing only; the head's own type and rhythm are not caller-tunable. */
@@ -33,6 +48,7 @@ export function PageHead({
   title,
   blurb,
   rule = true,
+  ruleWidth = "full",
   children,
   className,
 }: PageHeadProps) {
@@ -50,7 +66,9 @@ export function PageHead({
         </Paragraph>
       )}
       {children}
-      {rule && <hr className="gallery-rule mt-8" />}
+      {rule && (
+        <hr className={cn("gallery-rule mt-8", ruleWidth === "measure" && "max-w-2xl")} />
+      )}
     </header>
   );
 }
