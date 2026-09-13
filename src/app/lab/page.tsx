@@ -51,21 +51,35 @@ export default function LabPage() {
             </p>
           </div>
 
-          <ul className="grid gap-px border border-border bg-border sm:grid-cols-2">
+          {/* Hairline rows, and an `h3` per row.
+              This was `grid gap-px border border-border bg-border
+              sm:grid-cols-2` — byte-for-byte the tiled grid that `/garden`
+              carried until it was converted, which makes this the sibling that
+              conversion should have caught. DESIGN.md assigns index pages
+              stacked hairline rows and rules out equal-halves two-column
+              compositions; the same page's own "Running here" section above is
+              already a single column.
+
+              The titles were `<span className="text-card-title">`: the card
+              title step without the heading, so this section's rows were
+              invisible to a heading rotor exactly as `/garden`'s eight
+              destinations were. `h3`, because the "Elsewhere" `h2` is directly
+              above them. */}
+          <ul className="max-w-2xl divide-y divide-border border-y border-border">
             {EXPERIMENTS.map((experiment) => (
-              <li key={experiment.href} className="bg-background">
+              <li key={experiment.href}>
                 <a
                   href={experiment.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex h-full flex-col p-6 transition-colors hover:bg-muted/40"
+                  className="group flex flex-col py-4 transition-colors"
                 >
                   <span className="label-mono">{experiment.tag}</span>
-                  <span className="mt-3 flex items-start gap-1.5 text-card-title transition-colors group-hover:text-primary">
+                  <h3 className="mt-2 flex items-start gap-1.5 text-card-title text-foreground transition-colors group-hover:text-primary">
                     {experiment.title}
                     <LinkArrow href={experiment.href} className="mt-1 h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-                  </span>
-                  <span className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  </h3>
+                  <span className="mt-1 max-w-prose text-sm leading-relaxed text-muted-foreground">
                     {experiment.description}
                   </span>
                 </a>

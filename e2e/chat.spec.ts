@@ -127,3 +127,67 @@ test.describe('Chat', () => {
     expect(count).toBeGreaterThan(0)
   })
 })
+
+/**
+ * The ask drawer's discard control, verified in a browser.
+ *
+ * This is e2e rather than a unit test for two reasons. The first is evidence:
+ * reaching a non-empty transcript means actually sending a question, and the
+ * response has to come back through the real component. The second is the
+ * coverage ratchet — a unit test on this file makes v8 start counting a
+ * 290-line component that nothing else imports, and global coverage drops
+ * below the threshold even though the codebase is better tested. `/api/chat`
+ * is intercepted by Playwright and never leaves the browser, which is the
+ * pattern the tests above already use.
+ */
+test.describe('the ask drawer discards once it is asked twice', () => {
+  test('arms on the first click and discards on the second', async ({ page }) => {
+    // Browsing must not touch the production view counter.
+    await page.route('**/api/views', (route) => route.abort())
+    await page.route('**/api/chat', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ data: { answer: 'Boredom is where the thinking starts.' } }),
+      })
+    )
+
+    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.getByLabel('Ask the site').first().click()
+
+    const drawer = page.locator('#ask-drawer')
+    await expect(drawer).toBeVisible()
+
+    await drawer.getByLabel('Ask a question').fill('Why does boredom matter?')
+    await drawer.getByLabel('Send question').click()
+
+    const answer = drawer.getByText('Boredom is where the thinking starts.')
+    await expect(answer).toBeVisible({ timeout: 15000 })
+
+    // Before: this control and "Close the ask panel" were the same 36px
+    // icon-only square 4px apart, destructive one first, and one click threw
+    // the transcript away.
+    const discard = drawer.getByLabel('Start a new conversation')
+    await expect(discard).toBeEnabled()
+    await discard.click()
+
+    // Armed, not fired.
+    await expect(drawer.getByLabel('Confirm discarding this conversation')).toBeVisible()
+    await expect(answer).toBeVisible()
+
+    await drawer.getByLabel('Confirm discarding this conversation').click()
+    await expect(answer).toHaveCount(0)
+  })
+
+  test('cannot discard a conversation that has not started', async ({ page }) => {
+    await page.route('**/api/views', (route) => route.abort())
+    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.getByLabel('Ask the site').first().click()
+
+    const drawer = page.locator('#ask-drawer')
+    await expect(drawer).toBeVisible()
+    // Which is why this is a confirm and not an undo: the only time it can
+    // fire is the only time it costs something.
+    await expect(drawer.getByLabel('Start a new conversation')).toBeDisabled()
+  })
+})

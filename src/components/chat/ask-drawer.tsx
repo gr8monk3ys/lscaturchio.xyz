@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type FormEvent, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { usePathname } from "next/navigation";
 import { RotateCcw, X, ArrowUp } from "lucide-react";
 
@@ -36,6 +36,19 @@ export function AskDrawer() {
   const { messages, input, setInput, isLoading, send, reset, isEmpty } =
     useAskConversation({ contextSlug });
 
+  /* Discarding a transcript asks once.
+     This control sat 4px from "Close the ask panel", the same 36px icon-only
+     square, with the destructive one first — so the difference between
+     dismissing a panel and throwing away a conversation was which of two
+     identical glyphs you hit. It was already `disabled` when there is nothing
+     to discard, which is the reason this is a confirm rather than an undo:
+     the only time it can fire is the only time it costs something.
+
+     Two clicks, not a dialog: a modal inside a modal to protect one button is
+     more interface than the risk warrants, and the drawer is already a
+     dialog. */
+  const [confirmingReset, setConfirmingReset] = useState(false);
+
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLElement>(null);
   const isOpen = drawer?.isOpen ?? false;
@@ -55,6 +68,13 @@ export function AskDrawer() {
     if (!isOpen) return;
     const id = window.requestAnimationFrame(() => inputRef.current?.focus());
     return () => window.cancelAnimationFrame(id);
+  }, [isOpen]);
+
+  // An armed discard does not survive the panel closing. Otherwise a reader
+  // who arms it, closes the drawer and reopens it later finds a button that
+  // throws away their conversation on the first click.
+  useEffect(() => {
+    if (!isOpen) setConfirmingReset(false);
   }, [isOpen]);
 
   // Trap focus only while the drawer covers the page. In push mode it sits
@@ -132,15 +152,30 @@ export function AskDrawer() {
       <header className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
         <span className="label-mono">Ask</span>
         <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={reset}
-            disabled={isEmpty}
-            aria-label="Start a new conversation"
-            className="inline-flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-primary disabled:opacity-40"
-          >
-            <RotateCcw className="h-4 w-4" aria-hidden />
-          </button>
+          {confirmingReset ? (
+            <button
+              type="button"
+              onClick={() => {
+                reset();
+                setConfirmingReset(false);
+              }}
+              onBlur={() => setConfirmingReset(false)}
+              aria-label="Confirm discarding this conversation"
+              className="label-mono inline-flex h-9 items-center justify-center px-2 normal-case tracking-normal text-primary transition-colors"
+            >
+              Discard?
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmingReset(true)}
+              disabled={isEmpty}
+              aria-label="Start a new conversation"
+              className="inline-flex h-9 w-9 items-center justify-center text-muted-foreground transition-colors hover:text-primary disabled:opacity-40"
+            >
+              <RotateCcw className="h-4 w-4" aria-hidden />
+            </button>
+          )}
           <button
             type="button"
             onClick={drawer.close}
