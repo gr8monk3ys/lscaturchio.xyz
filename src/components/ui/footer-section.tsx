@@ -106,7 +106,12 @@ function Footer() {
           <p className="label-mono">
             © {currentYear} · Los Angeles · A garden, not a homepage
           </p>
-          <nav className="flex gap-4">
+          {/* Named, like the other eight landmarks on the page. A landmark
+              list that reads Primary, Writing, Work, Garden, About,
+              Breadcrumb, Table of contents, Filter by stage — and then
+              `(unnamed)` — makes the reader guess at the one thing it did not
+              bother to label. */}
+          <nav aria-label="Site and legal" className="flex gap-4">
             <Link
               href="/stats"
               prefetch={false}

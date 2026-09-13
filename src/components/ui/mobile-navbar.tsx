@@ -52,6 +52,14 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
     toggleRef.current?.focus();
   }, []);
 
+  // Focus moves into the dialog on open, and the cleanup is the existing
+  // `closeMenu`, which returns it to the toggle.
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const id = window.requestAnimationFrame(() => menuRef.current?.focus());
+    return () => window.cancelAnimationFrame(id);
+  }, [isMenuOpen]);
+
   // Escape + focus containment while the overlay is open. Mirrors the
   // document-level keydown listener in use-command-palette.
   useEffect(() => {
@@ -177,11 +185,26 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Mobile navigation"
+          /* "Menu", not "Mobile navigation" — the `<nav>` inside owns that
+             name. Wrapping the nav in a dialog left both landmarks carrying
+             the same label, so a screen reader announced "Mobile navigation,
+             dialog" and then "Mobile navigation, navigation": two nested
+             landmarks, one name, no way to tell which you are in. Both want a
+             name; they want different ones. */
+          aria-label="Menu"
           ref={menuRef}
-          /* "Mobile navigation", not "Mobile". A landmark's accessible name
-             is read as a noun phrase — "Mobile, navigation" announced the
-             adjective and left the reader to infer the noun. */
+          /* Focus moves in on open, which is what a modal does. The wrapper
+             takes it rather than the first link, so the dialog's own name is
+             announced before its contents — and `tabIndex={-1}` keeps it out
+             of the Tab cycle, because the trap's selector excludes
+             `[tabindex="-1"]`.
+
+             Before this, `document.activeElement` was `BODY` right after the
+             toggle fired. Nobody was stranded — the first Tab entered the
+             panel and Escape restored focus to the toggle — but a reader
+             using a screen reader got no signal that a dialog had opened
+             beyond `aria-expanded` flipping on a button they had just left. */
+          tabIndex={-1}
           data-lenis-prevent
           className="fixed inset-0 z-55 flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
         >

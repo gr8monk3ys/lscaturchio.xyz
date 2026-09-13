@@ -24,7 +24,7 @@ function GallerySection({ children }: { children: React.ReactNode }) {
   return (
     <section className="mt-16 border-t border-border pt-10">
       <span className="label-mono block">Related</span>
-      <h2 className="mt-2 text-section-title">
+      <h2 className="mt-2 text-card-title">
         Connected by idea, not tag
       </h2>
       <div className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
