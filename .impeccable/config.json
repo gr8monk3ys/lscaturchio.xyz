@@ -7,6 +7,42 @@
         "rule": "design-system-font-size",
         "value": "1.075rem",
         "createdAt": "2026-09-12T01:23:44.892Z"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#9be9a8",
+        "createdAt": "2026-09-13T23:06:04.093Z",
+        "reason": "Agent: GitHub GraphQL contributions fixture in a test; the colour is GitHub's API output, not a site token"
+      },
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/__tests__/api/write-chain.test.ts"
+        ],
+        "createdAt": "2026-09-13T23:06:04.162Z",
+        "reason": "Agent: the <img onerror> is an XSS payload string the test proves gets escaped"
+      },
+      {
+        "rule": "overused-font",
+        "value": "fraunces",
+        "createdAt": "2026-09-13T23:06:04.229Z",
+        "reason": "Agent: DESIGN.md typography declares Fraunces as the display face; global-error.tsx replaces the root layout so it has to name the family in CSS"
+      },
+      {
+        "rule": "overused-font",
+        "value": "instrument sans",
+        "createdAt": "2026-09-13T23:06:04.297Z",
+        "reason": "Agent: DESIGN.md typography declares Instrument Sans as the body face; global-error.tsx replaces the root layout so it has to name the family in CSS"
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-09-13T23:06:04.370Z",
+        "reason": "Agent: DESIGN.md Elevation & Depth sanctions exactly one animated layout property, .site-shell padding-inline-end for the ask drawer push; no transform reproduces the shell narrowing"
       }
     ]
   }

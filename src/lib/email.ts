@@ -77,12 +77,12 @@ export async function sendWelcomeEmail(email: string, unsubscribeToken: string):
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
-        <h1 style="color: white; margin: 0; font-size: 24px;">Welcome to My Newsletter!</h1>
+    <body style="font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #1a1f23; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background: #184e35; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 25px;">Welcome to My Newsletter!</h1>
       </div>
 
-      <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
+      <div style="background: #f9f8f5; padding: 30px; border-radius: 0 0 10px 10px;">
         <p>Hey there!</p>
 
         <p>Thanks for subscribing to my newsletter. I'm excited to have you join the community!</p>
@@ -98,16 +98,16 @@ export async function sendWelcomeEmail(email: string, unsubscribeToken: string):
         <p>In the meantime, feel free to check out my latest blog posts:</p>
 
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${siteUrl}/blog" style="display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">Read the Blog</a>
+          <a href="${siteUrl}/blog" style="display: inline-block; background: #184e35; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">Read the Blog</a>
         </div>
 
         <p>Cheers,<br>Lorenzo</p>
 
-        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+        <hr style="border: none; border-top: 1px solid #e2dbd5; margin: 30px 0;">
 
-        <p style="font-size: 12px; color: #6b7280; text-align: center;">
+        <p style="font-size: 12px; color: #606976; text-align: center;">
           You're receiving this email because you subscribed to my newsletter.<br>
-          <a href="${unsubscribeUrl}" style="color: #6b7280;">Unsubscribe</a>
+          <a href="${unsubscribeUrl}" style="color: #606976;">Unsubscribe</a>
         </p>
       </div>
     </body>
@@ -150,13 +150,13 @@ export async function sendOnboardingEmail(
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
       </head>
-      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #111827; max-width: 640px; margin: 0 auto; padding: 20px;">
-        <div style="background: #0f2a1b; padding: 28px; border-radius: 12px 12px 0 0; text-align: left;">
+      <body style="font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #1a1f23; max-width: 640px; margin: 0 auto; padding: 20px;">
+        <div style="background: #184e35; padding: 28px; border-radius: 12px 12px 0 0; text-align: left;">
           <div style="font-size: 12px; letter-spacing: 1.8px; text-transform: uppercase; color: rgba(255,255,255,0.7); font-weight: 700;">Start Here</div>
-          <h1 style="color: white; margin: 10px 0 0; font-size: 22px;">A few good places to begin</h1>
+          <h1 style="color: white; margin: 10px 0 0; font-size: 20px;">A few good places to begin</h1>
         </div>
 
-        <div style="background: #f9fafb; padding: 28px; border-radius: 0 0 12px 12px;">
+        <div style="background: #f9f8f5; padding: 28px; border-radius: 0 0 12px 12px;">
           <p style="margin-top: 0;">Thanks again for subscribing. If you want a quick path through the site, here are a few starting points.</p>
 
           ${topicLinks.length > 0 ? `
@@ -165,24 +165,24 @@ export async function sendOnboardingEmail(
               ${topicLinks
                 .map(
                   (t) =>
-                    `<a href="${t.href}" style="display: inline-block; padding: 10px 12px; border-radius: 999px; background: rgba(15, 42, 27, 0.08); color: #0f2a1b; text-decoration: none; font-weight: 700; font-size: 13px;">${t.label}</a>`
+                    `<a href="${t.href}" style="display: inline-block; padding: 10px 12px; border-radius: 999px; background: rgba(24, 78, 53, 0.08); color: #184e35; text-decoration: none; font-weight: 700; font-size: 12px;">${t.label}</a>`
                 )
                 .join("")}
             </div>
           ` : ""}
 
           <div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 18px 0 22px;">
-            <a href="${siteUrl}/blog" style="display: inline-block; background: #0f2a1b; color: white; padding: 12px 16px; text-decoration: none; border-radius: 10px; font-weight: 700;">Browse the blog</a>
-            <a href="${siteUrl}/projects" style="display: inline-block; background: white; color: #0f2a1b; padding: 12px 16px; text-decoration: none; border-radius: 10px; font-weight: 700; border: 1px solid rgba(15, 42, 27, 0.18);">View case studies</a>
+            <a href="${siteUrl}/blog" style="display: inline-block; background: #184e35; color: white; padding: 12px 16px; text-decoration: none; border-radius: 10px; font-weight: 700;">Browse the blog</a>
+            <a href="${siteUrl}/projects" style="display: inline-block; background: white; color: #184e35; padding: 12px 16px; text-decoration: none; border-radius: 10px; font-weight: 700; border: 1px solid rgba(24, 78, 53, 0.18);">View case studies</a>
           </div>
 
           <p style="margin: 0;">Cheers,<br>Lorenzo</p>
 
-          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 22px 0;">
+          <hr style="border: none; border-top: 1px solid #e2dbd5; margin: 22px 0;">
 
-          <p style="font-size: 12px; color: #6b7280; text-align: center; margin: 0;">
+          <p style="font-size: 12px; color: #606976; text-align: center; margin: 0;">
             You’re receiving this because you subscribed.<br>
-            <a href="${unsubscribeUrl}" style="color: #6b7280;">Unsubscribe</a>
+            <a href="${unsubscribeUrl}" style="color: #606976;">Unsubscribe</a>
           </p>
         </div>
       </body>
@@ -204,13 +204,13 @@ export async function sendOnboardingEmail(
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
       </head>
-      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #111827; max-width: 640px; margin: 0 auto; padding: 20px;">
-        <div style="background: #0f2a1b; padding: 28px; border-radius: 12px 12px 0 0; text-align: left;">
+      <body style="font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #1a1f23; max-width: 640px; margin: 0 auto; padding: 20px;">
+        <div style="background: #184e35; padding: 28px; border-radius: 12px 12px 0 0; text-align: left;">
           <div style="font-size: 12px; letter-spacing: 1.8px; text-transform: uppercase; color: rgba(255,255,255,0.7); font-weight: 700;">Work With Me</div>
-          <h1 style="color: white; margin: 10px 0 0; font-size: 22px;">Need help shipping this stuff?</h1>
+          <h1 style="color: white; margin: 10px 0 0; font-size: 20px;">Need help shipping this stuff?</h1>
         </div>
 
-        <div style="background: #f9fafb; padding: 28px; border-radius: 0 0 12px 12px;">
+        <div style="background: #f9f8f5; padding: 28px; border-radius: 0 0 12px 12px;">
           <p style="margin-top: 0;">If you’re building RAG/ML systems or shipping a product that needs to be reliable in production, I can help.</p>
           <ul style="padding-left: 18px; margin: 14px 0 18px;">
             <li>Architecture + review sessions</li>
@@ -219,17 +219,17 @@ export async function sendOnboardingEmail(
           </ul>
 
           <div style="display: flex; gap: 12px; flex-wrap: wrap; margin: 18px 0 22px;">
-            <a href="${siteUrl}/work-with-me" style="display: inline-block; background: #0f2a1b; color: white; padding: 12px 16px; text-decoration: none; border-radius: 10px; font-weight: 700;">See packages</a>
-            <a href="${siteUrl}/contact" style="display: inline-block; background: white; color: #0f2a1b; padding: 12px 16px; text-decoration: none; border-radius: 10px; font-weight: 700; border: 1px solid rgba(15, 42, 27, 0.18);">Contact me</a>
+            <a href="${siteUrl}/work-with-me" style="display: inline-block; background: #184e35; color: white; padding: 12px 16px; text-decoration: none; border-radius: 10px; font-weight: 700;">See packages</a>
+            <a href="${siteUrl}/contact" style="display: inline-block; background: white; color: #184e35; padding: 12px 16px; text-decoration: none; border-radius: 10px; font-weight: 700; border: 1px solid rgba(24, 78, 53, 0.18);">Contact me</a>
           </div>
 
           <p style="margin: 0;">Cheers,<br>Lorenzo</p>
 
-          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 22px 0;">
+          <hr style="border: none; border-top: 1px solid #e2dbd5; margin: 22px 0;">
 
-          <p style="font-size: 12px; color: #6b7280; text-align: center; margin: 0;">
+          <p style="font-size: 12px; color: #606976; text-align: center; margin: 0;">
             You’re receiving this because you subscribed.<br>
-            <a href="${unsubscribeUrl}" style="color: #6b7280;">Unsubscribe</a>
+            <a href="${unsubscribeUrl}" style="color: #606976;">Unsubscribe</a>
           </p>
         </div>
       </body>

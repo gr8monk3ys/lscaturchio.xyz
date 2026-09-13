@@ -687,8 +687,7 @@
    * looks broken. */
   @media (prefers-reduced-motion: reduce) {
     .animate-pulse,
-    .animate-spin,
-    .animate-bounce {
+    .animate-spin {
       animation-duration: 3s !important;
     }
   }

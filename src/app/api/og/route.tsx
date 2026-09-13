@@ -93,7 +93,7 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
           }}
         >
           {/* Editorial mark — the same green tick that sits above section titles */}
-          <div style={{ display: 'flex', width: '44px', height: '4px', borderRadius: '2px', backgroundColor: GREEN }} />
+          <div style={{ display: 'flex', width: '44px', height: '4px', borderRadius: '9999px', backgroundColor: GREEN }} />
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div
@@ -143,7 +143,7 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
           {description && (
             <p
               style={{
-                fontSize: '28px',
+                fontSize: '25px',
                 color: MUTED,
                 lineHeight: 1.35,
                 margin: 0,
@@ -173,7 +173,7 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontFamily: SERIF,
-                fontSize: '22px',
+                fontSize: '20px',
                 fontWeight: 700,
               }}
             >
@@ -208,7 +208,7 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
               style={{
                 width: '400px',
                 height: '400px',
-                borderRadius: '16px',
+                borderRadius: '18px',
                 objectFit: 'cover',
                 border: `1px solid ${HAIRLINE}`,
               }}
@@ -218,14 +218,14 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
               style={{
                 width: '400px',
                 height: '400px',
-                borderRadius: '16px',
+                borderRadius: '18px',
                 border: `1px solid ${HAIRLINE}`,
                 backgroundColor: 'rgba(24, 78, 53, 0.05)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontFamily: SERIF,
-                fontSize: '120px',
+                fontSize: '78px',
                 fontWeight: 600,
                 color: 'rgba(24, 78, 53, 0.22)',
               }}
