@@ -136,7 +136,7 @@ const RULES: Rule[] = [
   {
     id: "heading-in-label-voice",
     because:
-      "DESIGN.md: mono \"is the label beside the work, never headings or body copy\", and the Serif Speaks rule gives headings to Fraunces. 26 h2/h3 elements were set in `label-mono` — 11.52px uppercase #606976, quieter and smaller than the body they introduced, and on /colophon pixel-identical to the field labels nested inside them. An inverted hierarchy on the three pages that explain the work. DESIGN.md:309's \"any new section should introduce itself with one\" means a label ABOVE the heading, not instead of it.",
+      "DESIGN.md: mono \"is the label beside the work, never headings or body copy\", and the Serif Speaks rule gives headings to Fraunces. 26 h2/h3 elements were set in `label-mono` — 11.52px uppercase #606976, quieter and smaller than the body they introduced, and on /colophon pixel-identical to the field labels nested inside them. An inverted hierarchy on the three pages that explain the work. DESIGN.md:323's \"any new section should introduce itself with one\" means a label ABOVE the heading, not instead of it.",
     test: /<h[1-6][^>]*className="[^"]*\blabel-mono\b/,
   },
   {
@@ -160,7 +160,7 @@ const RULES: Rule[] = [
   {
     id: "focus-opt-out",
     because:
-      "DESIGN.md:281 specifies one focus treatment and `globals.css` now implements it globally. `focus:outline-hidden` sets `outline-style: none` from @layer utilities, which beats the @layer base rule regardless of specificity — so any element carrying it silently leaves the default and needs its own indicator. A measurement of 120 tab stops found 53 on a Tailwind ring and 66 on the outline: two vocabularies where the document names one. This rule is only writable now that the default exists; before, it would have been guarding an absence.",
+      "DESIGN.md:295 specifies one focus treatment and `globals.css` now implements it globally. `focus:outline-hidden` sets `outline-style: none` from @layer utilities, which beats the @layer base rule regardless of specificity — so any element carrying it silently leaves the default and needs its own indicator. A measurement of 120 tab stops found 53 on a Tailwind ring and 66 on the outline: two vocabularies where the document names one. This rule is only writable now that the default exists; before, it would have been guarding an absence.",
     test: /focus(?:-visible)?:(?:outline-hidden|outline-none|ring-\d)/,
   },
   {
@@ -222,13 +222,13 @@ const ALLOWED: Array<{ file: string; rule: string; reason: string }> = [
     file: "src/components/ui/footer-section.tsx",
     rule: "heading-in-label-voice",
     reason:
-      "DESIGN.md:305 specifies the footer's column headings in wall-label mono, and the Wall Label Rule agrees: a column name is metadata, not a section heading. The only heading on the site the label voice is documented to own.",
+      "DESIGN.md:320 specifies the footer's column headings in wall-label mono, and the Wall Label Rule agrees: a column name is metadata, not a section heading. The only heading on the site the label voice is documented to own.",
   },
   {
     file: "src/components/home/hero-ask.tsx",
     rule: "focus-opt-out",
     reason:
-      "DESIGN.md:299 specifies the underline field's focus outright: \"Focus turns the rule Forest Ink with no ring.\" It is the one control the document gives its own treatment. Worth revisiting — a 1px border colour change is the weakest indicator on the site, and WCAG 2.4.11 wants more area than 672px of hairline — but that is a change to the design system, not drift from it.",
+      "DESIGN.md:313 specifies the underline field's focus outright: \"Focus turns the rule Forest Ink with no ring.\" It is the one control the document gives its own treatment. Worth revisiting — a 1px border colour change is the weakest indicator on the site, and WCAG 2.4.11 wants more area than 672px of hairline — but that is a change to the design system, not drift from it.",
   },
   {
     file: "src/app/layout.tsx",
