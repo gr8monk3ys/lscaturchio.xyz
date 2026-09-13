@@ -101,30 +101,37 @@ export default function GardenPage() {
           }
         />
 
-        <ul className="mt-10 grid grid-cols-1 gap-px overflow-hidden border border-border bg-border sm:grid-cols-2">
+        {/* Hairline rows, not a 2x4 grid of equal tiles.
+            DESIGN.md assigns index pages "stacked rows separated by hairlines
+            ... not tiled cards", and says two-column compositions are
+            "asymmetric editorial splits, never equal halves". This was the one
+            index on the site doing both of the things it rules out — and it is
+            the entry point to the section PRODUCT.md calls the garden, so the
+            reader met the exception before any of the rule.
+
+            `max-w-2xl` on the list, like `/blog` and the topic hubs: the page
+            header keeps the wide column, the list caps at the documented
+            reading measure. The blurbs are sentences, and a sentence set
+            across 72rem is not a row, it is a paragraph pretending to be one. */}
+        <ul className="mt-10 max-w-2xl divide-y divide-border border-y border-border">
           {PLOTS.map((plot) => (
-            <li key={plot.href} className="bg-background">
+            <li key={plot.href}>
               <Link
                 href={plot.href}
                 prefetch={false}
-                className="group flex h-full items-start justify-between gap-4 p-6 transition-colors hover:bg-primary/5"
+                className="group flex items-start justify-between gap-4 py-4 transition-colors"
               >
                 <span className="min-w-0">
                   <span className="block font-semibold text-foreground group-hover:text-primary">
                     {plot.title}
                   </span>
-                  <span className="mt-1 block text-sm text-muted-foreground">
+                  <span className="mt-1 block max-w-prose text-sm text-muted-foreground">
                     {plot.blurb}
                   </span>
                 </span>
-                {/* The hover gesture moves with the glyph. These eight are
-                    internal, so the arrow is now `→` and the motion is
-                    horizontal only — the old `-translate-y-0.5` animated an
-                    up-and-away departure, which is the same false promise the
-                    glyph was making. */}
                 <LinkArrow
                   href={plot.href}
-                  className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+                  className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
                 />
               </Link>
             </li>
