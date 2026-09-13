@@ -26,8 +26,17 @@ function formatStars(rating: number): string {
   return "★".repeat(Math.floor(rating)) + (rating % 1 !== 0 ? "½" : "");
 }
 
+/**
+ * Pinned to en-US and UTC. The server renders in UTC; a visitor west of it
+ * would otherwise turn "2026-09-01" into "Aug 2026" and fail hydration on
+ * every month boundary.
+ */
 function formatMonth(date: string): string {
-  return new Date(date).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 }
 
 /** The four films pinned to the Letterboxd profile, as a numbered plate. */
@@ -158,7 +167,7 @@ export function MoviesList({
       {/* Stats — hairline-divided wall-label panel */}
       <div className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-4 sm:divide-x">
         {[
-          { value: stats.totalRated.toLocaleString(), label: "Films Rated" },
+          { value: stats.totalRated.toLocaleString("en-US"), label: "Films Rated" },
           { value: stats.fiveStarFilms, label: "5-Star Films" },
           { value: stats.averageRating, label: "Avg Rating" },
           { value: reviewed.length, label: "Written About" },

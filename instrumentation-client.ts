@@ -18,7 +18,14 @@ const SENTRY_ENVIRONMENT =
   process.env.NODE_ENV ||
   "development";
 
-if (SENTRY_DSN) {
+// Report only from deployed environments. A local `next dev` or `next start`
+// with a DSN in .env.local otherwise files its own bugs — a screenshot crawler
+// hitting a stale local build once produced 91 "This is a bug in Next.js"
+// events — and dev-only Next internals ("destination stream closed early")
+// that nobody can act on. `preview` stays on: that is a deploy.
+const SENTRY_ENABLED = ["production", "preview"].includes(SENTRY_ENVIRONMENT.trim());
+
+if (SENTRY_DSN && SENTRY_ENABLED) {
   Sentry.init({
     dsn: SENTRY_DSN,
 
@@ -36,6 +43,9 @@ if (SENTRY_DSN) {
       // Browser extensions
       /^chrome-extension:\/\//,
       /^moz-extension:\/\//,
+      // Microsoft Outlook SafeLinks / Edge link scanner injecting into the
+      // page; a well-known, unfixable client-side rejection.
+      /Object Not Found Matching Id:\d+, MethodName:\w+, ParamCount:\d+/,
       // Network errors that happen during navigation
       "Failed to fetch",
       "Load failed",

@@ -55,7 +55,13 @@ export function getRedisRateLimiter(limit: number, windowMs: number): RateLimite
   }
 
   if (!store) {
-    store = new RedisStore(new Redis({ url, token }), {
+    // Auto-pipelining is off on purpose. Upstash answers an over-quota
+    // database with HTTP 200 and `{"error": "...temporarily rate-limited..."}`,
+    // and the client's pipeline path assumes the body is an array — so the
+    // real message was lost behind `TypeError: c.map is not a function`. The
+    // single-command path checks `error` first and throws it verbatim. The
+    // store issues its commands one at a time anyway, so nothing was batched.
+    store = new RedisStore(new Redis({ url, token, enableAutoPipelining: false }), {
       prefix: KEY_PREFIX,
       // Throw rather than silently admitting the request, so withRateLimit can
       // catch it and degrade to the in-memory limiter — which still enforces

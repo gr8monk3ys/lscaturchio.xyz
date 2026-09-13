@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from 'react'
-import { logInfo, logError } from '@/lib/logger'
+import { logInfo, logWarn, logError } from '@/lib/logger'
 
 export function PWARegister() {
   useEffect(() => {
@@ -34,11 +34,17 @@ export function PWARegister() {
         .register('/sw.js')
         .then((registration) => {
           if (cancelled) return;
-          logInfo('Service Worker registered', { scope: registration.scope })
+          // Some browsers (and extension-injected shims) resolve with nothing.
+          logInfo('Service Worker registered', { scope: registration?.scope })
         })
         .catch((error) => {
           if (cancelled) return;
-          logError('Service Worker registration failed', error, { component: 'PWARegister' })
+          // Warning, not error: the page works without the service worker, and
+          // the failures seen are old Chrome builds that cannot fetch sw.js.
+          logWarn('Service Worker registration failed', {
+            component: 'PWARegister',
+            cause: error instanceof Error ? error.message : String(error),
+          })
         })
     };
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimiter, getClientIp, RATE_LIMITS } from './rate-limit';
 import { getRedisRateLimiter } from './rate-limit-redis';
-import { logError } from './logger';
+import { logError, logWarn } from './logger';
 
 // Re-export RATE_LIMITS for convenient single-import usage
 export { RATE_LIMITS };
@@ -19,6 +19,25 @@ type RateLimitResult = {
 };
 
 /**
+ * How long to stop asking Redis after a failure.
+ *
+ * When Upstash is down — or, as happened for a month in September 2026, over
+ * its free-tier quota and answering every command with an error — each
+ * request otherwise pays a failed round trip and files its own Sentry event.
+ * At 10% sampling that was ~9,000 events for one underlying condition. One
+ * report per minute is enough to see the outage; sixty a second is not more
+ * information.
+ */
+export const REDIS_RETRY_AFTER_MS = 60_000;
+
+let redisDownUntil = 0;
+
+/** Test hook: forget a tripped breaker. */
+export function resetRedisCircuit(): void {
+  redisDownUntil = 0;
+}
+
+/**
  * Attempt a Redis-backed rate limit check.
  *
  * Rate limiting is a soft dependency: if Upstash is unreachable, misconfigured,
@@ -26,11 +45,21 @@ type RateLimitResult = {
  * the in-memory limiter — not to fail the request. Returning null signals the
  * caller to fall back. Both the construction and the call are guarded, since
  * an invalid URL throws synchronously inside the Redis client constructor.
+ *
+ * A failure trips a breaker for `REDIS_RETRY_AFTER_MS`: during that window the
+ * in-memory limiter is used without consulting Redis at all, and the failure is
+ * reported once, as a warning. The in-memory limiter still enforces the same
+ * limits per instance, so nothing opens up — the degradation is expected and
+ * already handled, which is what "warning" means.
  */
 async function tryRedisRateLimit(
   clientIp: string,
   config: RateLimitConfig
 ): Promise<RateLimitResult | null> {
+  if (Date.now() < redisDownUntil) {
+    return null;
+  }
+
   try {
     const redisLimiter = getRedisRateLimiter(config.limit, config.window);
     if (!redisLimiter) {
@@ -45,9 +74,12 @@ async function tryRedisRateLimit(
       reset: redisResult.resetAt,
     };
   } catch (error) {
-    logError('Redis rate limiter unavailable, falling back to in-memory', error, {
+    redisDownUntil = Date.now() + REDIS_RETRY_AFTER_MS;
+    logWarn('Redis rate limiter unavailable, falling back to in-memory', {
       component: 'withRateLimit',
       action: 'redis',
+      retryAfterMs: REDIS_RETRY_AFTER_MS,
+      cause: error instanceof Error ? error.message : String(error),
     });
     return null;
   }

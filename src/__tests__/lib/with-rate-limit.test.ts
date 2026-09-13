@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
-import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit';
+import { withRateLimit, RATE_LIMITS, resetRedisCircuit, REDIS_RETRY_AFTER_MS } from '@/lib/with-rate-limit';
 import { rateLimiter, getClientIp } from '@/lib/rate-limit';
 import { getRedisRateLimiter } from '@/lib/rate-limit-redis';
-import { logError } from '@/lib/logger';
+import { logError, logWarn } from '@/lib/logger';
 
 // Mock dependencies
 vi.mock('@/lib/rate-limit', () => ({
@@ -25,6 +25,7 @@ vi.mock('@/lib/rate-limit-redis', () => ({
 
 vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
+  logWarn: vi.fn(),
 }));
 
 describe('withRateLimit', () => {
@@ -203,6 +204,7 @@ describe('withRateLimit', () => {
 describe('withRateLimit Redis backend', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetRedisCircuit();
 
     (getClientIp as Mock).mockReturnValue('192.168.1.1');
     (rateLimiter.check as Mock).mockReturnValue({
@@ -255,11 +257,43 @@ describe('withRateLimit Redis backend', () => {
     expect(mockHandler).toHaveBeenCalled();
     expect(response.headers.get('X-RateLimit-Backend')).toBe('memory');
     expect(rateLimiter.check).toHaveBeenCalledWith('192.168.1.1', 30, 60000);
-    expect(logError).toHaveBeenCalledWith(
+    // A warning, not an error: the fallback is designed and still enforces
+    // the limit. Upstash's own message must survive — the pipeline path once
+    // hid "database has been temporarily rate-limited" behind a TypeError.
+    expect(logError).not.toHaveBeenCalled();
+    expect(logWarn).toHaveBeenCalledWith(
       'Redis rate limiter unavailable, falling back to in-memory',
-      redisError,
-      { component: 'withRateLimit', action: 'redis' }
+      expect.objectContaining({
+        component: 'withRateLimit',
+        action: 'redis',
+        cause: 'Upstash unreachable',
+      })
     );
+  });
+
+  it('stops consulting Redis for a minute after a failure, then retries', async () => {
+    vi.useFakeTimers();
+    try {
+      const check = vi.fn().mockRejectedValue(new Error('Upstash unreachable'));
+      (getRedisRateLimiter as Mock).mockReturnValue({ check });
+      const wrapped = withRateLimit(vi.fn().mockResolvedValue(NextResponse.json({ ok: true })));
+      const req = () => new NextRequest('http://localhost/api/test');
+
+      await wrapped(req());
+      await wrapped(req());
+      await wrapped(req());
+
+      // One failed round trip and one report for the whole window — not one
+      // per request. That per-request report was ~9,000 Sentry events.
+      expect(check).toHaveBeenCalledTimes(1);
+      expect(logWarn).toHaveBeenCalledTimes(1);
+
+      vi.advanceTimersByTime(REDIS_RETRY_AFTER_MS + 1);
+      await wrapped(req());
+      expect(check).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('falls back to in-memory when constructing the Redis limiter throws', async () => {
