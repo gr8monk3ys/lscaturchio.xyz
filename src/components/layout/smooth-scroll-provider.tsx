@@ -1,18 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
-import Lenis from "lenis";
-// The package's own stylesheet, and it is not optional. It carries
-// `.lenis [data-lenis-prevent] { overscroll-behavior: contain }` and
-// `.lenis.lenis-stopped { overflow: clip }`. Without it the six opt-out regions
-// keep the JS wheel handback but lose scroll-chaining containment, so reaching
-// the bottom of the chat transcript or the command palette list scrolls the
-// document behind it. Shipping the attribute without the rule it depends on is
-// worse than not shipping the opt-out: DESIGN.md then states as settled fact
-// something that is half true.
-import "lenis/dist/lenis.css";
+import type Lenis from "lenis";
 
 import { prefersReducedMotion, setScroller } from "@/lib/smooth-scroll";
+
+// The package's stylesheet is not imported here; its rules live in
+// globals.css under "Lenis". They are not optional — they carry
+// `.lenis [data-lenis-prevent] { overscroll-behavior: contain }` and
+// `.lenis.lenis-stopped { overflow: clip }`, without which the six opt-out
+// regions keep the JS wheel handback but lose scroll-chaining containment.
+// They moved because a CSS import from a client component becomes a second
+// render-blocking stylesheet on every route, and this one is 20 lines.
 
 /**
  * Scroll acceleration for the whole document.
@@ -44,34 +43,47 @@ export function SmoothScrollProvider() {
   useEffect(() => {
     if (prefersReducedMotion()) return;
 
-    const lenis = new Lenis({
-      // 1.05s to settle: long enough to read as momentum, short enough that a
-      // reader who flicks twice is not waiting on the first flick.
-      duration: 1.05,
-      // Exponential ease-out. The default is close to this; naming it means the
-      // curve is a decision in the repository rather than a library default.
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      // Touch devices already have momentum from the OS, and doubling it feels
-      // like lag rather than polish.
-      smoothWheel: true,
-      syncTouch: false,
-      // A wheel notch should cover about as much ground as it does natively.
-      wheelMultiplier: 1,
+    // The library is imported here, not at the top of the module, so it is
+    // not in the initial bundle that has to be evaluated before the page is
+    // interactive. It lands a moment after hydration; a wheel event in that
+    // window scrolls natively, which is what it would do under reduced motion
+    // anyway.
+    let lenis: Lenis | null = null;
+    let frame = 0;
+    let cancelled = false;
+
+    void import("lenis").then(({ default: LenisCtor }) => {
+      if (cancelled) return;
+
+      lenis = new LenisCtor({
+        // 1.05s to settle: long enough to read as momentum, short enough that a
+        // reader who flicks twice is not waiting on the first flick.
+        duration: 1.05,
+        // Exponential ease-out. The default is close to this; naming it means the
+        // curve is a decision in the repository rather than a library default.
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        // Touch devices already have momentum from the OS, and doubling it feels
+        // like lag rather than polish.
+        smoothWheel: true,
+        syncTouch: false,
+        // A wheel notch should cover about as much ground as it does natively.
+        wheelMultiplier: 1,
+      });
+
+      setScroller(lenis);
+
+      const raf = (time: number) => {
+        lenis?.raf(time);
+        frame = requestAnimationFrame(raf);
+      };
+      frame = requestAnimationFrame(raf);
     });
 
-    setScroller(lenis);
-
-    let frame = 0;
-    const raf = (time: number) => {
-      lenis.raf(time);
-      frame = requestAnimationFrame(raf);
-    };
-    frame = requestAnimationFrame(raf);
-
     return () => {
+      cancelled = true;
       cancelAnimationFrame(frame);
       setScroller(null);
-      lenis.destroy();
+      lenis?.destroy();
     };
   }, []);
 
