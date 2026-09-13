@@ -90,6 +90,7 @@ export default function GardenPage() {
     <Container size="wide">
       <div className="py-10">
         <PageHead
+          ruleWidth="measure"
           kicker="Garden"
           title="A garden, not a homepage."
           blurb={
@@ -122,9 +123,19 @@ export default function GardenPage() {
                 className="group flex items-start justify-between gap-4 py-4 transition-colors"
               >
                 <span className="min-w-0">
-                  <span className="block font-semibold text-foreground group-hover:text-primary">
+                  {/* An `h2` on the ramp, not a `<span>` at body size.
+                      Converting this page's tiles to rows left the titles as
+                      spans, so `/garden` rendered exactly ONE heading element
+                      for its eight destinations — measured `headingOrder: [1]`.
+                      The heading rotor, which is how a screen-reader user
+                      skims, reached every essay on `/blog` and nothing at all
+                      here. `h2` because there is no grouping level above these
+                      on this page, and `text-card-title` because that is the
+                      step the identical row uses on `/blog`, `/topics` and
+                      `/tag`. */}
+                  <h2 className="text-card-title text-foreground group-hover:text-primary">
                     {plot.title}
-                  </span>
+                  </h2>
                   <span className="mt-1 block max-w-prose text-sm text-muted-foreground">
                     {plot.blurb}
                   </span>

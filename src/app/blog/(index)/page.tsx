@@ -212,7 +212,12 @@ export default async function Blog({
             ))}
           </p>
 
-          <hr className="gallery-rule mt-8" />
+          {/* Capped to the reading measure, like the list beneath it. At full
+              width this ran 1152px above a 672px column — 480px of rule
+              terminating in empty paper, which in a system whose only
+              structural device is the hairline is the one thing that reads
+              unfinished. */}
+          <hr className="gallery-rule mt-8 max-w-2xl" />
         </header>
 
         {hasActiveFilter ? (

@@ -62,6 +62,7 @@ export default async function TagPage({ params }: Props) {
   return (
     <Container className="mt-16 lg:mt-32" size="wide">
       <PageHead
+        ruleWidth="measure"
         className="mb-12"
         kicker="Writing · Tag"
         title={tag}
@@ -98,6 +99,19 @@ export default async function TagPage({ params }: Props) {
           and this route was one of the last two still answering a *narrowing*
           with a different-looking page. Filtering a list should remove items
           from it, not hand the reader three columns of stock photography. */}
+      {/* An `sr-only` h2, so the outline does not skip a level.
+          `EssayRows` renders each title as an `h3`, which is correct under the
+          section `h2` that `/topics/[slug]` supplies — but this page had no
+          `h2` at all, so its heading order ran h1 -> h3 while its sibling
+          taxonomy page ran h1 -> h2 -> h3. Two pages, the same row component,
+          two different documents.
+
+          Hidden rather than visible, because the fix is the outline and not
+          the composition: `/topics` shows "Posts" to separate it from a
+          "Featured projects" list above it, and this page has one section, so
+          a visible heading here would be furniture repeating what the blurb
+          already says. */}
+      <h2 className="sr-only">Posts tagged {tag}</h2>
       <EssayRows posts={filtered.map(toBlogPreview)} />
     </Container>
   );
