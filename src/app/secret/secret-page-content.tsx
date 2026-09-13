@@ -35,7 +35,7 @@ const EASTER_EGG_HINTS = [
  */
 export function SecretPageContent() {
   return (
-    <Container className="mt-16 lg:mt-32">
+    <Container className="mt-4">
       <PageHead
         className="mb-14"
         kicker="Gallery · Back room"

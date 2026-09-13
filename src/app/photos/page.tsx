@@ -36,7 +36,7 @@ export default async function PhotosPage({
   const initialCategory = readEnumParam(params, "category", PHOTO_CATEGORIES, "all");
 
   return (
-    <Container className="mt-16 lg:mt-32">
+    <Container className="mt-4">
       <div className="max-w-6xl mx-auto">
         {/* Header — gallery masthead */}
         <PageHead

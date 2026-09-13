@@ -12,7 +12,7 @@ export function NewsletterCTA({
   return (
     <section className="my-16 border-t border-border pt-8">
       <span className="label-mono block">Newsletter</span>
-      <h2 className="mt-2 text-section-title">
+      <h2 className="mt-2 text-card-title">
         Enjoyed this?
       </h2>
       <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">

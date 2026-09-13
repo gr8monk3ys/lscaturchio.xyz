@@ -30,7 +30,7 @@ export default async function Projects({
   const initialTech = readSearchParam(params, "tech");
 
   return (
-    <Container className="mt-16 lg:mt-32">
+    <Container className="mt-4">
       <div className="max-w-6xl mx-auto">
         {/* `PageHead` owns the type scale. This used to hand `Heading` an
             explicit `text-4xl md:text-5xl`, which lives in the same

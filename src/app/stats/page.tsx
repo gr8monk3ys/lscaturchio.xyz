@@ -18,7 +18,7 @@ export const metadata: Metadata = buildPageMetadata({
 
 export default function StatsPage() {
   return (
-    <div className="py-20">
+    <div className="pt-4 pb-20">
       <Container>
         <div className="max-w-6xl mx-auto">
           <PageHead

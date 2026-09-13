@@ -88,7 +88,7 @@ const MORE: Array<{ href: string; name: string }> = [
 export default function GardenPage() {
   return (
     <Container size="wide">
-      <div className="py-10">
+      <div className="pt-4 pb-10">
         <PageHead
           ruleWidth="measure"
           kicker="Garden"
