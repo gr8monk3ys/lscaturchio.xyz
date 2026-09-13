@@ -41,7 +41,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);
-  const menuRef = useRef<HTMLElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const toggleCategory = (name: string) => {
     setExpandedCategory((current) => (current === name ? null : name));
@@ -161,34 +161,31 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
       </div>
 
       {isMenuOpen && (
-        <nav
-          id="mobile-navigation-menu"
+        /* A dialog that CONTAINS a navigation landmark, which is the ARIA this
+           wants and the reason a first attempt was reverted. Putting
+           `role="dialog"` on the `<nav>` itself REPLACES its implicit
+           `navigation` role, and `a11y-keyboard-affordances.test.tsx` queries
+           this overlay as `getByRole("navigation", { name: "Mobile
+           navigation" })` — two tests that exist because the landmark is how a
+           screen-reader user skims by structure. Wrapping keeps both: the
+           overlay announces as a modal dialog, and the list inside it is still
+           a navigation landmark.
+
+           The wrapper carries the box and the focus trap; the `<nav>` inside
+           carries the landmark. `menuRef` moves up here so the trap's
+           `querySelectorAll` still sees every control in the overlay. */
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile navigation"
           ref={menuRef}
           /* "Mobile navigation", not "Mobile". A landmark's accessible name
              is read as a noun phrase — "Mobile, navigation" announced the
              adjective and left the reader to infer the noun. */
-          aria-label="Mobile navigation"
-          /* Deliberately NOT `role="dialog"`.
-             A review asked for it, on the grounds that this is a
-             full-viewport overlay that traps focus while the ask drawer
-             declares `role="dialog"` and `aria-modal` and this declares
-             neither. The behaviour is already right — focus is contained and
-             Escape closes and restores — so what is at stake is the
-             announcement.
-
-             Setting `role="dialog"` on a `<nav>` REPLACES its implicit
-             `navigation` role, and `a11y-keyboard-affordances.test.tsx`
-             queries this element as `getByRole("navigation", { name: "Mobile
-             navigation" })` — two tests that exist because the landmark is
-             load-bearing for a screen-reader user skimming by landmark. The
-             correct ARIA is a dialog *containing* a navigation landmark, which
-             means restructuring a working full-screen overlay for a nuance
-             rated P3 against behaviour that already works. Not a good trade,
-             and recorded here so the next review can weigh it rather than
-             rediscover it. */
           data-lenis-prevent
           className="fixed inset-0 z-55 flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
         >
+        <nav id="mobile-navigation-menu" aria-label="Mobile navigation" className="contents">
           <div className="mx-auto flex w-full max-w-md flex-col space-y-2 p-6 pt-20">
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {primaryNavigation.map((item) => {
@@ -332,6 +329,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
             </div>
           </div>
         </nav>
+        </div>
       )}
     </>
   );
