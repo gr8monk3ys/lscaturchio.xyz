@@ -26,7 +26,17 @@ export default function AboutPage() {
         <Interests />
         <Music />
 
-        {/* Teaser links to dedicated pages — de-carded hairline rows */}
+        {/* Teaser links to dedicated pages — de-carded hairline rows.
+            Wrapped in a section with an `sr-only` h2, following the precedent
+            `/tag/[tag]` set: these two are `h3`s with no `h2` above them, so
+            the outline filed "Books" and "Films" underneath "Favorite albums"
+            from the Music section — as though they were two more records.
+            Hidden rather than visible because the composition is already clear
+            to a sighted reader; it is the outline that was wrong. */}
+        <section aria-labelledby="about-garden">
+        <h2 id="about-garden" className="sr-only">
+          More in the garden
+        </h2>
         <div className="mt-12 grid grid-cols-1 divide-border border-y border-border md:grid-cols-2 md:divide-x">
           <Link
             href="/books"
@@ -60,6 +70,7 @@ export default function AboutPage() {
             <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-[transform,color]" />
           </Link>
         </div>
+        </section>
         <Suspense fallback={<div className="flex justify-center mt-16"><span className="text-muted-foreground">Loading...</span></div>}>
           <div className="flex justify-center mt-16">
             <ResumeDownloadButton />
