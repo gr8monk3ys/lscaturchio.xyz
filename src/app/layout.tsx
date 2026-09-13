@@ -16,7 +16,6 @@ import { AskDrawerProvider } from "@/components/chat/ask-drawer-provider";
 import { AskDrawer } from "@/components/chat/ask-drawer";
 import { ConsoleGreeting } from "@/components/layout/console-greeting";
 import { MobileNavbarGate } from "@/components/layout/mobile-navbar-gate";
-import { MotionProvider } from "@/components/layout/motion-provider";
 import { SmoothScrollProvider } from "@/components/layout/smooth-scroll-provider";
 const WEBMENTION_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, "");
 const ENABLE_VERCEL_ANALYTICS = process.env.VERCEL === "1";
@@ -239,51 +238,56 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <MotionProvider>
-            <SmoothScrollProvider />
-            <AskDrawerProvider>
-              {/* Everything the drawer pushes lives in .site-shell. The fixed
-                  header moves separately, via .site-header, because a padded
-                  ancestor cannot shift a position-fixed child. */}
-              <div className="site-shell">
-                {/* Each fallback reserves exactly what its component occupies
-                    in flow, or the swap is a layout shift on every route.
-                    `Navbar` renders a fixed header plus a `hidden h-20 md:block`
-                    spacer, so the fallback is that same spacer — the old
-                    `min-h-[64px]` was 16px short of it.
+          {/* No MotionProvider here. framer-motion's LazyMotion loads its
+              feature bundle on mount, wherever it is mounted, so at the root
+              it shipped 69 KB gzipped of animation runtime to every route —
+              including this one, where nothing animates. The provider now
+              lives in the layouts of the six segments that render `m.`
+              components (about, photos, professional, projects, secret,
+              work-with-me). */}
+          <SmoothScrollProvider />
+          <AskDrawerProvider>
+            {/* Everything the drawer pushes lives in .site-shell. The fixed
+                header moves separately, via .site-header, because a padded
+                ancestor cannot shift a position-fixed child. */}
+            <div className="site-shell">
+              {/* Each fallback reserves exactly what its component occupies
+                  in flow, or the swap is a layout shift on every route.
+                  `Navbar` renders a fixed header plus a `hidden h-20 md:block`
+                  spacer, so the fallback is that same spacer — the old
+                  `min-h-[64px]` was 16px short of it.
 
-                    `MobileNavbarGate` is fixed and occupies nothing, so its
-                    fallback stays `null` — the 64px the mobile bar overlays is
-                    reserved by `Navbar`'s own server-rendered spacer, which is
-                    the only place it can be held without shifting. */}
-                <Suspense fallback={<div className="hidden h-20 md:block" />}>
-                  <Navbar />
-                </Suspense>
-                <Suspense fallback={null}>
-                  <MobileNavbarGate />
-                </Suspense>
-                {/* `focus:outline-hidden` is deliberate, and allowlisted in
-                    design-drift.test.ts: this element exists to receive
-                    programmatic focus from the skip link, and the global
-                    `:focus-visible` outline would draw a 2px box around the
-                    whole page when it did. */}
-                <main id="main-content" tabIndex={-1} className="overflow-x-clip focus:outline-hidden">
-                  {children}
-                </main>
-                <DeferredLayoutExtras />
-                <ConsoleGreeting />
+                  `MobileNavbarGate` is fixed and occupies nothing, so its
+                  fallback stays `null` — the 64px the mobile bar overlays is
+                  reserved by `Navbar`'s own server-rendered spacer, which is
+                  the only place it can be held without shifting. */}
+              <Suspense fallback={<div className="hidden h-20 md:block" />}>
+                <Navbar />
+              </Suspense>
+              <Suspense fallback={null}>
+                <MobileNavbarGate />
+              </Suspense>
+              {/* `focus:outline-hidden` is deliberate, and allowlisted in
+                  design-drift.test.ts: this element exists to receive
+                  programmatic focus from the skip link, and the global
+                  `:focus-visible` outline would draw a 2px box around the
+                  whole page when it did. */}
+              <main id="main-content" tabIndex={-1} className="overflow-x-clip focus:outline-hidden">
+                {children}
+              </main>
+              <DeferredLayoutExtras />
+              <ConsoleGreeting />
 
-                <Suspense fallback={<div className="min-h-[200px]"></div>}>
-                  <Footer />
-                </Suspense>
-              </div>
+              <Suspense fallback={<div className="min-h-[200px]"></div>}>
+                <Footer />
+              </Suspense>
+            </div>
 
-              <AskDrawer />
-            </AskDrawerProvider>
+            <AskDrawer />
+          </AskDrawerProvider>
 
-            {ENABLE_VERCEL_ANALYTICS && <Analytics />}
-            {ENABLE_VERCEL_ANALYTICS && <SpeedInsights />}
-          </MotionProvider>
+          {ENABLE_VERCEL_ANALYTICS && <Analytics />}
+          {ENABLE_VERCEL_ANALYTICS && <SpeedInsights />}
         </ThemeProvider>
       </body>
     </html>
