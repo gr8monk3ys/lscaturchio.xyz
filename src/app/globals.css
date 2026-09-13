@@ -596,7 +596,7 @@
 
   /* Focus, as a default rather than an opt-in.
    *
-   * DESIGN.md:281 specifies one focus treatment — "a 2px Forest Ink outline
+   * DESIGN.md:295 specifies one focus treatment — "a 2px Forest Ink outline
    * offset 2px" — and it was written three times, each scoped to a utility
    * (cta-primary, cta-secondary, neu-button). Everything else fell through to
    * Chrome's UA ring: `outline: rgb(0, 95, 204) auto 1px`. A measurement put
@@ -627,7 +627,7 @@
    * vocabularies — a 2px line at a 2px gap, and a 4px radius-following halo —
    * both in the right ink and therefore both looking deliberate. The ring
    * stacks are gone; the only remaining suppressions are `#main-content` above
-   * and the masthead ask field, which DESIGN.md:299 gives its own indicator.
+   * and the masthead ask field, which DESIGN.md:313 gives its own indicator.
    * `src/__tests__/lib/design-drift.test.ts` holds the door shut. */
   /* The ring is already Forest Ink before it is ever shown.
    *

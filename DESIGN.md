@@ -365,6 +365,78 @@ rail. The ask drawer pauses the scroller while `body` is locked.
 
 This section previously specified a `reveal` utility — 14px rise, 650ms, staggered by a delay variable — and a 1.5s skeleton shimmer. Neither exists: `reveal` has no match anywhere in `src/`, and skeletons use Tailwind's `animate-pulse`. They were removed from the stylesheet when the motion doctrine changed and left behind in this document, which is the more dangerous half of that pair, because a spec nobody implements still gets implemented eventually.
 
+## Settled arguments, and one open one
+
+Design reviews keep re-raising these. Each is recorded with the measurement
+behind it so the next pass reads the reasoning instead of re-litigating it. A
+finding here can still be reopened — but with new evidence, not a fresh opinion.
+
+**The arrow glyph is derived, never chosen.** `↗` promises the click leaves the
+site. It was on all eight `/garden` cells, on home's "Read the case study", on
+the `/lab` search results, and on a same-page anchor that scrolls a few hundred
+pixels down the page you are already on — while `/contact` used it correctly for
+Calendly and a `mailto:`. One glyph, both meanings, so no meaning.
+`LinkArrow` picks it from the `href`, so there is no argument for the arrow and
+no way to pass a wrong one. `no-direct-arrow-up-right` keeps `link-arrow.tsx`
+the only module allowed to name the icon. A drift rule pairing glyph to href was
+the obvious alternative and is the wrong shape: the arrow is a *sibling* of the
+href, so any regex has to guess at a relationship across two lines.
+
+**The ask drawer covering the header controls below 1536 is a modal, not a
+bug.** It carries `role="dialog"`, `aria-modal="true"`, a full-viewport scrim at
+`z-54` with `pointer-events: auto` gated to exactly `max-width: 1535px`, a focus
+trap, and its own close button. Covered chrome is what a modal does, announced
+by a scrim. Lowering the push breakpoint to 1280 is ruled out against a
+measurement recorded in `globals.css`: pushing the shell there took the prose
+column from 672px to about 492px and reflowed the paragraph under the reader —
+the drawer crushing the thing it exists to keep in view.
+
+**A separator leads its item; it never trails.** Every `·` is glued to the item
+*after* it inside an `inline-flex`. This is chosen, not accidental: a trailing
+separator can be orphaned as the last thing on a wrapped line, and a leading one
+cannot, because it has something attached to its right. The cost is that a `·`
+can begin a wrapped line. Both options put a dot somewhere awkward; this one
+never leaves it dangling in mid-air.
+
+**The home page leads with the writing.** Section order is Hero → Currently →
+What I think → Projects → Who I am → New here. Reviews read "New here? Start
+with these" sitting last as a wayfinding defect. It is a deliberate sequence —
+this is a personal site, not a portfolio — and an independent external audit
+called the same ordering a strength. Changing it is an editorial decision, not a
+repair.
+
+**`lang` and `dir` are set on the client, and that is correct.** They were
+resolved server-side from the locale cookie, and reading a cookie in the root
+layout made all 84 essays dynamic: `cache-control: private, no-cache, no-store`
+with `x-vercel-cache: MISS` on every page. The justification was that
+hardcoding them shipped Arabic mirrored-wrong. It was the reverse — translation
+is the client-side Google Translate widget, so the server HTML is English in
+every locale, and `/ar` was serving `<html lang="ar" dir="rtl">` with zero
+Arabic characters: English text mirrored right-to-left, permanently so with
+JavaScript off. `HtmlLangSync` sets both attributes alongside the widget that
+actually changes the language, so the label tracks the content rather than
+preceding it.
+
+**Open: page-top spacing has two conventions.** Fifteen pages use
+`Container className="mt-16 lg:mt-32"`, putting `<main>` at y=208 and the kicker
+at y=288 on a 1440px viewport. Five (`/blog`, `/garden`, `/stats`, `/uses`,
+`/links`) use tighter ad-hoc padding and start at y=80, with kickers between 176
+and 268. A review called the roomy value dead paper; it is in fact the majority
+convention, and this document specifies neither. Unifying is worth doing — in
+whichever direction the author prefers — but it changes every page visibly and
+is a judgment about the notebook's margin, not a defect to quietly fix.
+
+**Known and unfixed: `/stats` has no honest loading failure.** Its two client
+components destructure `{ data, isLoading }` from SWR and drop `error`, and the
+page server-renders no numbers, so with JavaScript off or a hanging request it
+shows skeleton placeholders indefinitely — a reader cannot tell "loading" from
+"broken". `src/lib/popular-posts.ts` is the pattern for the fix: one server-side
+reader, shared by the page and the API route, handed to SWR as `fallbackData`.
+Note that `isLoading` stays true through the first request even when
+`fallbackData` is supplied, so the skeleton condition has to be
+`isLoading && !data` or the fallback renders behind a skeleton and the fix does
+nothing.
+
 ## Do's and Don'ts
 
 ### Do:

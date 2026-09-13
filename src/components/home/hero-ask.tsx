@@ -74,7 +74,7 @@ export function HeroAsk() {
             placeholder="What have you changed your mind on?"
             autoComplete="off"
             /* The site's one documented exception to the global focus outline.
-               DESIGN.md:299: "Focus turns the rule Forest Ink with no ring" —
+               DESIGN.md:313: "Focus turns the rule Forest Ink with no ring" —
                so `focus:outline-none` is load-bearing here and nowhere else,
                and it is the reason this line is allowlisted in
                design-drift.test.ts rather than cleaned up with the other 53.
