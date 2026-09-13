@@ -56,7 +56,17 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
         {groups.map(({ theme, posts: themePosts }) => (
           <section key={theme.slug}>
             <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-              <h3 className="text-subsection">{theme.title}</h3>
+              {/* `text-section-title`, matching `scroll-case-studies.tsx:85`
+                  two sections below — home's other `h3` — and matching
+                  `ThemedBlogSections`, where the same theme name introduces
+                  the same essays on `/blog`. At `text-subsection` (17.2rem/560)
+                  this was the only `h3` on the page not at 34.56px, and it was
+                  what made the row below it unfixable: an essay title on the
+                  index ramp (20px) would have been LARGER than the theme
+                  heading containing it. Raising the parent is what /blog
+                  already does, and it is the half I missed when I first called
+                  this arithmetically blocked. */}
+              <h3 className="text-section-title">{theme.title}</h3>
               <span className="label-mono shrink-0">{themePosts.length}</span>
             </div>
             <ul className="mt-4 space-y-3">
@@ -83,9 +93,16 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
                         </span>
                       )}
                     </span>
-                    <span className="mt-1 block font-semibold text-foreground group-hover:text-primary">
+                    {/* `h4.text-card-title`: the same 20px/620 Fraunces the
+                        identical row uses on `/blog`, `/topics`, `/tag`,
+                        `/garden` and `/lab`, and a heading so the rotor can
+                        reach it. It was a `<span>` at 16px Instrument Sans —
+                        body copy, in the body voice, for the one element the
+                        section exists to let you choose between. `h4` because
+                        the theme heading above it is an `h3`. */}
+                    <h4 className="mt-1 text-card-title text-foreground group-hover:text-primary">
                       {post.title}
-                    </span>
+                    </h4>
                     <span className="mt-1 block max-w-lg text-sm text-muted-foreground line-clamp-2">
                       {post.description}
                     </span>
