@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { LedgerHead, LedgerSection } from "@/components/ui/ledger-section";
+import { StageBadge } from "@/components/blog/stage-badge";
+import { formatDate } from "@/lib/formatDate";
 import { groupByTheme } from "@/lib/blog-themes";
 import type { BlogPreview } from "@/lib/blog-data";
 import { spellCount, spellCountLower, pluralize } from "@/lib/spell-count";
@@ -61,7 +63,27 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
               {themePosts.slice(0, 2).map((post) => (
                 <li key={post.slug}>
                   <Link href={`/blog/${post.slug}`} prefetch={false} className="group block">
-                    <span className="font-semibold text-foreground group-hover:text-primary">
+                    {/* The same wall label the `/blog` rows carry. The
+                        identical essay was rendered here as title plus
+                        description and on `/blog` as date, stage, title,
+                        description — so a reader who met an essay on the home
+                        page could not see the one thing the stage vocabulary
+                        exists to tell them, and met a different row for the
+                        same object one click later.
+
+                        Separator glued to the item after it, as everywhere
+                        else: a leading `·` cannot be orphaned at the end of a
+                        wrapped line. */}
+                    <span className="label-mono flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <time dateTime={post.date}>{formatDate(post.date)}</time>
+                      {post.stage && (
+                        <span className="inline-flex items-center gap-x-3">
+                          <span aria-hidden className="text-foreground/25">·</span>
+                          <StageBadge stage={post.stage} />
+                        </span>
+                      )}
+                    </span>
+                    <span className="mt-1 block font-semibold text-foreground group-hover:text-primary">
                       {post.title}
                     </span>
                     <span className="mt-1 block max-w-lg text-sm text-muted-foreground line-clamp-2">
