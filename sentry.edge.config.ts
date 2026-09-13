@@ -19,7 +19,10 @@ if (SENTRY_DSN) {
     dsn: SENTRY_DSN,
 
     // Performance Monitoring (lower rate for edge)
-    tracesSampleRate: process.env.NODE_ENV === "production" ? 0.05 : 1.0,
+    // No `tracesSampleRate`, for the same reason as the client and server
+    // configs: `webpack.treeshake.removeTracing` in `next.config.mjs` strips
+    // the SDK's tracing code from every bundle it processes, this one
+    // included. Error reporting is unchanged.
 
     // Debug mode in development
     debug: process.env.NODE_ENV === "development",

@@ -238,24 +238,53 @@ const withMDX = createMDX({
   },
 });
 
-// Sentry configuration options
+/**
+ * Sentry build options, checked against the API this version actually has.
+ *
+ * `@sentry/nextjs` is on 10.70.0 and `withSentryConfig` neither validates nor
+ * warns about keys it does not recognise, so options carried over from v7 keep
+ * reading as correct while doing nothing. Three of them were doing nothing:
+ * `hideSourceMaps`, `disableServerWebpackPlugin` and
+ * `disableClientWebpackPlugin` appear nowhere in this version's types *or* its
+ * webpack implementation. `sourcemaps.disable` is the current equivalent, and
+ * it is read (webpack.js:221).
+ *
+ * `webpack.treeshake` was NOT dead, and is deliberately left where it is:
+ * `setupTreeshakingFromConfig` reads `userSentryOptions.webpack?.treeshake`,
+ * and a top-level `treeshake` is read nowhere in the config code. This project
+ * builds with `next build --webpack`, so this is the path that applies. Moving
+ * it would have silently switched off the one flag that was working.
+ *
+ * Why it matters here: measured on production, one chunk is 674 KB parsed /
+ * 208 KB over the wire — 63% of all the JavaScript on the page — with 219
+ * matches for "sentry" inside it, on a site that is essentially text.
+ */
 const sentryWebpackPluginOptions = {
   // Suppress source map upload logs in CI
   silent: true,
-  // Upload source maps only if Sentry is configured
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
-  // Only upload source maps in production builds with auth token
   authToken: process.env.SENTRY_AUTH_TOKEN,
-  // Disable source map upload if not configured
-  disableServerWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
-  disableClientWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
-  // Hide source maps from clients
-  hideSourceMaps: true,
-  // Tree-shake Sentry debug logging in production
+
+  // Replaces the three dead v7 options above: no token means no upload, so
+  // there is no reason to emit the maps in the first place.
+  sourcemaps: {
+    disable: !process.env.SENTRY_AUTH_TOKEN,
+  },
+
   webpack: {
     treeshake: {
+      // Already here, already working. Kept.
       removeDebugLogging: true,
+      // New. Drops the tracing/performance half of the SDK from the bundle.
+      // A deliberate trade: the site keeps error reporting, which is what it
+      // acts on, and stops shipping performance instrumentation to every
+      // reader of an essay. There is no `isServer` gate on the define plugin
+      // (webpack.js:259), so this strips tracing from the server bundle too —
+      // which is why `tracesSampleRate` comes out of BOTH Sentry init files in
+      // the same change. Leaving either would configure a capability the
+      // shipped code no longer contains.
+      removeTracing: true,
     },
   },
 };

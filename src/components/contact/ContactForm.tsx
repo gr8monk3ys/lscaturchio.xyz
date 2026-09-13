@@ -346,7 +346,7 @@ export function ContactForm() {
               disabled={isSubmitting}
               className="cta-primary w-full px-6 py-3 rounded-xl disabled:opacity-50"
             >
-              {isSubmitting ? "Sending..." : "Send Project Details"}
+              {isSubmitting ? "Sending..." : "Send project details"}
             </button>
 
             {/* Two regions, not one, because the two outcomes have different
