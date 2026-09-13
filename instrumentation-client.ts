@@ -22,8 +22,12 @@ if (SENTRY_DSN) {
   Sentry.init({
     dsn: SENTRY_DSN,
 
-    // Performance Monitoring
-    tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
+    // No `tracesSampleRate`. `next.config.mjs` sets
+    // `treeshake.removeTracing`, which strips the SDK's tracing code from the
+    // bundle — so a sample rate here would configure a capability the shipped
+    // JavaScript no longer has. That is the same shape of defect as the dead
+    // build options it replaces: a setting that reads as working and does
+    // nothing. Error reporting, which is what this site acts on, is unchanged.
 
     // Debug mode in development
     debug: process.env.NODE_ENV === "development",
