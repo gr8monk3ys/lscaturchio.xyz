@@ -17,8 +17,14 @@ export const metadata = buildPageMetadata({
 });
 
 export default function AboutPage() {
+  // `mt-4`, like every other route. This had none, so its header block began
+  // 16px higher than every page that opens with a PageHead — the outlier in
+  // the opposite direction to the 208px band. The h1 still lands above other
+  // pages' h1s, because AboutHero has no kicker above it; what is aligned is
+  // the top edge of the header block, which is the thing a reader moving
+  // between pages actually sees move.
   return (
-    <Container size="wide">
+    <Container size="wide" className="mt-4">
       <div className="space-y-8">
         <AboutHero />
         <PersonalFavorites />

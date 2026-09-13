@@ -13,7 +13,7 @@ export const metadata = buildPageMetadata({
 
 export default function Contact() {
   return (
-    <Container className="mt-16 lg:mt-32">
+    <Container className="mt-4">
       <div className="max-w-6xl mx-auto space-y-16">
         <PageHead
           className="mb-12"

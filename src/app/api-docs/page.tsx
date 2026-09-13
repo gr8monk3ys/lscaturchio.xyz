@@ -33,7 +33,7 @@ const ENDPOINTS = [
 
 export default function ApiDocsPage() {
   return (
-    <Container className="mt-16 lg:mt-32">
+    <Container className="mt-4">
       <div className="max-w-4xl mx-auto">
         <div className="mb-10 neu-card p-8">
           <div className="flex items-center gap-4 mb-4">

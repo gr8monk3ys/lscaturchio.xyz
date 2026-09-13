@@ -42,7 +42,7 @@ export default function BooksPage() {
   const queueRatio = stats.booksRead > 0 ? Math.round(stats.toRead / stats.booksRead) : 0;
 
   return (
-    <Container className="mt-16 lg:mt-32">
+    <Container className="mt-4">
       <div className="max-w-4xl mx-auto">
         {/* Header — gallery masthead */}
         <PageHead

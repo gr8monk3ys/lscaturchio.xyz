@@ -8,7 +8,7 @@ import {
 /** Placard, one CTA, the filter rail, then the two-column case-study grid. */
 export default function ProjectsLoading() {
   return (
-    <Container className="mt-16 lg:mt-32">
+    <Container className="mt-4">
       <div className="mx-auto max-w-6xl">
         <SkeletonPageHead blurbLines={2} rule={false} className="mb-10" />
         <SkeletonBar className="h-3 w-52" />

@@ -28,7 +28,7 @@ export default function MoviesPage() {
   const watchlist = getLetterboxdWatchlist().slice(0, 40);
 
   return (
-    <Container className="mt-16 lg:mt-32">
+    <Container className="mt-4">
       <div className="max-w-4xl mx-auto">
         {/* Header — gallery masthead */}
         <PageHead

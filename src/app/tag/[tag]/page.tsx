@@ -60,7 +60,7 @@ export default async function TagPage({ params }: Props) {
   }
 
   return (
-    <Container className="mt-16 lg:mt-32" size="wide">
+    <Container className="mt-4" size="wide">
       <PageHead
         ruleWidth="measure"
         className="mb-12"

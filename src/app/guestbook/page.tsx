@@ -11,7 +11,7 @@ export const metadata = buildPageMetadata({
 
 export default function GuestbookPage() {
   return (
-    <Container className="mt-16 lg:mt-32">
+    <Container className="mt-4">
       <div className="max-w-2xl mx-auto">
         <PageHead
           className="mb-12"
