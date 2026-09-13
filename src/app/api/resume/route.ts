@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { z } from "zod";
-import { logInfo, logError } from "@/lib/logger";
+import { logInfo, logWarn, logError } from "@/lib/logger";
 import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
 import { withWriteRoute } from "@/lib/api/write-route";
 
@@ -43,7 +43,10 @@ const handleGet = async (req: NextRequest) => {
           }
         }
 
-        logError("Resume: File not found, redirecting to contact", null, {
+        // Warning: the redirect is the designed fallback and the visitor lands
+        // somewhere useful. Fix by adding the PDF to public/ or setting
+        // RESUME_URL — until then this should not page anyone.
+        logWarn("Resume: File not found, redirecting to contact", {
           component: "resume",
           action: "GET",
           paths: [RESUME_FILENAME, LEGACY_FILENAME],

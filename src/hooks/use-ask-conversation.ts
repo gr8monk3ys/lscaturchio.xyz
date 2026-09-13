@@ -1,7 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { logError } from "@/lib/logger";
+import { logError, logWarn } from "@/lib/logger";
+
+/** A non-2xx from /api/chat, with the status so the caller can tell a refusal from a failure. */
+class ChatRequestError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = "ChatRequestError";
+  }
+}
 
 /**
  * One conversation with the site, wherever it is being held.
@@ -99,10 +107,11 @@ export function useAskConversation({
 
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
-          throw new Error(
+          throw new ChatRequestError(
             data?.message ||
               data?.error ||
-              `Chat request failed with status ${response.status}`
+              `Chat request failed with status ${response.status}`,
+            response.status
           );
         }
 
@@ -118,10 +127,22 @@ export function useAskConversation({
           { id: prev.length + 1, content: answer, sender: "ai" },
         ]);
       } catch (error) {
-        logError("Chat request failed", error, {
-          component: "useAskConversation",
-          action: "send",
-        });
+        // A 4xx is the server declining on purpose — rate limit, CSRF origin,
+        // validation. The user sees ERROR_COPY either way; only a 5xx or a
+        // network failure is something to fix.
+        if (error instanceof ChatRequestError && error.status < 500) {
+          logWarn("Chat request rejected", {
+            component: "useAskConversation",
+            action: "send",
+            status: error.status,
+            reason: error.message,
+          });
+        } else {
+          logError("Chat request failed", error, {
+            component: "useAskConversation",
+            action: "send",
+          });
+        }
         setMessages((prev) => [
           ...prev,
           {
