@@ -115,7 +115,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
           href="/"
           prefetch={false}
           aria-label="Lorenzo Scaturchio — home"
-          className="flex h-10 items-center rounded-xl bg-background/80 px-3 backdrop-blur-md focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          className="flex h-10 items-center rounded-xl bg-background/80 px-3 backdrop-blur-md"
         >
           <Image
             src="/cursive.svg"
