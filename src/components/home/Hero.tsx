@@ -26,6 +26,11 @@ export function Hero() {
             `1fr / 300px` editorial split collapses to one column on a phone,
             and a centred plate in a left-aligned stack reads as a stray
             snapshot rather than as the masthead's other half. */}
+        {/* This plate is the mobile LCP element. `priority` alone only emits the
+            preload link in Next 16; the `fetchPriority="high"` attribute on the
+            image element itself is what moves the request ahead of the font and script
+            queue. The `sizes` list mirrors the three widths above so a phone
+            fetches a 176px-plate candidate rather than the 208px one. */}
         <figure className="w-44 sm:w-52 md:w-full md:max-w-[300px]">
           <div className="relative aspect-square overflow-hidden border border-border">
             <Image
@@ -33,7 +38,8 @@ export function Hero() {
               alt="Lorenzo Scaturchio"
               fill
               priority
-              sizes="(max-width: 768px) 208px, 300px"
+              fetchPriority="high"
+              sizes="(max-width: 640px) 176px, (max-width: 768px) 208px, 300px"
               className="object-cover"
             />
           </div>
