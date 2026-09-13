@@ -168,6 +168,24 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
              is read as a noun phrase — "Mobile, navigation" announced the
              adjective and left the reader to infer the noun. */
           aria-label="Mobile navigation"
+          /* Deliberately NOT `role="dialog"`.
+             A review asked for it, on the grounds that this is a
+             full-viewport overlay that traps focus while the ask drawer
+             declares `role="dialog"` and `aria-modal` and this declares
+             neither. The behaviour is already right — focus is contained and
+             Escape closes and restores — so what is at stake is the
+             announcement.
+
+             Setting `role="dialog"` on a `<nav>` REPLACES its implicit
+             `navigation` role, and `a11y-keyboard-affordances.test.tsx`
+             queries this element as `getByRole("navigation", { name: "Mobile
+             navigation" })` — two tests that exist because the landmark is
+             load-bearing for a screen-reader user skimming by landmark. The
+             correct ARIA is a dialog *containing* a navigation landmark, which
+             means restructuring a working full-screen overlay for a nuance
+             rated P3 against behaviour that already works. Not a good trade,
+             and recorded here so the next review can weigh it rather than
+             rediscover it. */
           data-lenis-prevent
           className="fixed inset-0 z-55 flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
         >

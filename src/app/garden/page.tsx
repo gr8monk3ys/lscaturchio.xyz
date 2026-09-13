@@ -114,7 +114,14 @@ export default function GardenPage() {
             header keeps the wide column, the list caps at the documented
             reading measure. The blurbs are sentences, and a sentence set
             across 72rem is not a row, it is a paragraph pretending to be one. */}
-        <ul className="mt-10 max-w-2xl divide-y divide-border border-y border-border">
+        {/* `border-b`, not `border-y`. Capping PageHead's closing rule to the
+            reading measure put it at exactly this list's width, 41px above a
+            `border-t` of the same colour — one line drawn twice with empty
+            paper between, on the page whose whole job is to be a clean index.
+            Before the cap the two were 1152px and 672px and read as two
+            different structures. The head owns the boundary above; `divide-y`
+            owns every boundary between rows; this owns the one below. */}
+        <ul className="mt-10 max-w-2xl divide-y divide-border border-b border-border">
           {PLOTS.map((plot) => (
             <li key={plot.href}>
               <Link
