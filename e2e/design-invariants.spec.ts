@@ -398,6 +398,42 @@ test.describe('design invariants, in the DOM', () => {
     ).toEqual([])
   })
 
+  test('a list that overflows says so, and says how much', async ({ page }) => {
+    // The palette held 24 destinations in a 540px window over 1681px of
+    // content and gave the reader no signal. Row 9 clipped mid-row at the
+    // panel edge, which is the only cue there was — and a half-row reads as a
+    // rendering seam rather than as "there is more". Fifteen of 24
+    // destinations existed unannounced, on the surface whose value is coverage.
+    //
+    // This lives in e2e rather than in a unit test because both halves are
+    // layout: jsdom reports `scrollHeight` and `clientHeight` as 0, so the
+    // affordance is unobservable there and a passing unit test would have meant
+    // nothing. It asserts the affordance appears *because* of overflow and
+    // retracts at the end of the scroll, not that a class is present.
+    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.locator('[data-command-palette-trigger]').first().click()
+
+    const dialog = page.locator('[role="dialog"][aria-label="Search and navigate"]')
+    await expect(dialog).toBeVisible()
+
+    const list = dialog.locator('[role="listbox"]')
+    const overflows = await list.evaluate((el) => el.scrollHeight > el.clientHeight + 1)
+    expect(overflows, 'the palette list should overflow at this viewport').toBe(true)
+
+    // The extent, in words. This is the half a scroll indicator cannot express.
+    await expect(dialog).toContainText(/\d+ destinations/)
+
+    const hairline = dialog.locator('[aria-hidden="true"].absolute.inset-x-0.bottom-0.border-b')
+    await expect(hairline).toHaveCount(1)
+
+    await list.evaluate((el) => {
+      el.scrollTop = el.scrollHeight
+    })
+    // Gone at the bottom: the cue tracks the actual scroll position rather
+    // than merely the fact that the list is long.
+    await expect(hairline).toHaveCount(0)
+  })
+
   test('every scroll opt-out actually contains its scroll', async ({ page }) => {
     // `data-lenis-prevent` is half JS and half CSS. The JS half hands the wheel
     // back to the browser; the CSS half — `.lenis [data-lenis-prevent] {
