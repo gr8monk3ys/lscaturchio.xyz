@@ -11,8 +11,6 @@ import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Fraunces, IBM_Plex_Mono } from "next/font/google";
 import { SITE_URL } from "@/lib/site-url";
 import { IDENTITY } from "@/constants/identity";
-import { cookies } from "next/headers";
-import { getActiveLanguage, isRtlLanguage } from "@/lib/site-language";
 import { DeferredLayoutExtras } from "@/components/layout/deferred-layout-extras";
 import { AskDrawerProvider } from "@/components/chat/ask-drawer-provider";
 import { AskDrawer } from "@/components/chat/ask-drawer";
@@ -149,20 +147,36 @@ export default async function RootLayout({
     ],
   };
 
-  // Resolved on the server from the locale cookie. This was hardcoded to
-  // `lang="en" dir="ltr"` and corrected in a client effect, so Arabic shipped
-  // mirrored-wrong on first paint and stayed wrong with JavaScript off —
-  // against PRODUCT.md's "multilingual is real, not a toy".
-  const cookieHeader = (await cookies())
-    .getAll()
-    .map(({ name, value }) => `${name}=${value}`)
-    .join("; ");
-  const language = getActiveLanguage({ cookies: cookieHeader });
-
   return (
+    /* `lang="en" dir="ltr"`, hardcoded, because that is what this document
+       contains — in every locale.
+ 
+       This read the locale cookie, and reading a cookie in the ROOT layout
+       opts the entire application into dynamic rendering. The build said so:
+       84 routes `ƒ (Dynamic)`, 2 `○ (Static)`. Production served
+       `cache-control: private, no-cache, no-store` with `x-vercel-cache: MISS`
+       and `cf-cache-status: DYNAMIC` on every essay, so Vercel's CDN,
+       Cloudflare and the browser were all disabled for a site that is text.
+ 
+       The comment that used to sit here said hardcoding these attributes made
+       Arabic "ship mirrored-wrong on first paint and stay wrong with
+       JavaScript off". Its premise was that translated content is
+       server-rendered. It is not: translation is the client-side Google
+       Translate widget, so the server HTML is English in every locale.
+       Measured on production before this change — `/ar` served
+       `<html lang="ar" dir="rtl">` with ZERO Arabic characters, which is
+       English text mirrored right-to-left, and with JavaScript off it stayed
+       that way permanently. The server read was producing the exact defect it
+       was added to prevent, and charging 84 uncacheable routes for it.
+ 
+       `HtmlLangSync` already sets `lang` and `dir` on the client for every
+       non-English locale (`client-enhancements.tsx:83` gates it on
+       `activeLanguage !== "en" || isRtlLanguage(...)`), which is the right
+       place: it runs alongside the widget that actually changes the language,
+       so the label tracks the content instead of preceding it. */
     <html
-      lang={language}
-      dir={isRtlLanguage(language) ? "rtl" : "ltr"}
+      lang="en"
+      dir="ltr"
       suppressHydrationWarning
       className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable}`}
     >
