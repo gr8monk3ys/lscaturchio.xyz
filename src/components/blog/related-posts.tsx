@@ -99,9 +99,16 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
             />
           </div>
           {post.date && <span className="label-mono mt-4 block">{formatDate(post.date)}</span>}
-          <h4 className="text-subsection mt-2 line-clamp-2 transition-colors group-hover:text-primary">
+          {/* `h3`, not `h4`. The section above these is an `h2`, so an `h4`
+              skipped a level on all 84 essays — WCAG 1.3.1, and right where a
+              reader who just finished an essay is deciding what to read next.
+              The level had been chosen for its size: `Heading.tsx` maps
+              `h4 -> text-subsection`, so reaching for the smaller type meant
+              reaching for the wrong rank. The size class is kept explicitly
+              and only the rank changes. */}
+          <h3 className="text-subsection mt-2 line-clamp-2 transition-colors group-hover:text-primary">
             {post.title}
-          </h4>
+          </h3>
           <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
             {post.description}
           </p>

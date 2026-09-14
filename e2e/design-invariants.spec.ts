@@ -434,6 +434,75 @@ test.describe('design invariants, in the DOM', () => {
     await expect(hairline).toHaveCount(0)
   })
 
+  test('nothing in flow renders past the viewport on a phone', async ({ page }) => {
+    // `scrollWidth` cannot see this, and that is the entire point.
+    //
+    // `main` carries `overflow-x: clip`, so a min-content blowout is clipped
+    // rather than scrolled: `document.scrollWidth === innerWidth` stays
+    // exactly true while content renders off-screen and unreachable. Eleven
+    // design measurements in a row certified "zero horizontal overflow" from
+    // that equality, and all eleven missed a P0 — `LedgerSection`'s grid item
+    // defaulted to `min-width: auto`, a `truncate` span inside it measured
+    // 381px, and the single sub-`lg` track resolved to 450px inside a 358px
+    // container. Forty-eight in-flow elements rendered out to x=466 on a
+    // 390px phone, with project titles amputated mid-word and the ellipsis
+    // itself painted outside the screen.
+    //
+    // So this asserts the geometry directly: no in-flow, visible element may
+    // have a right edge past the viewport. `position: fixed` is excluded
+    // because off-canvas drawers live there deliberately and contribute
+    // nothing to layout width.
+    const WIDTHS = [360, 390, 430]
+    const ROUTES = ['/', '/blog', '/projects', '/garden', '/about']
+    const offenders: string[] = []
+
+    for (const width of WIDTHS) {
+      await page.setViewportSize({ width, height: 844 })
+
+      for (const route of ROUTES) {
+        await page.goto(route, { waitUntil: 'domcontentloaded' })
+        await page.waitForTimeout(400)
+
+        const over = await page.evaluate((vw) => {
+          const out: Array<{ sel: string; right: number }> = []
+          const main = document.querySelector('main') ?? document.body
+          for (const el of Array.from(main.querySelectorAll<HTMLElement>('*'))) {
+            const cs = getComputedStyle(el)
+            if (cs.position === 'fixed' || cs.display === 'none' || cs.visibility === 'hidden') continue
+            const r = el.getBoundingClientRect()
+            if (r.width === 0) continue
+            if (r.right > vw + 1) {
+              out.push({
+                sel: `${el.tagName.toLowerCase()}.${String(el.className).split(/\s+/).slice(0, 2).join('.')}`,
+                right: Math.round(r.right),
+              })
+            }
+          }
+          // One entry per distinct selector is enough to locate the cause.
+          const seen = new Set<string>()
+          return out.filter((o) => !seen.has(o.sel) && seen.add(o.sel)).slice(0, 4)
+        }, width)
+
+        for (const { sel, right } of over) {
+          offenders.push(`${route} @${width}px — ${sel} reaches x=${right}`)
+        }
+      }
+    }
+
+    expect(
+      offenders,
+      [
+        'An in-flow element renders past the viewport on a phone.',
+        'This is usually a grid or flex item at its default `min-width: auto`',
+        'with a `truncate`/`nowrap` descendant setting the floor — add `min-w-0`.',
+        'Note that `document.scrollWidth` will NOT show this, because `main` is',
+        '`overflow-x: clip`: the content is clipped and unreachable, not scrollable.',
+        '',
+        ...offenders,
+      ].join('\n')
+    ).toEqual([])
+  })
+
   test('every scroll opt-out actually contains its scroll', async ({ page }) => {
     // `data-lenis-prevent` is half JS and half CSS. The JS half hands the wheel
     // back to the browser; the CSS half — `.lenis [data-lenis-prevent] {
