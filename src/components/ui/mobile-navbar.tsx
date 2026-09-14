@@ -229,7 +229,16 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
                   >
                     {ItemIcon && <ItemIcon className="h-4 w-4" />}
                     <div className="min-w-0">
-                      <div className="text-sm font-semibold">{item.name}</div>
+                      {/* `text-lg`, not `text-sm`. These five are the tier
+                          `navlinks.tsx` calls primary — "deliberately explicit
+                          and deliberately short" — and they rendered at
+                          14px/600 while the "BROWSE MORE" category rows below
+                          them rendered at 18px/500: 29% larger type on the
+                          tier labelled secondary. The cards carried a border,
+                          an icon and a description, so two prominence signals
+                          pointed in opposite directions and the eye landed on
+                          the accordions first. */}
+                      <div className="text-lg font-semibold">{item.name}</div>
                       {item.description && (
                         <div className="truncate text-xs text-muted-foreground">
                           {item.description}
@@ -262,7 +271,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
                     onClick={() => toggleCategory(category.name)}
                     aria-expanded={isExpanded}
                     aria-controls={panelId}
-                    className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-lg font-medium transition-colors ${
+                    className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors ${
                       hasActiveItem
                         ? "text-primary"
                         : "text-foreground/80 hover:bg-muted/50"
@@ -331,7 +340,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
               href={contactLink.href}
               prefetch={false}
               onClick={() => setIsMenuOpen(false)}
-              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-lg font-medium transition-colors ${
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-base font-medium transition-colors ${
                 isPathActive(pathname, contactLink.href)
                   ? "neu-pressed bg-primary/10 text-primary"
                   : "hover:bg-muted/50"
