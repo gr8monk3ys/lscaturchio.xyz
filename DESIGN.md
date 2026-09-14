@@ -369,13 +369,72 @@ Nested scroll areas opt out with `data-lenis-prevent` — the mobile nav panel,
 both drawer panes, the chat transcript, the command palette list, the contents
 rail. The ask drawer pauses the scroller while `body` is locked.
 
-This section previously specified a `reveal` utility — 14px rise, 650ms, staggered by a delay variable — and a 1.5s skeleton shimmer. Neither exists: `reveal` has no match anywhere in `src/`, and skeletons use Tailwind's `animate-pulse`. They were removed from the stylesheet when the motion doctrine changed and left behind in this document, which is the more dangerous half of that pair, because a spec nobody implements still gets implemented eventually.
+This section previously specified a `reveal` utility — 14px rise, 650ms, staggered by a delay variable — and a 1.5s skeleton shimmer; it was then corrected to say that skeletons use Tailwind's `animate-pulse`. Both claims are dead now: `reveal` has no match anywhere in `src/`, and the site ships no skeletons at all — see the settled argument on placeholders below. The corrections stay here rather than being quietly deleted, because a spec nobody implements still gets implemented eventually.
 
 ## Settled arguments, and one open one
 
 Design reviews keep re-raising these. Each is recorded with the measurement
 behind it so the next pass reads the reasoning instead of re-litigating it. A
 finding here can still be reopened — but with new evidence, not a fresh opinion.
+
+**A placeholder a reader cannot resolve is worse than an empty space.** The
+site ships no skeletons. `app/loading.tsx` was a `HomeLoading` masthead — a
+portrait plate and three cards — and every route without its own `loading.tsx`
+inherited it, so `/stats`, `/uses`, `/garden` and `/contact` all announced
+themselves with the shape of the home page. That was the visible half of a
+worse problem. A `loading.tsx` creates a Suspense boundary, and React's
+streaming format writes the fallback into the markup while parking the resolved
+content in `<div hidden id="S:n">`, to be moved into place by a `$RC` script.
+With JavaScript off that script never runs, so the fallback is final. Measured
+on the built output: every route served roughly 410 characters — the skip link
+and the ask drawer's copy — plus 17 to 36 pulsing bars, and no content at all.
+`/` was 442 characters, `/blog` 415.
+
+Deleting the five `loading.tsx` files removes those boundaries, and the same two
+routes then measure 4,718 and 19,252 characters with the scripts still off. That
+exposed three more boundaries doing the same thing, none of them needed: the
+root layout wrapped `Navbar` and `Footer`, so every route served its content
+with no navigation and no site map — the only link in the document was "Skip to
+content"; `/about` wrapped a static résumé download link behind `Loading...`;
+and `/photos` wrapped a gallery that reads a constant behind a spinner, which
+resolved into the shell on one measurement and not the next, because whether a
+boundary makes the shell is down to streaming timing. Removing all three leaves
+167 prerendered pages with no pending boundary and no placeholder, and `/stats`
+at 1,956 characters with the navbar and footer in the HTML.
+
+The rule that came out of it: **wrap something in `<Suspense>` only when it
+genuinely suspends, and write a fallback that is true if it is the last thing a
+reader ever sees.** `/chat` keeps its boundary and says asking a question needs
+JavaScript, which is accurate; `/bookmarks` says its list lives in this
+browser's storage. Both are honest states. "Loading…" over content that will
+never load is not one.
+
+The cost is the loading UI on a soft navigation, which these pages, static and
+on the CDN, can afford; the benefit is that a JavaScript failure degrades the
+site to plain HTML rather than to pulsing bars. `no-unresolvable-placeholder`
+guards the source and the `no route parks its content behind a script`
+invariant guards the response. Both were positive-controlled: restoring one
+`loading.tsx` fails the invariant on every route.
+
+The mobile navbar stays client-only. It is `dynamic(..., { ssr: false })` behind
+a media-query gate, so below 768px a reader without JavaScript has no header —
+the footer is the site map and carries every doorway, which is what it is for.
+That is a deliberate architecture with a fallback, not a placeholder.
+
+This argument was opened by the `/stats` finding and is far larger than it:
+seventeen design reviews scored this site with JavaScript on, and not one of
+them could see any of it.
+
+**"Recorded in DESIGN.md" is not a fix, and this document is where that was
+tested.** `/stats` shipping sixty-three `animate-pulse` nodes and no numbers was
+declined across several passes as known, with the remedy written down here. A
+later review asked whether being recorded had become the way a real defect
+stayed out of the count, and the challenge was correct: the fix was one
+afternoon's work and the entry had been standing for longer than that. A
+recorded defect is a defect with a citation. What this section is for is
+arguments that were settled by measurement — not a holding pen for work nobody
+intends to do.
+
 
 **The arrow glyph is derived, never chosen.** `↗` promises the click leaves the
 site. It was on all eight `/garden` cells, on home's "Read the case study", on
@@ -465,3 +524,5 @@ nothing.
 - **Don't** introduce a second accent colour; Moss exists for secondary fills and the four signal colours are for status only.
 - **Don't** round the portrait plate or box the underline input; squareness marks the work, roundness marks the interface.
 - **Don't** define `--spacing-xs..4xl` tokens in `@theme`; in Tailwind v4 they shadow the `max-w-*` container scale and collapse layouts.
+
+- **Don't** ship a skeleton, shimmer or pulsing placeholder; a `loading.tsx` parks the real content behind a script, so the fallback is what a reader without JavaScript keeps.

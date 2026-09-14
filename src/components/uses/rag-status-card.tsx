@@ -44,9 +44,7 @@ export function RagStatusCard() {
           <div className="text-[0.72rem] text-muted-foreground tabular-nums">
             {new Date(status.timestamp).toLocaleString()}
           </div>
-        ) : (
-          <div className="h-4 w-32 rounded bg-muted/60 animate-pulse" aria-hidden />
-        )}
+        ) : null}
       </div>
 
       {error ? (
@@ -61,14 +59,17 @@ export function RagStatusCard() {
                 <Database className="size-4 text-muted-foreground" />
                 Database
               </div>
-              <Pill ok={!!status?.database.ok} label={status?.database.ok ? "OK" : status?.database.configured ? "Error" : "Off"} />
+              <Pill
+                ok={!!status?.database.ok}
+                label={!status ? "—" : status.database.ok ? "OK" : status.database.configured ? "Error" : "Off"}
+              />
             </div>
             <div className="mt-2 text-xs text-muted-foreground">
               {status
                 ? status.database.configured
                   ? "Neon Postgres reachable."
                   : "DATABASE_URL not set."
-                : "Loading…"}
+                : "Not checked."}
             </div>
           </div>
 
@@ -78,7 +79,10 @@ export function RagStatusCard() {
                 <BrainCircuit className="size-4 text-muted-foreground" />
                 Embeddings
               </div>
-              <Pill ok={!!status?.embeddings.available} label={status?.embeddings.available ? "Ready" : "Offline"} />
+              <Pill
+                ok={!!status?.embeddings.available}
+                label={!status ? "—" : status.embeddings.available ? "Ready" : "Offline"}
+              />
             </div>
             <div className="mt-2 text-xs text-muted-foreground">
               {status ? (
@@ -97,7 +101,7 @@ export function RagStatusCard() {
                   </div>
                 </div>
               ) : (
-                "Loading…"
+                "Not checked."
               )}
             </div>
           </div>
@@ -117,7 +121,7 @@ export function RagStatusCard() {
                       : status.chat.ollamaAvailable
                         ? "Ollama"
                         : "Offline"
-                    : "…"
+                    : "—"
                 }
               />
             </div>
@@ -129,7 +133,7 @@ export function RagStatusCard() {
                     ? "Ollama reachable."
                     : "No provider configured."
               ) : (
-                "Loading…"
+                "Not checked."
               )}
             </div>
           </div>

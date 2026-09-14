@@ -44,14 +44,17 @@ describe("SeriesNavigation", () => {
     vi.clearAllMocks();
   });
 
-  it("shows a loading skeleton while the series is being fetched", () => {
+  // Was "shows a loading skeleton". A 128px pulsing block under every essay in
+  // a series, permanent without JavaScript, where `null` was already this
+  // component's honest empty state.
+  it("renders nothing while the series is being fetched", () => {
     mockFetch.mockImplementation(() => new Promise(() => {}));
 
     const { container } = renderWithSWR(
       <SeriesNavigation seriesName="Deep Learning" currentSlug="part-two" currentOrder={2} />
     );
 
-    expect(container.querySelector(".animate-pulse")).not.toBeNull();
+    expect(container).toBeEmptyDOMElement();
   });
 
   it("requests the series endpoint with the encoded series name", async () => {

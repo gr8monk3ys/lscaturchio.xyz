@@ -6,7 +6,6 @@ import { PersonalFavorites } from "@/components/about/PersonalFavorites";
 import { Interests } from "@/components/about/Interests";
 import { ResumeDownloadButton } from "@/components/ui/resume-download-button";
 import { Music } from "@/components/about/Music";
-import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
@@ -77,11 +76,13 @@ export default function AboutPage() {
           </Link>
         </div>
         </section>
-        <Suspense fallback={<div className="flex justify-center mt-16"><span className="text-muted-foreground">Loading...</span></div>}>
-          <div className="flex justify-center mt-16">
-            <ResumeDownloadButton />
-          </div>
-        </Suspense>
+        {/* No Suspense boundary. This is a static download link, and the
+            boundary's "Loading..." was what a reader without JavaScript got
+            instead of it — permanently, because the resolved content is parked
+            in a hidden div that only React's `$RC` script moves into place. */}
+        <div className="flex justify-center mt-16">
+          <ResumeDownloadButton />
+        </div>
       </div>
     </Container>
   );

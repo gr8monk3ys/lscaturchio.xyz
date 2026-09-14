@@ -261,9 +261,7 @@ export default async function RootLayout({
                   fallback stays `null` — the 64px the mobile bar overlays is
                   reserved by `Navbar`'s own server-rendered spacer, which is
                   the only place it can be held without shifting. */}
-              <Suspense fallback={<div className="hidden h-20 md:block" />}>
-                <Navbar />
-              </Suspense>
+              <Navbar />
               <Suspense fallback={null}>
                 <MobileNavbarGate />
               </Suspense>
@@ -278,9 +276,7 @@ export default async function RootLayout({
               <DeferredLayoutExtras />
               <ConsoleGreeting />
 
-              <Suspense fallback={<div className="min-h-[200px]"></div>}>
-                <Footer />
-              </Suspense>
+              <Footer />
             </div>
 
             <AskDrawer />

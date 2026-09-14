@@ -43,10 +43,13 @@ describe('RelatedPosts', () => {
     expect(mockUseSWR).toHaveBeenCalledWith(null, expect.any(Function));
   });
 
-  it('shows three skeleton slots while loading', () => {
+  // Was "shows three skeleton slots while loading". Those slots could only be
+  // replaced by JavaScript, so with scripts off they were a permanent heading
+  // over three pulsing cards — a state a reader cannot read.
+  it('renders nothing at all while loading', () => {
     swrState({ isLoading: true });
     const { container } = render(<RelatedPosts currentTitle="T" currentUrl="/u" />);
-    expect(container.querySelectorAll('.animate-pulse')).toHaveLength(3);
+    expect(container).toBeEmptyDOMElement();
   });
 
   // Error and empty are different states and no longer share an assertion.

@@ -298,6 +298,68 @@ test.describe('design invariants, in the DOM', () => {
     ).toEqual([])
   })
 
+  test('no route parks its content behind a script', async ({ page }) => {
+    // The page-level form of the test above, and a far larger defect than the
+    // one that test was written for.
+    //
+    // `app/loading.tsx` was a `HomeLoading` masthead, and every route without
+    // its own `loading.tsx` inherited it — so `/stats`, `/uses`, `/garden` and
+    // `/contact` all opened on the shape of the home page. That was the
+    // visible half. A `loading.tsx` creates a Suspense boundary, and React's
+    // streaming format writes the fallback into the markup while parking the
+    // resolved content in a `<div hidden id="S:n">` for a `$RC` script to move
+    // into place. With JavaScript off that script never runs, so the fallback
+    // is final: every route served roughly 410 characters — the skip link and
+    // the ask drawer's copy — plus 17 to 36 pulsing bars, and no content at
+    // all. `/stats` was sixty-three of them and not one number.
+    //
+    // DESIGN.md's motion doctrine already said "nothing waits for a scroll
+    // observer, a mount transition or an idle callback to become readable".
+    // A script that reveals the entire page is that sentence with a larger
+    // subject, which is why this asserts the mechanism rather than the pixels:
+    // a pending boundary in the response means the content is behind a script,
+    // whatever it looks like once hydration lands.
+    //
+    // Seventeen design reviews scored this site with JavaScript on, and not
+    // one of them could see this.
+    await page.route('**/api/views*', (route) => route.abort())
+
+    const offenders: string[] = []
+
+    for (const path of [...ROUTES, '/stats']) {
+      const response = await page.goto(path, { waitUntil: 'commit' })
+      const html = (await response?.text()) ?? ''
+
+      // `<template id="B:n">` is React's unresolved boundary. Its presence is
+      // the defect; what the fallback happens to look like is not the point.
+      const pending = html.match(/<template id="B:\d+">/g)?.length ?? 0
+      if (pending > 0) {
+        offenders.push(`${path} leaves ${pending} Suspense boundary(s) pending in its response`)
+      }
+
+      const pulses = html.match(/animate-pulse/g)?.length ?? 0
+      if (pulses > 0) {
+        offenders.push(`${path} ships ${pulses} animate-pulse node(s) in its response`)
+      }
+
+      // The positive half: the response must carry the page's own heading,
+      // not merely avoid a skeleton. A blank page ships no pulses either.
+      if (!/<h1[\s>]/.test(html)) {
+        offenders.push(`${path} has no h1 in its response`)
+      }
+    }
+
+    expect(
+      offenders,
+      [
+        'A route must render its content, not a placeholder only JavaScript can replace.',
+        "Delete the segment's loading.tsx rather than reshaping its skeleton.",
+        '',
+        ...offenders,
+      ].join('\n')
+    ).toEqual([])
+  })
+
   test("a route's tab title matches what the nav calls it", async ({ page }) => {
     // The existing name check reads `nav a` labels, so it sees the header and
     // the footer agreeing with each other and nothing else. /professional was
