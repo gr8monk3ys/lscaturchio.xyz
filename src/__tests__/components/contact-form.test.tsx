@@ -332,7 +332,14 @@ describe("ContactForm", () => {
 
     fireEvent.change(message, { target: { value: "Short." } });
     expect(screen.queryByText(/characters left/)).not.toBeInTheDocument();
-    expect(message).not.toHaveAttribute("aria-describedby");
+    // The field always has a description now: its guidance is rendered as
+    // `#message-hint` rather than living in the placeholder, where it vanished
+    // on the first keystroke and was never announced. The countdown id joins
+    // it only once the countdown exists.
+    expect(message).toHaveAttribute("aria-describedby", "message-hint");
+    expect(
+      screen.getByText(/Share the goal, the users, the data/)
+    ).toBeInTheDocument();
 
     fireEvent.change(message, {
       target: { value: "a".repeat(CONTACT_FIELD_LIMITS.message - 40) },
@@ -340,7 +347,7 @@ describe("ContactForm", () => {
     expect(screen.getByText("40 characters left")).toBeInTheDocument();
     // In the description rather than a live region: it changes on every
     // keystroke, and a live region updating per character talks over the typist.
-    expect(message).toHaveAttribute("aria-describedby", "message-count");
+    expect(message).toHaveAttribute("aria-describedby", "message-hint message-count");
     expect(document.getElementById("message-count")).not.toHaveAttribute("aria-live");
   });
 

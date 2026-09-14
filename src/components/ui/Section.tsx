@@ -56,11 +56,28 @@ export function Section({
         className
       )}
     >
-      {/* Full-width hairlines. These were centred partial-width rules — half
-          and a third of the section, capped at max-w-lg — which read as
-          ornament. DESIGN.md specifies a full-width hairline between sections
-          and gives it a name, `gallery-rule`. */}
-      {topDivider && <div className="absolute inset-x-0 top-0 h-px bg-border" />}
+      {/* Hairlines that end where the content ends.
+          These were centred partial-width rules — half and a third of the
+          section, capped at max-w-lg — which read as ornament, so they became
+          `inset-x-0` on this outer element. That overcorrected: the section
+          element is the full viewport width, while the content below sits
+          inside `mx-auto px-4 sm:px-6 lg:px-8` at the page width. Measured on
+          `/work-with-me` at 1440, one vertical stack held rules at 144→1296
+          and 176→1264 alternating down the page, with every text block
+          starting at x=176 — so the first rule a reader met began 32px left of
+          everything it divided, and the stagger repeated at 1920 (384/416
+          against content at 416), which rules out a one-width accident.
+
+          `/professional` was the counter-example that proved it fixable: every
+          rule there measured 272→1168, because that page's rules are drawn
+          inside the padding. So the divider now carries the same container and
+          padding as the content it divides, and a section rule cannot disagree
+          with the block beneath it at any breakpoint. */}
+      {topDivider && (
+        <div className="absolute inset-x-0 top-0 px-4 sm:px-6 lg:px-8">
+          <div className={cn("mx-auto h-px bg-border", PAGE_WIDTHS[size])} />
+        </div>
+      )}
       <div
         className={cn(
           "mx-auto px-4 sm:px-6 lg:px-8",
@@ -70,7 +87,11 @@ export function Section({
       >
         {children}
       </div>
-      {divider && <div className="absolute inset-x-0 bottom-0 h-px bg-border" />}
+      {divider && (
+        <div className="absolute inset-x-0 bottom-0 px-4 sm:px-6 lg:px-8">
+          <div className={cn("mx-auto h-px bg-border", PAGE_WIDTHS[size])} />
+        </div>
+      )}
     </section>
   );
 }

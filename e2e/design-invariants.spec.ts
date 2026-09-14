@@ -456,6 +456,36 @@ test.describe('design invariants, in the DOM', () => {
     const ROUTES = ['/', '/blog', '/projects', '/garden', '/about']
     const offenders: string[] = []
 
+    // A positive control, first, because a green result from this check is
+    // only worth what the check is worth. A measurement pass of this site
+    // once printed `{}` and read as a clean sweep across 80 page loads while
+    // measuring nothing at all — `page.evaluate` handed a string instead of a
+    // function returns `undefined`, and `JSON.stringify` drops
+    // undefined-valued keys silently. That is the same shape of failure as
+    // trusting `scrollWidth`: an instrument reporting confidence it has not
+    // earned.
+    //
+    // So: inject an element that MUST be caught, confirm it is caught, remove
+    // it. If this assertion ever fails, the probe below is broken and its
+    // zero means nothing.
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
+    const controlCaught = await page.evaluate(() => {
+      const main = document.querySelector('main') ?? document.body
+      const canary = document.createElement('div')
+      canary.id = 'overflow-canary'
+      canary.style.cssText = 'width:900px;height:8px;background:red'
+      main.appendChild(canary)
+      const caught = canary.getBoundingClientRect().right > window.innerWidth + 1
+      canary.remove()
+      return { caught, stillPresent: !!document.getElementById('overflow-canary') }
+    })
+    expect(
+      controlCaught.caught,
+      'positive control: a 900px element on a 390px viewport must register as overflowing'
+    ).toBe(true)
+    expect(controlCaught.stillPresent, 'the control element must be removed again').toBe(false)
+
     for (const width of WIDTHS) {
       await page.setViewportSize({ width, height: 844 })
 

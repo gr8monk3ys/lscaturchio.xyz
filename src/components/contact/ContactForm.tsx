@@ -168,6 +168,12 @@ export function ContactForm() {
    */
   const describedBy = (name: ContactField) => {
     const ids = [
+      // The message field's guidance is rendered, not just placeheld — see
+      // the hint below the label. A placeholder disappears on the first
+      // keystroke, which is exactly when a four-part instruction ("the goal,
+      // the users, the data, and the constraint") is still needed, and it is
+      // never announced as a description at all.
+      name === "message" ? "message-hint" : null,
       fieldError(name) ? `${name}-error` : null,
       charactersLeft(name) === null ? null : `${name}-count`,
     ].filter(Boolean);
@@ -319,6 +325,15 @@ export function ContactForm() {
                 {/* Wall label: the required marker is metadata, not part of the field name. */}
                 <span aria-hidden="true" className="label-mono">Required</span>
               </div>
+              {/* Rendered guidance, not a placeholder. This text lived only in
+                  the field's placeholder, so it vanished on the first
+                  keystroke — exactly when a four-part instruction is still
+                  needed — and a placeholder is never announced as a
+                  description at all. It is in `aria-describedby` now, so it is
+                  both visible while typing and read out with the field. */}
+              <p id="message-hint" className="mb-2 text-sm text-muted-foreground">
+                Share the goal, the users, the data, and the constraint that matters most.
+              </p>
               <textarea
                 ref={messageRef}
                 id="message"
@@ -332,7 +347,7 @@ export function ContactForm() {
                 aria-invalid={fieldError("message") ? true : undefined}
                 aria-describedby={describedBy("message")}
                 className="neu-input w-full px-4 py-3 rounded-xl resize-none aria-invalid:border-destructive"
-                placeholder="Share the goal, the users, the data, and the constraint that matters most..."
+                placeholder="What are you trying to build?"
               />
               {fieldError("message") && (
                 <p id="message-error" className="mt-2 text-sm text-destructive">
