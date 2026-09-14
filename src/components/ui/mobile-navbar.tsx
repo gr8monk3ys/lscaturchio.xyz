@@ -288,8 +288,27 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
                     />
                   </button>
 
-                  {isExpanded && (
-                    <div id={panelId} className="overflow-hidden">
+                  {/* Rendered always, toggled with `hidden` — the standard
+                      disclosure pattern. This was `{isExpanded && …}`, so
+                      while collapsed the panel did not exist and the button's
+                      `aria-controls` pointed at nothing: measured at 390x844
+                      and 360x780, `document.getElementById` returned `null`
+                      for `mobile-nav-panel-writing`, `-work`, `-garden` and
+                      `-about`. ARIA requires an IDREF to resolve.
+
+                      It also corrects the evidence behind a decision recorded
+                      elsewhere: the argument for keeping group labels that
+                      duplicate destination names cited "a resolving
+                      `aria-controls`" as one of four signals marking a
+                      container. Three of those four held; this one did not,
+                      in precisely the collapsed state where the ambiguity
+                      exists. Now it does.
+
+                      The `hidden` attribute removes the panel from layout and
+                      from the tab order, so the focus trap's
+                      `offsetParent !== null` filter still excludes these
+                      links while collapsed. */}
+                  <div id={panelId} hidden={!isExpanded} className="overflow-hidden">
                       <div className="space-y-1 pl-4">
                         {category.items.map((item) => {
                           const ItemIcon = item.icon;
@@ -330,8 +349,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
                           );
                         })}
                       </div>
-                    </div>
-                  )}
+                  </div>
                 </div>
               );
             })}
