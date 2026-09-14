@@ -63,10 +63,25 @@ function LedgerRow({
   return (
     <div
       id={id}
-      className="grid gap-x-8 gap-y-2 border-b border-border py-7 scroll-mt-28 md:grid-cols-[11rem_1fr]"
+      /* The measure cap belongs to the TRACK, not to the child inside it.
+         This was `md:grid-cols-[11rem_1fr]` with `max-w-lg` on the content
+         div, so the track ran to the container's right edge while the ink
+         stopped at 512px: measured at 1440, rule 144→1296 against content
+         144→864 — 432px of hairline dividing nothing, on seven rows of the
+         page that argues this author ships reliable software. The sweep was
+         0px at 768, 240px at 1024, and 432px at 1280/1440/1536.
+
+         This is the fourth instance of one class: a rule drawn on a box
+         wider than the content it divides. DESIGN.md records it for `/blog`
+         (546px), and the previous commit fixed it for this page's three
+         `border-t` sections and for `FaqSection`'s column — each fix
+         verified itself and left the next instance standing. So
+         `design-invariants.spec.ts` now asserts the class rather than
+         waiting for a fifth measurement to find a fifth case. */
+      className="grid gap-x-8 gap-y-2 border-b border-border py-7 scroll-mt-28 md:max-w-[45rem] md:grid-cols-[11rem_minmax(0,32rem)]"
     >
       <span className="label-mono pt-1">{label}</span>
-      <div className="min-w-0 max-w-lg">{children}</div>
+      <div className="min-w-0">{children}</div>
     </div>
   );
 }
@@ -123,7 +138,13 @@ export default function WorkWithMePage() {
 
         {/* The engagement, as a ledger. Price first: it is the question every
             visitor to this page is actually asking. */}
-        <section aria-label="The engagement" className="mt-14 border-t border-border">
+        {/* `md:max-w-[45rem]`, matching the LedgerRows inside it.
+            Capping those rows to 45rem left this wrapper's `border-t` at the
+            full 1152px — so the fix one level down created the same defect one
+            level up, which is the fifth instance of this class tonight and the
+            reason the invariant below now exists rather than a sixth
+            measurement. */}
+        <section aria-label="The engagement" className="mt-14 border-t border-border md:max-w-[45rem]">
           <LedgerRow label="What it costs" id="pricing">
             <p className="text-sm leading-relaxed text-foreground/85">
               Engagements start around{" "}

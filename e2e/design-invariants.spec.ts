@@ -533,6 +533,115 @@ test.describe('design invariants, in the DOM', () => {
     ).toEqual([])
   })
 
+  test('a hairline ends where the thing it divides ends', async ({ page }) => {
+    // Five instances of one defect in one night, each found by a separate
+    // measurement after the previous fix had verified itself:
+    //   /blog rows            1152px rule over  606px of text  (546px past)
+    //   Section dividers      144→1296 over content at x=176   ( 32px)
+    //   FaqSection wrapper    1152px rule over  896px column   (128px per side)
+    //   LedgerRow grid        1152px rule over  720px tracks   (432px)
+    //   and its own wrapper   created by the fix above it      (432px)
+    //
+    // Each fix left the next instance standing, so this asserts the class.
+    // A rule is an element with a top or bottom border and no side borders;
+    // it must not extend more than 200px past its widest block-level child.
+    // 200px because natural ragging in a flex-wrap list reached 131px and is
+    // not a defect, while every real instance above was 432px or more.
+    const TOLERANCE = 200
+
+    // Rules that deliberately run past their content, with the reason.
+    const ALLOWED: Array<{ match: string; reason: string }> = [
+      {
+        // hero-ask.tsx: a full-width rule above a single short link, there to
+        // separate a navigating link from three suggested-question chips that
+        // otherwise looked identical to it. Commented at the source.
+        match: 'DIV.mt-2.border-t',
+        reason: 'separates the ask link from the suggestion chips; deliberate and commented',
+      },
+    ]
+
+    const ROUTES = [
+      '/', '/blog', '/projects', '/garden', '/about',
+      '/contact', '/lab', '/professional', '/work-with-me',
+    ]
+    const offenders: string[] = []
+
+    for (const route of ROUTES) {
+      await page.goto(route, { waitUntil: 'domcontentloaded' })
+      await page.waitForTimeout(400)
+
+      const found = await page.evaluate((tolerance) => {
+        const out: Array<{ sel: string; gap: number; child: string }> = []
+        for (const el of Array.from(document.querySelectorAll<HTMLElement>('main *, footer *'))) {
+          const cs = getComputedStyle(el)
+          if (cs.position === 'fixed') continue
+
+          const hasRule =
+            (parseFloat(cs.borderTopWidth) > 0 && cs.borderTopColor !== 'rgba(0, 0, 0, 0)') ||
+            (parseFloat(cs.borderBottomWidth) > 0 && cs.borderBottomColor !== 'rgba(0, 0, 0, 0)')
+          if (!hasRule) continue
+          // A rule, not a box.
+          if (parseFloat(cs.borderLeftWidth) > 0 || parseFloat(cs.borderRightWidth) > 0) continue
+
+          // A wrap container's last line legitimately ends short — that is
+          // ragging, not a mismatch between a rule and its content. Measured
+          // on `/garden`'s link list: 131px at 1440 and 233px at the e2e
+          // viewport, from the same correct layout. Every real instance of
+          // this defect was a grid or a block.
+          if (cs.display.includes('flex') && cs.flexWrap === 'wrap') continue
+
+          const r = el.getBoundingClientRect()
+          if (r.width < 400) continue
+
+          // Compare against the widest BLOCK child that carries content. Ink
+          // extent is the wrong instrument — a short value in a wide track is
+          // not a defect, and measuring it that way flagged a deliberate rule.
+          let childRight = 0
+          let child = ''
+          for (const c of Array.from(el.children)) {
+            const ccs = getComputedStyle(c)
+            if (ccs.display === 'inline' || ccs.display === 'none') continue
+            if (!c.textContent?.trim() && !c.querySelector('img,svg')) continue
+            const cb = c.getBoundingClientRect()
+            if (cb.width === 0) continue
+            if (cb.right > childRight) {
+              childRight = cb.right
+              child = `${c.tagName}.${String(c.className).split(/\s+/)[0]}`
+            }
+          }
+          if (childRight === 0) continue
+
+          const gap = Math.round(r.right - childRight)
+          if (gap > tolerance) {
+            out.push({
+              sel: `${el.tagName}.${String(el.className).split(/\s+/).slice(0, 2).join('.')}`,
+              gap,
+              child,
+            })
+          }
+        }
+        const seen = new Set<string>()
+        return out.filter((o) => !seen.has(o.sel) && seen.add(o.sel))
+      }, TOLERANCE)
+
+      for (const { sel, gap, child } of found) {
+        if (ALLOWED.some((a) => sel.startsWith(a.match))) continue
+        offenders.push(`${route} — ${sel} runs ${gap}px past ${child}`)
+      }
+    }
+
+    expect(
+      offenders,
+      [
+        'A hairline runs past the content it divides.',
+        'Usually the measure cap sits on a child instead of on the element',
+        'carrying the border — move it up, or cap the bordered box itself.',
+        '',
+        ...offenders,
+      ].join('\n')
+    ).toEqual([])
+  })
+
   test('every scroll opt-out actually contains its scroll', async ({ page }) => {
     // `data-lenis-prevent` is half JS and half CSS. The JS half hands the wheel
     // back to the browser; the CSS half — `.lenis [data-lenis-prevent] {
