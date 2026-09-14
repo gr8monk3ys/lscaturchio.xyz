@@ -1,45 +1,18 @@
-"use client"
-
-import { useMemo } from 'react'
-import useSWR from 'swr'
-import { fetchJson, type ApiEnvelope } from '@/lib/fetcher'
-
-interface ViewRow {
-  slug: string
-  title: string
-  views: number
-}
-
-interface ViewsPayload {
-  available?: boolean
-  message?: string
-  views?: ViewRow[]
-}
+import type { RankedViews } from '@/lib/site-stats'
 
 const numberFormatter = new Intl.NumberFormat('en-US')
-const skeletonRows = ['views-skeleton-1', 'views-skeleton-2', 'views-skeleton-3', 'views-skeleton-4', 'views-skeleton-5']
 
-export function VisitorChart() {
-  const { data, isLoading } = useSWR<ApiEnvelope<ViewsPayload>>(
-    '/api/views?format=detailed',
-    fetchJson,
-    { revalidateOnFocus: false, shouldRetryOnError: false }
-  )
-
-  const payload = data?.data ?? null
-
-  const rows = useMemo(() => {
-    if (!payload?.available || !Array.isArray(payload.views)) {
-      return []
-    }
-
-    return payload.views.slice(0, 7)
-  }, [payload])
-
-  const maxViews = useMemo(
-    () => rows.reduce((max, row) => Math.max(max, row.views), 0),
-    [rows]
-  )
+/**
+ * The ranking, rendered from data the page already has.
+ *
+ * The five pulsing rows this used to ship in its HTML were the page's most
+ * misleading state: a reader could not tell a ranking that was still arriving
+ * from one that would never arrive. The three real states below — no source,
+ * a source with nothing in it, and a ranking — were all already written.
+ */
+export function VisitorChart({ rankedViews }: { rankedViews: RankedViews }) {
+  const { available, note, rows } = rankedViews
+  const maxViews = rows.reduce((max, row) => Math.max(max, row.views), 0)
 
   return (
     <div>
@@ -50,18 +23,9 @@ export function VisitorChart() {
         </p>
       </div>
 
-      {isLoading ? (
-        <div className="space-y-4" aria-hidden="true">
-          {skeletonRows.map((skeletonId) => (
-            <div key={skeletonId} className="space-y-2">
-              <div className="h-4 w-40 animate-pulse rounded bg-muted" />
-              <div className="h-3 w-full animate-pulse rounded-full bg-muted" />
-            </div>
-          ))}
-        </div>
-      ) : !payload?.available ? (
+      {!available ? (
         <div className="text-sm text-muted-foreground">
-          {payload?.message || 'Public view data is unavailable right now.'}
+          {note || 'Public view data is unavailable right now.'}
         </div>
       ) : rows.length === 0 ? (
         <div className="text-sm text-muted-foreground">
@@ -84,7 +48,7 @@ export function VisitorChart() {
               </div>
               <div className="h-3 overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full bg-primary/75 transition-[width] duration-300"
+                  className="h-full rounded-full bg-primary/75"
                   style={{ width: `${maxViews > 0 ? (row.views / maxViews) * 100 : 0}%` }}
                 />
               </div>

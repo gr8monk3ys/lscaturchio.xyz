@@ -113,11 +113,18 @@ export function BookmarksPageClient() {
     };
   }, [currentTime]);
 
+  // Not "Loading bookmarks…", which was never true before hydration and never
+  // became true without JavaScript. Bookmarks live in this browser's
+  // localStorage, so a reader with scripts off does not have a slow list — they
+  // have no list, and there is no wording of "loading" that makes that honest.
   if (!isClient) {
     return (
       <Container>
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="animate-pulse text-muted-foreground">Loading bookmarks...</div>
+        <div className="flex min-h-[50vh] items-center justify-center">
+          <p className="max-w-sm text-center text-sm text-muted-foreground">
+            Bookmarks are saved in this browser rather than to an account, so this
+            page needs JavaScript to read them.
+          </p>
         </div>
       </Container>
     );

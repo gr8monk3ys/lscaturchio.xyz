@@ -1,9 +1,7 @@
-import { Suspense } from "react";
 import { buildPageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Container } from "@/components/Container";
 import { PhotosGrid } from "@/components/photos/PhotosGrid";
-import { Loader2 } from "lucide-react";
 import type { PhotoCategory } from "@/constants/photos";
 import { PageHead } from "@/components/ui/page-head";
 import {
@@ -16,14 +14,6 @@ export const metadata = buildPageMetadata({
   description: "Photographs from wherever I have been carrying the camera. Shot on a Fuji X-T30 II, mostly on film simulation recipes.",
   path: "/photos",
 });
-
-function PhotosGridSkeleton() {
-  return (
-    <div className="flex items-center justify-center py-16">
-      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-    </div>
-  );
-}
 
 const PHOTO_CATEGORIES: readonly PhotoCategory[] = ["all", "travel", "nature"];
 
@@ -51,9 +41,13 @@ export default async function PhotosPage({
           }
         />
 
-        <Suspense fallback={<PhotosGridSkeleton />}>
-          <PhotosGrid initialCategory={initialCategory} />
-        </Suspense>
+        {/* No Suspense boundary, and no spinner. `PhotosGrid` reads a static
+            constant and needs no request; the boundary only gave React
+            somewhere to park the gallery while it emitted a spinning loader
+            that a reader without JavaScript would keep. Whether it resolved
+            into the shell at all was down to streaming timing — measured
+            twice, it went both ways. */}
+        <PhotosGrid initialCategory={initialCategory} />
 
         {/* A measurement found this page rendering zero interactive controls
             inside `main` — the 404 offers three ways out and this real page

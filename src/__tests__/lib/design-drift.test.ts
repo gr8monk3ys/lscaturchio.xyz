@@ -128,6 +128,12 @@ const RULES: Rule[] = [
     ),
   },
   {
+    id: "no-unresolvable-placeholder",
+    because:
+      "A `loading.tsx` creates a Suspense boundary, and React's streaming format writes the fallback into the markup while parking the resolved content in `<div hidden id=\"S:n\">` for a `$RC` script to move into place. With JavaScript off that script never runs, so the fallback is final — every route served about 410 characters of chrome plus 17 to 36 pulsing bars and no content, and `/stats` was measured at sixty-three of them with not one number. Deleting the five `loading.tsx` files took `/` from 442 to 4,718 characters and `/blog` from 415 to 19,252 with scripts still off. So the ban is on the placeholder, not on the animation: a skeleton is the one state a reader cannot interpret and the only one that JavaScript alone could ever resolve. Render the content, or render nothing, or say what is missing.",
+    test: /\banimate-pulse\b/,
+  },
+  {
     id: "no-direct-arrow-up-right",
     because:
       "`↗` promises the click leaves this site. It was on all eight `/garden` cells (every one an internal route), on home's \"Read the case study\", on the `/lab` search results, and on a *same-page anchor* that scrolls a few hundred pixels down the page the reader is already on — while `/contact` used it correctly for Calendly and a mailto. One glyph, both meanings, so no meaning. `LinkArrow` derives it from the href, which is why this rule bans naming the icon directly rather than trying to pair an arrow with an href two lines away.",

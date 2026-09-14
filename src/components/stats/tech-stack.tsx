@@ -1,5 +1,3 @@
-"use client"
-
 import { SITE_TECH } from '@/constants/site-tech'
 
 export function TechStack() {

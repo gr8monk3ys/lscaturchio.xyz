@@ -435,12 +435,12 @@ export function ContactForm() {
             </p>
             {/* Static, and hidden from assistive tech.
                 This was a 10x10px dot on `animate-pulse`, animating forever.
-                DESIGN.md:372 sanctions `animate-pulse` for skeletons — things
-                that are waiting on data — and DESIGN.md:339 states the site
-                animates continuously in exactly one place. An availability dot
-                is not waiting for anything; it is decoration that had appointed
-                itself the second perpetual motion on the site, on the page a
-                visitor is most likely to be reading carefully.
+                DESIGN.md:372 records that the site ships no skeletons at all,
+                and DESIGN.md:339 states it animates continuously in exactly one
+                place. The dot was not waiting for anything; it was decoration
+                that had appointed itself the second perpetual motion on the
+                site, on the page a visitor is most likely to be reading
+                carefully.
                 The sentence beside it carries the entire meaning, so the dot is
                 `aria-hidden` rather than being announced as an unnamed bullet. */}
             <div className="flex items-center gap-2">

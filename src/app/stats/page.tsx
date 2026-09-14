@@ -1,13 +1,13 @@
 import { Container } from '@/components/Container'
 import { Metadata } from 'next'
-import dynamic from 'next/dynamic'
 import { PageHead } from "@/components/ui/page-head";
 import { buildPageMetadata } from "@/lib/seo";
-
-const StatsOverview = dynamic(() => import('@/components/stats/stats-overview').then(m => m.StatsOverview))
-const VisitorChart = dynamic(() => import('@/components/stats/visitor-chart').then(m => m.VisitorChart))
-const ContributionGraph = dynamic(() => import('@/components/github/contribution-graph').then(m => m.ContributionGraph))
-const TechStack = dynamic(() => import('@/components/stats/tech-stack').then(m => m.TechStack))
+import { StatsOverview } from '@/components/stats/stats-overview'
+import { VisitorChart } from '@/components/stats/visitor-chart'
+import { TechStack } from '@/components/stats/tech-stack'
+import { ContributionGraph } from '@/components/github/contribution-graph'
+import { getSiteStats } from '@/lib/site-stats'
+import { getGithubContributions } from '@/lib/github-contributions'
 
 export const metadata: Metadata = buildPageMetadata({
   title: 'Stats',
@@ -16,7 +16,28 @@ export const metadata: Metadata = buildPageMetadata({
   path: '/stats',
 });
 
-export default function StatsPage() {
+/**
+ * Half an hour, and the numbers are in the HTML.
+ *
+ * This page used to render four client components that each fetched their own
+ * endpoint on mount, so its server response carried sixty-three `animate-pulse`
+ * nodes and not one number. With JS off, or a request that never came back, a
+ * reader got pulsing grey bars with no way to tell loading from broken — the
+ * only place on a site whose stated position is that every number is sourced
+ * where a reader could not interpret what they were looking at.
+ *
+ * Awaiting the data here makes the honest branch the one that ships. The cost
+ * is staleness bounded by `revalidate`, which is why the overview prints the
+ * time it was read: a dated number can be judged, an undated one cannot.
+ */
+export const revalidate = 1800
+
+export default async function StatsPage() {
+  const [stats, contributions] = await Promise.all([
+    getSiteStats(),
+    getGithubContributions(),
+  ])
+
   return (
     <div className="pt-4 pb-20">
       <Container>
@@ -34,15 +55,15 @@ export default function StatsPage() {
           />
 
           <div className="space-y-8">
-            <StatsOverview />
+            <StatsOverview generatedAt={stats.generatedAt} overview={stats.overview} />
             {/* One ranking, not two. `VisitorChart` and `PopularPosts` both
-                read /api/views?format=detailed and both ranked it — the same
-                numbers, twice, under two headings. */}
+                read the views table and both ranked it — the same numbers,
+                twice, under two headings. */}
             <div className="grid gap-8 xl:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
-              <VisitorChart />
+              <VisitorChart rankedViews={stats.rankedViews} />
               <TechStack />
             </div>
-            <ContributionGraph />
+            <ContributionGraph calendar={contributions} />
           </div>
         </div>
       </Container>

@@ -50,18 +50,14 @@ export function RelatedPosts({ currentTitle, currentUrl }: RelatedPostsProps) {
     return Array.isArray(related) ? related : []
   }, [data])
 
+  // Nothing while it loads, for the same reason the error branch below keeps
+  // the section: a reader must never be shown a state they cannot read. Three
+  // pulsing cards under a real heading were exactly that with JS off —
+  // permanent, and indistinguishable from a section that was still coming.
+  // The reserved space is not worth it; this sits at the foot of the essay,
+  // where arriving late costs a reader nothing.
   if (isLoading) {
-    return (
-      <GallerySection>
-        {[1, 2, 3].map((slot) => (
-          <div key={`related-skeleton-${slot}`} className="animate-pulse">
-            <div className="aspect-[3/2] border border-border bg-muted" />
-            <div className="mt-4 h-3 w-1/3 bg-muted" />
-            <div className="mt-2 h-5 w-3/4 bg-muted" />
-          </div>
-        ))}
-      </GallerySection>
-    )
+    return null
   }
 
   // A 429 from the rate limiter used to make this section vanish after

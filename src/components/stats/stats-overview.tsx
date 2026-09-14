@@ -1,109 +1,21 @@
-"use client"
-
-import { useMemo } from 'react'
-import useSWR from 'swr'
-import { fetchJson } from '@/lib/fetcher'
-import type { ApiEnvelope } from '@/lib/fetcher'
-
-interface BlogStatsPayload {
-  totalPosts?: number
-  avgReadingTime?: number
-}
-
-interface ViewsPayload {
-  views?: Array<{ views: number }>
-  available?: boolean
-  message?: string
-}
-
-interface NewsletterStatsPayload {
-  activeSubscribers?: number | null
-  available?: boolean
-  message?: string
-}
-
-interface OverviewMetric {
-  available: boolean
-  note?: string
-  value: number | null
-}
-
-interface OverviewData {
-  avgReadTime: OverviewMetric
-  newsletterSubscribers: OverviewMetric
-  totalPosts: OverviewMetric
-  totalViews: OverviewMetric
-}
+import type { StatMetric, StatsOverview as StatsOverviewData } from '@/lib/site-stats'
 
 const numberFormatter = new Intl.NumberFormat('en-US')
 
-const cardStyles = {
-  avgReadTime: {
-    label: 'Avg. Read Time',
-    suffix: ' min',
-  },
-  newsletterSubscribers: {
-    label: 'Newsletter Subscribers',
-  },
-  totalPosts: {
-    label: 'Blog Posts',
-  },
-  totalViews: {
-    label: 'Total Views',
-  },
-} as const
+const snapshotFormatter = new Intl.DateTimeFormat('en-US', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+  timeZone: 'UTC',
+})
 
-async function loadOverview(): Promise<OverviewData> {
-  const [blogStatsResult, viewsResult, newsletterResult] = await Promise.allSettled([
-    fetchJson<ApiEnvelope<BlogStatsPayload>>('/api/blog-stats'),
-    fetchJson<ApiEnvelope<ViewsPayload>>('/api/views?format=detailed'),
-    fetchJson<ApiEnvelope<NewsletterStatsPayload>>('/api/newsletter/stats'),
-  ])
+const cards = [
+  { key: 'totalViews', label: 'Total Views' },
+  { key: 'totalPosts', label: 'Blog Posts' },
+  { key: 'newsletterSubscribers', label: 'Newsletter Subscribers' },
+  { key: 'avgReadTime', label: 'Avg. Read Time', suffix: ' min' },
+] as const
 
-  const blogStats = blogStatsResult.status === 'fulfilled' ? blogStatsResult.value.data : null
-  const views = viewsResult.status === 'fulfilled' ? viewsResult.value.data : null
-  const newsletter = newsletterResult.status === 'fulfilled' ? newsletterResult.value.data : null
-
-  const totalViews =
-    views?.available && Array.isArray(views.views)
-      ? views.views.reduce((sum, entry) => sum + (entry.views || 0), 0)
-      : null
-
-  return {
-    totalViews: {
-      value: totalViews,
-      available: Boolean(views?.available && totalViews !== null),
-      note:
-        views?.message ||
-        (viewsResult.status === 'rejected' ? 'Public view data is unavailable right now.' : undefined),
-    },
-    totalPosts: {
-      value: typeof blogStats?.totalPosts === 'number' ? blogStats.totalPosts : null,
-      available: typeof blogStats?.totalPosts === 'number',
-      note:
-        blogStatsResult.status === 'rejected' ? 'Blog metadata is unavailable right now.' : undefined,
-    },
-    newsletterSubscribers: {
-      value: typeof newsletter?.activeSubscribers === 'number' ? newsletter.activeSubscribers : null,
-      available: Boolean(newsletter?.available && typeof newsletter.activeSubscribers === 'number'),
-      note:
-        newsletter?.message ||
-        (newsletterResult.status === 'rejected'
-          ? 'Newsletter subscriber counts are unavailable right now.'
-          : undefined),
-    },
-    avgReadTime: {
-      value: typeof blogStats?.avgReadingTime === 'number' ? blogStats.avgReadingTime : null,
-      available: typeof blogStats?.avgReadingTime === 'number',
-      note:
-        blogStatsResult.status === 'rejected'
-          ? 'Reading-time estimates are unavailable right now.'
-          : undefined,
-    },
-  }
-}
-
-function formatMetricValue(metric: OverviewMetric, suffix?: string) {
+function formatMetricValue(metric: StatMetric, suffix?: string) {
   if (!metric.available || metric.value === null) {
     return 'Unavailable'
   }
@@ -111,58 +23,57 @@ function formatMetricValue(metric: OverviewMetric, suffix?: string) {
   return `${numberFormatter.format(metric.value)}${suffix ?? ''}`
 }
 
-export function StatsOverview() {
-  const { data, isLoading } = useSWR('stats-overview', loadOverview, {
-    revalidateOnFocus: false,
-    shouldRetryOnError: false,
-  })
-
-  const cards = useMemo(() => {
-    if (!data) return []
-
-    return (Object.entries(cardStyles) as Array<[keyof typeof cardStyles, (typeof cardStyles)[keyof typeof cardStyles]]>).map(
-      ([key, style]) => ({
-        ...style,
-        metric: data[key],
-      })
-    )
-  }, [data])
-
-  const hasUnavailableMetrics = cards.some((card) => !card.metric.available)
+/**
+ * The overview, rendered from data the page already has.
+ *
+ * This was a client component that fetched three endpoints on mount and
+ * rendered four pulsing bars until they answered. Every other branch it could
+ * render was honest; the loading branch was the only one a reader with JS off
+ * ever saw, and it could not be told apart from a broken page. The states are
+ * unchanged — they are simply decided on the server now.
+ */
+export function StatsOverview({
+  generatedAt,
+  overview,
+}: {
+  generatedAt: string
+  overview: StatsOverviewData
+}) {
+  const unavailable = cards.filter(({ key }) => !overview[key].available)
 
   return (
     <div className="space-y-4">
-        <div className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-4 sm:divide-x">
-          {(isLoading ? Array.from({ length: 4 }, (_, index) => index) : cards).map((card) => {
-            if (typeof card === 'number') {
-              return (
-                <div key={`stats-skeleton-${card}`} className="px-5 py-6" aria-hidden="true">
-                  <div className="h-8 w-24 animate-pulse rounded bg-muted" />
-                  <div className="mt-2 h-3 w-28 animate-pulse rounded bg-muted" />
-                </div>
-              )
-            }
+      <div className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-4 sm:divide-x">
+        {cards.map((card) => {
+          const metric = overview[card.key]
 
-            return (
-              <div key={card.label} className="px-5 py-6">
-                <p className="text-section-title tabular-nums">
-                  {formatMetricValue(card.metric, 'suffix' in card ? card.suffix : undefined)}
-                </p>
-                <p className="label-mono mt-2">{card.label}</p>
-                <p className="label-mono mt-1 text-muted-foreground">
-                  {card.metric.available ? 'Live' : 'Unavailable'}
-                </p>
-              </div>
-            )
-          })}
-        </div>
-
-        {hasUnavailableMetrics && (
-          <p className="text-sm text-muted-foreground">
-            Only public, aggregate metrics are shown here. When a source is private or unavailable, the UI
-            labels it instead of estimating.
-          </p>
-        )}
+          return (
+            <div key={card.label} className="px-5 py-6">
+              <p className="text-section-title tabular-nums">
+                {formatMetricValue(metric, 'suffix' in card ? card.suffix : undefined)}
+              </p>
+              <p className="label-mono mt-2">{card.label}</p>
+              <p className="label-mono mt-1 text-muted-foreground">
+                {metric.available ? 'Sourced' : 'Unavailable'}
+              </p>
+            </div>
+          )
+        })}
       </div>
+
+      {/* The note renders unconditionally, because the sentence a reader most
+          needs is the one that dates the numbers. "Sourced" above claims only
+          that the source answered; this line says when it was asked. */}
+      <p className="text-sm text-muted-foreground">
+        Read{' '}
+        <time dateTime={generatedAt}>
+          {snapshotFormatter.format(new Date(generatedAt))} UTC
+        </time>
+        , and refreshed at most every 30 minutes.
+        {unavailable.length > 0
+          ? ' Only public, aggregate metrics appear here; when a source is private or unavailable it is labelled instead of estimated.'
+          : ''}
+      </p>
+    </div>
   )
 }

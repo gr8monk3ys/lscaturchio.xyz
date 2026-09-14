@@ -2,15 +2,7 @@
 
 import { useState } from 'react'
 import { IconBrandGithub } from '@tabler/icons-react'
-import useSWR from 'swr'
-import { fetchJson, type ApiEnvelope } from '@/lib/fetcher'
-
-interface ContributionDay {
-  contributionCount: number
-  date: string
-  /** GitHub's own green. Kept in the type because the API sends it; not used. */
-  color: string
-}
+import type { ContributionCalendar, ContributionDay } from '@/lib/github-contributions'
 
 /**
  * The heatmap in one ink.
@@ -37,65 +29,37 @@ function inkFor(count: number): string {
   return RAMP[4]
 }
 
-interface ContributionWeek {
-  contributionDays: ContributionDay[]
-}
-
-interface ContributionsResponse {
-  totalContributions: number
-  weeks: ContributionWeek[]
-  degraded: boolean
-  message?: string
-}
-
-export function ContributionGraph() {
-  const { data: envelope, error, isLoading } = useSWR<ApiEnvelope<ContributionsResponse>>(
-    '/api/github/contributions',
-    fetchJson,
-    { revalidateOnFocus: false }
+function GraphFrame({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="p-6 rounded-lg border border-border">
+      <div className="flex items-center gap-2 mb-4">
+        <IconBrandGithub className="h-5 w-5 text-primary" />
+        <h2 className="text-card-title">GitHub contributions</h2>
+      </div>
+      {children}
+    </div>
   )
-  const data = envelope?.data
+}
+
+/**
+ * The calendar arrives as a prop, so the grid is in the HTML.
+ *
+ * The `isLoading` branch this used to open with shipped a 128px pulsing block
+ * in the server response and nothing else — the one state a reader could not
+ * interpret. The component stays a Client Component only for the hover
+ * readout; every cell it paints is decided on the server.
+ */
+export function ContributionGraph({ calendar }: { calendar: ContributionCalendar }) {
   const [hoveredDay, setHoveredDay] = useState<ContributionDay | null>(null)
-
-  if (isLoading) {
-    return (
-      <div className="p-6 rounded-lg border border-border">
-        <div className="flex items-center gap-2 mb-6">
-          <IconBrandGithub className="h-5 w-5 text-primary" />
-          <h2 className="text-card-title">GitHub contributions</h2>
-        </div>
-        <div className="h-32 bg-muted animate-pulse rounded" />
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="p-6 rounded-lg border border-border">
-        <div className="flex items-center gap-2 mb-4">
-          <IconBrandGithub className="h-5 w-5 text-primary" />
-          <h2 className="text-card-title">GitHub contributions</h2>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          GitHub contribution data is temporarily unavailable.
-        </p>
-      </div>
-    )
-  }
-
-  if (!data) return null
+  const data = calendar
 
   if (data.degraded || data.weeks.length === 0) {
     return (
-      <div className="p-6 rounded-lg border border-border">
-        <div className="flex items-center gap-2 mb-4">
-          <IconBrandGithub className="h-5 w-5 text-primary" />
-          <h2 className="text-card-title">GitHub contributions</h2>
-        </div>
+      <GraphFrame>
         <p className="text-sm text-muted-foreground">
           {data.message || 'GitHub contribution data is temporarily unavailable.'}
         </p>
-      </div>
+      </GraphFrame>
     )
   }
 

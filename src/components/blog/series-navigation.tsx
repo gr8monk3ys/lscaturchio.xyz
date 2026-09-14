@@ -32,13 +32,14 @@ export function SeriesNavigation({
   });
   const seriesPosts = Array.isArray(data?.data?.posts) ? data.data.posts : [];
 
-  if (isLoading) {
-    return (
-      <div className="mt-8 h-32 animate-pulse border-t border-border bg-muted/40" aria-hidden />
-    );
-  }
-
-  if (seriesPosts.length === 0) {
+  // Nothing, not a pulsing block, while the series loads.
+  //
+  // The skeleton could only ever be replaced by JavaScript, so a reader
+  // without it got a 128px pulsing rectangle under every essay in a series,
+  // for good. `null` is already this component's honest empty state — an
+  // essay with no series renders nothing — and an absent ledger reads as
+  // "no series here", which is at worst premature rather than unreadable.
+  if (isLoading || seriesPosts.length === 0) {
     return null;
   }
 
