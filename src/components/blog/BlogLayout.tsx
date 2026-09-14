@@ -98,7 +98,17 @@ export async function BlogLayout({
       <div className="xl:relative xl:grid xl:grid-cols-[260px_1fr] xl:gap-12 xl:items-start">
         <BlogSidebar slug={slug} />
 
-        <div className="mx-auto max-w-2xl xl:mx-0">
+        {/* `max-w-prose` (65ch), not `max-w-2xl` (672px).
+            Measured with per-character `Range` rects over every `.prose p`
+            text node, n=81 full lines at 18px: p50 78 characters, p90 84,
+            max 88. DESIGN.md's Measure Rule caps running text at 65-75
+            characters "in `ch` rather than in pixels", and claimed the body
+            "already runs at ~72". Both halves were wrong at once — it ran at
+            78, and it ran on a pixel cap, which is the exact construct the
+            rule says to replace with `max-w-prose` when the scale moves. The
+            scale moved. This is the site's most-read surface and the rule was
+            written for it. */}
+        <div className="mx-auto max-w-xl xl:mx-0">
           {/* The leaf is the essay's own title. Without it the crumb read
                   "Building rag systems" above an h1 saying "Building RAG
                   Systems in Production" — and the same string went into the

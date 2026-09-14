@@ -285,7 +285,7 @@ export function AskDrawer() {
             placeholder="Ask about the writing…"
             /* No focus classes: the global `:focus-visible` in globals.css
                draws the outline. The wrapper's `focus-within:border-primary`
-               stays as a second, ambient cue — DESIGN.md:313 grants the
+               stays as a second, ambient cue — DESIGN.md:315 grants the
                no-ring underline treatment to the masthead ask field by name,
                and this is a different component, so it takes the house
                indicator like everything else. */

@@ -129,7 +129,21 @@ export default async function Blog({
               Browse by topic
             </Link>
 
-            <span aria-hidden className="label-mono text-foreground/25">·</span>
+            {/* `hidden md:inline`: the separator only exists where the row
+                fits on one line. It was a bare flex child between the topic
+                link and a 358px `<nav>` in a `flex-wrap` row, so below ~430px
+                the nav wrapped and the dot stayed behind — measured at 390px,
+                a middot at x=234 with "Browse by topic" ending at x=210, a dot
+                alone in 218px of paper.
+
+                Pairing it with the nav in one inline-flex was the doctrinal
+                fix and it does not work here: the pair is ~382px, so at 360px
+                it either wraps internally (leaving the same orphan) or
+                overflows the viewport, and zero horizontal overflow is a
+                measured property of this site worth more than a dot. Two
+                stacked rows separated by `gap-y-3` need no separator between
+                them. */}
+            <span aria-hidden className="label-mono hidden text-foreground/25 md:inline">·</span>
 
             {/* The site's one stage filter.
                 There were two, 97px apart, disagreeing about what selected
