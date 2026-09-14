@@ -52,4 +52,49 @@ describe("sentry client config", () => {
       "instrumentation-client.ts sets a non-zero replay sample rate. Session recording is not disclosed in the privacy policy."
     ).toBe(false);
   });
+
+  /**
+   * The bundle-size flags live under `webpack.treeshake` because that is the
+   * only key `@sentry/nextjs` 10.x reads for them on the `next build --webpack`
+   * path. `withSentryConfig` does not warn about keys it ignores, so a
+   * well-meaning move to a top-level `treeshake`, or to the deprecated
+   * `disableLogger`, would switch the stripping off while still reading as
+   * configured. Sentry's share of the home route is 78 KB raw / 28 KB gzip
+   * with these on; the tracing half of the SDK alone is more than that.
+   */
+  it("keeps the SDK tree-shaking flags on the key this Sentry version reads", () => {
+    const config = fs.readFileSync(
+      path.join(process.cwd(), "next.config.mjs"),
+      "utf-8"
+    );
+    const treeshake = config.match(/webpack:\s*\{\s*treeshake:\s*\{([\s\S]*?)\}/);
+
+    expect(treeshake, "next.config.mjs has no `webpack.treeshake` block").not.toBeNull();
+    for (const flag of [
+      "removeDebugLogging",
+      "removeTracing",
+      "excludeReplayIframe",
+      "excludeReplayShadowDOM",
+      "excludeReplayCompressionWorker",
+    ]) {
+      expect(
+        new RegExp(`${flag}\\s*:\\s*true`).test(treeshake![1]),
+        `webpack.treeshake.${flag} is not \`true\` in next.config.mjs`
+      ).toBe(true);
+    }
+  });
+
+  it("does not configure a tracing sample rate the shipped SDK cannot honour", () => {
+    const live = fs.readFileSync(
+      path.join(process.cwd(), "instrumentation-client.ts"),
+      "utf-8"
+    );
+
+    // `removeTracing` strips the tracing code from the bundle. A sample rate
+    // here would read as performance monitoring and do nothing.
+    expect(
+      /^\s*tracesSampleRate\s*:/m.test(live),
+      "instrumentation-client.ts sets tracesSampleRate, but next.config.mjs strips tracing from the bundle. Set one or the other, not both."
+    ).toBe(false);
+  });
 });
