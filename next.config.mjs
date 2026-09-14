@@ -258,6 +258,26 @@ const withMDX = createMDX({
  * Why it matters here: measured on production, one chunk is 674 KB parsed /
  * 208 KB over the wire — 63% of all the JavaScript on the page — with 219
  * matches for "sentry" inside it, on a site that is essentially text.
+ *
+ * Re-measured 2026-09-13 with source maps, after the flags below: Sentry is
+ * 89 KB raw of the home route's 536 KB vendor chunk, and building with the
+ * client init stubbed out moves the route's initial JavaScript by 78 KB raw /
+ * 28 KB gzip. Every module left is the error path (client, scope, event
+ * filters, breadcrumbs, global handlers, fetch/XHR/DOM instrumentation,
+ * Next.js stack-frame normalisation). That is the floor for an SDK that is
+ * initialised eagerly; the only lever left is deferring the SDK's load, and
+ * that changes what gets captured in the first moments of a page, so it is
+ * not taken.
+ *
+ * `bundleSizeOptimizations` (top-level) and `disableLogger` are NOT used,
+ * deliberately: they are second spellings of the same globals.
+ * `disableLogger` is deprecated in 10.70 and is rewritten into
+ * `webpack.treeshake.removeDebugLogging` with a build warning
+ * (withSentryConfig/deprecatedWebpackOptions.js:51); `bundleSizeOptimizations`
+ * is forwarded to @sentry/webpack-plugin (getBuildPluginOptions.js:227), which
+ * defines the same `__SENTRY_DEBUG__` / `__SENTRY_TRACING__` /
+ * `__RRWEB_EXCLUDE_*` constants that `setupTreeshakingFromConfig`
+ * (webpack.js:553) sets from the block below. One path, set once.
  */
 const sentryWebpackPluginOptions = {
   // Suppress source map upload logs in CI
@@ -285,6 +305,17 @@ const sentryWebpackPluginOptions = {
       // the same change. Leaving either would configure a capability the
       // shipped code no longer contains.
       removeTracing: true,
+      // Session Replay is deliberately off (instrumentation-client.ts records
+      // why), and the client bundle contains no replay code — so these three
+      // save 0 bytes today. They are set so that replay cannot come back
+      // carrying its iframe, shadow-DOM and compression-worker recorders by
+      // default: re-enabling replay is a privacy-policy change, and the
+      // bundle cost should be part of that decision, not a side effect of
+      // it. If replay ever returns with a self-hosted worker, drop the worker
+      // flag; without one, replay still works, uncompressed.
+      excludeReplayIframe: true,
+      excludeReplayShadowDOM: true,
+      excludeReplayCompressionWorker: true,
     },
   },
 };
