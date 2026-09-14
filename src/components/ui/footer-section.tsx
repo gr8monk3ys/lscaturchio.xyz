@@ -27,7 +27,13 @@ function Footer() {
         <div className="grid gap-12 lg:grid-cols-[1.1fr_2fr]">
           {/* Colophon */}
           <div className="max-w-sm space-y-5">
-            <h2 className="text-section-title">Lorenzo Scaturchio</h2>
+            {/* `text-card-title`, not `text-section-title`. The site name in
+                the footer rendered at 34.56px, larger than the content `h2`s
+                inside an essay at 30px — so the loudest heading on a page
+                about an idea was the author's name at the bottom of it. Same
+                rank, quieter type: chrome should not outweigh the thing it
+                frames. */}
+            <h2 className="text-card-title">Lorenzo Scaturchio</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               AI systems by day, essays about the world they land in the rest of
               the time. Built with Next.js and Neon — and rebuilt often.

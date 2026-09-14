@@ -28,9 +28,25 @@ interface LedgerSectionProps {
 export function LedgerSection({ head, children }: LedgerSectionProps) {
   return (
     <Section padding="large" size="wide" divider topDivider>
+      {/* `min-w-0` on both tracks, which is the whole fix for a P0.
+          A grid item defaults to `min-width: auto`, so its floor is its own
+          min-content width — and the rail holds project titles in a
+          `truncate` span, which is `white-space: nowrap` and measured 381px.
+          Below `lg` this is one column, so that 381px floor resolved the
+          single track to 450.312px inside a 358px container: 48 in-flow
+          elements rendered out to x=466 on a 390px phone, project names
+          amputated mid-word with the ellipsis itself painted off-screen.
+
+          It survived eleven design measurements because `main` carries
+          `overflow-x: clip`, so `document.scrollWidth === innerWidth` is
+          exactly true at every width — the precise check each of those passes
+          used to certify "zero horizontal overflow". Clipped, unreachable by
+          scrolling, and invisible to the instrument. `truncate` needs
+          `min-w-0` on every ancestor between it and the grid, or it sets the
+          floor instead of obeying it. */}
       <div className="grid items-start gap-12 lg:grid-cols-[minmax(280px,360px)_1fr]">
-        <div className="lg:sticky lg:top-28">{head}</div>
-        {children}
+        <div className="min-w-0 lg:sticky lg:top-28">{head}</div>
+        <div className="min-w-0">{children}</div>
       </div>
     </Section>
   );
