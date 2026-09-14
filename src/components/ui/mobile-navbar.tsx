@@ -168,8 +168,28 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
         </button>
       </div>
 
-      {isMenuOpen && (
-        /* A dialog that CONTAINS a navigation landmark, which is the ARIA this
+      {/* Rendered always and toggled with `hidden`, exactly like the four
+          category panels inside it.
+
+          This was `{isMenuOpen && …}`, so the id `mobile-navigation-menu`
+          did not exist while collapsed and the toggle's `aria-controls`
+          resolved to nothing. Measured across 12 combinations — both themes ×
+          390x844 and 360x780 × three routes — the button was visible, 40x40,
+          correctly named, `aria-expanded="false"`, and
+          `document.getElementById` returned `null` every time.
+
+          It is the fifth member of the set the previous commit fixed. That
+          commit rendered the four child panels always *because* "ARIA
+          requires an IDREF to resolve", and then left the one control that
+          opens the container — the only one of the five visible before any
+          interaction, and the first a screen-reader user reaches. The
+          convention was applied one level in and not at the top.
+
+          `hidden` keeps the collapsed container out of layout and out of the
+          tab order, so the focus trap and the focus-on-open effect are
+          unaffected; both are already gated on `isMenuOpen`. */}
+      <div hidden={!isMenuOpen}>
+        {/* A dialog that CONTAINS a navigation landmark, which is the ARIA this
            wants and the reason a first attempt was reverted. Putting
            `role="dialog"` on the `<nav>` itself REPLACES its implicit
            `navigation` role, and `a11y-keyboard-affordances.test.tsx` queries
@@ -181,7 +201,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
 
            The wrapper carries the box and the focus trap; the `<nav>` inside
            carries the landmark. `menuRef` moves up here so the trap's
-           `querySelectorAll` still sees every control in the overlay. */
+           `querySelectorAll` still sees every control in the overlay. */}
         <div
           role="dialog"
           aria-modal="true"
@@ -380,7 +400,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
           </div>
         </nav>
         </div>
-      )}
+      </div>
     </>
   );
 }
