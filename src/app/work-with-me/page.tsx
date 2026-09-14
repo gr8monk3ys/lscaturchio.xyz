@@ -123,7 +123,7 @@ export default function WorkWithMePage() {
 
         {/* The engagement, as a ledger. Price first: it is the question every
             visitor to this page is actually asking. */}
-        <section aria-label="The engagement" className="mt-14 border-t border-border px-4 sm:px-6 lg:px-8">
+        <section aria-label="The engagement" className="mt-14 border-t border-border">
           <LedgerRow label="What it costs" id="pricing">
             <p className="text-sm leading-relaxed text-foreground/85">
               Engagements start around{" "}
@@ -170,7 +170,7 @@ export default function WorkWithMePage() {
 
         {/* Services: every service and every facet on the page at once, as
             stacked entries. Nothing to click to find out what is on offer. */}
-        <section id="services" className="scroll-mt-28 border-t border-border py-16 px-4 sm:px-6 lg:px-8">
+        <section id="services" className="scroll-mt-28 border-t border-border py-16">
           <span className="label-mono block">Services</span>
           <h2 className="text-section-title mt-3">What the work looks like</h2>
           <p className="mt-3 max-w-2xl text-muted-foreground">
@@ -212,7 +212,12 @@ export default function WorkWithMePage() {
           </div>
         </section>
 
-        <section id="faq" className="scroll-mt-28 border-t border-border">
+        {/* No `border-t` here. `FaqSection` narrows to `max-w-4xl`, so its content
+            sits at x=272 inside this 1152px box — a rule on this wrapper divided
+            nothing, it just drew a line 128px wider than the thing beneath it on
+            each side. The rule moved into the component, onto the column it
+            actually divides. */}
+        <section id="faq" className="scroll-mt-28">
           <FaqSection
             title="Questions people ask first"
             description="Delivery, scope, and how we would talk to each other."
@@ -226,7 +231,7 @@ export default function WorkWithMePage() {
           />
         </section>
 
-        <section id="contact" className="scroll-mt-28 border-t border-border py-12 px-4 sm:px-6 lg:px-8">
+        <section id="contact" className="scroll-mt-28 border-t border-border py-12">
           <span className="label-mono block">Prefer async?</span>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             Send the goal, the user, the data sources, and the constraint that matters most.

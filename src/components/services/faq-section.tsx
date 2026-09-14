@@ -35,7 +35,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
     <div className="mx-auto max-w-6xl py-16 sm:py-24">
       <FAQStructuredData questions={items} />
       <div className="px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl divide-y divide-border">
+        <div className="mx-auto max-w-4xl divide-y divide-border border-t border-border">
           <h2 className="text-section-title">{title}</h2>
           <p className="mt-4 text-base leading-7 text-muted-foreground">
             {description}

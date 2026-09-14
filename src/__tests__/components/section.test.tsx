@@ -28,12 +28,21 @@ describe('Section', () => {
     const { container } = render(
       <Section divider topDivider><span>x</span></Section>
     );
-    // Two full-width hairlines (top + bottom). Asserted on `bg-border`, the
-    // token, rather than the old `bg-border/70` partial-width ornament.
+    // Two hairlines (top + bottom), each now wrapped in a padded container so
+    // the rule ends where the section's content ends rather than at the
+    // viewport edge. A review measured the old `inset-x-0` version drawing
+    // 144→1296 above content starting at x=176 — a 32px overhang on every
+    // section rule, alternating down the page with component rules that were
+    // drawn inside the padding. So the hairline is the inner element and the
+    // positioned wrapper carries the same `px-*` as the content.
     const rules = container.querySelectorAll('.bg-border');
     expect(rules.length).toBe(2);
     for (const rule of rules) {
-      expect(rule).toHaveClass('inset-x-0');
+      const wrapper = rule.parentElement;
+      expect(wrapper).toHaveClass('inset-x-0');
+      // The padding that makes the rule agree with the content beside it.
+      expect(wrapper).toHaveClass('lg:px-8');
+      expect(rule).toHaveClass('mx-auto');
     }
   });
 
