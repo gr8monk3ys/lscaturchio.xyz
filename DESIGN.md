@@ -263,7 +263,9 @@ correct, and this paragraph is the answer.
 
 **The Two Sheets Rule.** The only elevated objects are the fixed navigation and the primary CTA's 1px ledge. Nothing else may add a shadow without changing this file first.
 
-**The Measure Rule.** Running text caps at 65–75 characters per line, in `ch` rather than in pixels. The essay body already runs at ~72. The rule is written down because a review measured the `/blog` section descriptions and the `/lab` lede at ~96 characters — `max-w-2xl` is 672px, which is a comfortable measure at 19px and a wide one at 14px. A px cap encodes an assumption about the type scale; `max-w-prose` (65ch) holds the measure when the scale moves. Wall labels, metadata rows and single-line captions are not running text and are exempt.
+**The Measure Rule.** Running text caps at 65–75 characters per line, **measured, not assumed**. The rule is written down because a review measured the `/blog` section descriptions and the `/lab` lede at ~96 characters. Wall labels, metadata rows and single-line captions are not running text and are exempt.
+
+Two things this rule previously got wrong about itself, both found by measuring per-character `Range` rects rather than trusting the unit. It claimed the essay body "already runs at ~72": it ran at **78** (p50 over 81 full lines at 18px, p90 84, max 88) on `max-w-2xl`. And it prescribed `ch` over pixels, on the reasoning that `max-w-prose` (65ch) "holds the measure when the scale moves" — but `ch` is the advance width of the `0` glyph, which in a proportional face is wider than the average character. Switching the essay to `max-w-prose` made it **worse**: 693px and 81 characters. The essay column is `max-w-xl` (576px), which measures **p50 66, p90 71, max 76** — inside the range, by measurement. Check a measure with the DOM; do not infer it from the unit.
 
 **The Scrim Rule.** A modal separates with a scrim, not a shadow. `.overlay-scrim` — `hsl(var(--scrim) / var(--scrim-alpha))`, covering the viewport, with an optional small blur — is the third sanctioned separation mechanism alongside the two sheets, and the only one available to an overlay, since the Two Sheets Rule has already spent both of its shadows.
 
@@ -337,7 +339,11 @@ What moves is the interface responding to the reader, not the page introducing i
 - **The ask drawer** — the one composed movement on the site — pushes the shell and the header at 300ms on `cubic-bezier(0.22, 1, 0.36, 1)`. That curve is the site's standard ease; anything larger than a hover uses it.
 - **Scroll-linked progress** (the work timeline's rail) is driven by scroll position rather than by a timer, so it has no duration to specify.
 
-Every motion collapses to none under `prefers-reduced-motion`.
+Every transition collapses under `prefers-reduced-motion`, with one stated exception.
+
+This was an unqualified claim and it was false. There was no global rule — only a block slowing `animate-pulse`/`animate-spin` and two component-specific `transition: none` declarations — so every `transition` and `transition-all` in the codebase kept running. Measured: the skip link, the first focusable control on every route, travelled 114px over ~180ms with a trajectory byte-identical under `reduce` and `no-preference`, and nineteen elements on `/` retained transform-capable transitions. `globals.css` now collapses `transition-duration` and `animation-duration` to `0.01ms` for `*, *::before, *::after` under `reduce` (0.01ms rather than 0s, because a zero duration can skip `transitionend` and hang code waiting on it). Verified after: zero elements retain a transition under `reduce`.
+
+The exception is `animate-pulse` and `animate-spin`, which stay at 3s. They mean "something is loading", and freezing them leaves a shape that reads as broken rather than as waiting. It is stated here rather than left as a silent contradiction of the sentence above it.
 
 **Scroll carries momentum.** The document scrolls through Lenis at 1.05s with an
 exponential ease-out, which is the one place the site animates continuously

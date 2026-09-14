@@ -420,8 +420,8 @@ export function ContactForm() {
             </p>
             {/* Static, and hidden from assistive tech.
                 This was a 10x10px dot on `animate-pulse`, animating forever.
-                DESIGN.md:366 sanctions `animate-pulse` for skeletons — things
-                that are waiting on data — and DESIGN.md:337 states the site
+                DESIGN.md:372 sanctions `animate-pulse` for skeletons — things
+                that are waiting on data — and DESIGN.md:339 states the site
                 animates continuously in exactly one place. An availability dot
                 is not waiting for anything; it is decoration that had appointed
                 itself the second perpetual motion on the site, on the page a

@@ -596,7 +596,7 @@
 
   /* Focus, as a default rather than an opt-in.
    *
-   * DESIGN.md:295 specifies one focus treatment — "a 2px Forest Ink outline
+   * DESIGN.md:297 specifies one focus treatment — "a 2px Forest Ink outline
    * offset 2px" — and it was written three times, each scoped to a utility
    * (cta-primary, cta-secondary, neu-button). Everything else fell through to
    * Chrome's UA ring: `outline: rgb(0, 95, 204) auto 1px`. A measurement put
@@ -627,7 +627,7 @@
    * vocabularies — a 2px line at a 2px gap, and a 4px radius-following halo —
    * both in the right ink and therefore both looking deliberate. The ring
    * stacks are gone; the only remaining suppressions are `#main-content` above
-   * and the masthead ask field, which DESIGN.md:313 gives its own indicator.
+   * and the masthead ask field, which DESIGN.md:315 gives its own indicator.
    * `src/__tests__/lib/design-drift.test.ts` holds the door shut. */
   /* The ring is already Forest Ink before it is ever shown.
    *
@@ -682,13 +682,46 @@
     background: hsl(var(--primary) / 0.45);
   }
 
-  /* Tailwind's built-in loops carry meaning (something is loading), so
-   * reduced motion slows them rather than freezing them into a shape that
-   * looks broken. */
+  /* Reduced motion, actually collapsed.
+   *
+   * DESIGN.md's Motion section said, without qualification, "Every motion
+   * collapses to none under prefers-reduced-motion." It did not. There was no
+   * global rule — only this loop-slowing block and two component-specific
+   * `transition: none` declarations for the drawer — so every `transition`
+   * and `transition-all` in the codebase kept running.
+   *
+   * Measured before this: the skip link, the FIRST focusable control on every
+   * route, travelled 114px over ~180ms with a trajectory byte-identical under
+   * `reduce` and under `no-preference` (top -98 -> -88 -> -59 -> -17 -> 4 ->
+   * 11 -> 16). Nineteen elements on `/` retained transform-capable
+   * transitions. A reader who has asked the operating system for less motion
+   * got a slide as the first thing that happened when they pressed Tab.
+   *
+   * `0.01ms` rather than `0s`: a zero duration can skip `transitionend`
+   * entirely, and code that waits for that event then hangs. This is the
+   * long-standing accessibility-community form of this reset for that reason.
+   *
+   * The loop exception below is deliberate and now stated rather than
+   * implied: `animate-pulse` and `animate-spin` mean "something is loading",
+   * and freezing them leaves a shape that reads as broken rather than as
+   * waiting. They are slowed, not stopped — which is why the doctrine in
+   * DESIGN.md is amended to say so instead of claiming an absolute the code
+   * contradicts. */
   @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    /* Stated exception: a loading indicator still has to read as loading. */
     .animate-pulse,
     .animate-spin {
       animation-duration: 3s !important;
+      animation-iteration-count: infinite !important;
     }
   }
 
