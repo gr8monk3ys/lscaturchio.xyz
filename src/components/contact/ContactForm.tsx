@@ -246,7 +246,7 @@ export function ContactForm() {
                   aria-invalid={fieldError("name") ? true : undefined}
                   aria-describedby={describedBy("name")}
                   className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
-                  placeholder="Your name..."
+                  placeholder="Your name"
                 />
                 {fieldError("name") && (
                   <p id="name-error" className="mt-2 text-sm text-destructive">
@@ -277,7 +277,7 @@ export function ContactForm() {
                   aria-invalid={fieldError("email") ? true : undefined}
                   aria-describedby={describedBy("email")}
                   className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
-                  placeholder="you@example.com..."
+                  placeholder="you@example.com"
                 />
                 {fieldError("email") && (
                   <p id="email-error" className="mt-2 text-sm text-destructive">
@@ -308,7 +308,7 @@ export function ContactForm() {
                 aria-invalid={fieldError("subject") ? true : undefined}
                 aria-describedby={describedBy("subject")}
                 className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
-                placeholder="What is the decision or project?..."
+                placeholder="What is the decision or project?"
               />
               {fieldError("subject") && (
                 <p id="subject-error" className="mt-2 text-sm text-destructive">
