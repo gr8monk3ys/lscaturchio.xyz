@@ -33,16 +33,12 @@ const KEY_PREFIX = 'ratelimit:v2:';
 // Cache rate limiter instances by config
 const rateLimiters = new Map<string, RateLimiter>();
 
-// One Redis connection for the process, shared by every limiter.
+// One Redis connection for the process, shared by every limiter and by the
+// health check.
+let client: Redis | null = null;
 let store: RedisStore | null = null;
 
-/**
- * Get or create a rate limiter instance for the given config.
- *
- * Returns null when Upstash is not configured, which is the caller's signal to
- * fall back to the in-memory limiter.
- */
-export function getRedisRateLimiter(limit: number, windowMs: number): RateLimiter | null {
+function getRedisClient(): Redis | null {
   const url =
     process.env.UPSTASH_REDIS_REST_URL ||
     process.env.KV_REST_API_URL;
@@ -54,14 +50,87 @@ export function getRedisRateLimiter(limit: number, windowMs: number): RateLimite
     return null;
   }
 
-  if (!store) {
+  if (!client) {
     // Auto-pipelining is off on purpose. Upstash answers an over-quota
     // database with HTTP 200 and `{"error": "...temporarily rate-limited..."}`,
     // and the client's pipeline path assumes the body is an array — so the
     // real message was lost behind `TypeError: c.map is not a function`. The
     // single-command path checks `error` first and throws it verbatim. The
     // store issues its commands one at a time anyway, so nothing was batched.
-    store = new RedisStore(new Redis({ url, token, enableAutoPipelining: false }), {
+    client = new Redis({ url, token, enableAutoPipelining: false });
+  }
+
+  return client;
+}
+
+/**
+ * How long the health check waits for Upstash before calling it unavailable.
+ * A healthy PING answers in tens of milliseconds; a hibernated store answers
+ * quickly too (with an error), so this only matters when the network is gone.
+ */
+export const REDIS_PING_TIMEOUT_MS = 3_000;
+
+/**
+ * Send one PING and report whether Upstash answered it.
+ *
+ * This exists for `/api/health`, and it is deliberately separate from
+ * `withRateLimit`'s circuit breaker: a probe must report the store's state as
+ * it is right now, not the breaker's memory of a minute ago, and a failed probe
+ * must not itself trip the breaker for real traffic.
+ *
+ * The same command that answers the probe is what keeps the store awake:
+ * Upstash hibernates a pay-as-you-go database after 60 days without a command,
+ * and once asleep it answers every command with HTTP 200 and
+ * `{"error":"...temporarily rate-limited"}` — the client throws that error and
+ * this returns `unavailable`. That is exactly what happened to this site's
+ * store in August 2026, and `.github/workflows/redis-keepalive.yml` exists so
+ * it does not happen again.
+ *
+ * Never throws; the caller decides how loud to be.
+ */
+export async function pingRedis(): Promise<'connected' | 'unavailable' | 'not-configured'> {
+  let redis: Redis | null;
+  try {
+    // An invalid URL throws synchronously inside the constructor.
+    redis = getRedisClient();
+  } catch {
+    return 'unavailable';
+  }
+  if (!redis) {
+    return 'not-configured';
+  }
+
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const timeout = new Promise<never>((_, reject) => {
+      timer = setTimeout(
+        () => reject(new Error(`Redis PING timed out after ${REDIS_PING_TIMEOUT_MS}ms`)),
+        REDIS_PING_TIMEOUT_MS,
+      );
+    });
+    const reply = await Promise.race([redis.ping(), timeout]);
+    return reply === 'PONG' ? 'connected' : 'unavailable';
+  } catch {
+    return 'unavailable';
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Get or create a rate limiter instance for the given config.
+ *
+ * Returns null when Upstash is not configured, which is the caller's signal to
+ * fall back to the in-memory limiter.
+ */
+export function getRedisRateLimiter(limit: number, windowMs: number): RateLimiter | null {
+  const redis = getRedisClient();
+  if (!redis) {
+    return null;
+  }
+
+  if (!store) {
+    store = new RedisStore(redis, {
       prefix: KEY_PREFIX,
       // Throw rather than silently admitting the request, so withRateLimit can
       // catch it and degrade to the in-memory limiter — which still enforces

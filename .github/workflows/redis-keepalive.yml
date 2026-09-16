@@ -1,0 +1,52 @@
+name: Redis keepalive
+
+# Upstash hibernates a pay-as-you-go database after 60 days without a command,
+# and once asleep it answers every command with HTTP 200 and
+# {"error":"Your database has been temporarily rate-limited..."}. The Redis
+# SDK's pipelined path then surfaces that as `TypeError: c.map is not a
+# function`, which is how this site's rate-limit store failed in production in
+# August 2026: not over quota, just ignored long enough to be archived.
+#
+# Waking it is a free click in the Upstash console; keeping it awake is this
+# workflow. `/api/health` PINGs Redis on every call, so one request a week is
+# enough. Weekly, not daily: the point is to stay well inside the 60-day
+# window, not to monitor uptime (uptime.yml does that every 15 minutes). If the
+# store is asleep, this run goes red and GitHub's scheduled-workflow-failed
+# email says so.
+#
+# The bypass header is the same one uptime.yml uses so that Cloudflare's bot
+# layer does not refuse the runner's datacentre IP; if the variable and secret
+# are unset the request goes without it.
+#
+# The repo is public, so this costs no Actions minutes.
+
+on:
+  schedule:
+    - cron: '41 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    name: Touch the Redis store via /api/health
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call /api/health and require redis connected
+        env:
+          UPTIME_BYPASS_HEADER: ${{ vars.UPTIME_BYPASS_HEADER }}
+          UPTIME_BYPASS_TOKEN: ${{ secrets.UPTIME_BYPASS_TOKEN }}
+        run: |
+          set -euo pipefail
+          args=(-sS --max-time 30 -A 'lscaturchio-redis-keepalive/1.0 (+https://github.com/gr8monk3ys/lscaturchio.xyz)')
+          if [ -n "$UPTIME_BYPASS_HEADER" ] && [ -n "$UPTIME_BYPASS_TOKEN" ]; then
+            args+=(-H "$UPTIME_BYPASS_HEADER: $UPTIME_BYPASS_TOKEN")
+          fi
+          body="$(curl "${args[@]}" https://lscaturchio.xyz/api/health)"
+          echo "$body"
+          echo "$body" | grep -q '"redis":"connected"' || {
+            echo "::error::Redis is not connected. If the store hibernated: Vercel -> Storage -> the Upstash store -> Open in Upstash -> Activate."
+            exit 1
+          }
