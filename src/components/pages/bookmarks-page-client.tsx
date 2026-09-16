@@ -117,14 +117,24 @@ export function BookmarksPageClient() {
   // became true without JavaScript. Bookmarks live in this browser's
   // localStorage, so a reader with scripts off does not have a slow list — they
   // have no list, and there is no wording of "loading" that makes that honest.
+  // The heading is in both branches on purpose. This branch used to return the
+  // explanation alone, which left /bookmarks the one route in the site whose
+  // server response carried no `h1` at all — the page had no title, and no
+  // document outline, for a reader without scripts or for anything reading the
+  // markup. What the list needs JavaScript for is the *list*; the name of the
+  // page is static text and has no reason to wait for hydration.
   if (!isClient) {
     return (
       <Container>
-        <div className="flex min-h-[50vh] items-center justify-center">
-          <p className="max-w-sm text-center text-sm text-muted-foreground">
+        <div className="py-10">
+          <Heading as="h1" className="flex items-center gap-3">
+            <Bookmark className="h-8 w-8 text-primary" />
+            My Bookmarks
+          </Heading>
+          <Paragraph className="mt-2 max-w-sm text-muted-foreground">
             Bookmarks are saved in this browser rather than to an account, so this
             page needs JavaScript to read them.
-          </p>
+          </Paragraph>
         </div>
       </Container>
     );

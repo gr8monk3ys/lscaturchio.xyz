@@ -24,6 +24,48 @@ Personal site at https://lscaturchio.xyz: Next.js 16 App Router, React 19, TypeS
 - The sitemap is `src/app/sitemap.ts`; do not add a postbuild sitemap script
 - Editing an essay without `sync-retrieval-corpus` fails CI's drift check
 - The `E2E` job builds and serves the app itself, so it needs the same env as `Build`
+- **Two icon sets is correct, not drift.** `lucide-react` v1 removed every brand
+  mark, so Tabler is the only source for a logo and is imported for nothing else.
+  Enforced by `icon libraries` in `src/__tests__/lib/design-drift.test.ts`.
+- **`@gr8monk3ys/next-kit` is pinned to a commit SHA, not a tag.** Bun records no
+  integrity hash for a URL dependency, so a moved tag installs different code
+  silently — in the module that owns rate limiting. Keep the SHA form when bumping.
+- `design-drift.test.ts` scans `src/constants` too. It did not until 2026-09-15,
+  which is why `products.tsx` — the largest source file here — had never been
+  checked by any rule in it.
+
+## Commit subjects
+
+The subject line says which change this is; the reasoning goes in the body.
+
+This is a correction, not a preference. Roughly forty commits shipped subjects
+like "the fifth IDREF, which was the one you see first" and "a P0 that eleven
+measurements could not see, and the guard that can" — accurate sentences that
+make `git log --oneline` unscannable, because none of them names the thing it
+touched. Keep the conventional-commit type, then name the subject of the change:
+`fix(nav): resolve five dangling aria-labelledby IDREFs`. The essay is welcome
+one line down, where it does not cost anything to skim past.
+
+## The critique loop needs a stopping condition
+
+`.impeccable/critique/*.md` generates findings, and September closed 68 commits
+against seven of those files. Much of it was real — the Sentry and CSS bundle
+work, the WCAG fixes, the Suspense P0. Some of it was the loop reading its own
+output: `mobile-navbar.tsx` was rewritten six times across twenty commits, each
+pass finding the next instance of a rule the previous pass had introduced.
+
+Before acting on a critique finding, require both:
+
+1. **A reader-visible symptom.** Name what breaks for someone using the site. "The
+   fifth instance of an invariant" is not one; a dangling IDREF a screen reader
+   announces as nothing is.
+2. **A gate, or a reason there cannot be one.** A finding worth fixing twice is
+   worth a rule in `design-drift.test.ts` (regex-checkable) or
+   `design-invariants.spec.ts` (needs a render). A finding that resists both is
+   usually taste, and taste does not need a commit.
+
+A file touched three times by one critique cycle is the signal to stop and delete
+the finding, not to make a fourth pass.
 
 ## Agent skills
 

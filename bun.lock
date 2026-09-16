@@ -5,7 +5,7 @@
     "": {
       "name": "lscaturchio",
       "dependencies": {
-        "@gr8monk3ys/next-kit": "https://github.com/gr8monk3ys/next-kit/archive/refs/tags/v0.1.2.tar.gz",
+        "@gr8monk3ys/next-kit": "https://github.com/gr8monk3ys/next-kit/archive/203cc48e6a232b190e712d13dae8c27f6573ecad.tar.gz",
         "@mdx-js/loader": "^3.1.1",
         "@mdx-js/mdx": "^3.1.0",
         "@mdx-js/react": "^3.1.1",
@@ -188,7 +188,7 @@
 
     "@eslint/plugin-kit": ["@eslint/plugin-kit@0.4.1", "", { "dependencies": { "@eslint/core": "^0.17.0", "levn": "^0.4.1" } }, "sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA=="],
 
-    "@gr8monk3ys/next-kit": ["@gr8monk3ys/next-kit@https://github.com/gr8monk3ys/next-kit/archive/refs/tags/v0.1.2.tar.gz", { "peerDependencies": { "@clerk/nextjs": ">=6", "next": ">=14", "stripe": ">=17" }, "optionalPeers": ["@clerk/nextjs", "next", "stripe"] }],
+    "@gr8monk3ys/next-kit": ["@gr8monk3ys/next-kit@https://github.com/gr8monk3ys/next-kit/archive/203cc48e6a232b190e712d13dae8c27f6573ecad.tar.gz", { "peerDependencies": { "@clerk/nextjs": ">=6", "next": ">=14", "stripe": ">=17" }, "optionalPeers": ["@clerk/nextjs", "next", "stripe"] }],
 
     "@humanfs/core": ["@humanfs/core@0.19.1", "", {}, "sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA=="],
 

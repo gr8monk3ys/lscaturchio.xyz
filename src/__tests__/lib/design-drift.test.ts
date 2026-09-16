@@ -37,7 +37,7 @@ import path from "node:path";
  * invisible by *scope*, not by allowance. A rule that cannot reach a file is
  * indistinguishable from a rule that passes it.
  */
-const SCAN_ROOTS = ["src/app", "src/components", "src/hooks", "src/lib"];
+const SCAN_ROOTS = ["src/app", "src/components", "src/constants", "src/hooks", "src/lib"];
 
 interface Rule {
   id: string;
@@ -287,6 +287,67 @@ describe("design drift", () => {
     }
 
     expect(offenders, [`${rule.id}: ${rule.because}`, "", ...offenders].join("\n")).toEqual([]);
+  });
+});
+
+/**
+ * Two icon sets with one boundary.
+ *
+ * `@tabler/icons-react` and `lucide-react` look like a redundancy to collapse,
+ * and an audit called them exactly that. They are not: lucide-react v1 removed
+ * every brand mark for trademark reasons, so `Github`, `Linkedin`, `Instagram`,
+ * `Mastodon` and `Bluesky` do not exist there at any version this project can
+ * install. Tabler is the only source for a logo, and that is the whole of its
+ * job here — 7 files, brand marks only, against Lucide's 48.
+ *
+ * The failure mode is not the second dependency, it is the leak: once a file
+ * has `import { IconBrandGithub } from "@tabler/icons-react"` open, the next
+ * glyph it needs is one word away. `src/constants/socials.tsx` drew
+ * `IconUserPlus`, `IconBook`, `IconMovie` and `IconBookmarks` from Tabler that
+ * way, which is a second generic icon system on the site by accident rather
+ * than a brand mark by necessity. A line-level rule cannot see it, because a
+ * multi-line import puts each name on a line that no longer mentions Tabler.
+ *
+ * `IconBrandLeetcode` is why this checks for the `IconBrand` prefix rather than
+ * an allowlist of known logos: the set of brands is open, the naming is not.
+ */
+describe("icon libraries", () => {
+  it("imports brand marks from Tabler and nothing else", () => {
+    const offenders: string[] = [];
+
+    for (const root of SCAN_ROOTS) {
+      const dir = path.join(process.cwd(), root);
+      if (!fs.existsSync(dir)) continue;
+
+      for (const file of walk(dir)) {
+        const source = stripComments(fs.readFileSync(file, "utf-8"));
+        const relative = path.relative(process.cwd(), file);
+
+        for (const match of source.matchAll(
+          /import\s*\{([^}]*)\}\s*from\s*['"]@tabler\/icons-react['"]/g
+        )) {
+          const generic = match[1]
+            .split(",")
+            .map((name) => name.trim())
+            .filter(Boolean)
+            .filter((name) => !name.startsWith("IconBrand"));
+
+          if (generic.length > 0) {
+            offenders.push(`${relative} — ${generic.join(", ")}`);
+          }
+        }
+      }
+    }
+
+    expect(
+      offenders,
+      [
+        "Tabler is installed for the brand marks lucide-react v1 does not ship.",
+        "A generic glyph comes from lucide-react; import it there instead.",
+        "",
+        ...offenders,
+      ].join("\n")
+    ).toEqual([]);
   });
 });
 

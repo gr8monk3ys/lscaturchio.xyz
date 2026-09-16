@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test'
+import fs from 'node:fs'
+import path from 'node:path'
 
 /**
  * The design system, asserted on what the browser receives.
@@ -44,6 +46,71 @@ const ROUTES = [
   '/garden',
   '/colophon',
 ]
+
+/**
+ * Every statically routable page, read off the filesystem.
+ *
+ * `ROUTES` above is a hand-picked 16, and the cheap page-level checks were
+ * spending that list for no reason. The Suspense defect below was a property
+ * of the root `loading.tsx`, so it hit all 129 routes at once and the list
+ * caught it only because `/stats` had been appended by hand after the fact —
+ * the audit that found it had to look at a route nobody had thought to add.
+ *
+ * A hardcoded list is the wrong instrument for a defect that arrives by
+ * inheritance. This one cannot go stale: a new page.tsx is covered the day it
+ * lands, which is the only way a 129-route site stays checkable by a list
+ * nobody maintains.
+ *
+ * Excluded, with reasons — an exclusion here is a route that cannot answer a
+ * plain GET, not a route that is inconvenient:
+ *   - `[slug]`/`[tag]`: no concrete path to visit. `ROUTES` covers one of each
+ *     by hand (`/blog/building-rag-systems`).
+ *   - `admin/**`: session-gated, and `redirect('/admin/login')` is the correct
+ *     response. `e2e/admin.spec.ts` owns that gate.
+ *   - `offline`: the service worker's fallback document. It is served by the
+ *     worker on a failed fetch, not by the router.
+ */
+function staticRoutes(): string[] {
+  const appDir = path.join(process.cwd(), 'src/app')
+
+  function walk(dir: string): string[] {
+    return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+      if (entry.isDirectory()) return walk(path.join(dir, entry.name))
+      if (entry.name !== 'page.tsx') return []
+
+      const segments = path
+        .relative(appDir, dir)
+        .split(path.sep)
+        .filter((segment) => segment !== '' && !segment.startsWith('('))
+
+      if (segments.some((segment) => segment.startsWith('['))) return []
+      if (segments[0] === 'admin' || segments[0] === 'offline') return []
+
+      return [`/${segments.join('/')}`]
+    })
+  }
+
+  return [...new Set(walk(appDir))].sort()
+}
+
+const ALL_STATIC_ROUTES = staticRoutes()
+
+/**
+ * Routes allowed to leave a Suspense boundary pending, and why.
+ *
+ * Needs a reason, like `ALLOWED` in `src/__tests__/lib/design-drift.test.ts`:
+ * the rule below exists because a *silent* fallback became the whole page for a
+ * reader without JavaScript. A boundary whose fallback says what is true and
+ * points somewhere readable is the opposite of that defect, and the difference
+ * is the copy, which only a person can judge.
+ *
+ * The bar is that the feature genuinely cannot work without scripts. "This
+ * component is slow" is not on it — delete the boundary instead.
+ */
+const MAY_PARK_BEHIND_SCRIPT: Record<string, string> = {
+  '/chat':
+    "Composing an answer is streamed into the browser, so the feature is scripts or nothing. The fallback says exactly that and links to /blog, which is readable without them — see the comment in src/app/chat/page.tsx.",
+}
 
 test.describe('design invariants, in the DOM', () => {
   // Pages whose whole job is to get the reader to do one thing. These must
@@ -322,32 +389,49 @@ test.describe('design invariants, in the DOM', () => {
     //
     // Seventeen design reviews scored this site with JavaScript on, and not
     // one of them could see this.
+    //
+    // Runs against every statically routable page rather than the 16 in
+    // `ROUTES`: the defect arrived by inheritance from one root file, so the
+    // routes least likely to be on a hand-written list were hit just as hard.
     await page.route('**/api/views*', (route) => route.abort())
 
     const offenders: string[] = []
+    const parked = new Set<string>()
 
-    for (const path of [...ROUTES, '/stats']) {
-      const response = await page.goto(path, { waitUntil: 'commit' })
+    for (const route of ALL_STATIC_ROUTES) {
+      const response = await page.goto(route, { waitUntil: 'commit' })
       const html = (await response?.text()) ?? ''
 
       // `<template id="B:n">` is React's unresolved boundary. Its presence is
       // the defect; what the fallback happens to look like is not the point.
       const pending = html.match(/<template id="B:\d+">/g)?.length ?? 0
-      if (pending > 0) {
-        offenders.push(`${path} leaves ${pending} Suspense boundary(s) pending in its response`)
+      if (pending > 0) parked.add(route)
+      if (pending > 0 && !MAY_PARK_BEHIND_SCRIPT[route]) {
+        offenders.push(`${route} leaves ${pending} Suspense boundary(s) pending in its response`)
       }
 
       const pulses = html.match(/animate-pulse/g)?.length ?? 0
       if (pulses > 0) {
-        offenders.push(`${path} ships ${pulses} animate-pulse node(s) in its response`)
+        offenders.push(`${route} ships ${pulses} animate-pulse node(s) in its response`)
       }
 
       // The positive half: the response must carry the page's own heading,
       // not merely avoid a skeleton. A blank page ships no pulses either.
       if (!/<h1[\s>]/.test(html)) {
-        offenders.push(`${path} has no h1 in its response`)
+        offenders.push(`${route} has no h1 in its response`)
       }
     }
+
+    // An allowance nobody needs is a rule nobody is following. If /chat stops
+    // parking a boundary, this entry should be deleted rather than left to
+    // quietly permit the next one.
+    const unusedAllowances = Object.keys(MAY_PARK_BEHIND_SCRIPT).filter(
+      (route) => !parked.has(route)
+    )
+    expect(
+      unusedAllowances,
+      `MAY_PARK_BEHIND_SCRIPT lists routes that no longer park anything: ${unusedAllowances.join(', ')}`
+    ).toEqual([])
 
     expect(
       offenders,
