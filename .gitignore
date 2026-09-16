@@ -96,3 +96,6 @@ skills-lock.json
 /*.jpeg
 /*.webp
 /*.gif
+
+# Lighthouse reports written by scripts/check-lighthouse-score.mjs (uploaded as a CI artifact)
+/artifacts/

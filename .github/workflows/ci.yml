@@ -219,7 +219,7 @@ jobs:
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
 
   lighthouse:
-    name: Lighthouse Budget
+    name: Lighthouse (score floors)
     runs-on: ubuntu-latest
     timeout-minutes: 25
     needs: [build]
@@ -242,6 +242,11 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # Same env as Build. Without DATABASE_URL the server measured is the site
+      # running without its database, which once reported 0.26 cumulative layout
+      # shift against a 0.15 budget while the shipped site measured 0.006. A
+      # gate that measures a different site than the one deployed fails for
+      # reasons nobody can act on.
       - name: Build for Lighthouse
         run: bun run build
         env:
@@ -260,14 +265,21 @@ jobs:
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
 
-      - name: Run Lighthouse Budget Assertions
-        run: bun run perf:lighthouse
-        # lhci starts its own server, so this step needs the same runtime env
-        # as Build — the same reason the E2E job does. Without DATABASE_URL the
-        # server it measures is the site running without its database, which
-        # reported 0.26 cumulative layout shift against a 0.15 budget while the
-        # shipped site measured 0.006. A budget job that measures a different
-        # site than the one deployed fails for reasons nobody can act on.
+      # Port 3000 on purpose: it is in the CSRF allowlist by default, so the
+      # view-counter POST the pages fire does not 403 and land in
+      # errors-in-console (which alone costs best-practices four points).
+      - name: Start application
+        run: |
+          bun run start -- --hostname 127.0.0.1 --port 3000 > /tmp/lscaturchio.log 2>&1 &
+          echo $! > /tmp/lscaturchio.pid
+          for _ in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:3000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat /tmp/lscaturchio.log
+          exit 1
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -283,6 +295,25 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+
+      # Floors and the document byte cap live in scripts/check-lighthouse-score.mjs.
+      - name: Enforce Lighthouse score floors
+        run: bun run lighthouse:ci
+
+      - name: Upload Lighthouse artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-artifacts
+          path: artifacts/lighthouse
+          retention-days: 7
+
+      - name: Stop application
+        if: always()
+        run: |
+          if [ -f /tmp/lscaturchio.pid ]; then
+            kill "$(cat /tmp/lscaturchio.pid)" || true
+          fi
 
   postdeploy-chat-smoke:
     name: Post-Deploy Chat Smoke

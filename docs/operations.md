@@ -23,7 +23,8 @@ Use these when a change affects UI behavior, routing, or performance:
 
 ```bash
 npm run test:e2e
-npm run perf:lighthouse
+# Needs a production server on 127.0.0.1:3000 first (npm run build && npm run start)
+npm run lighthouse:ci
 ```
 
 Additional quality gates that CI enforces (run locally before pushing if in doubt):
