@@ -36,7 +36,7 @@
     "generate-project-logos": "node scripts/generate-project-logos.mjs",
     "suggest-internal-links": "tsx scripts/suggest-internal-links.ts",
     "send-webmentions": "tsx scripts/send-webmentions.ts",
-    "perf:lighthouse": "npx -y @lhci/cli@0.15.x autorun --config=.lighthouserc.json"
+    "lighthouse:ci": "node scripts/check-lighthouse-score.mjs http://127.0.0.1:3000 / /blog /blog/building-rag-systems /work-with-me"
   },
   "dependencies": {
     "@gr8monk3ys/next-kit": "https://github.com/gr8monk3ys/next-kit/archive/203cc48e6a232b190e712d13dae8c27f6573ecad.tar.gz",

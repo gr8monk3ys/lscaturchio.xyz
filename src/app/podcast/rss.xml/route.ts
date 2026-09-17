@@ -1,7 +1,7 @@
 import { Feed } from "feed";
 import { getAllBlogs } from "@/lib/getAllBlogs";
-import { getAudioByteLength, hasAudioForSlug } from "@/lib/audio";
-import { getAbsoluteAudioUrl } from "@/lib/audio-url";
+import { getAudioByteLength } from "@/lib/audio";
+import { getAudioUrl } from "@/lib/audio-url";
 import { getSiteUrl } from "@/lib/site-url";
 
 export async function GET() {
@@ -9,12 +9,15 @@ export async function GET() {
   const now = new Date();
   const blogs = await getAllBlogs();
 
+  // An enclosure URL is what makes a feed item an episode, so a post whose
+  // audio this deployment cannot serve is left out entirely rather than
+  // published with a URL that 404s in a podcast client.
   const audioPosts = blogs
     .map((post) => ({
       ...post,
-      hasAudio: hasAudioForSlug(post.slug),
+      audioUrl: getAudioUrl(post.slug),
     }))
-    .filter((post) => post.hasAudio);
+    .filter((post): post is typeof post & { audioUrl: string } => post.audioUrl !== null);
 
   const feed = new Feed({
     title: "Lorenzo Scaturchio Podcast",
@@ -41,7 +44,6 @@ export async function GET() {
 
   for (const post of audioPosts) {
     const postUrl = `${siteUrl}/blog/${post.slug}`;
-    const audioUrl = getAbsoluteAudioUrl(post.slug, siteUrl);
     const length = getAudioByteLength(post.slug) ?? 0;
 
     feed.addItem({
@@ -60,7 +62,7 @@ export async function GET() {
       date: new Date(post.updated || post.date),
       published: new Date(post.date),
       audio: {
-        url: audioUrl,
+        url: post.audioUrl,
         type: "audio/mpeg",
         length,
       },

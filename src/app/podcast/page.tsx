@@ -3,7 +3,6 @@ import { buildPageMetadata } from "@/lib/seo";
 import { Rss } from "lucide-react";
 import Link from "next/link";
 import { getAllBlogs } from "@/lib/getAllBlogs";
-import { hasAudioForSlug } from "@/lib/audio";
 import { getAudioUrl } from "@/lib/audio-url";
 import { PageHead } from "@/components/ui/page-head";
 
@@ -48,8 +47,11 @@ export default function PodcastPage() {
 
 async function Episodes() {
   const blogs = await getAllBlogs();
+  // `getAudioUrl` is null both when a post has no recording and when this
+  // deployment has no audio origin configured, which is the only honest test
+  // of whether an episode can actually be played here.
   const episodes = blogs
-    .filter((b) => hasAudioForSlug(b.slug))
+    .filter((b) => getAudioUrl(b.slug) !== null)
     .slice(0, 20);
 
   if (episodes.length === 0) {
@@ -70,7 +72,10 @@ async function Episodes() {
       </div>
 
       <div className="mt-8 divide-y divide-border border-y border-border">
-        {episodes.map((post) => (
+        {episodes.map((post) => {
+          const audioUrl = getAudioUrl(post.slug);
+
+          return (
           <article key={post.slug} className="py-8">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div className="min-w-0">
@@ -98,16 +103,19 @@ async function Episodes() {
               </span>
             </div>
 
-            <div className="mt-5">
-              <audio
-                controls
-                preload="none"
-                src={getAudioUrl(post.slug)}
-                className="w-full"
-              />
-            </div>
+            {audioUrl !== null && (
+              <div className="mt-5">
+                <audio
+                  controls
+                  preload="none"
+                  src={audioUrl}
+                  className="w-full"
+                />
+              </div>
+            )}
           </article>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
