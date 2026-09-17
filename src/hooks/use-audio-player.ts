@@ -21,10 +21,17 @@ import {
   type Chapter,
   type PlayerState,
 } from "@/components/blog/text-to-speech-types"
-import { getAudioUrl } from "@/lib/audio-url"
 
 interface UseAudioPlayerArgs {
   slug: string
+  /**
+   * Where this post's audio lives, or `null` when this deployment serves none
+   * (no recording for the slug, or no `NEXT_PUBLIC_AUDIO_CDN_URL`). Resolved on
+   * the server by `getAudioUrl` so the client never guesses a URL: guessing one
+   * cost a 404 per essay in every build without the CDN variable, which is what
+   * Lighthouse's `errors-in-console` was reporting.
+   */
+  audioSrc: string | null
 }
 
 /**
@@ -53,13 +60,25 @@ interface UseAudioPlayerReturn {
   dispatch: React.Dispatch<import("@/components/blog/text-to-speech-types").PlayerAction>
 }
 
-export function useAudioPlayer({ slug }: UseAudioPlayerArgs): UseAudioPlayerReturn {
+export function useAudioPlayer({ slug, audioSrc }: UseAudioPlayerArgs): UseAudioPlayerReturn {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const [state, dispatch] = useReducer(playerReducer, INITIAL_STATE)
 
   useEffect(() => {
-    const audioUrl = getAudioUrl(slug)
+    const fallbackSupported =
+      typeof window !== "undefined" && Boolean(window.speechSynthesis)
+
+    dispatch({ type: "SET_FALLBACK_SUPPORTED", value: fallbackSupported })
+
+    // No audio for this post: read it aloud with speech synthesis instead, and
+    // make no request. This is the same end state the `error` handler below
+    // reaches, minus the failed request that got there.
+    if (audioSrc === null) {
+      dispatch({ type: "SET_AUDIO_SOURCE", hasAudio: false, useFallback: true })
+      return
+    }
+
     const audio = new Audio()
 
     const handleCanPlay = (): void => {
@@ -76,12 +95,7 @@ export function useAudioPlayer({ slug }: UseAudioPlayerArgs): UseAudioPlayerRetu
     audio.addEventListener("canplaythrough", handleCanPlay)
     audio.addEventListener("error", handleError)
     audio.preload = "metadata"
-    audio.src = audioUrl
-
-    dispatch({
-      type: "SET_FALLBACK_SUPPORTED",
-      value: typeof window !== "undefined" && Boolean(window.speechSynthesis),
-    })
+    audio.src = audioSrc
 
     return () => {
       audio.removeEventListener("canplaythrough", handleCanPlay)
@@ -89,7 +103,7 @@ export function useAudioPlayer({ slug }: UseAudioPlayerArgs): UseAudioPlayerRetu
       audio.pause()
       audio.src = ""
     }
-  }, [slug])
+  }, [audioSrc])
 
   useEffect(() => {
     const root = getProseRoot()

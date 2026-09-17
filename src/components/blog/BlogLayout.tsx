@@ -14,6 +14,7 @@ import { BlogJsonLd } from "./blog-json-ld";
 import { SyndicationLinks } from "./syndication-links";
 import { BackButton } from "./back-button";
 import { TextToSpeech } from "./text-to-speech";
+import { getAudioUrl } from "@/lib/audio-url";
 import { SeriesNavigation } from "./series-navigation";
 import { Webmentions } from "./webmentions";
 import { GiscusComments } from "./giscus-comments";
@@ -232,7 +233,7 @@ export async function BlogLayout({
               {/* Listening is the one alternative that belongs before the
                   text. Sharing and subscribing wait until it has been read. */}
               <div className="mb-8">
-                <TextToSpeech slug={slug} />
+                <TextToSpeech slug={slug} audioSrc={getAudioUrl(slug)} />
               </div>
 
               <Prose>{children}</Prose>

@@ -3,7 +3,7 @@ import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { hasAudioForSlug } from "@/lib/audio";
-import { getAbsoluteAudioUrl } from "@/lib/audio-url";
+import { getAudioUrl } from "@/lib/audio-url";
 import { getSiteUrl } from "@/lib/site-url";
 import { apiSuccess } from "@/lib/api-response";
 
@@ -18,7 +18,10 @@ const handleGet = async (req: NextRequest) => {
   const posts = await getAllBlogs();
 
   const data = posts.slice(0, limit).map((p) => {
+    // `hasAudio` stays a fact about the recording; `audioUrl` is null when
+    // this deployment has no origin to serve it from.
     const hasAudio = hasAudioForSlug(p.slug);
+    const audioUrl = getAudioUrl(p.slug);
     return {
       slug: p.slug,
       url: `${siteUrl}/blog/${p.slug}`,
@@ -31,7 +34,7 @@ const handleGet = async (req: NextRequest) => {
       readingTimeMinutes: p.readingTimeMinutes,
       words: p.words,
       hasAudio,
-      audioUrl: hasAudio ? getAbsoluteAudioUrl(p.slug, siteUrl) : null,
+      audioUrl,
       series: p.series ?? null,
       seriesOrder: p.seriesOrder ?? null,
     };

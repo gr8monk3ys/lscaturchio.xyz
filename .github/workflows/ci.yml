@@ -247,6 +247,15 @@ jobs:
       # shift against a 0.15 budget while the shipped site measured 0.006. A
       # gate that measures a different site than the one deployed fails for
       # reasons nobody can act on.
+      #
+      # NEXT_PUBLIC_AUDIO_CDN_URL is the deliberate exception: a score gate
+      # should not depend on a third-party origin being reachable from a
+      # runner. So this build has no audio origin, and the essay player must
+      # make no audio request at all (src/lib/audio-url.ts returns null rather
+      # than guessing a URL). When it guessed /audio/<slug>.mp3 — a path that
+      # is in no build, since public/audio/*.mp3 is gitignored — every essay
+      # route logged a 404 and lost the four best-practices points that
+      # errors-in-console is worth.
       - name: Build for Lighthouse
         run: bun run build
         env:

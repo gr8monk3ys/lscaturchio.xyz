@@ -197,10 +197,25 @@ function logFailureDiagnostics(reportPath) {
     console.error(`[lighthouse] top opportunities: ${opportunities.join(", ")}`);
   }
 
+  // Annotated with the weight each audit carries, because not every failing
+  // audit costs a point. `valid-source-maps` fails on every essay route — Next
+  // ships no browser source maps in production — and is weighted 0, so it can
+  // never move a score and is not worth chasing. The first read of this list
+  // spent time on it; the annotation is so the next one does not.
+  const weightById = new Map();
+  for (const category of Object.values(report.categories)) {
+    for (const ref of category.auditRefs) {
+      weightById.set(ref.id, (weightById.get(ref.id) ?? 0) + ref.weight);
+    }
+  }
+
   const failedAudits = Object.values(report.audits)
     .filter((audit) => audit.score !== null && audit.score < 1 && audit.scoreDisplayMode === "binary")
     .slice(0, 10)
-    .map((audit) => audit.id);
+    .map((audit) => {
+      const weight = weightById.get(audit.id) ?? 0;
+      return weight > 0 ? `${audit.id} (weight ${weight})` : `${audit.id} (weight 0, scores nothing)`;
+    });
 
   if (failedAudits.length > 0) {
     console.error(`[lighthouse] failed binary audits: ${failedAudits.join(", ")}`);

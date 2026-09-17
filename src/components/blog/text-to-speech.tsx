@@ -11,9 +11,11 @@ import {
 
 interface AudioPlayerProps {
   slug: string
+  /** Resolved on the server by `getAudioUrl`; `null` when there is none to play. */
+  audioSrc: string | null
 }
 
-export function TextToSpeech({ slug }: AudioPlayerProps): React.ReactElement | null {
+export function TextToSpeech({ slug, audioSrc }: AudioPlayerProps): React.ReactElement | null {
   const {
     state,
     progressRef,
@@ -28,7 +30,7 @@ export function TextToSpeech({ slug }: AudioPlayerProps): React.ReactElement | n
     toggleFallback,
     jumpToChapter,
     dispatch,
-  } = useAudioPlayer({ slug })
+  } = useAudioPlayer({ slug, audioSrc })
 
   if (state.hasAudio === null) {
     return null
