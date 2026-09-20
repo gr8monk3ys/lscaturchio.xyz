@@ -185,7 +185,9 @@ async function checkHealth(baseUrl, timeoutMs) {
   }
 
   const payload = await readJsonOrText(response);
-  const status = payload && typeof payload === "object" ? payload.status : undefined;
+  // /api/health answers through apiSuccess, so the body is { data: {...}, success }.
+  const health = unwrapDataEnvelope(payload);
+  const status = health && typeof health === "object" ? health.status : undefined;
   if (status !== "healthy") {
     throw new Error(`Health endpoint returned non-healthy status: ${JSON.stringify(payload)}`);
   }
