@@ -210,7 +210,7 @@ export function CommandPaletteDialog({
               type="text"
               value={query}
               onChange={(e) => onChangeQuery(e.target.value)}
-              placeholder="Search pages, blogs, or actions..."
+              placeholder="Search pages, blogs, or actions…"
               aria-label="Search pages, blogs, or actions"
               role="combobox"
               aria-expanded
@@ -277,7 +277,7 @@ export function CommandPaletteDialog({
                   </>
                 ) : (
                   <>
-                    <p>No results found for &quot;{query}&quot;</p>
+                    <p>No results found for &ldquo;{query}&rdquo;</p>
                     <p className="text-sm mt-1">Try searching for something else</p>
                   </>
                 )}

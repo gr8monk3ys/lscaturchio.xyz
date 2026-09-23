@@ -249,7 +249,7 @@ export function ContactForm() {
                   aria-invalid={fieldError("name") ? true : undefined}
                   aria-describedby={describedBy("name")}
                   className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
-                  placeholder="Your name"
+                  placeholder="Your name…"
                 />
                 {fieldError("name") && (
                   <p id="name-error" className="mt-2 text-sm text-destructive">
@@ -283,7 +283,7 @@ export function ContactForm() {
                   aria-invalid={fieldError("email") ? true : undefined}
                   aria-describedby={describedBy("email")}
                   className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
-                  placeholder="you@example.com"
+                  placeholder="you@example.com…"
                 />
                 {fieldError("email") && (
                   <p id="email-error" className="mt-2 text-sm text-destructive">
@@ -373,7 +373,7 @@ export function ContactForm() {
               disabled={isSubmitting}
               className="cta-primary w-full px-6 py-3 rounded-xl disabled:opacity-50"
             >
-              {isSubmitting ? "Sending..." : "Send project details"}
+              {isSubmitting ? "Sending…" : "Send project details"}
             </button>
 
             {/* Two regions, not one, because the two outcomes have different

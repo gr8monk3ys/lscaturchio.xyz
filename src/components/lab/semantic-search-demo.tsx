@@ -86,7 +86,7 @@ export function SemanticSearchDemo() {
             id="lab-semantic-search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search posts..."
+            placeholder="Search the essays…"
             className={cn(
               "w-full rounded-xl pl-10 pr-10 py-3 text-sm",
               "neu-input text-foreground placeholder:text-muted-foreground"

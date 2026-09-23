@@ -386,7 +386,7 @@ describe("ContactForm", () => {
     });
   });
 
-  it("disables the button and shows Sending... while the request is in flight", async () => {
+  it("disables the button and shows Sending… while the request is in flight", async () => {
     let resolveFetch!: (value: Response) => void;
     fetchMock.mockImplementationOnce(
       () =>

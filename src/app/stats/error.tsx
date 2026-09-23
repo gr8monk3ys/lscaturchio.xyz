@@ -17,7 +17,7 @@ export default function StatsError({
       error={error}
       reset={reset}
       title="Failed to load statistics"
-      description="We couldn't load the stats page. This might be a temporary issue with data fetching or analytics services."
+      description="The stats didn't load, usually a temporary problem with the analytics services. Try again in a moment."
     />
   )
 }

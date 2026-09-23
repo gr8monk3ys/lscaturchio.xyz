@@ -91,7 +91,7 @@ export function NewsletterForm({
         setEmail('')
       } else {
         setStatus('error')
-        setMessage(data.error || 'Failed to subscribe')
+        setMessage(data.error || 'The subscription did not go through. Try again in a moment.')
       }
     } catch {
       setStatus('error')
@@ -141,7 +141,7 @@ export function NewsletterForm({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
+            placeholder="you@example.com…"
             required
             aria-label="Email address"
             disabled={status === 'loading' || status === 'success'}
@@ -159,7 +159,7 @@ export function NewsletterForm({
               <span className="inline-flex animate-spin" aria-hidden="true">
                 <Loader2 className="h-4 w-4" />
               </span>
-              <span>Subscribing...</span>
+              <span>Subscribing…</span>
             </>
           )}
           {status === 'success' && (
