@@ -54,6 +54,20 @@ export function ReadingProgressTracker({ slug, title, tags }: ReadingProgressTra
     const progressKey = `reading_progress_${slug}`;
     let ticking = false;
 
+    // Read the stored value once, then track what was last written in memory.
+    // This ran `localStorage.getItem` + `JSON.parse` on every animation frame
+    // while scrolling (js-cache-storage). `null` means nothing usable is stored.
+    let lastSaved: number | null = null;
+    try {
+      const stored = localStorage.getItem(progressKey);
+      if (stored) {
+        const data = JSON.parse(stored) as { progress?: number };
+        lastSaved = Number(data.progress) || 0;
+      }
+    } catch {
+      lastSaved = null;
+    }
+
     const updateProgress = () => {
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
@@ -67,29 +81,23 @@ export function ReadingProgressTracker({ slug, title, tags }: ReadingProgressTra
       );
 
       // Only save if progress is > 0 and has changed significantly (> 5%)
-      const stored = localStorage.getItem(progressKey);
-      let shouldSave = false;
-
-      if (!stored) {
-        shouldSave = progress > 0;
-      } else {
-        try {
-          const data = JSON.parse(stored);
-          const diff = Math.abs(progress - (data.progress || 0));
-          shouldSave = diff > 5; // Save every 5% change
-        } catch {
-          shouldSave = progress > 0;
-        }
-      }
+      const shouldSave =
+        lastSaved === null ? progress > 0 : Math.abs(progress - lastSaved) > 5;
 
       if (shouldSave) {
-        localStorage.setItem(
-          progressKey,
-          JSON.stringify({
-            progress: Math.round(progress),
-            lastRead: new Date().toISOString(),
-          })
-        );
+        const rounded = Math.round(progress);
+        try {
+          localStorage.setItem(
+            progressKey,
+            JSON.stringify({
+              progress: rounded,
+              lastRead: new Date().toISOString(),
+            })
+          );
+          lastSaved = rounded;
+        } catch {
+          // Quota exceeded or storage disabled: keep reading, stop saving.
+        }
       }
 
       ticking = false;
