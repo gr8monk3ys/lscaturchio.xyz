@@ -160,7 +160,7 @@ export function useCommandPalette(): CommandPaletteModel {
   const router = useRouter()
   const { theme, setTheme } = useTheme()
 
-  const { isOpen, isSearching, query, recentSearches, searchFailed, searchResults, selectedIndex } = state
+  const { isOpen, isSearching, query, searchFailed, searchResults, selectedIndex } = state
 
   useEffect(() => {
     const saved = safeStorage.getJSON<string[]>('command-palette-recent')
@@ -169,15 +169,17 @@ export function useCommandPalette(): CommandPaletteModel {
     }
   }, [])
 
-  const saveRecentSearch = useCallback(
-    (search: string) => {
-      if (!search.trim()) return
-      const updated = [search, ...recentSearches.filter((item) => item !== search)].slice(0, 5)
-      safeStorage.setJSON('command-palette-recent', updated)
-      dispatch({ type: 'SET_RECENT_SEARCHES', searches: updated })
-    },
-    [recentSearches]
-  )
+  // Builds on the stored list, not on `recentSearches` from render: the
+  // callback no longer depends on that state, so it — and `blogCommands`,
+  // which closes over it — is not recreated whenever the list changes
+  // (rerender-functional-setstate).
+  const saveRecentSearch = useCallback((search: string) => {
+    if (!search.trim()) return
+    const previous = safeStorage.getJSON<string[]>('command-palette-recent') ?? []
+    const updated = [search, ...previous.filter((item) => item !== search)].slice(0, 5)
+    safeStorage.setJSON('command-palette-recent', updated)
+    dispatch({ type: 'SET_RECENT_SEARCHES', searches: updated })
+  }, [])
 
   const performSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim() || searchQuery.length < 2) {
