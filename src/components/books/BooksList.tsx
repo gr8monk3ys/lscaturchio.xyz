@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useSearchParamState } from "@/hooks/use-search-param-state";
 import { BookOpen, Clock, ListVideo } from "lucide-react";
 import type { GoodreadsStats, ListedBook, ListedShelf } from "@/lib/goodreads";
 import { spellCount, pluralize } from "@/lib/spell-count";
@@ -20,6 +20,8 @@ const tabs = [
   { id: "recently-read", label: "Finished", icon: Clock },
   { id: "to-read", label: "Want to Read", icon: ListVideo },
 ];
+
+const TAB_IDS = tabs.map((tab) => tab.id);
 
 function formatStars(rating: number): string {
   return "★".repeat(rating);
@@ -176,7 +178,9 @@ export function BooksList({
   toRead,
   shelves,
 }: BooksListProps) {
-  const [activeTab, setActiveTab] = useState("currently-reading");
+  // The open list is in the URL (?list=…) so it survives a reload and can be
+  // linked to; the default list keeps the URL clean.
+  const [activeTab, setActiveTab] = useSearchParamState("list", TAB_IDS, "currently-reading");
 
   const listsById: Record<string, ListedBook[]> = {
     "currently-reading": currentlyReading,
