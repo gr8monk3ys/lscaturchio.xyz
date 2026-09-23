@@ -198,7 +198,7 @@ export function AskDrawer() {
         aria-label="Conversation"
       >
       {isEmpty ? (
-        <div data-lenis-prevent className="flex-1 overflow-y-auto px-5 py-8">
+        <div data-lenis-prevent className="flex-1 overflow-y-auto overscroll-contain px-5 py-8">
           <p className="text-section-title text-foreground">
             Ask the site anything.
           </p>
@@ -224,7 +224,7 @@ export function AskDrawer() {
           </div>
         </div>
       ) : (
-        <div data-lenis-prevent className="flex-1 overflow-y-auto px-3 py-4">
+        <div data-lenis-prevent className="flex-1 overflow-y-auto overscroll-contain px-3 py-4">
           <ChatMessageList>
             {messages.map((message) => (
               <ChatBubble

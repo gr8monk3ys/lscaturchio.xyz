@@ -253,7 +253,7 @@ export function CommandPaletteDialog({
             ref={listRef}
             id={LISTBOX_ID}
             data-lenis-prevent
-            className="max-h-[60vh] overflow-y-auto p-2"
+            className="max-h-[60vh] overflow-y-auto overscroll-contain p-2"
             role="listbox"
             aria-label="Search results"
           >

@@ -205,6 +205,11 @@ export function CodeBlock({
               </span>
             )}
           </Button>
+          {/* The button's aria-label names the action, so its visible
+              "Copied!" is never read out. This region announces the result. */}
+          <span className="sr-only" role="status" aria-live="polite">
+            {copied ? "Code copied to clipboard" : ""}
+          </span>
         </div>
       </div>
 

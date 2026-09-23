@@ -302,7 +302,7 @@ export function BookmarksPageClient() {
                   {/* Read Link */}
                   <Link
                     href={`/blog/${bookmark.slug}`}
-                    className="absolute bottom-4 right-4 p-2 rounded-full bg-primary/10 text-primary opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute bottom-4 right-4 p-2 rounded-full bg-primary/10 text-primary opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
                     aria-label="Read article"
                   >
                     <ExternalLink className="h-4 w-4" />
