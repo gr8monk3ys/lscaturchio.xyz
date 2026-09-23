@@ -68,7 +68,7 @@ export function FaqSection({ title, description, items, contactInfo }: FaqSectio
               rel="noopener noreferrer"
               className="label-mono label-link mt-4 inline-block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
             >
-              {contactInfo.buttonText} →
+              {contactInfo.buttonText} <span aria-hidden="true">→</span>
             </a>
           </div>
         </div>

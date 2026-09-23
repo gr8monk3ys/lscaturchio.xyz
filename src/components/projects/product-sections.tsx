@@ -52,7 +52,7 @@ function PrimaryProjectLinks({ product }: { product: Product }): React.ReactNode
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 bg-muted text-foreground px-5 py-2.5 rounded-xl font-medium hover:bg-muted/80 transition-colors"
         >
-          <IconBrandGithub className="h-4 w-4" />
+          <IconBrandGithub className="h-4 w-4" aria-hidden="true" />
           View Source
         </a>
       )}
@@ -294,7 +294,7 @@ export function RelatedProjectsSection({ relatedProjects }: { relatedProjects: P
                 </p>
               </div>
               <span className="label-mono shrink-0 transition-colors group-hover:text-primary">
-                Read →
+                Read <span aria-hidden="true">→</span>
               </span>
             </Link>
           </li>
@@ -332,7 +332,7 @@ function SidebarLinks({ product }: { product: Product }): React.ReactNode {
             className="inline-flex items-center justify-between rounded-xl bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80 transition-colors"
           >
             Source
-            <IconBrandGithub className="h-4 w-4" />
+            <IconBrandGithub className="h-4 w-4" aria-hidden="true" />
           </a>
         )}
         {product.sourcePrivate && (

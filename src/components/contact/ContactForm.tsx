@@ -421,19 +421,19 @@ export function ContactForm() {
             <h3 className="text-card-title mb-4">What helps me reply fast</h3>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
+                <span aria-hidden="true" className="text-primary mt-1">→</span>
                 <span>The outcome you want and who the system is for</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
+                <span aria-hidden="true" className="text-primary mt-1">→</span>
                 <span>The data sources, tools, or systems already in play</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
+                <span aria-hidden="true" className="text-primary mt-1">→</span>
                 <span>The biggest risk, bottleneck, or failure mode you are seeing</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
+                <span aria-hidden="true" className="text-primary mt-1">→</span>
                 <span>Timing, budget guardrails, or any decision deadline</span>
               </li>
             </ul>
@@ -474,7 +474,7 @@ export function ContactForm() {
                   className="border border-border rounded-lg p-3 hover:text-primary hover:border-primary transition-colors"
                   aria-label={social.label}
                 >
-                  <social.icon className="h-5 w-5" />
+                  <social.icon className="h-5 w-5" aria-hidden="true" />
                 </Link>
               ))}
             </div>

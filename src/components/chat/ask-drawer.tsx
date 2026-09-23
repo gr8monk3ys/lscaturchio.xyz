@@ -249,7 +249,7 @@ export function AskDrawer() {
                       onClick={() => void send(message.failedQuery ?? "")}
                       className="label-mono label-link mt-3 text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
                     >
-                      Try again →
+                      Try again <span aria-hidden="true">→</span>
                     </button>
                   )}
                 </ChatBubbleMessage>

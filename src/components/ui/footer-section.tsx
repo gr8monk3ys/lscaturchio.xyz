@@ -57,7 +57,7 @@ function Footer() {
                   title={social.label}
                   aria-label={social.label}
                 >
-                  <social.icon className="h-4 w-4" />
+                  <social.icon className="h-4 w-4" aria-hidden="true" />
                   <span className="sr-only">{social.label}</span>
                 </a>
               ))}

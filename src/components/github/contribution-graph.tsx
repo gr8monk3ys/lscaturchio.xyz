@@ -33,7 +33,7 @@ function GraphFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="p-6 rounded-lg border border-border">
       <div className="flex items-center gap-2 mb-4">
-        <IconBrandGithub className="h-5 w-5 text-primary" />
+        <IconBrandGithub className="h-5 w-5 text-primary" aria-hidden="true" />
         <h2 className="text-card-title">GitHub contributions</h2>
       </div>
       {children}
@@ -81,7 +81,7 @@ export function ContributionGraph({ calendar }: { calendar: ContributionCalendar
     <div className="p-6 rounded-lg border border-border">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <IconBrandGithub className="h-5 w-5 text-primary" />
+          <IconBrandGithub className="h-5 w-5 text-primary" aria-hidden="true" />
           <h2 className="text-card-title">GitHub contributions</h2>
         </div>
         <p className="text-sm text-muted-foreground">

@@ -88,7 +88,7 @@ export function ChatPageClient({
               href={`/blog/${contextSlug}`}
               className="normal-case tracking-normal text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
             >
-              ← Back to the essay
+              <span aria-hidden="true">←</span> Back to the essay
             </Link>
           </p>
         )}
@@ -117,7 +117,7 @@ export function ChatPageClient({
                     onClick={() => void send(message.failedQuery ?? "")}
                     className="label-mono mt-3 block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
                   >
-                    Try again →
+                    Try again <span aria-hidden="true">→</span>
                   </button>
                 )}
               </ChatBubbleMessage>

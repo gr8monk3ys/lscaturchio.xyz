@@ -98,7 +98,7 @@ export function SeriesNavigation({
                 "label-mono min-w-0 text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
               )}
             >
-              <span className="text-muted-foreground">← </span>
+              <span aria-hidden="true" className="text-muted-foreground">← </span>
               <span className="sr-only">Previous</span>
               <span aria-hidden className="normal-case tracking-normal">Previous · {prevPost.title}</span>
             </Link>
@@ -112,7 +112,7 @@ export function SeriesNavigation({
             >
               <span className="sr-only">Next</span>
               <span aria-hidden className="normal-case tracking-normal">Next · {nextPost.title}</span>
-              <span className="text-muted-foreground"> →</span>
+              <span aria-hidden="true" className="text-muted-foreground"> →</span>
             </Link>
           )}
         </div>

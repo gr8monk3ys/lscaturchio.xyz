@@ -132,10 +132,10 @@ export function BlogGrid({
                 prefetch={false}
                 className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
               >
-                ← Prev
+                <span aria-hidden="true">←</span> Prev
               </Link>
             ) : (
-              <span className="label-mono text-muted-foreground/60" aria-disabled="true">← Prev</span>
+              <span className="label-mono text-muted-foreground/60" aria-disabled="true"><span aria-hidden="true">←</span> Prev</span>
             )}
 
             <span className="label-mono">
@@ -148,10 +148,10 @@ export function BlogGrid({
                 prefetch={false}
                 className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
               >
-                Next →
+                Next <span aria-hidden="true">→</span>
               </Link>
             ) : (
-              <span className="label-mono text-muted-foreground/60" aria-disabled="true">Next →</span>
+              <span className="label-mono text-muted-foreground/60" aria-disabled="true">Next <span aria-hidden="true">→</span></span>
             )}
           </div>
         </nav>
