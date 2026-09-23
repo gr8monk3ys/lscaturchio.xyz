@@ -163,6 +163,7 @@ export function SemanticSearchDemo() {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
+                          timeZone: "UTC",
                         })}
                       </span>
                       <span className="ml-2">

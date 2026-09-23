@@ -18,7 +18,7 @@ function formatStartDate(startDate?: string): string | null {
   const value = `${startDate}-01`
   const date = new Date(value)
   if (!Number.isFinite(date.getTime())) return null
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })
 }
 
 function toStableListItems(values: string[], prefix: string): Array<{ key: string; value: string }> {

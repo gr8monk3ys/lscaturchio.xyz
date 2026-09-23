@@ -93,6 +93,10 @@ export function BookmarksPageClient() {
         month: "short",
         day: "numeric",
         year: "numeric",
+        // A post date ("2026-01-15") is a calendar day, parsed as UTC
+        // midnight; in the viewer's zone it printed the day before west of
+        // UTC. A bookmark timestamp is a real instant and stays local.
+        timeZone: /^\d{4}-\d{2}-\d{2}$/.test(dateStr) ? "UTC" : undefined,
       });
     } catch {
       return dateStr;

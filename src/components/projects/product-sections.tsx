@@ -105,6 +105,7 @@ export function HeaderSection({ metrics, product, shared, status }: HeaderSectio
               {new Date(product.startDate + '-01').toLocaleDateString('en-US', {
                 month: 'short',
                 year: 'numeric',
+                timeZone: 'UTC',
               })}
             </span>
           </div>

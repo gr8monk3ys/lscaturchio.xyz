@@ -47,6 +47,10 @@ export function ChangelogTimeline() {
                   month: 'long',
                   day: 'numeric',
                   year: 'numeric',
+                  // A date-only string parses as UTC midnight; formatting it in
+                  // the viewer's zone printed the previous day west of UTC and
+                  // disagreed with the server-rendered HTML.
+                  timeZone: 'UTC',
                 })}
               </p>
             </div>
