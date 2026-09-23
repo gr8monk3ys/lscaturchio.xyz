@@ -244,9 +244,9 @@ export function BookmarksPageClient() {
                 When you find articles you want to read later, click the bookmark icon to save
                 them here.
               </Paragraph>
-              <Link href="/blog">
-                <Button className="mt-6">Browse Articles</Button>
-              </Link>
+              <Button asChild className="mt-6">
+                <Link href="/blog">Browse Articles</Link>
+              </Button>
             </div>
           )}
 
