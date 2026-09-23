@@ -580,6 +580,71 @@ test.describe('design invariants, in the DOM', () => {
     await expect(hairline).toHaveCount(0)
   })
 
+  test('below its push breakpoint, the ask drawer is a real modal over the chrome it covers', async ({
+    page,
+  }) => {
+    // At 1440 the drawer opened at `left: 1056` while `.site-shell` kept
+    // `padding-inline-end: 0px` — the push layout in globals.css is gated to
+    // `min-width: 1536px`, so at 1440 the panel covered the ASK trigger
+    // (right edge 1066), Search (1216) and the theme toggle (1264) with
+    // nothing marking them unreachable. A reader could see all three, try to
+    // click one, and land on the drawer instead.
+    //
+    // The fix does not raise the breakpoint or shrink the panel; it makes the
+    // overlay a real modal, the same contract ⌘K already keeps: `.ask-scrim`
+    // covers the full viewport and takes pointer events, the panel carries
+    // `role="dialog"` and `aria-modal="true"`, and a focus trap keeps Tab
+    // inside it. Covering the header is then consistent with the rest of the
+    // page being inert, not a leak. This asserts that contract at 1440 — a
+    // width the push breakpoint excludes and the header-controls test above
+    // does not touch — so a regression that re-opens the gap between "visually
+    // covered" and "actually reachable" fails here.
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.route('**/api/views', (route) => route.abort())
+    await page.goto('/', { waitUntil: 'networkidle' })
+    await page.getByLabel('Ask the site').first().click()
+
+    const drawer = page.locator('#ask-drawer')
+    await expect(drawer).toBeVisible()
+    await expect(drawer).toHaveAttribute('role', 'dialog')
+    await expect(drawer).toHaveAttribute('aria-modal', 'true')
+
+    // Push mode never engaged: the shell took none of its layout width back.
+    const shellPadding = await page
+      .locator('.site-shell')
+      .evaluate((el) => getComputedStyle(el).paddingInlineEnd)
+    expect(shellPadding, 'the shell should not have yielded width below 1536px').toBe('0px')
+
+    // The scrim is not decoration at this width: it spans the viewport and
+    // intercepts clicks, which is what makes the covered controls inert
+    // instead of merely hidden.
+    const scrim = await page.locator('.ask-scrim').evaluate((el) => {
+      const box = el.getBoundingClientRect()
+      const style = getComputedStyle(el)
+      return { width: box.width, height: box.height, pointerEvents: style.pointerEvents }
+    })
+    expect(scrim.width, 'scrim should span the full viewport width').toBeGreaterThanOrEqual(1440)
+    expect(scrim.height, 'scrim should span the full viewport height').toBeGreaterThanOrEqual(900)
+    expect(scrim.pointerEvents, 'scrim should block clicks to what it covers').toBe('auto')
+
+    // The trap does not let Tab walk out of the panel into the controls
+    // sitting under the scrim, so a keyboard user starting from the
+    // auto-focused composer never reaches a target the mouse also cannot
+    // reach. Cycled well past the panel's own focusable count (composer,
+    // reset, close, input, send) to prove it wraps rather than merely delays
+    // the escape.
+    const startedInPanel = await drawer.evaluate((panel) => panel.contains(document.activeElement))
+    expect(startedInPanel, 'opening the drawer should focus something inside it').toBe(true)
+
+    const themeToggle = page.getByLabel('Toggle theme')
+    for (let i = 0; i < 12; i += 1) {
+      await page.keyboard.press('Tab')
+      const stillInPanel = await drawer.evaluate((panel) => panel.contains(document.activeElement))
+      expect(stillInPanel, `tab ${i + 1} should stay inside the drawer`).toBe(true)
+    }
+    await expect(themeToggle).not.toBeFocused()
+  })
+
   test('nothing in flow renders past the viewport on a phone', async ({ page }) => {
     // `scrollWidth` cannot see this, and that is the entire point.
     //
