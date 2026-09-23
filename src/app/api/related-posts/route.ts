@@ -78,12 +78,13 @@ const handleGet = async (request: NextRequest) => {
       if (sim > (bestBySlug.get(slug) ?? -1)) bestBySlug.set(slug, sim);
     }
 
+    const blogsBySlug = new Map(allBlogs.map((b) => [b.slug, b]));
     for (const [slug, sim] of Array.from(bestBySlug)) {
       if (relatedPostsMap.has(slug)) {
         relatedPostsMap.get(slug)!.score += sim * 100;
         continue;
       }
-      const blog = allBlogs.find((b) => b.slug === slug);
+      const blog = blogsBySlug.get(slug);
       relatedPostsMap.set(slug, {
         title: blog?.title ?? 'Untitled',
         url: `/blog/${slug}`,
