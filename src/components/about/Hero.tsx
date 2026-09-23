@@ -52,7 +52,7 @@ export function AboutHero() {
             alt="Lorenzo Scaturchio at Coachella"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover transition-all duration-500"
+            className="object-cover"
             priority
           />
         </div>
