@@ -8,6 +8,8 @@ import {
   getToReadBooks,
   getTopRatedBooks,
   getCustomShelves,
+  type GoodreadsBook,
+  type ListedBook,
 } from "@/lib/goodreads";
 import { PageHead } from "@/components/ui/page-head";
 import { spellCountLower, pluralize } from "@/lib/spell-count";
@@ -32,11 +34,38 @@ export function generateMetadata() {
 
 export default function BooksPage() {
   const stats = getGoodreadsStats();
-  const perfectScores = getTopRatedBooks();
-  const currentlyReading = getCurrentlyReading();
-  const recentlyRead = getReadBooks(40);
-  const toRead = getToReadBooks(40);
-  const shelves = getCustomShelves();
+
+  // Only rendered fields cross to the client component. The memo keeps one
+  // object per book, so a book on two lists is still serialized once.
+  const listed = new Map<GoodreadsBook, ListedBook>();
+  const slim = (books: GoodreadsBook[]): ListedBook[] =>
+    books.map((book) => {
+      let entry = listed.get(book);
+      if (!entry) {
+        entry = {
+          id: book.id,
+          title: book.title,
+          author: book.author,
+          link: book.link,
+          rating: book.rating,
+          bookshelves: book.bookshelves,
+          pages: book.pages,
+          yearPublished: book.yearPublished,
+        };
+        listed.set(book, entry);
+      }
+      return entry;
+    });
+
+  const perfectScores = slim(getTopRatedBooks());
+  const currentlyReading = slim(getCurrentlyReading());
+  const recentlyRead = slim(getReadBooks(40));
+  const toRead = slim(getToReadBooks(40));
+  const shelves = getCustomShelves().map((shelf) => ({
+    name: shelf.name,
+    label: shelf.label,
+    books: slim(shelf.books),
+  }));
   // Also derived. "roughly five times" was true when it was typed (4.7x) and
   // would have stayed on the page as the shelves moved underneath it.
   const queueRatio = stats.booksRead > 0 ? Math.round(stats.toRead / stats.booksRead) : 0;

@@ -3,16 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { BookOpen, Clock, ListVideo } from "lucide-react";
-import type { GoodreadsBook, GoodreadsShelf, GoodreadsStats } from "@/lib/goodreads";
+import type { GoodreadsStats, ListedBook, ListedShelf } from "@/lib/goodreads";
 import { spellCount, pluralize } from "@/lib/spell-count";
 
 interface BooksListProps {
   stats: GoodreadsStats;
-  perfectScores: GoodreadsBook[];
-  currentlyReading: GoodreadsBook[];
-  recentlyRead: GoodreadsBook[];
-  toRead: GoodreadsBook[];
-  shelves: GoodreadsShelf[];
+  perfectScores: ListedBook[];
+  currentlyReading: ListedBook[];
+  recentlyRead: ListedBook[];
+  toRead: ListedBook[];
+  shelves: ListedShelf[];
 }
 
 const tabs = [
@@ -31,7 +31,7 @@ function formatYear(year: number): string {
 }
 
 /** A book I gave full marks, as a numbered plate. */
-function PerfectScore({ book, index }: { book: GoodreadsBook; index: number }) {
+function PerfectScore({ book, index }: { book: ListedBook; index: number }) {
   return (
     <li className="border-t border-border py-8 first:border-t-0 first:pt-0">
       <div className="flex gap-5 sm:gap-8">
@@ -64,7 +64,7 @@ function PerfectScore({ book, index }: { book: GoodreadsBook; index: number }) {
 
 /** Static row: staggered opacity-0 entrances were missed under `LazyMotion
  *  strict`, leaving the whole library list blank. */
-function BookRow({ book }: { book: GoodreadsBook }) {
+function BookRow({ book }: { book: ListedBook }) {
   return (
     <li className="border-t border-border py-5">
       <div className="flex flex-col gap-x-6 gap-y-1 sm:flex-row sm:items-baseline sm:justify-between">
@@ -111,7 +111,7 @@ function BookRow({ book }: { book: GoodreadsBook }) {
 const SHELF_PREVIEW = 6;
 
 /** One title on a shelf. Leaves for Goodreads, so it opens in its own tab. */
-function ShelfBook({ book }: { book: GoodreadsBook }) {
+function ShelfBook({ book }: { book: ListedBook }) {
   return (
     <Link
       href={book.link}
@@ -133,7 +133,7 @@ function ShelfBook({ book }: { book: GoodreadsBook }) {
  * Both counts are read off the array. A typed one fails `count-drift`, and it
  * would be wrong within a data refresh anyway.
  */
-function Shelf({ shelf }: { shelf: GoodreadsShelf }) {
+function Shelf({ shelf }: { shelf: ListedShelf }) {
   const preview = shelf.books.slice(0, SHELF_PREVIEW);
   const folded = shelf.books.slice(SHELF_PREVIEW);
 
@@ -178,7 +178,7 @@ export function BooksList({
 }: BooksListProps) {
   const [activeTab, setActiveTab] = useState("currently-reading");
 
-  const listsById: Record<string, GoodreadsBook[]> = {
+  const listsById: Record<string, ListedBook[]> = {
     "currently-reading": currentlyReading,
     "recently-read": recentlyRead,
     "to-read": toRead,
