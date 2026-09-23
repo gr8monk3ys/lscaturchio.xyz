@@ -93,7 +93,11 @@ export function SemanticSearchDemo() {
             )}
           />
           {isLoading && (
-            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true">
+              <span className="flex animate-spin">
+                <Loader2 className="h-4 w-4" />
+              </span>
+            </span>
           )}
         </div>
       </div>

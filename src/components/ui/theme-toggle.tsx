@@ -31,8 +31,15 @@ export function ThemeToggle() {
       aria-label="Toggle theme"
     >
       {/* One Pen Rule: muted at rest, Forest Ink on hover/focus. */}
-      <Sun className="h-5 w-5 rotate-0 scale-100 text-muted-foreground transition-all group-hover:text-primary group-focus-visible:text-primary dark:-rotate-90 dark:scale-0" />
-      <Moon className="absolute h-5 w-5 rotate-90 scale-0 text-muted-foreground transition-all group-hover:text-primary group-focus-visible:text-primary dark:rotate-0 dark:scale-100" />
+      {/* The rotate/scale swap runs on a wrapper span, not on the SVG, so it
+          is composited (rendering-animate-svg-wrapper); the SVG keeps only its
+          colour transition. */}
+      <span aria-hidden="true" className="flex rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0">
+        <Sun className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary" />
+      </span>
+      <span aria-hidden="true" className="absolute flex rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100">
+        <Moon className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary" />
+      </span>
       <span className="sr-only">Toggle theme</span>
     </button>
   )

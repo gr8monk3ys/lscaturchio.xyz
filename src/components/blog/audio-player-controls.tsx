@@ -77,10 +77,14 @@ export function ProgressBar({
         aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
         className="group relative h-2 w-full cursor-pointer rounded-full bg-muted"
       >
-        <div
-          className="absolute inset-y-0 left-0 rounded-full bg-primary transition-[width] duration-100"
-          style={{ width: `${progress}%` }}
-        />
+        {/* The fill scales from the left inside a rounded clip instead of
+            animating `width`, which re-ran layout on every timeupdate. */}
+        <div className="absolute inset-0 overflow-hidden rounded-full">
+          <div
+            className="h-full w-full origin-left bg-primary transition-transform duration-100"
+            style={{ transform: `scaleX(${progress / 100})` }}
+          />
+        </div>
         <div
           className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-primary opacity-0 transition-opacity group-hover:opacity-100"
           style={{ left: `calc(${progress}% - 8px)` }}
@@ -118,7 +122,13 @@ export function TransportControls({
   onTogglePlay,
 }: TransportControlsProps): React.ReactElement {
   function renderPlayIcon(): React.ReactElement {
-    if (isLoading) return <Loader2 className="h-5 w-5 animate-spin" />
+    if (isLoading) {
+      return (
+        <span className="flex animate-spin">
+          <Loader2 className="h-5 w-5" />
+        </span>
+      )
+    }
     if (isPlaying) return <Pause className="h-5 w-5" />
     return <Play className="h-5 w-5" />
   }

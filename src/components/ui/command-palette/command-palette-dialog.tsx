@@ -219,7 +219,11 @@ export function CommandPaletteDialog({
               aria-activedescendant={activeOptionId}
               className="flex-1 bg-transparent text-base placeholder:text-muted-foreground"
             />
-            {isSearching && <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />}
+            {isSearching && (
+              <span className="inline-flex animate-spin text-muted-foreground" aria-hidden="true">
+                <Loader2 className="h-4 w-4" />
+              </span>
+            )}
             {query && !isSearching && (
               <button
                 type="button"

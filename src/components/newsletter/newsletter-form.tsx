@@ -156,7 +156,9 @@ export function NewsletterForm({
         >
           {status === 'loading' && (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="inline-flex animate-spin" aria-hidden="true">
+                <Loader2 className="h-4 w-4" />
+              </span>
               <span>Subscribing...</span>
             </>
           )}
