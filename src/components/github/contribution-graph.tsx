@@ -33,7 +33,7 @@ function GraphFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="p-6 rounded-lg border border-border">
       <div className="flex items-center gap-2 mb-4">
-        <IconBrandGithub className="h-5 w-5 text-primary" />
+        <IconBrandGithub className="h-5 w-5 text-primary" aria-hidden="true" />
         <h2 className="text-card-title">GitHub contributions</h2>
       </div>
       {children}
@@ -64,7 +64,13 @@ export function ContributionGraph({ calendar }: { calendar: ContributionCalendar
   }
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  const currentMonth = new Date().getMonth()
+  // The month axis comes from the data, not from the clock. `new Date()` in
+  // render ran once at build time on the server and again in the browser, so
+  // the labels disagreed (a hydration mismatch) as soon as the month turned
+  // over after a deploy — and they could drift from the cells they label.
+  const lastWeek = data.weeks[data.weeks.length - 1]
+  const lastDay = lastWeek?.contributionDays[lastWeek.contributionDays.length - 1]
+  const currentMonth = lastDay ? new Date(`${lastDay.date}T00:00:00Z`).getUTCMonth() : 0
   const displayMonths = Array.from({ length: 12 }, (_, offset) => ({
     key: `${currentMonth}-${offset}`,
     label: months[(currentMonth - 11 + offset + 12) % 12],
@@ -75,7 +81,7 @@ export function ContributionGraph({ calendar }: { calendar: ContributionCalendar
     <div className="p-6 rounded-lg border border-border">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <IconBrandGithub className="h-5 w-5 text-primary" />
+          <IconBrandGithub className="h-5 w-5 text-primary" aria-hidden="true" />
           <h2 className="text-card-title">GitHub contributions</h2>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -133,7 +139,8 @@ export function ContributionGraph({ calendar }: { calendar: ContributionCalendar
                 {new Date(hoveredDay.date).toLocaleDateString('en-US', {
                   month: 'short',
                   day: 'numeric',
-                  year: 'numeric'
+                  year: 'numeric',
+                  timeZone: 'UTC',
                 })}
               </div>
             )}

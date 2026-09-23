@@ -242,11 +242,14 @@ export function ContactForm() {
                   required
                   maxLength={CONTACT_FIELD_LIMITS.name}
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData((prev) => ({ ...prev, name: value }));
+                }}
                   aria-invalid={fieldError("name") ? true : undefined}
                   aria-describedby={describedBy("name")}
                   className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
-                  placeholder="Your name"
+                  placeholder="Your name…"
                 />
                 {fieldError("name") && (
                   <p id="name-error" className="mt-2 text-sm text-destructive">
@@ -273,11 +276,14 @@ export function ContactForm() {
                   required
                   maxLength={CONTACT_FIELD_LIMITS.email}
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData((prev) => ({ ...prev, email: value }));
+                }}
                   aria-invalid={fieldError("email") ? true : undefined}
                   aria-describedby={describedBy("email")}
                   className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
-                  placeholder="you@example.com"
+                  placeholder="you@example.com…"
                 />
                 {fieldError("email") && (
                   <p id="email-error" className="mt-2 text-sm text-destructive">
@@ -304,7 +310,10 @@ export function ContactForm() {
                 required
                 maxLength={CONTACT_FIELD_LIMITS.subject}
                 value={formData.subject}
-                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData((prev) => ({ ...prev, subject: value }));
+                }}
                 aria-invalid={fieldError("subject") ? true : undefined}
                 aria-describedby={describedBy("subject")}
                 className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
@@ -343,7 +352,10 @@ export function ContactForm() {
                 autoComplete="off"
                 maxLength={CONTACT_FIELD_LIMITS.message}
                 value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData((prev) => ({ ...prev, message: value }));
+                }}
                 aria-invalid={fieldError("message") ? true : undefined}
                 aria-describedby={describedBy("message")}
                 className="neu-input w-full px-4 py-3 rounded-xl resize-none aria-invalid:border-destructive"
@@ -361,7 +373,7 @@ export function ContactForm() {
               disabled={isSubmitting}
               className="cta-primary w-full px-6 py-3 rounded-xl disabled:opacity-50"
             >
-              {isSubmitting ? "Sending..." : "Send project details"}
+              {isSubmitting ? "Sending…" : "Send project details"}
             </button>
 
             {/* Two regions, not one, because the two outcomes have different
@@ -409,19 +421,19 @@ export function ContactForm() {
             <h3 className="text-card-title mb-4">What helps me reply fast</h3>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
+                <span aria-hidden="true" className="text-primary mt-1">→</span>
                 <span>The outcome you want and who the system is for</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
+                <span aria-hidden="true" className="text-primary mt-1">→</span>
                 <span>The data sources, tools, or systems already in play</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
+                <span aria-hidden="true" className="text-primary mt-1">→</span>
                 <span>The biggest risk, bottleneck, or failure mode you are seeing</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
+                <span aria-hidden="true" className="text-primary mt-1">→</span>
                 <span>Timing, budget guardrails, or any decision deadline</span>
               </li>
             </ul>
@@ -462,7 +474,7 @@ export function ContactForm() {
                   className="border border-border rounded-lg p-3 hover:text-primary hover:border-primary transition-colors"
                   aria-label={social.label}
                 >
-                  <social.icon className="h-5 w-5" />
+                  <social.icon className="h-5 w-5" aria-hidden="true" />
                 </Link>
               ))}
             </div>

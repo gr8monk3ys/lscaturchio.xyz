@@ -208,9 +208,12 @@ export function CommandPaletteDialog({
               ref={inputRef}
               autoFocus
               type="text"
+              name="q"
+              autoComplete="off"
+              spellCheck={false}
               value={query}
               onChange={(e) => onChangeQuery(e.target.value)}
-              placeholder="Search pages, blogs, or actions..."
+              placeholder="Search pages, blogs, or actions…"
               aria-label="Search pages, blogs, or actions"
               role="combobox"
               aria-expanded
@@ -219,7 +222,11 @@ export function CommandPaletteDialog({
               aria-activedescendant={activeOptionId}
               className="flex-1 bg-transparent text-base placeholder:text-muted-foreground"
             />
-            {isSearching && <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />}
+            {isSearching && (
+              <span className="inline-flex animate-spin text-muted-foreground" aria-hidden="true">
+                <Loader2 className="h-4 w-4" />
+              </span>
+            )}
             {query && !isSearching && (
               <button
                 type="button"
@@ -246,7 +253,7 @@ export function CommandPaletteDialog({
             ref={listRef}
             id={LISTBOX_ID}
             data-lenis-prevent
-            className="max-h-[60vh] overflow-y-auto p-2"
+            className="max-h-[60vh] overflow-y-auto overscroll-contain p-2"
             role="listbox"
             aria-label="Search results"
           >
@@ -273,7 +280,7 @@ export function CommandPaletteDialog({
                   </>
                 ) : (
                   <>
-                    <p>No results found for &quot;{query}&quot;</p>
+                    <p>No results found for &ldquo;{query}&rdquo;</p>
                     <p className="text-sm mt-1">Try searching for something else</p>
                   </>
                 )}

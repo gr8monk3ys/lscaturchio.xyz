@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, KeyboardEvent } from "react";
+import { FormEvent, KeyboardEvent, useState } from "react";
 import { useAskConversation } from "@/hooks/use-ask-conversation";
 import { CornerDownLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,10 @@ export function ChatPageClient({
   const { messages, input, setInput, isLoading, send, reset, isEmpty } =
     useAskConversation({ contextSlug, initialQuery });
 
+  // Discarding the transcript asks once, the same two-click confirm as the
+  // ask drawer: a destructive action is never immediate.
+  const [confirmingReset, setConfirmingReset] = useState(false);
+
   const handleSubmit = (e?: FormEvent) => {
     e?.preventDefault();
     void send(input);
@@ -62,10 +66,20 @@ export function ChatPageClient({
           {!isEmpty && (
             <button
               type="button"
-              onClick={reset}
-              className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+              onClick={() => {
+                if (confirmingReset) {
+                  reset();
+                  setConfirmingReset(false);
+                } else {
+                  setConfirmingReset(true);
+                }
+              }}
+              onBlur={() => setConfirmingReset(false)}
+              className={`label-mono label-link underline-offset-4 transition-colors hover:text-primary hover:underline ${
+                confirmingReset ? "text-primary" : "text-muted-foreground"
+              }`}
             >
-              Start over
+              {confirmingReset ? "Discard this conversation?" : "Start over"}
             </button>
           )}
         </div>
@@ -88,7 +102,7 @@ export function ChatPageClient({
               href={`/blog/${contextSlug}`}
               className="normal-case tracking-normal text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
             >
-              ← Back to the essay
+              <span aria-hidden="true">←</span> Back to the essay
             </Link>
           </p>
         )}
@@ -117,7 +131,7 @@ export function ChatPageClient({
                     onClick={() => void send(message.failedQuery ?? "")}
                     className="label-mono mt-3 block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
                   >
-                    Try again →
+                    Try again <span aria-hidden="true">→</span>
                   </button>
                 )}
               </ChatBubbleMessage>

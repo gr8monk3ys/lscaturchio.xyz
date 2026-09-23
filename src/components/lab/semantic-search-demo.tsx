@@ -84,16 +84,22 @@ export function SemanticSearchDemo() {
           </label>
           <input
             id="lab-semantic-search"
+            name="q"
+            autoComplete="off"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search posts..."
+            placeholder="Search the essays…"
             className={cn(
               "w-full rounded-xl pl-10 pr-10 py-3 text-sm",
               "neu-input text-foreground placeholder:text-muted-foreground"
             )}
           />
           {isLoading && (
-            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true">
+              <span className="flex animate-spin">
+                <Loader2 className="h-4 w-4" />
+              </span>
+            </span>
           )}
         </div>
       </div>
@@ -159,6 +165,7 @@ export function SemanticSearchDemo() {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
+                          timeZone: "UTC",
                         })}
                       </span>
                       <span className="ml-2">

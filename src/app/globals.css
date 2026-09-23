@@ -259,7 +259,7 @@
 
 @utility cta-primary {
   /* CTA Style Guide */
-  @apply inline-flex items-center justify-center font-semibold transition-all;
+  @apply inline-flex items-center justify-center font-semibold transition-[color,background-color,border-color,box-shadow,filter,transform];
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   border: 1px solid hsl(var(--primary) / 0.42);
@@ -291,7 +291,7 @@
 }
 
 @utility cta-secondary {
-  @apply inline-flex items-center justify-center font-medium transition-all;
+  @apply inline-flex items-center justify-center font-medium transition-[color,background-color,border-color,box-shadow];
   color: hsl(var(--foreground));
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
@@ -592,6 +592,25 @@
     letter-spacing: -0.02em;
     line-height: 1.1;
     font-optical-sizing: auto;
+    /* No one-word last lines on a heading (Web Interface Guidelines). */
+    text-wrap: balance;
+  }
+
+  /* Taps act immediately: no double-tap-to-zoom delay on controls, and a
+   * press flash in the site's own ink rather than the platform's grey. */
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  label,
+  summary,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+
+  html {
+    -webkit-tap-highlight-color: hsl(var(--primary) / 0.12);
   }
 
   /* Focus, as a default rather than an opt-in.

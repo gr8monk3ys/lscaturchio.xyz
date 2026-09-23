@@ -38,44 +38,46 @@ const handleGet = async (request: NextRequest) => {
 
   try {
     const sql = getDb();
-    const allBlogs = await getAllBlogs();
-    const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
 
     // Fetch newsletter stats
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+    // Every read below is independent of the others, so they start together:
+    // the blog index, the four newsletter counts, views and reactions used to
+    // be three sequential round trips.
     const [
+      allBlogs,
       activeRows,
       totalRows,
       unsubRows,
       recentRows,
+      viewsData,
+      reactionsData,
     ] = await Promise.all([
+      getAllBlogs(),
       sql`SELECT count_active_subscribers() as count`,
       sql`SELECT COUNT(*) as count FROM newsletter_subscribers`,
       sql`SELECT COUNT(*) as count FROM newsletter_subscribers WHERE is_active = false`,
       sql`SELECT COUNT(*) as count FROM newsletter_subscribers WHERE subscribed_at >= ${thirtyDaysAgo.toISOString()} AND is_active = true`,
+      sql`SELECT slug, count FROM views ORDER BY count DESC`,
+      sql`SELECT slug, likes, bookmarks FROM reactions ORDER BY likes DESC`,
     ]);
+    const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
 
     const activeCount = Number(activeRows[0].count) || 0;
     const totalCount = Number(totalRows[0].count) || 0;
     const unsubCount = Number(unsubRows[0].count) || 0;
     const recentCount = Number(recentRows[0].count) || 0;
 
-    // Fetch views
-    const viewsData = await sql`
-      SELECT slug, count FROM views ORDER BY count DESC
-    `;
-
-    // Fetch reactions
-    const reactionsData = await sql`
-      SELECT slug, likes, bookmarks FROM reactions ORDER BY likes DESC
-    `;
-
     // Calculate totals
     const totalViews = viewsData.reduce((sum, v) => sum + v.count, 0);
-    const totalLikes = reactionsData.reduce((sum, r) => sum + r.likes, 0);
-    const totalBookmarks = reactionsData.reduce((sum, r) => sum + r.bookmarks, 0);
+    let totalLikes = 0;
+    let totalBookmarks = 0;
+    for (const r of reactionsData) {
+      totalLikes += r.likes;
+      totalBookmarks += r.bookmarks;
+    }
 
     // Get unique posts with any engagement
     const postsWithEngagement = new Set([

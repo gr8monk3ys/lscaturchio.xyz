@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
+import { useCallback, useEffect, useEffectEvent, useMemo, useReducer, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { FileText, Moon, Sun } from 'lucide-react'
@@ -160,7 +160,7 @@ export function useCommandPalette(): CommandPaletteModel {
   const router = useRouter()
   const { theme, setTheme } = useTheme()
 
-  const { isOpen, isSearching, query, recentSearches, searchFailed, searchResults, selectedIndex } = state
+  const { isOpen, isSearching, query, searchFailed, searchResults, selectedIndex } = state
 
   useEffect(() => {
     const saved = safeStorage.getJSON<string[]>('command-palette-recent')
@@ -169,15 +169,17 @@ export function useCommandPalette(): CommandPaletteModel {
     }
   }, [])
 
-  const saveRecentSearch = useCallback(
-    (search: string) => {
-      if (!search.trim()) return
-      const updated = [search, ...recentSearches.filter((item) => item !== search)].slice(0, 5)
-      safeStorage.setJSON('command-palette-recent', updated)
-      dispatch({ type: 'SET_RECENT_SEARCHES', searches: updated })
-    },
-    [recentSearches]
-  )
+  // Builds on the stored list, not on `recentSearches` from render: the
+  // callback no longer depends on that state, so it — and `blogCommands`,
+  // which closes over it — is not recreated whenever the list changes
+  // (rerender-functional-setstate).
+  const saveRecentSearch = useCallback((search: string) => {
+    if (!search.trim()) return
+    const previous = safeStorage.getJSON<string[]>('command-palette-recent') ?? []
+    const updated = [search, ...previous.filter((item) => item !== search)].slice(0, 5)
+    safeStorage.setJSON('command-palette-recent', updated)
+    dispatch({ type: 'SET_RECENT_SEARCHES', searches: updated })
+  }, [])
 
   const performSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim() || searchQuery.length < 2) {
@@ -428,10 +430,15 @@ export function useCommandPalette(): CommandPaletteModel {
     [activeSelectedIndex, closePalette, commandCount, executeCommand, filteredCommands, isOpen, openPalette]
   )
 
+  // One document listener for the life of the hook. `handleKeyDown` changes
+  // on every keystroke and selection move; subscribing to it directly removed
+  // and re-added the listener each time (advanced-event-handler-refs).
+  const onDocumentKeyDown = useEffectEvent((event: KeyboardEvent) => handleKeyDown(event))
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyDown])
+    const listener = (event: KeyboardEvent) => onDocumentKeyDown(event)
+    document.addEventListener('keydown', listener)
+    return () => document.removeEventListener('keydown', listener)
+  }, [])
 
   useEffect(() => {
     if (!isOpen || !listRef.current || commandCount === 0) return

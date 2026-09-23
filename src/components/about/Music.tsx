@@ -42,7 +42,7 @@ const favoriteAlbums: Album[] = [
     title: "Hunky Dory",
     artist: "David Bowie",
     year: 1971,
-    description: "Rick Wakeman on piano, a year before Ziggy. \"Life on Mars?\" is a parody of \"My Way\" and borrows its opening chords, which reached Sinatra from a French song called \"Comme d'habitude\". \"Kooks\" he finished days after his son was born, and dedicated to him.",
+    description: "Rick Wakeman on piano, a year before Ziggy. “Life on Mars?” is a parody of “My Way” and borrows its opening chords, which reached Sinatra from a French song called “Comme d’habitude”. “Kooks” he finished days after his son was born, and dedicated to him.",
     imageUrl: "/images/music/hunky-dory.webp",
     source: { label: "Hunky Dory, Wikipedia", href: "https://en.wikipedia.org/wiki/Hunky_Dory" }
   },

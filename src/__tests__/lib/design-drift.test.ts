@@ -197,6 +197,12 @@ const RULES: Rule[] = [
     test: /\b(?:group-)?hover:scale-/,
   },
   {
+    id: "transition-all",
+    because:
+      "Vercel's Web Interface Guidelines: never `transition: all` — list the properties. `transition-all` also animates `outline-color`, which is the focus-ring interpolation globals.css already had to work around, and on a framer-motion element it eases every transform the library writes a second time. Eleven sites carried it before the 2026-09 audit.",
+    test: /\btransition-all\b|transition:\s*all\b/,
+  },
+  {
     id: "heading-scale-outside-ramp",
     because:
       "A heading takes a ramp token, not a raw size. `display-scale-outside-ramp` starts at text-2xl because everything above text-card-title is a heading — which leaves text-lg and text-xl, where a heading can invent its own scale in the body voice and pass every rule. /blog did exactly that twice: 83 essay titles as `<span>` at 16px, and the archive's `<h2 class=\"text-xl font-semibold tracking-tight\">`. Both were the most important text on the page, set as body copy, one step under the threshold.",

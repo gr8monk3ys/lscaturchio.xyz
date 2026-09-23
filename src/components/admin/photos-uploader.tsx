@@ -4,6 +4,7 @@ import { useState } from "react";
 import { inputClass, labelClass, fieldClass, submitButtonClass } from "./form-styles";
 import { PublishResult, type PublishState } from "./publish-result";
 import { publishRequest } from "./publish";
+import { useUnsavedChangesWarning } from "./use-unsaved-changes";
 
 interface PhotoDraft {
   file: File;
@@ -34,6 +35,8 @@ function draftFromFile(file: File): PhotoDraft {
 export function PhotosUploader() {
   const [drafts, setDrafts] = useState<PhotoDraft[]>([]);
   const [result, setResult] = useState<PublishState>({ state: "idle" });
+  // Selected photos and their metadata exist only here until published.
+  useUnsavedChangesWarning(drafts.length > 0 && result.state !== "done");
 
   function updateDraft(index: number, patch: Partial<PhotoDraft>) {
     setDrafts((prev) => prev.map((d, i) => (i === index ? { ...d, ...patch } : d)));
@@ -75,6 +78,7 @@ export function PhotosUploader() {
         </label>
         <input
           id="photo-files"
+          name="photos"
           type="file"
           multiple
           accept="image/png,image/jpeg,image/webp"
@@ -86,9 +90,11 @@ export function PhotosUploader() {
         <fieldset key={`${d.file.name}-${i}`} className="mb-6 rounded-md border border-border p-4">
           <legend className="px-1 text-sm font-medium">{d.file.name}</legend>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className={fieldClass}>
-              <label className={labelClass}>Category</label>
+            <label className={fieldClass}>
+              <span className={labelClass}>Category</span>
               <select
+                name="category"
+                autoComplete="off"
                 className={inputClass}
                 value={d.category}
                 onChange={(e) =>
@@ -98,74 +104,88 @@ export function PhotosUploader() {
                 <option value="travel">Travel & Landscape</option>
                 <option value="nature">Nature</option>
               </select>
-            </div>
-            <div className={fieldClass}>
-              <label className={labelClass}>Date</label>
+            </label>
+            <label className={fieldClass}>
+              <span className={labelClass}>Date</span>
               <input
+                name="date"
+                autoComplete="off"
                 type="date"
                 className={inputClass}
                 value={d.date}
                 onChange={(e) => updateDraft(i, { date: e.target.value })}
                 required
               />
-            </div>
+            </label>
           </div>
-          <div className={fieldClass}>
-            <label className={labelClass}>Alt text</label>
+          <label className={fieldClass}>
+            <span className={labelClass}>Alt text</span>
             <input
+              name="alt-text"
+              autoComplete="off"
               className={inputClass}
               value={d.alt}
               onChange={(e) => updateDraft(i, { alt: e.target.value })}
               required
             />
-          </div>
+          </label>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className={fieldClass}>
-              <label className={labelClass}>Camera</label>
+            <label className={fieldClass}>
+              <span className={labelClass}>Camera</span>
               <input
+                name="camera"
+                autoComplete="off"
                 className={inputClass}
                 value={d.camera}
                 onChange={(e) => updateDraft(i, { camera: e.target.value })}
                 required
               />
-            </div>
-            <div className={fieldClass}>
-              <label className={labelClass}>Lens</label>
+            </label>
+            <label className={fieldClass}>
+              <span className={labelClass}>Lens</span>
               <input
+                name="lens"
+                autoComplete="off"
                 className={inputClass}
                 value={d.lens}
                 onChange={(e) => updateDraft(i, { lens: e.target.value })}
                 required
               />
-            </div>
-            <div className={fieldClass}>
-              <label className={labelClass}>Settings</label>
+            </label>
+            <label className={fieldClass}>
+              <span className={labelClass}>Settings</span>
               <input
+                name="settings"
+                autoComplete="off"
                 className={inputClass}
                 placeholder="f/8 1/250 ISO 200"
                 value={d.settings}
                 onChange={(e) => updateDraft(i, { settings: e.target.value })}
                 required
               />
-            </div>
+            </label>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className={fieldClass}>
-              <label className={labelClass}>Recipe (optional)</label>
+            <label className={fieldClass}>
+              <span className={labelClass}>Recipe (optional)</span>
               <input
+                name="recipe"
+                autoComplete="off"
                 className={inputClass}
                 value={d.recipe}
                 onChange={(e) => updateDraft(i, { recipe: e.target.value })}
               />
-            </div>
-            <div className={fieldClass}>
-              <label className={labelClass}>Location (optional)</label>
+            </label>
+            <label className={fieldClass}>
+              <span className={labelClass}>Location (optional)</span>
               <input
+                name="location"
+                autoComplete="off"
                 className={inputClass}
                 value={d.location}
                 onChange={(e) => updateDraft(i, { location: e.target.value })}
               />
-            </div>
+            </label>
           </div>
         </fieldset>
       ))}

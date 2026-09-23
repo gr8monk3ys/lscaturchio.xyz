@@ -61,16 +61,17 @@ export const POST = withWriteRoute(
     const query = sanitizeChatInput(data.query);
     const { contextSlug } = data;
 
-    const retrieval = await loadSemanticRetrieval(query);
-
-    let postContext = null;
-    if (contextSlug) {
-      try {
-        postContext = await loadBlogContext(contextSlug);
-      } catch (error) {
-        logError('Failed to load blog context', error, { component: 'chat', contextSlug });
-      }
-    }
+    // Retrieval and the open essay's context do not depend on each other, so
+    // they load together rather than one after the other.
+    const [retrieval, postContext] = await Promise.all([
+      loadSemanticRetrieval(query),
+      contextSlug
+        ? loadBlogContext(contextSlug).catch((error: unknown) => {
+            logError('Failed to load blog context', error, { component: 'chat', contextSlug });
+            return null;
+          })
+        : Promise.resolve(null),
+    ]);
 
     const systemPrompt = buildSystemPromptWithContext(SYSTEM_PROMPT, postContext, retrieval);
 

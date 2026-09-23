@@ -187,7 +187,7 @@ export function NewHereSection({ popularPosts, essayCount }: NewHereSectionProps
                   )}
 
                   <span className="label-mono mt-3 inline-block text-foreground underline-offset-4 transition-colors group-hover:text-primary group-hover:underline">
-                    {step.cta} →
+                    {step.cta} <span aria-hidden="true">→</span>
                   </span>
                 </span>
               </Link>
