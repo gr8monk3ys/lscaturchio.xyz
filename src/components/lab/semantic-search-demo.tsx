@@ -84,6 +84,8 @@ export function SemanticSearchDemo() {
           </label>
           <input
             id="lab-semantic-search"
+            name="q"
+            autoComplete="off"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search the essays…"

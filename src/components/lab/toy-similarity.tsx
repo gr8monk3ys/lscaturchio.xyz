@@ -97,6 +97,8 @@ export function ToySimilarity() {
           </label>
           <textarea
             id="toy-similarity-text-a"
+            name="text-a"
+            autoComplete="off"
             value={a}
             onChange={(e) => setA(e.target.value)}
             rows={5}
@@ -112,6 +114,8 @@ export function ToySimilarity() {
           </label>
           <textarea
             id="toy-similarity-text-b"
+            name="text-b"
+            autoComplete="off"
             value={b}
             onChange={(e) => setB(e.target.value)}
             rows={5}

@@ -281,6 +281,8 @@ export function AskDrawer() {
           </label>
           <textarea
             id="ask-drawer-input"
+            name="question"
+            autoComplete="off"
             ref={inputRef}
             rows={1}
             value={input}

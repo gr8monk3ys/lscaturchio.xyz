@@ -208,6 +208,9 @@ export function CommandPaletteDialog({
               ref={inputRef}
               autoFocus
               type="text"
+              name="q"
+              autoComplete="off"
+              spellCheck={false}
               value={query}
               onChange={(e) => onChangeQuery(e.target.value)}
               placeholder="Search pages, blogs, or actions…"
