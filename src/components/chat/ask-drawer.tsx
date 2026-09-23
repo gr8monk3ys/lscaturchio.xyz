@@ -72,10 +72,14 @@ export function AskDrawer() {
 
   // An armed discard does not survive the panel closing. Otherwise a reader
   // who arms it, closes the drawer and reopens it later finds a button that
-  // throws away their conversation on the first click.
-  useEffect(() => {
+  // throws away their conversation on the first click. Adjusted during render
+  // when `isOpen` changes, not in an effect, so there is no extra commit with
+  // the stale value (react-best-practices: rerender-derived-state-no-effect).
+  const [wasOpen, setWasOpen] = useState(isOpen);
+  if (wasOpen !== isOpen) {
+    setWasOpen(isOpen);
     if (!isOpen) setConfirmingReset(false);
-  }, [isOpen]);
+  }
 
   // Trap focus only while the drawer covers the page. In push mode it sits
   // beside fully usable content and trapping would strand the reader; in

@@ -13,7 +13,7 @@ export function NowEditor({ initial }: { initial: NowContent }) {
   const [result, setResult] = useState<PublishState>({ state: "idle" });
 
   function updateBuild(index: number, patch: Partial<NowBuild>) {
-    setBuilding(building.map((x, j) => (j === index ? { ...x, ...patch } : x)));
+    setBuilding((prev) => prev.map((x, j) => (j === index ? { ...x, ...patch } : x)));
   }
 
   async function publish() {
@@ -50,7 +50,10 @@ export function NowEditor({ initial }: { initial: NowContent }) {
           <input
             className={inputClass}
             value={location.label}
-            onChange={(e) => setLocation({ ...location, label: e.target.value })}
+            onChange={(e) => {
+              const { value } = e.target;
+              setLocation((prev) => ({ ...prev, label: value }));
+            }}
             required
           />
         </div>
@@ -59,7 +62,10 @@ export function NowEditor({ initial }: { initial: NowContent }) {
           <input
             className={inputClass}
             value={location.detail}
-            onChange={(e) => setLocation({ ...location, detail: e.target.value })}
+            onChange={(e) => {
+              const { value } = e.target;
+              setLocation((prev) => ({ ...prev, detail: value }));
+            }}
             required
           />
         </div>
@@ -101,7 +107,7 @@ export function NowEditor({ initial }: { initial: NowContent }) {
           <button
             type="button"
             className="text-sm text-muted-foreground underline"
-            onClick={() => setBuilding(building.filter((_, j) => j !== i))}
+            onClick={() => setBuilding((prev) => prev.filter((_, j) => j !== i))}
           >
             Remove
           </button>
@@ -110,7 +116,7 @@ export function NowEditor({ initial }: { initial: NowContent }) {
       <button
         type="button"
         className="mb-6 text-sm underline"
-        onClick={() => setBuilding([...building, { title: "", href: "", note: "" }])}
+        onClick={() => setBuilding((prev) => [...prev, { title: "", href: "", note: "" }])}
       >
         + Add project
       </button>
@@ -122,15 +128,16 @@ export function NowEditor({ initial }: { initial: NowContent }) {
             className={inputClass}
             rows={2}
             value={t}
-            onChange={(e) =>
-              setThinkingAbout(thinkingAbout.map((x, j) => (j === i ? e.target.value : x)))
-            }
+            onChange={(e) => {
+              const { value } = e.target;
+              setThinkingAbout((prev) => prev.map((x, j) => (j === i ? value : x)));
+            }}
             required
           />
           <button
             type="button"
             className="text-sm text-muted-foreground underline"
-            onClick={() => setThinkingAbout(thinkingAbout.filter((_, j) => j !== i))}
+            onClick={() => setThinkingAbout((prev) => prev.filter((_, j) => j !== i))}
           >
             Remove
           </button>
@@ -139,7 +146,7 @@ export function NowEditor({ initial }: { initial: NowContent }) {
       <button
         type="button"
         className="mb-6 block text-sm underline"
-        onClick={() => setThinkingAbout([...thinkingAbout, ""])}
+        onClick={() => setThinkingAbout((prev) => [...prev, ""])}
       >
         + Add thought
       </button>

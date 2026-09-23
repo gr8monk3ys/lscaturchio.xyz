@@ -242,7 +242,10 @@ export function ContactForm() {
                   required
                   maxLength={CONTACT_FIELD_LIMITS.name}
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData((prev) => ({ ...prev, name: value }));
+                }}
                   aria-invalid={fieldError("name") ? true : undefined}
                   aria-describedby={describedBy("name")}
                   className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
@@ -273,7 +276,10 @@ export function ContactForm() {
                   required
                   maxLength={CONTACT_FIELD_LIMITS.email}
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData((prev) => ({ ...prev, email: value }));
+                }}
                   aria-invalid={fieldError("email") ? true : undefined}
                   aria-describedby={describedBy("email")}
                   className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
@@ -304,7 +310,10 @@ export function ContactForm() {
                 required
                 maxLength={CONTACT_FIELD_LIMITS.subject}
                 value={formData.subject}
-                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData((prev) => ({ ...prev, subject: value }));
+                }}
                 aria-invalid={fieldError("subject") ? true : undefined}
                 aria-describedby={describedBy("subject")}
                 className="neu-input w-full px-4 py-3 rounded-xl aria-invalid:border-destructive"
@@ -343,7 +352,10 @@ export function ContactForm() {
                 autoComplete="off"
                 maxLength={CONTACT_FIELD_LIMITS.message}
                 value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setFormData((prev) => ({ ...prev, message: value }));
+                }}
                 aria-invalid={fieldError("message") ? true : undefined}
                 aria-describedby={describedBy("message")}
                 className="neu-input w-full px-4 py-3 rounded-xl resize-none aria-invalid:border-destructive"

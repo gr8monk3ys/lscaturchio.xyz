@@ -284,7 +284,7 @@ export function CodeBlock({
       {isLongCode && (
         <div className="border-t border-border/70">
           <Button
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={() => setIsExpanded((expanded) => !expanded)}
             variant="ghost"
             className="w-full h-10 rounded-none text-muted-foreground hover:text-primary hover:bg-primary/6"
           >

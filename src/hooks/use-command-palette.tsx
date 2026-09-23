@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
+import { useCallback, useEffect, useEffectEvent, useMemo, useReducer, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { FileText, Moon, Sun } from 'lucide-react'
@@ -428,10 +428,15 @@ export function useCommandPalette(): CommandPaletteModel {
     [activeSelectedIndex, closePalette, commandCount, executeCommand, filteredCommands, isOpen, openPalette]
   )
 
+  // One document listener for the life of the hook. `handleKeyDown` changes
+  // on every keystroke and selection move; subscribing to it directly removed
+  // and re-added the listener each time (advanced-event-handler-refs).
+  const onDocumentKeyDown = useEffectEvent((event: KeyboardEvent) => handleKeyDown(event))
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyDown])
+    const listener = (event: KeyboardEvent) => onDocumentKeyDown(event)
+    document.addEventListener('keydown', listener)
+    return () => document.removeEventListener('keydown', listener)
+  }, [])
 
   useEffect(() => {
     if (!isOpen || !listRef.current || commandCount === 0) return
