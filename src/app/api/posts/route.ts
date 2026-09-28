@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { withRateLimit } from "@/lib/with-rate-limit";
 import { RATE_LIMITS } from "@/lib/rate-limit";
 import { getAllBlogs } from "@/lib/getAllBlogs";
+import { getPublishedBlogs } from "@/lib/blog-data";
 import { hasAudioForSlug } from "@/lib/audio";
 import { getAudioUrl } from "@/lib/audio-url";
 import { getSiteUrl } from "@/lib/site-url";
@@ -15,7 +16,8 @@ const handleGet = async (req: NextRequest) => {
     500
   );
 
-  const posts = await getAllBlogs();
+  // Scheduled posts (future front-matter date) are not announced early.
+  const posts = getPublishedBlogs(await getAllBlogs());
 
   const data = posts.slice(0, limit).map((p) => {
     // `hasAudio` stays a fact about the recording; `audioUrl` is null when
