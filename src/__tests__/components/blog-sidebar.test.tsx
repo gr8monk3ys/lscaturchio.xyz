@@ -168,6 +168,24 @@ describe('BlogSidebar', () => {
     expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
   });
 
+  it('moves focus to the heading, so the next Tab continues in that section', () => {
+    // Scrolling alone left keyboard and screen-reader focus on the contents
+    // row, so the next Tab went to the next row, not into the section read
+    // (WCAG 2.4.3).
+    const root = mountEssay('<h2>Retrieval</h2><p>Body <a href="#x">link</a></p>');
+    const heading = root.querySelector('h2') as HTMLElement;
+    heading.scrollIntoView = vi.fn();
+    const focus = vi.spyOn(heading, 'focus');
+
+    render(<BlogSidebar slug="essay" />);
+    fireEvent.click(screen.getByRole('button', { name: 'Retrieval' }));
+
+    expect(document.activeElement).toBe(heading);
+    expect(heading.getAttribute('tabindex')).toBe('-1');
+    // The scroll is already animating; focusing must not jump over it.
+    expect(focus).toHaveBeenCalledWith({ preventScroll: true });
+  });
+
   it('jumps without animating under prefers-reduced-motion', () => {
     vi.stubGlobal('matchMedia', (query: string) => ({
       matches: query.includes('prefers-reduced-motion'),
