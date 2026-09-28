@@ -42,10 +42,10 @@ export const rateLimiter = {
   /**
    * Check whether a request should be rate limited.
    *
-   * Buckets are keyed by identifier alone — not by (identifier, limit, window) —
-   * so one client shares a single window across every endpoint, exactly as the
-   * previous implementation did. The first request in a window is the one that
-   * fixes the window's length.
+   * Buckets are keyed by (limit, window, identifier), so each policy counts
+   * separately: the PUBLIC reads an essay page fires on load do not use up the
+   * same client's CHAT or NEWSLETTER allowance. Routes that share a policy
+   * share its bucket. The Redis limiter namespaces its keys the same way.
    *
    * @param identifier - Unique identifier (usually IP address)
    * @param limit - Maximum number of requests allowed
@@ -56,7 +56,7 @@ export const rateLimiter = {
     limit: number = 10,
     windowMs: number = 60000 // 1 minute default
   ): MemoryRateLimitResult {
-    const { count, resetAt } = store.hit(identifier, windowMs);
+    const { count, resetAt } = store.hit(`${limit}:${windowMs}:${identifier}`, windowMs);
 
     return {
       success: count <= limit,

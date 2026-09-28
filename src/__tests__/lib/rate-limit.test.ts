@@ -88,6 +88,20 @@ describe('rateLimiter', () => {
     expect(second.reset).toBe(first.reset);
   });
 
+  it('gives each limit policy its own bucket for the same client', () => {
+    // A reader who opens an essay spends several hits on the PUBLIC reads it
+    // fires (views, webmentions, series). Those must not be charged against
+    // CHAT's 3-per-minute allowance, or the reader's first question 429s.
+    for (let i = 0; i < 4; i++) {
+      rateLimiter.check('user1', RATE_LIMITS.PUBLIC.limit, RATE_LIMITS.PUBLIC.window);
+    }
+
+    const chat = rateLimiter.check('user1', RATE_LIMITS.CHAT.limit, RATE_LIMITS.CHAT.window);
+
+    expect(chat.success).toBe(true);
+    expect(chat.remaining).toBe(RATE_LIMITS.CHAT.limit - 1);
+  });
+
   describe('getHeaders', () => {
     it('returns correct rate limit headers', () => {
       const result = rateLimiter.check('user1', 10);

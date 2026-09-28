@@ -109,3 +109,34 @@ describe('pingRedis', () => {
     await expect(pingRedis()).resolves.toBe('unavailable');
   });
 });
+
+describe('getRedisRateLimiter', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+    process.env = {
+      ...originalEnv,
+      UPSTASH_REDIS_REST_URL: 'https://example.upstash.io',
+      UPSTASH_REDIS_REST_TOKEN: 'test-token',
+    };
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+  });
+
+  it('namespaces each limit policy so policies do not share one counter per client', async () => {
+    const { createRateLimiter } = await import('@gr8monk3ys/next-kit/rate-limit');
+    const { getRedisRateLimiter } = await import('@/lib/rate-limit-redis');
+
+    getRedisRateLimiter(3, 60_000);
+    getRedisRateLimiter(100, 60_000);
+
+    const prefixes = vi
+      .mocked(createRateLimiter)
+      .mock.calls.map(([options]) => options.prefix);
+    expect(prefixes).toEqual(['3:60000', '100:60000']);
+  });
+});
