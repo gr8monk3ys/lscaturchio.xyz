@@ -217,6 +217,28 @@ describe('schema layer (real Zod schemas)', () => {
     expect(mailer).not.toHaveBeenCalled();
   });
 
+  it('returns 400, not a logged 500, for a body that is not JSON', async () => {
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', { rawBody: '{' })
+    );
+
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe('Request body must be valid JSON');
+    expect(mailer).not.toHaveBeenCalled();
+  });
+
+  it('returns 400 for a field that is only whitespace', async () => {
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', {
+        body: { ...validContact, message: '   \n  ' },
+      })
+    );
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ error: 'Message is required', field: 'message' });
+    expect(mailer).not.toHaveBeenCalled();
+  });
+
   it('returns 400 with the field error for an over-long message', async () => {
     const res = await contactPost(
       makeRequest('http://localhost:3000/api/contact', {
