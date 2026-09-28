@@ -274,7 +274,7 @@ describe("design drift", () => {
       if (!fs.existsSync(dir)) continue;
 
       for (const file of walk(dir)) {
-        const relative = path.relative(process.cwd(), file);
+        const relative = path.relative(process.cwd(), file).split(path.sep).join("/");
         if (ALLOWED.some((a) => a.file === relative && a.rule === rule.id)) continue;
 
         const lines = stripComments(fs.readFileSync(file, "utf-8")).split("\n");
@@ -321,7 +321,7 @@ describe("icon libraries", () => {
 
       for (const file of walk(dir)) {
         const source = stripComments(fs.readFileSync(file, "utf-8"));
-        const relative = path.relative(process.cwd(), file);
+        const relative = path.relative(process.cwd(), file).split(path.sep).join("/");
 
         for (const match of source.matchAll(
           /import\s*\{([^}]*)\}\s*from\s*['"]@tabler\/icons-react['"]/g
@@ -396,7 +396,7 @@ describe("heading case", () => {
       if (!fs.existsSync(dir)) continue;
 
       for (const file of walk(dir)) {
-        const relative = path.relative(process.cwd(), file);
+        const relative = path.relative(process.cwd(), file).split(path.sep).join("/");
         // Email bodies are not pages. The headings in there ("New Contact
         // Form Submission", "Welcome to My Newsletter!") are transactional mail
         // — one an internal notification to the site's owner — and the site's
@@ -404,8 +404,8 @@ describe("heading case", () => {
         // routes here for the same reason, and because it is HTML in a
         // template string that no page renders; it surfaced only when the
         // word-count floor dropped to three.
-        if (relative.startsWith(path.join("src", "app", "api"))) continue;
-        if (relative === path.join("src", "lib", "email.ts")) continue;
+        if (relative.startsWith("src/app/api/")) continue;
+        if (relative === "src/lib/email.ts") continue;
 
         const source = fs.readFileSync(file, "utf-8");
 
