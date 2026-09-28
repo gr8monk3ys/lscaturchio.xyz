@@ -39,7 +39,7 @@ export function TextToSpeech({ slug, audioSrc }: AudioPlayerProps): React.ReactE
   if (state.useFallback && state.fallbackSupported) {
     return (
       <ListenButton
-        label={state.fallbackPlaying ? "Pause text-to-speech" : "Listen to article"}
+        label={state.fallbackPlaying ? "Stop reading aloud" : "Listen to article"}
         icon={state.fallbackPlaying ? "pause" : "play"}
         onClick={toggleFallback}
       />
