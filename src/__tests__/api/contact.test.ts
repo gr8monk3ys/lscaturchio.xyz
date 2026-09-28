@@ -495,13 +495,10 @@ describe('/api/contact', () => {
   });
 
   describe('edge cases', () => {
-    // Note: The current validation schema trims AFTER min(1) check,
-    // so whitespace-only strings pass validation. These tests document
-    // actual behavior - consider using z.preprocess or refine for stricter validation.
+    // The schema trims BEFORE its min(1) check, so a field of only
+    // whitespace is rejected rather than mailed as a blank line.
 
-    it('allows whitespace-only name (trims after min check)', async () => {
-      // Current behavior: "   " passes min(1), then gets trimmed to ""
-      // The API still sends the email with empty name
+    it('rejects a whitespace-only name', async () => {
       const request = createMockRequest({
         name: '   ',
         email: 'test@example.com',
@@ -511,13 +508,11 @@ describe('/api/contact', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      // Documents current behavior - validation passes
-      expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
+      expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
     });
 
-    it('allows whitespace-only message (trims after min check)', async () => {
-      // Current behavior: "   " passes min(1), then gets trimmed to ""
+    it('rejects a whitespace-only message', async () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'test@example.com',
@@ -527,9 +522,8 @@ describe('/api/contact', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      // Documents current behavior - validation passes
-      expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
+      expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
     });
 
     it('handles malformed JSON body', async () => {
@@ -545,13 +539,12 @@ describe('/api/contact', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      expect(response.status).toBe(500);
-      expect(data.error).toBeDefined();
+      expect(response.status).toBe(400);
+      expect(data.error).toBe('Request body must be valid JSON');
       expect(data.success).toBe(false);
     });
 
-    it('allows message with only newlines (trims after min check)', async () => {
-      // Current behavior: "\n\n\n" passes min(1), then gets trimmed to ""
+    it('rejects a message of only newlines', async () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'test@example.com',
@@ -561,9 +554,8 @@ describe('/api/contact', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      // Documents current behavior - validation passes
-      expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
+      expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
     });
 
     it('accepts message at exactly 5000 characters', async () => {

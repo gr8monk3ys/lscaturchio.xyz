@@ -82,6 +82,16 @@ function scrollToHeading(id: string) {
   // animate the same scroll position and the reader sees a stutter. The
   // reduced-motion check this used to do inline now lives in one place.
   scrollToElement(id);
+
+  // Scrolling moves the view, not focus: without this, a keyboard or
+  // screen-reader user stayed on the contents row and the next Tab went to
+  // the next row rather than into the section (WCAG 2.4.3). `tabindex=-1`
+  // makes the heading focusable without adding it to the Tab order, and
+  // `preventScroll` leaves the smooth scroll above to do the moving.
+  const heading = document.getElementById(id);
+  if (!heading) return;
+  if (!heading.hasAttribute("tabindex")) heading.setAttribute("tabindex", "-1");
+  heading.focus({ preventScroll: true });
 }
 
 /** Ask about this essay. Shared by the desktop rail and the mobile end matter. */

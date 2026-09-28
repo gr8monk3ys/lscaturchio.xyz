@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { afterEach, describe, it, expect, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { UnsubscribePageClient } from "@/components/pages/unsubscribe-page-client";
 
 describe("UnsubscribePageClient", () => {
@@ -46,5 +46,54 @@ describe("UnsubscribePageClient", () => {
     expect(screen.getByText("This link is missing a token.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Back to Home" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Browse Blog" })).not.toBeInTheDocument();
+  });
+
+  describe("confirm state", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it("unsubscribes only when the reader presses the button", async () => {
+      const fetchMock = vi.fn(async () =>
+        new Response(
+          JSON.stringify({ data: { message: "Successfully unsubscribed" }, success: true }),
+          { status: 200 }
+        )
+      );
+      vi.stubGlobal("fetch", fetchMock);
+
+      render(<UnsubscribePageClient status="confirm" message="" token="tok-123" />);
+
+      expect(fetchMock).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByRole("button", { name: "Unsubscribe" }));
+
+      await waitFor(() =>
+        expect(screen.getByRole("heading", { name: "Unsubscribed Successfully" })).toBeInTheDocument()
+      );
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/newsletter/unsubscribe",
+        expect.objectContaining({ method: "POST", body: JSON.stringify({ token: "tok-123" }) })
+      );
+      expect(screen.getByText("Successfully unsubscribed")).toBeInTheDocument();
+    });
+
+    it("shows the server's error when the request is refused", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () =>
+          new Response(JSON.stringify({ error: "Invalid unsubscribe token", success: false }), {
+            status: 404,
+          })
+        )
+      );
+
+      render(<UnsubscribePageClient status="confirm" message="" token="bad" />);
+      fireEvent.click(screen.getByRole("button", { name: "Unsubscribe" }));
+
+      await waitFor(() =>
+        expect(screen.getByRole("heading", { name: "Unsubscribe Failed" })).toBeInTheDocument()
+      );
+      expect(screen.getByText("Invalid unsubscribe token")).toBeInTheDocument();
+    });
   });
 });

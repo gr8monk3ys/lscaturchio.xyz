@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next'
 import { getAllBlogs } from '@/lib/getAllBlogs'
 import { listRoutableProjects } from '@/lib/project-catalogue'
 import { TOPIC_HUBS } from '@/constants/topics'
-import { getBlogLastModified } from '@/lib/blog-data'
+import { getBlogLastModified, getPublishedBlogs } from '@/lib/blog-data'
 import { absoluteSitePath } from '@/lib/site-locale'
 
 type ChangeFrequency = NonNullable<
@@ -45,7 +45,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/changelog', changeFrequency: 'monthly', priority: 0.2 },
   ]
 
-  const blogs = await getAllBlogs()
+  // Scheduled posts (future front-matter date) are not announced early.
+  const blogs = getPublishedBlogs(await getAllBlogs())
 
   const blogEntries = blogs.map((blog) => ({
     path: `/blog/${blog.slug}`,

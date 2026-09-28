@@ -3,9 +3,13 @@ import { getAllBlogs } from '@/lib/getAllBlogs';
 import { Feed } from 'feed';
 import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit';
 import { getSiteUrl } from '@/lib/site-url';
+import { getPublishedBlogs } from '@/lib/blog-data';
+import { essayToFeedHtml } from '@/lib/feed-html';
 
 const handleGet = async () => {
-  const blogs = await getAllBlogs();
+  // Scheduled posts (a future front-matter date) stay out until their day,
+  // as they do on the blog index.
+  const blogs = getPublishedBlogs(await getAllBlogs());
   const siteURL = getSiteUrl();
   const date = new Date();
 
@@ -21,9 +25,9 @@ const handleGet = async () => {
     updated: date,
     generator: "Feed for Node.js",
     feedLinks: {
-      rss2: `${siteURL}/api/rss`,
-      json: `${siteURL}/api/rss.json`,
-      atom: `${siteURL}/api/rss.atom`,
+      // feed@6 reads `rss` for the RSS 2.0 atom:link self reference; the
+      // `rss2` key it used to get was ignored. Only the RSS feed exists.
+      rss: `${siteURL}/api/rss`,
     },
     author: {
       name: "Lorenzo Scaturchio",
@@ -42,9 +46,10 @@ const handleGet = async () => {
     }
 
     // Build enhanced content with series info and metadata
-    let enhancedContent = post.content;
+    const html = essayToFeedHtml(post.content, siteURL);
+    let enhancedContent = html;
     if (post.series && post.seriesOrder) {
-      enhancedContent = `<p><strong>📚 This is Part ${post.seriesOrder} of the "${post.series}" series</strong></p>\n\n${post.content}`;
+      enhancedContent = `<p><strong>📚 This is Part ${post.seriesOrder} of the "${post.series}" series</strong></p>\n\n${html}`;
     }
 
     feed.addItem({

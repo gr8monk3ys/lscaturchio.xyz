@@ -6,7 +6,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        // /api/og is every page's og:image. Link-preview bots (X, LinkedIn)
+        // obey robots.txt, and the longer Allow beats the /api/ Disallow.
+        allow: ["/", "/api/og"],
         disallow: ["/api/", "/secret", "/unsubscribe"],
       },
     ],

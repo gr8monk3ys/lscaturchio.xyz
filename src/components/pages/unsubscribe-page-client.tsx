@@ -4,10 +4,52 @@ import { Container } from '@/components/Container'
 import { Heading } from '@/components/Heading'
 import { Check, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
 
-export type UnsubscribeStatus = 'success' | 'error' | 'no-token'
+/**
+ * `confirm` is an active subscription waiting on the reader. The page never
+ * unsubscribes on load, because mail scanners open every link in a message;
+ * the button below is the only thing that does.
+ */
+export type UnsubscribeStatus = 'confirm' | 'success' | 'error' | 'no-token'
 
-export function UnsubscribePageClient({ status, message }: { status: UnsubscribeStatus; message: string }) {
+export function UnsubscribePageClient({
+  status: initialStatus,
+  message: initialMessage,
+  token,
+}: {
+  status: UnsubscribeStatus
+  message: string
+  token?: string
+}) {
+  const [status, setStatus] = useState(initialStatus)
+  const [message, setMessage] = useState(initialMessage)
+  const [pending, setPending] = useState(false)
+
+  const confirm = async () => {
+    setPending(true)
+    try {
+      const response = await fetch('/api/newsletter/unsubscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      })
+      const data = await response.json().catch(() => null)
+      if (response.ok) {
+        setStatus('success')
+        setMessage(data?.data?.message || 'Successfully unsubscribed')
+      } else {
+        setStatus('error')
+        setMessage(data?.error || 'Failed to unsubscribe. Please try again later.')
+      }
+    } catch {
+      setStatus('error')
+      setMessage('Network error. Please try again later.')
+    } finally {
+      setPending(false)
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center py-20">
       <Container>
@@ -28,12 +70,17 @@ export function UnsubscribePageClient({ status, message }: { status: Unsubscribe
               </div>
 
               <Heading as="h1" className="mb-4">
+                {status === 'confirm' && 'Unsubscribe from the newsletter?'}
                 {status === 'success' && 'Unsubscribed Successfully'}
                 {status === 'error' && 'Unsubscribe Failed'}
                 {status === 'no-token' && 'Invalid Link'}
               </Heading>
 
-              <p className="text-muted-foreground mb-8">{message}</p>
+              <p className="text-muted-foreground mb-8" aria-live="polite">
+                {status === 'confirm'
+                  ? 'You will stop receiving emails from me. Nothing changes until you press the button.'
+                  : message}
+              </p>
 
               {status === 'success' && (
                 <p className="text-sm text-muted-foreground mb-8">
@@ -43,9 +90,24 @@ export function UnsubscribePageClient({ status, message }: { status: Unsubscribe
               )}
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                {status === 'confirm' && (
+                  <button
+                    type="button"
+                    onClick={confirm}
+                    disabled={pending}
+                    aria-busy={pending}
+                    className="px-6 py-3 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-60"
+                  >
+                    Unsubscribe
+                  </button>
+                )}
                 <Link
                   href="/"
-                  className="px-6 py-3 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  className={
+                    status === 'confirm'
+                      ? 'px-6 py-3 rounded-md border border-border hover:bg-accent transition-colors'
+                      : 'px-6 py-3 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors'
+                  }
                 >
                   Back to Home
                 </Link>

@@ -23,7 +23,7 @@ import { Redis } from '@upstash/redis';
  * The previous implementation (`@upstash/ratelimit`'s sliding window) wrote
  * `ratelimit::<identifier>:<window-index>` — it joins its own prefix with `:`
  * and appends the window index — while this store writes
- * `ratelimit:v2:<identifier>`. Those never collide, so no key is read back
+ * `ratelimit:v2:<limit>:<windowMs>:<identifier>`. Those never collide, so no key is read back
  * under a type it was not written with. `v2` makes the generation change
  * legible in Redis and keeps a future prefix edit from landing on a namespace
  * that is still live; the stale keys expire on their own TTLs.
@@ -148,6 +148,10 @@ export function getRedisRateLimiter(limit: number, windowMs: number): RateLimite
         store,
         limit,
         windowMs,
+        // One bucket per policy. Without a prefix every limiter shares the
+        // store's single `ratelimit:v2:<ip>` key, so the PUBLIC reads an essay
+        // page fires on load were charged against CHAT's 3-per-minute allowance.
+        prefix: key,
       })
     );
   }

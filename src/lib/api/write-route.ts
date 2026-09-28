@@ -131,6 +131,22 @@ function checkAuth(req: NextRequest, config: WriteRouteConfig): NextResponse | n
   }
 }
 
+/**
+ * A body the client sent malformed is the client's error, not ours: without
+ * this, `req.json()` on `{` (or an empty body) threw a SyntaxError into the
+ * generic catch, which logged it as a server error and answered 500.
+ */
+async function readClientBody<T>(
+  read: () => T | Promise<T>,
+  message = "Request body must be valid JSON"
+): Promise<T> {
+  try {
+    return await read();
+  } catch {
+    throw writeError.badRequest(message);
+  }
+}
+
 export function withWriteRoute<S extends ZodSchema, TOut>(
   config: WriteRouteConfig<S> & { envelope: { kind: "standard" } },
   handler: (ctx: WriteContext<S>) => Promise<TOut>
@@ -161,14 +177,14 @@ export function withWriteRoute<S extends ZodSchema>(
       const body = config.body;
 
       if (body.kind === "json") {
-        const parsed = parseBody(body.schema, await req.json());
+        const parsed = parseBody(body.schema, await readClientBody(() => req.json()));
         if (!parsed.success) return ApiErrors.badRequest(parsed.error, parsed.field);
         data = parsed.data;
       } else if (body.kind === "formData") {
-        form = await req.formData();
+        form = await readClientBody(() => req.formData(), "Request body must be multipart form data");
         const raw = form.get(body.jsonField);
         if (typeof raw !== "string") return ApiErrors.missingField(body.jsonField);
-        const parsed = parseBody(body.schema, JSON.parse(raw));
+        const parsed = parseBody(body.schema, await readClientBody(() => JSON.parse(raw)));
         if (!parsed.success) return ApiErrors.badRequest(parsed.error, parsed.field);
         data = parsed.data;
       }
