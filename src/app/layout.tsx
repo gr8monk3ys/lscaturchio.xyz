@@ -1,8 +1,6 @@
 import "./globals.css"
 import { Footer } from "@/components/ui/footer-section";
 import { Navbar } from "@/components/ui/navbar";
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Suspense } from 'react'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Metadata } from 'next'
@@ -17,6 +15,7 @@ import { AskDrawer } from "@/components/chat/ask-drawer";
 import { ConsoleGreeting } from "@/components/layout/console-greeting";
 import { MobileNavbarGate } from "@/components/layout/mobile-navbar-gate";
 import { SmoothScrollProvider } from "@/components/layout/smooth-scroll-provider";
+import { VercelInsights } from "@/components/layout/vercel-insights";
 const WEBMENTION_DOMAIN = new URL(SITE_URL).hostname.replace(/^www\./, "");
 const ENABLE_VERCEL_ANALYTICS = process.env.VERCEL === "1";
 
@@ -282,8 +281,7 @@ export default async function RootLayout({
             <AskDrawer />
           </AskDrawerProvider>
 
-          {ENABLE_VERCEL_ANALYTICS && <Analytics />}
-          {ENABLE_VERCEL_ANALYTICS && <SpeedInsights />}
+          {ENABLE_VERCEL_ANALYTICS && <VercelInsights />}
         </ThemeProvider>
       </body>
     </html>

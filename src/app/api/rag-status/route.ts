@@ -17,46 +17,55 @@ const handleGet = async () => {
   const embeddingsProvider = getEmbeddingProvider();
   const embeddingsDimensions = getProviderEmbeddingDimensions();
 
-  let embeddingsAvailable = false;
-  try {
-    embeddingsAvailable = await isEmbeddingsAvailable();
-  } catch (error) {
-    logError("RAG status: embeddings availability check failed", error, { component: "rag-status" });
-    embeddingsAvailable = false;
-  }
-
   const databaseConfigured = isDatabaseConfigured();
-  let databaseOk = false;
-  let embeddingsCount: number | null = null;
 
-  if (databaseConfigured) {
+  // The three probes are independent — embeddings, database, Ollama — so they
+  // run together; the response used to wait for each in turn.
+  const checkEmbeddings = async (): Promise<boolean> => {
+    try {
+      return await isEmbeddingsAvailable();
+    } catch (error) {
+      logError("RAG status: embeddings availability check failed", error, { component: "rag-status" });
+      return false;
+    }
+  };
+
+  const checkDatabase = async (): Promise<{ ok: boolean; count: number | null }> => {
+    if (!databaseConfigured) return { ok: false, count: null };
     try {
       const sql = getDb();
       await sql`SELECT 1`;
-      databaseOk = true;
 
       try {
         const rows = await sql`SELECT COUNT(*)::int as count FROM embeddings`;
-        embeddingsCount = rows[0]?.count ?? 0;
+        return { ok: true, count: rows[0]?.count ?? 0 };
       } catch {
         // Table may not exist yet (first deploy), or pgvector not installed.
-        embeddingsCount = null;
+        return { ok: true, count: null };
       }
     } catch (error) {
       logError("RAG status: database check failed", error, { component: "rag-status" });
-      databaseOk = false;
+      return { ok: false, count: null };
     }
-  }
+  };
 
   // Ollama checks can be slow/irrelevant in prod; only probe when OpenAI isn't configured.
-  let ollamaAvailable: boolean | null = null;
-  if (!openaiConfigured) {
+  const checkOllama = async (): Promise<boolean | null> => {
+    if (openaiConfigured) return null;
     try {
-      ollamaAvailable = await isOllamaAvailable();
+      return await isOllamaAvailable();
     } catch {
-      ollamaAvailable = null;
+      return null;
     }
-  }
+  };
+
+  const [embeddingsAvailable, database, ollamaAvailable] = await Promise.all([
+    checkEmbeddings(),
+    checkDatabase(),
+    checkOllama(),
+  ]);
+  const databaseOk = database.ok;
+  const embeddingsCount = database.count;
 
   return apiSuccess(
     {

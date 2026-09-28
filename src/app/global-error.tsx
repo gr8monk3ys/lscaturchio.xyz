@@ -125,6 +125,7 @@ const paletteCss = `
     border: 0;
     padding: 0;
     cursor: pointer;
+    text-decoration: none;
     text-underline-offset: 4px;
     transition: color 150ms ease;
   }
@@ -169,19 +170,15 @@ export default function GlobalError({
               <button type="button" onClick={() => reset()} className="ge-cta">
                 Try again
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  // Hard navigation is deliberate: global-error replaces the root
-                  // layout, so the Next router context is unavailable here. No
-                  // basePath is configured, so the rule's hazard does not apply.
-                  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-                  window.location.href = "/";
-                }}
-                className="ge-link"
-              >
+              {/* A plain anchor, not a button that assigns location: this is
+                  navigation, so it should open in a new tab on Cmd/Ctrl-click
+                  like any link. A hard load is still what happens — global-error
+                  replaces the root layout, so there is no Next router here to
+                  intercept it, and no basePath is configured. */}
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+              <a href="/" className="ge-link">
                 Go home
-              </button>
+              </a>
             </div>
           </main>
         </div>

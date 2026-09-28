@@ -101,7 +101,7 @@ export default async function NowPage() {
             <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-section-title">Reading</h2>
               <Link href="/books" className="label-mono label-link hover:text-primary">
-                All books →
+                All books <span aria-hidden="true">→</span>
               </Link>
             </div>
             <ul className="divide-y divide-border border-y border-border">
@@ -128,7 +128,7 @@ export default async function NowPage() {
             <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-section-title">Last watched</h2>
               <Link href="/movies" className="label-mono label-link hover:text-primary">
-                All films →
+                All films <span aria-hidden="true">→</span>
               </Link>
             </div>
             <ul className="divide-y divide-border border-y border-border">
@@ -165,7 +165,7 @@ export default async function NowPage() {
             <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-section-title">Writing</h2>
               <Link href="/blog" className="label-mono label-link hover:text-primary">
-                All posts →
+                All posts <span aria-hidden="true">→</span>
               </Link>
             </div>
             <ul className="divide-y divide-border border-y border-border">
@@ -191,7 +191,7 @@ export default async function NowPage() {
           <ul className="space-y-3 text-muted-foreground">
             {nowData.thinkingAbout.map((item) => (
               <li key={item} className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
+                <span aria-hidden="true" className="text-primary mt-1">→</span>
                 <span>{item}</span>
               </li>
             ))}

@@ -92,11 +92,16 @@ export default async function Blog({
    * thing they would take you to.
    */
   const stageScope = tagFilteredBlogs.length > 0 ? tagFilteredBlogs : blogs;
+  // One pass over the posts, not one `.filter` per stage.
+  const countByStage = new Map<string, number>();
+  for (const blog of stageScope) {
+    if (blog.stage) countByStage.set(blog.stage, (countByStage.get(blog.stage) ?? 0) + 1);
+  }
   const stageCounts = BLOG_STAGES.map((stage) => ({
     stage,
     label: STAGE_LABELS[stage].label,
     blurb: STAGE_LABELS[stage].blurb,
-    count: stageScope.filter((blog) => blog.stage === stage).length,
+    count: countByStage.get(stage) ?? 0,
   })).filter(({ count }) => count > 0);
 
   return (

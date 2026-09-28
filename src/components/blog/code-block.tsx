@@ -205,6 +205,11 @@ export function CodeBlock({
               </span>
             )}
           </Button>
+          {/* The button's aria-label names the action, so its visible
+              "Copied!" is never read out. This region announces the result. */}
+          <span className="sr-only" role="status" aria-live="polite">
+            {copied ? "Code copied to clipboard" : ""}
+          </span>
         </div>
       </div>
 
@@ -284,7 +289,7 @@ export function CodeBlock({
       {isLongCode && (
         <div className="border-t border-border/70">
           <Button
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={() => setIsExpanded((expanded) => !expanded)}
             variant="ghost"
             className="w-full h-10 rounded-none text-muted-foreground hover:text-primary hover:bg-primary/6"
           >

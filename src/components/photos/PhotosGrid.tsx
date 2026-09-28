@@ -96,7 +96,7 @@ function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridPr
                 className="object-cover"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               />
-              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300">
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                   <p className="font-medium text-sm truncate">{photo.alt}</p>
                   {photo.location && (
@@ -227,6 +227,7 @@ function PhotoLightbox({
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric',
+                          timeZone: 'UTC',
                         })}
                       </span>
                     )}
@@ -315,7 +316,7 @@ function EmptyGallery(): React.ReactNode {
           href="/garden"
           className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
         >
-          ← Back to the garden
+          <span aria-hidden="true">←</span> Back to the garden
         </Link>
         <Link
           href="/movies"

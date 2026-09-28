@@ -18,7 +18,7 @@ export default function ProjectsError({
       error={error}
       reset={reset}
       title="Failed to load projects"
-      description="We couldn't load the projects. Please try again or explore other sections."
+      description="The projects didn't load. Try again, or explore another section."
       icon={
         <svg
           className="h-8 w-8 text-destructive"

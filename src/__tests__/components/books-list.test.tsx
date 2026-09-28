@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BooksList } from '@/components/books/BooksList';
 import type { GoodreadsBook, GoodreadsShelf, GoodreadsStats } from '@/lib/goodreads';
@@ -75,7 +75,17 @@ function renderList() {
   );
 }
 
+const TABS_UNDER_TEST = ['currently-reading', 'recently-read'];
+const LABELS_UNDER_TEST = [/Reading Now/, /Finished/];
+const renderUnderTest = () => renderList();
+
 describe('BooksList', () => {
+  // The open list lives in the URL (?list=…), and the test window is shared
+  // across tests, so each starts from a clean query string.
+  beforeEach(() => {
+    window.history.replaceState(null, '', '/');
+  });
+
   it('renders the full-marks books as a numbered list with author and shelves', () => {
     renderList();
 
@@ -218,5 +228,23 @@ describe('BooksList', () => {
 
     expect(screen.queryByRole('heading', { name: 'Full marks' })).not.toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Shelves' })).not.toBeInTheDocument();
+  });
+});
+
+describe('BooksList list in the URL', () => {
+  beforeEach(() => {
+    window.history.replaceState(null, '', '/');
+  });
+
+  it('writes the chosen list to ?list= and reads it back', () => {
+    window.history.replaceState(null, '', '/?list=' + TABS_UNDER_TEST[1]);
+    renderUnderTest();
+    const pressed = screen.getAllByRole('button').filter((b) => b.getAttribute('aria-pressed') === 'true');
+    expect(pressed).toHaveLength(1);
+    expect(pressed[0].textContent).toMatch(LABELS_UNDER_TEST[1]);
+
+    fireEvent.click(screen.getAllByRole('button').find((b) => LABELS_UNDER_TEST[0].test(b.textContent ?? ''))!);
+    // The default list keeps the URL clean.
+    expect(new URLSearchParams(window.location.search).get('list')).toBeNull();
   });
 });

@@ -18,7 +18,7 @@ function formatStartDate(startDate?: string): string | null {
   const value = `${startDate}-01`
   const date = new Date(value)
   if (!Number.isFinite(date.getTime())) return null
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })
 }
 
 function toStableListItems(values: string[], prefix: string): Array<{ key: string; value: string }> {
@@ -175,7 +175,7 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80 transition-colors"
               >
-                <IconBrandGithub className="h-4 w-4" />
+                <IconBrandGithub className="h-4 w-4" aria-hidden="true" />
                 Source
               </a>
             )}

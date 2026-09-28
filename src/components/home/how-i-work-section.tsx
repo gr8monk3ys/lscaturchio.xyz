@@ -73,14 +73,14 @@ export function HowIWorkSection() {
               prefetch={false}
               className="label-mono label-link text-foreground ink-underline hover:text-primary"
             >
-              Start a project →
+              Start a project <span aria-hidden="true">→</span>
             </Link>
             <Link
               href="/projects"
               prefetch={false}
               className="label-mono label-link text-foreground ink-underline hover:text-primary"
             >
-              See case studies →
+              See case studies <span aria-hidden="true">→</span>
             </Link>
           </div>
         </>

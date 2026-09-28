@@ -33,59 +33,63 @@ describe("SocialShare", () => {
     vi.useRealTimers();
   });
 
-  it("opens the Twitter intent URL with encoded title and url", () => {
+  it("links to the Twitter intent URL with encoded title and url", () => {
     render(<SocialShare {...props} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Share on Twitter" }));
+    const link = screen.getByRole("link", { name: "Share on Twitter" });
 
-    expect(openSpy).toHaveBeenCalledWith(
+    expect(link).toHaveAttribute(
+      "href",
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(
         props.title
-      )}&url=${encodeURIComponent(props.url)}`,
-      "_blank",
-      "noopener,noreferrer"
+      )}&url=${encodeURIComponent(props.url)}`
     );
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("opens the LinkedIn share URL with the encoded url", () => {
+  it("links to the LinkedIn share URL with the encoded url", () => {
     render(<SocialShare {...props} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Share on LinkedIn" }));
+    const link = screen.getByRole("link", { name: "Share on LinkedIn" });
 
-    expect(openSpy).toHaveBeenCalledWith(
-      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(props.url)}`,
-      "_blank",
-      "noopener,noreferrer"
+    expect(link).toHaveAttribute(
+      "href",
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(props.url)}`
     );
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("opens the Bluesky compose URL with title and url in the text", () => {
+  it("links to the Bluesky compose URL with title and url in the text", () => {
     render(<SocialShare {...props} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Share on Bluesky" }));
+    const link = screen.getByRole("link", { name: "Share on Bluesky" });
 
-    expect(openSpy).toHaveBeenCalledWith(
+    expect(link).toHaveAttribute(
+      "href",
       `https://bsky.app/intent/compose?text=${encodeURIComponent(
         `${props.title}\n${props.url}`
-      )}`,
-      "_blank",
-      "noopener,noreferrer"
+      )}`
     );
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("opens the Hacker News submit URL with encoded url and title", () => {
+  it("links to the Hacker News submit URL with encoded url and title", () => {
     render(<SocialShare {...props} />);
 
     // Name leads with the visible "HN" label to satisfy WCAG 2.5.3.
-    fireEvent.click(screen.getByRole("button", { name: "Share on HN (Hacker News)" }));
+    const link = screen.getByRole("link", { name: "Share on HN (Hacker News)" });
 
-    expect(openSpy).toHaveBeenCalledWith(
+    expect(link).toHaveAttribute(
+      "href",
       `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(
         props.url
-      )}&t=${encodeURIComponent(props.title)}`,
-      "_blank",
-      "noopener,noreferrer"
+      )}&t=${encodeURIComponent(props.title)}`
     );
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
 
   it("copies the share URL and shows Copied! until the timeout elapses", async () => {

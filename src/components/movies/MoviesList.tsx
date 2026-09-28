@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useSearchParamState } from "@/hooks/use-search-param-state";
 import { Clock, ListVideo, PenLine, Trophy } from "lucide-react";
 import type { LetterboxdMovie, LetterboxdStats } from "@/lib/letterboxd";
 
@@ -20,6 +20,8 @@ const tabs = [
   { id: "recent", label: "Recent", icon: Clock },
   { id: "watchlist", label: "Watchlist", icon: ListVideo },
 ];
+
+const TAB_IDS = tabs.map((tab) => tab.id);
 
 /** Letterboxd's own notation — whole stars plus a half, rendered as text. */
 function formatStars(rating: number): string {
@@ -133,7 +135,9 @@ export function MoviesList({
   recentWatches,
   watchlist,
 }: MoviesListProps) {
-  const [activeTab, setActiveTab] = useState("five-star");
+  // The open list is in the URL (?list=…) so it survives a reload and can be
+  // linked to; the default list keeps the URL clean.
+  const [activeTab, setActiveTab] = useSearchParamState("list", TAB_IDS, "five-star");
 
   const listsById: Record<string, LetterboxdMovie[]> = {
     "five-star": fiveStar,
