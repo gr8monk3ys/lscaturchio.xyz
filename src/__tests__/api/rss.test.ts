@@ -31,6 +31,7 @@ function blog(overrides: Partial<Blog>): Blog {
     content: '<p>Body</p>',
     tags: ['ai', 'engineering'],
     image: '/images/blog/a-post.webp',
+    published: true,
     ...overrides,
   } as Blog;
 }
@@ -115,6 +116,49 @@ describe('/api/rss', () => {
     expect(body).toContain('Vector Stores (Building RAG #2)');
     expect(body).toContain('Part 2');
     expect(body).toContain('Building RAG');
+  });
+
+  it('publishes the essay as rendered HTML, not its MDX source', async () => {
+    // `content` is the raw content.mdx file. Feed readers render
+    // content:encoded as HTML, so the meta export and markdown syntax used to
+    // reach subscribers verbatim.
+    vi.mocked(getAllBlogs).mockResolvedValue([
+      blog({
+        content: [
+          'export const meta = {',
+          "  title: 'A Post',",
+          '};',
+          '',
+          '<AssumedAudience>',
+          '## A heading',
+          '',
+          'Some *emphasis* and [a link](/blog/other).',
+          '</AssumedAudience>',
+        ].join('\n'),
+      }),
+    ]);
+
+    const body = await (await GET(new NextRequest('http://localhost/api/rss', { method: 'GET' }))).text();
+
+    expect(body).not.toContain('export const meta');
+    expect(body).not.toContain('## A heading');
+    expect(body).not.toContain('AssumedAudience');
+    expect(body).toContain('<h2>A heading</h2>');
+    expect(body).toContain('<em>emphasis</em>');
+    // Relative links would resolve against the reader app, not the site.
+    expect(body).toContain('<a href="https://lscaturchio.xyz/blog/other">a link</a>');
+  });
+
+  it('leaves scheduled (unpublished) posts out of the feed', async () => {
+    vi.mocked(getAllBlogs).mockResolvedValue([
+      blog({ slug: 'live', title: 'Live' }),
+      blog({ slug: 'scheduled', title: 'Scheduled', published: false }),
+    ]);
+
+    const body = await (await GET(new NextRequest('http://localhost/api/rss', { method: 'GET' }))).text();
+
+    expect(body.match(/<item>/g)?.length).toBe(1);
+    expect(body).not.toContain('https://lscaturchio.xyz/blog/scheduled');
   });
 
   it('chooses an image MIME type by extension', async () => {
