@@ -89,9 +89,9 @@ const validContact = {
   email: 'jane@example.com',
   subject: 'Project scoping',
   message: 'Hello there.',
-  // What the real form sends; without it the route drops the message as a
-  // script that posted without loading the page (src/lib/contact-spam.ts).
-  website: '',
+  // What the real form sends: an empty honeypot and the time the form was
+  // open (src/lib/contact-spam.ts).
+  contact_ref: '',
   elapsedMs: 30_000,
 };
 

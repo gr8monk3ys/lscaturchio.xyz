@@ -26,6 +26,25 @@ type ContactField = keyof typeof CONTACT_FIELD_LIMITS;
  */
 const COUNTDOWN_THRESHOLD = 0.9;
 
+/**
+ * How long a send may take before the form gives up and says so.
+ *
+ * BotID (instrumentation-client.ts) wraps `fetch` and waits for its challenge
+ * script before the request leaves. If an extension blocks that script, or it
+ * loads and never answers, the wrapped fetch can wait forever — and an
+ * `AbortSignal` on the request cannot help, because the request has not been
+ * made yet. Without this the button sat on "Sending..." indefinitely.
+ */
+const SUBMIT_TIMEOUT_MS = 20_000;
+
+function withSubmitTimeout<T>(request: Promise<T>): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error("Contact form send timed out")), SUBMIT_TIMEOUT_MS);
+  });
+  return Promise.race([request, timeout]).finally(() => clearTimeout(timer));
+}
+
 export function ContactForm() {
   const [formData, setFormData] = useState({
     name: "",
@@ -59,11 +78,14 @@ export function ContactForm() {
    * uncontrolled on purpose: a browser-driving bot writes to the DOM, not to
    * React state, and reading the node is what sees it. The clock starts at
    * mount and restarts after each send, so a second message is timed too.
+   * `performance.now()` rather than `Date.now()`: the wall clock can be
+   * corrected backwards while someone types, and a negative interval would
+   * read as a bot and drop their message without a word.
    */
   const honeypotRef = useRef<HTMLInputElement>(null);
   const openedAt = useRef(0);
   useEffect(() => {
-    openedAt.current = Date.now();
+    openedAt.current = performance.now();
   }, []);
 
   /**
@@ -125,20 +147,22 @@ export function ContactForm() {
     setFailure(null);
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          [HONEYPOT_FIELD]: honeypotRef.current?.value ?? "",
-          elapsedMs: Date.now() - openedAt.current,
-        }),
-      });
+      const response = await withSubmitTimeout(
+        fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...formData,
+            [HONEYPOT_FIELD]: honeypotRef.current?.value ?? "",
+            elapsedMs: Math.round(performance.now() - openedAt.current),
+          }),
+        })
+      );
 
       if (response.ok) {
         setSubmitStatus("success");
         setFormData({ name: "", email: "", subject: "", message: "" });
-        openedAt.current = Date.now();
+        openedAt.current = performance.now();
         return;
       }
 
@@ -162,7 +186,7 @@ export function ContactForm() {
       setSubmitStatus("error");
       setFailure({
         message:
-          "The request never reached the server — usually a dropped connection rather than anything you typed.",
+          "The message did not reach the server — a dropped connection, or a browser extension blocking the site's bot check, rather than anything you typed.",
       });
     } finally {
       setIsSubmitting(false);

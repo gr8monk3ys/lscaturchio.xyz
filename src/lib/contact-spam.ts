@@ -9,32 +9,44 @@
  * Two signals, both invisible to a person:
  *
  *  - a honeypot input that is off-screen, `aria-hidden` and out of the tab
- *    order, so only something filling fields blindly ever puts text in it;
+ *    order, so only something filling fields blindly ever puts text in it.
+ *    Its name means nothing to autofill or a password manager, which ignore
+ *    `autocomplete="off"` and would otherwise fill a field called "website";
  *  - how long the form was open before it was sent, measured on the client
- *    (one clock, so no skew) and reported as `elapsedMs`. Typing a name, an
- *    email, a subject and a message takes longer than a few seconds; a script
- *    posting to the API directly sends no timing at all.
+ *    with a monotonic clock and reported as `elapsedMs`. Typing a name, an
+ *    email, a subject and a message takes longer than a few seconds.
  *
  * A request that trips either is answered as if it succeeded and is not
  * mailed, so a bot iterating on its payload learns nothing. That is only safe
  * because a person cannot plausibly trip them; anything with a real
- * false-positive rate (BotID) fails loudly instead — see the contact route.
+ * false-positive rate fails loudly instead — see the contact route.
+ *
+ * A missing `elapsedMs` is deliberately NOT a signal. A tab opened before a
+ * deploy runs the previous bundle, which never sent one, and dropping its
+ * message silently would lose a real enquiry while telling the writer it
+ * arrived. A script posting to the API directly also sends none; BotID
+ * refuses that one, visibly.
  */
 
-/** The honeypot input's name, shared by the form and the route. */
-export const HONEYPOT_FIELD = "website";
+/**
+ * The honeypot input's name, shared by the form and the route. Meaningless on
+ * purpose — see above.
+ */
+export const HONEYPOT_FIELD = "contact_ref";
 
 /** Below this, the form was not filled in by hand. */
 export const MIN_FILL_MS = 3000;
 
-export type SpamSignal = "honeypot" | "no-timing" | "too-fast";
+export type SpamSignal = "honeypot" | "too-fast";
 
 export function spamSignal(submission: {
-  website?: unknown;
+  contact_ref?: unknown;
   elapsedMs?: number;
 }): SpamSignal | null {
-  if (submission.website !== undefined && submission.website !== "") return "honeypot";
-  if (submission.elapsedMs === undefined) return "no-timing";
-  if (submission.elapsedMs < MIN_FILL_MS) return "too-fast";
+  const honeypot = submission[HONEYPOT_FIELD];
+  if (honeypot !== undefined && honeypot !== "") return "honeypot";
+  if (submission.elapsedMs !== undefined && submission.elapsedMs < MIN_FILL_MS) {
+    return "too-fast";
+  }
   return null;
 }

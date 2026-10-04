@@ -59,7 +59,7 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
       'Content-Type': 'application/json',
       origin: 'http://localhost:3000',
     },
-    body: JSON.stringify({ website: '', elapsedMs: 30_000, ...body }),
+    body: JSON.stringify({ contact_ref: '', elapsedMs: 30_000, ...body }),
   });
 }
 
@@ -632,9 +632,7 @@ describe('/api/contact', () => {
     // Each of these answers exactly like a real send, so a bot iterating on
     // its payload cannot tell which part gave it away.
     it.each([
-      ['a filled honeypot', { website: 'https://spam.example' }, 'honeypot'],
-      ['no fill time', { elapsedMs: undefined }, 'no-timing'],
-      ['a non-numeric fill time', { elapsedMs: 'soon' }, 'no-timing'],
+      ['a filled honeypot', { contact_ref: 'https://spam.example' }, 'honeypot'],
       ['a fill time under three seconds', { elapsedMs: 800 }, 'too-fast'],
     ])('drops %s without mailing it, and reports success', async (_, overrides, signal) => {
       const response = await POST(createMockRequest({ ...validBody, ...overrides }));
@@ -648,12 +646,29 @@ describe('/api/contact', () => {
       expect(info).toHaveBeenCalledWith(`[contact] dropped submission: ${signal}`);
     });
 
-    it('does not put the spam signals in the email', async () => {
-      await POST(createMockRequest(validBody));
+    // A tab opened before the deploy runs the old bundle, which sent neither
+    // field. Dropping it would lose a real message while saying it arrived;
+    // it goes on to BotID, which refuses a bare script visibly.
+    it.each([
+      ['no fill time', { contact_ref: undefined, elapsedMs: undefined }],
+      ['a non-numeric fill time', { elapsedMs: 'soon' }],
+    ])('mails a submission with %s, after asking BotID', async (_, overrides) => {
+      const response = await POST(createMockRequest({ ...validBody, ...overrides }));
+
+      expect(response.status).toBe(200);
+      expect(isBotRequest).toHaveBeenCalledTimes(1);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(info).not.toHaveBeenCalled();
+    });
+
+    it('mails only the four fields a person wrote, not the spam signals', async () => {
+      await POST(createMockRequest({ ...validBody, elapsedMs: 987_654 }));
 
       const bodyJson = JSON.parse(mockFetch.mock.calls[0][1].body);
-      expect(bodyJson.html).not.toContain('30000');
-      expect(bodyJson.html).not.toContain('website');
+      const mailed = JSON.stringify(bodyJson);
+      expect(mailed).not.toContain('987654');
+      expect(mailed).not.toContain('contact_ref');
+      expect(mailed).not.toContain('elapsedMs');
     });
   });
 

@@ -129,7 +129,7 @@ describe("ContactForm", () => {
       email: "ada@example.com",
       subject: "RAG audit",
       message: "We need retrieval evaluated before launch.",
-      website: "",
+      contact_ref: "",
       elapsedMs: expect.any(Number),
     });
   });
@@ -137,26 +137,50 @@ describe("ContactForm", () => {
   /**
    * The spam signals src/lib/contact-spam.ts judges. A bot driving a browser
    * writes into the DOM, so the honeypot is read from the node, not state; the
-   * clock is the time since the form mounted.
+   * clock is the time since the form mounted, on the monotonic clock.
    */
   it("sends what a bot typed into the honeypot, and how long the form was open", async () => {
-    vi.useFakeTimers({ toFake: ["Date"] });
+    let now = 1_000;
+    const clock = vi.spyOn(performance, "now").mockImplementation(() => now);
     try {
-      vi.setSystemTime(1_000_000);
       fetchMock.mockResolvedValueOnce(jsonResponse({}));
       const { container } = render(<ContactForm />);
 
       fillForm();
-      const honeypot = container.querySelector<HTMLInputElement>("#website");
+      const honeypot = container.querySelector<HTMLInputElement>("#contact_ref");
       expect(honeypot).not.toBeNull();
       (honeypot as HTMLInputElement).value = "https://spam.example";
-      vi.setSystemTime(1_012_000);
+      now = 13_000;
       submitForm();
 
       await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
       const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
-      expect(body.website).toBe("https://spam.example");
+      expect(body.contact_ref).toBe("https://spam.example");
       expect(body.elapsedMs).toBe(12_000);
+    } finally {
+      clock.mockRestore();
+    }
+  });
+
+  /**
+   * BotID wraps fetch and waits on its challenge before the request leaves;
+   * a blocked or silent challenge used to leave the button on "Sending..."
+   * forever.
+   */
+  it("gives up and says so when the send never answers", async () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    try {
+      fetchMock.mockReturnValueOnce(new Promise<Response>(() => {}));
+      render(<ContactForm />);
+
+      fillForm();
+      submitForm();
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(20_000);
+      });
+
+      expect(screen.getByText(/did not reach the server/i)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /send project details/i })).toBeEnabled();
     } finally {
       vi.useRealTimers();
     }
@@ -164,7 +188,7 @@ describe("ContactForm", () => {
 
   it("keeps the honeypot away from people: hidden, untabbable, never autofilled", () => {
     const { container } = render(<ContactForm />);
-    const honeypot = container.querySelector<HTMLInputElement>("#website");
+    const honeypot = container.querySelector<HTMLInputElement>("#contact_ref");
 
     expect(honeypot).toHaveAttribute("tabindex", "-1");
     expect(honeypot).toHaveAttribute("autocomplete", "off");
@@ -244,7 +268,7 @@ describe("ContactForm", () => {
     submitForm();
 
     await waitFor(() => {
-      expect(screen.getByText(/never reached the server/i)).toBeInTheDocument();
+      expect(screen.getByText(/did not reach the server/i)).toBeInTheDocument();
     });
   });
 
