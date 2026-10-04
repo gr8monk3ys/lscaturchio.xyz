@@ -35,6 +35,10 @@ vi.mock('@/lib/csrf', () => ({
   validateCsrf: vi.fn(),
 }));
 
+vi.mock('@/lib/bot-id', () => ({
+  isBotRequest: vi.fn(),
+}));
+
 // Mock fetch globally for Resend API calls
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
@@ -42,8 +46,12 @@ vi.stubGlobal('fetch', mockFetch);
 import { POST } from '@/app/api/contact/route';
 import { logError } from '@/lib/logger';
 import { validateCsrf } from '@/lib/csrf';
+import { isBotRequest } from '@/lib/bot-id';
 
-// Helper to create mock request
+/**
+ * A request as the real form sends it: an empty honeypot and a fill time well
+ * past the floor, unless the test overrides them.
+ */
 function createMockRequest(body: Record<string, unknown>): NextRequest {
   return new NextRequest('http://localhost:3000/api/contact', {
     method: 'POST',
@@ -51,9 +59,16 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
       'Content-Type': 'application/json',
       origin: 'http://localhost:3000',
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ website: '', elapsedMs: 30_000, ...body }),
   });
 }
+
+const validBody = {
+  name: 'John Doe',
+  email: 'john@example.com',
+  subject: 'Project scoping',
+  message: 'Hello world',
+};
 
 // Store original env
 const originalEnv = { ...process.env };
@@ -63,6 +78,8 @@ describe('/api/contact', () => {
     vi.clearAllMocks();
     // Default: CSRF passes
     vi.mocked(validateCsrf).mockReturnValue(null);
+    // Default: BotID says human
+    vi.mocked(isBotRequest).mockResolvedValue(false);
     // Default: Resend API configured
     process.env.RESEND_API_KEY = 'test_resend_key';
     process.env.CONTACT_EMAIL = 'test@example.com';
@@ -598,6 +615,67 @@ describe('/api/contact', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
+    });
+  });
+
+  describe('spam signals', () => {
+    let info: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      info = vi.spyOn(console, 'info').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      info.mockRestore();
+    });
+
+    // Each of these answers exactly like a real send, so a bot iterating on
+    // its payload cannot tell which part gave it away.
+    it.each([
+      ['a filled honeypot', { website: 'https://spam.example' }, 'honeypot'],
+      ['no fill time', { elapsedMs: undefined }, 'no-timing'],
+      ['a non-numeric fill time', { elapsedMs: 'soon' }, 'no-timing'],
+      ['a fill time under three seconds', { elapsedMs: 800 }, 'too-fast'],
+    ])('drops %s without mailing it, and reports success', async (_, overrides, signal) => {
+      const response = await POST(createMockRequest({ ...validBody, ...overrides }));
+      const data = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.data.message).toContain('successfully');
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(isBotRequest).not.toHaveBeenCalled();
+      expect(info).toHaveBeenCalledWith(`[contact] dropped submission: ${signal}`);
+    });
+
+    it('does not put the spam signals in the email', async () => {
+      await POST(createMockRequest(validBody));
+
+      const bodyJson = JSON.parse(mockFetch.mock.calls[0][1].body);
+      expect(bodyJson.html).not.toContain('30000');
+      expect(bodyJson.html).not.toContain('website');
+    });
+  });
+
+  describe('BotID', () => {
+    // A refusal the reader can see, unlike the silent drops above: BotID can
+    // misjudge a person, and they need to know to use email instead.
+    it('refuses with 403 and does not mail when BotID says bot', async () => {
+      vi.mocked(isBotRequest).mockResolvedValue(true);
+
+      const response = await POST(createMockRequest(validBody));
+      const data = await response.json();
+
+      expect(response.status).toBe(403);
+      expect(data.success).toBe(false);
+      expect(data.error).toContain('flagged as automated');
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it('asks BotID only after the request has passed validation', async () => {
+      await POST(createMockRequest({ ...validBody, email: 'not-an-email' }));
+
+      expect(isBotRequest).not.toHaveBeenCalled();
     });
   });
 

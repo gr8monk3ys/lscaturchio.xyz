@@ -129,7 +129,48 @@ describe("ContactForm", () => {
       email: "ada@example.com",
       subject: "RAG audit",
       message: "We need retrieval evaluated before launch.",
+      website: "",
+      elapsedMs: expect.any(Number),
     });
+  });
+
+  /**
+   * The spam signals src/lib/contact-spam.ts judges. A bot driving a browser
+   * writes into the DOM, so the honeypot is read from the node, not state; the
+   * clock is the time since the form mounted.
+   */
+  it("sends what a bot typed into the honeypot, and how long the form was open", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    try {
+      vi.setSystemTime(1_000_000);
+      fetchMock.mockResolvedValueOnce(jsonResponse({}));
+      const { container } = render(<ContactForm />);
+
+      fillForm();
+      const honeypot = container.querySelector<HTMLInputElement>("#website");
+      expect(honeypot).not.toBeNull();
+      (honeypot as HTMLInputElement).value = "https://spam.example";
+      vi.setSystemTime(1_012_000);
+      submitForm();
+
+      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+      const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
+      expect(body.website).toBe("https://spam.example");
+      expect(body.elapsedMs).toBe(12_000);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("keeps the honeypot away from people: hidden, untabbable, never autofilled", () => {
+    const { container } = render(<ContactForm />);
+    const honeypot = container.querySelector<HTMLInputElement>("#website");
+
+    expect(honeypot).toHaveAttribute("tabindex", "-1");
+    expect(honeypot).toHaveAttribute("autocomplete", "off");
+    expect(honeypot?.closest('[aria-hidden="true"]')).not.toBeNull();
+    // Out of the accessibility tree, so it is not one of the form's fields.
+    expect(screen.queryByRole("textbox", { name: "Leave this field empty" })).toBeNull();
   });
 
   it("clears the fields after a successful submit", async () => {

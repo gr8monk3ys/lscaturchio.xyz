@@ -89,6 +89,10 @@ const validContact = {
   email: 'jane@example.com',
   subject: 'Project scoping',
   message: 'Hello there.',
+  // What the real form sends; without it the route drops the message as a
+  // script that posted without loading the page (src/lib/contact-spam.ts).
+  website: '',
+  elapsedMs: 30_000,
 };
 
 beforeAll(() => {
@@ -270,8 +274,7 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
     const res = await contactPost(
       makeRequest('http://localhost:3000/api/contact', {
         body: {
-          name: 'Jane Doe',
-          email: 'jane@example.com',
+          ...validContact,
           // The subject is reader-controlled and now leads the header line, so
           // this is where a header-injection attempt would go.
           subject: 'Audit\r\nBcc: attacker@evil.example',
