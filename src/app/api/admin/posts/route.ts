@@ -3,7 +3,6 @@ import { getFile, commitToMain, type CommitFile } from "@/lib/admin/github";
 import { postPublishSchema } from "@/lib/admin/schemas";
 import {
   buildContentMdx,
-  buildPageTsx,
   validateMdx,
   type PostMeta,
 } from "@/lib/admin/blog-content";
@@ -47,7 +46,9 @@ export const POST = withWriteRoute(
       image: input.image,
     };
 
-    // Order matters for the commit: content.mdx, page.tsx (create only), cover.
+    // Order matters for the commit: content.mdx, then the cover. There is no
+    // page.tsx to write: `src/app/blog/[slug]` renders any essay the catalogue
+    // lists, so the content file is the whole post.
     const files: CommitFile[] = [];
     let cover: CommitFile | null = null;
     if (input.coverImage) {
@@ -62,9 +63,6 @@ export const POST = withWriteRoute(
     if (!mdxCheck.ok) throw writeError.badRequest(`MDX does not compile: ${mdxCheck.error}`);
 
     files.push({ path: contentPath, content: mdx });
-    if (!existing) {
-      files.push({ path: `src/app/blog/${input.slug}/page.tsx`, content: buildPageTsx(input.slug) });
-    }
     if (cover) files.push(cover);
 
     const verb = existing ? "update" : "add";

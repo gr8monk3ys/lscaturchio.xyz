@@ -1,14 +1,7 @@
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
 import { BooksList } from "@/components/books/BooksList";
-import {
-  getGoodreadsStats,
-  getCurrentlyReading,
-  getReadBooks,
-  getToReadBooks,
-  getTopRatedBooks,
-  getCustomShelves,
-} from "@/lib/goodreads";
+import { getGoodreadsLibrary } from "@/lib/goodreads";
 import { PageHead } from "@/components/ui/page-head";
 import { spellCountLower, pluralize } from "@/lib/spell-count";
 
@@ -19,7 +12,7 @@ import { spellCountLower, pluralize } from "@/lib/spell-count";
  * renders and no drift check read.
  */
 export function generateMetadata() {
-  const perfectScores = getTopRatedBooks().length;
+  const perfectScores = getGoodreadsLibrary().topRated().length;
 
   return buildPageMetadata({
     title: "Books",
@@ -31,12 +24,13 @@ export function generateMetadata() {
 }
 
 export default function BooksPage() {
-  const stats = getGoodreadsStats();
-  const perfectScores = getTopRatedBooks();
-  const currentlyReading = getCurrentlyReading();
-  const recentlyRead = getReadBooks(40);
-  const toRead = getToReadBooks(40);
-  const shelves = getCustomShelves();
+  const library = getGoodreadsLibrary();
+  const stats = library.stats();
+  const perfectScores = library.topRated();
+  const currentlyReading = library.currentlyReading();
+  const recentlyRead = library.read(40);
+  const toRead = library.toRead(40);
+  const shelves = library.customShelves();
   // Also derived. "roughly five times" was true when it was typed (4.7x) and
   // would have stayed on the page as the shelves moved underneath it.
   const queueRatio = stats.booksRead > 0 ? Math.round(stats.toRead / stats.booksRead) : 0;

@@ -6,7 +6,7 @@
  * By default this script:
  * 1. Builds a JSONL batch prompt file in tmp/imagegen/
  * 2. Calls the imagegen skill CLI for generation
- * 3. Rewrites image paths in content.mdx and page.tsx to /images/blog/<slug>.webp
+ * 3. Rewrites the image path in each content.mdx to /images/blog/<slug>.webp
  *
  * Use --prepare-only to only write the JSONL file.
  */
@@ -192,19 +192,14 @@ function updateMetadataForGeneratedImages(slugs) {
       continue;
     }
 
+    // content.mdx is the essay's only file: its meta is what the essay route
+    // and every listing read. There is no per-essay page.tsx to keep in step.
     const contentPath = path.join(BLOG_DIR, slug, "content.mdx");
-    const pagePath = path.join(BLOG_DIR, slug, "page.tsx");
 
     const contentResult = replaceImageField(contentPath, imagePath);
     if (contentResult.status === "updated") updatedFiles++;
     if (contentResult.status !== "updated" && contentResult.status !== "already-set") {
       metadataMisses.push(`${slug}/content.mdx (${contentResult.status})`);
-    }
-
-    const pageResult = replaceImageField(pagePath, imagePath);
-    if (pageResult.status === "updated") updatedFiles++;
-    if (pageResult.status !== "updated" && pageResult.status !== "already-set") {
-      metadataMisses.push(`${slug}/page.tsx (${pageResult.status})`);
     }
   }
 

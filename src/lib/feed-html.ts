@@ -1,23 +1,21 @@
 import { micromark } from "micromark";
 import { gfm, gfmHtml } from "micromark-extension-gfm";
 
-import { mdxToPlainMarkdown } from "@/lib/retrieval-corpus";
-
 /**
- * An essay's content.mdx rendered to HTML for a feed's content:encoded.
+ * An essay's body rendered to HTML for a feed's content:encoded.
  *
  * Feed readers show that field as HTML, so it cannot be the raw MDX source
  * (the meta export and markdown syntax used to reach subscribers verbatim).
- * The same MDX-to-markdown pass the chat corpus uses drops the meta export,
- * imports and component tag lines; micromark then renders the markdown.
- * micromark escapes raw HTML by default, so nothing in an essay can inject
- * markup into a reader.
+ * It takes `BlogPost.body` — the plain markdown `essay-sources` derives, with
+ * the meta export, imports and component tag lines already gone — and
+ * micromark renders it. micromark escapes raw HTML by default, so nothing in
+ * an essay can inject markup into a reader.
  *
  * Root-relative links and images are made absolute: a reader resolves them
  * against its own origin otherwise.
  */
-export function essayToFeedHtml(mdxSource: string, siteUrl: string): string {
-  const html = micromark(mdxToPlainMarkdown(mdxSource), {
+export function essayToFeedHtml(body: string, siteUrl: string): string {
+  const html = micromark(body, {
     extensions: [gfm()],
     htmlExtensions: [gfmHtml()],
   });

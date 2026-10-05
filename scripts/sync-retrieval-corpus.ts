@@ -49,8 +49,8 @@ async function main() {
   const stale: string[] = [];
   let unchanged = 0;
 
-  for (const { slug, meta, source: mdx } of essays) {
-    const expected = buildCorpusDocument(meta.title!, mdx);
+  for (const { slug, meta, body } of essays) {
+    const expected = buildCorpusDocument(meta.title!, body);
     const target = path.join(DATA_DIR, corpusFileName(slug));
 
     const current = fs.existsSync(target) ? fs.readFileSync(target, "utf-8") : null;

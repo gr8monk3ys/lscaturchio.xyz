@@ -1,62 +1,41 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { getLiveLastWatch } from '@/lib/letterboxd';
 
+// Feed parsing — non-film items, the rating range, entities — is covered once,
+// in letterboxd-format.test.ts. This file covers only the adapter: fetch, hand
+// the body to that parser, and degrade to null.
+
+vi.mock('@/lib/logger', () => ({
+  logError: vi.fn(),
+  logWarn: vi.fn(),
+}));
+
 const RSS = `<?xml version="1.0"?><rss><channel>
+  <item><title>A list, not a diary entry</title></item>
   <item>
-    <title>A written review, not a diary entry</title>
-    <description>no film tags here</description>
-  </item>
-  <item>
-    <title>Disclosure Day, 2026 - ★★½</title>
     <letterboxd:filmTitle>Disclosure Day</letterboxd:filmTitle>
     <letterboxd:filmYear>2026</letterboxd:filmYear>
     <letterboxd:memberRating>2.5</letterboxd:memberRating>
   </item>
 </channel></rss>`;
 
-function mockFetch(impl: () => Promise<Response> | Response) {
-  vi.stubGlobal('fetch', vi.fn(impl));
-}
-
-afterEach(() => vi.unstubAllGlobals());
+const fetchReturning = (response: () => Promise<Response>) =>
+  vi.fn(response) as unknown as typeof fetch;
 
 describe('getLiveLastWatch', () => {
-  it('parses the first diary entry (skipping non-film items)', async () => {
-    mockFetch(() => new Response(RSS, { status: 200 }));
-    const result = await getLiveLastWatch();
-    expect(result).toEqual({ title: 'Disclosure Day', year: '2026', rating: 2.5 });
-  });
+  it('returns the first film in the feed, its rating as a number, revalidated hourly', async () => {
+    const fetchFeed = fetchReturning(async () => new Response(RSS, { status: 200 }));
 
-  it('returns an unrated entry with rating null', async () => {
-    const unrated = RSS.replace(/<letterboxd:memberRating>.*?<\/letterboxd:memberRating>/, '');
-    mockFetch(() => new Response(unrated, { status: 200 }));
-    const result = await getLiveLastWatch();
-    expect(result).toMatchObject({ title: 'Disclosure Day', rating: null });
-  });
-
-  it('rejects an out-of-range rating from a malformed feed', async () => {
-    // Letterboxd ratings are 0.5–5.0; a junk value must not render as "999★".
-    const bad = RSS.replace(
-      '<letterboxd:memberRating>2.5</letterboxd:memberRating>',
-      '<letterboxd:memberRating>999</letterboxd:memberRating>',
+    expect(await getLiveLastWatch(fetchFeed)).toEqual({ title: 'Disclosure Day', year: '2026', rating: 2.5 });
+    expect(fetchFeed).toHaveBeenCalledWith(
+      'https://letterboxd.com/gr8monk3ys/rss/',
+      expect.objectContaining({ next: { revalidate: 3600 } }),
     );
-    mockFetch(() => new Response(bad, { status: 200 }));
-    const result = await getLiveLastWatch();
-    expect(result).toMatchObject({ title: 'Disclosure Day', year: '2026', rating: null });
   });
 
-  it('returns null on a non-OK response (caller falls back to CSV)', async () => {
-    mockFetch(() => new Response('nope', { status: 503 }));
-    expect(await getLiveLastWatch()).toBeNull();
-  });
-
-  it('returns null when the fetch throws', async () => {
-    mockFetch(() => Promise.reject(new Error('network down')));
-    expect(await getLiveLastWatch()).toBeNull();
-  });
-
-  it('returns null when no item has a film title', async () => {
-    mockFetch(() => new Response('<rss><channel><item><title>just a review</title></item></channel></rss>', { status: 200 }));
-    expect(await getLiveLastWatch()).toBeNull();
+  it('returns null — so the caller falls back to the CSV — on a bad status, a throw, or no film', async () => {
+    expect(await getLiveLastWatch(fetchReturning(async () => new Response('nope', { status: 503 })))).toBeNull();
+    expect(await getLiveLastWatch(fetchReturning(() => Promise.reject(new Error('network down'))))).toBeNull();
+    expect(await getLiveLastWatch(fetchReturning(async () => new Response('<rss/>', { status: 200 })))).toBeNull();
   });
 });

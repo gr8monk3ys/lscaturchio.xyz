@@ -1,26 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import path from 'path';
-import fs from 'fs/promises';
 import { loadBlogContext, buildSystemPromptWithContext } from '@/lib/chat/context';
+import { getEssaySource, type EssaySource } from '@/lib/essay-sources';
 
-vi.mock('fs/promises', () => ({
-  default: { access: vi.fn(), readFile: vi.fn() },
-}));
+// Finding the essay and deriving its body are essay-sources' job, pinned in
+// essay-sources.test.ts. Chat context only shapes an EssaySource.
+vi.mock('@/lib/essay-sources', () => ({ getEssaySource: vi.fn() }));
 
-const mockAccess = vi.mocked(fs.access);
-const mockReadFile = vi.mocked(fs.readFile);
+const mockGetEssaySource = vi.mocked(getEssaySource);
 
-const MDX = `import { Sidenote } from "@/components/sidenote";
+function essay(body: string, meta: EssaySource['meta'] = {}): EssaySource {
+  return {
+    slug: 'digital-gardens',
+    relativePath: 'digital-gardens/content.mdx',
+    filePath: '/blog/digital-gardens/content.mdx',
+    source: '',
+    meta,
+    body,
+  };
+}
 
-export const meta = {
-  title: "Digital Gardens",
-  description: "Notes on tending a garden of notes.",
-  date: "2026-01-01",
-  image: "/blog/gardens.webp",
-  tags: ["writing"],
-};
-
-## Why gardens
+const BODY = `## Why gardens
 
 Because [streams](/blog/streams) wash away.
 
@@ -28,64 +27,38 @@ Because [streams](/blog/streams) wash away.
 
 Prune often.
 
-# A top-level heading that should be ignored
-`;
-
-/** Only the given relative path (under src/app/blog) exists. */
-function onlyFileExists(relPath: string, content: string) {
-  const target = path.join(process.cwd(), 'src', 'app', 'blog', relPath);
-  mockAccess.mockImplementation((p) =>
-    String(p) === target ? Promise.resolve() : Promise.reject(new Error('ENOENT')),
-  );
-  mockReadFile.mockResolvedValue(content);
-}
+# A top-level heading that should be ignored`;
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
 describe('loadBlogContext', () => {
-  it('returns null when no MDX file exists for the slug', async () => {
-    mockAccess.mockRejectedValue(new Error('ENOENT'));
+  it('returns null when there is no such essay', async () => {
+    mockGetEssaySource.mockResolvedValue(null);
     expect(await loadBlogContext('missing-post')).toBeNull();
-    expect(mockReadFile).not.toHaveBeenCalled();
   });
 
-  it('loads <slug>/content.mdx and extracts meta, headings, and text', async () => {
-    onlyFileExists(path.join('digital-gardens', 'content.mdx'), MDX);
+  it("carries the essay's meta, ##/### headings, and its body", async () => {
+    mockGetEssaySource.mockResolvedValue(
+      essay(BODY, { title: 'Digital Gardens', description: 'Notes on tending.' }),
+    );
 
     const ctx = await loadBlogContext('digital-gardens');
 
-    expect(ctx).not.toBeNull();
-    expect(ctx!.title).toBe('Digital Gardens');
-    expect(ctx!.description).toBe('Notes on tending a garden of notes.');
-    // Only ##/### headings count, markdown links are flattened to their text.
-    expect(ctx!.headings).toEqual(['Why gardens', 'Tending']);
-    expect(ctx!.text).toContain('Prune often.');
-  });
-
-  it('falls back to the flat <slug>.mdx layout', async () => {
-    onlyFileExists('digital-gardens.mdx', MDX);
-
-    const ctx = await loadBlogContext('digital-gardens');
-
-    expect(ctx?.title).toBe('Digital Gardens');
-    expect(mockReadFile).toHaveBeenCalledTimes(1);
-  });
-
-  it('strips import lines and the meta export from the context text', async () => {
-    onlyFileExists('digital-gardens.mdx', MDX);
-
-    const ctx = await loadBlogContext('digital-gardens');
-
-    expect(ctx!.text).not.toContain('import {');
-    expect(ctx!.text).not.toContain('export const meta');
-    expect(ctx!.text).toContain('Because [streams](/blog/streams) wash away.');
+    expect(mockGetEssaySource).toHaveBeenCalledWith('digital-gardens');
+    expect(ctx).toEqual({
+      title: 'Digital Gardens',
+      description: 'Notes on tending.',
+      // Markdown links are flattened to their text; a # heading is not a section.
+      headings: ['Why gardens', 'Tending'],
+      text: BODY,
+    });
   });
 
   it('truncates oversized posts and marks the cut', async () => {
     const huge = `## Only Heading\n\n${'x'.repeat(9000)}`;
-    onlyFileExists('big-post.mdx', huge);
+    mockGetEssaySource.mockResolvedValue(essay(huge));
 
     const ctx = await loadBlogContext('big-post');
 

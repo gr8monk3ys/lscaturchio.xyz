@@ -27,7 +27,7 @@ function post(slug: string, readingTimeMinutes = 6): BlogPost {
     date: '2025-01-01',
     tags: ['ai'],
     image: `/images/${slug}.webp`,
-    content: '',
+    body: '',
     published: true,
     words: readingTimeMinutes * 200,
     readingTimeMinutes,
