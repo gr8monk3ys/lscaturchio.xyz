@@ -151,10 +151,6 @@ export function parseMetaExport(content: string): ParsedMetaExport {
   return { meta: readMeta(found.object), span: found.span };
 }
 
-export function extractBlogMeta(content: string): PartialBlogMeta {
-  return parseMetaExport(content).meta;
-}
-
 function readMeta(metaObject: ts.ObjectLiteralExpression): PartialBlogMeta {
   return {
     title: readStringValue(getMetaPropertyExpression(metaObject, "title")),

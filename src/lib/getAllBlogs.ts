@@ -50,7 +50,13 @@ interface BlogMeta {
 
 export interface BlogPost extends BlogMeta {
   slug: string;
-  content: string;
+  /**
+   * The essay as plain markdown (`EssaySource.body`): no meta export, no
+   * imports. The raw MDX source is deliberately not carried: the feed only
+   * wanted the body, and reading time computed from the source counted the
+   * front-matter as prose.
+   */
+  body: string;
   /**
    * Whether the post is live. Decided at the read seam, from the raw
    * front-matter date, because `date` below has been clamped and can no longer
@@ -87,7 +93,7 @@ export interface EssayCatalogueOptions {
 }
 
 function toBlogPost(essay: EssaySource, now: Date): BlogPost {
-  const { meta, source: content } = essay;
+  const { meta, body } = essay;
   // `listEssaySources` has already guaranteed title and date parse.
   const title = meta.title as string;
   const date = meta.date as string;
@@ -101,11 +107,11 @@ function toBlogPost(essay: EssaySource, now: Date): BlogPost {
   const updatedDate = meta.updated
     ? clampBlogDateToToday(meta.updated, today)
     : undefined;
-  const reading = calculateReadingTime(content);
+  const reading = calculateReadingTime(body);
 
   return {
     slug: essay.slug,
-    content,
+    body,
     title,
     description: meta.description || "",
     date: publishDate,

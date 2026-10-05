@@ -46,8 +46,8 @@ describe('calculateReadingTime', () => {
     const markdown = '# Heading\n**bold** *italic* `code` ~~strike~~';
     const result = calculateReadingTime(markdown);
 
-    // Should count: Heading, bold, italic, code, strike
-    expect(result.words).toBeGreaterThan(0);
+    // Heading, bold, italic, code, strike: symbols are not words.
+    expect(result.words).toBe(5);
   });
 
   it('accepts custom words per minute', () => {

@@ -4,11 +4,10 @@ import * as os from "os";
 import * as path from "path";
 
 import { createEssayCatalogue } from "@/lib/getAllBlogs";
-import { calculateReadingTime } from "@/lib/reading-time";
 
 /**
  * The catalogue's interface, exercised through the real read path: a fixture
- * tree on disk, glob, `extractBlogMeta`, the clamp. The clock and the essay
+ * tree on disk, glob, `parseMetaExport`, the clamp. The clock and the essay
  * root are injected, so nothing here mocks `process.cwd` or the date.
  *
  * Every default query must leave the scheduled post out. That one property is
@@ -108,11 +107,15 @@ describe("getAllBlogs", () => {
     expect(slugs(await later.getAllBlogs())).toContain("scheduled");
   });
 
-  it("computes reading time once, with the formula the API reports", async () => {
+  it("counts the essay's words, not its front-matter", async () => {
+    // The fixture is a seven-line meta export and exactly 400 words of prose.
+    // Reading time used to be computed from the raw source, so every essay
+    // was charged for its title, description, date and tags.
     const post = (await catalogue().getAllBlogs()).find((b) => b.slug === "untagged")!;
 
-    expect(post.readingTimeMinutes).toBe(calculateReadingTime(post.content).minutes);
-    expect(post.words).toBe(calculateReadingTime(post.content).words);
+    expect(post.body).not.toContain("export const meta");
+    expect(post.words).toBe(400);
+    expect(post.readingTimeMinutes).toBe(2);
   });
 });
 

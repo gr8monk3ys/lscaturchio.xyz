@@ -27,6 +27,12 @@ This repo powers the public `lscaturchio.xyz` site. It is part marketing site, p
 
 Blog routes are backed by per-slug folders under `src/app/blog/<slug>/`. Shared metadata and archive logic are aggregated by helpers in `src/lib/getAllBlogs.ts` and `src/lib/blog-data.ts`.
 
+Anything that needs an essay's text (reading time, the RSS feed, the chat
+corpus and chat context, embeddings, TTS, webmentions) reads `EssaySource.body`
+from `src/lib/essay-sources.ts`: the MDX with its meta export, imports and
+tag-only lines removed by one rule. Do not strip MDX again in a new consumer;
+the meta block is wherever `parseMetaExport` in `src/lib/blog-meta.ts` says it is.
+
 Related content inputs also live under `public/my-data/`, including:
 
 - `blog-*.md`: **generated** plain-markdown copies of the essays, used for

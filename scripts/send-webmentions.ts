@@ -19,13 +19,6 @@ function clampToToday(date: string): string {
   return date > today ? today : date;
 }
 
-function stripMdx(source: string): string {
-  let s = source;
-  s = s.replace(/export\s+const\s+meta\s*=\s*\{[\s\S]*?\}\s*;?\s*/m, "");
-  s = s.replace(/^import\s+.*$/gm, "");
-  return s;
-}
-
 function cleanUrl(u: string): string {
   let s = u.trim();
   // Drop common trailing punctuation from markdown/prose contexts.
@@ -33,8 +26,8 @@ function cleanUrl(u: string): string {
   return s;
 }
 
-function extractExternalLinks(mdx: string, siteUrl: string): string[] {
-  const s = stripMdx(mdx);
+/** External links in an essay body (`EssaySource.body`: no meta, no imports). */
+function extractExternalLinks(s: string, siteUrl: string): string[] {
   const out = new Set<string>();
 
   const patterns: Array<{ re: RegExp; group: number }> = [
@@ -148,7 +141,7 @@ async function main(): Promise<void> {
 
   const targetsBySource: Array<{ source: string; slug: string; targets: string[] }> = [];
 
-  for (const { slug: postSlug, meta, source: content } of essays) {
+  for (const { slug: postSlug, meta, body } of essays) {
     if (slug && postSlug !== slug) continue;
 
     // Skip posts that are future-dated in source (belt + suspenders).
@@ -159,7 +152,7 @@ async function main(): Promise<void> {
     }
 
     const source = `${siteUrl}/blog/${postSlug}`;
-    const targets = extractExternalLinks(content, siteUrl);
+    const targets = extractExternalLinks(body, siteUrl);
     if (targets.length === 0) continue;
     targetsBySource.push({ source, slug: postSlug, targets });
   }

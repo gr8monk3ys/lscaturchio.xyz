@@ -10,11 +10,13 @@ const TMP_DIR = path.join(AUDIO_DIR, '.tmp-openai')
 const MAX_CHUNK_LENGTH = Number(process.env.OPENAI_TTS_MAX_CHARS || 3200)
 const MIN_CONTENT_LENGTH = 50
 
-function stripMdxToPlainText(mdx: string): string {
-  let text = mdx
+/**
+ * Speakable text from an essay body (`EssaySource.body`, which has already
+ * lost the meta export and imports): code, tags and markdown syntax go too.
+ */
+function bodyToSpeech(body: string): string {
+  let text = body
 
-  text = text.replace(/export\s+const\s+meta\s*=\s*\{[\s\S]*?\};?\s*/g, '')
-  text = text.replace(/^import\s+.*$/gm, '')
   text = text.replace(/```[\s\S]*?```/g, '')
   text = text.replace(/`[^`]+`/g, '')
   // Loop-based sanitization to handle nested/malformed tags like `<scr<script>ipt>`
@@ -249,7 +251,7 @@ async function main(): Promise<void> {
   let skipped = 0
   let failed = 0
 
-  for (const { slug, source } of essays) {
+  for (const { slug, body } of essays) {
     if (slugFilter.size > 0 && !slugFilter.has(slug)) {
       continue
     }
@@ -260,7 +262,7 @@ async function main(): Promise<void> {
       continue
     }
 
-    const plainText = stripMdxToPlainText(source)
+    const plainText = bodyToSpeech(body)
 
     if (plainText.length < MIN_CONTENT_LENGTH) {
       console.log(`Skipping ${slug} (content too short)`)

@@ -5,6 +5,7 @@ import * as path from "path";
 
 import {
   listEssaySources,
+  getEssaySource,
   essaySlugFromPath,
   MalformedEssayError,
 } from "@/lib/essay-sources";
@@ -90,6 +91,103 @@ describe("listEssaySources", () => {
     const essays = await listEssaySources({ blogDir });
 
     expect(essays.map((e) => e.slug)).toContain("directory-essay");
+  });
+});
+
+describe("EssaySource.body", () => {
+  // Every hard case for "strip the meta export" in one essay. The old rules
+  // each failed one of these: a brace counter ended the meta at the `}` inside
+  // the title and leaked the rest into the body; a lazy `\{[\s\S]*?\}` stopped
+  // at the nested object; reading time stripped nothing at all.
+  const HARD = [
+    'import { Sidenote } from "@/components/sidenote";',
+    "",
+    "export const meta = {",
+    '  title: "Braces } in a string",',
+    "  description: \"An apostrophe's fine, and so is a { brace.\",",
+    '  date: "2024-01-01",',
+    "  extra: { nested: { deep: true } },",
+    "};",
+    "",
+    "<AssumedAudience>",
+    "  Readers who assume the worst.",
+    "</AssumedAudience>",
+    "",
+    "## A heading",
+    "",
+    "Prose with an inline <span>tag</span>.",
+    "",
+    "```ts",
+    'import { useState } from "react";',
+    "export const meta = { fenced: true };",
+    '<CustomComponent prop="value" />',
+    "```",
+    "",
+    "",
+    "",
+    "Closing paragraph.",
+    "",
+  ].join("\n");
+
+  const bodyDir = path.join(tmpRoot, "body-fixtures");
+
+  beforeAll(() => {
+    fs.mkdirSync(path.join(bodyDir, "hard-cases"), { recursive: true });
+    fs.writeFileSync(path.join(bodyDir, "hard-cases", "content.mdx"), HARD, "utf-8");
+    // A flat essay whose meta closes without a semicolon, the common shape.
+    fs.writeFileSync(
+      path.join(bodyDir, "flat-body.mdx"),
+      'export const meta = {\n  title: "Flat",\n}\n\n## Only section\n\nFlat body.\n',
+      "utf-8"
+    );
+  });
+
+  it("is the essay as plain markdown, whatever the meta block holds", async () => {
+    const essay = await getEssaySource("hard-cases", { blogDir: bodyDir });
+
+    expect(essay?.meta.title).toBe("Braces } in a string");
+    expect(essay?.body).toBe(
+      [
+        "Readers who assume the worst.",
+        "",
+        "## A heading",
+        "",
+        "Prose with an inline <span>tag</span>.",
+        "",
+        // Code samples survive verbatim, meta-lookalike and all.
+        "```ts",
+        'import { useState } from "react";',
+        "export const meta = { fenced: true };",
+        '<CustomComponent prop="value" />',
+        "```",
+        "",
+        "Closing paragraph.",
+      ].join("\n")
+    );
+  });
+
+  it("derives a flat essay's body the same way", async () => {
+    const essay = await getEssaySource("flat-body", { blogDir: bodyDir });
+
+    expect(essay?.relativePath).toBe("flat-body.mdx");
+    expect(essay?.body).toBe("## Only section\n\nFlat body.");
+  });
+});
+
+describe("getEssaySource", () => {
+  it("finds an essay in either shape", async () => {
+    expect((await getEssaySource("directory-essay", { blogDir }))?.relativePath).toBe(
+      "directory-essay/content.mdx"
+    );
+    expect((await getEssaySource("flat-essay", { blogDir }))?.relativePath).toBe(
+      "flat-essay.mdx"
+    );
+  });
+
+  it("is null for no essay, a malformed one, or a slug that is not a slug", async () => {
+    expect(await getEssaySource("no-such-essay", { blogDir })).toBeNull();
+    expect(await getEssaySource("malformed-essay", { blogDir })).toBeNull();
+    expect(await getEssaySource("../blog/flat-essay", { blogDir })).toBeNull();
   });
 });
 

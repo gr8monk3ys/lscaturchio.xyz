@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { extractBlogMeta } from '@/lib/blog-meta';
+import { parseMetaExport } from '@/lib/blog-meta';
 
-describe('extractBlogMeta', () => {
+const metaOf = (source: string) => parseMetaExport(source).meta;
+
+describe('parseMetaExport().meta', () => {
   it('extracts supported literal fields from exported meta object', () => {
     const source = `
       export const meta = {
@@ -19,7 +21,7 @@ describe('extractBlogMeta', () => {
       Hello world.
     `;
 
-    expect(extractBlogMeta(source)).toEqual({
+    expect(metaOf(source)).toEqual({
       title: 'Post Title',
       description: 'Post Description',
       date: '2025-02-13',
@@ -39,7 +41,7 @@ describe('extractBlogMeta', () => {
       Just markdown content.
     `;
 
-    expect(extractBlogMeta(source)).toEqual({});
+    expect(metaOf(source)).toEqual({});
   });
 
   it('does not get confused by code fences that include "export const meta"', () => {
@@ -59,7 +61,7 @@ describe('extractBlogMeta', () => {
       \`\`\`
     `;
 
-    const meta = extractBlogMeta(source);
+    const meta = metaOf(source);
     expect(meta.title).toBe('Actual Title');
     expect(meta.description).toBe('Actual Description');
     expect(meta.tags).toEqual(['real']);
@@ -77,7 +79,7 @@ describe('extractBlogMeta', () => {
       };
     `;
 
-    expect(extractBlogMeta(source)).toEqual({
+    expect(metaOf(source)).toEqual({
       title: undefined,
       description: 'Static Description',
       date: '2025-02-13',
@@ -99,7 +101,7 @@ describe('extractBlogMeta', () => {
         stage: "evergreen",
       };
     `;
-    expect(extractBlogMeta(source).stage).toBe('evergreen');
+    expect(metaOf(source).stage).toBe('evergreen');
   });
 
   it('drops an unrecognized stage value', () => {
@@ -110,13 +112,13 @@ describe('extractBlogMeta', () => {
         stage: "evergeen",
       };
     `;
-    expect(extractBlogMeta(source).stage).toBeUndefined();
+    expect(metaOf(source).stage).toBeUndefined();
   });
 
   it('omits stage when absent', () => {
     const source = `
       export const meta = { title: "T", date: "2025-02-13" };
     `;
-    expect(extractBlogMeta(source).stage).toBeUndefined();
+    expect(metaOf(source).stage).toBeUndefined();
   });
 });
