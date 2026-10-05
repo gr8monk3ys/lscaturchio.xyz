@@ -61,8 +61,9 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
 
   return (
     <>
-      {/* z-60: above the menu overlay (z-55) so this button can close it,
-          below the photo lightbox (z-70). Site chrome otherwise lives at z-40/50.
+      {/* `z-menu-bar`: above the menu overlay so this button can close it,
+          below the ask drawer, the lightbox and the palette. The order is
+          defined once, in the `--z-index-*` tokens in globals.css.
 
           A bar, and a wordmark inside it. This was a single floating button at
           `right-0 top-0` with nothing behind it, which meant that at 390px —
@@ -78,7 +79,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
           is full-screen and paints its own header area. */}
       <div
         className={[
-          "fixed inset-x-0 top-0 z-60 flex h-16 items-center justify-between gap-3 border-b border-border/40 bg-background/90 px-4 backdrop-blur-sm md:hidden",
+          "fixed inset-x-0 top-0 z-menu-bar flex h-16 items-center justify-between gap-3 border-b border-border/40 bg-background/90 px-4 backdrop-blur-sm md:hidden",
           isMenuOpen ? "border-transparent bg-transparent backdrop-blur-none" : "",
         ].join(" ")}
       >
@@ -172,7 +173,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
              beyond `aria-expanded` flipping on a button they had just left. */
           tabIndex={-1}
           data-lenis-prevent
-          className="fixed inset-0 z-55 flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
+          className="fixed inset-0 z-menu flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
         >
         <nav id="mobile-navigation-menu" aria-label="Mobile navigation" className="contents">
           <div className="mx-auto flex w-full max-w-md flex-col space-y-2 p-6 pt-20">

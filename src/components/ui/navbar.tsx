@@ -13,7 +13,7 @@ const navLinkBaseClass =
 export function Navbar() {
   return (
     <>
-      <header className="site-header fixed top-0 z-50 hidden border-b border-border/40 bg-background/90 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md md:block">
+      <header className="site-header fixed top-0 z-chrome hidden border-b border-border/40 bg-background/90 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md md:block">
         {/* `container` resolves to 1280px at 2xl, 128px wider than the 1152px
             content cap, so the chrome sat wider than everything beneath it. */}
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">

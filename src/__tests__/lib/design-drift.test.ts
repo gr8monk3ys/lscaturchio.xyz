@@ -191,6 +191,15 @@ const RULES: Rule[] = [
     appliesTo: (line) => !line.includes("immediate"),
   },
   {
+    id: "raw-z-on-fixed",
+    because:
+      "Everything `position: fixed` stacks against everything else fixed, so its z-index is a position in one site-wide order, and that order is the `--z-index-*` tokens in globals.css (`z-menu`, `z-palette`, …). Chosen as numbers file by file, the command palette landed at z-50 under the z-55 mobile menu that opens it — a dialog that took focus and could not be seen — and the ask drawer at z-55 under the z-60 phone bar, which covered its close button. Name the layer; add one to the token block if none fits.",
+    test: /(?<![\w-])z-(?:\d+|\[[^\]]+\])(?![\w-])/,
+    // A class list that positions the element as fixed. `absolute z-10` inside
+    // an overlay stacks within that overlay and is not part of the order.
+    appliesTo: (line) => /(?:^|["'`\s])(?:[a-z0-9]+:)*fixed(?=["'`\s])/.test(line),
+  },
+  {
     id: "image-hover-lift",
     because:
       "The Flat Paper Rule: a hovered surface changes tint and border colour, it does not rise. Scale on an image is a lift.",
@@ -552,9 +561,10 @@ describe("modal overlays", () => {
       .filter(({ source }) => !IMPORTS_OVERLAY.test(source))
       .map(({ relative }) => relative);
 
-    // The three known surfaces, so a scan that silently matched nothing
-    // cannot pass this by finding no candidates.
-    expect(surfaces.length).toBeGreaterThanOrEqual(3);
+    // The four known surfaces (menu, drawer, palette, photo lightbox), so a
+    // scan that silently matched nothing cannot pass this by finding no
+    // candidates.
+    expect(surfaces.length).toBeGreaterThanOrEqual(4);
     expect(
       offenders,
       [
@@ -584,5 +594,46 @@ describe("modal overlays", () => {
         ...offenders,
       ].join("\n")
     ).toEqual([]);
+  });
+});
+
+/**
+ * The overlay stacking order, as an order.
+ *
+ * `raw-z-on-fixed` makes every fixed element name a layer; this holds what the
+ * layers mean relative to each other. Each pair is a reader-visible failure the
+ * site has had or would have: the palette opens from inside the menu and the
+ * drawer, so it has to sit above both; the phone bar carries the menu's close
+ * toggle, so it has to sit above the menu; the drawer is a modal on a phone,
+ * so it has to cover the bar or the bar covers its close button.
+ */
+describe("overlay layers", () => {
+  const css = fs.readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf-8");
+  const layers = new Map(
+    [...css.matchAll(/--z-index-([a-z-]+):\s*(-?\d+)\s*;/g)].map(([, name, value]) => [
+      name,
+      Number(value),
+    ])
+  );
+
+  const ABOVE: Array<[upper: string, lower: string, because: string]> = [
+    ["menu-bar", "menu", "the menu's close toggle lives in the bar"],
+    ["drawer", "menu-bar", "on a phone the drawer covers the bar, or the bar covers the drawer's close button"],
+    ["lightbox", "drawer", "the lightbox covers the push-mode drawer beside it"],
+    ["palette", "menu", "the menu's Search button opens the palette"],
+    ["palette", "drawer", "⌘K opens the palette from inside the drawer"],
+    ["palette", "lightbox", "⌘K opens the palette over the lightbox"],
+    ["menu", "chrome", "the menu overlay covers the page's own header"],
+  ];
+
+  it.each(ABOVE)("puts %s above %s: %s", (upper, lower) => {
+    expect(layers.get(upper), `--z-index-${upper} is not defined in globals.css`).toBeTypeOf("number");
+    expect(layers.get(lower), `--z-index-${lower} is not defined in globals.css`).toBeTypeOf("number");
+    expect(layers.get(upper)!).toBeGreaterThan(layers.get(lower)!);
+  });
+
+  it("reads the stacking z-index in globals.css from the tokens", () => {
+    const raw = [...css.matchAll(/^\s*z-index:\s*(-?\d+)\s*;/gm)].map(([line]) => line.trim());
+    expect(raw, "Use var(--z-index-<layer>) so CSS-only layers sit in the same order.").toEqual([]);
   });
 });

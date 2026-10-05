@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useId, useMemo, useRef } from 'react'
 import { m, AnimatePresence } from '@/lib/motion'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -24,6 +24,7 @@ import {
 } from '@/constants/photos'
 import { logError } from '@/lib/logger'
 import { useLightbox } from '@/hooks/use-lightbox'
+import { useModalOverlay } from '@/hooks/use-modal-overlay'
 
 type PhotosGridProps = {
   initialCategory?: PhotoCategory
@@ -76,6 +77,7 @@ function PhotoMasonryGrid({ photosWithPlaceholders, onOpen }: PhotoMasonryGridPr
         <button
           key={photo.id}
           type="button"
+          data-photo-id={photo.id}
           className="break-inside-avoid w-full text-left cursor-pointer group"
           onClick={() => onOpen(photo, index)}
         >
@@ -123,6 +125,8 @@ type PhotoLightboxProps = {
   onPrevious: () => void
   onNext: () => void
   onDownload: (photo: Photo) => void
+  /** The thumbnail to hand focus back to when the browser recorded no opener. */
+  returnFocusFallback: () => HTMLElement | null
 }
 
 function PhotoLightbox({
@@ -133,18 +137,44 @@ function PhotoLightbox({
   onPrevious,
   onNext,
   onDownload,
+  returnFocusFallback,
 }: PhotoLightboxProps): React.ReactNode {
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const closeRef = useRef<HTMLButtonElement>(null)
+  const titleId = useId()
+
+  /* A full-screen overlay at 95% black that declared nothing. No role, no
+     `aria-modal`, no trap: Tab walked out of it into the gallery hidden
+     behind, a screen reader was never told a dialog had opened, and on close
+     focus stayed wherever it had wandered rather than on the photo the reader
+     opened. Initial focus goes to the close button — the one control every
+     photo has, where Previous and Next come and go at the ends of the set.
+     Escape, the trap and focus return are `useModalOverlay`'s; the arrow keys
+     stay in `useLightbox`, because paging is the lightbox's own. */
+  useModalOverlay({
+    open: currentPhoto !== null,
+    onClose,
+    containerRef: dialogRef,
+    initialFocusRef: closeRef,
+    returnFocusFallback,
+  })
+
   return (
     <AnimatePresence>
       {currentPhoto && (
         <m.div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-70 bg-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-lightbox bg-black/95 flex items-center justify-center"
           onClick={onClose}
         >
           <button
+            ref={closeRef}
             type="button"
             className="absolute top-4 right-4 text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors z-10"
             onClick={onClose}
@@ -212,7 +242,9 @@ function PhotoLightbox({
             <div className="mt-4 bg-white/5 backdrop-blur-xs rounded-xl p-4 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
-                  <h3 className="text-card-title mb-2 text-white">{currentPhoto.alt}</h3>
+                  <h3 id={titleId} className="text-card-title mb-2 text-white">
+                    {currentPhoto.alt}
+                  </h3>
                   <div className="flex flex-wrap gap-x-4 gap-y-2 text-white/70 text-sm">
                     {currentPhoto.location && (
                       <span className="flex items-center gap-1.5">
@@ -345,6 +377,27 @@ export function PhotosGrid({ initialCategory = 'all' }: PhotosGridProps): React.
 
   const { currentItem, currentIndex, open, close, goToPrevious, goToNext } = useLightbox(filteredPhotos)
 
+  // The thumbnail that opened the lightbox, kept for focus return. The overlay
+  // hands focus back to whatever had it on open, but Safari does not focus a
+  // clicked button, and then there is no opener to return to.
+  const openedFromRef = useRef<string | null>(null)
+
+  const openPhoto = useCallback(
+    (photo: Photo, index: number) => {
+      openedFromRef.current = photo.id
+      open(photo, index)
+    },
+    [open]
+  )
+
+  const openingThumbnail = useCallback(
+    () =>
+      Array.from(document.querySelectorAll<HTMLElement>('[data-photo-id]')).find(
+        (thumbnail) => thumbnail.dataset.photoId === openedFromRef.current
+      ) ?? null,
+    []
+  )
+
   const handleCategoryChange = useCallback(
     (category: PhotoCategory) => {
       const params = new URLSearchParams(
@@ -395,7 +448,7 @@ export function PhotosGrid({ initialCategory = 'all' }: PhotosGridProps): React.
         onSelectCategory={handleCategoryChange}
       />
 
-      <PhotoMasonryGrid photosWithPlaceholders={filteredPhotos} onOpen={open} />
+      <PhotoMasonryGrid photosWithPlaceholders={filteredPhotos} onOpen={openPhoto} />
 
       {filteredPhotos.length === 0 && (
         <div className="text-center py-16">
@@ -412,6 +465,7 @@ export function PhotosGrid({ initialCategory = 'all' }: PhotosGridProps): React.
         onPrevious={goToPrevious}
         onNext={goToNext}
         onDownload={handleDownload}
+        returnFocusFallback={openingThumbnail}
       />
     </>
   )
