@@ -2,6 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "bun install",
   "buildCommand": "bun run build",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':(exclude)docs' ':(exclude).github' ':(exclude).impeccable' ':(exclude)src/__tests__' ':(exclude)e2e' ':(exclude,glob)*.md'",
   "git": {
     "deploymentEnabled": {
       "**": false,
