@@ -5,7 +5,6 @@ import {
   parseMeta,
   extractBody,
   buildContentMdx,
-  buildPageTsx,
   validateMdx,
   type PostMeta,
 } from "@/lib/admin/blog-content";
@@ -92,16 +91,6 @@ describe("meta round-trip", () => {
 
   it("returns null for a meta block it cannot parse", () => {
     expect(parseMeta("export const meta = {\n  title: someVariable,\n}\n")).toBeNull();
-  });
-});
-
-describe("buildPageTsx", () => {
-  it("embeds the slug in the blog path", () => {
-    expect(buildPageTsx("my-post")).toContain('"/blog/my-post"');
-  });
-
-  it("hands the slug to BlogLayout so the shell never re-derives it", () => {
-    expect(buildPageTsx("my-post")).toContain('<BlogLayout meta={meta} slug="my-post">');
   });
 });
 

@@ -168,13 +168,16 @@ describe("listSeries", () => {
   });
 });
 
-describe("getReadingTimeMinutes", () => {
+describe("getBlogPost", () => {
   it("resolves a scheduled essay, because its route renders", async () => {
-    const minutes = await catalogue().getReadingTimeMinutes("scheduled");
-    expect(minutes).toBeGreaterThan(0);
+    const post = await catalogue().getBlogPost("scheduled");
+    expect(post?.published).toBe(false);
+    // The display clamp has already run: a scheduled date reads as today.
+    expect(post?.date).toBe(TODAY);
+    expect(post?.readingTimeMinutes).toBeGreaterThan(0);
   });
 
   it("is undefined for a slug with no source", async () => {
-    expect(await catalogue().getReadingTimeMinutes("nope")).toBeUndefined();
+    expect(await catalogue().getBlogPost("nope")).toBeUndefined();
   });
 });

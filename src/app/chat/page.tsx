@@ -1,5 +1,6 @@
 import { Container } from "@/components/Container";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { Suspense } from "react";
 import {
   readSearchParam,
@@ -35,7 +36,7 @@ export default async function ChatPage({
           <div className="neu-card min-h-[70vh] rounded-2xl p-6 text-sm text-muted-foreground">
             Asking a question needs JavaScript, because the answer is composed in
             the browser as it arrives. The essays it draws on are all readable
-            without it — start at <a className="label-link underline underline-offset-4" href="/blog">the writing</a>.
+            without it — start at <Link className="label-link underline underline-offset-4" href="/blog">the writing</Link>.
           </div>
         }
       >

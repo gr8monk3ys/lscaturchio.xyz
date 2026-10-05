@@ -30,23 +30,10 @@ import {
 } from "@/lib/blog-data";
 import { allThemesForTags } from "@/lib/blog-themes";
 import { calculateReadingTime } from "@/lib/reading-time";
-import type { BlogStage } from "@/lib/blog-stage";
+import type { BlogMeta } from "@/lib/blog-meta";
 
 /** Disk is read at most once per minute per catalogue. */
 const CACHE_TTL_MS = 60_000;
-
-interface BlogMeta {
-  title: string;
-  description: string;
-  date: string;
-  updated?: string;
-  image: string;
-  tags: string[];
-  syndication?: string[];
-  series?: string;
-  seriesOrder?: number;
-  stage?: BlogStage;
-}
 
 export interface BlogPost extends BlogMeta {
   slug: string;
@@ -204,11 +191,8 @@ export function createEssayCatalogue({
     }).sort((a, b) => b.totalPosts - a.totalPosts);
   }
 
-  async function getReadingTimeMinutes(
-    slug: string
-  ): Promise<number | undefined> {
-    const all = await getAllBlogs({ includeScheduled: true });
-    return all.find((blog) => blog.slug === slug)?.readingTimeMinutes;
+  async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
+    return (await readAll()).find((blog) => blog.slug === slug);
   }
 
   return {
@@ -216,7 +200,7 @@ export function createEssayCatalogue({
     getBlogsByTag,
     getBlogsInTheme,
     listSeries,
-    getReadingTimeMinutes,
+    getBlogPost,
   };
 }
 
@@ -252,18 +236,15 @@ export function listSeries(): Promise<EssaySeries[]> {
 }
 
 /**
- * The reading time for one essay, from the same computation every other
- * surface quotes. Resolves scheduled essays too, because the essay route
- * renders them.
+ * One essay by slug, scheduled or not, because the essay route renders
+ * scheduled essays at their URL. Undefined when the slug has no source, or
+ * its meta has no title or date.
  *
- * Returns undefined when the slug has no source. Callers must render nothing
- * in that case: the essay shell used to take this as an optional prop
- * defaulting to 5, which only two of eighty-three routes ever passed, so
- * eighty-one essays quoted "5 min" regardless of length. A number that is
- * absent is visibly absent; a number that is wrong is not.
+ * This is the record the essay page renders: the clamped dates, the reading
+ * time every other surface quotes, and the default cover. The essay shell used
+ * to take the MDX's raw `meta` instead, re-apply the clamp, and look the
+ * reading time back up here by slug.
  */
-export function getReadingTimeMinutes(
-  slug: string
-): Promise<number | undefined> {
-  return catalogue.getReadingTimeMinutes(slug);
+export function getBlogPost(slug: string): Promise<BlogPost | undefined> {
+  return catalogue.getBlogPost(slug);
 }
