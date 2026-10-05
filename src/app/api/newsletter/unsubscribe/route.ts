@@ -12,6 +12,7 @@ export const POST = withWriteRoute(
     },
     csrf: { kind: 'required' },
     body: { kind: 'json', schema: unsubscribeSchema },
+    guard: { kind: 'none', reason: 'Acts only on the token emailed to the subscriber; a script without one changes nothing.' },
     envelope: { kind: 'standard' },
     errors: {
       log: 'Newsletter Unsubscribe: Unexpected error',

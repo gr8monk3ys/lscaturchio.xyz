@@ -11,6 +11,7 @@ export const POST = withWriteRoute(
     },
     csrf: { kind: 'required' },
     body: { kind: 'json', schema: summarizeSchema },
+    guard: { kind: 'none', reason: 'No form behind it; cost is bounded by the SUMMARIZE rate-limit policy.' },
     envelope: { kind: 'standard' },
     errors: {
       log: 'Summarize API: Unexpected error',

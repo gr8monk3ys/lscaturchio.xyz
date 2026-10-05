@@ -16,6 +16,7 @@ export const POST = withWriteRoute(
     // Multipart: the image bytes ride alongside a JSON metadata field, which
     // is what the schema validates.
     body: { kind: "formData", jsonField: "entries", schema: photoEntriesSchema },
+    guard: { kind: "none", reason: "Admin-only; the session already proves the owner sent it." },
     envelope: { kind: "standard" },
     errors: {
       log: "Admin photo publish failed",

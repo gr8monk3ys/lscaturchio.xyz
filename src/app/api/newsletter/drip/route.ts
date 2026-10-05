@@ -68,6 +68,7 @@ export const POST = withWriteRoute(
       kind: "none",
       reason: "Takes no request body; its only input is the ?dryRun query flag.",
     },
+    guard: { kind: "none", reason: "Called by a cron job holding the API key; there is no person and no form." },
     envelope: { kind: "standard" },
     errors: {
       log: "Newsletter drip failed",

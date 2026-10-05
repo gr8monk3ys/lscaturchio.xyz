@@ -322,7 +322,7 @@ const sentryWebpackPluginOptions = {
 };
 
 // BotID adds the rewrites that proxy its challenge script to Vercel; see
-// src/lib/bot-id.ts. Wrap with Sentry if DSN is configured.
+// src/lib/form-guard/guard.ts. Wrap with Sentry if DSN is configured.
 const configWithPlugins = withBotId(withMDX(nextConfig));
 export default process.env.NEXT_PUBLIC_SENTRY_DSN
   ? withSentryConfig(configWithPlugins, sentryWebpackPluginOptions)

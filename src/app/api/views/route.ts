@@ -140,6 +140,7 @@ export const POST = withWriteRoute(
     },
     csrf: { kind: "required" },
     body: { kind: "json", schema: viewTrackingSchema },
+    guard: { kind: "none", reason: "A counter bumped on page load, not a form; there is nothing for a person to fill in." },
     envelope: { kind: "standard" },
     errors: {
       log: "View Counter: Unexpected error",

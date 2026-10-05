@@ -12,6 +12,7 @@ export const POST = withWriteRoute(
     },
     csrf: { kind: "required" },
     body: { kind: "none", reason: "Logout carries no payload — the session cookie is the whole request." },
+    guard: { kind: "none", reason: "No form a stranger can reach: it ends the admin's own session." },
     envelope: {
       kind: "raw",
       reason: "Answers a browser form post with a 303 redirect to /admin/login, not a JSON document.",

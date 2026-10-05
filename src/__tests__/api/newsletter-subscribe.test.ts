@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, it, expect, vi, beforeEach } from 'vitest'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
 const mockSql = vi.fn()
 
@@ -258,11 +258,7 @@ describe('/api/newsletter/subscribe', () => {
 
   describe('CSRF validation', () => {
     it('validates CSRF token and returns error when invalid', async () => {
-      const csrfResponse = NextResponse.json(
-        { error: 'Invalid origin' },
-        { status: 403 }
-      )
-      vi.mocked(validateCsrf).mockReturnValue(csrfResponse)
+      vi.mocked(validateCsrf).mockReturnValue({ status: 403, error: 'Invalid origin' })
 
       const request = createMockRequest({ email: 'test@example.com' })
       const response = await POST(request)

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 // Create a mock sql tagged template function
 const mockSql = vi.fn();
@@ -223,9 +223,10 @@ describe('Views API Route', () => {
     });
 
     it('returns 403 when CSRF validation fails', async () => {
-      (validateCsrf as ReturnType<typeof vi.fn>).mockReturnValue(
-        NextResponse.json({ error: 'CSRF validation failed' }, { status: 403 })
-      );
+      (validateCsrf as ReturnType<typeof vi.fn>).mockReturnValue({
+        status: 403,
+        error: 'CSRF validation failed',
+      });
 
       const request = new NextRequest('http://localhost/api/views', {
         method: 'POST',
