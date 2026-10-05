@@ -1,8 +1,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { searchEmbeddings, type HybridRow } from '@/lib/embeddings';
-import { withRateLimit } from '@/lib/with-rate-limit';
-import { RATE_LIMITS } from '@/lib/rate-limit';
+import { withRateLimit } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
 import type { SearchResult } from '@/types/embeddings';
 import { apiSuccess, ApiErrors } from '@/lib/api-response';
@@ -180,7 +179,7 @@ const handleGet = async (request: NextRequest) => {
 export const POST = withWriteRoute(
   {
     // 5 requests per minute.
-    limit: RATE_LIMITS.AI_HEAVY,
+    limit: 'SEARCH',
     auth: {
       kind: 'public',
       reason: 'Site search is a public read; the mutation-shaped POST only carries a longer query body.',
@@ -221,4 +220,4 @@ export const POST = withWriteRoute(
 );
 
 // Export with rate limiting (5 requests per minute)
-export const GET = withRateLimit(handleGet, RATE_LIMITS.AI_HEAVY);
+export const GET = withRateLimit(handleGet, 'SEARCH');

@@ -1,8 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db';
 import { getAllBlogs } from '@/lib/getAllBlogs';
-import { withRateLimit } from '@/lib/with-rate-limit';
-import { RATE_LIMITS } from '@/lib/rate-limit';
+import { withRateLimit } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
 import { validateApiKey } from '@/lib/api-auth';
 import { apiSuccess, ApiErrors } from '@/lib/api-response';
@@ -147,4 +146,4 @@ const handleGet = async (request: NextRequest) => {
   }
 };
 
-export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
+export const GET = withRateLimit(handleGet, 'ANALYTICS');

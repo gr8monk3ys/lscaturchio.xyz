@@ -1,4 +1,3 @@
-import { RATE_LIMITS } from "@/lib/rate-limit";
 import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { getFile, commitToMain, type CommitFile } from "@/lib/admin/github";
 import { postPublishSchema } from "@/lib/admin/schemas";
@@ -12,7 +11,7 @@ import { toWebp } from "@/lib/admin/images";
 
 export const POST = withWriteRoute(
   {
-    limit: RATE_LIMITS.STANDARD,
+    limit: "ADMIN_WRITE",
     auth: { kind: "adminSession" },
     csrf: { kind: "required" },
     body: { kind: "json", schema: postPublishSchema },

@@ -23,15 +23,7 @@ vi.mock('@/lib/getAllBlogs', () => ({
   getAllBlogs: vi.fn(),
 }));
 
-// Mock rate limiting to pass through for tests
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-  RATE_LIMITS: {
-    STANDARD: { limit: 30, window: 60000 },
-    PUBLIC: { limit: 100, window: 60000 },
-    AI_HEAVY: { limit: 5, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 import { GET, POST } from '@/app/api/views/route';
 import { isDatabaseConfigured } from '@/lib/db';

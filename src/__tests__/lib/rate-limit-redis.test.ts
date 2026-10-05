@@ -10,8 +10,10 @@ vi.mock('@upstash/redis', () => ({
 }));
 
 vi.mock('@gr8monk3ys/next-kit/rate-limit', () => ({
-  RedisStore: vi.fn(),
-  createRateLimiter: vi.fn(),
+  // Constructible, like the real class.
+  RedisStore: vi.fn(function () {
+    return {};
+  }),
 }));
 
 describe('pingRedis', () => {
@@ -110,33 +112,37 @@ describe('pingRedis', () => {
   });
 });
 
-describe('getRedisRateLimiter', () => {
+describe('getUpstashStore', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
-    process.env = {
-      ...originalEnv,
-      UPSTASH_REDIS_REST_URL: 'https://example.upstash.io',
-      UPSTASH_REDIS_REST_TOKEN: 'test-token',
-    };
+    process.env = { ...originalEnv };
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
   });
 
   afterEach(() => {
     process.env = originalEnv;
   });
 
-  it('namespaces each limit policy so policies do not share one counter per client', async () => {
-    const { createRateLimiter } = await import('@gr8monk3ys/next-kit/rate-limit');
-    const { getRedisRateLimiter } = await import('@/lib/rate-limit-redis');
+  it('is null without credentials, which sends the limiter to its memory store', async () => {
+    const { getUpstashStore } = await import('@/lib/rate-limit-redis');
 
-    getRedisRateLimiter(3, 60_000);
-    getRedisRateLimiter(100, 60_000);
+    expect(getUpstashStore()).toBeNull();
+  });
 
-    const prefixes = vi
-      .mocked(createRateLimiter)
-      .mock.calls.map(([options]) => options.prefix);
-    expect(prefixes).toEqual(['3:60000', '100:60000']);
+  it('builds one store for the process and fails closed, so the limiter can fall back', async () => {
+    process.env.UPSTASH_REDIS_REST_URL = 'https://example.upstash.io';
+    process.env.UPSTASH_REDIS_REST_TOKEN = 'token';
+    const { RedisStore } = await import('@gr8monk3ys/next-kit/rate-limit');
+    const { getUpstashStore } = await import('@/lib/rate-limit-redis');
+
+    expect(getUpstashStore()).toBe(getUpstashStore());
+    expect(RedisStore).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(RedisStore).mock.calls[0][1]).toMatchObject({ onError: 'closed' });
   });
 });

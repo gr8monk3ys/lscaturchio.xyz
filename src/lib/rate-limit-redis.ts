@@ -1,40 +1,32 @@
 /**
- * Redis-backed rate limiter using Upstash
+ * The Upstash adapter for the rate-limit store port, plus the health probe.
  *
  * The counters live in `@gr8monk3ys/next-kit/rate-limit`'s `RedisStore`
- * (INCR + PEXPIRE); this module owns only the credential lookup and the
- * per-config limiter cache.
+ * (INCR + PEXPIRE). This module owns only the credential lookup and the one
+ * shared client. It knows nothing about policies or clients: the bucket key
+ * arrives fully built from `src/lib/rate-limit.ts`, the only place a key is
+ * composed.
  *
  * Requires environment variables:
  * - UPSTASH_REDIS_REST_URL
  * - UPSTASH_REDIS_REST_TOKEN
  */
 
-import {
-  createRateLimiter,
-  RedisStore,
-  type RateLimiter,
-} from '@gr8monk3ys/next-kit/rate-limit';
+import { RedisStore, type RateLimitStore } from '@gr8monk3ys/next-kit/rate-limit';
 import { Redis } from '@upstash/redis';
 
 /**
  * Key prefix, deliberately versioned.
  *
- * The previous implementation (`@upstash/ratelimit`'s sliding window) wrote
- * `ratelimit::<identifier>:<window-index>` — it joins its own prefix with `:`
- * and appends the window index — while this store writes
- * `ratelimit:v2:<limit>:<windowMs>:<identifier>`. Those never collide, so no key is read back
- * under a type it was not written with. `v2` makes the generation change
- * legible in Redis and keeps a future prefix edit from landing on a namespace
- * that is still live; the stale keys expire on their own TTLs.
+ * `v2` keys were `ratelimit:v2:<limit>:<windowMs>:<identifier>`: a policy was
+ * its numbers, so routes that happened to share numbers shared a counter. `v3`
+ * keys are `ratelimit:v3:<POLICY>:<identifier>`. The generations never
+ * collide, so no key is read back under a layout it was not written with, and
+ * the stale `v2` keys expire on their own TTLs.
  */
-const KEY_PREFIX = 'ratelimit:v2:';
+const KEY_PREFIX = 'ratelimit:v3:';
 
-// Cache rate limiter instances by config
-const rateLimiters = new Map<string, RateLimiter>();
-
-// One Redis connection for the process, shared by every limiter and by the
-// health check.
+// One Redis connection for the process, shared by the store and the health check.
 let client: Redis | null = null;
 let store: RedisStore | null = null;
 
@@ -64,6 +56,28 @@ function getRedisClient(): Redis | null {
 }
 
 /**
+ * The shared rate-limit store, or null when Upstash is not configured.
+ *
+ * May throw: an invalid URL throws synchronously inside the Redis client
+ * constructor, and `hit` throws on any Redis error (`onError: 'closed'`)
+ * instead of silently admitting the request. The rate-limit module catches
+ * both, trips its breaker and degrades to the in-memory store, which still
+ * enforces the policy per instance instead of failing fully open.
+ */
+export function getUpstashStore(): RateLimitStore | null {
+  const redis = getRedisClient();
+  if (!redis) {
+    return null;
+  }
+
+  if (!store) {
+    store = new RedisStore(redis, { prefix: KEY_PREFIX, onError: 'closed' });
+  }
+
+  return store;
+}
+
+/**
  * How long the health check waits for Upstash before calling it unavailable.
  * A healthy PING answers in tens of milliseconds; a hibernated store answers
  * quickly too (with an error), so this only matters when the network is gone.
@@ -73,10 +87,10 @@ export const REDIS_PING_TIMEOUT_MS = 3_000;
 /**
  * Send one PING and report whether Upstash answered it.
  *
- * This exists for `/api/health`, and it is deliberately separate from
- * `withRateLimit`'s circuit breaker: a probe must report the store's state as
- * it is right now, not the breaker's memory of a minute ago, and a failed probe
- * must not itself trip the breaker for real traffic.
+ * This exists for `/api/health`, and it is deliberately separate from the
+ * rate-limit module's circuit breaker: a probe must report the store's state
+ * as it is right now, not the breaker's memory of a minute ago, and a failed
+ * probe must not itself trip the breaker for real traffic.
  *
  * The same command that answers the probe is what keeps the store awake:
  * Upstash hibernates a pay-as-you-go database after 60 days without a command,
@@ -115,46 +129,4 @@ export async function pingRedis(): Promise<'connected' | 'unavailable' | 'not-co
   } finally {
     clearTimeout(timer);
   }
-}
-
-/**
- * Get or create a rate limiter instance for the given config.
- *
- * Returns null when Upstash is not configured, which is the caller's signal to
- * fall back to the in-memory limiter.
- */
-export function getRedisRateLimiter(limit: number, windowMs: number): RateLimiter | null {
-  const redis = getRedisClient();
-  if (!redis) {
-    return null;
-  }
-
-  if (!store) {
-    store = new RedisStore(redis, {
-      prefix: KEY_PREFIX,
-      // Throw rather than silently admitting the request, so withRateLimit can
-      // catch it and degrade to the in-memory limiter — which still enforces
-      // the configured limits per instance instead of failing fully open.
-      onError: 'closed',
-    });
-  }
-
-  const key = `${limit}:${windowMs}`;
-
-  if (!rateLimiters.has(key)) {
-    rateLimiters.set(
-      key,
-      createRateLimiter({
-        store,
-        limit,
-        windowMs,
-        // One bucket per policy. Without a prefix every limiter shares the
-        // store's single `ratelimit:v2:<ip>` key, so the PUBLIC reads an essay
-        // page fires on load were charged against CHAT's 3-per-minute allowance.
-        prefix: key,
-      })
-    );
-  }
-
-  return rateLimiters.get(key)!;
 }

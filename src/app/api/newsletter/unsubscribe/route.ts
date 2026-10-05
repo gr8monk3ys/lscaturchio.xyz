@@ -1,12 +1,11 @@
 import { getDb } from '@/lib/db';
-import { RATE_LIMITS } from '@/lib/rate-limit';
 import { withWriteRoute, writeError } from '@/lib/api/write-route';
 import { unsubscribeSchema } from '@/lib/validations';
 
 export const POST = withWriteRoute(
   {
     // 3 requests per 5 minutes.
-    limit: RATE_LIMITS.NEWSLETTER,
+    limit: 'NEWSLETTER_UNSUBSCRIBE',
     auth: {
       kind: 'public',
       reason: 'The unsubscribe token in the body is the credential; it arrives by email, not by session.',

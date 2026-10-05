@@ -10,7 +10,7 @@ Next.js 16 App Router, React 19, TypeScript, Tailwind, Neon Postgres, deployed o
 
 Every public write endpoint is the same four-layer chain, and the contact form is the shortest example ([`src/app/api/contact/route.ts`](src/app/api/contact/route.ts)):
 
-1. **Rate limit** — `withRateLimit(handler, { limit: 3, window: 5 min })` wraps the handler, so it runs before anything else. Upstash Redis when configured, an in-memory map otherwise; if Redis errors, the request degrades to the in-memory limiter instead of failing ([`src/lib/with-rate-limit.ts`](src/lib/with-rate-limit.ts)).
+1. **Rate limit** — the route is charged against its named policy, `CONTACT` (3 per 5 min per client), before anything else runs. Each policy has its own buckets, so the contact form and the newsletter signup never spend each other's allowance. Upstash Redis when configured, an in-memory map otherwise; if Redis errors, the request degrades to the in-memory limiter instead of failing ([`src/lib/rate-limit.ts`](src/lib/rate-limit.ts)).
 2. **CSRF** — `Origin` header checked against the site URL and the exact hostnames Vercel injects for this deployment, never a name prefix: anyone can register `lscaturchio-<x>.vercel.app` ([`src/lib/csrf.ts`](src/lib/csrf.ts)).
 3. **Zod** — `contactFormSchema` trims and bounds name (100), email, message (5000); a failure is a 400 with the field error ([`src/lib/validations.ts`](src/lib/validations.ts)).
 4. **Sanitise at the sink** — the email body is built from `escapeHtml`/`sanitizeForHtmlEmail`, and the subject through `sanitizeEmailSubject`, which strips `\r\n` so a name cannot inject mail headers ([`src/lib/sanitize.ts`](src/lib/sanitize.ts)).

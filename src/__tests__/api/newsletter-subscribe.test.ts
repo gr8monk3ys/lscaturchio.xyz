@@ -21,15 +21,7 @@ vi.mock('@/lib/csrf', () => ({
   validateCsrf: vi.fn(),
 }))
 
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-}))
-
-vi.mock('@/lib/rate-limit', () => ({
-  RATE_LIMITS: {
-    NEWSLETTER: { limit: 3, window: 300000 },
-  },
-}))
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 vi.mock('@/constants/newsletter', () => ({
   NEWSLETTER_TOPIC_IDS: ['tech', 'ai', 'web'],

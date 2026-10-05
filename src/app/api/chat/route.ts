@@ -1,6 +1,5 @@
 import { hybridSearch } from '@/lib/embeddings';
 import { logError } from '@/lib/logger';
-import { RATE_LIMITS } from '@/lib/rate-limit';
 import { withWriteRoute } from '@/lib/api/write-route';
 import { chatRequestSchema } from '@/lib/validations';
 import { generateChatAnswer } from '@/lib/chat/providers';
@@ -42,10 +41,10 @@ async function loadSemanticRetrieval(query: string): Promise<SemanticRetrieval> 
 
 export const POST = withWriteRoute(
   {
-    limit: RATE_LIMITS.CHAT,
+    limit: 'CHAT',
     auth: {
       kind: 'public',
-      reason: 'The site-wide chat box is open to every reader; abuse is bounded by RATE_LIMITS.CHAT.',
+      reason: 'The site-wide chat box is open to every reader; abuse is bounded by the CHAT rate-limit policy.',
     },
     csrf: { kind: 'required' },
     body: { kind: 'json', schema: chatRequestSchema },

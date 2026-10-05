@@ -40,7 +40,7 @@ vi.stubGlobal('fetch', mailer);
 import { POST as contactPost } from '@/app/api/contact/route';
 import { POST as subscribePost } from '@/app/api/newsletter/subscribe/route';
 import { POST as dripPost } from '@/app/api/newsletter/drip/route';
-import { RATE_LIMITS } from '@/lib/rate-limit';
+import { RATE_LIMIT_POLICIES } from '@/lib/rate-limit';
 
 const GOOD_ORIGIN = 'http://localhost:3000';
 
@@ -316,12 +316,12 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Rate limit — the real withRateLimit over the real in-memory limiter
+// Rate limit — the real withRateLimit over the real in-memory store
 // ---------------------------------------------------------------------------
-describe('rate-limit layer (real @/lib/with-rate-limit)', () => {
-  it('engages after RATE_LIMITS.NEWSLETTER.limit requests from one IP', async () => {
+describe('rate-limit layer (real @/lib/rate-limit)', () => {
+  it('engages after the CONTACT policy limit from one IP', async () => {
     const ip = freshIp();
-    const limit = RATE_LIMITS.NEWSLETTER.limit;
+    const { limit } = RATE_LIMIT_POLICIES.CONTACT;
 
     for (let i = 0; i < limit; i += 1) {
       const ok = await contactPost(
@@ -337,14 +337,36 @@ describe('rate-limit layer (real @/lib/with-rate-limit)', () => {
 
     expect(blocked.status).toBe(429);
     expect(blocked.headers.get('Retry-After')).toBeTruthy();
-    expect((await blocked.json()).error).toBe('Too many requests');
+    // The standard error envelope, like every other failure on this route.
+    expect(await blocked.json()).toEqual({
+      success: false,
+      error: 'Too many requests',
+      retryAfter: expect.any(Number),
+    });
     // The mailer was reached exactly `limit` times, never on the blocked call.
     expect(mailer).toHaveBeenCalledTimes(limit);
   });
 
+  it('does not spend the newsletter signup allowance on contact messages', async () => {
+    // Both policies are 3 per 5 minutes. They used to be one bucket.
+    const ip = freshIp();
+    for (let i = 0; i <= RATE_LIMIT_POLICIES.CONTACT.limit; i += 1) {
+      await contactPost(makeRequest('http://localhost:3000/api/contact', { ip, body: validContact }));
+    }
+
+    const res = await subscribePost(
+      makeRequest('http://localhost:3000/api/newsletter/subscribe', {
+        ip,
+        body: { email: 'reader@example.com' },
+      })
+    );
+
+    expect(res.status).toBe(200);
+  });
+
   it('runs FIRST: an exhausted bucket 429s even a request that would fail CSRF', async () => {
     const ip = freshIp();
-    for (let i = 0; i < RATE_LIMITS.NEWSLETTER.limit; i += 1) {
+    for (let i = 0; i < RATE_LIMIT_POLICIES.CONTACT.limit; i += 1) {
       await contactPost(makeRequest('http://localhost:3000/api/contact', { ip, body: validContact }));
     }
 

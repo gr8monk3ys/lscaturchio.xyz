@@ -3,17 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const mockSql = vi.fn();
 
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-}));
-
-vi.mock('@/lib/rate-limit', () => ({
-  RATE_LIMITS: {
-    // Mirrors src/lib/rate-limit.ts. The drip endpoint moved off PUBLIC
-    // (100/min) onto STANDARD when it joined the shared write chain.
-    STANDARD: { limit: 30, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 vi.mock('@/lib/api-auth', () => ({
   validateApiKey: vi.fn(),

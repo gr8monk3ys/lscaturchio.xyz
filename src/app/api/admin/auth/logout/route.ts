@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { RATE_LIMITS } from "@/lib/rate-limit";
 import { withWriteRoute } from "@/lib/api/write-route";
 import { ADMIN_SESSION_COOKIE } from "@/lib/admin/session";
 
 export const POST = withWriteRoute(
   {
-    limit: RATE_LIMITS.STANDARD,
+    limit: "ADMIN_WRITE",
     auth: {
       kind: "public",
       reason:

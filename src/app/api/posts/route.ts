@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { withRateLimit } from "@/lib/with-rate-limit";
-import { RATE_LIMITS } from "@/lib/rate-limit";
+import { withRateLimit } from "@/lib/rate-limit";
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { hasAudioForSlug } from "@/lib/audio";
 import { getAudioUrl } from "@/lib/audio-url";
@@ -50,5 +49,5 @@ const handleGet = async (req: NextRequest) => {
   );
 };
 
-export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
+export const GET = withRateLimit(handleGet, "PUBLIC_READ");
 

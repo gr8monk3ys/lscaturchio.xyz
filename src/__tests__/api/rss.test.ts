@@ -9,12 +9,7 @@ vi.mock('@/lib/site-url', () => ({
   getSiteUrl: vi.fn(() => 'https://lscaturchio.xyz'),
 }));
 
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: <T>(handler: T) => handler,
-  RATE_LIMITS: {
-    PUBLIC: { limit: 100, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 import { GET } from '@/app/api/rss/route';
 import { getAllBlogs } from '@/lib/getAllBlogs';

@@ -1,5 +1,4 @@
 import type { ZodSchema } from "zod";
-import { RATE_LIMITS } from "@/lib/rate-limit";
 import { withWriteRoute } from "@/lib/api/write-route";
 import { getFile, commitToMain } from "@/lib/admin/github";
 
@@ -27,7 +26,7 @@ export function makeJsonContentPut(config: {
 }) {
   return withWriteRoute(
     {
-      limit: RATE_LIMITS.STANDARD,
+      limit: "ADMIN_WRITE",
       auth: { kind: "adminSession" },
       csrf: { kind: "required" },
       body: { kind: "json", schema: config.schema },

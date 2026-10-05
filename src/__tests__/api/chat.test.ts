@@ -31,17 +31,7 @@ vi.mock('@/lib/logger', () => ({
   logInfo: vi.fn(),
 }));
 
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-}));
-
-vi.mock('@/lib/rate-limit', () => ({
-  // Mirrors src/lib/rate-limit.ts. /api/chat takes CHAT, not AI_HEAVY.
-  RATE_LIMITS: {
-    CHAT: { limit: 3, window: 60000 },
-    AI_HEAVY: { limit: 5, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 vi.mock('@/lib/csrf', () => ({
   validateCsrf: vi.fn(),

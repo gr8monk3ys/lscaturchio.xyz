@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 import { searchEmbeddings } from '@/lib/embeddings';
-import { withRateLimit } from '@/lib/with-rate-limit';
-import { RATE_LIMITS } from '@/lib/rate-limit';
+import { withRateLimit } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
 import type { RelatedPost } from '@/types/embeddings';
 import { getAllBlogs } from '@/lib/getAllBlogs';
@@ -141,4 +140,4 @@ const handleGet = async (request: NextRequest) => {
 };
 
 // Export with rate limiting (10 requests per minute)
-export const GET = withRateLimit(handleGet, RATE_LIMITS.RELATED_POSTS);
+export const GET = withRateLimit(handleGet, 'RELATED_POSTS');
