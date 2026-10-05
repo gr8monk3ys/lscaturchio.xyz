@@ -15,6 +15,7 @@ export const POST = withWriteRoute(
     auth: { kind: "adminSession" },
     csrf: { kind: "required" },
     body: { kind: "json", schema: postPublishSchema },
+    guard: { kind: "none", reason: "Admin-only; the session already proves the owner sent it." },
     envelope: { kind: "standard" },
     errors: {
       log: "Admin post publish failed",

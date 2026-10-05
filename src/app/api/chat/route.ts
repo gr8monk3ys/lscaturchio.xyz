@@ -19,6 +19,7 @@ export const POST = withWriteRoute(
     },
     csrf: { kind: 'required' },
     body: { kind: 'json', schema: chatRequestSchema },
+    guard: { kind: 'none', reason: 'Answers the reader who asked and sends nothing onward; the CHAT rate-limit policy bounds what a script can spend.' },
     envelope: { kind: 'standard' },
     errors: {
       log: 'Chat API request failed',

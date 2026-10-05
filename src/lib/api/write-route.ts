@@ -1,12 +1,12 @@
 /**
  * The single write-route seam.
  *
- * Every mutating API route is built from this module. The four layers a write
- * endpoint needs — rate limit, authentication, CSRF, schema validation — and
- * the response envelope are applied here, in a fixed order the caller cannot
- * reorder or omit:
+ * Every mutating API route is built from this module. The five layers a write
+ * endpoint needs — rate limit, authentication, CSRF, schema validation, the
+ * human form guard — and the response envelope are applied here, in a fixed
+ * order the caller cannot reorder or omit:
  *
- *   rate limit -> auth -> CSRF -> body/Zod -> handler -> envelope
+ *   rate limit -> auth -> CSRF -> body/Zod -> guard -> handler -> envelope
  *
  * Every layer is a REQUIRED field on the config, so a route cannot forget one
  * by writing less code; it can only declare a deviation, and each deviation
@@ -35,6 +35,7 @@ import { validateApiKey } from "@/lib/api-auth";
 import { parseBody } from "@/lib/validations";
 import { apiSuccess, apiError, ApiErrors, refusalResponse, type Refusal } from "@/lib/api-response";
 import { logError } from "@/lib/logger";
+import { runGuard, type GuardPolicy } from "@/lib/form-guard/guard";
 
 /**
  * Who may call the route. `public` is a real choice, not an absence, and has to
@@ -79,15 +80,24 @@ export type WriteRouteErrors = {
   message: string;
 };
 
-export type WriteRouteConfig<S extends ZodSchema = ZodSchema> = {
+export type WriteRouteConfig<S extends ZodSchema = ZodSchema, TOut = unknown> = {
   /** The policy this route is charged against, by name (`RATE_LIMIT_POLICIES`). */
   limit: RateLimitPolicy;
   auth: AuthPolicy;
   csrf: CsrfPolicy;
   body: BodyPolicy<S>;
+  /**
+   * Whether a person must have sent this (`src/lib/form-guard/guard.ts`). A
+   * dropped submission is answered with `dropped`, so it is typed as the
+   * handler's own return value: a bot sees exactly what a person would.
+   */
+  guard: GuardPolicy<NoInfer<TOut>>;
   envelope: EnvelopePolicy;
   errors: WriteRouteErrors;
 };
+
+/** A `raw` route answers with a NextResponse, which no policy can stand in for. */
+type NoGuard = Extract<GuardPolicy, { kind: "none" }>;
 
 export type WriteContext<S extends ZodSchema = ZodSchema> = {
   req: NextRequest;
@@ -113,7 +123,6 @@ export class WriteRouteError extends Error {
 
 export const writeError = {
   badRequest: (message: string) => new WriteRouteError(400, message),
-  forbidden: (message: string) => new WriteRouteError(403, message),
   notFound: (message: string) => new WriteRouteError(404, message),
   conflict: (message: string) => new WriteRouteError(409, message),
   internal: (message: string) => new WriteRouteError(500, message),
@@ -154,11 +163,14 @@ async function readClientBody<T>(
 }
 
 export function withWriteRoute<S extends ZodSchema, TOut>(
-  config: WriteRouteConfig<S> & { envelope: { kind: "standard" } },
+  config: WriteRouteConfig<S, TOut> & { envelope: { kind: "standard" } },
   handler: (ctx: WriteContext<S>) => Promise<TOut>
 ): RouteHandler;
 export function withWriteRoute<S extends ZodSchema>(
-  config: WriteRouteConfig<S> & { envelope: { kind: "raw"; reason: string } },
+  config: Omit<WriteRouteConfig<S>, "guard"> & {
+    guard: NoGuard;
+    envelope: { kind: "raw"; reason: string };
+  },
   handler: (ctx: WriteContext<S>) => Promise<NextResponse>
 ): RouteHandler;
 export function withWriteRoute<S extends ZodSchema>(
@@ -179,26 +191,40 @@ export function withWriteRoute<S extends ZodSchema>(
     try {
       // 3. body -> Zod
       let data: unknown;
+      // The body as the client sent it, for the guard, which reads fields no
+      // route schema declares.
+      let submitted: unknown;
       let form: FormData | null = null;
       const body = config.body;
 
       if (body.kind === "json") {
-        const parsed = parseBody(body.schema, await readClientBody(() => req.json()));
+        submitted = await readClientBody(() => req.json());
+        const parsed = parseBody(body.schema, submitted);
         if (!parsed.success) return ApiErrors.badRequest(parsed.error, parsed.field);
         data = parsed.data;
       } else if (body.kind === "formData") {
         form = await readClientBody(() => req.formData(), "Request body must be multipart form data");
         const raw = form.get(body.jsonField);
         if (typeof raw !== "string") return ApiErrors.missingField(body.jsonField);
-        const parsed = parseBody(body.schema, await readClientBody(() => JSON.parse(raw)));
+        submitted = await readClientBody(() => JSON.parse(raw));
+        const parsed = parseBody(body.schema, submitted);
         if (!parsed.success) return ApiErrors.badRequest(parsed.error, parsed.field);
         data = parsed.data;
       }
 
-      // 4. handler
+      // 4. guard — after Zod, so a person is told about a malformed field
+      // before anything can answer them with a silent success.
+      const verdict = await runGuard(config.guard, submitted, {
+        component: config.errors.component,
+        action: config.errors.action,
+      });
+      if (verdict.kind === "refuse") return refusalResponse(verdict.refusal);
+      if (verdict.kind === "drop") return apiSuccess(verdict.answer);
+
+      // 5. handler
       const result = await handler({ req, data, form } as WriteContext<S>);
 
-      // 5. envelope
+      // 6. envelope
       if (config.envelope.kind === "raw") {
         return result as NextResponse;
       }

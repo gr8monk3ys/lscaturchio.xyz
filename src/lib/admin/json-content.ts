@@ -30,6 +30,7 @@ export function makeJsonContentPut(config: {
       auth: { kind: "adminSession" },
       csrf: { kind: "required" },
       body: { kind: "json", schema: config.schema },
+      guard: { kind: "none", reason: "Admin-only; the session already proves the owner sent it." },
       envelope: { kind: "standard" },
       errors: {
         log: `Admin ${config.logLabel} publish failed`,

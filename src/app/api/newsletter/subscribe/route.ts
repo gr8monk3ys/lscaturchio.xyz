@@ -63,6 +63,18 @@ export const POST = withWriteRoute(
     },
     csrf: { kind: 'required' },
     body: { kind: 'json', schema: newsletterSubscribeSchema },
+    // It mails whatever address it is given, so a script posting here turns
+    // the site into a sender of unsolicited welcome email.
+    guard: {
+      kind: 'humanForm',
+      path: '/api/newsletter/subscribe',
+      // Lower than the contact form's: one field, which autofill can fill.
+      // Measured from the form mounting at the end of an essay, so a reader
+      // is far past it; a script filling on load is well under it.
+      minFillMs: 1000,
+      refusal: 'This signup was flagged as automated and was not saved.',
+      dropped: { message: SUBSCRIBE_MESSAGE },
+    },
     envelope: { kind: 'standard' },
     errors: {
       log: 'Newsletter Subscribe: Unexpected error',

@@ -4,7 +4,7 @@ import { IconBrandGithub, IconBrandLinkedin, IconBrandTwitter } from "@tabler/ic
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { contactFormSchema } from "@/lib/validations";
-import { HONEYPOT_FIELD } from "@/lib/contact-spam";
+import { useFormGuard } from "@/hooks/use-form-guard";
 import { submitWrite, type WriteResult } from "@/lib/fetcher";
 
 import { CONTACT_FIELD_LIMITS } from "@/lib/validations";
@@ -94,20 +94,8 @@ export function ContactForm() {
   const subjectRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
 
-  /**
-   * The spam signals `src/lib/contact-spam.ts` judges. The honeypot is
-   * uncontrolled on purpose: a browser-driving bot writes to the DOM, not to
-   * React state, and reading the node is what sees it. The clock starts at
-   * mount and restarts after each send, so a second message is timed too.
-   * `performance.now()` rather than `Date.now()`: the wall clock can be
-   * corrected backwards while someone types, and a negative interval would
-   * read as a bot and drop their message without a word.
-   */
-  const honeypotRef = useRef<HTMLInputElement>(null);
-  const openedAt = useRef(0);
-  useEffect(() => {
-    openedAt.current = performance.now();
-  }, []);
+  /** The honeypot and fill-time signals the route's human form guard judges. */
+  const guard = useFormGuard();
 
   /**
    * Send focus to the input the server rejected.
@@ -169,15 +157,14 @@ export function ContactForm() {
 
     const result = await submitWrite("/api/contact", {
       ...formData,
-      [HONEYPOT_FIELD]: honeypotRef.current?.value ?? "",
-      elapsedMs: Math.round(performance.now() - openedAt.current),
+      ...guard.fields(),
     });
     setIsSubmitting(false);
 
     if (result.kind === "ok") {
       setSubmitStatus("success");
       setFormData({ name: "", email: "", subject: "", message: "" });
-      openedAt.current = performance.now();
+      guard.reset();
       return;
     }
 
@@ -392,22 +379,7 @@ export function ContactForm() {
               )}
               {countdown("message")}
             </div>
-            {/* Honeypot. Off-screen rather than `display: none`, which form
-                bots check for; hidden from assistive tech and out of the tab
-                order, so no person reaches it. The label is for the one who
-                somehow does. */}
-            <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
-              <label htmlFor={HONEYPOT_FIELD}>Leave this field empty</label>
-              <input
-                ref={honeypotRef}
-                type="text"
-                id={HONEYPOT_FIELD}
-                name={HONEYPOT_FIELD}
-                tabIndex={-1}
-                autoComplete="off"
-                defaultValue=""
-              />
-            </div>
+            {guard.honeypot}
             <button
               type="submit"
               disabled={isSubmitting}
