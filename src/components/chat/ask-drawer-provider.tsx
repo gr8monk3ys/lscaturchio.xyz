@@ -6,7 +6,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 
@@ -49,24 +48,15 @@ export function AskDrawerProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOverlay, setIsOverlay] = useState(true);
   const [seed, setSeed] = useState("");
-  const restoreFocusTo = useRef<HTMLElement | null>(null);
 
+  // Focus return and Escape are not here: `AskDrawer` hands its panel to
+  // `useModalOverlay`, which records the opener and gives focus back on close.
   const open = useCallback((seedQuestion = "") => {
-    restoreFocusTo.current =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     if (seedQuestion) setSeed(seedQuestion);
     setIsOpen(true);
   }, []);
 
-  const close = useCallback(() => {
-    setIsOpen(false);
-    // Send focus back where it came from; a drawer that dumps focus on <body>
-    // strands a keyboard reader at the top of the document.
-    const target = restoreFocusTo.current;
-    if (target && document.contains(target)) {
-      window.requestAnimationFrame(() => target.focus());
-    }
-  }, []);
+  const close = useCallback(() => setIsOpen(false), []);
 
   const toggle = useCallback(() => {
     if (isOpen) close();
@@ -105,15 +95,6 @@ export function AskDrawerProvider({ children }: { children: React.ReactNode }) {
       resumeScroller();
     };
   }, [isOpen]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [isOpen, close]);
 
   const value = useMemo(
     () => ({ isOpen, isOverlay, open, close, toggle, seed, clearSeed }),

@@ -145,18 +145,6 @@ export function useCommandPalette(): CommandPaletteModel {
   const [state, dispatch] = useReducer(paletteReducer, INITIAL_STATE)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
-  /**
-   * Whatever had focus when the palette opened, so Escape can give it back.
-   *
-   * It has to be captured here, synchronously inside `openPalette`, because
-   * that is the last moment the trigger still holds focus: by the time any
-   * effect in the dialog runs, React has applied the input's `autoFocus` and
-   * `document.activeElement` is the input. A first attempt captured it there
-   * and restored focus to an element that had just unmounted, which is how a
-   * keyboard user ended up on `<body>` having to tab from the top of the
-   * document — the state the scrim's comment claimed was already solved.
-   */
-  const openerRef = useRef<HTMLElement | null>(null)
   const router = useRouter()
   const { theme, setTheme } = useTheme()
 
@@ -246,38 +234,12 @@ export function useCommandPalette(): CommandPaletteModel {
     focusNextFrame(() => inputRef.current?.focus())
   }, [])
 
-  const openPalette = useCallback(() => {
-    const active = document.activeElement
-    openerRef.current = active instanceof HTMLElement && active !== document.body ? active : null
-    dispatch({ type: 'OPEN' })
-    focusInput()
-  }, [focusInput])
+  // Focus in on open, Escape, the Tab trap and focus back out on close belong
+  // to the dialog's `useModalOverlay`, which falls back to the trigger when
+  // Cmd+K was pressed from `<body>` and there is no opener to return to.
+  const openPalette = useCallback(() => dispatch({ type: 'OPEN' }), [])
 
-  const closePalette = useCallback(() => {
-    dispatch({ type: 'CLOSE' })
-    const opener = openerRef.current
-    openerRef.current = null
-
-    // Fall back to the trigger when there was no opener to remember.
-    //
-    // Cmd+K works from anywhere, so it is routinely pressed while focus is on
-    // `<body>` — and then there is nothing to give focus back to. The previous
-    // version returned early there, which a review read, correctly, as "the
-    // palette does not restore focus on Escape": it restored focus from the
-    // button path and not from the accelerator that the header advertises.
-    //
-    // The trigger is the honest destination. It is where the palette lives, it
-    // is on every page, and landing there leaves a keyboard user one Tab from
-    // the nav instead of at the top of the document.
-    focusNextFrame(() => {
-      if (opener?.isConnected) {
-        opener.focus()
-        return
-      }
-      const trigger = document.querySelector<HTMLElement>('[data-command-palette-trigger]')
-      trigger?.focus()
-    })
-  }, [])
+  const closePalette = useCallback(() => dispatch({ type: 'CLOSE' }), [])
 
   const clearQuery = useCallback(() => {
     dispatch({ type: 'CLEAR_QUERY' })
@@ -397,10 +359,6 @@ export function useCommandPalette(): CommandPaletteModel {
       if (!isOpen) return
 
       switch (event.key) {
-        case 'Escape':
-          event.preventDefault()
-          closePalette()
-          return
         case 'ArrowDown':
           event.preventDefault()
           if (commandCount === 0) return

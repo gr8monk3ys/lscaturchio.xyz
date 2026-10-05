@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -13,6 +13,7 @@ import {
   secondaryNavigationCategories,
 } from "@/constants/navlinks";
 import { isPathActive } from "@/lib/navigation-path";
+import { useModalOverlay } from "@/hooks/use-modal-overlay";
 
 import { ThemeToggle } from "./theme-toggle";
 import { AskDrawerTrigger } from "@/components/chat/ask-drawer-trigger";
@@ -30,9 +31,6 @@ const CommandPalette = dynamic(
   }
 );
 
-const FOCUSABLE_SELECTOR =
-  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
 function categoryPanelId(name: string): string {
   return `mobile-nav-panel-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 }
@@ -47,68 +45,19 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
     setExpandedCategory((current) => (current === name ? null : name));
   };
 
-  const closeMenu = useCallback(() => {
-    setIsMenuOpen(false);
-    toggleRef.current?.focus();
-  }, []);
+  const closeMenu = useCallback(() => setIsMenuOpen(false), []);
 
-  // Focus moves into the dialog on open, and the cleanup is the existing
-  // `closeMenu`, which returns it to the toggle.
-  useEffect(() => {
-    if (!isMenuOpen) return;
-    const id = window.requestAnimationFrame(() => menuRef.current?.focus());
-    return () => window.cancelAnimationFrame(id);
-  }, [isMenuOpen]);
-
-  // Escape + focus containment while the overlay is open. Mirrors the
-  // document-level keydown listener in use-command-palette.
-  useEffect(() => {
-    if (!isMenuOpen) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closeMenu();
-        return;
-      }
-
-      if (event.key !== "Tab") return;
-
-      const toggle = toggleRef.current;
-      const menu = menuRef.current;
-      if (!toggle || !menu) return;
-
-      // The toggle sits outside the overlay but must stay reachable, so the
-      // cycle runs toggle -> menu contents -> toggle and never reaches the
-      // page behind.
-      const focusable = [
-        toggle,
-        ...Array.from(menu.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)),
-      ].filter((element) => element.offsetParent !== null || element === toggle);
-
-      if (focusable.length === 0) return;
-
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      const active = document.activeElement as HTMLElement | null;
-
-      if (event.shiftKey) {
-        if (active === first || !active || !focusable.includes(active)) {
-          event.preventDefault();
-          last.focus();
-        }
-        return;
-      }
-
-      if (active === last || !active || !focusable.includes(active)) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [closeMenu, isMenuOpen]);
+  // Initial focus (the dialog wrapper, so its name is announced first),
+  // Escape, Tab containment and focus return all live in `useModalOverlay`.
+  // The toggle is outside the overlay but stays in the cycle: it is the
+  // visible way out, and on close focus returns to it.
+  useModalOverlay({
+    open: isMenuOpen,
+    onClose: closeMenu,
+    containerRef: menuRef,
+    alsoReachable: [toggleRef],
+    returnFocusFallback: () => toggleRef.current,
+  });
 
   return (
     <>
@@ -186,8 +135,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
           convention was applied one level in and not at the top.
 
           `hidden` keeps the collapsed container out of layout and out of the
-          tab order, so the focus trap and the focus-on-open effect are
-          unaffected; both are already gated on `isMenuOpen`. */}
+          tab order, and `useModalOverlay` only runs while `isMenuOpen`. */}
       <div hidden={!isMenuOpen}>
         {/* A dialog that CONTAINS a navigation landmark, which is the ARIA this
            wants and the reason a first attempt was reverted. Putting
@@ -199,9 +147,8 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
            overlay announces as a modal dialog, and the list inside it is still
            a navigation landmark.
 
-           The wrapper carries the box and the focus trap; the `<nav>` inside
-           carries the landmark. `menuRef` moves up here so the trap's
-           `querySelectorAll` still sees every control in the overlay. */}
+           The wrapper carries the box and is the overlay's container; the
+           `<nav>` inside carries the landmark. */}
         <div
           role="dialog"
           aria-modal="true"
@@ -216,8 +163,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
           /* Focus moves in on open, which is what a modal does. The wrapper
              takes it rather than the first link, so the dialog's own name is
              announced before its contents — and `tabIndex={-1}` keeps it out
-             of the Tab cycle, because the trap's selector excludes
-             `[tabindex="-1"]`.
+             of the Tab cycle, because a negative tabindex is never a stop.
 
              Before this, `document.activeElement` was `BODY` right after the
              toggle fired. Nobody was stranded — the first Tab entered the
@@ -325,9 +271,8 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
                       exists. Now it does.
 
                       The `hidden` attribute removes the panel from layout and
-                      from the tab order, so the focus trap's
-                      `offsetParent !== null` filter still excludes these
-                      links while collapsed. */}
+                      from the tab order, and the overlay's Tab cycle skips
+                      anything inside a `[hidden]` ancestor. */}
                   <div id={panelId} hidden={!isExpanded} className="overflow-hidden">
                       <div className="space-y-1 pl-4">
                         {category.items.map((item) => {

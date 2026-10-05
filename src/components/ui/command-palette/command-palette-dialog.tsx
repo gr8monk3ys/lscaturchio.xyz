@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Search, X, Loader2, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useModalOverlay } from '@/hooks/use-modal-overlay'
 import type { CommandCategory, CommandGroups, CommandItem } from './types'
 
 function getCategoryLabel(category: CommandCategory): string {
@@ -89,58 +90,35 @@ export function CommandPaletteDialog({
     commandCount > 0 ? `${LISTBOX_ID}-option-${selectedIndex}` : undefined
 
   /**
-   * Keep Tab inside the dialog, and hand focus back on the way out.
+   * Initial focus, Escape, the Tab trap and focus return: `useModalOverlay`.
    *
    * It declares `aria-modal="true"`, which is a promise to assistive tech that
-   * the rest of the page is unavailable, so the tab order has to keep it.
+   * the rest of the page is unavailable, so the tab order has to keep it. The
+   * result rows are `<button tabIndex={-1}>`, driven by
+   * `aria-activedescendant` rather than by focus, and the overlay's tabbability
+   * rule leaves them out of the cycle — the first trap here let them in, and
+   * Tab fell out of the dialog into the nav behind the scrim.
    *
-   * The first version of this trap did not. Its selector clause
-   * `button:not([disabled])` matched the result rows — which are
-   * `<button tabIndex={-1}>`, driven by `aria-activedescendant` rather than by
-   * focus — so `last` resolved to the final *result*, never the last tabbable
-   * thing, and Tab ran input -> Clear search -> <body> -> the skip link -> the
-   * nav behind the scrim. It only looked correct on an empty query, where
-   * `first === last === input`. Selector-based tabbability is the trap here:
-   * `[tabindex="-1"]` is excluded by one clause and let back in by another.
-   * Filtering on the resolved `tabIndex` cannot be fooled that way.
-   *
-   * Focus restoration lives in `useCommandPalette`, not here. Capturing the
-   * opener in an effect on this component looked right and was not: effects
-   * run after commit, and React has already applied the input's `autoFocus`
-   * by then — so the "opener" resolved to the input itself, and closing
-   * restored focus to a node that had just been unmounted, landing on
-   * `<body>`. Measured. The only place the trigger is still focused is inside
-   * `openPalette`, before it dispatches.
+   * This only renders while open, so `open` is always true and unmounting is
+   * closing. The input does not use `autoFocus`: that runs during commit,
+   * before the overlay records the opener, and the "opener" would be the input
+   * itself — which is how focus once landed on `<body>` after Escape.
    */
   const panelRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const tabbable = (panel: HTMLElement) =>
-      Array.from(
-        panel.querySelectorAll<HTMLElement>('a[href], button, input, textarea, select, [tabindex]')
-      ).filter((el) => el.tabIndex >= 0 && !el.hasAttribute('disabled'))
-
-    const onKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.key !== 'Tab') return
-      const panel = panelRef.current
-      if (!panel) return
-      const focusable = tabbable(panel)
-      if (focusable.length === 0) return
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-      const active = document.activeElement
-
-      if (event.shiftKey && (active === first || !panel.contains(active))) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && (active === last || !panel.contains(active))) {
-        event.preventDefault()
-        first.focus()
-      }
-    }
-    document.addEventListener('keydown', onKeyDown, true)
-    return () => document.removeEventListener('keydown', onKeyDown, true)
-  }, [])
+  useModalOverlay({
+    open: true,
+    onClose,
+    containerRef: panelRef,
+    initialFocusRef: inputRef,
+    // Cmd+K works from anywhere, so it is routinely pressed while focus is on
+    // `<body>` and there is no opener to give focus back to. The trigger is
+    // the honest destination: it is where the palette lives, it is on every
+    // page, and landing there leaves a keyboard user one Tab from the nav
+    // instead of at the top of the document.
+    returnFocusFallback: () =>
+      document.querySelector<HTMLElement>('[data-command-palette-trigger]'),
+  })
 
   /**
    * Portalled to `document.body`, and it has to be.
@@ -199,14 +177,12 @@ export function CommandPaletteDialog({
         >
           <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
             <Search className="h-5 w-5 text-muted-foreground shrink-0" />
-            {/* `autoFocus`: mounting and focusing in one step.
-                Focus was driven from `openPalette` through a single
-                `requestAnimationFrame`, which is a race against this element
-                existing — and the portal lost it. Letting the element that
-                needs focus ask for it removes the timing question entirely. */}
+            {/* Focused a frame after mount by `useModalOverlay`. That frame
+                once raced a portal target held in state, which rendered nothing
+                on the first commit; the portal now goes straight to
+                `document.body`, so the input exists when the frame fires. */}
             <input
               ref={inputRef}
-              autoFocus
               type="text"
               value={query}
               onChange={(e) => onChangeQuery(e.target.value)}
