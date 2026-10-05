@@ -1,3 +1,4 @@
+import { after } from 'next/server';
 import { getDb } from '@/lib/db';
 import crypto from 'crypto';
 import { withWriteRoute } from '@/lib/api/write-route';
@@ -34,14 +35,21 @@ function buildMetadataJson(
 const SUBSCRIBE_MESSAGE = 'Thanks! Check your inbox to confirm your subscription.';
 
 /**
- * Not awaited: the subscription stands whether or not the welcome email
- * leaves, and the response must not wait on Resend. deliverMail never throws
+ * After the response, not awaited by it: the subscription stands whether or
+ * not the welcome email leaves, and the reader must not wait on Resend.
+ *
+ * `after()` rather than a bare un-awaited promise. On Vercel a function may be
+ * frozen as soon as its response is sent, so a floating promise could be cut
+ * off mid-request and the welcome email silently never leave; `after` keeps
+ * the invocation alive until the callback settles. deliverMail never throws
  * and logs its own failures, so nothing here is swallowed.
  */
 function sendWelcome(email: string, unsubscribeToken: string): void {
-  void deliverMail(
-    { to: email, ...renderWelcomeEmail(unsubscribeToken) },
-    { component: 'newsletter/subscribe', action: 'POST' }
+  after(() =>
+    deliverMail(
+      { to: email, ...renderWelcomeEmail(unsubscribeToken) },
+      { component: 'newsletter/subscribe', action: 'POST' }
+    )
   );
 }
 
