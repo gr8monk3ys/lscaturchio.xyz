@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { contactFormSchema } from "@/lib/validations";
 import { HONEYPOT_FIELD } from "@/lib/contact-spam";
+import { submitWrite, type WriteResult } from "@/lib/fetcher";
 
 import { CONTACT_FIELD_LIMITS } from "@/lib/validations";
 
@@ -27,22 +28,42 @@ type ContactField = keyof typeof CONTACT_FIELD_LIMITS;
 const COUNTDOWN_THRESHOLD = 0.9;
 
 /**
- * How long a send may take before the form gives up and says so.
+ * The rate-limit sentence, with the wait the server named when it named one.
  *
- * BotID (instrumentation-client.ts) wraps `fetch` and waits for its challenge
- * script before the request leaves. If an extension blocks that script, or it
- * loads and never answers, the wrapped fetch can wait forever — and an
- * `AbortSignal` on the request cannot help, because the request has not been
- * made yet. Without this the button sat on "Sending..." indefinitely.
+ * The form always had this sentence, behind `body?.error ?? ...` — and the
+ * 429 always carries `error: "Too many requests"`, so the fallback could never
+ * win and readers saw the bare phrase instead.
  */
-const SUBMIT_TIMEOUT_MS = 20_000;
+function rateLimitedMessage(retryAfter: number | null): string {
+  const wait =
+    retryAfter === null
+      ? "in a few minutes"
+      : retryAfter <= 60
+        ? "in a minute"
+        : `in ${Math.ceil(retryAfter / 60)} minutes`;
+  return `Too many messages from this address in a short window. Try again ${wait}.`;
+}
 
-function withSubmitTimeout<T>(request: Promise<T>): Promise<T> {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error("Contact form send timed out")), SUBMIT_TIMEOUT_MS);
-  });
-  return Promise.race([request, timeout]).finally(() => clearTimeout(timer));
+/** What the form says for each way a send can fail. */
+function describeFailure(
+  result: Exclude<WriteResult<unknown>, { kind: "ok" }>
+): { message: string; field?: string } {
+  switch (result.kind) {
+    case "invalid-field":
+      return { message: result.message, field: result.field };
+    case "rate-limited":
+      return { message: rateLimitedMessage(result.retryAfter) };
+    case "refused":
+    case "server-error":
+      // The server diagnoses each of these in its own sentence — a BotID
+      // refusal, a missing mail key, a Resend outage — so relay it.
+      return { message: result.message ?? "The message did not send." };
+    case "network":
+      return {
+        message:
+          "The message did not reach the server — a dropped connection, or a browser extension blocking the site's bot check, rather than anything you typed.",
+      };
+  }
 }
 
 export function ContactForm() {
@@ -146,51 +167,24 @@ export function ContactForm() {
     setIsSubmitting(true);
     setFailure(null);
 
-    try {
-      const response = await withSubmitTimeout(
-        fetch("/api/contact", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...formData,
-            [HONEYPOT_FIELD]: honeypotRef.current?.value ?? "",
-            elapsedMs: Math.round(performance.now() - openedAt.current),
-          }),
-        })
-      );
+    const result = await submitWrite("/api/contact", {
+      ...formData,
+      [HONEYPOT_FIELD]: honeypotRef.current?.value ?? "",
+      elapsedMs: Math.round(performance.now() - openedAt.current),
+    });
+    setIsSubmitting(false);
 
-      if (response.ok) {
-        setSubmitStatus("success");
-        setFormData({ name: "", email: "", subject: "", message: "" });
-        openedAt.current = performance.now();
-        return;
-      }
-
-      // The typed message is never cleared on failure; it is the most expensive
-      // thing on the page to retype.
-      const body = (await response.json().catch(() => null)) as {
-        error?: string;
-        field?: string;
-      } | null;
-
-      setSubmitStatus("error");
-      setFailure({
-        message:
-          body?.error ??
-          (response.status === 429
-            ? "Too many messages from this address in a short window. Try again in a few minutes."
-            : "The message did not send."),
-        field: body?.field,
-      });
-    } catch {
-      setSubmitStatus("error");
-      setFailure({
-        message:
-          "The message did not reach the server — a dropped connection, or a browser extension blocking the site's bot check, rather than anything you typed.",
-      });
-    } finally {
-      setIsSubmitting(false);
+    if (result.kind === "ok") {
+      setSubmitStatus("success");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      openedAt.current = performance.now();
+      return;
     }
+
+    // The typed message is never cleared on failure; it is the most expensive
+    // thing on the page to retype.
+    setSubmitStatus("error");
+    setFailure(describeFailure(result));
   };
 
   /** The message rendered under a field, when the failure named that field. */

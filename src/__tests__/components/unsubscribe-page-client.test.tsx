@@ -95,5 +95,22 @@ describe("UnsubscribePageClient", () => {
       );
       expect(screen.getByText("Invalid unsubscribe token")).toBeInTheDocument();
     });
+
+    it("says so when the request never reaches the server", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => {
+          throw new TypeError("Failed to fetch");
+        })
+      );
+
+      render(<UnsubscribePageClient status="confirm" message="" token="tok-123" />);
+      fireEvent.click(screen.getByRole("button", { name: "Unsubscribe" }));
+
+      await waitFor(() =>
+        expect(screen.getByText("Network error. Please try again later.")).toBeInTheDocument()
+      );
+      expect(screen.getByRole("heading", { name: "Unsubscribe Failed" })).toBeInTheDocument();
+    });
   });
 });

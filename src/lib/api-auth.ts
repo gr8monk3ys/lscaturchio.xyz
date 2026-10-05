@@ -5,7 +5,8 @@
  */
 
 import crypto from 'crypto';
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import type { Refusal } from './api-response';
 import { logError } from './logger';
 
 /**
@@ -46,13 +47,14 @@ export interface ValidateApiKeyOptions {
 /**
  * Validate API key from request headers
  *
- * Returns null if authentication succeeds, or a NextResponse error if it fails.
+ * Returns null if authentication succeeds, or a 401 `Refusal` for the caller
+ * to render with `refusalResponse`.
  * In development mode, allows access without a key if the env var is not configured.
  *
  * @example
  * ```ts
- * const authError = validateApiKey(request);
- * if (authError) return authError;
+ * const refusal = validateApiKey(request);
+ * if (refusal) return refusalResponse(refusal);
  * // Proceed with authenticated handler
  * ```
  *
@@ -65,7 +67,7 @@ export interface ValidateApiKeyOptions {
 export function validateApiKey(
   request: NextRequest,
   options: ValidateApiKeyOptions = {}
-): NextResponse | null {
+): Refusal | null {
   const {
     envKey = 'ANALYTICS_API_KEY',
     component = 'api',
@@ -81,10 +83,7 @@ export function validateApiKey(
         component,
         action,
       });
-      return NextResponse.json(
-        { error: 'Unauthorized - API key required' },
-        { status: 401 }
-      );
+      return { status: 401, error: 'Unauthorized - API key required' };
     }
     // Development mode: allow access without key
     return null;
@@ -92,10 +91,7 @@ export function validateApiKey(
 
   const providedKey = request.headers.get('x-api-key');
   if (!safeCompare(providedKey, apiKey)) {
-    return NextResponse.json(
-      { error: 'Unauthorized - valid API key required' },
-      { status: 401 }
-    );
+    return { status: 401, error: 'Unauthorized - valid API key required' };
   }
 
   return null;

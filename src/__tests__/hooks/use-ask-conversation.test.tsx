@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useAskConversation, ASK_OPENER } from "@/hooks/use-ask-conversation";
+import { logError, logWarn } from "@/lib/logger";
+
+vi.mock("@/lib/logger", () => ({ logError: vi.fn(), logWarn: vi.fn() }));
 
 const fetchMock = vi.fn();
 
@@ -13,8 +16,14 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+const JSON_HEADERS = { "content-type": "application/json" };
+
+/** What /api/chat sends on success: the standard { data, success } envelope. */
 function ok(answer: string) {
-  return { ok: true, json: async () => ({ data: { answer } }) };
+  return new Response(JSON.stringify({ data: { answer }, success: true }), {
+    status: 200,
+    headers: JSON_HEADERS,
+  });
 }
 
 describe("useAskConversation", () => {
@@ -72,7 +81,12 @@ describe("useAskConversation", () => {
   });
 
   it("keeps the failed question so the reader can resend it", async () => {
-    fetchMock.mockResolvedValue({ ok: false, json: async () => ({ error: "boom" }) });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ error: "Failed to process chat request", success: false }), {
+        status: 500,
+        headers: JSON_HEADERS,
+      })
+    );
     const { result } = renderHook(() => useAskConversation());
 
     await act(async () => {
@@ -84,7 +98,9 @@ describe("useAskConversation", () => {
   });
 
   it("treats a 200 with no answer as a failure rather than rendering nothing", async () => {
-    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ data: {} }) });
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ data: {}, success: true }), { status: 200, headers: JSON_HEADERS })
+    );
     const { result } = renderHook(() => useAskConversation());
 
     await act(async () => {
@@ -93,6 +109,37 @@ describe("useAskConversation", () => {
 
     await waitFor(() => expect(result.current.messages).toHaveLength(3));
     expect(result.current.messages[2].failedQuery).toBe("Empty?");
+  });
+
+  // The reader sees the same copy either way; what differs is whether anyone
+  // is paged. A rate limit is the server working, a lost request is not.
+  it.each([
+    [
+      "a rate limit",
+      () =>
+        fetchMock.mockResolvedValue(
+          new Response(
+            JSON.stringify({ error: "Too many requests", success: false, retryAfter: 60 }),
+            { status: 429, headers: JSON_HEADERS }
+          )
+        ),
+      "warn",
+    ],
+    ["a request that never left", () => fetchMock.mockRejectedValue(new TypeError("Failed to fetch")), "error"],
+  ])("reports %s at the right level", async (_case, arrange, level) => {
+    vi.mocked(logWarn).mockClear();
+    vi.mocked(logError).mockClear();
+    arrange();
+    const { result } = renderHook(() => useAskConversation());
+
+    await act(async () => {
+      await result.current.send("Still there?");
+    });
+
+    await waitFor(() => expect(result.current.messages).toHaveLength(3));
+    expect(result.current.messages[2].failedQuery).toBe("Still there?");
+    expect(logWarn).toHaveBeenCalledTimes(level === "warn" ? 1 : 0);
+    expect(logError).toHaveBeenCalledTimes(level === "error" ? 1 : 0);
   });
 
   it("ignores an empty or whitespace-only question", async () => {

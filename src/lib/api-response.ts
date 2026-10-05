@@ -3,7 +3,12 @@
  *
  * Provides consistent response format across all API routes:
  * - Success: { data: T, success: true }
- * - Error: { error: string, success: false }
+ * - Error: { error: string, success: false, field?: string, retryAfter?: number }
+ *
+ * `field` names the input a 400 is about; `retryAfter` is the 429's wait in
+ * seconds. The browser decodes this one shape in `submitWrite`
+ * (`src/lib/fetcher.ts`), so a layer that answers in any other shape is a
+ * failure the forms cannot read.
  */
 
 import { NextResponse } from "next/server";
@@ -48,6 +53,23 @@ export function apiError(
     { error: message, success: false, ...details },
     { status }
   );
+}
+
+/**
+ * A layer's decision to stop a request, before it is rendered.
+ *
+ * The pre-handler layers of the write chain — CSRF (`validateCsrf`), API-key
+ * auth (`validateApiKey`) and the admin session (`requireAdmin`) — return one
+ * of these instead of a response, and the caller renders it with
+ * `refusalResponse`. They used to build their own `NextResponse.json({ error })`,
+ * which is how a CSRF 403 came to be the one failure on a write route without
+ * `success: false`: the chain's envelope cannot drift if the layers never
+ * spell one.
+ */
+export type Refusal = { status: number; error: string };
+
+export function refusalResponse(refusal: Refusal): NextResponse {
+  return apiError(refusal.error, refusal.status);
 }
 
 /**

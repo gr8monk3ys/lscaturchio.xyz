@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
-import { ApiErrors } from "@/lib/api-response";
+import type { NextRequest } from "next/server";
+import type { Refusal } from "@/lib/api-response";
 import { safeCompare } from "@/lib/api-auth";
 
 export const ADMIN_SESSION_COOKIE = "admin_session";
@@ -69,12 +69,13 @@ export function verifySessionToken(
   }
 }
 
-export function requireAdmin(req: NextRequest): NextResponse | null {
+/** Null for a signed-in admin; otherwise the refusal the caller renders. */
+export function requireAdmin(req: NextRequest): Refusal | null {
   if (!isAdminConfigured()) {
-    return ApiErrors.internalError("Admin portal is not configured");
+    return { status: 500, error: "Admin portal is not configured" };
   }
   const session = verifySessionToken(req.cookies.get(ADMIN_SESSION_COOKIE)?.value);
-  if (!session) return ApiErrors.unauthorized();
+  if (!session) return { status: 401, error: "Unauthorized" };
   return null;
 }
 
