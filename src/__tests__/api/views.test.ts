@@ -38,7 +38,7 @@ function post(slug: string, title = slug): BlogPost {
     date: '2025-01-01',
     image: '/images/blog/default.webp',
     tags: [],
-    content: '',
+    body: '',
     published: true,
     readingTimeMinutes: 1,
     words: 200,

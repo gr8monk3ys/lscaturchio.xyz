@@ -81,15 +81,12 @@ describe("POST /api/admin/posts", () => {
     expect(res.status).toBe(409);
   });
 
-  it("commits content.mdx and page.tsx on create", async () => {
+  it("commits only content.mdx on create: the essay route renders it", async () => {
     const { POST } = await import("@/app/api/admin/posts/route");
     const res = await POST(await authedRequest(validPost));
     expect(res.status).toBe(200);
     const [files, message] = commitToMain.mock.calls[0] as [Array<{ path: string }>, string];
-    expect(files.map((f) => f.path)).toEqual([
-      "src/app/blog/a-new-post/content.mdx",
-      "src/app/blog/a-new-post/page.tsx",
-    ]);
+    expect(files.map((f) => f.path)).toEqual(["src/app/blog/a-new-post/content.mdx"]);
     expect(message).toContain("a-new-post");
   });
 
