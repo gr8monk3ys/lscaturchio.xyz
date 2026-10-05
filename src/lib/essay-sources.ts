@@ -3,15 +3,16 @@
  * is its text".
  *
  * This used to be re-decided in five places with four different predicates:
- * `getAllBlogs` and three scripts globbed the flat and nested MDX shapes, while the
- * retrieval-corpus sync walked directories only — so a flat
- * `src/app/blog/foo.mdx` would render on the site and be webmentioned but never
- * reach the chat corpus. Malformed front-matter was likewise a silent skip in
- * one place and a hard CI failure in another.
+ * `getAllBlogs` and three scripts globbed a flat `src/app/blog/foo.mdx` as well
+ * as the directory shape, while the retrieval-corpus sync walked directories
+ * only. Malformed front-matter was likewise a silent skip in one place and a
+ * hard CI failure in another.
  *
- * Both of those are now stated here, explicitly, as options: the walk covers
- * flat and directory essays alike, and `onMalformed` chooses between dropping a
- * bad source and failing loudly.
+ * Both are now stated here. An essay is `<slug>/content.mdx` and nothing else:
+ * that is the one file `src/app/blog/[slug]` imports, so it is the only shape
+ * that renders, and a shape the route cannot render must not be listed,
+ * prerendered or embedded. `onMalformed` chooses between dropping a bad source
+ * and failing loudly.
  *
  * The essay's text is derived here too. "Strip the meta export" was written
  * five times: a brace counter that miscounted a `}` inside a string, three
@@ -26,10 +27,10 @@ import fs from "fs/promises";
 import { parseMetaExport, type BlogMeta, type MetaExportSpan } from "./blog-meta";
 
 /**
- * An essay is either `<slug>/content.mdx` or a flat `<slug>.mdx`. Nothing else
- * under the blog route is one.
+ * An essay is `<slug>/content.mdx`. Nothing else under the blog route is one,
+ * including a flat `<slug>.mdx`, which the essay route has no import for.
  */
-export const ESSAY_GLOB = ["*.mdx", "*/content.mdx"];
+export const ESSAY_GLOB = ["*/content.mdx"];
 
 /** Where the essays live, resolved at call time so tests can move the cwd. */
 export function essayRoot(): string {
@@ -90,14 +91,14 @@ export class MalformedEssayError extends Error {
   }
 }
 
-/** `foo/content.mdx` and `foo.mdx` both name the essay `foo`. */
+/** `foo/content.mdx` names the essay `foo`. */
 export function essaySlugFromPath(relativePath: string): string {
-  return relativePath.replace(/(\/content)?\.mdx$/, "");
+  return relativePath.replace(/\/content\.mdx$/, "");
 }
 
-/** The inverse: where essay `foo` may live, directory shape first. */
-function essayPathsForSlug(slug: string): string[] {
-  return [`${slug}/content.mdx`, `${slug}.mdx`];
+/** The inverse: where essay `foo` lives. */
+function essayPathForSlug(slug: string): string {
+  return `${slug}/content.mdx`;
 }
 
 /** Same shape as the site's slug rule; anything else could leave the blog root. */
@@ -219,8 +220,8 @@ export async function listEssaySources(
 }
 
 /**
- * One essay by slug, in either shape, or null when there is no such essay or
- * its meta fails `requiredMeta`. Reads one file rather than walking the root.
+ * One essay by slug, or null when there is no such essay or its meta fails
+ * `requiredMeta`. Reads one file rather than walking the root.
  */
 export async function getEssaySource(
   slug: string,
@@ -230,12 +231,10 @@ export async function getEssaySource(
   const blogDir = options.blogDir ?? essayRoot();
   const requiredMeta = options.requiredMeta ?? ["title"];
 
-  for (const relativePath of essayPathsForSlug(slug)) {
-    try {
-      return (await readEssay(blogDir, relativePath, requiredMeta)).essay;
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-    }
+  try {
+    return (await readEssay(blogDir, essayPathForSlug(slug), requiredMeta)).essay;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    return null;
   }
-  return null;
 }

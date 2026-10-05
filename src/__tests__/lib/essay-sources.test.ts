@@ -12,9 +12,9 @@ import {
 
 /**
  * Pins the one predicate that answers "what counts as an essay". It used to be
- * re-answered in five places with four different predicates — the corpus sync
- * walked directories only, so a flat `foo.mdx` shipped on the site and was
- * never embedded. These fixtures cover all four shapes at once.
+ * re-answered in five places with four different predicates. It is now
+ * `<slug>/content.mdx` only: the one file the essay route imports, so a flat
+ * `foo.mdx` beside it is not listed, prerendered or embedded.
  */
 
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "essay-sources-"));
@@ -35,10 +35,11 @@ function write(relativePath: string, contents: string) {
 
 beforeAll(() => {
   write("directory-essay/content.mdx", mdx("Directory essay"));
+  // Not essays: a flat file the route has no import for, a nested
+  // non-`content` file, a README, and a component.
   write("flat-essay.mdx", mdx("Flat essay"));
   write("malformed-essay/content.mdx", mdx(null));
   write("dateless-essay/content.mdx", "export const meta = {\n  title: \"No date\",\n};\n");
-  // Not essays: a nested non-`content` file, a README, and a component.
   write("directory-essay/notes.mdx", mdx("Notes are not an essay"));
   write("README.md", "not an essay");
   write("directory-essay/Diagram.tsx", "export default function D() { return null; }");
@@ -51,12 +52,12 @@ afterAll(() => {
 });
 
 describe("listEssaySources", () => {
-  it("returns directory and flat essays, and nothing else", async () => {
+  it("returns directory essays, and nothing else", async () => {
     const slugs = (await listEssaySources()).map((e) => e.slug);
 
-    expect(slugs).toEqual(["dateless-essay", "directory-essay", "flat-essay"]);
-    // The flat essay is the case the corpus sync used to miss entirely.
-    expect(slugs).toContain("flat-essay");
+    expect(slugs).toEqual(["dateless-essay", "directory-essay"]);
+    // A flat file would be listed and prerendered with nothing to render.
+    expect(slugs).not.toContain("flat-essay");
     // Malformed meta is dropped by default, not fatal.
     expect(slugs).not.toContain("malformed-essay");
     // A sibling .mdx inside an essay directory is not a second essay.
@@ -65,17 +66,17 @@ describe("listEssaySources", () => {
   });
 
   it("hands back the source and parsed meta, read once", async () => {
-    const flat = (await listEssaySources()).find((e) => e.slug === "flat-essay");
+    const essay = (await listEssaySources()).find((e) => e.slug === "directory-essay");
 
-    expect(flat?.relativePath).toBe("flat-essay.mdx");
-    expect(flat?.meta.title).toBe("Flat essay");
-    expect(flat?.source).toContain("Body text.");
+    expect(essay?.relativePath).toBe("directory-essay/content.mdx");
+    expect(essay?.meta.title).toBe("Directory essay");
+    expect(essay?.source).toContain("Body text.");
   });
 
   it("drops a dateless essay only when the caller asks for a date", async () => {
     const withDate = await listEssaySources({ requiredMeta: ["title", "date"] });
 
-    expect(withDate.map((e) => e.slug)).toEqual(["directory-essay", "flat-essay"]);
+    expect(withDate.map((e) => e.slug)).toEqual(["directory-essay"]);
   });
 
   it("fails loudly in strict mode — the corpus sync's CI gate", async () => {
@@ -134,9 +135,10 @@ describe("EssaySource.body", () => {
   beforeAll(() => {
     fs.mkdirSync(path.join(bodyDir, "hard-cases"), { recursive: true });
     fs.writeFileSync(path.join(bodyDir, "hard-cases", "content.mdx"), HARD, "utf-8");
-    // A flat essay whose meta closes without a semicolon, the common shape.
+    // A meta block that closes without a semicolon, the common shape.
+    fs.mkdirSync(path.join(bodyDir, "no-semicolon"), { recursive: true });
     fs.writeFileSync(
-      path.join(bodyDir, "flat-body.mdx"),
+      path.join(bodyDir, "no-semicolon", "content.mdx"),
       'export const meta = {\n  title: "Flat",\n}\n\n## Only section\n\nFlat body.\n',
       "utf-8"
     );
@@ -166,22 +168,20 @@ describe("EssaySource.body", () => {
     );
   });
 
-  it("derives a flat essay's body the same way", async () => {
-    const essay = await getEssaySource("flat-body", { blogDir: bodyDir });
+  it("ends the meta block where the compiler does, semicolon or not", async () => {
+    const essay = await getEssaySource("no-semicolon", { blogDir: bodyDir });
 
-    expect(essay?.relativePath).toBe("flat-body.mdx");
+    expect(essay?.relativePath).toBe("no-semicolon/content.mdx");
     expect(essay?.body).toBe("## Only section\n\nFlat body.");
   });
 });
 
 describe("getEssaySource", () => {
-  it("finds an essay in either shape", async () => {
+  it("finds an essay by slug, and not a flat file of the same name", async () => {
     expect((await getEssaySource("directory-essay", { blogDir }))?.relativePath).toBe(
       "directory-essay/content.mdx"
     );
-    expect((await getEssaySource("flat-essay", { blogDir }))?.relativePath).toBe(
-      "flat-essay.mdx"
-    );
+    expect(await getEssaySource("flat-essay", { blogDir })).toBeNull();
   });
 
   it("is null for no essay, a malformed one, or a slug that is not a slug", async () => {
@@ -192,8 +192,7 @@ describe("getEssaySource", () => {
 });
 
 describe("essaySlugFromPath", () => {
-  it("names both shapes the same way", () => {
+  it("names an essay by its directory", () => {
     expect(essaySlugFromPath("foo/content.mdx")).toBe("foo");
-    expect(essaySlugFromPath("foo.mdx")).toBe("foo");
   });
 });
