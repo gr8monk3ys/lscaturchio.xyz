@@ -1,17 +1,21 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // The retrieval module is tested at its interface — essays and grounding —
 // with only the edges mocked: the database (which answers both the vector and
 // the full-text query) and the two embedding providers.
-const { mockSql, mockOllamaEmbed, mockOllamaAvailable, mockLogError } = vi.hoisted(() => {
-  // No OpenAI key: the embedding ladder goes straight to (mocked) Ollama.
-  delete process.env.OPENAI_API_KEY;
-  return {
-    mockSql: vi.fn(),
-    mockOllamaEmbed: vi.fn(),
-    mockOllamaAvailable: vi.fn(),
-    mockLogError: vi.fn(),
-  };
+const { mockSql, mockOllamaEmbed, mockOllamaAvailable, mockLogError } = vi.hoisted(() => ({
+  mockSql: vi.fn(),
+  mockOllamaEmbed: vi.fn(),
+  mockOllamaAvailable: vi.fn(),
+  mockLogError: vi.fn(),
+}));
+
+// No OpenAI key: the embedding ladder goes straight to (mocked) Ollama.
+beforeEach(() => {
+  vi.stubEnv('OPENAI_API_KEY', '');
+});
+afterEach(() => {
+  vi.unstubAllEnvs();
 });
 
 vi.mock('@/lib/db', () => ({

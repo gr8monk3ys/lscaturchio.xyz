@@ -12,32 +12,15 @@
 
 import { createOllamaEmbedding, isOllamaAvailable, getEmbeddingDimensions } from './ollama';
 import { logWarn } from './logger';
-import { getErrorMessage, isOpenAIAuthOrConfigError } from './openai-errors';
+import { getErrorMessage } from './openai-errors';
+import { disableOpenAIOnAuthError, getOpenAIClient, isOpenAIEnabled } from './ai-provider';
 
 const NO_EMBEDDING_PROVIDER_ERROR =
   'No embedding provider available. Set a valid OPENAI_API_KEY or start Ollama server.';
 
-// Determine which provider to use
-const USE_OPENAI = !!process.env.OPENAI_API_KEY;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-// Lazy OpenAI initialization (only if API key is set)
-let openaiClient: import('openai').default | null = null;
-let openaiEmbeddingsDisabled = false;
-let hasWarnedOpenAIFallback = false;
 let hasWarnedNoProvider = false;
-
-async function getOpenAI() {
-  if (!openaiClient && USE_OPENAI) {
-    const OpenAI = (await import('openai')).default;
-    openaiClient = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY!,
-      timeout: 30000,
-      maxRetries: 1,
-    });
-  }
-  return openaiClient;
-}
 
 /** True for the error `createEmbedding` throws when neither provider is reachable. */
 export function isNoEmbeddingProviderError(error: unknown): boolean {
@@ -49,10 +32,8 @@ export function isNoEmbeddingProviderError(error: unknown): boolean {
  * Uses OpenAI if API key is set, otherwise Ollama
  */
 export async function createEmbedding(text: string): Promise<number[]> {
-  if (USE_OPENAI && !openaiEmbeddingsDisabled) {
-    const client = await getOpenAI();
-    if (!client) throw new Error('OpenAI client not initialized');
-
+  const client = await getOpenAIClient();
+  if (client) {
     try {
       const response = await client.embeddings.create({
         model: 'text-embedding-3-small',
@@ -61,21 +42,8 @@ export async function createEmbedding(text: string): Promise<number[]> {
       });
       return response.data[0].embedding;
     } catch (error) {
-      // Disable OpenAI embeddings on auth/config failures and fall back to Ollama.
-      if (isOpenAIAuthOrConfigError(error)) {
-        openaiEmbeddingsDisabled = true;
-        if (!hasWarnedOpenAIFallback) {
-          hasWarnedOpenAIFallback = true;
-          if (!IS_PRODUCTION) {
-            logWarn('OpenAI embeddings auth/config failed; falling back to Ollama', {
-              component: 'embeddings',
-              reason: getErrorMessage(error),
-            });
-          }
-        }
-      } else {
-        throw error;
-      }
+      // An auth/config failure turns OpenAI off everywhere; fall back to Ollama.
+      if (!disableOpenAIOnAuthError(error)) throw error;
     }
   }
 
@@ -88,8 +56,8 @@ export async function createEmbedding(text: string): Promise<number[]> {
         'No embedding provider available in non-production; semantic search will return empty results',
         {
           component: 'embeddings',
-          openaiConfigured: USE_OPENAI,
-          openaiDisabled: openaiEmbeddingsDisabled,
+          openaiConfigured: !!process.env.OPENAI_API_KEY,
+          openaiDisabled: !!process.env.OPENAI_API_KEY && !isOpenAIEnabled(),
         }
       );
     }
@@ -103,7 +71,7 @@ export async function createEmbedding(text: string): Promise<number[]> {
  * Get the embedding dimensions for the current provider
  */
 export function getProviderEmbeddingDimensions(): number {
-  if (USE_OPENAI && !openaiEmbeddingsDisabled) {
+  if (isOpenAIEnabled()) {
     return 768; // OpenAI text-embedding-3-small with dimensions=768
   }
   return getEmbeddingDimensions(); // Ollama model dimensions
@@ -113,13 +81,13 @@ export function getProviderEmbeddingDimensions(): number {
  * Get the current embedding provider name
  */
 export function getEmbeddingProvider(): string {
-  return USE_OPENAI && !openaiEmbeddingsDisabled ? 'openai' : 'ollama';
+  return isOpenAIEnabled() ? 'openai' : 'ollama';
 }
 
 /**
  * Check if embeddings are available (provider is configured)
  */
 export async function isEmbeddingsAvailable(): Promise<boolean> {
-  if (USE_OPENAI && !openaiEmbeddingsDisabled) return true;
+  if (isOpenAIEnabled()) return true;
   return isOllamaAvailable();
 }
