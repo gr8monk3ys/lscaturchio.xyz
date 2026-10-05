@@ -11,10 +11,17 @@
  *
  * After a real sync, rerun `npm run generate-embeddings` so retrieval matches
  * (it is content-hash incremental, so unchanged essays are skipped).
+ *
+ * Only published essays are written. public/my-data is served publicly and
+ * feeds search, chat and related posts, so a scheduled essay (future
+ * front-matter date) stays out until its day, by the same `isBlogPublished`
+ * rule the essay catalogue applies. On that day the drift check reports the
+ * essay as missing until this script is rerun.
  */
 import fs from "fs";
 import path from "path";
 import { listEssaySources, MalformedEssayError } from "../src/lib/essay-sources";
+import { isBlogPublished } from "../src/lib/blog-data";
 import {
   buildCorpusDocument,
   corpusFileName,
@@ -30,11 +37,14 @@ async function main() {
   // quietly drop an essay out of the corpus. The usual cause is ASI —
   // `export const meta = {...}` without a trailing `;`, followed by JSX, parses
   // as one continued expression and the meta object is lost. Add the semicolon
-  // in the post.
-  const essays = await listEssaySources({
-    requiredMeta: ["title"],
+  // in the post. A missing date fails too: the site cannot render or order an
+  // undated essay, so it cannot be published, and dropping it silently is
+  // exactly what strict mode exists to prevent.
+  const sources = await listEssaySources({
+    requiredMeta: ["title", "date"],
     onMalformed: "throw",
   });
+  const essays = sources.filter(({ meta }) => isBlogPublished(meta.date!));
 
   const stale: string[] = [];
   let unchanged = 0;

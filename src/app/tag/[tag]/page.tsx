@@ -5,7 +5,7 @@ import { permanentRedirect } from "next/navigation";
 import { Container } from "@/components/Container";
 import { PageHead } from "@/components/ui/page-head";
 import { EssayRows } from "@/components/blog/essay-rows";
-import { getAllBlogs } from "@/lib/getAllBlogs";
+import { getAllBlogs, getBlogsByTag } from "@/lib/getAllBlogs";
 import { toBlogPreview } from "@/lib/blog-data";
 import { spellCount, pluralize } from "@/lib/spell-count";
 import { buildPageMetadata } from "@/lib/seo";
@@ -48,10 +48,7 @@ export default async function TagPage({ params }: Props) {
   const raw = (await params).tag;
   const tag = safeDecodeURIComponent(raw);
 
-  const blogs = await getAllBlogs();
-  const filtered = blogs.filter((blog) =>
-    blog.tags.some((t) => t.toLowerCase() === tag.toLowerCase())
-  );
+  const filtered = await getBlogsByTag(tag);
 
   // Retired or unknown tags (the 2026-08 consolidation dropped ~120 tags used
   // by one or two posts) redirect to the index instead of serving a thin page.
@@ -107,10 +104,8 @@ export default async function TagPage({ params }: Props) {
           two different documents.
 
           Hidden rather than visible, because the fix is the outline and not
-          the composition: `/topics` shows "Posts" to separate it from a
-          "Featured projects" list above it, and this page has one section, so
-          a visible heading here would be furniture repeating what the blurb
-          already says. */}
+          the composition: this page has one section, so a visible heading
+          here would be furniture repeating what the blurb already says. */}
       <h2 className="sr-only">Posts tagged {tag}</h2>
       <EssayRows posts={filtered.map(toBlogPreview)} />
     </Container>

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Container } from "@/components/Container";
-import { getAllBlogs } from "@/lib/getAllBlogs";
-import { TOPIC_HUBS } from "@/constants/topics";
+import { getBlogsInTheme } from "@/lib/getAllBlogs";
+import { BLOG_THEMES } from "@/lib/blog-themes";
 import { PageHead } from "@/components/ui/page-head";
 import { buildPageMetadata } from "@/lib/seo";
 
@@ -16,14 +16,16 @@ export const metadata: Metadata = buildPageMetadata({
 export const revalidate = 3600;
 
 export default async function TopicsPage() {
-  const blogs = await getAllBlogs();
-
-  const hubsWithCounts = TOPIC_HUBS.map((hub) => {
-    const count = blogs.filter((blog) =>
-      blog.tags.some((tag) => hub.tags.some((t) => t.toLowerCase() === tag.toLowerCase()))
-    ).length;
-    return { ...hub, count };
-  }).sort((a, b) => b.count - a.count);
+  // All-themes membership: an essay tagged politics and philosophy counts
+  // toward both hubs, so these numbers can sum past the essay total.
+  const hubsWithCounts = (
+    await Promise.all(
+      BLOG_THEMES.map(async (theme) => ({
+        ...theme,
+        count: (await getBlogsInTheme(theme.slug)).length,
+      }))
+    )
+  ).sort((a, b) => b.count - a.count);
 
   return (
     <Container className="mt-4" size="wide">

@@ -16,17 +16,23 @@ vi.mock('@/lib/logger', () => ({
 }));
 
 import { getPopularPosts } from '@/lib/popular-posts';
-import { getAllBlogs } from '@/lib/getAllBlogs';
+import { getAllBlogs, type BlogPost } from '@/lib/getAllBlogs';
 import { isDatabaseConfigured } from '@/lib/db';
 
-function post(slug: string) {
+// A whole catalogue record. The catalogue answers published essays only, so
+// that is what the double returns.
+function post(slug: string, date = '2025-01-01'): BlogPost {
   return {
     slug,
     title: `Title for ${slug}`,
     description: 'desc',
-    date: '2025-01-01',
+    date,
     tags: ['ai'],
     image: `/images/${slug}.webp`,
+    content: '',
+    published: true,
+    readingTimeMinutes: 1,
+    words: 200,
   };
 }
 
@@ -43,7 +49,7 @@ describe('getPopularPosts', () => {
       { slug: 'buy-cheap-stuff', count: 9999 },
       { slug: 'real-post', count: 10 },
     ]);
-    vi.mocked(getAllBlogs).mockResolvedValue([post('real-post')] as never);
+    vi.mocked(getAllBlogs).mockResolvedValue([post('real-post')]);
 
     const { source, posts } = await getPopularPosts(5);
 
@@ -62,23 +68,24 @@ describe('getPopularPosts', () => {
       { slug: 'p1', count: 30 },
       { slug: 'p2', count: 20 },
     ]);
-    vi.mocked(getAllBlogs).mockResolvedValue([post('p1'), post('p2')] as never);
+    vi.mocked(getAllBlogs).mockResolvedValue([post('p1'), post('p2')]);
 
     const { posts } = await getPopularPosts(2);
 
     expect(posts.map((p) => p.slug)).toEqual(['p1', 'p2']);
   });
 
-  it('falls back to recent posts when the database is not configured', async () => {
+  it('falls back to the newest posts when the database is not configured', async () => {
     vi.mocked(isDatabaseConfigured).mockReturnValue(false);
+    // Newest first, as the catalogue answers.
     vi.mocked(getAllBlogs).mockResolvedValue([
-      { ...post('older'), date: '2024-01-01' },
-      { ...post('newer'), date: '2025-06-01' },
-    ] as never);
+      post('newer', '2025-06-01'),
+      post('older', '2024-01-01'),
+    ]);
 
     const { source, posts } = await getPopularPosts(1);
 
     expect(source).toBe('fallback');
-    expect(posts[0].slug).toBe('newer');
+    expect(posts.map((p) => p.slug)).toEqual(['newer']);
   });
 });

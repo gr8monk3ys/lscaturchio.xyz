@@ -1,4 +1,4 @@
-import { getAllBlogs } from "@/lib/getAllBlogs";
+import { listSeries } from "@/lib/getAllBlogs";
 import { logError } from "@/lib/logger";
 import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
 import { apiSuccess, ApiErrors } from "@/lib/api-response";
@@ -24,48 +24,17 @@ interface SeriesInfo {
  */
 const handleGet = async () => {
   try {
-    const blogs = await getAllBlogs();
-
-    // Group posts by series
-    const seriesMap = new Map<string, SeriesInfo["posts"]>();
-
-    blogs.forEach((blog) => {
-      if (blog.series && blog.seriesOrder) {
-        if (!seriesMap.has(blog.series)) {
-          seriesMap.set(blog.series, []);
-        }
-
-        seriesMap.get(blog.series)!.push({
-          slug: blog.slug,
-          title: blog.title,
-          description: blog.description,
-          date: blog.date,
-          image: blog.image,
-          seriesOrder: blog.seriesOrder,
-        });
-      }
-    });
-
-    // Convert to array and calculate stats
-    const allSeries: SeriesInfo[] = Array.from(seriesMap.entries()).map(
-      ([name, posts]) => {
-        // Sort posts by seriesOrder
-        const sortedPosts = posts.sort((a, b) => a.seriesOrder - b.seriesOrder);
-
-        // Estimate total reading time (roughly 5 min per post)
-        const totalReadingTime = sortedPosts.length * 5;
-
-        return {
-          name,
-          posts: sortedPosts,
-          totalPosts: sortedPosts.length,
-          totalReadingTime,
-        };
-      }
-    );
-
-    // Sort series by total posts (descending)
-    allSeries.sort((a, b) => b.totalPosts - a.totalPosts);
+    const allSeries: SeriesInfo[] = (await listSeries()).map((series) => ({
+      ...series,
+      posts: series.posts.map((post) => ({
+        slug: post.slug,
+        title: post.title,
+        description: post.description,
+        date: post.date,
+        image: post.image,
+        seriesOrder: post.seriesOrder ?? 0,
+      })),
+    }));
 
     return apiSuccess({
       series: allSeries,

@@ -155,9 +155,10 @@ export const POST = withWriteRoute(
     // without checking the slug actually exists any caller could create rows
     // for arbitrary strings — growing the table without bound and, because the
     // read paths fall back to `title: slug`, printing attacker-chosen text on
-    // the public /stats page. getAllBlogs() is cached for 60s, so this costs
-    // at most one disk read per minute.
-    const allBlogs = await getAllBlogs();
+    // the public /stats page. A scheduled essay renders at its URL, so it is
+    // a real post here. The catalogue is cached for 60s, so this costs at
+    // most one disk read per minute.
+    const allBlogs = await getAllBlogs({ includeScheduled: true });
     if (!allBlogs.some((blog) => blog.slug === slug)) {
       throw writeError.notFound(`No blog post with slug "${slug}"`);
     }

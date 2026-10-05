@@ -3,13 +3,10 @@ import { getAllBlogs } from '@/lib/getAllBlogs';
 import { Feed } from 'feed';
 import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit';
 import { getSiteUrl } from '@/lib/site-url';
-import { getPublishedBlogs } from '@/lib/blog-data';
 import { essayToFeedHtml } from '@/lib/feed-html';
 
 const handleGet = async () => {
-  // Scheduled posts (a future front-matter date) stay out until their day,
-  // as they do on the blog index.
-  const blogs = getPublishedBlogs(await getAllBlogs());
+  const blogs = await getAllBlogs();
   const siteURL = getSiteUrl();
   const date = new Date();
 

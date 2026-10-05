@@ -1,118 +1,177 @@
-import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 
-import {
-  getPublishedBlogs,
-  getTodayIsoDate,
-  getBlogStats,
-  splitHomepageBlogs,
-} from "@/lib/blog-data";
+import { createEssayCatalogue } from "@/lib/getAllBlogs";
 import { calculateReadingTime } from "@/lib/reading-time";
 
 /**
- * These tests go through the real read path — a fixture tree on disk, glob,
- * `extractBlogMeta`, the clamp — instead of hand-built records. The previous
- * suite tested the pure filter past the seam production actually uses, so a
- * future-dated post could be clamped to today upstream and the publication
- * filter downstream would still report green.
+ * The catalogue's interface, exercised through the real read path: a fixture
+ * tree on disk, glob, `extractBlogMeta`, the clamp. The clock and the essay
+ * root are injected, so nothing here mocks `process.cwd` or the date.
+ *
+ * Every default query must leave the scheduled post out. That one property is
+ * what used to be re-checked route by route (RSS, sitemap, /api/posts), and
+ * forgotten on eleven others.
  */
 
-const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "blog-read-path-"));
-const blogDir = path.join(tmpRoot, "src", "app", "blog");
+const NOW = new Date("2026-06-15T12:00:00Z");
+const TODAY = "2026-06-15";
 
-function isoOffset(days: number): string {
-  const d = new Date();
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().slice(0, 10);
+const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "essay-catalogue-"));
+
+interface FixturePost {
+  slug: string;
+  date: string;
+  tags?: string[];
+  series?: string;
+  seriesOrder?: number;
+  words?: number;
 }
 
-function writePost(slug: string, date: string, body = "word ".repeat(400)) {
-  const dir = path.join(blogDir, slug);
+function writePost({ slug, date, tags = [], series, seriesOrder, words = 400 }: FixturePost) {
+  const dir = path.join(tmpRoot, slug);
   fs.mkdirSync(dir, { recursive: true });
+  const meta = [
+    "export const meta = {",
+    `  title: "${slug}",`,
+    `  description: "d",`,
+    `  date: "${date}",`,
+    `  tags: ${JSON.stringify(tags)},`,
+    series ? `  series: "${series}",` : "",
+    seriesOrder ? `  seriesOrder: ${seriesOrder},` : "",
+    "};",
+  ].filter(Boolean);
   fs.writeFileSync(
     path.join(dir, "content.mdx"),
-    [
-      "export const meta = {",
-      `  title: "${slug}",`,
-      `  description: "d",`,
-      `  date: "${date}",`,
-      `  tags: ["fixture"],`,
-      "};",
-      "",
-      body,
-      "",
-    ].join("\n"),
+    [...meta, "", "word ".repeat(words), ""].join("\n"),
     "utf-8"
   );
 }
 
-async function loadBlogs() {
-  // getAllBlogs caches at module scope for 60s; a fresh module per call keeps
-  // the fixtures honest.
-  vi.resetModules();
-  const { getAllBlogs } = await import("@/lib/getAllBlogs");
-  return getAllBlogs();
+function catalogue() {
+  return createEssayCatalogue({ blogDir: tmpRoot, now: () => NOW });
 }
 
 beforeAll(() => {
-  writePost("past-post", isoOffset(-30));
-  writePost("tomorrow-post", isoOffset(1));
-  writePost("far-future-post", "2999-01-01");
-  writePost("bad-date-post", "whenever");
-  vi.spyOn(process, "cwd").mockReturnValue(tmpRoot);
+  writePost({ slug: "old-politics", date: "2026-01-10", tags: ["Politics"], series: "S", seriesOrder: 2, words: 1000 });
+  writePost({ slug: "new-philosophy", date: "2026-05-01", tags: ["philosophy", "politics"], series: "S", seriesOrder: 1, words: 2200 });
+  writePost({ slug: "untagged", date: "2026-03-01", tags: ["nonsense"] });
+  // Within the 24h grace window, so live.
+  writePost({ slug: "tomorrow", date: "2026-06-16", tags: ["economics"] });
+  // Scheduled: carries a tag, a theme and a series that live posts also use.
+  writePost({ slug: "scheduled", date: "2026-07-01", tags: ["politics", "scheduled-only"], series: "S", seriesOrder: 3 });
+  writePost({ slug: "bad-date", date: "whenever", tags: ["politics"] });
 });
 
 afterAll(() => {
-  vi.restoreAllMocks();
   fs.rmSync(tmpRoot, { recursive: true, force: true });
 });
 
-describe("getAllBlogs read seam", () => {
+const slugs = (posts: Array<{ slug: string }>) => posts.map((p) => p.slug);
+
+describe("getAllBlogs", () => {
+  it("answers published essays only, newest first", async () => {
+    expect(slugs(await catalogue().getAllBlogs())).toEqual([
+      "tomorrow",
+      "new-philosophy",
+      "untagged",
+      "old-politics",
+    ]);
+  });
+
+  it("includes scheduled essays only when asked", async () => {
+    const all = await catalogue().getAllBlogs({ includeScheduled: true });
+
+    expect(slugs(all)).toContain("scheduled");
+    expect(slugs(all)).toContain("bad-date");
+    expect(all.find((b) => b.slug === "scheduled")?.published).toBe(false);
+  });
+
   it("decides publication from the raw date, before the display clamp", async () => {
-    const blogs = await loadBlogs();
-    const far = blogs.find((b) => b.slug === "far-future-post");
+    const all = await catalogue().getAllBlogs({ includeScheduled: true });
+    const scheduled = all.find((b) => b.slug === "scheduled");
 
-    expect(far).toBeDefined();
-    // The clamp still runs, so a mis-dated post renders a sane date...
-    expect(far?.date).toBe(getTodayIsoDate());
-    // ...and that is exactly why the date can no longer answer "is it live?".
-    // The flag was computed from "2999-01-01".
-    expect(far?.published).toBe(false);
+    // The clamp, against the injected clock, still gives a sane display date,
+    // which is exactly why the date can no longer answer "is it live?".
+    expect(scheduled?.date).toBe(TODAY);
+    expect(scheduled?.published).toBe(false);
   });
 
-  it("hides a far-future post from the published list, keeps the grace window", async () => {
-    const slugs = getPublishedBlogs(await loadBlogs()).map((b) => b.slug);
+  it("judges publication against the injected clock", async () => {
+    const later = createEssayCatalogue({
+      blogDir: tmpRoot,
+      now: () => new Date("2026-07-02T00:00:00Z"),
+    });
 
-    expect(slugs).toContain("past-post");
-    expect(slugs).toContain("tomorrow-post"); // within the 24h grace period
-    expect(slugs).not.toContain("far-future-post");
-    expect(slugs).not.toContain("bad-date-post");
+    expect(slugs(await later.getAllBlogs())).toContain("scheduled");
   });
 
-  it("gives both homepage sections the same published set", async () => {
-    const { recentBlogs, publishedBlogs } = splitHomepageBlogs(await loadBlogs());
-    const published = new Set(publishedBlogs.map((b) => b.slug));
+  it("computes reading time once, with the formula the API reports", async () => {
+    const post = (await catalogue().getAllBlogs()).find((b) => b.slug === "untagged")!;
 
-    expect(published.has("far-future-post")).toBe(false);
-    expect(recentBlogs.every((b) => published.has(b.slug))).toBe(true);
+    expect(post.readingTimeMinutes).toBe(calculateReadingTime(post.content).minutes);
+    expect(post.words).toBe(calculateReadingTime(post.content).words);
+  });
+});
+
+describe("getBlogsByTag", () => {
+  it("matches case-insensitively and trims, published only", async () => {
+    const c = catalogue();
+
+    expect(slugs(await c.getBlogsByTag("politics"))).toEqual(["new-philosophy", "old-politics"]);
+    expect(slugs(await c.getBlogsByTag("  POLITICS "))).toEqual(["new-philosophy", "old-politics"]);
   });
 
-  it("computes reading time once, with the same formula the API reports", async () => {
-    const blogs = await loadBlogs();
-    const post = blogs.find((b) => b.slug === "past-post");
+  it("finds nothing for a tag only a scheduled essay carries", async () => {
+    expect(await catalogue().getBlogsByTag("scheduled-only")).toEqual([]);
+    expect(await catalogue().getBlogsByTag("")).toEqual([]);
+  });
+});
 
-    expect(post?.readingTimeMinutes).toBe(calculateReadingTime(post!.content).minutes);
-    expect(post?.words).toBe(calculateReadingTime(post!.content).words);
+describe("getBlogsInTheme", () => {
+  it("uses all-themes membership: any matching tag counts", async () => {
+    const c = catalogue();
+
+    // new-philosophy's first tag is philosophy, so its primary theme is
+    // philosophy-self, but it still belongs to the politics hub.
+    expect(slugs(await c.getBlogsInTheme("power-institutions"))).toEqual([
+      "new-philosophy",
+      "old-politics",
+    ]);
+    expect(slugs(await c.getBlogsInTheme("philosophy-self"))).toEqual(["new-philosophy"]);
   });
 
-  it("sums the same per-post minutes into the stats endpoint's totals", async () => {
-    const blogs = await loadBlogs();
-    const stats = getBlogStats(blogs);
+  it("leaves scheduled essays out", async () => {
+    const inTheme = await catalogue().getBlogsInTheme("power-institutions");
+    expect(slugs(inTheme)).not.toContain("scheduled");
+  });
+});
 
-    expect(stats.totalReadingTime).toBe(
-      blogs.reduce((total, b) => total + b.readingTimeMinutes, 0)
-    );
+describe("listSeries", () => {
+  it("groups published essays in reading order with real reading-time totals", async () => {
+    const all = await catalogue().getAllBlogs();
+    const minutes = (slug: string) => all.find((b) => b.slug === slug)!.readingTimeMinutes;
+
+    const [series] = await catalogue().listSeries();
+
+    expect(series.name).toBe("S");
+    expect(slugs(series.posts)).toEqual(["new-philosophy", "old-politics"]);
+    expect(series.totalPosts).toBe(2);
+    expect(series.totalReadingTime).toBe(minutes("new-philosophy") + minutes("old-politics"));
+    // Not the old flat five minutes a post.
+    expect(series.totalReadingTime).not.toBe(series.totalPosts * 5);
+  });
+});
+
+describe("getReadingTimeMinutes", () => {
+  it("resolves a scheduled essay, because its route renders", async () => {
+    const minutes = await catalogue().getReadingTimeMinutes("scheduled");
+    expect(minutes).toBeGreaterThan(0);
+  });
+
+  it("is undefined for a slug with no source", async () => {
+    expect(await catalogue().getReadingTimeMinutes("nope")).toBeUndefined();
   });
 });
