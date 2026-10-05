@@ -26,6 +26,24 @@ class Logger {
   }
 
   /**
+   * Log a line that should reach production logs without alerting anyone.
+   *
+   * `info` prints only in development and `warn` raises a Sentry event, so
+   * neither fits a count worth reading in Vercel's runtime logs, such as a
+   * dropped spam submission. Printed as given, with no level prefix, so a
+   * log search for the message text matches the line itself. Silent under
+   * test like every other level.
+   */
+  notice(message: string, context?: LogContext): void {
+    if (this.isTest) return;
+    if (context) {
+      console.info(message, context);
+    } else {
+      console.info(message);
+    }
+  }
+
+  /**
    * Log warning messages
    */
   warn(message: string, context?: LogContext): void {
@@ -96,6 +114,9 @@ export const logger = new Logger();
 // Export convenience functions
 export const logInfo = (message: string, context?: LogContext) =>
   logger.info(message, context);
+
+export const logNotice = (message: string, context?: LogContext) =>
+  logger.notice(message, context);
 
 export const logWarn = (message: string, context?: LogContext) =>
   logger.warn(message, context);
