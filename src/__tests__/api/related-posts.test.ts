@@ -7,10 +7,7 @@ const getAllBlogs = vi.fn();
 vi.mock('@/lib/embeddings', () => ({ searchEmbeddings: (...a: unknown[]) => searchEmbeddings(...a) }));
 vi.mock('@/lib/getAllBlogs', () => ({ getAllBlogs: () => getAllBlogs() }));
 vi.mock('@/lib/logger', () => ({ logError: vi.fn() }));
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-}));
-vi.mock('@/lib/rate-limit', () => ({ RATE_LIMITS: { RELATED_POSTS: { limit: 10, window: 60000 } } }));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 import { GET } from '@/app/api/related-posts/route';
 

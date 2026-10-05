@@ -1,4 +1,3 @@
-import { RATE_LIMITS } from "@/lib/rate-limit";
 import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { escapeHtml, sanitizeForHtmlEmail, sanitizeEmailSubject } from "@/lib/sanitize";
 import { logError } from "@/lib/logger";
@@ -10,7 +9,7 @@ const SENT_MESSAGE = "Message sent successfully! I'll get back to you soon.";
 
 export const POST = withWriteRoute(
   {
-    limit: RATE_LIMITS.NEWSLETTER,
+    limit: "CONTACT",
     auth: {
       kind: "public",
       reason: "The contact form is the site's front door; anyone must be able to reach it.",

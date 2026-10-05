@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAllBlogs } from '@/lib/getAllBlogs';
 import { Feed } from 'feed';
-import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit';
+import { withRateLimit } from '@/lib/rate-limit';
 import { getSiteUrl } from '@/lib/site-url';
 import { essayToFeedHtml } from '@/lib/feed-html';
 
@@ -83,4 +83,4 @@ const handleGet = async () => {
   });
 };
 
-export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
+export const GET = withRateLimit(handleGet, 'PUBLIC_READ');

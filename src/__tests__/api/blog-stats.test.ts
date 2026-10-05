@@ -15,7 +15,7 @@ vi.mock('@/lib/logger', () => ({
 }));
 
 vi.mock('@/lib/rate-limit-redis', () => ({
-  getRedisRateLimiter: vi.fn(() => null),
+  getUpstashStore: vi.fn(() => null),
 }));
 
 import { GET } from '@/app/api/blog-stats/route';

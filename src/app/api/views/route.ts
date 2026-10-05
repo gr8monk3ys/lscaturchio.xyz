@@ -3,7 +3,7 @@ import { getAllBlogs } from "@/lib/getAllBlogs";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { logError } from "@/lib/logger";
 import { slugQuerySchema, viewTrackingSchema, parseQuery } from "@/lib/validations";
-import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
+import { withRateLimit } from "@/lib/rate-limit";
 import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
@@ -124,7 +124,7 @@ const handleGet = async (req: NextRequest) => {
 };
 
 // Export with rate limiting (100 requests per minute - public read-only endpoint)
-export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
+export const GET = withRateLimit(handleGet, "PUBLIC_READ");
 
 /**
  * POST /api/views
@@ -133,7 +133,7 @@ export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
 export const POST = withWriteRoute(
   {
     // 30 requests per minute - standard mutation endpoint.
-    limit: RATE_LIMITS.STANDARD,
+    limit: "VIEW_COUNT",
     auth: {
       kind: "public",
       reason: "Every reader increments the counter for the post they are reading.",

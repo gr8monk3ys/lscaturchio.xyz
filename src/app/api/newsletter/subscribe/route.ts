@@ -1,6 +1,5 @@
 import { getDb } from '@/lib/db';
 import crypto from 'crypto';
-import { RATE_LIMITS } from '@/lib/rate-limit';
 import { withWriteRoute } from '@/lib/api/write-route';
 import { newsletterSubscribeSchema } from '@/lib/validations';
 import { sendWelcomeEmail } from '@/lib/email';
@@ -36,7 +35,7 @@ const SUBSCRIBE_MESSAGE = 'Thanks! Check your inbox to confirm your subscription
 export const POST = withWriteRoute(
   {
     // 3 requests per 5 minutes to prevent spam.
-    limit: RATE_LIMITS.NEWSLETTER,
+    limit: 'NEWSLETTER_SUBSCRIBE',
     auth: {
       kind: 'public',
       reason: 'Signing up for the newsletter is by definition an unauthenticated action.',

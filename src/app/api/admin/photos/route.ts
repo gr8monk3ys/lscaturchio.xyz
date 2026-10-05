@@ -1,4 +1,3 @@
-import { RATE_LIMITS } from "@/lib/rate-limit";
 import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { getFile, commitToMain, type CommitFile } from "@/lib/admin/github";
 import { jsonFileContent, PHOTOS_JSON_PATH } from "@/lib/admin/json-content";
@@ -11,7 +10,7 @@ const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 
 export const POST = withWriteRoute(
   {
-    limit: RATE_LIMITS.STANDARD,
+    limit: "ADMIN_WRITE",
     auth: { kind: "adminSession" },
     csrf: { kind: "required" },
     // Multipart: the image bytes ride alongside a JSON metadata field, which

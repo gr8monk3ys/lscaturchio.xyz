@@ -22,15 +22,13 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import type { ZodSchema, z } from "zod";
-import { withRateLimit } from "@/lib/with-rate-limit";
+import { withRateLimit, type RateLimitPolicy } from "@/lib/rate-limit";
 import { validateCsrf } from "@/lib/csrf";
 import { requireAdmin } from "@/lib/admin/session";
 import { validateApiKey } from "@/lib/api-auth";
 import { parseBody } from "@/lib/validations";
 import { apiSuccess, apiError, ApiErrors } from "@/lib/api-response";
 import { logError } from "@/lib/logger";
-
-export type RateLimitPolicy = { limit: number; window: number };
 
 /**
  * Who may call the route. `public` is a real choice, not an absence, and has to
@@ -76,6 +74,7 @@ export type WriteRouteErrors = {
 };
 
 export type WriteRouteConfig<S extends ZodSchema = ZodSchema> = {
+  /** The policy this route is charged against, by name (`RATE_LIMIT_POLICIES`). */
   limit: RateLimitPolicy;
   auth: AuthPolicy;
   csrf: CsrfPolicy;

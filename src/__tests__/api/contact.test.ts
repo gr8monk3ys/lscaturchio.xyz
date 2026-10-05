@@ -6,26 +6,7 @@ vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
 }));
 
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-  // Mirrors src/lib/rate-limit.ts — these values drifted once (STANDARD 60 vs
-  // the real 30, AI_HEAVY 10 vs the real 5) and nothing caught it.
-  RATE_LIMITS: {
-    NEWSLETTER: { limit: 3, window: 300000 },
-    STANDARD: { limit: 30, window: 60000 },
-    AI_HEAVY: { limit: 5, window: 60000 },
-  },
-}));
-
-vi.mock('@/lib/rate-limit', () => ({
-  // Mirrors src/lib/rate-limit.ts — these values drifted once (STANDARD 60 vs
-  // the real 30, AI_HEAVY 10 vs the real 5) and nothing caught it.
-  RATE_LIMITS: {
-    NEWSLETTER: { limit: 3, window: 300000 },
-    STANDARD: { limit: 30, window: 60000 },
-    AI_HEAVY: { limit: 5, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 // @/lib/sanitize is deliberately NOT mocked. It used to be reimplemented here,
 // which meant these tests asserted a copy of the sanitisers rather than the

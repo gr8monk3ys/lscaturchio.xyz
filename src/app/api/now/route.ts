@@ -1,5 +1,4 @@
-import { withRateLimit } from "@/lib/with-rate-limit";
-import { RATE_LIMITS } from "@/lib/rate-limit";
+import { withRateLimit } from "@/lib/rate-limit";
 import { nowData } from "@/lib/now-data";
 import { apiSuccess } from "@/lib/api-response";
 
@@ -17,5 +16,5 @@ const handleGet = async () => {
   );
 };
 
-export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
+export const GET = withRateLimit(handleGet, "PUBLIC_READ");
 

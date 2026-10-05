@@ -1,113 +1,236 @@
 /**
- * Rate limiting: presets, client identification, in-memory limiter.
+ * Rate limiting. One question: charge this request against policy NAME.
  *
- * Thin app-specific layer over `@gr8monk3ys/next-kit/rate-limit`. The kit owns
- * the window accounting (`MemoryStore`) and the IP-string parsing
- * (`normalizeIpCandidate`). This module keeps the two things that are this
- * site's own:
+ * ```ts
+ * export const GET = withRateLimit(handleGet, "PUBLIC_READ");
+ * withWriteRoute({ limit: "CONTACT", ... }, handler);
+ * ```
  *
- *   - the per-endpoint presets in `RATE_LIMITS`, and
- *   - the header-trust policy in `getClientIp`, which is deliberately narrower
- *     than the kit's `getClientId` — see the comment there.
+ * Everything else is this module's business, in one place:
  *
- * `rateLimiter.check` stays synchronous: `withRateLimit` calls it that way and
- * `MemoryStore.hit` is synchronous, so nothing needs to be awaited.
+ *   - the policy table, `RATE_LIMIT_POLICIES`. A policy is a NAME, not its
+ *     numbers: two policies with the same limit and window still count
+ *     separately. When identity was the (limit, window) pair, the contact form
+ *     shared one 3-per-5-minutes bucket with newsletter subscribe and
+ *     unsubscribe, and ffee38e had to repair both stores after PUBLIC reads
+ *     drained CHAT's allowance;
+ *   - the bucket key, `<POLICY>:<client>`, built once in `charge` and handed to
+ *     whichever store answers. No store composes a key;
+ *   - client identification (`getClientIp`, this site's header-trust policy);
+ *   - backend selection: Upstash when configured, with a circuit breaker that
+ *     drops to a per-instance memory store when Upstash fails;
+ *   - the `X-RateLimit-*` headers, and the 429, rendered through
+ *     `api-response.ts` like every other error this API returns.
+ *
+ * `@gr8monk3ys/next-kit/rate-limit` supplies the parts that are not this
+ * site's: the store port (`RateLimitStore`), the window accounting behind it
+ * (`MemoryStore`, and `RedisStore` in `rate-limit-redis.ts`) and IP-string
+ * parsing (`normalizeIpCandidate`).
  */
 
+import type { NextRequest, NextResponse } from 'next/server';
 import {
   MemoryStore,
   normalizeIpCandidate,
+  type RateLimitStore,
+  type StoreHit,
 } from '@gr8monk3ys/next-kit/rate-limit';
+import { ApiErrors } from './api-response';
+import { logError, logWarn } from './logger';
+import { getUpstashStore } from './rate-limit-redis';
 
-export interface MemoryRateLimitResult {
-  success: boolean;
-  limit: number;
-  remaining: number;
-  /** Unix-ms timestamp at which the current window expires. */
-  reset: number;
-}
+const MINUTE = 60_000;
 
 /**
- * Process-local counters. Replaces the hand-rolled `Map` + `setInterval`
- * sweeper: `MemoryStore` drops expired keys opportunistically on write, so
- * there is no timer to keep alive and nothing to `destroy()`.
- *
- * IMPORTANT: this is in-memory, so it resets when the server restarts and does
- * not coordinate across serverless instances. `withRateLimit` prefers the
- * Redis-backed limiter when Upstash is configured and only falls back here.
+ * Every policy, named for what it protects. A route picks one by name; routes
+ * that name the same policy share its bucket on purpose.
  */
-const store = new MemoryStore();
+export const RATE_LIMIT_POLICIES = {
+  // Model-backed endpoints: each request costs real money.
+  /** POST /api/chat */
+  CHAT: { limit: 3, windowMs: MINUTE },
+  /** POST /api/summarize */
+  SUMMARIZE: { limit: 2, windowMs: MINUTE },
+  /** GET + POST /api/search — one query embedding per request, either verb. */
+  SEARCH: { limit: 5, windowMs: MINUTE },
+  /** GET /api/related-posts */
+  RELATED_POSTS: { limit: 10, windowMs: MINUTE },
 
-export const rateLimiter = {
+  // Endpoints that send email or store a person's address.
+  /** POST /api/contact */
+  CONTACT: { limit: 3, windowMs: 5 * MINUTE },
+  /** POST /api/newsletter/subscribe */
+  NEWSLETTER_SUBSCRIBE: { limit: 3, windowMs: 5 * MINUTE },
+  /** POST /api/newsletter/unsubscribe */
+  NEWSLETTER_UNSUBSCRIBE: { limit: 3, windowMs: 5 * MINUTE },
   /**
-   * Check whether a request should be rate limited.
-   *
-   * Buckets are keyed by (limit, window, identifier), so each policy counts
-   * separately: the PUBLIC reads an essay page fires on load do not use up the
-   * same client's CHAT or NEWSLETTER allowance. Routes that share a policy
-   * share its bucket. The Redis limiter namespaces its keys the same way.
-   *
-   * @param identifier - Unique identifier (usually IP address)
-   * @param limit - Maximum number of requests allowed
-   * @param windowMs - Time window in milliseconds
+   * POST /api/newsletter/drip. Sends up to a batch of onboarding emails per
+   * call; the scheduled caller runs about once an hour, so 30/min is far above
+   * any legitimate cadence.
    */
-  check(
-    identifier: string,
-    limit: number = 10,
-    windowMs: number = 60000 // 1 minute default
-  ): MemoryRateLimitResult {
-    const { count, resetAt } = store.hit(`${limit}:${windowMs}:${identifier}`, windowMs);
+  NEWSLETTER_DRIP: { limit: 30, windowMs: MINUTE },
 
-    return {
-      success: count <= limit,
-      limit,
-      remaining: Math.max(0, limit - count),
-      reset: resetAt,
-    };
-  },
+  // Public writes and expensive reads.
+  /** POST /api/views */
+  VIEW_COUNT: { limit: 30, windowMs: MINUTE },
+  /** POST /api/resume (download telemetry) */
+  RESUME_DOWNLOAD: { limit: 30, windowMs: MINUTE },
+  /** GET /api/og — renders an image per request. */
+  OG_IMAGE: { limit: 30, windowMs: MINUTE },
+  /** GET /api/github/contributions — spends GitHub GraphQL quota. */
+  GITHUB_CONTRIBUTIONS: { limit: 30, windowMs: MINUTE },
+
+  // Admin portal.
+  /** GET /api/admin/auth/login and /callback */
+  ADMIN_SIGN_IN: { limit: 10, windowMs: 5 * MINUTE },
+  /** Admin content PUTs (posts, photos, now, links) and POST logout. */
+  ADMIN_WRITE: { limit: 30, windowMs: MINUTE },
+  /** GET /api/analytics — API-key protected, so not a public read. */
+  ANALYTICS: { limit: 100, windowMs: MINUTE },
 
   /**
-   * Get rate limit headers for response.
-   *
-   * `X-RateLimit-Reset` is an ISO timestamp here, not the epoch-ms the kit's
-   * own `rateLimitHeaders` emits. Changing it would change what every API route
-   * on this site already returns to clients, so the format stays ours.
+   * Every cheap public read of site content, sharing one per-client budget on
+   * purpose: an essay page fires several of these on load, and the budget is
+   * for "reads of this site", not one allowance per endpoint.
    */
-  getHeaders(result: MemoryRateLimitResult): Record<string, string> {
-    return {
-      'X-RateLimit-Limit': result.limit.toString(),
-      'X-RateLimit-Remaining': result.remaining.toString(),
-      'X-RateLimit-Reset': new Date(result.reset).toISOString(),
-    };
-  },
+  PUBLIC_READ: { limit: 100, windowMs: MINUTE },
+} as const satisfies Record<string, { limit: number; windowMs: number }>;
+
+export type RateLimitPolicy = keyof typeof RATE_LIMIT_POLICIES;
+
+export type RateLimitCharge =
+  | { allowed: true; headers: Record<string, string> }
+  | { allowed: false; headers: Record<string, string>; response: NextResponse };
+
+/**
+ * How long to stop asking the shared store after a failure.
+ *
+ * When Upstash is down — or, as happened for a month in September 2026, over
+ * its free-tier quota and answering every command with an error — each
+ * request otherwise pays a failed round trip and files its own Sentry event.
+ * At 10% sampling that was ~9,000 events for one underlying condition. One
+ * report per minute is enough to see the outage; sixty a second is not more
+ * information.
+ */
+export const SHARED_STORE_RETRY_AFTER_MS = MINUTE;
+
+/** The store port: Upstash and memory are the two adapters behind it. */
+export type RateLimitStores = {
+  /**
+   * The cross-instance store, or null when none is configured. May throw,
+   * either when built or on `hit`; a throw trips the breaker.
+   */
+  shared: () => RateLimitStore | null;
+  /** Per-instance store, used when `shared` is absent or failing. */
+  local: RateLimitStore;
 };
 
 /**
- * Rate limit presets for different API endpoints
+ * Build a limiter over a pair of stores. Production uses one instance, wired
+ * below; tests build their own over adapters they control.
  */
-export const RATE_LIMITS = {
-  // Expensive OpenAI operations
-  AI_HEAVY: { limit: 5, window: 60000 }, // 5 requests per minute
-  CHAT: { limit: 3, window: 60000 }, // 3 requests per minute
-  SUMMARIZE: { limit: 2, window: 60000 }, // 2 requests per minute
-  RELATED_POSTS: { limit: 10, window: 60000 }, // 10 requests per minute
+export function createRateLimit(stores: RateLimitStores) {
+  let sharedDownUntil = 0;
 
-  // Standard API operations
-  STANDARD: { limit: 30, window: 60000 }, // 30 requests per minute
+  async function hit(
+    key: string,
+    windowMs: number,
+  ): Promise<StoreHit & { backend: 'redis' | 'memory' }> {
+    if (Date.now() >= sharedDownUntil) {
+      try {
+        const shared = stores.shared();
+        if (shared) {
+          return { ...(await shared.hit(key, windowMs)), backend: 'redis' };
+        }
+      } catch (error) {
+        // A soft dependency: degrade, do not fail the request. The memory
+        // store still enforces the same policy per instance, so nothing opens
+        // up — which is why this is a warning and not an error.
+        sharedDownUntil = Date.now() + SHARED_STORE_RETRY_AFTER_MS;
+        logWarn('Redis rate limiter unavailable, falling back to in-memory', {
+          component: 'rate-limit',
+          action: 'redis',
+          retryAfterMs: SHARED_STORE_RETRY_AFTER_MS,
+          cause: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+    return { ...(await stores.local.hit(key, windowMs)), backend: 'memory' };
+  }
 
-  // Public read-only endpoints
-  PUBLIC: { limit: 100, window: 60000 }, // 100 requests per minute
+  return {
+    /** Count one request from this client against `policy`. */
+    async charge(request: Request, policy: RateLimitPolicy): Promise<RateLimitCharge> {
+      const { limit, windowMs } = RATE_LIMIT_POLICIES[policy];
+      const { count, resetAt, backend } = await hit(`${policy}:${getClientIp(request)}`, windowMs);
 
-  // Newsletter operations (prevent spam)
-  NEWSLETTER: { limit: 3, window: 300000 }, // 3 requests per 5 minutes
+      // `X-RateLimit-Reset` is an ISO timestamp, not the epoch-ms the kit's
+      // own `rateLimitHeaders` emits; changing it would change what every API
+      // route here already returns.
+      const headers: Record<string, string> = {
+        'X-RateLimit-Limit': String(limit),
+        'X-RateLimit-Remaining': String(Math.max(0, limit - count)),
+        'X-RateLimit-Reset': new Date(resetAt).toISOString(),
+        'X-RateLimit-Backend': backend,
+      };
 
-  // Admin portal sign-in (login redirect + OAuth callback)
-  ADMIN_AUTH: { limit: 10, window: 300000 }, // 10 requests per 5 minutes
-} as const;
+      if (count <= limit) {
+        return { allowed: true, headers };
+      }
+
+      const retryAfter = Math.max(1, Math.ceil((resetAt - Date.now()) / 1000));
+      const response = setHeaders(ApiErrors.tooManyRequests('Too many requests', retryAfter), {
+        ...headers,
+        'Retry-After': String(retryAfter),
+      });
+      return { allowed: false, headers, response };
+    },
+  };
+}
+
+function setHeaders(response: NextResponse, headers: Record<string, string>): NextResponse {
+  for (const [name, value] of Object.entries(headers)) {
+    response.headers.set(name, value);
+  }
+  return response;
+}
+
+const limiter = createRateLimit({ shared: getUpstashStore, local: new MemoryStore() });
 
 /**
- * Helper to get client IP from Next.js request
- * Checks multiple headers from various CDN/proxy providers
+ * Wrap a route handler so every request is charged against `policy` first.
+ *
+ * Over the limit, the handler never runs and the caller gets the standard 429.
+ * Otherwise the handler's response carries the rate-limit headers; a handler
+ * that throws is logged and answered with the standard 500, headers included.
+ */
+export function withRateLimit<T extends unknown[]>(
+  handler: (request: NextRequest, ...args: T) => Promise<NextResponse>,
+  policy: RateLimitPolicy,
+) {
+  return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
+    const charge = await limiter.charge(request, policy);
+    if (!charge.allowed) {
+      return charge.response;
+    }
+
+    let response: NextResponse;
+    try {
+      response = await handler(request, ...args);
+    } catch (error) {
+      logError('API handler error', error, {
+        component: 'rate-limit',
+        action: 'handler',
+        policy,
+      });
+      response = ApiErrors.internalError();
+    }
+    return setHeaders(response, charge.headers);
+  };
+}
+
+/**
+ * The client a bucket belongs to.
  *
  * This is NOT the kit's `getClientId`. In next-kit v0.1.1 that helper trusted
  * `cf-connecting-ip` unconditionally — fully client-controlled on a Vercel

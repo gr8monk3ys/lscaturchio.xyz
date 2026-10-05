@@ -1,15 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 
-// Mock rate limiting to pass through for tests
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-  RATE_LIMITS: {
-    STANDARD: { limit: 30, window: 60000 },
-    PUBLIC: { limit: 100, window: 60000 },
-    AI_HEAVY: { limit: 5, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 // Mock the shared github-repos helper
 const mockGetGithubPortfolioRepos = vi.fn();

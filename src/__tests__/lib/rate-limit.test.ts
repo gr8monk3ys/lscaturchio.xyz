@@ -1,167 +1,289 @@
+/**
+ * Rate limiting, tested at its interface: charge a request against a policy
+ * name. The stores are real `MemoryStore`s, or a hand-written store standing
+ * in for Upstash where a test needs it to fail. Nothing between the request
+ * and the store is mocked, so the bucket key — where the cross-policy bug in
+ * ffee38e lived — is exercised, not assumed.
+ */
+
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { getClientIp, RATE_LIMITS } from '@/lib/rate-limit';
+import { NextRequest, NextResponse } from 'next/server';
+import { MemoryStore, type RateLimitStore } from '@gr8monk3ys/next-kit/rate-limit';
+import {
+  createRateLimit,
+  getClientIp,
+  RATE_LIMIT_POLICIES,
+  SHARED_STORE_RETRY_AFTER_MS,
+  type RateLimitPolicy,
+} from '@/lib/rate-limit';
+import { logError, logWarn } from '@/lib/logger';
 
-describe('rateLimiter', () => {
-  // The limiter is a module-level singleton over one MemoryStore, so each test
-  // re-imports the module to get an empty store. (The previous version of this
-  // file hand-rolled a *copy* of the implementation and asserted against that,
-  // so it kept passing no matter what the real module did.)
-  let rateLimiter: typeof import('@/lib/rate-limit').rateLimiter;
+vi.mock('@/lib/logger', () => ({
+  logError: vi.fn(),
+  logWarn: vi.fn(),
+}));
 
-  beforeEach(async () => {
-    vi.useFakeTimers();
-    vi.resetModules();
-    rateLimiter = (await import('@/lib/rate-limit')).rateLimiter;
-  });
+function request(ip = '203.0.113.7'): NextRequest {
+  return new NextRequest('http://localhost/api/test', { headers: { 'x-real-ip': ip } });
+}
 
-  afterEach(() => {
-    vi.useRealTimers();
-  });
+function memoryOnly() {
+  return createRateLimit({ shared: () => null, local: new MemoryStore() });
+}
 
-  it('allows requests under the limit', () => {
-    const result = rateLimiter.check('user1', 5);
+/** Charge `times` requests and return the last charge. */
+async function chargeN(
+  limiter: ReturnType<typeof createRateLimit>,
+  policy: RateLimitPolicy,
+  times: number,
+  ip?: string,
+) {
+  let last = await limiter.charge(request(ip), policy);
+  for (let i = 1; i < times; i += 1) {
+    last = await limiter.charge(request(ip), policy);
+  }
+  return last;
+}
 
-    expect(result.success).toBe(true);
-    expect(result.remaining).toBe(4);
-    expect(result.limit).toBe(5);
-  });
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.clearAllMocks();
+});
 
-  it('tracks requests per identifier', () => {
-    rateLimiter.check('user1', 5);
-    rateLimiter.check('user1', 5);
-    const result = rateLimiter.check('user1', 5);
+afterEach(() => {
+  vi.useRealTimers();
+});
 
-    expect(result.success).toBe(true);
-    expect(result.remaining).toBe(2);
-  });
+describe('charge', () => {
+  it('admits up to the policy limit and counts down X-RateLimit-Remaining', async () => {
+    const limiter = memoryOnly();
+    const { limit } = RATE_LIMIT_POLICIES.CONTACT;
 
-  it('blocks requests over the limit', () => {
-    const limit = 3;
-
-    rateLimiter.check('user1', limit);
-    rateLimiter.check('user1', limit);
-    rateLimiter.check('user1', limit);
-    const result = rateLimiter.check('user1', limit);
-
-    expect(result.success).toBe(false);
-    expect(result.remaining).toBe(0);
-  });
-
-  it('resets after the time window', () => {
-    const windowMs = 60000;
-
-    // Use up all requests
-    rateLimiter.check('user1', 2, windowMs);
-    rateLimiter.check('user1', 2, windowMs);
-    const blocked = rateLimiter.check('user1', 2, windowMs);
-
-    expect(blocked.success).toBe(false);
-
-    // Advance time past the window
-    vi.advanceTimersByTime(windowMs + 1);
-
-    const allowed = rateLimiter.check('user1', 2, windowMs);
-    expect(allowed.success).toBe(true);
-    expect(allowed.remaining).toBe(1);
-  });
-
-  it('tracks different users independently', () => {
-    rateLimiter.check('user1', 2);
-    rateLimiter.check('user1', 2);
-
-    const user1 = rateLimiter.check('user1', 2);
-    const user2 = rateLimiter.check('user2', 2);
-
-    expect(user1.success).toBe(false);
-    expect(user2.success).toBe(true);
-    expect(user2.remaining).toBe(1);
-  });
-
-  it('keeps the reset time of the window a client is already inside', () => {
-    const windowMs = 60000;
-    const first = rateLimiter.check('user1', 5, windowMs);
-
-    vi.advanceTimersByTime(10_000);
-    const second = rateLimiter.check('user1', 5, windowMs);
-
-    // Fixed window: the second request does not extend the deadline.
-    expect(second.reset).toBe(first.reset);
-  });
-
-  it('gives each limit policy its own bucket for the same client', () => {
-    // A reader who opens an essay spends several hits on the PUBLIC reads it
-    // fires (views, webmentions, series). Those must not be charged against
-    // CHAT's 3-per-minute allowance, or the reader's first question 429s.
-    for (let i = 0; i < 4; i++) {
-      rateLimiter.check('user1', RATE_LIMITS.PUBLIC.limit, RATE_LIMITS.PUBLIC.window);
+    for (let i = 0; i < limit; i += 1) {
+      const charge = await limiter.charge(request(), 'CONTACT');
+      expect(charge.allowed).toBe(true);
+      expect(charge.headers['X-RateLimit-Remaining']).toBe(String(limit - i - 1));
     }
 
-    const chat = rateLimiter.check('user1', RATE_LIMITS.CHAT.limit, RATE_LIMITS.CHAT.window);
-
-    expect(chat.success).toBe(true);
-    expect(chat.remaining).toBe(RATE_LIMITS.CHAT.limit - 1);
+    expect((await limiter.charge(request(), 'CONTACT')).allowed).toBe(false);
   });
 
-  describe('getHeaders', () => {
-    it('returns correct rate limit headers', () => {
-      const result = rateLimiter.check('user1', 10);
-      const headers = rateLimiter.getHeaders(result);
+  it('keeps two policies with identical numbers independent', async () => {
+    // CONTACT and NEWSLETTER_SUBSCRIBE are both 3 per 5 minutes. When a policy
+    // was its numbers, they were one bucket: three contact messages used up
+    // the same reader's newsletter signup.
+    expect(RATE_LIMIT_POLICIES.CONTACT).toEqual(RATE_LIMIT_POLICIES.NEWSLETTER_SUBSCRIBE);
+    const limiter = memoryOnly();
 
-      expect(headers['X-RateLimit-Limit']).toBe('10');
-      expect(headers['X-RateLimit-Remaining']).toBe('9');
-      expect(headers['X-RateLimit-Reset']).toBe(new Date(result.reset).toISOString());
-    });
+    const contact = await chargeN(limiter, 'CONTACT', RATE_LIMIT_POLICIES.CONTACT.limit + 1);
+    const subscribe = await limiter.charge(request(), 'NEWSLETTER_SUBSCRIBE');
+
+    expect(contact.allowed).toBe(false);
+    expect(subscribe.allowed).toBe(true);
+    expect(subscribe.headers['X-RateLimit-Remaining']).toBe(
+      String(RATE_LIMIT_POLICIES.NEWSLETTER_SUBSCRIBE.limit - 1),
+    );
+  });
+
+  it('keeps the same client independent across policies with different numbers', async () => {
+    // A reader who opens an essay spends several PUBLIC_READ hits on load;
+    // none of them may come out of CHAT's 3-per-minute allowance.
+    const limiter = memoryOnly();
+    await chargeN(limiter, 'PUBLIC_READ', 4);
+
+    const chat = await limiter.charge(request(), 'CHAT');
+
+    expect(chat.allowed).toBe(true);
+    expect(chat.headers['X-RateLimit-Remaining']).toBe(String(RATE_LIMIT_POLICIES.CHAT.limit - 1));
+  });
+
+  it('keeps different clients under one policy independent', async () => {
+    const limiter = memoryOnly();
+    await chargeN(limiter, 'CHAT', RATE_LIMIT_POLICIES.CHAT.limit + 1, '198.51.100.1');
+
+    expect((await limiter.charge(request('198.51.100.2'), 'CHAT')).allowed).toBe(true);
+  });
+
+  it('opens a fresh window once the policy window has passed', async () => {
+    const limiter = memoryOnly();
+    expect((await chargeN(limiter, 'CHAT', RATE_LIMIT_POLICIES.CHAT.limit + 1)).allowed).toBe(false);
+
+    vi.advanceTimersByTime(RATE_LIMIT_POLICIES.CHAT.windowMs + 1);
+
+    expect((await limiter.charge(request(), 'CHAT')).allowed).toBe(true);
+  });
+
+  it('builds one key, <POLICY>:<client>, and hands it to the shared store', async () => {
+    const keys: string[] = [];
+    const shared = new MemoryStore();
+    const recording: RateLimitStore = {
+      hit: (key, windowMs) => {
+        keys.push(key);
+        return shared.hit(key, windowMs);
+      },
+      reset: () => {},
+      cleanup: () => {},
+    };
+    const local = new MemoryStore();
+    const limiter = createRateLimit({ shared: () => recording, local });
+
+    const charge = await limiter.charge(request('203.0.113.9'), 'SEARCH');
+
+    expect(keys).toEqual(['SEARCH:203.0.113.9']);
+    expect(charge.headers['X-RateLimit-Backend']).toBe('redis');
+    expect(local.size).toBe(0);
   });
 });
 
-describe('RATE_LIMITS presets', () => {
-  it('has AI_HEAVY preset', () => {
-    expect(RATE_LIMITS.AI_HEAVY).toEqual({
-      limit: 5,
-      window: 60000,
-    });
+describe('charge when the shared store fails', () => {
+  const failing = (): RateLimitStore & { hit: ReturnType<typeof vi.fn> } => ({
+    hit: vi.fn(async () => {
+      throw new Error('Your database has been temporarily rate-limited.');
+    }),
+    reset: () => {},
+    cleanup: () => {},
   });
 
-  it('has CHAT preset', () => {
-    expect(RATE_LIMITS.CHAT).toEqual({
-      limit: 3,
-      window: 60000,
-    });
+  it('still enforces the policy through the memory store', async () => {
+    const limiter = createRateLimit({ shared: failing, local: new MemoryStore() });
+    const { limit } = RATE_LIMIT_POLICIES.CONTACT;
+
+    const admitted = await chargeN(limiter, 'CONTACT', limit);
+    const blocked = await limiter.charge(request(), 'CONTACT');
+
+    // A dead Upstash must neither take the route down nor open it up.
+    expect(admitted.allowed).toBe(true);
+    expect(admitted.headers['X-RateLimit-Backend']).toBe('memory');
+    expect(blocked.allowed).toBe(false);
+    expect(logError).not.toHaveBeenCalled();
+    // Upstash's own message survives into the warning.
+    expect(logWarn).toHaveBeenCalledWith(
+      'Redis rate limiter unavailable, falling back to in-memory',
+      expect.objectContaining({ cause: 'Your database has been temporarily rate-limited.' }),
+    );
   });
 
-  it('has SUMMARIZE preset', () => {
-    expect(RATE_LIMITS.SUMMARIZE).toEqual({
-      limit: 2,
-      window: 60000,
+  it('degrades the same way when building the shared store throws', async () => {
+    const limiter = createRateLimit({
+      shared: () => {
+        throw new TypeError('Invalid URL');
+      },
+      local: new MemoryStore(),
     });
+
+    const charge = await limiter.charge(request(), 'CHAT');
+
+    expect(charge.allowed).toBe(true);
+    expect(charge.headers['X-RateLimit-Backend']).toBe('memory');
   });
 
-  it('has RELATED_POSTS preset', () => {
-    expect(RATE_LIMITS.RELATED_POSTS).toEqual({
-      limit: 10,
-      window: 60000,
-    });
+  it('stops asking the shared store for a minute after a failure, then retries', async () => {
+    const store = failing();
+    const limiter = createRateLimit({ shared: () => store, local: new MemoryStore() });
+
+    await chargeN(limiter, 'PUBLIC_READ', 3);
+
+    // One failed round trip and one report for the whole window, not one per
+    // request. The per-request report was ~9,000 Sentry events.
+    expect(store.hit).toHaveBeenCalledTimes(1);
+    expect(logWarn).toHaveBeenCalledTimes(1);
+
+    vi.advanceTimersByTime(SHARED_STORE_RETRY_AFTER_MS + 1);
+    await limiter.charge(request(), 'PUBLIC_READ');
+
+    expect(store.hit).toHaveBeenCalledTimes(2);
   });
 
-  it('has STANDARD preset', () => {
-    expect(RATE_LIMITS.STANDARD).toEqual({
-      limit: 30,
-      window: 60000,
+  it('uses the memory store silently when no shared store is configured', async () => {
+    const charge = await memoryOnly().charge(request(), 'CHAT');
+
+    expect(charge.headers['X-RateLimit-Backend']).toBe('memory');
+    expect(logWarn).not.toHaveBeenCalled();
+  });
+});
+
+describe('the 429', () => {
+  it('is the standard error envelope with retryAfter, plus the rate-limit headers', async () => {
+    const limiter = memoryOnly();
+    const { limit, windowMs } = RATE_LIMIT_POLICIES.CONTACT;
+    await chargeN(limiter, 'CONTACT', limit);
+
+    const charge = await limiter.charge(request(), 'CONTACT');
+    if (charge.allowed) throw new Error('expected the request to be rejected');
+
+    const retryAfter = windowMs / 1000;
+    expect(charge.response.status).toBe(429);
+    expect(await charge.response.json()).toEqual({
+      success: false,
+      error: 'Too many requests',
+      retryAfter,
     });
+    const header = (name: string) => charge.response.headers.get(name);
+    expect(header('Retry-After')).toBe(String(retryAfter));
+    expect(header('X-RateLimit-Limit')).toBe(String(limit));
+    expect(header('X-RateLimit-Remaining')).toBe('0');
+    expect(header('X-RateLimit-Reset')).toBe(new Date(Date.now() + windowMs).toISOString());
+    expect(header('X-RateLimit-Backend')).toBe('memory');
+  });
+});
+
+describe('withRateLimit', () => {
+  // The production instance: no Upstash credentials in the test env, so it
+  // runs on its memory store. Fresh module per test for an empty store.
+  const originalEnv = process.env;
+  let withRateLimit: typeof import('@/lib/rate-limit').withRateLimit;
+
+  beforeEach(async () => {
+    process.env = { ...originalEnv };
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
+    vi.resetModules();
+    ({ withRateLimit } = await import('@/lib/rate-limit'));
   });
 
-  it('has PUBLIC preset', () => {
-    expect(RATE_LIMITS.PUBLIC).toEqual({
-      limit: 100,
-      window: 60000,
-    });
+  afterEach(() => {
+    process.env = originalEnv;
   });
 
-  it('has NEWSLETTER preset', () => {
-    expect(RATE_LIMITS.NEWSLETTER).toEqual({
-      limit: 3,
-      window: 300000,
-    });
+  it('puts the rate-limit headers on the handler response', async () => {
+    const route = withRateLimit(async () => NextResponse.json({ ok: true }), 'PUBLIC_READ');
+
+    const res = await route(request());
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('X-RateLimit-Limit')).toBe('100');
+    expect(res.headers.get('X-RateLimit-Remaining')).toBe('99');
+  });
+
+  it('never runs the handler once the policy is exhausted', async () => {
+    const handler = vi.fn(async () => NextResponse.json({ ok: true }));
+    const route = withRateLimit(handler, 'SUMMARIZE');
+
+    for (let i = 0; i < RATE_LIMIT_POLICIES.SUMMARIZE.limit; i += 1) await route(request());
+    const res = await route(request());
+
+    expect(res.status).toBe(429);
+    expect(handler).toHaveBeenCalledTimes(RATE_LIMIT_POLICIES.SUMMARIZE.limit);
+  });
+
+  it('answers a throwing handler with the standard 500, headers included', async () => {
+    const route = withRateLimit(async () => {
+      throw new Error('boom');
+    }, 'CHAT');
+
+    const res = await route(request());
+
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ success: false, error: 'Internal server error' });
+    expect(res.headers.get('X-RateLimit-Remaining')).toBe('2');
+    const { logError: log } = await import('@/lib/logger');
+    expect(log).toHaveBeenCalledWith(
+      'API handler error',
+      expect.any(Error),
+      expect.objectContaining({ policy: 'CHAT' }),
+    );
   });
 });
 
