@@ -19,6 +19,23 @@ export interface GoodreadsBook {
   isbn: string | null;
 }
 
+/**
+ * The fields the /books page actually renders. The page passes these across the
+ * server/client boundary instead of whole `GoodreadsBook` rows, which also
+ * carry dates, the average rating, the shelf and the ISBN that nothing on the
+ * client reads.
+ */
+export type ListedBook = Pick<
+  GoodreadsBook,
+  'id' | 'title' | 'author' | 'link' | 'rating' | 'bookshelves' | 'pages' | 'yearPublished'
+>;
+
+export interface ListedShelf {
+  name: string;
+  label: string;
+  books: ListedBook[];
+}
+
 // Goodreads exports ISBNs wrapped as ="9780374528379"; pull out a clean 10/13-digit value.
 function cleanIsbn(raw13: string | undefined, raw10: string | undefined): string | null {
   for (const raw of [raw13, raw10]) {

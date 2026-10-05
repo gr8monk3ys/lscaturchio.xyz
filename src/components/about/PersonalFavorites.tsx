@@ -76,7 +76,7 @@ export function PersonalFavorites() {
 
           <m.div variants={itemVariants} className="mt-4">
             <p className="max-w-2xl text-lg text-muted-foreground italic">
-              &quot;What are some of the topics I write about as well as enjoy reading? Generally you&apos;ll see me covering: Mindfulness, the state of media (Indie Art, Sci-Fi), consumerism and privacy, and anything else that strikes my fancy.&quot;
+              &ldquo;What are some of the topics I write about as well as enjoy reading? Generally you&apos;ll see me covering: Mindfulness, the state of media (Indie Art, Sci-Fi), consumerism and privacy, and anything else that strikes my fancy.&rdquo;
             </p>
           </m.div>
         </m.div>

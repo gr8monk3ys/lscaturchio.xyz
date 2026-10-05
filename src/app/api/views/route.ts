@@ -28,9 +28,11 @@ const handleGet = async (req: NextRequest) => {
       }
 
       const sql = getDb();
-      const rows = await sql`SELECT slug, count FROM views ORDER BY count DESC LIMIT 1000`;
-
-      const allBlogs = await getAllBlogs();
+      // Independent reads: the counter table and the blog index load together.
+      const [rows, allBlogs] = await Promise.all([
+        sql`SELECT slug, count FROM views ORDER BY count DESC LIMIT 1000`,
+        getAllBlogs(),
+      ]);
       const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
 
       // Defensive: rows written before the slug check above (or by a direct

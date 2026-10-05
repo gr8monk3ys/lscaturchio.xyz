@@ -72,10 +72,14 @@ export function AskDrawer() {
 
   // An armed discard does not survive the panel closing. Otherwise a reader
   // who arms it, closes the drawer and reopens it later finds a button that
-  // throws away their conversation on the first click.
-  useEffect(() => {
+  // throws away their conversation on the first click. Adjusted during render
+  // when `isOpen` changes, not in an effect, so there is no extra commit with
+  // the stale value (react-best-practices: rerender-derived-state-no-effect).
+  const [wasOpen, setWasOpen] = useState(isOpen);
+  if (wasOpen !== isOpen) {
+    setWasOpen(isOpen);
     if (!isOpen) setConfirmingReset(false);
-  }, [isOpen]);
+  }
 
   // Trap focus only while the drawer covers the page. In push mode it sits
   // beside fully usable content and trapping would strand the reader; in
@@ -194,7 +198,7 @@ export function AskDrawer() {
         aria-label="Conversation"
       >
       {isEmpty ? (
-        <div data-lenis-prevent className="flex-1 overflow-y-auto px-5 py-8">
+        <div data-lenis-prevent className="flex-1 overflow-y-auto overscroll-contain px-5 py-8">
           <p className="text-section-title text-foreground">
             Ask the site anything.
           </p>
@@ -220,7 +224,7 @@ export function AskDrawer() {
           </div>
         </div>
       ) : (
-        <div data-lenis-prevent className="flex-1 overflow-y-auto px-3 py-4">
+        <div data-lenis-prevent className="flex-1 overflow-y-auto overscroll-contain px-3 py-4">
           <ChatMessageList>
             {messages.map((message) => (
               <ChatBubble
@@ -245,7 +249,7 @@ export function AskDrawer() {
                       onClick={() => void send(message.failedQuery ?? "")}
                       className="label-mono label-link mt-3 text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
                     >
-                      Try again →
+                      Try again <span aria-hidden="true">→</span>
                     </button>
                   )}
                 </ChatBubbleMessage>
@@ -277,6 +281,8 @@ export function AskDrawer() {
           </label>
           <textarea
             id="ask-drawer-input"
+            name="question"
+            autoComplete="off"
             ref={inputRef}
             rows={1}
             value={input}

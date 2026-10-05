@@ -47,7 +47,7 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
             prefetch={false}
             className="label-mono label-link mt-8 inline-block text-foreground ink-underline hover:text-primary"
           >
-            Read everything →
+            Read everything <span aria-hidden="true">→</span>
           </Link>
         </>
       }

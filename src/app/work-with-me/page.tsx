@@ -131,7 +131,7 @@ export default function WorkWithMePage() {
               href="/contact"
               className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
             >
-              Or send a brief →
+              Or send a brief <span aria-hidden="true">→</span>
             </Link>
           </div>
         </header>

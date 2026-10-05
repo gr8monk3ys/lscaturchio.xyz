@@ -5,7 +5,7 @@ import { footerColumns } from "@/constants/navlinks";
 import { socials } from "@/constants/socials";
 
 const iconLinkClass =
-  "inline-flex h-10 w-10 items-center justify-center rounded-xl neu-button text-foreground transition-all duration-200 hover:text-primary";
+  "inline-flex h-10 w-10 items-center justify-center rounded-xl neu-button text-foreground transition-[color,background-color,border-color,transform] duration-200 hover:text-primary";
 /** `min-h-11` on phones: this row measured 20px tall against WCAG 2.5.8's
  *  24px floor. The site map links below already carry `min-h-6`. */
 const utilityLinkClass =
@@ -57,7 +57,7 @@ function Footer() {
                   title={social.label}
                   aria-label={social.label}
                 >
-                  <social.icon className="h-4 w-4" />
+                  <social.icon className="h-4 w-4" aria-hidden="true" />
                   <span className="sr-only">{social.label}</span>
                 </a>
               ))}

@@ -37,7 +37,7 @@ export default function OfflinePage() {
             href="/"
             className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
-            ← Back to the entrance
+            <span aria-hidden="true">←</span> Back to the entrance
           </Link>
           <Link
             href="/blog"

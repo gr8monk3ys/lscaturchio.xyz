@@ -62,11 +62,19 @@ const FALLBACK_THEME: BlogTheme = {
  * every post appears exactly once. Posts matching nothing land in the fallback
  * rather than vanishing from the index.
  */
+// Tag -> theme slug, built once. The first theme listing a tag wins, which is
+// what `BLOG_THEMES.find(...)` returned when this was a scan per tag per post.
+const THEME_BY_TAG = new Map<string, string>();
+for (const theme of BLOG_THEMES) {
+  for (const tag of theme.tags) {
+    if (!THEME_BY_TAG.has(tag)) THEME_BY_TAG.set(tag, theme.slug);
+  }
+}
+
 export function themeForTags(tags: string[]): string {
   for (const tag of tags) {
-    const needle = tag.toLowerCase();
-    const theme = BLOG_THEMES.find((t) => t.tags.includes(needle));
-    if (theme) return theme.slug;
+    const slug = THEME_BY_TAG.get(tag.toLowerCase());
+    if (slug) return slug;
   }
   return FALLBACK_THEME_SLUG;
 }

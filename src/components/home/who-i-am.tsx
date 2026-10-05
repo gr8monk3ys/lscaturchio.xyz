@@ -18,7 +18,7 @@ export function WhoIAm() {
             prefetch={false}
             className="label-mono label-link mt-8 inline-block text-foreground ink-underline hover:text-primary"
           >
-            More about me →
+            More about me <span aria-hidden="true">→</span>
           </Link>
         </>
       }

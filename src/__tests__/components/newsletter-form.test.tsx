@@ -147,7 +147,7 @@ describe("NewsletterForm", () => {
     });
   });
 
-  it("shows Subscribing... and disables the form while the request is in flight", async () => {
+  it("shows Subscribing… and disables the form while the request is in flight", async () => {
     let resolveFetch!: (value: Response) => void;
     fetchMock.mockImplementationOnce(
       () =>

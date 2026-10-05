@@ -10,6 +10,27 @@ import { withWriteRoute } from "@/lib/api/write-route";
 const RESUME_FILENAME = "Lorenzo_Scaturchio_Resume.pdf";
 const LEGACY_FILENAME = "Lorenzo_resume_DS.pdf";
 
+type ResumeFile = { buffer: Buffer; filename: string };
+
+/**
+ * The PDF is a static asset, so it is resolved and read once per server
+ * instance rather than on every download. `undefined` means not looked up yet;
+ * `null` means neither file exists. A read error is not cached: it propagates
+ * to the handler's catch, exactly as the per-request read did.
+ */
+let cachedResumeFile: ResumeFile | null | undefined;
+
+function getResumeFile(): ResumeFile | null {
+  if (cachedResumeFile !== undefined) return cachedResumeFile;
+  const candidates = [
+    { path: join(process.cwd(), "public", RESUME_FILENAME), filename: RESUME_FILENAME },
+    { path: join(process.cwd(), "public", LEGACY_FILENAME), filename: LEGACY_FILENAME },
+  ];
+  const found = candidates.find((candidate) => existsSync(candidate.path));
+  cachedResumeFile = found ? { buffer: readFileSync(found.path), filename: found.filename } : null;
+  return cachedResumeFile;
+}
+
 /**
  * GET /api/resume
  * Serves the PDF resume file with proper headers for download
@@ -17,48 +38,40 @@ const LEGACY_FILENAME = "Lorenzo_resume_DS.pdf";
 const handleGet = async (req: NextRequest) => {
   try {
     // Try the new filename first, then fall back to legacy
-    let resumePath = join(process.cwd(), "public", RESUME_FILENAME);
-    let filename = RESUME_FILENAME;
+    const resumeFile = getResumeFile();
 
-    if (!existsSync(resumePath)) {
-      // Try legacy filename
-      resumePath = join(process.cwd(), "public", LEGACY_FILENAME);
-      filename = LEGACY_FILENAME;
-
-      if (!existsSync(resumePath)) {
-        const externalResumeUrl = process.env.RESUME_URL?.trim();
-        if (externalResumeUrl) {
-          try {
-            new URL(externalResumeUrl);
-            logInfo("Resume: Redirecting to external URL fallback", {
-              component: "resume",
-              action: "GET",
-            });
-            return NextResponse.redirect(externalResumeUrl, 307);
-          } catch (error) {
-            logError("Resume: Invalid RESUME_URL fallback", error, {
-              component: "resume",
-              action: "GET",
-            });
-          }
+    if (!resumeFile) {
+      const externalResumeUrl = process.env.RESUME_URL?.trim();
+      if (externalResumeUrl) {
+        try {
+          new URL(externalResumeUrl);
+          logInfo("Resume: Redirecting to external URL fallback", {
+            component: "resume",
+            action: "GET",
+          });
+          return NextResponse.redirect(externalResumeUrl, 307);
+        } catch (error) {
+          logError("Resume: Invalid RESUME_URL fallback", error, {
+            component: "resume",
+            action: "GET",
+          });
         }
-
-        // Warning: the redirect is the designed fallback and the visitor lands
-        // somewhere useful. Fix by adding the PDF to public/ or setting
-        // RESUME_URL — until then this should not page anyone.
-        logWarn("Resume: File not found, redirecting to contact", {
-          component: "resume",
-          action: "GET",
-          paths: [RESUME_FILENAME, LEGACY_FILENAME],
-        });
-
-        const contactFallbackUrl = new URL("/contact?subject=resume", req.url);
-        return NextResponse.redirect(contactFallbackUrl, 307);
       }
+
+      // Warning: the redirect is the designed fallback and the visitor lands
+      // somewhere useful. Fix by adding the PDF to public/ or setting
+      // RESUME_URL — until then this should not page anyone.
+      logWarn("Resume: File not found, redirecting to contact", {
+        component: "resume",
+        action: "GET",
+        paths: [RESUME_FILENAME, LEGACY_FILENAME],
+      });
+
+      const contactFallbackUrl = new URL("/contact?subject=resume", req.url);
+      return NextResponse.redirect(contactFallbackUrl, 307);
     }
 
-    // Read the PDF file and convert to Uint8Array for NextResponse compatibility
-    const fileBuffer = readFileSync(resumePath);
+    const { buffer: fileBuffer, filename } = resumeFile;
     const uint8Array = new Uint8Array(fileBuffer);
 
     // Return the PDF with appropriate headers
