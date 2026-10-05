@@ -20,9 +20,9 @@ vi.mock('@/lib/ollama', () => ({
   createOllamaChatCompletion: vi.fn(),
 }));
 
-// Mock embeddings module
-vi.mock('@/lib/embeddings', () => ({
-  hybridSearch: vi.fn(),
+// Mock retrieval: the route sees grounding, never chunk rows
+vi.mock('@/lib/retrieval', () => ({
+  groundingFor: vi.fn(),
 }));
 
 // Mock other dependencies
@@ -38,7 +38,7 @@ vi.mock('@/lib/csrf', () => ({
 }));
 
 import { POST } from '@/app/api/chat/route';
-import { hybridSearch } from '@/lib/embeddings';
+import { groundingFor } from '@/lib/retrieval';
 import { isOllamaAvailable, createOllamaChatCompletion } from '@/lib/ollama';
 import { validateCsrf } from '@/lib/csrf';
 
@@ -59,8 +59,8 @@ describe('/api/chat', () => {
     vi.clearAllMocks();
     // Default: CSRF passes
     vi.mocked(validateCsrf).mockReturnValue(null);
-    // Default: hybrid retrieval finds nothing (confidence "none")
-    vi.mocked(hybridSearch).mockResolvedValue({ results: [], confidence: 'none' });
+    // Default: retrieval finds nothing (confidence "none")
+    vi.mocked(groundingFor).mockResolvedValue({ context: '', confidence: 'none', closest: [] });
     // Default: Ollama available and returns response
     vi.mocked(isOllamaAvailable).mockResolvedValue(true);
     vi.mocked(createOllamaChatCompletion).mockResolvedValue('Test response from Ollama');
@@ -122,19 +122,17 @@ describe('/api/chat', () => {
     });
 
     it('includes context from embeddings in AI prompt', async () => {
-      vi.mocked(hybridSearch).mockResolvedValue({
-        results: [
-          { id: 1, content: 'I am a software engineer', metadata: {}, similarity: 0.8, score: 0.5 },
-          { id: 2, content: 'I work on web applications', metadata: {}, similarity: 0.7, score: 0.4 },
-        ],
+      vi.mocked(groundingFor).mockResolvedValue({
+        context: 'I am a software engineer\n\nI work on web applications',
         confidence: 'strong',
+        closest: [{ title: 'On Shipping', url: '/blog/on-shipping' }],
       });
 
       const request = createMockRequest({ query: 'Tell me about yourself' });
       await POST(request);
 
-      // Verify hybrid retrieval ran for the query
-      expect(hybridSearch).toHaveBeenCalledWith('Tell me about yourself');
+      // Verify retrieval ran for the query
+      expect(groundingFor).toHaveBeenCalledWith('Tell me about yourself');
 
       // Verify Ollama was called with context in the system prompt
       expect(createOllamaChatCompletion).toHaveBeenCalled();
@@ -142,11 +140,10 @@ describe('/api/chat', () => {
       const systemMessage = callArgs[0].find((m) => m.role === 'system');
       expect(systemMessage?.content).toContain('I am a software engineer');
       expect(systemMessage?.content).toContain('I work on web applications');
+      expect(systemMessage?.content).toContain('On Shipping (/blog/on-shipping)');
     });
 
     it('works without embeddings context', async () => {
-      vi.mocked(hybridSearch).mockResolvedValue({ results: [], confidence: 'none' });
-
       const request = createMockRequest({ query: 'Hello' });
       const response = await POST(request);
       const data = await response.json();
@@ -154,7 +151,7 @@ describe('/api/chat', () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.data.answer).toBe('Test response from Ollama');
-      expect(hybridSearch).toHaveBeenCalled();
+      expect(groundingFor).toHaveBeenCalled();
     });
   });
 
@@ -184,19 +181,6 @@ describe('/api/chat', () => {
       expect(data.success).toBe(true);
       expect(data.data.provider).toBe('fallback');
       expect(data.data.degraded).toBe(true);
-    });
-
-    it('continues without context when embeddings search fails', async () => {
-      vi.mocked(hybridSearch).mockRejectedValue(new Error('Search error'));
-
-      const request = createMockRequest({ query: 'test query' });
-      const response = await POST(request);
-      const data = await response.json();
-
-      // Should still succeed - embeddings failure is graceful
-      expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
-      expect(data.data.answer).toBe('Test response from Ollama');
     });
   });
 });

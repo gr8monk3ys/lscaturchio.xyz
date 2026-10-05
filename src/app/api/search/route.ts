@@ -1,110 +1,11 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { searchEmbeddings, type HybridRow } from '@/lib/embeddings';
+import { relevantEssays } from '@/lib/retrieval';
 import { withRateLimit } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
-import type { SearchResult } from '@/types/embeddings';
+import { parseBody } from '@/lib/validations';
 import { apiSuccess, ApiErrors } from '@/lib/api-response';
 import { withWriteRoute } from '@/lib/api/write-route';
-
-/**
- * Turn an embedding chunk into something worth showing a reader.
- *
- * Returns null for chunks that are mostly code: a preview is prose, and a
- * fenced block tells a visitor nothing about the essay it came from.
- */
-function presentableSnippet(content: string | null | undefined, title: string): string | null {
-  if (!content) return null;
-  let text = content.trim();
-
-  // Opens with a fence, or contains a whole fenced block.
-  if (/^`{3}/.test(text)) return null;
-  if ((text.match(/`{3}/g) || []).length >= 2) return null;
-
-  // A leading copy of the post's own title, which the reader can already see
-  // directly above the snippet.
-  if (title && title !== 'Untitled' && text.toLowerCase().startsWith(title.toLowerCase())) {
-    text = text.slice(title.length).replace(/^[\s:.\u2014-]+/, '');
-  }
-
-  return text.length > 0 ? text : null;
-}
-
-/**
- * Groups raw embedding results by blog post URL, keeping only unique snippets
- * and tracking the highest similarity score per post.
- *
- * Used by both GET and POST handlers to avoid duplicating the reduce logic.
- */
-type GroupedResult = SearchResult & { tags?: string[]; score: number };
-
-function groupEmbeddingResults(
-  results: HybridRow[],
-  options?: { includeTags?: boolean },
-): Record<string, GroupedResult> {
-  return results.reduce(
-    (acc, result) => {
-      const blogUrl = result.metadata?.url || '';
-      if (!blogUrl) return acc;
-
-      // Lexical-only hits have a null cosine similarity; show 0 for display and
-      // rank groups by the fused score instead.
-      const sim = result.similarity ?? 0;
-      const score = result.score ?? 0;
-
-      if (!acc[blogUrl]) {
-        acc[blogUrl] = {
-          title: result.metadata?.title || 'Untitled',
-          url: blogUrl,
-          description: result.metadata?.description || '',
-          date: result.metadata?.date || '',
-          ...(options?.includeTags ? { tags: result.metadata?.tags || [] } : {}),
-          similarity: sim,
-          score,
-          snippets: [],
-        };
-      }
-
-      // Add content snippet if it's unique — and if it reads as prose.
-      //
-      // A snippet is an embedding chunk shown verbatim to a reader, and the
-      // corpus is chunked for retrieval rather than for preview. /lab showed
-      // two consequences: a chunk beginning with the post's own title, so the
-      // excerpt read "…in Production People who've shipped…" with the heading
-      // fused to the body; and a chunk that was a fenced code block, so the
-      // representative excerpt for a prose essay was TypeScript.
-      //
-      // Fixed here rather than at index time on purpose. Rechunking means
-      // regenerating embeddings, and a corpus whose embeddings no longer match
-      // its text is a worse defect than an ugly snippet. This is the read
-      // layer — the last place the text is still text.
-      const snippet = presentableSnippet(result.content, acc[blogUrl].title);
-      if (snippet && !acc[blogUrl].snippets.includes(snippet)) {
-        acc[blogUrl].snippets.push(snippet);
-      }
-
-      // Track the highest cosine (display) and fused score (ranking) per post.
-      if (sim > acc[blogUrl].similarity) acc[blogUrl].similarity = sim;
-      if (score > acc[blogUrl].score) acc[blogUrl].score = score;
-
-      return acc;
-    },
-    {} as Record<string, GroupedResult>,
-  );
-}
-
-/**
- * Validates a search query string, returning an error response if invalid.
- */
-function validateQuery(query: string | null): ReturnType<typeof ApiErrors.badRequest> | null {
-  if (!query || typeof query !== 'string' || query.trim().length === 0) {
-    return ApiErrors.badRequest('Search query is required');
-  }
-  if (query.length > 500) {
-    return ApiErrors.badRequest('Search query too long (max 500 characters)');
-  }
-  return null;
-}
 
 function parseLimit(raw: unknown): number {
   const parsed =
@@ -120,11 +21,11 @@ function parseLimit(raw: unknown): number {
 }
 
 /**
- * The POST body, as a schema rather than the route-local checks GET still uses.
- * Messages and coercions are deliberately identical to `validateQuery` /
- * `parseLimit` so moving POST onto the shared write chain changed no response.
+ * One search request, whichever verb carried it: GET reads `?q=&limit=`, POST
+ * reads `{ query, limit }`. Both go through this schema, so the two cannot
+ * disagree about what a valid query is.
  */
-const searchPostSchema = z
+const searchRequestSchema = z
   .object({ query: z.unknown().optional(), limit: z.unknown().optional() })
   .superRefine((body, ctx) => {
     const query = body.query;
@@ -144,26 +45,22 @@ const searchPostSchema = z
 const handleGet = async (request: NextRequest) => {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const query = searchParams.get('q');
-    const limit = parseLimit(searchParams.get('limit'));
+    const parsed = parseBody(searchRequestSchema, {
+      query: searchParams.get('q'),
+      limit: searchParams.get('limit'),
+    });
+    if (!parsed.success) return ApiErrors.badRequest(parsed.error, parsed.field);
+    const { query, limit } = parsed.data;
 
-    const queryError = validateQuery(query);
-    if (queryError) return queryError;
-
-    const results = await searchEmbeddings(query!, limit);
-    const grouped = groupEmbeddingResults(results);
-
-    const searchResults = Object.values(grouped)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, limit)
-      .map((result) => ({
-        title: result.title,
-        url: result.url,
-        description: result.description,
-        date: result.date,
-        similarity: result.similarity,
-        snippets: result.snippets.slice(0, 2),
-      }));
+    const essays = await relevantEssays(query, { limit });
+    const searchResults = essays.map((essay) => ({
+      title: essay.title,
+      url: essay.url,
+      description: essay.description,
+      date: essay.date,
+      similarity: essay.similarity,
+      snippets: essay.snippets,
+    }));
 
     return apiSuccess({
       query,
@@ -185,7 +82,7 @@ export const POST = withWriteRoute(
       reason: 'Site search is a public read; the mutation-shaped POST only carries a longer query body.',
     },
     csrf: { kind: 'required' },
-    body: { kind: 'json', schema: searchPostSchema },
+    body: { kind: 'json', schema: searchRequestSchema },
     envelope: { kind: 'standard' },
     errors: {
       log: 'Search: Unexpected error',
@@ -197,23 +94,15 @@ export const POST = withWriteRoute(
   async ({ data }) => {
     const { query, limit } = data;
 
-    const results = await searchEmbeddings(query, limit);
-    const grouped = groupEmbeddingResults(results, { includeTags: true });
-
-    const searchResults = Object.values(grouped)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, limit)
-      .map((result) => {
-        const slug = result.url.split('/').pop() || '';
-        return {
-          slug,
-          title: result.title,
-          description: result.description,
-          date: result.date,
-          tags: result.tags || [],
-          relevance: result.similarity,
-        };
-      });
+    const essays = await relevantEssays(query, { limit });
+    const searchResults = essays.map((essay) => ({
+      slug: essay.slug,
+      title: essay.title,
+      description: essay.description,
+      date: essay.date,
+      tags: essay.tags,
+      relevance: essay.similarity,
+    }));
 
     return { query, results: searchResults, count: searchResults.length };
   }

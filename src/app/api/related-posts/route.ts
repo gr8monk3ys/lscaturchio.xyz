@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { searchEmbeddings } from '@/lib/embeddings';
+import { relevantEssays } from '@/lib/retrieval';
 import { withRateLimit } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
 import type { RelatedPost } from '@/types/embeddings';
@@ -8,10 +8,12 @@ import { apiSuccess, ApiErrors } from '@/lib/api-response';
 
 /**
  * Related posts, semantic-first. The point of a garden is non-obvious
- * connections, so embedding similarity is the primary signal — not shared
+ * connections, so retrieval relevance is the primary signal — not shared
  * tags. Order of influence:
  * 1. Same series (kept together by design)
- * 2. Semantic similarity over the post's title + description (primary)
+ * 2. Retrieval relevance over the post's title + description (primary) —
+ *    the same fused vector + keyword rank search uses, so an essay that
+ *    matches on exact terms ranks on that rather than scoring zero
  * 3. Shared tags — only a small tiebreak, and a fallback when embeddings are
  *    unavailable (no DB), so the section still works everywhere.
  */
@@ -59,27 +61,20 @@ const handleGet = async (request: NextRequest) => {
         });
     }
 
-    // Strategy 2: Semantic similarity (primary signal). Query on title +
-    // description for a richer match than the title alone. Results are
-    // chunk-level, so collapse to the best similarity per post.
+    // Strategy 2: Retrieval relevance (primary signal). Query on title +
+    // description for a richer match than the title alone. The current post is
+    // its own best match, so ask for headroom past `limit`.
     const query = currentPost
       ? `${currentPost.title}. ${currentPost.description}`
       : title;
-    const embeddingResults = await searchEmbeddings(query, limit + 20);
+    const essays = await relevantEssays(query, { limit: limit + 20 });
 
-    const bestBySlug = new Map<string, number>();
-    for (const result of embeddingResults) {
-      const url = result.metadata?.url;
-      if (!url || url === currentUrl) continue;
-      const slug = url.split('/').pop() || '';
-      if (!slug || slug === currentSlug) continue;
-      const sim = result.similarity ?? 0;
-      if (sim > (bestBySlug.get(slug) ?? -1)) bestBySlug.set(slug, sim);
-    }
-
-    for (const [slug, sim] of Array.from(bestBySlug)) {
+    for (const essay of essays) {
+      const { slug } = essay;
+      if (!slug || slug === currentSlug || essay.url === currentUrl) continue;
+      const score = essay.relevance * 100;
       if (relatedPostsMap.has(slug)) {
-        relatedPostsMap.get(slug)!.score += sim * 100;
+        relatedPostsMap.get(slug)!.score += score;
         continue;
       }
       const blog = allBlogs.find((b) => b.slug === slug);
@@ -89,8 +84,8 @@ const handleGet = async (request: NextRequest) => {
         description: blog?.description ?? '',
         date: blog?.date ?? '',
         image: blog?.image ?? '/images/blog/default.webp',
-        similarity: sim,
-        score: sim * 100,
+        similarity: essay.similarity,
+        score,
       });
     }
 

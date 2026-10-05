@@ -1,43 +1,14 @@
-import { hybridSearch } from '@/lib/embeddings';
+import { groundingFor } from '@/lib/retrieval';
 import { logError } from '@/lib/logger';
 import { withWriteRoute } from '@/lib/api/write-route';
 import { chatRequestSchema } from '@/lib/validations';
 import { generateChatAnswer } from '@/lib/chat/providers';
-import {
-  buildSystemPromptWithContext,
-  loadBlogContext,
-  type SemanticRetrieval,
-} from '@/lib/chat/context';
+import { buildSystemPromptWithContext, loadBlogContext } from '@/lib/chat/context';
 import {
   SYSTEM_PROMPT,
   buildFallbackAnswer,
   sanitizeChatInput,
 } from '@/lib/chat/security';
-
-async function loadSemanticRetrieval(query: string): Promise<SemanticRetrieval> {
-  try {
-    // hybridSearch degrades to lexical-only when no embedding provider is
-    // configured, so there is no separate availability gate to check.
-    const { results, confidence } = await hybridSearch(query);
-    const context = results.map((r) => r.content).join('\n\n');
-
-    const seen = new Set<string>();
-    const closest: Array<{ title: string; url: string }> = [];
-    for (const r of results) {
-      const url = typeof r.metadata?.url === 'string' ? r.metadata.url : '';
-      if (!url || seen.has(url)) continue;
-      seen.add(url);
-      const title = typeof r.metadata?.title === 'string' ? r.metadata.title : url;
-      closest.push({ title, url });
-      if (closest.length >= 3) break;
-    }
-
-    return { context, confidence, closest };
-  } catch (error) {
-    logError('Hybrid retrieval failed', error, { component: 'chat' });
-    return { context: '', confidence: 'none', closest: [] };
-  }
-}
 
 export const POST = withWriteRoute(
   {
@@ -60,7 +31,9 @@ export const POST = withWriteRoute(
     const query = sanitizeChatInput(data.query);
     const { contextSlug } = data;
 
-    const retrieval = await loadSemanticRetrieval(query);
+    // Degrades to keyword-only grounding without an embedding provider, and to
+    // none without a database; it does not throw.
+    const retrieval = await groundingFor(query);
 
     let postContext = null;
     if (contextSlug) {

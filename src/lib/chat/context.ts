@@ -1,16 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { extractBlogMeta } from '@/lib/blog-meta';
-import type { Confidence } from '@/lib/retrieval';
-
-export interface SemanticRetrieval {
-  /** Joined chunk text from the best-matching notes. */
-  context: string;
-  /** How well the corpus grounds the question. */
-  confidence: Confidence;
-  /** Closest related notes to point at (deduped by url). */
-  closest: Array<{ title: string; url: string }>;
-}
+import type { Grounding } from '@/lib/retrieval';
 
 // Strictly-grounded: the assistant is a guide to Lorenzo's writing, not a
 // general chatbot. It must not answer from the model's own knowledge.
@@ -95,7 +86,7 @@ function formatClosest(closest: Array<{ title: string; url: string }>): string |
 export function buildSystemPromptWithContext(
   systemPrompt: string,
   postContext: BlogContext | null,
-  retrieval: SemanticRetrieval,
+  retrieval: Grounding,
 ): string {
   const postBlock = postContext ? formatBlogContextBlock(postContext) : null;
 

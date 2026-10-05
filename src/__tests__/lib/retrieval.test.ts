@@ -3,9 +3,6 @@ import {
   reciprocalRankFusion,
   reciprocalRankFusionScored,
   assessConfidence,
-  buildEmbeddingInput,
-  sourceContentHash,
-  shouldSkipSource,
   RRF_K,
   STRONG_SIM,
   WEAK_SIM,
@@ -95,7 +92,7 @@ describe('reciprocalRankFusion', () => {
 
 describe('assessConfidence at production thresholds', () => {
   // Guards the values actually used at runtime: the bare defaults
-  // (STRONG_SIM / WEAK_SIM) and the hybridSearch caller's override
+  // (STRONG_SIM / WEAK_SIM) and groundingFor's override
   // ({ strong: STRONG_SIM, weak: EMBEDDING_MATCH_THRESHOLD = 0.5 }).
   it('classifies against the bare STRONG_SIM / WEAK_SIM defaults', () => {
     expect(STRONG_SIM).toBe(0.55);
@@ -106,7 +103,7 @@ describe('assessConfidence at production thresholds', () => {
     expect(assessConfidence([{ similarity: 0.39 }])).toBe('none');
   });
 
-  it('honors the hybridSearch override { strong: 0.55, weak: 0.5 }', () => {
+  it('honors the groundingFor override { strong: 0.55, weak: 0.5 }', () => {
     const prod = { strong: STRONG_SIM, weak: 0.5 };
     expect(assessConfidence([{ similarity: 0.55 }], prod)).toBe('strong');
     expect(assessConfidence([{ similarity: 0.54 }], prod)).toBe('weak');
@@ -143,39 +140,5 @@ describe('assessConfidence', () => {
 
   it('still reports strong when a strong cosine sits alongside lexical-only hits', () => {
     expect(assessConfidence([{ similarity: null }, { similarity: 0.65 }], opts)).toBe('strong');
-  });
-});
-
-describe('buildEmbeddingInput', () => {
-  it('prepends a Title/Type/URL preamble before the chunk body', () => {
-    const out = buildEmbeddingInput(
-      { title: 'On Gardens', type: 'blog', url: '/blog/on-gardens' },
-      'A chunk of prose.',
-    );
-    expect(out).toBe(
-      'Title: On Gardens\nType: blog\nURL: /blog/on-gardens\n\nA chunk of prose.',
-    );
-  });
-
-  it('omits absent preamble lines but keeps the present ones', () => {
-    expect(buildEmbeddingInput({ title: 'T' }, 'body')).toBe('Title: T\n\nbody');
-  });
-
-  it('returns the chunk unchanged when there is no metadata', () => {
-    expect(buildEmbeddingInput({}, 'body')).toBe('body');
-  });
-});
-
-describe('sourceContentHash / shouldSkipSource', () => {
-  it('is deterministic and differs for different content', () => {
-    expect(sourceContentHash('abc')).toBe(sourceContentHash('abc'));
-    expect(sourceContentHash('abc')).not.toBe(sourceContentHash('abd'));
-  });
-
-  it('skips a source only when every existing chunk already carries the new hash', () => {
-    const h = sourceContentHash('content');
-    expect(shouldSkipSource([h, h, h], h)).toBe(true);
-    expect(shouldSkipSource([h, 'stale', h], h)).toBe(false); // a chunk predates the change
-    expect(shouldSkipSource([], h)).toBe(false); // never indexed → don't skip
   });
 });
