@@ -87,6 +87,42 @@
 
 }
 
+/**
+ * Stacking order for everything `position: fixed`, defined once.
+ *
+ * Each `--z-index-<name>` generates a `z-<name>` utility. They were numeric
+ * classes chosen file by file, and the command palette — which opens from the
+ * mobile menu's Search button, and on ⌘K from anywhere — was the lowest of
+ * them: z-50 under a z-55 menu at 98% opacity, so tapping Search opened a
+ * dialog nobody could see and moved focus into it. The ask drawer was z-55
+ * under the z-60 phone bar, which painted over the drawer's own close button.
+ *
+ * The order, and why each step sits where it does:
+ * - float, chrome: page furniture (scroll-to-top; the headers, reading bar).
+ * - menu: the phone menu overlay.
+ * - menu-bar: the phone bar, above the menu so its toggle can close it.
+ * - drawer: the ask drawer and its scrim, which are a modal on a phone and
+ *   cover the bar like any other chrome.
+ * - lightbox: covers everything a reader can open it beside.
+ * - palette: the top overlay, because it can be opened from inside any other.
+ * - grain: the paper texture, pointer-events none, over all of it on purpose.
+ * - skip-link: above even the grain, the first thing a keyboard reaches.
+ *
+ * `static`, so the variables are emitted even where only CSS (the scrim, the
+ * grain) reads them. `overlay layers` in design-drift.test.ts holds the order.
+ */
+@theme static {
+  --z-index-float: 40;
+  --z-index-chrome: 50;
+  --z-index-menu: 55;
+  --z-index-menu-bar: 60;
+  --z-index-drawer: 64;
+  --z-index-lightbox: 68;
+  --z-index-palette: 72;
+  --z-index-grain: 80;
+  --z-index-skip-link: 200;
+}
+
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -738,7 +774,7 @@
     content: '';
     position: fixed;
     inset: 0;
-    z-index: 80;
+    z-index: var(--z-index-grain);
     pointer-events: none;
     opacity: 0.035;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -847,7 +883,7 @@ body {
 .ask-scrim {
   position: fixed;
   inset: 0;
-  z-index: 54;
+  z-index: var(--z-index-drawer);
   background: hsl(var(--scrim) / var(--scrim-alpha));
   opacity: 0;
   pointer-events: none;

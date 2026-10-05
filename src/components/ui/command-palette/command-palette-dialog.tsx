@@ -162,12 +162,12 @@ export function CommandPaletteDialog({
       <div
         aria-hidden="true"
         onClick={onClose}
-        className="overlay-scrim fixed inset-0 z-50 backdrop-blur-xs"
+        className="overlay-scrim fixed inset-0 z-palette backdrop-blur-xs"
       />
 
       <div
         ref={panelRef}
-        className="fixed left-1/2 top-[20%] z-50 w-full max-w-xl -translate-x-1/2 px-4"
+        className="fixed left-1/2 top-[20%] z-palette w-full max-w-xl -translate-x-1/2 px-4"
       >
         <div
           role="dialog"

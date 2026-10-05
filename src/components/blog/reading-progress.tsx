@@ -28,7 +28,7 @@ export function ReadingProgress() {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 h-1 bg-primary z-50 origin-left"
+      className="fixed top-0 left-0 right-0 h-1 bg-primary z-chrome origin-left"
       style={{
         transform: `scaleX(${scaleX})`,
         opacity: isVisible ? 1 : 0,

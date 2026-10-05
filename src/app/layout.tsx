@@ -228,7 +228,7 @@ export default async function RootLayout({
             translated 300% off-screen is a keyboard trap. */}
         <a
           href="#main-content"
-          className="fixed left-4 top-4 z-[200] -translate-y-[300%] rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-transform duration-200 focus:translate-y-0"
+          className="fixed left-4 top-4 z-skip-link -translate-y-[300%] rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-transform duration-200 focus:translate-y-0"
         >
           Skip to content
         </a>

@@ -120,7 +120,7 @@ export function AskDrawer() {
       // already. The drawer separates from the page with a hairline, the way
       // every other surface here does.
       className={[
-        "ask-drawer fixed inset-y-0 z-[55] flex w-full flex-col border-border bg-background",
+        "ask-drawer fixed inset-y-0 z-drawer flex w-full flex-col border-border bg-background",
         "border-s md:w-96",
         isOpen ? "translate-x-0" : "translate-x-full",
         isOpen ? "visible" : "invisible",
