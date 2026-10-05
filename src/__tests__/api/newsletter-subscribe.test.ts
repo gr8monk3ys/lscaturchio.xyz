@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { afterAll, beforeAll, describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest, NextResponse } from 'next/server'
 
 const mockSql = vi.fn()
@@ -9,12 +9,9 @@ vi.mock('@/lib/db', () => ({
   isDatabaseConfigured: vi.fn(() => true),
 }))
 
-vi.mock('@/lib/email', () => ({
-  sendWelcomeEmail: vi.fn().mockResolvedValue(undefined),
-}))
-
 vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
+  logInfo: vi.fn(),
 }))
 
 vi.mock('@/lib/csrf', () => ({
@@ -28,9 +25,18 @@ vi.mock('@/constants/newsletter', () => ({
 }))
 
 import { POST } from '@/app/api/newsletter/subscribe/route'
-import { sendWelcomeEmail } from '@/lib/email'
+import { installMailTransport } from '@/lib/mail/deliver'
+import { createOutbox } from '@/lib/mail/outbox'
 import { validateCsrf } from '@/lib/csrf'
 import { logError } from '@/lib/logger'
+
+// The mailer: an in-memory outbox in place of Resend.
+const outbox = createOutbox()
+let restoreTransport: () => void
+beforeAll(() => {
+  restoreTransport = installMailTransport(outbox)
+})
+afterAll(() => restoreTransport())
 
 // Helper to create mock request
 function createMockRequest(body: Record<string, unknown>): NextRequest {
@@ -47,6 +53,7 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
 describe('/api/newsletter/subscribe', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    outbox.clear()
     // Default: CSRF passes
     vi.mocked(validateCsrf).mockReturnValue(null)
     // Default: no existing subscriber
@@ -124,17 +131,21 @@ describe('/api/newsletter/subscribe', () => {
       expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.')
     })
 
-    it('sends welcome email for new subscriber (non-blocking)', async () => {
+    it('queues the welcome email, with the stored unsubscribe token', async () => {
       mockSql.mockResolvedValueOnce([])
       mockSql.mockResolvedValueOnce([])
 
       const request = createMockRequest({ email: 'new@example.com' })
       await POST(request)
 
-      expect(sendWelcomeEmail).toHaveBeenCalledWith(
-        'new@example.com',
-        expect.any(String)
-      )
+      // INSERT args: [templateStrings, email, token, metadataJson]
+      const token = mockSql.mock.calls[1][2]
+      await vi.waitFor(() => expect(outbox.sent).toHaveLength(1))
+      expect(outbox.sent[0]).toMatchObject({
+        to: 'new@example.com',
+        subject: "Welcome to Lorenzo's Newsletter!",
+      })
+      expect(outbox.sent[0].html).toContain(`/unsubscribe?token=${token}`)
     })
   })
 
@@ -147,6 +158,8 @@ describe('/api/newsletter/subscribe', () => {
       const request = createMockRequest({ email: 'existing@example.com' })
       const response = await POST(request)
       const data = await response.json()
+      // Already subscribed: no second welcome email.
+      expect(outbox.sent).toHaveLength(0)
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
@@ -200,7 +213,7 @@ describe('/api/newsletter/subscribe', () => {
       expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.')
     })
 
-    it('sends welcome email for reactivated subscriber', async () => {
+    it('queues the welcome email for a reactivated subscriber', async () => {
       mockSql.mockResolvedValueOnce([
         { email: 'inactive@example.com', is_active: false },
       ])
@@ -209,10 +222,8 @@ describe('/api/newsletter/subscribe', () => {
       const request = createMockRequest({ email: 'inactive@example.com' })
       await POST(request)
 
-      expect(sendWelcomeEmail).toHaveBeenCalledWith(
-        'inactive@example.com',
-        expect.any(String)
-      )
+      await vi.waitFor(() => expect(outbox.sent).toHaveLength(1))
+      expect(outbox.sent[0].to).toBe('inactive@example.com')
     })
   })
 

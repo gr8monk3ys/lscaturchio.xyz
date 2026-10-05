@@ -228,7 +228,7 @@ const ALLOWED: Array<{ file: string; rule: string; reason: string }> = [
       "The one module allowed to name the glyph, because it is the module that decides when the glyph is true.",
   },
   {
-    file: "src/lib/email.ts",
+    file: "src/lib/mail/templates.ts",
     rule: "inline-css-type-ramp",
     reason:
       "Email is a different coordinate space, not a lapse. Mail clients strip <style> blocks and treat rem unreliably, so an HTML email has to inline px on every element — the same reason the Satori OG card is allowed its own literals. The site's ramp has no jurisdiction inside a message Gmail will re-render; the rule's scope is CSS a browser paints as part of this document.",
@@ -409,12 +409,12 @@ describe("heading case", () => {
         // Email bodies are not pages. The headings in there ("New Contact
         // Form Submission", "Welcome to My Newsletter!") are transactional mail
         // — one an internal notification to the site's owner — and the site's
-        // style guide governs the site. `src/lib/email.ts` joins the API
-        // routes here for the same reason, and because it is HTML in a
+        // style guide governs the site. `src/lib/mail/templates.ts` joins the
+        // API routes here for the same reason, and because it is HTML in a
         // template string that no page renders; it surfaced only when the
         // word-count floor dropped to three.
         if (relative.startsWith("src/app/api/")) continue;
-        if (relative === "src/lib/email.ts") continue;
+        if (relative === "src/lib/mail/templates.ts") continue;
 
         const source = fs.readFileSync(file, "utf-8");
 

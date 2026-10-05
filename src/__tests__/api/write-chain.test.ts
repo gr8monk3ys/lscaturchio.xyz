@@ -6,16 +6,17 @@
  * when a layer is dropped from a route — and `contact.test.ts` used to
  * reimplement the sanitisers inside its own mock, asserting a copy of the code
  * rather than the code. This file stubs only the two OUTBOUND side effects the
- * routes reach for — the mailer (Resend, via global fetch) and the database
- * (Neon) — and lets everything between the request and those sinks run for
- * real: the in-memory rate limiter, Origin validation, Zod, the sanitisers in
- * `src/lib/sanitize.ts`, and the response envelope.
+ * routes reach for — the mailer (the in-memory outbox transport in place of
+ * Resend) and the database (Neon) — and lets everything between the request
+ * and those sinks run for real: the in-memory rate limiter, Origin validation,
+ * the spam checks, Zod, the sanitisers in `src/lib/sanitize.ts`, the mail
+ * templates and delivery module, and the response envelope.
  *
  * It therefore also pins the LAYER ORDER, which is the property `withWriteRoute`
  * exists to guarantee: rate limit -> auth -> CSRF -> Zod -> handler -> envelope.
  */
 
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 
 // ---------------------------------------------------------------------------
@@ -28,19 +29,18 @@ vi.mock('@/lib/db', () => ({
   isDatabaseConfigured: () => true,
 }));
 
-vi.mock('@/lib/email', () => ({
-  sendWelcomeEmail: vi.fn(async () => true),
-  sendOnboardingEmail: vi.fn(async () => true),
-}));
-
-// Resend is reached through global fetch; this is the mailer.
-const mailer = vi.fn();
-vi.stubGlobal('fetch', mailer);
-
 import { POST as contactPost } from '@/app/api/contact/route';
 import { POST as subscribePost } from '@/app/api/newsletter/subscribe/route';
 import { POST as dripPost } from '@/app/api/newsletter/drip/route';
 import { RATE_LIMIT_POLICIES } from '@/lib/rate-limit';
+import { installMailTransport } from '@/lib/mail/deliver';
+import { createOutbox } from '@/lib/mail/outbox';
+
+// The mailer. Every route that sends mail goes through deliverMail, so this
+// one transport catches all of it.
+const outbox = createOutbox();
+let restoreTransport: () => void;
+afterAll(() => restoreTransport());
 
 const GOOD_ORIGIN = 'http://localhost:3000';
 
@@ -102,7 +102,7 @@ beforeAll(() => {
   delete process.env.UPSTASH_REDIS_REST_TOKEN;
   delete process.env.KV_REST_API_URL;
   delete process.env.KV_REST_API_TOKEN;
-  process.env.RESEND_API_KEY = 'test_resend_key';
+  restoreTransport = installMailTransport(outbox);
   process.env.CONTACT_EMAIL = 'inbox@example.com';
   process.env.CONTACT_FROM_EMAIL = 'noreply@example.com';
   process.env.NEWSLETTER_ADMIN_API_KEY = 'test-drip-key';
@@ -110,7 +110,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mailer.mockResolvedValue({ ok: true, json: async () => ({ id: 'sent' }) });
+  outbox.clear();
   mockSql.mockResolvedValue([]);
 });
 
@@ -128,7 +128,7 @@ describe('CSRF layer (real @/lib/csrf)', () => {
 
     expect(res.status).toBe(403);
     expect((await res.json()).error).toBe('Missing origin header');
-    expect(mailer).not.toHaveBeenCalled();
+    expect(outbox.sent).toHaveLength(0);
   });
 
   it('rejects a POST from a foreign Origin', async () => {
@@ -141,7 +141,7 @@ describe('CSRF layer (real @/lib/csrf)', () => {
 
     expect(res.status).toBe(403);
     expect((await res.json()).error).toBe('Invalid origin');
-    expect(mailer).not.toHaveBeenCalled();
+    expect(outbox.sent).toHaveLength(0);
   });
 
   it('guards the database route the same way', async () => {
@@ -218,7 +218,7 @@ describe('schema layer (real Zod schemas)', () => {
       field: 'email',
       success: false,
     });
-    expect(mailer).not.toHaveBeenCalled();
+    expect(outbox.sent).toHaveLength(0);
   });
 
   it('returns 400, not a logged 500, for a body that is not JSON', async () => {
@@ -228,7 +228,7 @@ describe('schema layer (real Zod schemas)', () => {
 
     expect(res.status).toBe(400);
     expect((await res.json()).error).toBe('Request body must be valid JSON');
-    expect(mailer).not.toHaveBeenCalled();
+    expect(outbox.sent).toHaveLength(0);
   });
 
   it('returns 400 for a field that is only whitespace', async () => {
@@ -240,7 +240,7 @@ describe('schema layer (real Zod schemas)', () => {
 
     expect(res.status).toBe(400);
     expect(await res.json()).toMatchObject({ error: 'Message is required', field: 'message' });
-    expect(mailer).not.toHaveBeenCalled();
+    expect(outbox.sent).toHaveLength(0);
   });
 
   it('returns 400 with the field error for an over-long message', async () => {
@@ -284,9 +284,9 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
     );
 
     expect(res.status).toBe(200);
-    expect(mailer).toHaveBeenCalledTimes(1);
+    expect(outbox.sent).toHaveLength(1);
 
-    const payload = JSON.parse(mailer.mock.calls[0][1].body);
+    const payload = outbox.sent[0];
 
     // Header injection: no bare CR or LF survives into the subject.
     expect(payload.subject).not.toMatch(/[\r\n]/);
@@ -309,9 +309,59 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
     );
 
     expect(res.status).toBe(200);
-    const payload = JSON.parse(mailer.mock.calls[0][1].body);
+    const payload = outbox.sent[0];
     expect(payload.html).not.toContain('<img');
     expect(payload.html).toContain('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Mail — the real spam checks, templates and deliverMail; the outbox at the end
+// ---------------------------------------------------------------------------
+describe('mail delivery (real @/lib/mail)', () => {
+  it('delivers a contact message to the inbox, replying to the sender', async () => {
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', { body: validContact })
+    );
+
+    expect(res.status).toBe(200);
+    expect(outbox.sent).toEqual([
+      expect.objectContaining({
+        from: 'noreply@example.com',
+        to: 'inbox@example.com',
+        replyTo: 'jane@example.com',
+        subject: 'Project scoping — Jane Doe',
+      }),
+    ]);
+  });
+
+  it('leaves the outbox empty for a submission the spam checks drop', async () => {
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', {
+        body: { ...validContact, contact_ref: 'https://spam.example' },
+      })
+    );
+
+    // Answered exactly like a real send.
+    expect(res.status).toBe(200);
+    expect((await res.json()).success).toBe(true);
+    expect(outbox.sent).toHaveLength(0);
+  });
+
+  it('queues a welcome email for a new subscriber', async () => {
+    const res = await subscribePost(
+      makeRequest('http://localhost:3000/api/newsletter/subscribe', {
+        body: { email: 'reader@example.com' },
+      })
+    );
+
+    expect(res.status).toBe(200);
+    await vi.waitFor(() => expect(outbox.sent).toHaveLength(1));
+    expect(outbox.sent[0]).toMatchObject({
+      from: 'newsletter@lscaturchio.xyz',
+      to: 'reader@example.com',
+      subject: "Welcome to Lorenzo's Newsletter!",
+    });
   });
 });
 
@@ -344,7 +394,7 @@ describe('rate-limit layer (real @/lib/rate-limit)', () => {
       retryAfter: expect.any(Number),
     });
     // The mailer was reached exactly `limit` times, never on the blocked call.
-    expect(mailer).toHaveBeenCalledTimes(limit);
+    expect(outbox.sent).toHaveLength(limit);
   });
 
   it('does not spend the newsletter signup allowance on contact messages', async () => {

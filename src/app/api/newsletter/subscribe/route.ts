@@ -1,8 +1,10 @@
+import { after } from 'next/server';
 import { getDb } from '@/lib/db';
 import crypto from 'crypto';
 import { withWriteRoute } from '@/lib/api/write-route';
 import { newsletterSubscribeSchema } from '@/lib/validations';
-import { sendWelcomeEmail } from '@/lib/email';
+import { deliverMail } from '@/lib/mail/deliver';
+import { renderWelcomeEmail } from '@/lib/mail/templates';
 import { NEWSLETTER_TOPIC_IDS } from '@/constants/newsletter';
 
 function buildMetadataJson(
@@ -31,6 +33,25 @@ function buildMetadataJson(
  * endpoint becomes a membership oracle for any address someone cares to try.
  */
 const SUBSCRIBE_MESSAGE = 'Thanks! Check your inbox to confirm your subscription.';
+
+/**
+ * After the response, not awaited by it: the subscription stands whether or
+ * not the welcome email leaves, and the reader must not wait on Resend.
+ *
+ * `after()` rather than a bare un-awaited promise. On Vercel a function may be
+ * frozen as soon as its response is sent, so a floating promise could be cut
+ * off mid-request and the welcome email silently never leave; `after` keeps
+ * the invocation alive until the callback settles. deliverMail never throws
+ * and logs its own failures, so nothing here is swallowed.
+ */
+function sendWelcome(email: string, unsubscribeToken: string): void {
+  after(() =>
+    deliverMail(
+      { to: email, ...renderWelcomeEmail(unsubscribeToken) },
+      { component: 'newsletter/subscribe', action: 'POST' }
+    )
+  );
+}
 
 export const POST = withWriteRoute(
   {
@@ -95,8 +116,7 @@ export const POST = withWriteRoute(
         WHERE email = ${normalizedEmail}
       `;
 
-      // Send welcome back email (non-blocking)
-      sendWelcomeEmail(normalizedEmail, unsubscribeToken).catch(() => {});
+      sendWelcome(normalizedEmail, unsubscribeToken);
 
       return { message: SUBSCRIBE_MESSAGE };
     }
@@ -108,8 +128,7 @@ export const POST = withWriteRoute(
       VALUES (${normalizedEmail}, ${unsubscribeToken}, ${metadataJson}::jsonb)
     `;
 
-    // Send welcome email (non-blocking - don't fail subscription if email fails)
-    sendWelcomeEmail(normalizedEmail, unsubscribeToken).catch(() => {});
+    sendWelcome(normalizedEmail, unsubscribeToken);
 
     // 200, not 201: a distinct status code discloses that this address was new.
     return { message: SUBSCRIBE_MESSAGE };

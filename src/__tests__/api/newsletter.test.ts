@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { afterAll, beforeAll, describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 
 const mockSql = vi.fn();
@@ -8,12 +8,9 @@ vi.mock('@/lib/db', () => ({
   getDb: vi.fn(() => mockSql),
 }));
 
-vi.mock('@/lib/email', () => ({
-  sendWelcomeEmail: vi.fn().mockResolvedValue(undefined),
-}));
-
 vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
+  logInfo: vi.fn(),
 }));
 
 vi.mock('@/lib/csrf', () => ({
@@ -23,7 +20,17 @@ vi.mock('@/lib/csrf', () => ({
 vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 import { POST } from '@/app/api/newsletter/subscribe/route';
-import { sendWelcomeEmail } from '@/lib/email';
+import { logError } from '@/lib/logger';
+import { installMailTransport } from '@/lib/mail/deliver';
+import { createOutbox } from '@/lib/mail/outbox';
+
+// The mailer: an in-memory outbox in place of Resend.
+const outbox = createOutbox();
+let restoreTransport: () => void;
+beforeAll(() => {
+  restoreTransport = installMailTransport(outbox);
+});
+afterAll(() => restoreTransport());
 
 // Helper to create mock request
 function createMockRequest(body: Record<string, unknown>): NextRequest {
@@ -40,6 +47,7 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
 describe('/api/newsletter/subscribe', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    outbox.clear();
     // Default: no existing subscriber (empty rows)
     mockSql.mockResolvedValue([]);
   });
@@ -109,10 +117,8 @@ describe('/api/newsletter/subscribe', () => {
       const request = createMockRequest({ email: 'new@example.com' });
       await POST(request);
 
-      expect(sendWelcomeEmail).toHaveBeenCalledWith(
-        'new@example.com',
-        expect.any(String) // unsubscribe token
-      );
+      await vi.waitFor(() => expect(outbox.sent).toHaveLength(1));
+      expect(outbox.sent[0].to).toBe('new@example.com');
     });
   });
 
@@ -176,7 +182,7 @@ describe('/api/newsletter/subscribe', () => {
       const request = createMockRequest({ email: 'inactive@example.com' });
       await POST(request);
 
-      expect(sendWelcomeEmail).toHaveBeenCalled();
+      await vi.waitFor(() => expect(outbox.sent).toHaveLength(1));
     });
   });
 
@@ -193,19 +199,44 @@ describe('/api/newsletter/subscribe', () => {
       expect(data.success).toBe(false);
     });
 
-    it('still succeeds if welcome email fails', async () => {
+    it('still succeeds if the welcome email fails, and logs the failure', async () => {
       mockSql.mockResolvedValueOnce([]);
       mockSql.mockResolvedValueOnce([]);
-      vi.mocked(sendWelcomeEmail).mockRejectedValue(new Error('Email error'));
+      outbox.respondWith({ status: 'failed', reason: 'Resend API error' });
 
       const request = createMockRequest({ email: 'test@example.com' });
       const response = await POST(request);
       const data = await response.json();
 
-      // Should still succeed - email is non-blocking (catch in route)
+      // The subscription stands; the welcome email is not awaited.
       expect(response.status).toBe(200);
       expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.');
       expect(data.success).toBe(true);
+      // It used to be `.catch(() => {})`: a failure went nowhere.
+      await vi.waitFor(() =>
+        expect(logError).toHaveBeenCalledWith(
+          'Mail: Resend API error',
+          undefined,
+          expect.objectContaining({ component: 'newsletter/subscribe' })
+        )
+      );
+    });
+
+    it('logs a missing mail configuration instead of skipping the welcome email silently', async () => {
+      mockSql.mockResolvedValueOnce([]);
+      mockSql.mockResolvedValueOnce([]);
+      outbox.respondWith({ status: 'not-configured', missing: 'RESEND_API_KEY' });
+
+      const response = await POST(createMockRequest({ email: 'test@example.com' }));
+
+      expect(response.status).toBe(200);
+      await vi.waitFor(() =>
+        expect(logError).toHaveBeenCalledWith(
+          'Mail: RESEND_API_KEY is not configured; message not sent',
+          null,
+          expect.objectContaining({ component: 'newsletter/subscribe' })
+        )
+      );
     });
   });
 });

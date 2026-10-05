@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
 
 const mockSql = vi.fn();
@@ -14,10 +14,6 @@ vi.mock('@/lib/db', () => ({
   isDatabaseConfigured: vi.fn(() => true),
 }));
 
-vi.mock('@/lib/email', () => ({
-  sendOnboardingEmail: vi.fn(),
-}));
-
 vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
   logInfo: vi.fn(),
@@ -25,7 +21,16 @@ vi.mock('@/lib/logger', () => ({
 
 import { POST } from '@/app/api/newsletter/drip/route';
 import { validateApiKey } from '@/lib/api-auth';
-import { sendOnboardingEmail } from '@/lib/email';
+import { installMailTransport } from '@/lib/mail/deliver';
+import { createOutbox } from '@/lib/mail/outbox';
+
+// The mailer: an in-memory outbox in place of Resend.
+const outbox = createOutbox();
+let restoreTransport: () => void;
+beforeAll(() => {
+  restoreTransport = installMailTransport(outbox);
+});
+afterAll(() => restoreTransport());
 
 function createRequest(search = ''): NextRequest {
   return new NextRequest(`http://localhost:3000/api/newsletter/drip${search}`, {
@@ -41,7 +46,7 @@ describe('/api/newsletter/drip', () => {
     vi.clearAllMocks();
     mockSql.mockReset();
     vi.mocked(validateApiKey).mockReturnValue(null);
-    vi.mocked(sendOnboardingEmail).mockResolvedValue(true);
+    outbox.clear();
   });
 
   it('returns auth error when API key validation fails', async () => {
@@ -81,7 +86,7 @@ describe('/api/newsletter/drip', () => {
       skipped: 0,
       dryRun: true,
     });
-    expect(sendOnboardingEmail).not.toHaveBeenCalled();
+    expect(outbox.sent).toHaveLength(0);
     expect(mockSql).toHaveBeenCalledTimes(1);
   });
 
@@ -115,12 +120,13 @@ describe('/api/newsletter/drip', () => {
       skipped: 0,
       dryRun: false,
     });
-    expect(sendOnboardingEmail).toHaveBeenCalledWith(
-      'user@example.com',
-      'token-123',
-      1,
-      { topics: ['rag-llms'] }
-    );
+    expect(outbox.sent).toHaveLength(1);
+    expect(outbox.sent[0]).toMatchObject({
+      to: 'user@example.com',
+      subject: 'Start here: a quick path through the site',
+    });
+    expect(outbox.sent[0].html).toContain('/unsubscribe?token=token-123');
+    expect(outbox.sent[0].html).toContain('/topics/rag-llms');
     expect(mockSql).toHaveBeenCalledTimes(3);
 
     const claimPayload = JSON.parse(mockSql.mock.calls[1][1] as string);
@@ -150,7 +156,7 @@ describe('/api/newsletter/drip', () => {
       ])
       .mockResolvedValueOnce([{ email: 'user@example.com' }])
       .mockResolvedValueOnce([]);
-    vi.mocked(sendOnboardingEmail).mockResolvedValue(false);
+    outbox.respondWith({ status: 'failed', reason: 'Resend API error' });
 
     const response = await POST(createRequest());
     const body = await response.json();
