@@ -561,9 +561,10 @@ describe("modal overlays", () => {
       .filter(({ source }) => !IMPORTS_OVERLAY.test(source))
       .map(({ relative }) => relative);
 
-    // The three known surfaces, so a scan that silently matched nothing
-    // cannot pass this by finding no candidates.
-    expect(surfaces.length).toBeGreaterThanOrEqual(3);
+    // The four known surfaces (menu, drawer, palette, photo lightbox), so a
+    // scan that silently matched nothing cannot pass this by finding no
+    // candidates.
+    expect(surfaces.length).toBeGreaterThanOrEqual(4);
     expect(
       offenders,
       [

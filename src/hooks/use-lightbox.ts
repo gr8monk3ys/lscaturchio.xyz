@@ -41,13 +41,14 @@ export function useLightbox<T extends LightboxItem>(items: T[]): UseLightboxRetu
     setCurrentItem(items[nextIndex] ?? null)
   }, [items, currentIndex])
 
+  // Arrow keys page through the set. Escape is not here: the lightbox is a
+  // modal, and `useModalOverlay` owns Escape for every modal. A second
+  // listener here ignored which overlay was on top, so with ⌘K's palette open
+  // over the lightbox one Escape closed both.
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!currentItem) return
       switch (event.key) {
-        case 'Escape':
-          close()
-          return
         case 'ArrowLeft':
           goToPrevious()
           return
@@ -61,7 +62,7 @@ export function useLightbox<T extends LightboxItem>(items: T[]): UseLightboxRetu
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [close, goToNext, goToPrevious, currentItem])
+  }, [goToNext, goToPrevious, currentItem])
 
   return { currentItem, currentIndex, open, close, goToPrevious, goToNext }
 }
