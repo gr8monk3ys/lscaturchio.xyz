@@ -108,6 +108,7 @@ export class WriteRouteError extends Error {
 
 export const writeError = {
   badRequest: (message: string) => new WriteRouteError(400, message),
+  forbidden: (message: string) => new WriteRouteError(403, message),
   notFound: (message: string) => new WriteRouteError(404, message),
   conflict: (message: string) => new WriteRouteError(409, message),
   internal: (message: string) => new WriteRouteError(500, message),

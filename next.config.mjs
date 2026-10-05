@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 import createMDX from '@next/mdx';
 import { withSentryConfig } from '@sentry/nextjs';
+import { withBotId } from 'botid/next/config';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -320,8 +321,9 @@ const sentryWebpackPluginOptions = {
   },
 };
 
-// Wrap with Sentry if DSN is configured, otherwise just use MDX
-const configWithMDX = withMDX(nextConfig);
+// BotID adds the rewrites that proxy its challenge script to Vercel; see
+// src/lib/bot-id.ts. Wrap with Sentry if DSN is configured.
+const configWithPlugins = withBotId(withMDX(nextConfig));
 export default process.env.NEXT_PUBLIC_SENTRY_DSN
-  ? withSentryConfig(configWithMDX, sentryWebpackPluginOptions)
-  : configWithMDX;
+  ? withSentryConfig(configWithPlugins, sentryWebpackPluginOptions)
+  : configWithPlugins;

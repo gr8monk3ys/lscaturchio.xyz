@@ -84,6 +84,14 @@ export const contactFormSchema = z.object({
       CONTACT_FIELD_LIMITS.message,
       `Message is too long (max ${CONTACT_FIELD_LIMITS.message} characters)`
     ),
+  /**
+   * The spam signals `src/lib/contact-spam.ts` reads. Declared here only so
+   * `z.object` does not strip them before the route sees them. Neither can
+   * fail validation: a 400 naming the field would tell a bot exactly which
+   * part of its payload to fix.
+   */
+  contact_ref: z.unknown().optional(),
+  elapsedMs: z.number().optional().catch(undefined),
 });
 
 /**

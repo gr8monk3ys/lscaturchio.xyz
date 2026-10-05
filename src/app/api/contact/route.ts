@@ -3,6 +3,10 @@ import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { escapeHtml, sanitizeForHtmlEmail, sanitizeEmailSubject } from "@/lib/sanitize";
 import { logError } from "@/lib/logger";
 import { contactFormSchema } from "@/lib/validations";
+import { spamSignal } from "@/lib/contact-spam";
+import { isBotRequest } from "@/lib/bot-id";
+
+const SENT_MESSAGE = "Message sent successfully! I'll get back to you soon.";
 
 export const POST = withWriteRoute(
   {
@@ -23,6 +27,23 @@ export const POST = withWriteRoute(
   },
   async ({ data }) => {
     const { name, email, subject, message } = data;
+
+    // Answered as a success and not mailed. See contact-spam.ts for why the
+    // bot is not told. `console.info` rather than the logger: `logInfo` prints
+    // only in development and `logWarn` raises a Sentry event per bot, so this
+    // line is how the count shows up in Vercel's runtime logs.
+    const signal = spamSignal(data);
+    if (signal) {
+      console.info(`[contact] dropped submission: ${signal}`);
+      return { message: SENT_MESSAGE };
+    }
+
+    // A refusal, not a silent drop: BotID can misjudge a person, and they need
+    // to know the message did not arrive. The form adds the direct email
+    // address under any failure that names no field.
+    if (await isBotRequest({ component: "contact", action: "POST" })) {
+      throw writeError.forbidden("This message was flagged as automated and was not sent.");
+    }
 
     // Check if Resend API key is configured
     const resendApiKey = process.env.RESEND_API_KEY;
@@ -74,6 +95,6 @@ export const POST = withWriteRoute(
       throw writeError.internal("Failed to send message. Please try again later.");
     }
 
-    return { message: "Message sent successfully! I'll get back to you soon." };
+    return { message: SENT_MESSAGE };
   }
 );

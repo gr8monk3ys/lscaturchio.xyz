@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { BOTID_PATH_PREFIX } from "@/lib/botid-paths";
 import {
   DEFAULT_LOCALE,
   GOOGLE_TRANSLATE_COOKIE,
@@ -46,11 +47,15 @@ function setLocaleCookies(response: NextResponse, locale: LocaleSegment): void {
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Never touch API routes, Next internals, or static assets.
+  // Never touch API routes, Next internals, or static assets — nor BotID's
+  // challenge paths, which are rewritten to Vercel after this runs. A reader
+  // with a locale cookie would otherwise be redirected to /es/149e…, the
+  // challenge would 404, and the contact form would refuse them as a bot.
   if (
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
+    pathname.startsWith(BOTID_PATH_PREFIX) ||
     isPublicFile(pathname)
   ) {
     return NextResponse.next();

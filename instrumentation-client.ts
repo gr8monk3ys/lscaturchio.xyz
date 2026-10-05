@@ -5,6 +5,14 @@
  */
 
 import * as Sentry from "@sentry/nextjs";
+import { initBotId } from "botid/client/core";
+
+// Attaches a BotID challenge token to these requests; the route reads the
+// verdict with `isBotRequest` (src/lib/bot-id.ts). A path the server checks
+// but this list omits classifies every visitor as a bot.
+initBotId({
+  protect: [{ path: "/api/contact", method: "POST" }],
+});
 
 // Export navigation transition hook for Sentry to instrument page navigations
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
