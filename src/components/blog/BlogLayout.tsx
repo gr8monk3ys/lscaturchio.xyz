@@ -23,56 +23,35 @@ import { BlogSidebar, EssayContentsInline } from "./blog-sidebar";
 import Link from "next/link";
 import { rankThemesForTags } from "@/lib/blog-themes";
 import { getSiteUrl } from "@/lib/site-url";
-import { clampBlogDateToToday } from "@/lib/blog-data";
-import { getReadingTimeMinutes } from "@/lib/getAllBlogs";
-import type { BlogStage } from "@/lib/blog-stage";
+import type { BlogPost } from "@/lib/getAllBlogs";
 import { StageBadge } from "@/components/blog/stage-badge";
-
-interface BlogMeta {
-  title: string;
-  description: string;
-  date: string;
-  updated?: string; // Optional last updated date
-  image: string;
-  tags: string[];
-  syndication?: string[]; // Optional syndication links (Mastodon/Bluesky/etc.)
-  series?: string; // Optional series name
-  seriesOrder?: number; // Order within the series
-  stage?: BlogStage;
-}
 
 interface BlogLayoutProps {
   children: ReactNode;
-  meta: BlogMeta;
   /**
-   * The essay's own slug. Every route already writes its path literally, so
-   * the shell takes it as a prop instead of re-deriving it from
-   * `usePathname()` — which is what made this whole file client-only.
+   * The catalogue's record for this essay, not the MDX's raw `meta`. Its
+   * dates are already clamped, its reading time is the one every other
+   * surface quotes, and its cover has the default applied, so the shell
+   * derives none of them again.
    */
-  slug: string;
+  post: BlogPost;
   isRssFeed?: boolean;
   previousPathname?: string;
 }
 
-export async function BlogLayout({
+export function BlogLayout({
   children,
-  meta,
-  slug,
+  post,
   isRssFeed = false,
   previousPathname,
 }: BlogLayoutProps) {
-  const safeDate = clampBlogDateToToday(meta.date);
-  const safeUpdated = meta.updated ? clampBlogDateToToday(meta.updated) : undefined;
-  const relatedHubs = rankThemesForTags(meta.tags);
+  const { slug } = post;
+  const relatedHubs = rankThemesForTags(post.tags);
   const pathname = `/blog/${slug}`;
 
   if (isRssFeed) {
     return children;
   }
-
-  // Derived, never passed. Only two routes ever passed the old prop, so the
-  // other eighty-one rendered its default of 5.
-  const readingTime = await getReadingTimeMinutes(slug);
 
   // Canonical, never window.location: branching on `typeof window` here
   // desynced server and client rendering (hydration mismatch on every
@@ -82,15 +61,15 @@ export async function BlogLayout({
   return (
     <>
       <ReadingProgress />
-      <ReadingProgressTracker slug={slug} title={meta.title} tags={meta.tags} />
+      <ReadingProgressTracker slug={slug} title={post.title} tags={post.tags} />
       <Container className="mt-8 lg:mt-16">
         <BlogJsonLd
-          title={meta.title}
-          description={meta.description}
-          date={safeDate}
-          updated={safeUpdated}
-          image={meta.image}
-          tags={meta.tags}
+          title={post.title}
+          description={post.description}
+          date={post.date}
+          updated={post.updated}
+          image={post.image}
+          tags={post.tags}
           url={fullUrl}
         />
       {/* Contents rail on the left, prose on the right. The rail is also first
@@ -118,7 +97,7 @@ export async function BlogLayout({
                   /blog; this breadcrumb said "Blog", which is the one-
                   destination-two-names bug the nav-vocabulary rule exists for,
                   in a nav that rule cannot see. */}
-              <BreadcrumbNav customSegments={{ blog: "Writing", [slug]: meta.title }} />
+              <BreadcrumbNav customSegments={{ blog: "Writing", [slug]: post.title }} />
 
           {previousPathname && <BackButton />}
           <article>
@@ -133,16 +112,14 @@ export async function BlogLayout({
                   group separators did not. A leading separator cannot orphan,
                   because it has something glued to its right. */}
               <div className="label-mono flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                <time dateTime={safeDate}>{formatDate(safeDate)}</time>
-                {readingTime !== undefined && (
-                  <span className="inline-flex items-center gap-x-3">
-                    <span aria-hidden className="text-foreground/25">·</span>
-                    <span>{readingTime} min</span>
-                  </span>
-                )}
-                {meta.tags.length > 0 && (
+                <time dateTime={post.date}>{formatDate(post.date)}</time>
+                <span className="inline-flex items-center gap-x-3">
+                  <span aria-hidden className="text-foreground/25">·</span>
+                  <span>{post.readingTimeMinutes} min</span>
+                </span>
+                {post.tags.length > 0 && (
                   <>
-                    {meta.tags.map((tag) => (
+                    {post.tags.map((tag) => (
                       <span key={tag} className="inline-flex items-center gap-x-3">
                         <span aria-hidden className="text-foreground/25">·</span>
                         <Link
@@ -155,25 +132,25 @@ export async function BlogLayout({
                     ))}
                   </>
                 )}
-                {meta.stage && (
+                {post.stage && (
                   <span className="inline-flex items-center gap-x-3">
                     <span aria-hidden className="text-foreground/25">·</span>
-                    <StageBadge stage={meta.stage} />
+                    <StageBadge stage={post.stage} />
                   </span>
                 )}
                 <ViewCounter slug={slug} />
               </div>
 
               <Heading className="mt-5 text-balance">
-                {meta.title}
+                {post.title}
               </Heading>
 
               <p className="mt-5 max-w-2xl text-xl leading-relaxed text-muted-foreground">
-                {meta.description}
+                {post.description}
               </p>
 
-              {safeUpdated && (
-                <p className="label-mono mt-3">Updated {formatDate(safeUpdated)}</p>
+              {post.updated && (
+                <p className="label-mono mt-3">Updated {formatDate(post.updated)}</p>
               )}
 
               {/* Byline as a wall label: the reader who arrived mid-essay
@@ -220,8 +197,8 @@ export async function BlogLayout({
 
               <div className="relative mt-8 aspect-video overflow-hidden border border-border bg-muted">
                 <FallbackImage
-                  src={meta.image}
-                  alt={meta.title}
+                  src={post.image}
+                  alt={post.title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 672px"
                   className="object-cover"
@@ -244,20 +221,20 @@ export async function BlogLayout({
             <footer className="mt-12 border-t border-border pt-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <SocialShare
-                  title={meta.title}
-                  description={meta.description}
+                  title={post.title}
+                  description={post.description}
                   url={fullUrl}
                 />
-                {meta.syndication && meta.syndication.length > 0 && (
-                  <SyndicationLinks links={meta.syndication} />
+                {post.syndication && post.syndication.length > 0 && (
+                  <SyndicationLinks links={post.syndication} />
                 )}
               </div>
 
-              {meta.series && meta.seriesOrder && (
+              {post.series && post.seriesOrder && (
                 <SeriesNavigation
-                  seriesName={meta.series}
+                  seriesName={post.series}
                   currentSlug={slug}
-                  currentOrder={meta.seriesOrder}
+                  currentOrder={post.seriesOrder}
                 />
               )}
             </footer>
@@ -272,7 +249,7 @@ export async function BlogLayout({
                 offering them something, and because a personal essay should not
                 close on a GitHub-login iframe. */}
             <RelatedPosts
-              currentTitle={meta.title}
+              currentTitle={post.title}
               currentUrl={pathname}
             />
 

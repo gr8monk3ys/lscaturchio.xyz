@@ -30,7 +30,7 @@ function post(slug: string, readingTimeMinutes: number, tags: string[]): BlogPos
     date: '2024-01-01',
     image: '/images/blog/default.webp',
     tags,
-    content: '',
+    body: '',
     published: true,
     readingTimeMinutes,
     words: readingTimeMinutes * 200,

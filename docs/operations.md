@@ -156,6 +156,9 @@ Behaviour and failure modes:
   committed. If a bad commit ever lands anyway, the failed Vercel build
   leaves the previous deploy live — the failure mode is "not published",
   never "site down".
+- A post is one file: the portal commits `src/app/blog/<slug>/content.mdx`
+  (plus the cover webp, when one is uploaded). There is no `page.tsx` to
+  generate; `src/app/blog/[slug]` renders any essay the catalogue lists.
 - Photo uploads are converted server-side to webp (q85, max 1920px) and the
   gallery entry is written to `src/data/photos.json` in the same commit.
 - The `/now` and `/links` editors write `src/data/now.json` and

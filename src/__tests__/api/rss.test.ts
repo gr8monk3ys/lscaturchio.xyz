@@ -23,7 +23,7 @@ function blog(overrides: Partial<Blog>): Blog {
     description: 'A post description.',
     date: '2025-01-15',
     updated: '2025-01-20',
-    content: '<p>Body</p>',
+    body: 'Body',
     tags: ['ai', 'engineering'],
     image: '/images/blog/a-post.webp',
     published: true,
@@ -113,31 +113,19 @@ describe('/api/rss', () => {
     expect(body).toContain('Building RAG');
   });
 
-  it('publishes the essay as rendered HTML, not its MDX source', async () => {
-    // `content` is the raw content.mdx file. Feed readers render
-    // content:encoded as HTML, so the meta export and markdown syntax used to
-    // reach subscribers verbatim.
+  it('publishes the essay as rendered HTML, not markdown', async () => {
+    // `body` is the essay's plain markdown (the meta export is already gone;
+    // essay-sources tests pin that). Feed readers render content:encoded as
+    // HTML, so markdown syntax used to reach subscribers verbatim.
     vi.mocked(getAllBlogs).mockResolvedValue([
       blog({
-        content: [
-          'export const meta = {',
-          "  title: 'A Post',",
-          '};',
-          '',
-          '<AssumedAudience>',
-          '## A heading',
-          '',
-          'Some *emphasis* and [a link](/blog/other).',
-          '</AssumedAudience>',
-        ].join('\n'),
+        body: ['## A heading', '', 'Some *emphasis* and [a link](/blog/other).'].join('\n'),
       }),
     ]);
 
     const body = await (await GET(new NextRequest('http://localhost/api/rss', { method: 'GET' }))).text();
 
-    expect(body).not.toContain('export const meta');
     expect(body).not.toContain('## A heading');
-    expect(body).not.toContain('AssumedAudience');
     expect(body).toContain('<h2>A heading</h2>');
     expect(body).toContain('<em>emphasis</em>');
     // Relative links would resolve against the reader app, not the site.

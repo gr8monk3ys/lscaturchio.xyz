@@ -1,6 +1,9 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignoreExportsUsedInFile": true,
+  "entry": [
+    "src/app/blog/*/content.mdx"
+  ],
   "ignoreDependencies": [],
   "ignoreBinaries": [
     "uv",

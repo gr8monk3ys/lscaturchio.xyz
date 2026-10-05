@@ -1,13 +1,10 @@
-import fs from 'fs/promises';
-import path from 'path';
-import { extractBlogMeta } from '@/lib/blog-meta';
+import { getEssaySource } from '@/lib/essay-sources';
 import type { Grounding } from '@/lib/retrieval';
 
 // Strictly-grounded: the assistant is a guide to Lorenzo's writing, not a
 // general chatbot. It must not answer from the model's own knowledge.
 const GROUNDING_DIRECTIVE = `Grounding rules (these override any urge to be generally helpful): answer ONLY from the context below, which is my own writing. Do not use outside or general knowledge to fill gaps or speculate. If the context does not actually cover the question, say plainly and briefly — in first person — that I haven't written about that, and point the reader to any closest related notes listed. A short honest "I haven't written about that" beats a confident guess.`;
 
-const BLOG_DIR = path.join(process.cwd(), 'src', 'app', 'blog');
 const MAX_CONTEXT_CHARS = 7000;
 const MAX_HEADINGS = 14;
 
@@ -17,21 +14,6 @@ export type BlogContext = {
   headings: string[];
   text: string;
 };
-
-async function fileExists(filePath: string): Promise<boolean> {
-  try {
-    await fs.access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function stripMdxImportsAndMeta(source: string): string {
-  let s = source.replace(/^import .+?;?\s*$/gm, '');
-  s = s.replace(/export const meta\s*=\s*\{[\s\S]*?\}\s*;?/m, '');
-  return s.trim();
-}
 
 function extractMdxHeadings(source: string): string[] {
   const headings: string[] = [];
@@ -45,34 +27,25 @@ function extractMdxHeadings(source: string): string[] {
   return headings;
 }
 
+/**
+ * The essay a reader is on, as chat context: its title, description, section
+ * headings, and its body (`EssaySource.body`) capped at MAX_CONTEXT_CHARS.
+ * Null when there is no such essay.
+ */
 export async function loadBlogContext(slug: string): Promise<BlogContext | null> {
-  const candidates = [
-    path.join(BLOG_DIR, slug, 'content.mdx'),
-    path.join(BLOG_DIR, `${slug}.mdx`),
-  ];
+  const essay = await getEssaySource(slug);
+  if (!essay) return null;
 
-  let mdx: string | null = null;
-  for (const candidate of candidates) {
-    if (await fileExists(candidate)) {
-      mdx = await fs.readFile(candidate, 'utf-8');
-      break;
-    }
-  }
-
-  if (!mdx) return null;
-
-  const meta = extractBlogMeta(mdx);
-  const cleaned = stripMdxImportsAndMeta(mdx);
-  const headings = extractMdxHeadings(cleaned);
+  const { meta, body } = essay;
   const text =
-    cleaned.length > MAX_CONTEXT_CHARS
-      ? `${cleaned.slice(0, MAX_CONTEXT_CHARS)}\n\n[truncated]`
-      : cleaned;
+    body.length > MAX_CONTEXT_CHARS
+      ? `${body.slice(0, MAX_CONTEXT_CHARS)}\n\n[truncated]`
+      : body;
 
   return {
     title: meta.title,
     description: meta.description,
-    headings,
+    headings: extractMdxHeadings(body),
     text,
   };
 }

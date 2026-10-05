@@ -61,10 +61,15 @@ const ROUTES = [
  * lands, which is the only way a 129-route site stays checkable by a list
  * nobody maintains.
  *
+ * Essays are the one dynamic route expanded here: `blog/[slug]` becomes every
+ * `src/app/blog/<slug>/content.mdx`, the files its generateStaticParams lists.
+ * They were 84 `page.tsx` files until one route replaced them, and the site's
+ * most-read pages should not have left this list when that happened.
+ *
  * Excluded, with reasons — an exclusion here is a route that cannot answer a
  * plain GET, not a route that is inconvenient:
- *   - `[slug]`/`[tag]`: no concrete path to visit. `ROUTES` covers one of each
- *     by hand (`/blog/building-rag-systems`).
+ *   - other `[slug]`/`[tag]` routes: no concrete path to visit. `ROUTES`
+ *     covers them by hand.
  *   - `admin/**`: session-gated, and `redirect('/admin/login')` is the correct
  *     response. `e2e/admin.spec.ts` owns that gate.
  *   - `offline`: the service worker's fallback document. It is served by the
@@ -72,6 +77,15 @@ const ROUTES = [
  */
 function staticRoutes(): string[] {
   const appDir = path.join(process.cwd(), 'src/app')
+  const blogDir = path.join(appDir, 'blog')
+
+  function essayRoutes(): string[] {
+    return fs
+      .readdirSync(blogDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .filter((entry) => fs.existsSync(path.join(blogDir, entry.name, 'content.mdx')))
+      .map((entry) => `/blog/${entry.name}`)
+  }
 
   function walk(dir: string): string[] {
     return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -83,6 +97,7 @@ function staticRoutes(): string[] {
         .split(path.sep)
         .filter((segment) => segment !== '' && !segment.startsWith('('))
 
+      if (segments.join('/') === 'blog/[slug]') return essayRoutes()
       if (segments.some((segment) => segment.startsWith('['))) return []
       if (segments[0] === 'admin' || segments[0] === 'offline') return []
 

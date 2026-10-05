@@ -29,7 +29,7 @@ function post(slug: string, date = '2025-01-01'): BlogPost {
     date,
     tags: ['ai'],
     image: `/images/${slug}.webp`,
-    content: '',
+    body: '',
     published: true,
     readingTimeMinutes: 1,
     words: 200,

@@ -21,11 +21,27 @@ This repo powers the public `lscaturchio.xyz` site. It is part marketing site, p
 - Static pages live in `src/app/<route>/page.tsx`
 - API handlers live in `src/app/api/**/route.ts`
 - Site metadata routes such as sitemap and robots live directly under `src/app`
-- Blog posts live in `src/app/blog/<slug>/`
+- Blog posts live in `src/app/blog/<slug>/content.mdx`, rendered by one route,
+  `src/app/blog/[slug]/page.tsx`
 
 ## Blog And Content Model
 
-Blog routes are backed by per-slug folders under `src/app/blog/<slug>/`. Shared metadata and archive logic are aggregated by helpers in `src/lib/getAllBlogs.ts` and `src/lib/blog-data.ts`.
+An essay is one file, `src/app/blog/<slug>/content.mdx`; there is no per-essay
+`page.tsx`. The dynamic route `src/app/blog/[slug]/page.tsx` prerenders every
+slug the catalogue lists (`generateStaticParams`, `dynamicParams = false`, so
+anything else is a 404), takes its metadata, clamped dates, reading time and
+default cover from the catalogue's `BlogPost` (`getBlogPost`), and imports the
+MDX only for its body (`src/lib/essay-content.ts`). Scheduled essays are
+prerendered and reachable at their URL but left out of every listing, the feed
+and the sitemap. Adding an essay is adding its folder and `content.mdx`.
+
+Shared metadata and archive logic are aggregated by helpers in `src/lib/getAllBlogs.ts` and `src/lib/blog-data.ts`.
+
+Anything that needs an essay's text (reading time, the RSS feed, the chat
+corpus and chat context, embeddings, TTS, webmentions) reads `EssaySource.body`
+from `src/lib/essay-sources.ts`: the MDX with its meta export, imports and
+tag-only lines removed by one rule. Do not strip MDX again in a new consumer;
+the meta block is wherever `parseMetaExport` in `src/lib/blog-meta.ts` says it is.
 
 Related content inputs also live under `public/my-data/`, including:
 

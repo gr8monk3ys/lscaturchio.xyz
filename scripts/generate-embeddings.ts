@@ -15,10 +15,10 @@ import {
   sourceContentHash,
   shouldSkipSource,
 } from '../src/lib/embedding-ingest';
-import { extractBlogMeta } from '../src/lib/blog-meta';
+import { getEssaySource } from '../src/lib/essay-sources';
+import { slugFromCorpusFileName } from '../src/lib/retrieval-corpus';
 
 const DATA_DIR = path.join(process.cwd(), 'public', 'my-data');
-const BLOG_DIR = path.join(process.cwd(), 'src', 'app', 'blog');
 
 function slugToTitle(slug: string): string {
   return slug
@@ -27,17 +27,19 @@ function slugToTitle(slug: string): string {
     .join(' ');
 }
 
-function getSourceMetadata(fileName: string): Record<string, unknown> {
+async function getSourceMetadata(fileName: string): Promise<Record<string, unknown>> {
   const baseMeta: Record<string, unknown> = { source: fileName };
 
-  if (!fileName.startsWith('blog-') || !fileName.endsWith('.md')) {
+  const slug = slugFromCorpusFileName(fileName);
+  if (slug === null) {
     return baseMeta;
   }
 
-  const slug = fileName.replace(/^blog-/, '').replace(/\.md$/, '');
-  const contentPath = path.join(BLOG_DIR, slug, 'content.mdx');
+  // Either essay shape; a flat `<slug>.mdx` used to fall through to a title
+  // guessed from the slug.
+  const essay = await getEssaySource(slug);
 
-  if (!fs.existsSync(contentPath)) {
+  if (!essay) {
     return {
       ...baseMeta,
       slug,
@@ -46,8 +48,7 @@ function getSourceMetadata(fileName: string): Record<string, unknown> {
     };
   }
 
-  const mdxContent = fs.readFileSync(contentPath, 'utf-8');
-  const meta = extractBlogMeta(mdxContent);
+  const { meta } = essay;
 
   return {
     ...baseMeta,
@@ -64,7 +65,7 @@ function getSourceMetadata(fileName: string): Record<string, unknown> {
 async function processFile(filePath: string, appendMode: boolean) {
   const content = fs.readFileSync(filePath, 'utf-8');
   const fileName = path.basename(filePath);
-  const sourceMetadata = getSourceMetadata(fileName);
+  const sourceMetadata = await getSourceMetadata(fileName);
   const fileHash = sourceContentHash(content);
 
   // Split content into chunks
@@ -83,7 +84,7 @@ async function processFile(filePath: string, appendMode: boolean) {
     }
   }
 
-  const type = fileName.startsWith('blog-') ? 'blog' : 'page';
+  const type = slugFromCorpusFileName(fileName) === null ? 'page' : 'blog';
   const title = typeof sourceMetadata.title === 'string' ? sourceMetadata.title : '';
   const url = typeof sourceMetadata.url === 'string' ? sourceMetadata.url : '';
 

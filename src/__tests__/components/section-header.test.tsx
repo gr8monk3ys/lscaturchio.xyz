@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import Link from 'next/link';
 import { SectionHeader } from '@/components/ui/Section';
 
 describe('SectionHeader', () => {
@@ -21,7 +22,7 @@ describe('SectionHeader', () => {
 
   it('renders an action element when provided', () => {
     render(
-      <SectionHeader title="Writing" action={<a href="/blog">View all</a>} />
+      <SectionHeader title="Writing" action={<Link href="/blog">View all</Link>} />
     );
     expect(screen.getByRole('link', { name: 'View all' })).toHaveAttribute('href', '/blog');
   });

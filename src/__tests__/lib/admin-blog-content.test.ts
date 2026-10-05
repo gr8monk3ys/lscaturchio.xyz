@@ -5,7 +5,6 @@ import {
   parseMeta,
   extractBody,
   buildContentMdx,
-  buildPageTsx,
   validateMdx,
   type PostMeta,
 } from "@/lib/admin/blog-content";
@@ -68,18 +67,30 @@ describe("meta round-trip", () => {
     expect(parseMeta(source)?.seriesOrder).toBe(8);
   });
 
+  it("keeps a hand-written `};` with the meta, not the body", () => {
+    // Sixteen essays close their meta with `};`. The old exact-shape regex
+    // ended the block at `}`, so the editor's body opened with a `;` that a
+    // save would have published as a paragraph.
+    const source = `export const meta = {
+  title: "T",
+  description: "D",
+  date: "2026-01-01",
+  tags: [],
+};
+
+## Body
+`;
+    expect(parseMeta(source)?.title).toBe("T");
+    expect(extractBody(source)).toBe("## Body");
+  });
+
+  it("refuses a post with anything above its meta block, which a save would drop", () => {
+    const source = `import { X } from "./x";\n\n${buildContentMdx(meta, "Body.")}`;
+    expect(parseMeta(source)).toBeNull();
+  });
+
   it("returns null for a meta block it cannot parse", () => {
     expect(parseMeta("export const meta = {\n  title: someVariable,\n}\n")).toBeNull();
-  });
-});
-
-describe("buildPageTsx", () => {
-  it("embeds the slug in the blog path", () => {
-    expect(buildPageTsx("my-post")).toContain('"/blog/my-post"');
-  });
-
-  it("hands the slug to BlogLayout so the shell never re-derives it", () => {
-    expect(buildPageTsx("my-post")).toContain('<BlogLayout meta={meta} slug="my-post">');
   });
 });
 

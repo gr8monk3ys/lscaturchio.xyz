@@ -43,7 +43,7 @@ const handleGet = async () => {
     }
 
     // Build enhanced content with series info and metadata
-    const html = essayToFeedHtml(post.content, siteURL);
+    const html = essayToFeedHtml(post.body, siteURL);
     let enhancedContent = html;
     if (post.series && post.seriesOrder) {
       enhancedContent = `<p><strong>📚 This is Part ${post.seriesOrder} of the "${post.series}" series</strong></p>\n\n${html}`;
