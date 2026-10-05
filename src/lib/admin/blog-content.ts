@@ -1,5 +1,5 @@
 import { compile } from "@mdx-js/mdx";
-import { extractBlogMeta, type BlogMeta } from "@/lib/blog-meta";
+import { parseMetaExport, type BlogMeta } from "@/lib/blog-meta";
 
 /** BlogMeta, minus the image requirement — portal posts may ship without one. */
 export type PostMeta = Omit<BlogMeta, "image"> & { image?: string };
@@ -28,29 +28,33 @@ export function serializeMeta(meta: PostMeta): string {
   return lines.join("\n");
 }
 
-// The portal always emits this exact shape; body extraction depends on it.
-const META_BLOCK_RE = /export const meta = \{\n([\s\S]*?)\n\}/;
-
 /**
- * Parse a post's meta for editing. Values are read with the site's canonical
- * AST parser (extractBlogMeta, the same one getAllBlogs uses), but form-based
- * editing additionally requires the standard block shape so extractBody can
- * split meta from body reliably. Anything else returns null and the caller
- * treats the file as not portal-editable.
+ * Parse a post's meta for editing, with the same parse that tells every other
+ * reader where the meta block is (`parseMetaExport`). A save writes the meta
+ * block and then `extractBody`'s text, so a post is only editable when the
+ * block is the first thing in the file: anything above it would be dropped.
+ * Anything else returns null and the caller treats the file as not
+ * portal-editable.
  */
 export function parseMeta(source: string): PostMeta | null {
-  if (!META_BLOCK_RE.test(source)) return null;
-  const meta = extractBlogMeta(source);
+  const { meta, span } = parseMetaExport(source);
+  if (!span || source.slice(0, span.start).trim() !== "") return null;
   if (!meta.title || !meta.description || !meta.date) return null;
   return { ...meta, tags: meta.tags ?? [] } as PostMeta;
 }
 
+/**
+ * Everything after the meta block, for the editor: the MDX as written, not
+ * the derived plain body, because a save writes it back. The block ends where
+ * the compiler says, so a hand-written `};` stays with the meta instead of
+ * opening the body.
+ */
 export function extractBody(source: string): string {
-  const match = source.match(META_BLOCK_RE);
-  if (!match) return source;
+  const { span } = parseMetaExport(source);
+  if (!span) return source;
   return source
-    .slice((match.index ?? 0) + match[0].length)
-    .replace(/^\n+/, "")
+    .slice(span.end)
+    .replace(/^[ \t]*\n+/, "")
     .replace(/\n+$/, "");
 }
 

@@ -25,7 +25,22 @@ function getPropertyNameText(name: ts.PropertyName): string | null {
   return null;
 }
 
-function getMetaObject(content: string): ts.ObjectLiteralExpression | null {
+/**
+ * Where `export const meta = { ... }` sits in a source, as character offsets:
+ * `start` is the `export` keyword, `end` is just past the closing `}`, or past
+ * the `;` after it when there is one.
+ */
+export interface MetaExportSpan {
+  start: number;
+  end: number;
+}
+
+interface MetaExport {
+  object: ts.ObjectLiteralExpression;
+  span: MetaExportSpan;
+}
+
+function findMetaExport(content: string): MetaExport | null {
   const sourceFile = ts.createSourceFile(
     "content.mdx.tsx",
     content,
@@ -52,7 +67,10 @@ function getMetaObject(content: string): ts.ObjectLiteralExpression | null {
       }
 
       if (declaration.initializer && ts.isObjectLiteralExpression(declaration.initializer)) {
-        return declaration.initializer;
+        return {
+          object: declaration.initializer,
+          span: { start: statement.getStart(sourceFile), end: statement.end },
+        };
       }
     }
   }
@@ -112,12 +130,32 @@ function readStringArray(expr: ts.Expression | undefined): string[] | undefined 
   return values;
 }
 
-export function extractBlogMeta(content: string): PartialBlogMeta {
-  const metaObject = getMetaObject(content);
-  if (!metaObject) {
-    return {};
-  }
+export interface ParsedMetaExport {
+  /** Whatever fields parsed; empty when there is no meta export. */
+  meta: PartialBlogMeta;
+  /** Where the export sits, or null when there is none to find. */
+  span: MetaExportSpan | null;
+}
 
+/**
+ * The one parse of an essay's `export const meta`: its values, and where the
+ * block is. Everything that skips, strips or rewrites "the meta block" asks
+ * this, so nothing disagrees about where it ends. A nested object, a `}` inside
+ * a string and a trailing `;` are the compiler's problem, not a regex's.
+ */
+export function parseMetaExport(content: string): ParsedMetaExport {
+  const found = findMetaExport(content);
+  if (!found) {
+    return { meta: {}, span: null };
+  }
+  return { meta: readMeta(found.object), span: found.span };
+}
+
+export function extractBlogMeta(content: string): PartialBlogMeta {
+  return parseMetaExport(content).meta;
+}
+
+function readMeta(metaObject: ts.ObjectLiteralExpression): PartialBlogMeta {
   return {
     title: readStringValue(getMetaPropertyExpression(metaObject, "title")),
     description: readStringValue(getMetaPropertyExpression(metaObject, "description")),
