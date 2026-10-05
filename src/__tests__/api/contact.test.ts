@@ -18,14 +18,8 @@ vi.mock('@/lib/csrf', () => ({
   validateCsrf: vi.fn(),
 }));
 
-vi.mock('@/lib/bot-id', () => ({
-  isBotRequest: vi.fn(),
-}));
-
 import { POST } from '@/app/api/contact/route';
-import { logNotice } from '@/lib/logger';
 import { validateCsrf } from '@/lib/csrf';
-import { isBotRequest } from '@/lib/bot-id';
 import { installMailTransport } from '@/lib/mail/deliver';
 import { createOutbox } from '@/lib/mail/outbox';
 
@@ -66,8 +60,6 @@ describe('/api/contact', () => {
     outbox.clear();
     // Default: CSRF passes
     vi.mocked(validateCsrf).mockReturnValue(null);
-    // Default: BotID says human
-    vi.mocked(isBotRequest).mockResolvedValue(false);
     vi.stubEnv('CONTACT_EMAIL', 'inbox@example.com');
     vi.stubEnv('CONTACT_FROM_EMAIL', 'noreply@example.com');
   });
@@ -271,6 +263,15 @@ describe('/api/contact', () => {
       expect(outbox.sent[0].html).toContain('<br>'); // newlines converted to <br>
     });
 
+    it('mails only the four fields a person wrote, not the guard fields', async () => {
+      await POST(createMockRequest({ ...validBody, elapsedMs: 987_654 }));
+
+      const mailed = JSON.stringify(outbox.sent[0]);
+      expect(mailed).not.toContain('987654');
+      expect(mailed).not.toContain('contact_ref');
+      expect(mailed).not.toContain('elapsedMs');
+    });
+
     it('sanitizes subject to prevent header injection', async () => {
       await POST(createMockRequest({ ...validBody, name: 'John\r\nBcc: attacker@evil.com' }));
 
@@ -413,72 +414,6 @@ describe('/api/contact', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-    });
-  });
-
-
-  describe('spam signals', () => {
-    // Each of these answers exactly like a real send, so a bot iterating on
-    // its payload cannot tell which part gave it away.
-    it.each([
-      ['a filled honeypot', { contact_ref: 'https://spam.example' }, 'honeypot'],
-      ['a fill time under three seconds', { elapsedMs: 800 }, 'too-fast'],
-    ])('drops %s without mailing it, and reports success', async (_, overrides, signal) => {
-      const response = await POST(createMockRequest({ ...validBody, ...overrides }));
-      const data = await response.json();
-
-      expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
-      expect(data.data.message).toContain('successfully');
-      expect(outbox.sent).toHaveLength(0);
-      expect(isBotRequest).not.toHaveBeenCalled();
-      expect(logNotice).toHaveBeenCalledWith(`[contact] dropped submission: ${signal}`);
-    });
-
-    // A tab opened before the deploy runs the old bundle, which sent neither
-    // field. Dropping it would lose a real message while saying it arrived;
-    // it goes on to BotID, which refuses a bare script visibly.
-    it.each([
-      ['no fill time', { contact_ref: undefined, elapsedMs: undefined }],
-      ['a non-numeric fill time', { elapsedMs: 'soon' }],
-    ])('mails a submission with %s, after asking BotID', async (_, overrides) => {
-      const response = await POST(createMockRequest({ ...validBody, ...overrides }));
-
-      expect(response.status).toBe(200);
-      expect(isBotRequest).toHaveBeenCalledTimes(1);
-      expect(outbox.sent).toHaveLength(1);
-      expect(logNotice).not.toHaveBeenCalled();
-    });
-
-    it('mails only the four fields a person wrote, not the spam signals', async () => {
-      await POST(createMockRequest({ ...validBody, elapsedMs: 987_654 }));
-
-      const mailed = JSON.stringify(outbox.sent[0]);
-      expect(mailed).not.toContain('987654');
-      expect(mailed).not.toContain('contact_ref');
-      expect(mailed).not.toContain('elapsedMs');
-    });
-  });
-
-  describe('BotID', () => {
-    // A refusal the reader can see, unlike the silent drops above: BotID can
-    // misjudge a person, and they need to know to use email instead.
-    it('refuses with 403 and does not mail when BotID says bot', async () => {
-      vi.mocked(isBotRequest).mockResolvedValue(true);
-
-      const response = await POST(createMockRequest(validBody));
-      const data = await response.json();
-
-      expect(response.status).toBe(403);
-      expect(data.success).toBe(false);
-      expect(data.error).toContain('flagged as automated');
-      expect(outbox.sent).toHaveLength(0);
-    });
-
-    it('asks BotID only after the request has passed validation', async () => {
-      await POST(createMockRequest({ ...validBody, email: 'not-an-email' }));
-
-      expect(isBotRequest).not.toHaveBeenCalled();
     });
   });
 

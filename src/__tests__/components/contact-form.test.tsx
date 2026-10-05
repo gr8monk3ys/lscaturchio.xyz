@@ -135,9 +135,10 @@ describe("ContactForm", () => {
   });
 
   /**
-   * The spam signals src/lib/contact-spam.ts judges. A bot driving a browser
-   * writes into the DOM, so the honeypot is read from the node, not state; the
-   * clock is the time since the form mounted, on the monotonic clock.
+   * The signals the human form guard (src/lib/form-guard) judges. A bot
+   * driving a browser writes into the DOM, so the honeypot is read from the
+   * node, not state; the clock is the time since the form mounted, or since
+   * the last success, on the monotonic clock.
    */
   it("sends what a bot typed into the honeypot, and how long the form was open", async () => {
     let now = 1_000;
@@ -147,7 +148,7 @@ describe("ContactForm", () => {
       const { container } = render(<ContactForm />);
 
       fillForm();
-      const honeypot = container.querySelector<HTMLInputElement>("#contact_ref");
+      const honeypot = container.querySelector<HTMLInputElement>('input[name="contact_ref"]');
       expect(honeypot).not.toBeNull();
       (honeypot as HTMLInputElement).value = "https://spam.example";
       now = 13_000;
@@ -157,6 +158,18 @@ describe("ContactForm", () => {
       const body = submitMock.mock.calls[0][1] as Record<string, unknown>;
       expect(body.contact_ref).toBe("https://spam.example");
       expect(body.elapsedMs).toBe(12_000);
+
+      // A second message is timed from the first one's success, not from
+      // mount, and the honeypot starts empty again.
+      await waitFor(() => expect(screen.getByText(/message sent/i)).toBeInTheDocument());
+      expect(honeypot).toHaveValue("");
+      submitMock.mockResolvedValueOnce(SENT);
+      fillForm();
+      now = 20_000;
+      submitForm();
+
+      await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(2));
+      expect((submitMock.mock.calls[1][1] as Record<string, unknown>).elapsedMs).toBe(7_000);
     } finally {
       clock.mockRestore();
     }
@@ -183,7 +196,7 @@ describe("ContactForm", () => {
 
   it("keeps the honeypot away from people: hidden, untabbable, never autofilled", () => {
     const { container } = render(<ContactForm />);
-    const honeypot = container.querySelector<HTMLInputElement>("#contact_ref");
+    const honeypot = container.querySelector<HTMLInputElement>('input[name="contact_ref"]');
 
     expect(honeypot).toHaveAttribute("tabindex", "-1");
     expect(honeypot).toHaveAttribute("autocomplete", "off");

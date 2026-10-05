@@ -83,6 +83,7 @@ export const POST = withWriteRoute(
     },
     csrf: { kind: 'required' },
     body: { kind: 'json', schema: searchRequestSchema },
+    guard: { kind: 'none', reason: 'A read with a long query body; nothing is stored or sent.' },
     envelope: { kind: 'standard' },
     errors: {
       log: 'Search: Unexpected error',

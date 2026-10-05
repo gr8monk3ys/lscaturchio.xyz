@@ -6,13 +6,13 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { initBotId } from "botid/client/core";
+import { BOTID_PROTECT } from "@/lib/form-guard/shared";
 
-// Attaches a BotID challenge token to these requests; the route reads the
-// verdict with `isBotRequest` (src/lib/bot-id.ts). A path the server checks
-// but this list omits classifies every visitor as a bot.
-initBotId({
-  protect: [{ path: "/api/contact", method: "POST" }],
-});
+// Attaches a BotID challenge token to requests on every route that declares
+// the human form guard; the guard reads the verdict (src/lib/form-guard). A
+// path the server checks but this list omits classifies every visitor as a
+// bot, which is why the list is imported rather than written here.
+initBotId({ protect: BOTID_PROTECT });
 
 // Export navigation transition hook for Sentry to instrument page navigations
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

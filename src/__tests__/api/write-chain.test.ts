@@ -9,11 +9,14 @@
  * routes reach for — the mailer (the in-memory outbox transport in place of
  * Resend) and the database (Neon) — and lets everything between the request
  * and those sinks run for real: the in-memory rate limiter, Origin validation,
- * the spam checks, Zod, the sanitisers in `src/lib/sanitize.ts`, the mail
- * templates and delivery module, and the response envelope.
+ * Zod, the human form guard, the sanitisers in `src/lib/sanitize.ts`, the mail
+ * templates and delivery module, and the response envelope. The guard's BotID
+ * classifier is the off-Vercel one that lets everyone through, except where a
+ * test installs one that says "bot".
  *
  * It therefore also pins the LAYER ORDER, which is the property `withWriteRoute`
- * exists to guarantee: rate limit -> auth -> CSRF -> Zod -> handler -> envelope.
+ * exists to guarantee:
+ * rate limit -> auth -> CSRF -> Zod -> guard -> handler -> envelope.
  *
  * The last section is the browser's side of the same contract: `submitWrite`
  * (src/lib/fetcher.ts), the decoder every form posts through, fed these real
@@ -41,6 +44,7 @@ import { RATE_LIMIT_POLICIES } from '@/lib/rate-limit';
 import { installMailTransport } from '@/lib/mail/deliver';
 import { createOutbox } from '@/lib/mail/outbox';
 import { submitWrite } from '@/lib/fetcher';
+import { installBotClassifier } from '@/lib/form-guard/guard';
 
 // The mailer. Every route that sends mail goes through deliverMail, so this
 // one transport catches all of it.
@@ -96,7 +100,7 @@ const validContact = {
   subject: 'Project scoping',
   message: 'Hello there.',
   // What the real form sends: an empty honeypot and the time the form was
-  // open (src/lib/contact-spam.ts).
+  // open (src/hooks/use-form-guard.tsx).
   contact_ref: '',
   elapsedMs: 30_000,
 };
@@ -328,7 +332,7 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Mail — the real spam checks, templates and deliverMail; the outbox at the end
+// Mail — the real templates and deliverMail; the outbox at the end
 // ---------------------------------------------------------------------------
 describe('mail delivery (real @/lib/mail)', () => {
   it('delivers a contact message to the inbox, replying to the sender', async () => {
@@ -347,19 +351,6 @@ describe('mail delivery (real @/lib/mail)', () => {
     ]);
   });
 
-  it('leaves the outbox empty for a submission the spam checks drop', async () => {
-    const res = await contactPost(
-      makeRequest('http://localhost:3000/api/contact', {
-        body: { ...validContact, contact_ref: 'https://spam.example' },
-      })
-    );
-
-    // Answered exactly like a real send.
-    expect(res.status).toBe(200);
-    expect((await res.json()).success).toBe(true);
-    expect(outbox.sent).toHaveLength(0);
-  });
-
   it('queues a welcome email for a new subscriber', async () => {
     const res = await subscribePost(
       makeRequest('http://localhost:3000/api/newsletter/subscribe', {
@@ -373,6 +364,159 @@ describe('mail delivery (real @/lib/mail)', () => {
       from: 'newsletter@lscaturchio.xyz',
       to: 'reader@example.com',
       subject: "Welcome to Lorenzo's Newsletter!",
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Human form guard — the real guard; BotID's classifier is the one seam
+// ---------------------------------------------------------------------------
+describe('human form guard (real @/lib/form-guard)', () => {
+  const SENT = {
+    data: { message: "Message sent successfully! I'll get back to you soon." },
+    success: true,
+  };
+  const SUBSCRIBED = {
+    data: { message: 'Thanks! Check your inbox to confirm your subscription.' },
+    success: true,
+  };
+  const validSubscribe = { email: 'reader@example.com', contact_ref: '', elapsedMs: 30_000 };
+
+  // A dropped submission is answered exactly like a real one, so a bot
+  // iterating on its payload cannot tell which part gave it away.
+  it.each([
+    ['a filled honeypot', { contact_ref: 'https://spam.example' }],
+    ['a fill time under the floor', { elapsedMs: 800 }],
+  ])('drops %s on contact: the success envelope, nothing mailed', async (_, overrides) => {
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', { body: { ...validContact, ...overrides } })
+    );
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual(SENT);
+    expect(outbox.sent).toHaveLength(0);
+  });
+
+  it.each([
+    ['a filled honeypot', { contact_ref: 'https://spam.example' }],
+    ['a fill time under the floor', { elapsedMs: 200 }],
+  ])('drops %s on subscribe: the success envelope, no SQL, nothing mailed', async (_, overrides) => {
+    const res = await subscribePost(
+      makeRequest('http://localhost:3000/api/newsletter/subscribe', {
+        body: { ...validSubscribe, ...overrides },
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual(SUBSCRIBED);
+    expect(mockSql).not.toHaveBeenCalled();
+    expect(outbox.sent).toHaveLength(0);
+  });
+
+  it('holds each form to its own floor: two seconds is a script on contact, a person on subscribe', async () => {
+    const contact = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', { body: { ...validContact, elapsedMs: 2000 } })
+    );
+    expect(contact.status).toBe(200);
+    expect(outbox.sent).toHaveLength(0);
+
+    const subscribe = await subscribePost(
+      makeRequest('http://localhost:3000/api/newsletter/subscribe', {
+        body: { ...validSubscribe, elapsedMs: 2000 },
+      })
+    );
+    expect(subscribe.status).toBe(200);
+    expect(mockSql).toHaveBeenCalled();
+  });
+
+  // A tab opened before a deploy runs the old bundle. Dropping its message
+  // would lose it while saying it arrived.
+  it('mails a submission that sends no guard fields at all', async () => {
+    const { name, email, subject, message } = validContact;
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', { body: { name, email, subject, message } })
+    );
+
+    expect(res.status).toBe(200);
+    expect(outbox.sent).toHaveLength(1);
+  });
+
+  // A 400 naming the honeypot would tell a bot which part of its payload to fix.
+  it('never answers its own fields with a field error', async () => {
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', {
+        body: { ...validContact, elapsedMs: 'soon' },
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(outbox.sent).toHaveLength(1);
+  });
+
+  describe('when BotID says bot', () => {
+    const classifier = vi.fn(async () => true);
+    let restore: () => void;
+    beforeEach(() => {
+      classifier.mockClear();
+      restore = installBotClassifier(classifier);
+    });
+    afterEach(() => restore());
+
+    // A refusal the reader can see, unlike a drop: BotID can misjudge a
+    // person, and they need to know to use email instead.
+    it('refuses contact with a 403 that says so, and mails nothing', async () => {
+      const res = await contactPost(
+        makeRequest('http://localhost:3000/api/contact', { body: validContact })
+      );
+
+      expect(res.status).toBe(403);
+      expect(await res.json()).toEqual({
+        success: false,
+        error: 'This message was flagged as automated and was not sent.',
+      });
+      expect(outbox.sent).toHaveLength(0);
+    });
+
+    it('refuses subscribe with a 403, before any SQL', async () => {
+      const res = await subscribePost(
+        makeRequest('http://localhost:3000/api/newsletter/subscribe', { body: validSubscribe })
+      );
+
+      expect(res.status).toBe(403);
+      expect((await res.json()).error).toBe(
+        'This signup was flagged as automated and was not saved.'
+      );
+      expect(mockSql).not.toHaveBeenCalled();
+    });
+
+    it('is not consulted by a route that declares no guard', async () => {
+      const res = await dripPost(
+        makeRequest('http://localhost:3000/api/newsletter/drip', {
+          origin: null,
+          headers: { 'x-api-key': 'test-drip-key' },
+        })
+      );
+
+      expect(res.status).toBe(200);
+      expect(classifier).not.toHaveBeenCalled();
+    });
+
+    // The guard runs AFTER Zod, so a person is told about a malformed field
+    // before anything can answer them with a silent success or a refusal.
+    it('runs after Zod: a malformed email is a 400 naming the field, even with a filled honeypot', async () => {
+      const res = await contactPost(
+        makeRequest('http://localhost:3000/api/contact', {
+          body: { ...validContact, email: 'not-an-email', contact_ref: 'https://spam.example' },
+        })
+      );
+
+      expect(res.status).toBe(400);
+      expect(await res.json()).toEqual({
+        success: false,
+        error: 'Invalid email format',
+        field: 'email',
+      });
+      expect(classifier).not.toHaveBeenCalled();
     });
   });
 });
@@ -568,6 +712,20 @@ describe('submitWrite: every layer decodes to its own kind (real routes)', () =>
     const windowSeconds = RATE_LIMIT_POLICIES.CONTACT.windowMs / 1000;
     expect(result.kind === 'rate-limited' && result.retryAfter).toBeGreaterThan(0);
     expect(result.kind === 'rate-limited' && result.retryAfter).toBeLessThanOrEqual(windowSeconds);
+  });
+
+  it("a guard refusal is refused, with the route's sentence", async () => {
+    browser();
+    const restore = installBotClassifier(async () => true);
+    try {
+      expect(await submitWrite('/api/contact', validContact)).toEqual({
+        kind: 'refused',
+        status: 403,
+        message: 'This message was flagged as automated and was not sent.',
+      });
+    } finally {
+      restore();
+    }
   });
 
   it("a handler writeError.internal is server-error, with the handler's sentence", async () => {

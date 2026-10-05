@@ -106,6 +106,7 @@ export const POST = withWriteRoute(
     },
     csrf: { kind: "required" },
     body: { kind: "json", schema: resumeTrackSchema },
+    guard: { kind: "none", reason: "Download telemetry with no form behind it; a scripted count costs accuracy, not money or mail." },
     envelope: { kind: "standard" },
     errors: {
       log: "Resume: Error tracking download",

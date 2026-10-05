@@ -109,7 +109,41 @@ describe("NewsletterForm", () => {
       email: "reader@example.com",
       topics: ["systems-craft"],
       source: "/blog/some-post",
+      contact_ref: "",
+      elapsedMs: expect.any(Number),
     });
+  });
+
+  /**
+   * The route runs the human form guard (src/lib/form-guard/guard.ts). A bot
+   * driving a browser writes into the DOM, so the honeypot is read from the
+   * node; the clock is the time since the form mounted, on the monotonic clock.
+   */
+  it("sends the honeypot and how long the form was open, and resets both after a success", async () => {
+    let now = 1_000;
+    const clock = vi.spyOn(performance, "now").mockImplementation(() => now);
+    try {
+      fetchMock.mockResolvedValueOnce(jsonResponse({ message: "Welcome aboard!" }));
+      const { container } = render(<NewsletterForm />);
+
+      const honeypot = container.querySelector<HTMLInputElement>('input[name="contact_ref"]');
+      expect(honeypot).not.toBeNull();
+      expect(honeypot).toHaveAttribute("tabindex", "-1");
+      expect(honeypot?.closest('[aria-hidden="true"]')).not.toBeNull();
+      (honeypot as HTMLInputElement).value = "https://spam.example";
+
+      fillEmail();
+      now = 9_500;
+      submitForm();
+
+      await waitFor(() => expect(screen.getByText("Welcome aboard!")).toBeInTheDocument());
+      const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
+      expect(body.contact_ref).toBe("https://spam.example");
+      expect(body.elapsedMs).toBe(8_500);
+      expect(honeypot).toHaveValue("");
+    } finally {
+      clock.mockRestore();
+    }
   });
 
   it("shows success state, clears the email, and disables controls after subscribing", async () => {
