@@ -514,3 +514,75 @@ describe("navigation vocabulary", () => {
     ).toEqual([]);
   });
 });
+
+/**
+ * One overlay module, and nothing that competes with it.
+ *
+ * Modal-overlay behaviour — initial focus, the Tab trap, Escape, focus return —
+ * was hand-rolled three times: the mobile menu, the ask drawer and the command
+ * palette, with three focusable selectors and three different answers to
+ * "which elements are tab stops". The menu's own comment said it "mirrors" the
+ * palette, and a critique loop then rewrote `mobile-navbar.tsx` six times, each
+ * pass finding the next place one copy had drifted from another.
+ *
+ * `useModalOverlay` is the only implementation now, and these two rules keep it
+ * that way. `aria-modal` is a promise to assistive tech that the rest of the
+ * page is unavailable, so a file that makes the promise must use the module
+ * that keeps it. And handling Tab anywhere else is a fourth trap being born.
+ */
+describe("modal overlays", () => {
+  const OVERLAY_MODULE = "src/hooks/use-modal-overlay.ts";
+  const IMPORTS_OVERLAY = /from\s*["']@\/hooks\/use-modal-overlay["']/;
+  const HANDLES_TAB = /\.key\s*[!=]==?\s*["']Tab["']|case\s+["']Tab["']/;
+
+  function sources() {
+    return SCAN_ROOTS.flatMap((root) => {
+      const dir = path.join(process.cwd(), root);
+      if (!fs.existsSync(dir)) return [];
+      return walk(dir).map((file) => ({
+        relative: path.relative(process.cwd(), file).split(path.sep).join("/"),
+        source: stripComments(fs.readFileSync(file, "utf-8")),
+      }));
+    });
+  }
+
+  it("routes every aria-modal surface through useModalOverlay", () => {
+    const surfaces = sources().filter(({ source }) => source.includes("aria-modal"));
+    const offenders = surfaces
+      .filter(({ source }) => !IMPORTS_OVERLAY.test(source))
+      .map(({ relative }) => relative);
+
+    // The three known surfaces, so a scan that silently matched nothing
+    // cannot pass this by finding no candidates.
+    expect(surfaces.length).toBeGreaterThanOrEqual(3);
+    expect(
+      offenders,
+      [
+        "These files declare aria-modal without useModalOverlay.",
+        "Call useModalOverlay from @/hooks/use-modal-overlay for initial focus, the Tab trap, Escape and focus return.",
+        "",
+        ...offenders,
+      ].join("\n")
+    ).toEqual([]);
+  });
+
+  it("handles Tab nowhere but the overlay module", () => {
+    const offenders: string[] = [];
+    for (const { relative, source } of sources()) {
+      if (relative === OVERLAY_MODULE) continue;
+      source.split("\n").forEach((line, index) => {
+        if (HANDLES_TAB.test(line)) offenders.push(`${relative}:${index + 1} — ${line.trim()}`);
+      });
+    }
+
+    expect(
+      offenders,
+      [
+        "A Tab handler outside use-modal-overlay is a hand-rolled focus trap.",
+        "Pass the container to useModalOverlay, and list any outside control in `alsoReachable`.",
+        "",
+        ...offenders,
+      ].join("\n")
+    ).toEqual([]);
+  });
+});
