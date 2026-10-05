@@ -2,19 +2,19 @@ import fs from 'fs';
 import path from 'path';
 import {
   createEmbedding,
-  splitIntoChunks,
-  storeEmbedding,
-  deleteEmbeddingsBySource,
-  getSourceContentHashes,
   getEmbeddingProvider,
   getProviderEmbeddingDimensions,
   isEmbeddingsAvailable,
 } from '../src/lib/embeddings';
 import {
+  splitIntoChunks,
+  storeEmbedding,
+  deleteEmbeddingsBySource,
+  getSourceContentHashes,
   buildEmbeddingInput,
   sourceContentHash,
   shouldSkipSource,
-} from '../src/lib/retrieval';
+} from '../src/lib/embedding-ingest';
 import { extractBlogMeta } from '../src/lib/blog-meta';
 
 const DATA_DIR = path.join(process.cwd(), 'public', 'my-data');

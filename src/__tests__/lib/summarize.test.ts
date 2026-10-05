@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock the OpenAI client so we control exactly what the model "returns".
 // `vi.hoisted` makes `create` available inside the hoisted vi.mock factory.
@@ -19,6 +19,12 @@ function modelReturns(content: string) {
 describe('generateKeyTakeaways — model-output robustness', () => {
   beforeEach(() => {
     create.mockReset();
+    // Summaries ride the shared OpenAI client, which exists only with a key.
+    vi.stubEnv('OPENAI_API_KEY', 'sk-test');
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it('returns the takeaways array when the model returns a well-formed list', async () => {

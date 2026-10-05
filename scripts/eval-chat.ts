@@ -3,7 +3,8 @@
  * Chat retrieval quality evaluation script.
  *
  * Runs each query in scripts/eval-chat-queries.json through both:
- *  - retrieval probe: src/lib/embeddings searchSimilarContent (direct call)
+ *  - retrieval probe: src/lib/retrieval groundingFor (direct call) — the same
+ *    grounding the chat route builds its prompt from
  *  - generation probe: POST /api/chat (HTTP)
  *
  * Writes a markdown artifact (default tmp/chat-eval-<date>.md) with
@@ -16,11 +17,8 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import {
-  searchSimilarContent,
-  getEmbeddingProvider,
-  isEmbeddingsAvailable,
-} from '../src/lib/embeddings'
+import { getEmbeddingProvider, isEmbeddingsAvailable } from '../src/lib/embeddings'
+import { groundingFor, type Grounding } from '../src/lib/retrieval'
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '..')
@@ -39,13 +37,6 @@ type Args = {
   outputPath: string
   timeoutMs: number
   intervalMs: number
-}
-
-type RetrievedRow = {
-  id: number
-  content: string
-  similarity: number
-  metadata: { source?: string; slug?: string; title?: string } & Record<string, unknown>
 }
 
 type ChatData = {
@@ -116,10 +107,7 @@ async function loadQueries(): Promise<Query[]> {
   return parsed
 }
 
-async function probeRetrieval(query: string): Promise<RetrievedRow[]> {
-  const rows = await searchSimilarContent(query, 5)
-  return rows as RetrievedRow[]
-}
+const NO_GROUNDING: Grounding = { context: '', confidence: 'none', closest: [] }
 
 async function probeGeneration(args: Args, query: string): Promise<ChatResult> {
   const controller = new AbortController()
@@ -152,24 +140,19 @@ function bucketLabel(intent: Bucket): string {
 
 function formatRow(
   query: Query,
-  retrieved: RetrievedRow[],
+  retrieved: Grounding,
   generated: ChatResult,
   index: number
 ): string {
   const isAdversarial = query.intent === 'adversarial'
 
   const sourcesBlock =
-    retrieved.length === 0
-      ? '  - _(no chunks above threshold)_'
-      : retrieved
-          .map(
-            (r) =>
-              `  - \`${r.metadata.source ?? 'unknown'}\` (sim=${r.similarity.toFixed(3)})`
-          )
-          .join('\n')
+    retrieved.closest.length === 0
+      ? '  - _(no essays matched)_'
+      : retrieved.closest.map((c) => `  - ${c.title} (\`${c.url}\`)`).join('\n')
 
   const topSnippet =
-    retrieved[0]?.content?.slice(0, 200).replace(/\s+/g, ' ').trim() ?? '_n/a_'
+    retrieved.context.slice(0, 200).replace(/\s+/g, ' ').trim() || '_n/a_'
 
   const generationBlock =
     'error' in generated
@@ -183,9 +166,10 @@ function formatRow(
   return `### Query ${index + 1}: "${query.query}"
 - **Intent:** ${query.intent}
 - **Expected:** ${query.expected}
-- **Retrieved (top ${retrieved.length}):**
+- **Grounding confidence:** ${retrieved.confidence}
+- **Closest essays (${retrieved.closest.length}):**
 ${sourcesBlock}
-- **Top chunk snippet:** ${topSnippet}
+- **Context opens with:** ${topSnippet}
 - **Generated answer:**${generationBlock}
 
 - **Judgment:**
@@ -223,11 +207,11 @@ async function main(): Promise<void> {
   for (let i = 0; i < queries.length; i++) {
     const q = queries[i]
     console.log(`[eval-chat] (${i + 1}/${queries.length}) [${q.intent}] ${q.query}`)
-    const retrieved = await probeRetrieval(q.query).catch((error: unknown) => {
+    const retrieved = await groundingFor(q.query).catch((error: unknown) => {
       console.warn(
         `  retrieval failed: ${error instanceof Error ? error.message : String(error)}`
       )
-      return [] as RetrievedRow[]
+      return NO_GROUNDING
     })
     const generated = await probeGeneration(args, q.query)
     sections[q.intent].push(formatRow(q, retrieved, generated, i))

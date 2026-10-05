@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 
-const searchEmbeddings = vi.fn();
+const relevantEssays = vi.fn();
 const getAllBlogs = vi.fn();
 
-vi.mock('@/lib/embeddings', () => ({ searchEmbeddings: (...a: unknown[]) => searchEmbeddings(...a) }));
+vi.mock('@/lib/retrieval', () => ({ relevantEssays: (...a: unknown[]) => relevantEssays(...a) }));
 vi.mock('@/lib/getAllBlogs', () => ({ getAllBlogs: () => getAllBlogs() }));
 vi.mock('@/lib/logger', () => ({ logError: vi.fn() }));
 vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
@@ -17,6 +17,21 @@ const BLOGS = [
   { slug: 'shares-tag', title: 'Shares A Tag', description: 'same tag, different idea', date: '2026-02-03', image: '/c.webp', tags: ['justice'] },
 ];
 
+/** An essay as the retrieval module returns it; only url/slug/scores matter here. */
+function essay(slug: string, relevance: number, similarity = relevance) {
+  return {
+    url: `/blog/${slug}`,
+    slug,
+    title: slug,
+    description: '',
+    date: '',
+    tags: [],
+    similarity,
+    relevance,
+    snippets: [],
+  };
+}
+
 function req(slug: string, title: string) {
   return new NextRequest(
     `http://localhost/api/related-posts?title=${encodeURIComponent(title)}&url=/blog/${slug}&limit=2`
@@ -25,35 +40,50 @@ function req(slug: string, title: string) {
 
 describe('Related Posts API (semantic-first)', () => {
   beforeEach(() => {
-    searchEmbeddings.mockReset();
+    relevantEssays.mockReset();
     getAllBlogs.mockReset().mockResolvedValue(BLOGS);
   });
 
   it('ranks a high-similarity post above a shared-tag-only post', async () => {
     // 'bureaucratic' shares NO tag with 'carceral' but is semantically closest;
     // 'shares-tag' shares the tag but is semantically distant.
-    searchEmbeddings.mockResolvedValue([
-      { similarity: 0.92, metadata: { url: '/blog/bureaucratic' } },
-      { similarity: 0.41, metadata: { url: '/blog/shares-tag' } },
-    ]);
+    relevantEssays.mockResolvedValue([essay('bureaucratic', 1), essay('shares-tag', 0.45)]);
 
     const res = await GET(req('carceral', 'The Prison System'));
     const body = await res.json();
     expect(body.data.related[0].url).toBe('/blog/bureaucratic');
   });
 
-  it('excludes the current post from results', async () => {
-    searchEmbeddings.mockResolvedValue([
-      { similarity: 0.99, metadata: { url: '/blog/carceral' } },
-      { similarity: 0.5, metadata: { url: '/blog/bureaucratic' } },
+  it('ranks a keyword-only match by its relevance, not as zero similarity', async () => {
+    // 'bureaucratic' matched on exact terms alone (no cosine), and ranked top of
+    // the fused list; it used to score 0 here and lose to any vector hit.
+    relevantEssays.mockResolvedValue([essay('bureaucratic', 1, 0), essay('shares-tag', 0.5)]);
+
+    const res = await GET(req('carceral', 'The Prison System'));
+    const body = await res.json();
+    expect(body.data.related.map((p: { url: string }) => p.url)).toEqual([
+      '/blog/bureaucratic',
+      '/blog/shares-tag',
     ]);
+    // The displayed similarity stays the cosine, which is 0 for a keyword match.
+    expect(body.data.related[0].similarity).toBe(0);
+  });
+
+  it('queries on the current post’s title and description, with headroom past the limit', async () => {
+    relevantEssays.mockResolvedValue([]);
+    await GET(req('carceral', 'The Prison System'));
+    expect(relevantEssays).toHaveBeenCalledWith('The Prison System. on mass incarceration', { limit: 22 });
+  });
+
+  it('excludes the current post from results', async () => {
+    relevantEssays.mockResolvedValue([essay('carceral', 1), essay('bureaucratic', 0.5)]);
     const res = await GET(req('carceral', 'The Prison System'));
     const body = await res.json();
     expect(body.data.related.every((p: { url: string }) => p.url !== '/blog/carceral')).toBe(true);
   });
 
   it('falls back to shared tags when embeddings return nothing', async () => {
-    searchEmbeddings.mockResolvedValue([]);
+    relevantEssays.mockResolvedValue([]);
     const res = await GET(req('carceral', 'The Prison System'));
     const body = await res.json();
     // 'shares-tag' shares the 'justice' tag with current post.
@@ -73,6 +103,6 @@ describe('Related Posts API (semantic-first)', () => {
       new NextRequest(`http://localhost/api/related-posts?title=${encodeURIComponent(longTitle)}`)
     );
     expect(res.status).toBe(400);
-    expect(searchEmbeddings).not.toHaveBeenCalled();
+    expect(relevantEssays).not.toHaveBeenCalled();
   });
 });

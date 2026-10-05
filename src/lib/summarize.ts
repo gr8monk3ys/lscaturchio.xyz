@@ -1,22 +1,16 @@
-import OpenAI from 'openai'
 import { logError } from './logger'
-
-let openaiClient: OpenAI | null = null
+import { disableOpenAIOnAuthError, getOpenAIClient } from './ai-provider'
 
 // Hard cap on how much content we ever forward to the model. The request
 // schema already limits input to 50k chars, but clamping here protects every
 // caller (and bounds cost) regardless of how the function is invoked.
 const MAX_INPUT_CHARS = 12000
 
-function getOpenAI(): OpenAI {
-  if (!openaiClient) {
-    openaiClient = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-      timeout: 30000,
-      maxRetries: 1,
-    })
-  }
-  return openaiClient
+/** The shared OpenAI client; summaries have no other provider to fall back to. */
+async function requireOpenAI() {
+  const client = await getOpenAIClient()
+  if (!client) throw new Error('OpenAI is not configured or its key was refused')
+  return client
 }
 
 /**
@@ -30,7 +24,7 @@ export async function summarizeContent(
   maxLength: number = 50
 ): Promise<string> {
   try {
-    const response = await getOpenAI().chat.completions.create({
+    const response = await (await requireOpenAI()).chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
@@ -48,6 +42,7 @@ export async function summarizeContent(
 
     return response.choices[0]?.message?.content || ''
   } catch (error) {
+    disableOpenAIOnAuthError(error)
     logError('Summarization error', error, { component: 'summarize', action: 'summarizeContent' })
     throw new Error('Failed to generate summary')
   }
@@ -64,7 +59,7 @@ export async function generateKeyTakeaways(
   numTakeaways: number = 3
 ): Promise<string[]> {
   try {
-    const response = await getOpenAI().chat.completions.create({
+    const response = await (await requireOpenAI()).chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
@@ -89,6 +84,7 @@ export async function generateKeyTakeaways(
       ? result.takeaways.filter((t: unknown): t is string => typeof t === 'string')
       : []
   } catch (error) {
+    disableOpenAIOnAuthError(error)
     logError('Takeaways generation error', error, { component: 'summarize', action: 'generateKeyTakeaways' })
     throw new Error('Failed to generate takeaways')
   }
