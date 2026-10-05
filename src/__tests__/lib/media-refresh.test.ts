@@ -1,187 +1,203 @@
 import { describe, it, expect } from 'vitest';
 import {
-  parseLetterboxdRss,
-  parseGoodreadsRss,
+  datedEntries,
   mergeDiary,
   mergeRatings,
   mergeWatched,
   mergeReviews,
   upsertGoodreads,
+  type DatedFeedEntry,
 } from '@/lib/media-refresh';
+import {
+  diaryTable,
+  ratingsTable,
+  type DiaryRecord,
+  type LetterboxdFeedEntry,
+} from '@/lib/letterboxd-format';
+import { libraryTable, type GoodreadsFeedEntry, type LibraryRecord } from '@/lib/goodreads-format';
 
-const LETTERBOXD_XML = `<rss><channel>
-<item> <title>Ikiru, 1952 - ★★★★★</title> <link>https://letterboxd.com/gr8monk3ys/film/ikiru/</link> <letterboxd:watchedDate>2026-08-01</letterboxd:watchedDate> <letterboxd:rewatch>Yes</letterboxd:rewatch> <letterboxd:filmTitle>Ikiru</letterboxd:filmTitle> <letterboxd:filmYear>1952</letterboxd:filmYear> <letterboxd:memberRating>5.0</letterboxd:memberRating> <description><![CDATA[ <p><img src="poster.jpg"/></p> <p>Still lands, harder now.</p> ]]></description> </item>
-<item> <title>The Odyssey, 2026 - ★★★★</title> <link>https://letterboxd.com/gr8monk3ys/film/the-odyssey-2026/</link> <letterboxd:watchedDate>2026-08-06</letterboxd:watchedDate> <letterboxd:rewatch>No</letterboxd:rewatch> <letterboxd:filmTitle>The Odyssey</letterboxd:filmTitle> <letterboxd:filmYear>2026</letterboxd:filmYear> <letterboxd:memberRating>4.0</letterboxd:memberRating> <description><![CDATA[ <p><img src="poster.jpg"/></p> <p>Watched on Thursday August 6, 2026.</p> ]]></description> </item>
-<item> <title>A list, not a film</title> <link>https://letterboxd.com/gr8monk3ys/list/x/</link> <description><![CDATA[ <p>list stuff</p> ]]></description> </item>
-</channel></rss>`;
-
-const GOODREADS_XML = `<rss><channel>
-<item>
-  <title>The Iliad</title>
-  <book_id>1371</book_id>
-  <author_name>Homer</author_name>
-  <isbn>0140275363</isbn>
-  <user_rating>5</user_rating>
-  <user_read_at><![CDATA[Tue, 4 Aug 2026 00:00:00 +0000]]></user_read_at>
-  <user_date_added><![CDATA[Tue, 01 Aug 2023 07:53:58 -0700]]></user_date_added>
-  <user_shelves>books-that-changed-my-life</user_shelves>
-  <average_rating>3.88</average_rating>
-  <book_published>-750</book_published>
-  <book id="1371"><num_pages>614</num_pages></book>
-</item>
-</channel></rss>`;
-
-describe('parseLetterboxdRss', () => {
-  it('parses diary entries and skips non-film items', () => {
-    const entries = parseLetterboxdRss(LETTERBOXD_XML);
-    expect(entries).toHaveLength(2);
-    expect(entries[0]).toMatchObject({
-      title: 'Ikiru',
-      year: '1952',
-      rating: '5.0',
-      watchedDate: '2026-08-01',
-      rewatch: 'Yes',
-      review: 'Still lands, harder now.',
-    });
-  });
-
-  it('treats the "Watched on <date>." filler as no review', () => {
-    const [, odyssey] = parseLetterboxdRss(LETTERBOXD_XML);
-    expect(odyssey.review).toBe('');
-  });
-
-  it('does not double-unescape entities, and decodes only after stripping tags', () => {
-    const xml = `<rss><channel><item>
-      <letterboxd:filmTitle>Fear &amp;amp; Loathing</letterboxd:filmTitle>
-      <letterboxd:filmYear>1998</letterboxd:filmYear>
-      <letterboxd:watchedDate>2026-08-01</letterboxd:watchedDate>
-      <letterboxd:rewatch>No</letterboxd:rewatch>
-      <link>x</link>
-      <description><![CDATA[ <p><img src="p.jpg"/></p> <p>I <b>&lt;3</b> this &amp; that</p> ]]></description>
-    </item></channel></rss>`;
-    const [entry] = parseLetterboxdRss(xml);
-
-    // "&amp;amp;" is the literal text "&amp;" — one decode, not two.
-    expect(entry.title).toBe('Fear &amp; Loathing');
-    // The member's escaped "&lt;3" is a literal "<3": tags must strip before
-    // entities decode, or the heart gets eaten as a half-open tag.
-    expect(entry.review).toBe('I <3 this & that');
-  });
-
-  it('leaves no angle bracket behind, even for nested or unbalanced markup', () => {
-    const xml = `<rss><channel><item>
-      <letterboxd:filmTitle>X</letterboxd:filmTitle>
-      <letterboxd:filmYear>2026</letterboxd:filmYear>
-      <letterboxd:watchedDate>2026-08-01</letterboxd:watchedDate>
-      <letterboxd:rewatch>No</letterboxd:rewatch>
-      <link>x</link>
-      <description><![CDATA[ <p><img src="p.jpg"/></p> <p>a <scr<script>ipt> b <em>fine</em> c <</p> ]]></description>
-    </item></channel></rss>`;
-    const [entry] = parseLetterboxdRss(xml);
-    expect(entry.review).not.toMatch(/[<>]/);
-    expect(entry.review).toContain('fine');
-  });
+const feedEntry = (overrides: Partial<LetterboxdFeedEntry>): LetterboxdFeedEntry => ({
+  title: 'Untitled',
+  year: '2026',
+  link: 'https://letterboxd.com/gr8monk3ys/film/untitled/',
+  rating: '',
+  watchedDate: '2026-08-01',
+  rewatch: false,
+  review: '',
+  ...overrides,
 });
 
-describe('parseGoodreadsRss', () => {
-  it('parses shelf items with the export-compatible fields', () => {
-    const [iliad] = parseGoodreadsRss(GOODREADS_XML, 'read');
-    expect(iliad).toMatchObject({
-      bookId: '1371',
-      title: 'The Iliad',
-      author: 'Homer',
-      isbn: '0140275363',
-      rating: '5',
-      pages: '614',
-      published: '-750',
-      readAt: '2026/08/04',
-      shelves: 'books-that-changed-my-life',
-      exclusiveShelf: 'read',
-    });
+const ikiru = feedEntry({
+  title: 'Ikiru',
+  year: '1952',
+  link: 'https://letterboxd.com/gr8monk3ys/film/ikiru/',
+  rating: '5.0',
+  watchedDate: '2026-08-01',
+  rewatch: true,
+  review: 'Still lands, harder now.',
+});
+const odyssey = feedEntry({
+  title: 'The Odyssey',
+  link: 'https://letterboxd.com/gr8monk3ys/film/the-odyssey-2026/',
+  rating: '4.0',
+  watchedDate: '2026-08-06',
+});
+const undated = feedEntry({ title: 'No Date', rating: '3.5', watchedDate: null, review: 'Words.' });
+
+const entries = datedEntries([ikiru, odyssey, undated]);
+
+describe('datedEntries', () => {
+  it('keeps only entries with a watch date — there is no export row for the rest', () => {
+    expect(entries.map((e) => e.title)).toEqual(['Ikiru', 'The Odyssey']);
   });
 });
-
-const entries = parseLetterboxdRss(LETTERBOXD_XML);
 
 describe('Letterboxd merges', () => {
-  const existingDiary = [
-    { Date: '2026-08-01', Name: 'Ikiru', Year: '1952', 'Letterboxd URI': 'https://boxd.it/x', Rating: '5', Rewatch: 'Yes', Tags: '', 'Watched Date': '2026-08-01' },
+  const existingDiary: DiaryRecord[] = [
+    {
+      date: '2026-08-01',
+      title: 'Ikiru',
+      year: '1952',
+      uri: 'https://boxd.it/x',
+      rating: '5',
+      rewatch: 'Yes',
+      tags: '',
+      watchedDate: '2026-08-01',
+    },
   ];
 
   it('mergeDiary appends only unseen viewings (same film, new date = new row)', () => {
     const result = mergeDiary(existingDiary, entries);
     expect(result.added).toBe(1);
-    expect(result.rows.at(-1)).toMatchObject({ Name: 'The Odyssey', 'Watched Date': '2026-08-06' });
+    expect(result.rows.at(-1)).toEqual({
+      date: '2026-08-06',
+      title: 'The Odyssey',
+      year: '2026',
+      uri: 'https://letterboxd.com/gr8monk3ys/film/the-odyssey-2026/',
+      rating: '4.0',
+      rewatch: '',
+      tags: '',
+      watchedDate: '2026-08-06',
+    });
 
     // Idempotent: running the same merge again changes nothing.
-    const again = mergeDiary(result.rows, entries);
-    expect(again.added).toBe(0);
+    expect(mergeDiary(result.rows, entries).added).toBe(0);
+  });
+
+  it('mergeDiary writes the export’s "Yes" for a rewatch', () => {
+    const result = mergeDiary([], entries);
+    expect(diaryTable.serialize(result.rows).split('\n')[1]).toBe(
+      '2026-08-01,Ikiru,1952,https://letterboxd.com/gr8monk3ys/film/ikiru/,5.0,Yes,,2026-08-01',
+    );
   });
 
   it('mergeRatings appends new films and updates a changed rating in place', () => {
-    const ratings = [
-      { Date: '2025-01-07', Name: 'Ikiru', Year: '1952', 'Letterboxd URI': 'https://boxd.it/251c', Rating: '4.5' },
-    ];
+    const ratings = ratingsTable.parse(
+      'Date,Name,Year,Letterboxd URI,Rating\n2025-01-07,Ikiru,1952,https://boxd.it/251c,4.5',
+    );
     const result = mergeRatings(ratings, entries);
     expect(result.added).toBe(1); // The Odyssey
     expect(result.updated).toBe(1); // Ikiru 4.5 → 5.0
-    expect(result.rows[0].Rating).toBe('5.0');
+    expect(result.rows[0]).toMatchObject({ rating: '5.0', date: '2026-08-01' });
+  });
+
+  it('mergeRatings ignores unrated entries', () => {
+    const unrated: DatedFeedEntry[] = [{ ...odyssey, rating: '', watchedDate: '2026-08-06' }];
+    expect(mergeRatings([], unrated).added).toBe(0);
   });
 
   it('mergeWatched dedupes by film', () => {
-    const watched = [{ Date: '2025-01-07', Name: 'Ikiru', Year: '1952', 'Letterboxd URI': 'x' }];
+    const watched = [{ date: '2025-01-07', title: 'Ikiru', year: '1952', uri: 'x' }];
     const result = mergeWatched(watched, entries);
     expect(result.added).toBe(1);
-    expect(result.rows.map((r) => r.Name)).toEqual(['Ikiru', 'The Odyssey']);
+    expect(result.rows.map((r) => r.title)).toEqual(['Ikiru', 'The Odyssey']);
   });
 
-  it('mergeReviews only appends entries with actual review text', () => {
+  it('mergeReviews only appends entries with actual review text, once per viewing', () => {
     const result = mergeReviews([], entries);
     expect(result.added).toBe(1);
-    expect(result.rows[0]).toMatchObject({ Name: 'Ikiru', Review: 'Still lands, harder now.' });
+    expect(result.rows[0]).toMatchObject({
+      title: 'Ikiru',
+      review: 'Still lands, harder now.',
+      rewatch: 'Yes',
+    });
+    expect(mergeReviews(result.rows, entries).added).toBe(0);
   });
 });
 
 describe('upsertGoodreads', () => {
-  const books = parseGoodreadsRss(GOODREADS_XML, 'read');
+  const iliad: GoodreadsFeedEntry = {
+    bookId: '1371',
+    title: 'The Iliad',
+    author: 'Homer',
+    isbn: '0140275363',
+    rating: '5',
+    averageRating: '3.88',
+    pages: '614',
+    published: '-750',
+    readAt: '2026/08/04',
+    dateAdded: '2023/08/01',
+    shelves: 'books-that-changed-my-life',
+    exclusiveShelf: 'read',
+  };
+
+  const existing = (): LibraryRecord => ({
+    ...libraryTable.empty(),
+    bookId: '1371',
+    title: 'The Iliad',
+    author: 'Homer',
+    isbn: '="0140275363"',
+    myRating: '0',
+    exclusiveShelf: 'currently-reading',
+    bookshelves: 'to-read',
+    binding: 'Paperback', // export-only field must survive untouched
+  });
 
   it('updates an existing row in place (shelf move, new rating) and counts it once', () => {
-    const rows = [
-      {
-        'Book Id': '1371',
-        Title: 'The Iliad',
-        Author: 'Homer',
-        ISBN: '="0140275363"',
-        'My Rating': '0',
-        'Exclusive Shelf': 'currently-reading',
-        'Date Read': '',
-        Bookshelves: '',
-        Binding: 'Paperback', // export-only column must survive untouched
-      },
-    ];
-    const result = upsertGoodreads(rows, books);
+    const result = upsertGoodreads([existing()], [iliad]);
     expect(result.updated).toBe(1);
     expect(result.added).toBe(0);
     expect(result.rows[0]).toMatchObject({
-      'My Rating': '5',
-      'Exclusive Shelf': 'read',
-      'Date Read': '2026/08/04',
-      Binding: 'Paperback',
+      myRating: '5',
+      exclusiveShelf: 'read',
+      dateRead: '2026/08/04',
+      binding: 'Paperback',
+      // Stale exclusive-shelf leakage in Bookshelves gets cleared, not kept.
+      bookshelves: 'books-that-changed-my-life',
     });
-    // Stale exclusive-shelf leakage in Bookshelves gets cleared, not kept.
-    expect(result.rows[0]['Bookshelves']).toBe('books-that-changed-my-life');
   });
 
-  it('appends unknown books with the export ISBN quoting', () => {
-    const result = upsertGoodreads([], books);
-    expect(result.added).toBe(1);
-    expect(result.rows[0]['ISBN']).toBe('="0140275363"');
-    expect(result.rows[0]['Read Count']).toBe('1');
+  it('keeps an existing read date when the feed has none', () => {
+    const row = { ...existing(), dateRead: '2020/01/01' };
+    upsertGoodreads([row], [{ ...iliad, readAt: '' }]);
+    expect(row.dateRead).toBe('2020/01/01');
+  });
+
+  it('appends unknown books with the export ISBN quoting and every other field empty', () => {
+    const result = upsertGoodreads([], [iliad, { ...iliad, bookId: '2', isbn: '', exclusiveShelf: 'to-read' }]);
+    expect(result.added).toBe(2);
+    expect(result.rows[0]).toEqual({
+      ...libraryTable.empty(),
+      bookId: '1371',
+      title: 'The Iliad',
+      author: 'Homer',
+      isbn: '="0140275363"',
+      myRating: '5',
+      averageRating: '3.88',
+      pages: '614',
+      originalPublicationYear: '-750',
+      dateRead: '2026/08/04',
+      dateAdded: '2023/08/01',
+      bookshelves: 'books-that-changed-my-life',
+      exclusiveShelf: 'read',
+      readCount: '1',
+    });
+    expect(result.rows[1]).toMatchObject({ isbn: '=""', readCount: '0' });
   });
 
   it('is idempotent', () => {
-    const first = upsertGoodreads([], books);
-    const second = upsertGoodreads(first.rows, books);
+    const first = upsertGoodreads([], [iliad]);
+    const second = upsertGoodreads(first.rows, [iliad]);
     expect(second.added + second.updated).toBe(0);
   });
 });

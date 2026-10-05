@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { BookOpen, Clapperboard, PenLine, Wrench } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { getCurrentlyReading } from "@/lib/goodreads";
-import { getRecentWatches, getLiveLastWatch } from "@/lib/letterboxd";
+import { getGoodreadsLibrary } from "@/lib/goodreads";
+import { getLetterboxdLibrary, getLiveLastWatch } from "@/lib/letterboxd";
 
 interface CurrentlyStripProps {
   latestPost?: { slug: string; title: string } | null;
@@ -26,8 +26,8 @@ interface StripItem {
  * degrades to nothing rather than showing placeholders.
  */
 export async function CurrentlyStrip({ latestPost, latestRepo }: CurrentlyStripProps) {
-  const reading = getCurrentlyReading()[0];
-  const lastWatch = (await getLiveLastWatch()) ?? getRecentWatches(1)[0];
+  const reading = getGoodreadsLibrary().currentlyReading()[0];
+  const lastWatch = (await getLiveLastWatch()) ?? getLetterboxdLibrary().recentWatches(1)[0];
 
   const items: StripItem[] = [];
 

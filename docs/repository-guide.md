@@ -42,16 +42,18 @@ Related content inputs also live under `public/my-data/`, including:
 exports committed under `public/my-data/`. Two things about those files have
 already caused bugs:
 
-- **Parse them with `src/lib/csv.ts` (`parseCsv`), never by splitting on
-  newlines.** Both services quote free-text fields (reviews, notes) that contain
-  literal newlines. Splitting the file into lines first shreds those records and
-  silently shifts every following column.
+- **Read and write them through the tables in `src/lib/letterboxd-format.ts`
+  and `src/lib/goodreads-format.ts`, never by splitting on newlines.** Both
+  services quote free-text fields (reviews, notes) that contain literal
+  newlines. Splitting the file into lines first shreds those records and
+  silently shifts every following column. The tables are also the only place a
+  column name is spelled, for the site and the refresh script alike.
 - **Letterboxd uses two URI namespaces.** `ratings.csv`, `watchlist.csv`, and the
   profile's `Favorite Films` column store the *film* URI (`boxd.it/251c`).
   `diary.csv` and `reviews.csv` store the *entry* URI for one specific viewing
   (`boxd.it/8mdUF3`). Joining across those files on `Letterboxd URI` matches
   nothing and fails quietly. Join on title + year — `filmKey()` in
-  `src/lib/letterboxd.ts` — and let the most recent viewing win.
+  `src/lib/letterboxd-format.ts` — and let the most recent viewing win.
 
 To refresh the data, replace the CSVs in place; no build step is required. The
 top four films on `/movies` are read from the profile export, so re-pinning
