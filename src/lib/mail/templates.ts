@@ -1,74 +1,29 @@
 /**
- * Email utilities for newsletter and notifications
+ * The site's email bodies, as pure renderers: data in, `{ subject, html }`
+ * out. Sending them is `deliverMail`'s job (./deliver).
  *
- * Uses Resend API for email delivery.
- * Falls back to console logging when RESEND_API_KEY is not configured.
+ * Every style is inline and in px on purpose: mail clients strip <style>
+ * blocks and treat rem unreliably. See the `inline-css-type-ramp` allowance
+ * in design-drift.test.ts.
  */
 
-import { logError, logInfo } from './logger';
-import { NEWSLETTER_TOPICS } from '@/constants/newsletter';
-import { getSiteUrl } from '@/lib/site-url';
+import { NEWSLETTER_TOPICS } from "@/constants/newsletter";
+import { escapeHtml, sanitizeEmailSubject, sanitizeForHtmlEmail } from "@/lib/sanitize";
+import { getSiteUrl } from "@/lib/site-url";
 
-const RESEND_API_URL = 'https://api.resend.com/emails';
-
-interface EmailOptions {
-  to: string;
+export interface RenderedMail {
   subject: string;
   html: string;
-  from?: string;
 }
 
-/**
- * Send an email using Resend API
- */
-async function sendEmail(options: EmailOptions): Promise<boolean> {
-  const resendApiKey = process.env.RESEND_API_KEY;
-  const fromEmail = options.from || process.env.NEWSLETTER_FROM_EMAIL || 'newsletter@lscaturchio.xyz';
-
-  if (!resendApiKey) {
-    logInfo('Email: No RESEND_API_KEY configured', {
-      component: 'email',
-      to: options.to,
-      subject: options.subject,
-    });
-    return false;
-  }
-
-  try {
-    const response = await fetch(RESEND_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: options.to,
-        subject: options.subject,
-        html: options.html,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      logError('Email: Resend API error', errorData, { component: 'email', to: options.to });
-      return false;
-    }
-
-    logInfo('Email: Sent successfully', { component: 'email', to: options.to, subject: options.subject });
-    return true;
-  } catch (error) {
-    logError('Email: Failed to send', error, { component: 'email', to: options.to });
-    return false;
-  }
+function unsubscribeUrl(siteUrl: string, unsubscribeToken: string): string {
+  return `${siteUrl}/unsubscribe?token=${unsubscribeToken}`;
 }
 
-/**
- * Send welcome email to new newsletter subscriber
- */
-export async function sendWelcomeEmail(email: string, unsubscribeToken: string): Promise<boolean> {
+/** Sent to a new or returning newsletter subscriber. */
+export function renderWelcomeEmail(unsubscribeToken: string): RenderedMail {
   const siteUrl = getSiteUrl();
-  const unsubscribeUrl = `${siteUrl}/unsubscribe?token=${unsubscribeToken}`;
+  const unsubscribeHref = unsubscribeUrl(siteUrl, unsubscribeToken);
 
   const html = `
     <!DOCTYPE html>
@@ -107,28 +62,27 @@ export async function sendWelcomeEmail(email: string, unsubscribeToken: string):
 
         <p style="font-size: 12px; color: #606976; text-align: center;">
           You're receiving this email because you subscribed to my newsletter.<br>
-          <a href="${unsubscribeUrl}" style="color: #606976;">Unsubscribe</a>
+          <a href="${unsubscribeHref}" style="color: #606976;">Unsubscribe</a>
         </p>
       </div>
     </body>
     </html>
   `;
 
-  return sendEmail({
-    to: email,
-    subject: "Welcome to Lorenzo's Newsletter!",
-    html,
-  });
+  return { subject: "Welcome to Lorenzo's Newsletter!", html };
 }
 
-export async function sendOnboardingEmail(
-  email: string,
+/**
+ * The onboarding drip: step 1 a day after signup, step 2 about a week in.
+ * Any other step has no email, and returns null.
+ */
+export function renderOnboardingEmail(
   unsubscribeToken: string,
   step: number,
   options: { topics?: string[] } = {}
-): Promise<boolean> {
+): RenderedMail | null {
   const siteUrl = getSiteUrl();
-  const unsubscribeUrl = `${siteUrl}/unsubscribe?token=${unsubscribeToken}`;
+  const unsubscribeHref = unsubscribeUrl(siteUrl, unsubscribeToken);
   const topics = (options.topics ?? [])
     .map((t) => String(t).trim())
     .filter(Boolean)
@@ -182,18 +136,14 @@ export async function sendOnboardingEmail(
 
           <p style="font-size: 12px; color: #606976; text-align: center; margin: 0;">
             You’re receiving this because you subscribed.<br>
-            <a href="${unsubscribeUrl}" style="color: #606976;">Unsubscribe</a>
+            <a href="${unsubscribeHref}" style="color: #606976;">Unsubscribe</a>
           </p>
         </div>
       </body>
       </html>
     `;
 
-    return sendEmail({
-      to: email,
-      subject: "Start here: a quick path through the site",
-      html,
-    });
+    return { subject: "Start here: a quick path through the site", html };
   }
 
   if (step === 2) {
@@ -229,20 +179,42 @@ export async function sendOnboardingEmail(
 
           <p style="font-size: 12px; color: #606976; text-align: center; margin: 0;">
             You’re receiving this because you subscribed.<br>
-            <a href="${unsubscribeUrl}" style="color: #606976;">Unsubscribe</a>
+            <a href="${unsubscribeHref}" style="color: #606976;">Unsubscribe</a>
           </p>
         </div>
       </body>
       </html>
     `;
 
-    return sendEmail({
-      to: email,
-      subject: "Work with me (if you need a hand shipping)",
-      html,
-    });
+    return { subject: "Work with me (if you need a hand shipping)", html };
   }
 
-  // Unknown step: no-op.
-  return false;
+  return null;
+}
+
+/**
+ * The notification the site's owner gets for a contact-form submission. Every
+ * reader-supplied field is escaped; the subject is stripped of CR/LF so it
+ * cannot inject a header.
+ */
+export function renderContactNotification(
+  submission: { name: string; email: string; subject: string; message: string },
+  sentAt: Date = new Date()
+): RenderedMail {
+  const { name, email, subject, message } = submission;
+
+  return {
+    // The reader's own subject leads; the name qualifies it.
+    subject: sanitizeEmailSubject(`${subject} — ${name}`),
+    html: `
+          <h2>New Contact Form Submission</h2>
+          <p><strong>From:</strong> ${escapeHtml(name)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+          <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
+          <p><strong>Message:</strong></p>
+          <p>${sanitizeForHtmlEmail(message)}</p>
+          <hr>
+          <p><small>Sent at ${sentAt.toLocaleString()}</small></p>
+        `,
+  };
 }

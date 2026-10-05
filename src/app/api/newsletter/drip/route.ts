@@ -1,7 +1,8 @@
 import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
-import { logError, logInfo } from "@/lib/logger";
-import { sendOnboardingEmail } from "@/lib/email";
+import { logInfo } from "@/lib/logger";
+import { deliverMail } from "@/lib/mail/deliver";
+import { renderOnboardingEmail } from "@/lib/mail/templates";
 
 type OnboardingState = {
   step?: number;
@@ -154,16 +155,15 @@ export const POST = withWriteRoute(
         continue;
       }
 
-      let ok = false;
-      try {
-        ok = await sendOnboardingEmail(email, token, nextStep, { topics });
-      } catch (error) {
-        logError("Newsletter drip send failed", error, {
-          component: "newsletter/drip",
-          email,
-          step: nextStep,
-        });
-      }
+      // deliverMail logs its own failures, and never with the address.
+      const rendered = renderOnboardingEmail(token, nextStep, { topics });
+      const outcome = rendered
+        ? await deliverMail(
+            { to: email, ...rendered },
+            { component: "newsletter/drip", action: "POST" }
+          )
+        : null;
+      const ok = outcome?.status === "delivered";
 
       if (!ok) {
         failed++;
