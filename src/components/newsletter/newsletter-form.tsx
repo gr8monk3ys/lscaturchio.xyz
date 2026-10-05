@@ -5,6 +5,7 @@ import { Mail, Loader2, Check, AlertCircle } from 'lucide-react'
 import { NEWSLETTER_TOPICS, type NewsletterTopicId } from '@/constants/newsletter'
 import { cn } from '@/lib/utils'
 import { submitWrite } from '@/lib/fetcher'
+import { useFormGuard } from '@/hooks/use-form-guard'
 
 type SubscriptionStatus = 'idle' | 'loading' | 'success' | 'error'
 
@@ -59,6 +60,9 @@ export function NewsletterForm({
   const [status, setStatus] = useState<SubscriptionStatus>('idle')
   const [message, setMessage] = useState('')
   const [topics, setTopics] = useState<NewsletterTopicId[]>(() => normalizeTopics(defaultTopics))
+  // The route mails whatever address it is given, so it runs the human form
+  // guard; this is the browser's half of it.
+  const guard = useFormGuard()
 
   const toggleTopic = (id: NewsletterTopicId) => {
     setTopics((prev) => {
@@ -78,12 +82,14 @@ export function NewsletterForm({
       email,
       topics,
       source: sourcePath,
+      ...guard.fields(),
     })
 
     if (result.kind === 'ok') {
       setStatus('success')
       setMessage(result.data?.message || 'Successfully subscribed!')
       setEmail('')
+      guard.reset()
     } else if (result.kind === 'network') {
       setStatus('error')
       setMessage('Network error. Please try again.')
@@ -145,6 +151,8 @@ export function NewsletterForm({
             className="w-full pl-11 pr-4 py-3 rounded-xl neu-input text-foreground placeholder:text-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
+
+        {guard.honeypot}
 
         <button
           type="submit"
