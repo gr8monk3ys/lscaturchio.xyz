@@ -13,6 +13,11 @@ interface UseLightboxReturn<T extends LightboxItem> {
   goToNext: () => void
 }
 
+function isEditable(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false
+  return target.isContentEditable || target.matches('input, textarea, select')
+}
+
 export function useLightbox<T extends LightboxItem>(items: T[]): UseLightboxReturn<T> {
   const [currentItem, setCurrentItem] = useState<T | null>(null)
   const [currentIndex, setCurrentIndex] = useState(-1)
@@ -45,9 +50,14 @@ export function useLightbox<T extends LightboxItem>(items: T[]): UseLightboxRetu
   // modal, and `useModalOverlay` owns Escape for every modal. A second
   // listener here ignored which overlay was on top, so with ⌘K's palette open
   // over the lightbox one Escape closed both.
+  //
+  // Arrows inside a text field belong to the field. ⌘K opens the palette over
+  // the lightbox, and Left/Right in its input moved the caret AND paged the
+  // photo underneath.
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!currentItem) return
+      if (isEditable(event.target)) return
       switch (event.key) {
         case 'ArrowLeft':
           goToPrevious()

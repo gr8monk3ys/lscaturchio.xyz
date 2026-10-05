@@ -158,4 +158,19 @@ describe("photo lightbox", () => {
     fireEvent.keyDown(window, { key: "ArrowLeft" });
     expect(screen.getByRole("dialog", { name: "Pines after rain" })).toBeInTheDocument();
   });
+
+  // ⌘K opens the palette over the lightbox; arrows in its input move the
+  // caret and must not page the photo underneath.
+  it("leaves arrow keys typed into a text field alone", async () => {
+    render(<PhotosGrid />);
+    await openFrom("Pines after rain");
+    const field = document.createElement("input");
+    document.body.appendChild(field);
+    try {
+      fireEvent.keyDown(field, { key: "ArrowRight" });
+      expect(screen.getByRole("dialog", { name: "Pines after rain" })).toBeInTheDocument();
+    } finally {
+      field.remove();
+    }
+  });
 });
