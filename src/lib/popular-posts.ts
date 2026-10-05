@@ -25,12 +25,10 @@ export async function getPopularPosts(limit: number = 5): Promise<{
   const blogMap = new Map(allBlogs.map((b) => [b.slug, b]))
 
   if (!isDatabaseConfigured()) {
+    // The catalogue already answers newest first.
     const posts = allBlogs
-      .map((b) => ({ b, t: new Date(b.date).getTime() }))
-      .filter((x) => Number.isFinite(x.t))
-      .sort((a, c) => c.t - a.t)
       .slice(0, clampedLimit)
-      .map(({ b }) => ({
+      .map((b) => ({
         slug: b.slug,
         title: b.title,
         description: b.description,

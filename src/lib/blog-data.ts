@@ -20,7 +20,7 @@ export interface BlogTagFields {
  * This rule lives here and nowhere else, and it has to be asked *before*
  * `clampBlogDateToToday` runs. The clamp rewrites a future date to today, so a
  * clamped record can never look unpublished and any date comparison downstream
- * of the clamp is a no-op that silently passes everything. `readBlog` asks this
+ * of the clamp is a no-op that silently passes everything. `toBlogPost` asks this
  * of the raw date and stores the answer as `published`; every consumer reads
  * the flag instead of re-deriving it.
  */
@@ -71,16 +71,18 @@ export interface BlogStatsSummary {
   topTags: BlogTagCount[];
 }
 
-export function getTodayIsoDate(): string {
-  return new Date().toISOString().slice(0, 10);
+export function getTodayIsoDate(now: Date = new Date()): string {
+  return now.toISOString().slice(0, 10);
 }
 
-export function clampBlogDateToToday(date: string): string {
+export function clampBlogDateToToday(
+  date: string,
+  today: string = getTodayIsoDate()
+): string {
   if (!BLOG_DATE_PATTERN.test(date)) {
     return date;
   }
 
-  const today = getTodayIsoDate();
   return date > today ? today : date;
 }
 
@@ -105,8 +107,13 @@ export function sortBlogsByDateDescending<T extends BlogDateFields>(
 
 /**
  * Newest-first list of the posts that are live. Reads the `published` flag
- * `readBlog` computed; it deliberately does not look at `date` again, because
- * by the time a record gets here its date has been clamped for display.
+ * the catalogue computed at its read seam; it deliberately does not look at
+ * `date` again, because by the time a record gets here its date has been
+ * clamped for display.
+ *
+ * Callers do not apply this themselves: the essay catalogue
+ * (`src/lib/getAllBlogs.ts`) answers published-only by default and is the one
+ * place this runs.
  */
 export function getPublishedBlogs<T extends BlogPublicationFields>(
   blogs: readonly T[]
@@ -160,27 +167,5 @@ export function toBlogPreview<T extends BlogPreviewSource>(blog: T): BlogPreview
     tags: blog.tags,
     image: blog.image || DEFAULT_BLOG_IMAGE,
     stage: blog.stage,
-  };
-}
-
-/**
- * The homepage's single source of blog sections. Both halves come off the same
- * published list, so the "latest" strip and the themed index can never disagree
- * about what has shipped.
- */
-export function splitHomepageBlogs<
-  T extends BlogPreviewSource & BlogPublicationFields,
->(
-  blogs: readonly T[],
-  { recentCount = 3 }: { recentCount?: number } = {}
-): {
-  publishedBlogs: BlogPreview[];
-  recentBlogs: BlogPreview[];
-} {
-  const publishedBlogs = getPublishedBlogs(blogs).map(toBlogPreview);
-
-  return {
-    publishedBlogs,
-    recentBlogs: publishedBlogs.slice(0, recentCount),
   };
 }

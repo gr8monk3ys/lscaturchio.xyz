@@ -38,7 +38,8 @@ const handleGet = async (request: NextRequest) => {
 
   try {
     const sql = getDb();
-    const allBlogs = await getAllBlogs();
+    // Admin: name every essay, scheduled ones included.
+    const allBlogs = await getAllBlogs({ includeScheduled: true });
     const blogMap = new Map(allBlogs.map((blog) => [blog.slug, blog.title]));
 
     // Fetch newsletter stats

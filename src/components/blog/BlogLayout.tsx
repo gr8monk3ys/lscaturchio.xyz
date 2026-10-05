@@ -21,7 +21,7 @@ import { GiscusComments } from "./giscus-comments";
 import { RelatedPosts } from "./related-posts";
 import { BlogSidebar, EssayContentsInline } from "./blog-sidebar";
 import Link from "next/link";
-import { getTopicHubsForTags } from "@/constants/topics";
+import { rankThemesForTags } from "@/lib/blog-themes";
 import { getSiteUrl } from "@/lib/site-url";
 import { clampBlogDateToToday } from "@/lib/blog-data";
 import { getReadingTimeMinutes } from "@/lib/getAllBlogs";
@@ -63,7 +63,7 @@ export async function BlogLayout({
 }: BlogLayoutProps) {
   const safeDate = clampBlogDateToToday(meta.date);
   const safeUpdated = meta.updated ? clampBlogDateToToday(meta.updated) : undefined;
-  const relatedHubs = getTopicHubsForTags(meta.tags);
+  const relatedHubs = rankThemesForTags(meta.tags);
   const pathname = `/blog/${slug}`;
 
   if (isRssFeed) {

@@ -9,7 +9,6 @@ import {
   isBlogPublished,
   sortBlogsByDateDescending,
   getBlogStats,
-  splitHomepageBlogs,
 } from "@/lib/blog-data";
 
 const base = {
@@ -31,6 +30,10 @@ describe("toBlogPreview", () => {
   it("leaves stage undefined when absent", () => {
     expect(toBlogPreview(base).stage).toBeUndefined();
   });
+
+  it("fills in the default cover image", () => {
+    expect(toBlogPreview({ ...base, image: undefined }).image).toContain("default");
+  });
 });
 
 describe("clampBlogDateToToday", () => {
@@ -40,6 +43,13 @@ describe("clampBlogDateToToday", () => {
 
   it("clamps future dates to today", () => {
     expect(clampBlogDateToToday("2999-01-01")).toBe(getTodayIsoDate());
+  });
+
+  it("clamps against an injected today", () => {
+    const today = getTodayIsoDate(new Date("2026-06-15T23:00:00Z"));
+    expect(today).toBe("2026-06-15");
+    expect(clampBlogDateToToday("2026-07-01", today)).toBe("2026-06-15");
+    expect(clampBlogDateToToday("2026-06-01", today)).toBe("2026-06-01");
   });
 
   it("passes malformed dates through untouched", () => {
@@ -124,34 +134,5 @@ describe("getBlogStats", () => {
     const empty = getBlogStats([]);
     expect(empty.avgReadingTime).toBe(0);
     expect(empty.topTags).toEqual([]);
-  });
-});
-
-describe("splitHomepageBlogs", () => {
-  const mk = (slug: string, date: string, published = true) => ({
-    slug,
-    title: slug,
-    description: "",
-    date,
-    tags: [],
-    published,
-  });
-  const posts = [
-    ...Array.from({ length: 15 }, (_, i) =>
-      mk(`post-${i}`, `2025-05-${String(15 - i).padStart(2, "0")}`)
-    ),
-    mk("unpublished", "2999-01-01", false),
-  ];
-
-  it("gives both homepage sections the same published set", () => {
-    const { recentBlogs, publishedBlogs } = splitHomepageBlogs(posts);
-    expect(publishedBlogs).toHaveLength(15);
-    expect(publishedBlogs.map((b) => b.slug)).not.toContain("unpublished");
-    expect(recentBlogs).toEqual(publishedBlogs.slice(0, 3));
-  });
-
-  it("fills in the default cover image on previews", () => {
-    const { recentBlogs } = splitHomepageBlogs([mk("bare", "2025-01-01")]);
-    expect(recentBlogs[0].image).toContain("default");
   });
 });

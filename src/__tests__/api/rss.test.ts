@@ -149,18 +149,6 @@ describe('/api/rss', () => {
     expect(body).toContain('<a href="https://lscaturchio.xyz/blog/other">a link</a>');
   });
 
-  it('leaves scheduled (unpublished) posts out of the feed', async () => {
-    vi.mocked(getAllBlogs).mockResolvedValue([
-      blog({ slug: 'live', title: 'Live' }),
-      blog({ slug: 'scheduled', title: 'Scheduled', published: false }),
-    ]);
-
-    const body = await (await GET(new NextRequest('http://localhost/api/rss', { method: 'GET' }))).text();
-
-    expect(body.match(/<item>/g)?.length).toBe(1);
-    expect(body).not.toContain('https://lscaturchio.xyz/blog/scheduled');
-  });
-
   it('chooses an image MIME type by extension', async () => {
     vi.mocked(getAllBlogs).mockResolvedValue([
       blog({ slug: 'png-post', image: '/images/blog/png-post.png' }),

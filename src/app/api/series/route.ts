@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getSeriesPosts } from "@/lib/getAllBlogs";
+import { listSeries } from "@/lib/getAllBlogs";
 import { logError } from "@/lib/logger";
 import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
 import { apiSuccess, ApiErrors } from "@/lib/api-response";
@@ -16,7 +16,8 @@ const handleGet = async (req: NextRequest) => {
       return ApiErrors.badRequest("Series name is required");
     }
 
-    const posts = await getSeriesPosts(seriesName);
+    const posts =
+      (await listSeries()).find((series) => series.name === seriesName)?.posts ?? [];
 
     const simplifiedPosts = posts.map((post) => ({
       slug: post.slug,

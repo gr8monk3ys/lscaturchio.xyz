@@ -16,10 +16,10 @@ vi.mock('@/lib/logger', () => ({
 }));
 
 import { getSiteStats } from '@/lib/site-stats';
-import { getAllBlogs } from '@/lib/getAllBlogs';
+import { getAllBlogs, type BlogPost } from '@/lib/getAllBlogs';
 import { isDatabaseConfigured } from '@/lib/db';
 
-function post(slug: string, readingTimeMinutes = 6) {
+function post(slug: string, readingTimeMinutes = 6): BlogPost {
   return {
     slug,
     title: `Title for ${slug}`,
@@ -27,6 +27,9 @@ function post(slug: string, readingTimeMinutes = 6) {
     date: '2025-01-01',
     tags: ['ai'],
     image: `/images/${slug}.webp`,
+    content: '',
+    published: true,
+    words: readingTimeMinutes * 200,
     readingTimeMinutes,
   };
 }
@@ -68,7 +71,7 @@ describe('getSiteStats', () => {
 
   it('sums every view row but ranks only the top seven', async () => {
     vi.mocked(getAllBlogs).mockResolvedValue(
-      Array.from({ length: 9 }, (_, index) => post(`p${index}`)) as never
+      Array.from({ length: 9 }, (_, index) => post(`p${index}`))
     );
     routeSql({
       views: () => Array.from({ length: 9 }, (_, index) => ({ slug: `p${index}`, count: 10 })),
@@ -86,7 +89,7 @@ describe('getSiteStats', () => {
     // The same guard `/api/views` and `popular-posts` carry: a row for a
     // deleted or renamed post must not surface with the raw slug as a title,
     // and must not inflate the total either.
-    vi.mocked(getAllBlogs).mockResolvedValue([post('real-post')] as never);
+    vi.mocked(getAllBlogs).mockResolvedValue([post('real-post')]);
     routeSql({
       views: () => [
         { slug: 'buy-cheap-stuff', count: 9999 },
@@ -106,7 +109,7 @@ describe('getSiteStats', () => {
     // The defect this module exists to close. A page that renders "0" for a
     // failed query is not degraded, it is wrong: zero views is a real,
     // reportable state and a dead database must not be able to claim it.
-    vi.mocked(getAllBlogs).mockResolvedValue([post('p1')] as never);
+    vi.mocked(getAllBlogs).mockResolvedValue([post('p1')]);
     routeSql({
       views: () => {
         throw new Error('connection terminated');
@@ -125,7 +128,7 @@ describe('getSiteStats', () => {
   it('keeps views available when only the subscriber count fails', async () => {
     // Two sources, two verdicts. One failure used to be indistinguishable
     // from the other because a single skeleton covered both.
-    vi.mocked(getAllBlogs).mockResolvedValue([post('p1')] as never);
+    vi.mocked(getAllBlogs).mockResolvedValue([post('p1')]);
     routeSql({
       views: () => [{ slug: 'p1', count: 5 }],
       subscribers: () => {
@@ -143,7 +146,7 @@ describe('getSiteStats', () => {
 
   it('still reports the numbers that come off the filesystem with no database', async () => {
     vi.mocked(isDatabaseConfigured).mockReturnValue(false);
-    vi.mocked(getAllBlogs).mockResolvedValue([post('p1', 4), post('p2', 8)] as never);
+    vi.mocked(getAllBlogs).mockResolvedValue([post('p1', 4), post('p2', 8)]);
 
     const stats = await getSiteStats();
 
@@ -155,7 +158,7 @@ describe('getSiteStats', () => {
   });
 
   it('dates the snapshot, so a stale page can be told from a broken one', async () => {
-    vi.mocked(getAllBlogs).mockResolvedValue([post('p1')] as never);
+    vi.mocked(getAllBlogs).mockResolvedValue([post('p1')]);
     routeSql({ views: () => [{ slug: 'p1', count: 1 }] });
 
     const stats = await getSiteStats();
@@ -165,7 +168,7 @@ describe('getSiteStats', () => {
   });
 
   it('reads a null count as zero views rather than dropping the row', async () => {
-    vi.mocked(getAllBlogs).mockResolvedValue([post('p1')] as never);
+    vi.mocked(getAllBlogs).mockResolvedValue([post('p1')]);
     routeSql({ views: () => [{ slug: 'p1', count: null }] });
 
     const stats = await getSiteStats();
