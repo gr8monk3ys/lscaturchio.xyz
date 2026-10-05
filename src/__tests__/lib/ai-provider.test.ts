@@ -87,6 +87,19 @@ describe('ai-provider', () => {
     expect(isOpenAIEnabled()).toBe(true);
   });
 
+  // /api/summarize sends reader text to OpenAI. An error whose MESSAGE merely
+  // contains an auth word must not switch OpenAI off for every reader; only a
+  // real 401/403 from the API may.
+  it('falls back on an auth-worded message without a 401/403, but leaves OpenAI on', async () => {
+    const { disableOpenAIOnAuthError, isOpenAIEnabled } = await load();
+
+    expect(disableOpenAIOnAuthError(new Error('Unauthorized words in your text'))).toBe(true);
+    expect(
+      disableOpenAIOnAuthError(Object.assign(new Error('authentication mentioned'), { status: 400 }))
+    ).toBe(true);
+    expect(isOpenAIEnabled()).toBe(true);
+  });
+
   it('a key refused while embedding turns OpenAI off for chat and summaries too', async () => {
     embeddingsCreate.mockRejectedValue(refused());
     const { createEmbedding, generateChatAnswer, summarizeContent, getEmbeddingProvider } =

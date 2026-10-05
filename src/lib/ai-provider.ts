@@ -11,7 +11,7 @@
 
 import type OpenAI from 'openai';
 import { logWarn } from './logger';
-import { getErrorMessage, isOpenAIAuthOrConfigError } from './openai-errors';
+import { getErrorMessage, getErrorStatus, isOpenAIAuthOrConfigError } from './openai-errors';
 
 const CLIENT_OPTIONS = { timeout: 30_000, maxRetries: 1 } as const;
 
@@ -45,12 +45,20 @@ export async function getOpenAIClient(): Promise<OpenAI | null> {
 }
 
 /**
- * Report an error from an OpenAI call. An auth/config error turns OpenAI off
- * for every consumer and returns true, meaning "fall back, do not retry"; any
- * other error returns false and changes nothing.
+ * Report an error from an OpenAI call. An auth/config error returns true,
+ * meaning "fall back, do not retry"; any other error returns false.
+ *
+ * Only a real 401/403 from the API turns OpenAI off for every consumer. The
+ * message-text matches in `isOpenAIAuthOrConfigError` still make THIS call fall
+ * back, but they must not flip the process-wide switch: /api/summarize sends
+ * reader-supplied text to OpenAI, and an error that echoed a word like
+ * "unauthorized" would otherwise disable chat and search for every reader
+ * until the instance recycled.
  */
 export function disableOpenAIOnAuthError(error: unknown): boolean {
   if (!isOpenAIAuthOrConfigError(error)) return false;
+  const status = getErrorStatus(error);
+  if (status !== 401 && status !== 403) return true;
   if (!openaiDisabled) {
     openaiDisabled = true;
     if (process.env.NODE_ENV !== 'production') {
