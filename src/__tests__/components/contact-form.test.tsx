@@ -1,13 +1,22 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { CONTACT_FIELD_LIMITS } from "@/lib/validations";
+import { submitWrite, type WriteResult } from "@/lib/fetcher";
 
-const fetchMock = vi.fn<typeof fetch>();
+/**
+ * The form is tested against decoder results, not hand-written HTTP bodies.
+ * What each layer of the real route answers, and the kind it decodes to, is
+ * pinned once against the real chain in src/__tests__/api/write-chain.test.ts;
+ * the fixtures this replaced included a `{}` 429 the server never sends.
+ */
+vi.mock("@/lib/fetcher", () => ({ submitWrite: vi.fn() }));
+const submitMock = vi.mocked(submitWrite);
 
-function jsonResponse(body: unknown, ok = true, status = ok ? 200 : 400): Response {
-  return { ok, status, json: async () => body } as Response;
-}
+const SENT: WriteResult<unknown> = {
+  kind: "ok",
+  data: { message: "Message sent successfully! I'll get back to you soon." },
+};
 
 function fillForm() {
   fireEvent.change(screen.getByLabelText("Name"), {
@@ -31,13 +40,8 @@ function submitForm() {
   fireEvent.submit(form as HTMLFormElement);
 }
 
-beforeEach(() => {
-  vi.stubGlobal("fetch", fetchMock);
-});
-
 afterEach(() => {
-  fetchMock.mockReset();
-  vi.unstubAllGlobals();
+  submitMock.mockReset();
 });
 
 describe("ContactForm", () => {
@@ -75,7 +79,7 @@ describe("ContactForm", () => {
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();
     });
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(submitMock).not.toHaveBeenCalled();
   });
 
   it("moves focus to the first field that fails client validation", async () => {
@@ -98,7 +102,7 @@ describe("ContactForm", () => {
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();
     });
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(submitMock).not.toHaveBeenCalled();
     expect(screen.getByLabelText("Email")).toHaveFocus();
   });
 
@@ -109,7 +113,7 @@ describe("ContactForm", () => {
   });
 
   it("posts the form data to /api/contact and shows the success message", async () => {
-    fetchMock.mockResolvedValueOnce(jsonResponse({}));
+    submitMock.mockResolvedValueOnce(SENT);
     render(<ContactForm />);
 
     fillForm();
@@ -119,12 +123,8 @@ describe("ContactForm", () => {
       expect(screen.getByText(/message sent/i)).toBeInTheDocument();
     });
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe("/api/contact");
-    expect(init?.method).toBe("POST");
-    expect(init?.headers).toEqual({ "Content-Type": "application/json" });
-    expect(JSON.parse(String(init?.body))).toEqual({
+    expect(submitMock).toHaveBeenCalledTimes(1);
+    expect(submitMock).toHaveBeenCalledWith("/api/contact", {
       name: "Ada Lovelace",
       email: "ada@example.com",
       subject: "RAG audit",
@@ -143,7 +143,7 @@ describe("ContactForm", () => {
     let now = 1_000;
     const clock = vi.spyOn(performance, "now").mockImplementation(() => now);
     try {
-      fetchMock.mockResolvedValueOnce(jsonResponse({}));
+      submitMock.mockResolvedValueOnce(SENT);
       const { container } = render(<ContactForm />);
 
       fillForm();
@@ -153,8 +153,8 @@ describe("ContactForm", () => {
       now = 13_000;
       submitForm();
 
-      await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
-      const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
+      await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1));
+      const body = submitMock.mock.calls[0][1] as Record<string, unknown>;
       expect(body.contact_ref).toBe("https://spam.example");
       expect(body.elapsedMs).toBe(12_000);
     } finally {
@@ -165,25 +165,20 @@ describe("ContactForm", () => {
   /**
    * BotID wraps fetch and waits on its challenge before the request leaves;
    * a blocked or silent challenge used to leave the button on "Sending..."
-   * forever.
+   * forever. submitWrite owns the 20s ceiling (pinned in write-chain.test.ts);
+   * the form owns saying so and giving the button back.
    */
   it("gives up and says so when the send never answers", async () => {
-    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-    try {
-      fetchMock.mockReturnValueOnce(new Promise<Response>(() => {}));
-      render(<ContactForm />);
+    submitMock.mockResolvedValueOnce({ kind: "network", cause: "timeout" });
+    render(<ContactForm />);
 
-      fillForm();
-      submitForm();
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(20_000);
-      });
+    fillForm();
+    submitForm();
 
+    await waitFor(() => {
       expect(screen.getByText(/did not reach the server/i)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /send project details/i })).toBeEnabled();
-    } finally {
-      vi.useRealTimers();
-    }
+    });
+    expect(screen.getByRole("button", { name: /send project details/i })).toBeEnabled();
   });
 
   it("keeps the honeypot away from people: hidden, untabbable, never autofilled", () => {
@@ -198,7 +193,7 @@ describe("ContactForm", () => {
   });
 
   it("clears the fields after a successful submit", async () => {
-    fetchMock.mockResolvedValueOnce(jsonResponse({}));
+    submitMock.mockResolvedValueOnce(SENT);
     render(<ContactForm />);
 
     fillForm();
@@ -217,13 +212,11 @@ describe("ContactForm", () => {
     // The API diagnoses each failure separately — a rate limit, a missing mail
     // key, a rejected field, an upstream outage — and this component used to
     // print "Message failed to send. Please try again" over all of them.
-    fetchMock.mockResolvedValueOnce(
-      jsonResponse(
-        { error: "Contact form is temporarily unavailable. Please try again later." },
-        false,
-        500
-      )
-    );
+    submitMock.mockResolvedValueOnce({
+      kind: "server-error",
+      status: 500,
+      message: "Contact form is temporarily unavailable. Please try again later.",
+    });
     render(<ContactForm />);
 
     fillForm();
@@ -241,9 +234,11 @@ describe("ContactForm", () => {
   });
 
   it("puts a field error beside the field it names, not under the button", async () => {
-    fetchMock.mockResolvedValueOnce(
-      jsonResponse({ error: "Invalid email format", field: "email" }, false, 400)
-    );
+    submitMock.mockResolvedValueOnce({
+      kind: "invalid-field",
+      field: "email",
+      message: "Invalid email format",
+    });
     render(<ContactForm />);
 
     fillForm();
@@ -261,7 +256,7 @@ describe("ContactForm", () => {
   });
 
   it("names a dropped connection as such when the request throws", async () => {
-    fetchMock.mockRejectedValueOnce(new Error("network down"));
+    submitMock.mockResolvedValueOnce({ kind: "network", cause: "unreachable" });
     render(<ContactForm />);
 
     fillForm();
@@ -272,16 +267,51 @@ describe("ContactForm", () => {
     });
   });
 
-  it("falls back to its own sentence when the body carries no reason", async () => {
-    fetchMock.mockResolvedValueOnce(jsonResponse({}, false, 429));
+  /**
+   * The server's 429 always says "Too many requests", and the form used to
+   * prefer that over its own sentence, so its own sentence, written for this
+   * case, was unreachable. The test that covered it mocked a `{}` body.
+   */
+  it.each([
+    [240, "Try again in 4 minutes."],
+    [45, "Try again in a minute."],
+    [null, "Try again in a few minutes."],
+  ])("says a rate limit in its own words, with the wait (retryAfter %s)", async (retryAfter, wait) => {
+    submitMock.mockResolvedValueOnce({
+      kind: "rate-limited",
+      retryAfter,
+      message: "Too many requests",
+    });
     render(<ContactForm />);
 
     fillForm();
     submitForm();
 
     await waitFor(() => {
-      expect(screen.getByText(/too many messages/i)).toBeInTheDocument();
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        `Too many messages from this address in a short window. ${wait}`
+      );
     });
+    expect(screen.queryByText(/^Too many requests/)).not.toBeInTheDocument();
+    // Names no field, so the direct address is offered.
+    expect(screen.getByRole("link", { name: "lorenzosca7@protonmail.ch" })).toBeInTheDocument();
+  });
+
+  it("relays a BotID refusal, and offers the direct address", async () => {
+    submitMock.mockResolvedValueOnce({
+      kind: "refused",
+      status: 403,
+      message: "This message was flagged as automated and was not sent.",
+    });
+    render(<ContactForm />);
+
+    fillForm();
+    submitForm();
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent(/flagged as automated/i);
+    });
+    expect(screen.getByRole("link", { name: "lorenzosca7@protonmail.ch" })).toBeInTheDocument();
   });
 
   it("moves focus to the field the failure names", async () => {
@@ -290,9 +320,11 @@ describe("ContactForm", () => {
     // is still on the submit button, whose status region stays deliberately
     // silent for field-scoped failures. So the form answered a screen-reader
     // user with nothing at all. Focus is the announcement.
-    fetchMock.mockResolvedValueOnce(
-      jsonResponse({ error: "Invalid email format", field: "email" }, false, 400)
-    );
+    submitMock.mockResolvedValueOnce({
+      kind: "invalid-field",
+      field: "email",
+      message: "Invalid email format",
+    });
     render(<ContactForm />);
 
     fillForm();
@@ -312,7 +344,7 @@ describe("ContactForm", () => {
   it("leaves focus alone when the failure names no field", async () => {
     // Nothing to correct in a particular input, so stealing focus would move
     // the reader away from the form for no reason; the alert carries it.
-    fetchMock.mockResolvedValueOnce(jsonResponse({}, false, 500));
+    submitMock.mockResolvedValueOnce({ kind: "server-error", status: 502, message: null });
     render(<ContactForm />);
 
     fillForm();
@@ -330,7 +362,7 @@ describe("ContactForm", () => {
     // the reader is about to walk away believing the message went. Both used
     // one aria-live="polite" region, which queues the failure behind whatever
     // else is speaking.
-    fetchMock.mockResolvedValueOnce(jsonResponse({}, false, 500));
+    submitMock.mockResolvedValueOnce({ kind: "server-error", status: 502, message: null });
     render(<ContactForm />);
 
     const alert = screen.getByRole("alert");
@@ -353,7 +385,7 @@ describe("ContactForm", () => {
   });
 
   it("puts the confirmation in the polite region, not the alert", async () => {
-    fetchMock.mockResolvedValueOnce(jsonResponse({}));
+    submitMock.mockResolvedValueOnce(SENT);
     render(<ContactForm />);
 
     fillForm();
@@ -432,9 +464,11 @@ describe("ContactForm", () => {
   });
 
   it("describes a field by both its error and its countdown when it has both", () => {
-    fetchMock.mockResolvedValueOnce(
-      jsonResponse({ error: "Subject is too long", field: "subject" }, false, 400)
-    );
+    submitMock.mockResolvedValueOnce({
+      kind: "invalid-field",
+      field: "subject",
+      message: "Subject is too long",
+    });
     render(<ContactForm />);
 
     fillForm();
@@ -452,11 +486,11 @@ describe("ContactForm", () => {
   });
 
   it("disables the button and shows Sending... while the request is in flight", async () => {
-    let resolveFetch!: (value: Response) => void;
-    fetchMock.mockImplementationOnce(
+    let resolveSend!: (value: WriteResult<unknown>) => void;
+    submitMock.mockImplementationOnce(
       () =>
-        new Promise<Response>((resolve) => {
-          resolveFetch = resolve;
+        new Promise<WriteResult<unknown>>((resolve) => {
+          resolveSend = resolve;
         })
     );
     render(<ContactForm />);
@@ -468,7 +502,7 @@ describe("ContactForm", () => {
       expect(screen.getByRole("button", { name: /sending/i })).toBeDisabled();
     });
 
-    act(() => resolveFetch(jsonResponse({})));
+    act(() => resolveSend(SENT));
 
     await waitFor(() => {
       expect(

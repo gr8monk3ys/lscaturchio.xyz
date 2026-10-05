@@ -58,12 +58,16 @@ test.describe('Newsletter Subscription', () => {
     expect(await emailInput.getAttribute('type')).toBe('email')
   })
 
-  test('duplicate subscription shows error message', async ({ page }) => {
+  test('a refused subscription shows the server reason', async ({ page }) => {
+    // The real 429 envelope. This used to mock a 409 "Already subscribed",
+    // which the route never sends: every subscribe outcome answers alike so
+    // the endpoint cannot be used to test whether an address is on the list.
     await page.route('**/api/newsletter/subscribe', (route) =>
       route.fulfill({
-        status: 409,
+        status: 429,
         contentType: 'application/json',
-        body: JSON.stringify({ error: 'Already subscribed' }),
+        headers: { 'Retry-After': '300' },
+        body: JSON.stringify({ success: false, error: 'Too many requests', retryAfter: 300 }),
       })
     )
 
@@ -73,7 +77,7 @@ test.describe('Newsletter Subscription', () => {
     const submitButton = page.locator('button[type="submit"]').filter({ hasText: 'Subscribe' }).first()
     await submitButton.click()
 
-    await expect(page.getByText('Already subscribed').first()).toBeVisible({ timeout: 15000 })
+    await expect(page.getByText('Too many requests').first()).toBeVisible({ timeout: 15000 })
   })
 
   test('topic buttons can be toggled', async ({ page }) => {

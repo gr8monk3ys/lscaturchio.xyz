@@ -5,6 +5,7 @@ import { Heading } from '@/components/Heading'
 import { Check, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import { submitWrite } from '@/lib/fetcher'
 
 /**
  * `confirm` is an active subscription waiting on the reader. The page never
@@ -28,25 +29,20 @@ export function UnsubscribePageClient({
 
   const confirm = async () => {
     setPending(true)
-    try {
-      const response = await fetch('/api/newsletter/unsubscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token }),
-      })
-      const data = await response.json().catch(() => null)
-      if (response.ok) {
-        setStatus('success')
-        setMessage(data?.data?.message || 'Successfully unsubscribed')
-      } else {
-        setStatus('error')
-        setMessage(data?.error || 'Failed to unsubscribe. Please try again later.')
-      }
-    } catch {
+    const result = await submitWrite<{ message?: string }>('/api/newsletter/unsubscribe', {
+      token,
+    })
+    setPending(false)
+
+    if (result.kind === 'ok') {
+      setStatus('success')
+      setMessage(result.data?.message || 'Successfully unsubscribed')
+    } else if (result.kind === 'network') {
       setStatus('error')
       setMessage('Network error. Please try again later.')
-    } finally {
-      setPending(false)
+    } else {
+      setStatus('error')
+      setMessage(result.message || 'Failed to unsubscribe. Please try again later.')
     }
   }
 

@@ -18,6 +18,12 @@
  * so the `{ data, success }` shape cannot drift route by route. Handlers signal
  * expected failures by throwing `writeError.*`; anything else that escapes is
  * logged once and answered with the route's configured 500 message.
+ *
+ * The layers cannot spell one either. Auth and CSRF return a `Refusal` and
+ * this chain renders it; the rate limiter's 429 and every 400 and 500 here go
+ * through `api-response.ts`. So every failure a write route answers is
+ * `{ success: false, error, field?, retryAfter? }`, which is the one shape the
+ * browser side decodes (`submitWrite` in `src/lib/fetcher.ts`).
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -27,7 +33,7 @@ import { validateCsrf } from "@/lib/csrf";
 import { requireAdmin } from "@/lib/admin/session";
 import { validateApiKey } from "@/lib/api-auth";
 import { parseBody } from "@/lib/validations";
-import { apiSuccess, apiError, ApiErrors } from "@/lib/api-response";
+import { apiSuccess, apiError, ApiErrors, refusalResponse, type Refusal } from "@/lib/api-response";
 import { logError } from "@/lib/logger";
 
 /**
@@ -115,7 +121,7 @@ export const writeError = {
 
 type RouteHandler = (req: NextRequest) => Promise<NextResponse>;
 
-function checkAuth(req: NextRequest, config: WriteRouteConfig): NextResponse | null {
+function checkAuth(req: NextRequest, config: WriteRouteConfig): Refusal | null {
   const auth = config.auth;
   switch (auth.kind) {
     case "public":
@@ -161,13 +167,13 @@ export function withWriteRoute<S extends ZodSchema>(
 ): RouteHandler {
   const chain = async (req: NextRequest): Promise<NextResponse> => {
     // 1. auth — before CSRF, matching the order the admin routes already used.
-    const authError = checkAuth(req, config as WriteRouteConfig);
-    if (authError) return authError;
+    const authRefusal = checkAuth(req, config as WriteRouteConfig);
+    if (authRefusal) return refusalResponse(authRefusal);
 
     // 2. CSRF
     if (config.csrf.kind === "required") {
-      const csrfError = validateCsrf(req);
-      if (csrfError) return csrfError;
+      const csrfRefusal = validateCsrf(req);
+      if (csrfRefusal) return refusalResponse(csrfRefusal);
     }
 
     try {

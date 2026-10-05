@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import crypto from 'crypto';
 
 // Mock logger
@@ -100,11 +100,10 @@ describe('api-auth', () => {
         const request = createRequest('some-key');
         const result = validateApiKey(request);
 
-        expect(result).toBeInstanceOf(NextResponse);
+        expect(result).not.toBeNull();
         expect(result!.status).toBe(401);
 
-        const body = await result!.json();
-        expect(body.error).toBe('Unauthorized - API key required');
+        expect(result!.error).toBe('Unauthorized - API key required');
         expect(logError).toHaveBeenCalled();
       });
 
@@ -114,11 +113,10 @@ describe('api-auth', () => {
         const request = createRequest(null);
         const result = validateApiKey(request);
 
-        expect(result).toBeInstanceOf(NextResponse);
+        expect(result).not.toBeNull();
         expect(result!.status).toBe(401);
 
-        const body = await result!.json();
-        expect(body.error).toBe('Unauthorized - valid API key required');
+        expect(result!.error).toBe('Unauthorized - valid API key required');
       });
 
       it('returns 401 when provided API key is empty string', async () => {
@@ -127,11 +125,10 @@ describe('api-auth', () => {
         const request = createRequest('');
         const result = validateApiKey(request);
 
-        expect(result).toBeInstanceOf(NextResponse);
+        expect(result).not.toBeNull();
         expect(result!.status).toBe(401);
 
-        const body = await result!.json();
-        expect(body.error).toBe('Unauthorized - valid API key required');
+        expect(result!.error).toBe('Unauthorized - valid API key required');
       });
 
       it('returns 401 when provided API key is invalid', async () => {
@@ -140,11 +137,10 @@ describe('api-auth', () => {
         const request = createRequest('wrong-api-key');
         const result = validateApiKey(request);
 
-        expect(result).toBeInstanceOf(NextResponse);
+        expect(result).not.toBeNull();
         expect(result!.status).toBe(401);
 
-        const body = await result!.json();
-        expect(body.error).toBe('Unauthorized - valid API key required');
+        expect(result!.error).toBe('Unauthorized - valid API key required');
       });
 
       it('returns null (success) when API key is valid', () => {
@@ -171,7 +167,7 @@ describe('api-auth', () => {
         const request = createRequest('wrong-secret');
         const result = validateApiKey(request, { envKey: 'CUSTOM_API_KEY' });
 
-        expect(result).toBeInstanceOf(NextResponse);
+        expect(result).not.toBeNull();
         expect(result!.status).toBe(401);
       });
 
@@ -225,7 +221,7 @@ describe('api-auth', () => {
         // Invalid key should fail
         const invalidRequest = createRequest('wrong-key');
         const result = validateApiKey(invalidRequest);
-        expect(result).toBeInstanceOf(NextResponse);
+        expect(result).not.toBeNull();
         expect(result!.status).toBe(401);
       });
 

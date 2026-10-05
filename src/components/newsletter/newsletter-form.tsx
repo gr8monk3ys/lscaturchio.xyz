@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Mail, Loader2, Check, AlertCircle } from 'lucide-react'
 import { NEWSLETTER_TOPICS, type NewsletterTopicId } from '@/constants/newsletter'
 import { cn } from '@/lib/utils'
+import { submitWrite } from '@/lib/fetcher'
 
 type SubscriptionStatus = 'idle' | 'loading' | 'success' | 'error'
 
@@ -73,29 +74,25 @@ export function NewsletterForm({
     setStatus('loading')
     setMessage('')
 
-    try {
-      const response = await fetch('/api/newsletter/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, topics, source: sourcePath }),
-      })
+    const result = await submitWrite<{ message?: string }>('/api/newsletter/subscribe', {
+      email,
+      topics,
+      source: sourcePath,
+    })
 
-      const data = await response.json()
-
-      if (response.ok) {
-        setStatus('success')
-        // apiSuccess wraps the payload as { data, success }, so the message
-        // lives at data.data.message. Reading data.message meant the server
-        // text was never shown — the fallback below always won.
-        setMessage(data?.data?.message || 'Successfully subscribed!')
-        setEmail('')
-      } else {
-        setStatus('error')
-        setMessage(data.error || 'Failed to subscribe')
-      }
-    } catch {
+    if (result.kind === 'ok') {
+      setStatus('success')
+      setMessage(result.data?.message || 'Successfully subscribed!')
+      setEmail('')
+    } else if (result.kind === 'network') {
       setStatus('error')
       setMessage('Network error. Please try again.')
+    } else {
+      // A server that answered is not a network error, whatever its body. A
+      // gateway's HTML 502 used to throw in `response.json()` and land here
+      // as "Network error"; it now gets the fallback sentence below.
+      setStatus('error')
+      setMessage(result.message || 'Failed to subscribe')
     }
 
     // No timer. This used to clear the confirmation after five seconds, which

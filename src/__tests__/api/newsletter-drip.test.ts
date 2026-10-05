@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 const mockSql = vi.fn();
 
@@ -50,9 +50,7 @@ describe('/api/newsletter/drip', () => {
   });
 
   it('returns auth error when API key validation fails', async () => {
-    vi.mocked(validateApiKey).mockReturnValue(
-      NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    );
+    vi.mocked(validateApiKey).mockReturnValue({ status: 401, error: 'Unauthorized' });
 
     const response = await POST(createRequest());
     expect(response.status).toBe(401);

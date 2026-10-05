@@ -14,9 +14,14 @@
  *
  * It therefore also pins the LAYER ORDER, which is the property `withWriteRoute`
  * exists to guarantee: rate limit -> auth -> CSRF -> Zod -> handler -> envelope.
+ *
+ * The last section is the browser's side of the same contract: `submitWrite`
+ * (src/lib/fetcher.ts), the decoder every form posts through, fed these real
+ * responses rather than hand-written fixtures. A fixture is how the contact
+ * form's 429 test came to mock a `{}` body the server never sends.
  */
 
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 
 // ---------------------------------------------------------------------------
@@ -35,6 +40,7 @@ import { POST as dripPost } from '@/app/api/newsletter/drip/route';
 import { RATE_LIMIT_POLICIES } from '@/lib/rate-limit';
 import { installMailTransport } from '@/lib/mail/deliver';
 import { createOutbox } from '@/lib/mail/outbox';
+import { submitWrite } from '@/lib/fetcher';
 
 // The mailer. Every route that sends mail goes through deliverMail, so this
 // one transport catches all of it.
@@ -127,7 +133,9 @@ describe('CSRF layer (real @/lib/csrf)', () => {
     );
 
     expect(res.status).toBe(403);
-    expect((await res.json()).error).toBe('Missing origin header');
+    // The standard envelope. CSRF used to answer a bare `{ error }`, the one
+    // write-route failure without `success: false`.
+    expect(await res.json()).toEqual({ success: false, error: 'Missing origin header' });
     expect(outbox.sent).toHaveLength(0);
   });
 
@@ -178,6 +186,10 @@ describe('auth layer (real @/lib/api-auth)', () => {
     );
 
     expect(res.status).toBe(401);
+    expect(await res.json()).toEqual({
+      success: false,
+      error: 'Unauthorized - valid API key required',
+    });
     expect(mockSql).not.toHaveBeenCalled();
   });
 
@@ -464,5 +476,176 @@ describe('envelope layer', () => {
       field: 'email',
       success: false,
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The browser's decoder, over the real chain
+// ---------------------------------------------------------------------------
+describe('submitWrite: every layer decodes to its own kind (real routes)', () => {
+  const ROUTES: Record<string, (req: NextRequest) => Promise<Response>> = {
+    '/api/contact': contactPost,
+    '/api/newsletter/subscribe': subscribePost,
+    '/api/newsletter/drip': dripPost,
+  };
+
+  /**
+   * `fetch` as a browser on `origin` would make it: the request submitWrite
+   * builds, handed to the real route handler. The browser, not the page,
+   * attaches Origin, which is why it is a parameter here.
+   */
+  function browser(options: Pick<ReqOptions, 'origin' | 'ip'> = {}): void {
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+      const path = String(input);
+      const route = ROUTES[path];
+      if (!route) throw new Error(`no route stubbed for ${path}`);
+      return route(
+        makeRequest(`http://localhost:3000${path}`, {
+          ...options,
+          rawBody: String(init?.body),
+          headers: init?.headers as Record<string, string>,
+        })
+      );
+    });
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it('a success is ok, with the envelope unwrapped', async () => {
+    browser();
+    expect(
+      await submitWrite('/api/newsletter/subscribe', { email: 'reader@example.com' })
+    ).toEqual({
+      kind: 'ok',
+      data: { message: 'Thanks! Check your inbox to confirm your subscription.' },
+    });
+  });
+
+  it("a CSRF 403 is refused, with the layer's reason", async () => {
+    browser({ origin: 'https://evil.example' });
+    expect(await submitWrite('/api/contact', validContact)).toEqual({
+      kind: 'refused',
+      status: 403,
+      message: 'Invalid origin',
+    });
+  });
+
+  it('an API-key 401 is refused', async () => {
+    browser();
+    expect(await submitWrite('/api/newsletter/drip', {})).toEqual({
+      kind: 'refused',
+      status: 401,
+      message: 'Unauthorized - valid API key required',
+    });
+  });
+
+  it('a Zod 400 is invalid-field, naming the field', async () => {
+    browser();
+    expect(await submitWrite('/api/contact', { ...validContact, email: 'not-an-email' })).toEqual({
+      kind: 'invalid-field',
+      field: 'email',
+      message: 'Invalid email format',
+    });
+  });
+
+  it('a 429 is rate-limited, with the wait in seconds', async () => {
+    const ip = freshIp();
+    browser({ ip });
+    for (let i = 0; i < RATE_LIMIT_POLICIES.CONTACT.limit; i += 1) {
+      expect((await submitWrite('/api/contact', validContact)).kind).toBe('ok');
+    }
+
+    const result = await submitWrite('/api/contact', validContact);
+
+    expect(result).toEqual({
+      kind: 'rate-limited',
+      retryAfter: expect.any(Number),
+      message: 'Too many requests',
+    });
+    const windowSeconds = RATE_LIMIT_POLICIES.CONTACT.windowMs / 1000;
+    expect(result.kind === 'rate-limited' && result.retryAfter).toBeGreaterThan(0);
+    expect(result.kind === 'rate-limited' && result.retryAfter).toBeLessThanOrEqual(windowSeconds);
+  });
+
+  it("a handler writeError.internal is server-error, with the handler's sentence", async () => {
+    browser();
+    outbox.respondWith({ status: 'failed', reason: 'provider outage' });
+    expect(await submitWrite('/api/contact', validContact)).toEqual({
+      kind: 'server-error',
+      status: 500,
+      message: 'Failed to send message. Please try again later.',
+    });
+  });
+
+  it('a 5xx that is not JSON is still server-error, not a network failure', async () => {
+    // What a gateway answers when the function behind it dies: HTML, no envelope.
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response('<html><body>502 Bad Gateway</body></html>', {
+          status: 502,
+          headers: { 'content-type': 'text/html' },
+        })
+    );
+    expect(await submitWrite('/api/contact', validContact)).toEqual({
+      kind: 'server-error',
+      status: 502,
+      message: null,
+    });
+  });
+
+  it('a platform 429 with no envelope still reads the Retry-After header', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response('Too Many Requests', { status: 429, headers: { 'retry-after': '42' } })
+    );
+    expect(await submitWrite('/api/contact', validContact)).toEqual({
+      kind: 'rate-limited',
+      retryAfter: 42,
+      message: null,
+    });
+  });
+
+  it('a request that cannot leave is network/unreachable', async () => {
+    vi.stubGlobal('fetch', async () => {
+      throw new TypeError('Failed to fetch');
+    });
+    expect(await submitWrite('/api/contact', validContact)).toEqual({
+      kind: 'network',
+      cause: 'unreachable',
+    });
+  });
+
+  it('a send that never answers is network/timeout after 20s', async () => {
+    // BotID's fetch wrapper can wait on its challenge forever, before the
+    // request exists for an AbortSignal to cancel.
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    vi.stubGlobal('fetch', () => new Promise<Response>(() => {}));
+
+    let settled: unknown = 'pending';
+    void submitWrite('/api/contact', validContact).then((result) => {
+      settled = result;
+    });
+
+    await vi.advanceTimersByTimeAsync(19_999);
+    expect(settled).toBe('pending');
+    await vi.advanceTimersByTimeAsync(1);
+    expect(settled).toEqual({ kind: 'network', cause: 'timeout' });
+  });
+
+  it('timeoutMs: null waits for as long as the server takes', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    let answer!: (response: Response) => void;
+    vi.stubGlobal('fetch', () => new Promise<Response>((resolve) => (answer = resolve)));
+
+    const pending = submitWrite('/api/chat', {}, { timeoutMs: null });
+    await vi.advanceTimersByTimeAsync(120_000);
+    answer(new Response(JSON.stringify({ data: { answer: 'late' }, success: true }), { status: 200 }));
+
+    expect(await pending).toEqual({ kind: 'ok', data: { answer: 'late' } });
   });
 });
