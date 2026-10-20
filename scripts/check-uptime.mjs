@@ -15,7 +15,7 @@
  *    A status-only probe would have stayed green throughout.
  *
  * 2. /api/chat is intentionally NOT probed. It bills a real OpenAI call per
- *    request; on a 15-minute schedule that is ~2900 paid calls a month for no
+ *    request; on an hourly schedule that is ~720 paid calls a month for no
  *    added signal. Chat is covered post-deploy by scripts/smoke-chat.mjs, and
  *    /api/rag-status verifies the same dependencies for free.
  *
