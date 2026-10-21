@@ -7,15 +7,16 @@ export function Hero() {
       <div className="mx-auto grid max-w-6xl gap-12 py-16 md:grid-cols-[1fr_minmax(0,300px)] md:items-end md:py-24 lg:py-28">
         {/* The name is the work; everything else is the wall label. */}
         <div className="min-w-0 space-y-6">
-          <span className="label-mono block">Essays · Systems · Los Angeles</span>
+          <span className="label-mono block">Systems · Essays · Los Angeles</span>
 
           <h1 className="text-balance text-display">
             Hey, I&apos;m <span className="text-primary">Lorenzo Scaturchio</span>
           </h1>
 
           <p className="max-w-xl text-lg text-muted-foreground sm:text-xl">
-            I build AI systems and I&apos;m suspicious of them. I write about power,
-            attention, and what institutions are actually built to do.
+            I build AI and web tools that show their sources: retrieval that cites
+            what it read, automation that only decides what it safely can. I also
+            write essays about technology, attention and work.
           </p>
         </div>
 

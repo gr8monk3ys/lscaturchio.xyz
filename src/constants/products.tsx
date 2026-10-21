@@ -35,8 +35,8 @@ export const products: Product[] = [
     homeCard: {
       kicker: "Accessibility",
       blurb:
-        "Softens algorithmic feeds and reduces motion for people who find the web overwhelming. No accounts, no analytics, nothing leaves the device.",
-      metrics: ["Local-only storage", "Zero network calls", "4 presets"],
+        "For people who find the web overwhelming: calmer feeds, less motion, and a breathing exercise one click away. No account, and nothing leaves their browser.",
+      metrics: ["No account needed", "Zero network calls", "4 presets"],
       coverSrc: "/images/projects/covers/cocoon.webp",
     },
     featured: true,
@@ -105,10 +105,10 @@ export const products: Product[] = [
     slug: "verso",
     thesis: "A diary for artworks, not visits",
     homeCard: {
-      kicker: "Product Thinking",
+      kicker: "Consumer App",
       blurb:
-        "Letterboxd where the unit is the work, not the visit — a frequency bet, stated up front so it can be falsified.",
-      metrics: ["10k works seeded", "Offline-first capture", "Thesis measured, not assumed"],
+        "For museum-goers: log each work you stand in front of, even in a basement with no signal, and rate them later that evening. Letterboxd for paintings rather than visits.",
+      metrics: ["10k Met works preloaded", "Works offline", "Rate later, in one queue"],
       coverSrc: "/images/projects/covers/verso.webp",
     },
     featured: true,
@@ -758,16 +758,16 @@ export const products: Product[] = [
     href: "https://github.com/gr8monk3ys/merge-gate",
     title: "merge-gate",
     description:
-      "The policy engine that decides which of ~100 open pull requests may merge without a human. Shape is computed from the diff, never eyeballed \u2014 and it refuses to arm auto-merge on anything, ever.",
+      "Keeps about 70 repositories patched without a person reading every dependency update. It merges only changes that cannot alter behaviour, judged from the diff itself, and never grants standing permission to merge later changes.",
     thumbnail: mergeGate,
     stack: ["Python", "GitHub API", "pytest"],
     slug: "merge-gate",
     thesis: "Decide what merges without a human",
     homeCard: {
-      kicker: "Policy Engine",
+      kicker: "Automation",
       blurb:
-        "Decides which of ~100 open pull requests may merge without a human. Shape is computed from the diff, never eyeballed.",
-      metrics: ["49 passing tests", "~70 repos governed", "Zero arms granted"],
+        "Keeps about 70 repositories patched without one person reading every update. Updates that cannot change behaviour merge on their own; anything that could waits for a human.",
+      metrics: ["~70 repos kept current", "Behaviour changes always wait", "49 tests"],
       coverSrc: "/images/projects/covers/merge-gate.webp",
     },
     featured: true,

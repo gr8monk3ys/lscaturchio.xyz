@@ -9,10 +9,10 @@
 export const IDENTITY = {
   name: "Lorenzo Scaturchio",
   /** Short self-description — used on OG cards and as schema.org Person.description. */
-  role: "builds systems, suspicious of them",
+  role: "builds AI that shows its sources",
   /** Default <title> and OpenGraph/Twitter title. */
-  titleDefault: "Lorenzo Scaturchio — builds systems, suspicious of them",
+  titleDefault: "Lorenzo Scaturchio — builds AI that shows its sources",
   /** One-sentence description that echoes the homepage hero. */
   tagline:
-    "Lorenzo Scaturchio writes about power, attention, and what institutions are actually built to do — and builds the AI systems those essays are suspicious of.",
+    "Lorenzo Scaturchio builds AI and web tools that cite their sources and say what they can't do, and writes about technology, attention and work.",
 } as const;

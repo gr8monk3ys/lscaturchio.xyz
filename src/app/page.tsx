@@ -16,11 +16,11 @@ import { toBlogPreview } from "@/lib/blog-data";
 export const metadata: Metadata = {
   title: { absolute: IDENTITY.titleDefault },
   description:
-    "Essays on power, attention and what institutions are built to do, plus the AI and web systems Lorenzo Scaturchio builds, films watched, books read, and what he is doing now.",
+    "The AI and web tools Lorenzo Scaturchio builds, essays on technology, attention and work, films watched, books read, and what he is doing now.",
   openGraph: {
     title: IDENTITY.titleDefault,
     description:
-      "Essays on power, attention and institutions, plus the systems Lorenzo Scaturchio builds and the rest of what he keeps.",
+      "The AI and web tools Lorenzo Scaturchio builds, his essays, and the rest of what he keeps.",
     images: [
       {
         url: ogCardUrl({
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: IDENTITY.titleDefault,
-    description: "Essays on power, attention and institutions, plus the systems Lorenzo Scaturchio builds.",
+    description: "The AI and web tools Lorenzo Scaturchio builds, and his essays on technology, attention and work.",
     images: [
       ogCardUrl({
         title: "Lorenzo Scaturchio",
@@ -102,11 +102,11 @@ export default async function Home() {
       {/* Live "what I'm up to" strip — the garden's pulse */}
       <CurrentlyStrip latestPost={latestPost} latestRepo={latestRepo} />
 
-      {/* The writing leads — this is a personal site, not a portfolio */}
-      <WhatIThink posts={publishedBlogs} />
-
-      {/* Projects as evidence, not as the pitch */}
+      {/* What the work does for the people using it, before the essays */}
       <ScrollCaseStudies />
+
+      {/* The writing, technology first; the full archive is one click away */}
+      <WhatIThink posts={publishedBlogs} />
 
       {/* The person behind the rest of it */}
       <WhoIAm />

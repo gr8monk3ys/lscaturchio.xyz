@@ -124,7 +124,7 @@ export function NewHereSection({ popularPosts, essayCount }: NewHereSectionProps
           label: "Then the person",
           title: "Who is writing this",
           blurb:
-            "A writer and engineer in Los Angeles who builds AI systems and is suspicious of them.",
+            "An engineer and writer in Los Angeles who builds AI tools that show their sources.",
           cta: "About me",
         },
     {

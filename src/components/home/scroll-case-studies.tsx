@@ -14,7 +14,7 @@ import {
  * The three projects the home page leads with. Their copy, metrics and cover
  * live on the project records, so this names an order and nothing else.
  */
-const FEATURED_SLUGS = ["merge-gate", "verso", "cocoon"] as const;
+const FEATURED_SLUGS = ["cocoon", "verso", "merge-gate"] as const;
 
 const CASE_STUDIES = listHomeCaseStudies(FEATURED_SLUGS);
 
@@ -25,10 +25,10 @@ export function ScrollCaseStudies() {
         /* Catalogue index — no card, just a labelled list on the paper. */
         <>
           <LedgerHead
-            index="02"
+            index="01"
             eyebrow="Things I made"
             title="Things I actually shipped."
-            description="A policy engine that decides what merges without me, a product built on a stated bet, and a tool people install. All three are running; none of them are demos."
+            description="Three tools, each written up as who it is for and what changes for them. All three are running; none of them are demos."
           />
 
           <LedgerRows items={CASE_STUDIES} numbered className="mt-8 border-t border-border">
