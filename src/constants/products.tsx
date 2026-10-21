@@ -767,7 +767,7 @@ export const products: Product[] = [
       kicker: "Automation",
       blurb:
         "Keeps a fleet of repositories patched without one person reading every update. Updates that cannot change behaviour merge on their own; anything that could waits for a human.",
-      metrics: ["~70 repos kept current", "Behaviour changes always wait", "49 tests"],
+      metrics: ["~80 repos kept current", "Behaviour changes always wait", "49 tests"],
       coverSrc: "/images/projects/covers/merge-gate.webp",
     },
     featured: true,
@@ -777,7 +777,7 @@ export const products: Product[] = [
     sourceUrl: "https://github.com/gr8monk3ys/merge-gate",
     caseStudy: {
       challenge:
-        "A fleet of ~70 repos produces more pull requests than one person can read \u2014 mostly dependency bumps, mostly safe, occasionally not. Reviewing by eye does not scale, and the obvious shortcut is worse than the problem: GitHub's auto-merge grants standing permission to merge future content based on a judgement about past content.",
+        "A fleet of ~80 repos produces more pull requests than one person can read \u2014 mostly dependency bumps, mostly safe, occasionally not. Reviewing by eye does not scale, and the obvious shortcut is worse than the problem: GitHub's auto-merge grants standing permission to merge future content based on a judgement about past content.",
       solution:
         "Classify every PR by the shape of its diff, and merge only the shapes that cannot carry behaviour: lockfiles, tests, data artifacts, whitelisted CI fixes, and dependency bumps whose every version delta is patch or minor. Content never auto-merges. The gate merges a green PR immediately against the exact SHA it judged, and disables any standing arm it finds.",
       results: [
@@ -788,7 +788,7 @@ export const products: Product[] = [
       ],
       metrics: [
         { label: "Tests", value: "49 passing" },
-        { label: "Repos governed", value: "~70" },
+        { label: "Repos governed", value: "~80" },
         { label: "Arms granted", value: "Zero" },
         { label: "Policy surface", value: "3 constants" },
       ],
