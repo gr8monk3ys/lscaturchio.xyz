@@ -1,64 +1,19 @@
 import { logError, logInfo } from '@/lib/logger';
 import { createOllamaChatCompletion, isOllamaAvailable } from '@/lib/ollama';
-import { isOpenAIAuthOrConfigError } from '@/lib/openai-errors';
-
-export const USE_OPENAI = !!process.env.OPENAI_API_KEY;
-export const USE_OPENROUTER = !!process.env.OPENROUTER_API_KEY;
+import {
+  disableOpenAIOnAuthError,
+  getOpenAIClient,
+  getOpenRouterClient,
+} from '@/lib/ai-provider';
 
 const OPENAI_CHAT_MODEL = process.env.OPENAI_CHAT_MODEL || 'gpt-4o-mini';
 const OPENAI_FALLBACK_CHAT_MODEL =
   process.env.OPENAI_FALLBACK_CHAT_MODEL || 'gpt-4.1-nano';
-const OPENROUTER_BASE_URL =
-  process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
 const OPENROUTER_CHAT_MODEL =
   process.env.OPENROUTER_CHAT_MODEL || 'openai/gpt-4.1-nano';
 const OPENROUTER_FALLBACK_CHAT_MODEL =
   process.env.OPENROUTER_FALLBACK_CHAT_MODEL || '';
-const OPENROUTER_SITE_URL =
-  process.env.OPENROUTER_SITE_URL ||
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  'https://lscaturchio.xyz';
-const OPENROUTER_APP_NAME = process.env.OPENROUTER_APP_NAME || 'lscaturchio.xyz';
 const OLLAMA_DEFAULT_MODEL = 'llama3.2';
-
-let openaiClient: import('openai').default | null = null;
-let openrouterClient: import('openai').default | null = null;
-let openaiChatDisabled = false;
-
-async function getOpenAI() {
-  if (!openaiClient && USE_OPENAI) {
-    const OpenAI = (await import('openai')).default;
-    openaiClient = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY!,
-      timeout: 30000,
-      maxRetries: 1,
-    });
-  }
-  return openaiClient;
-}
-
-async function getOpenRouter() {
-  if (!openrouterClient && USE_OPENROUTER) {
-    const OpenAI = (await import('openai')).default;
-
-    const defaultHeaders: Record<string, string> = {};
-    if (OPENROUTER_SITE_URL.trim()) {
-      defaultHeaders['HTTP-Referer'] = OPENROUTER_SITE_URL.trim();
-    }
-    if (OPENROUTER_APP_NAME.trim()) {
-      defaultHeaders['X-Title'] = OPENROUTER_APP_NAME.trim();
-    }
-
-    openrouterClient = new OpenAI({
-      apiKey: process.env.OPENROUTER_API_KEY!,
-      baseURL: OPENROUTER_BASE_URL,
-      timeout: 30000,
-      maxRetries: 1,
-      defaultHeaders,
-    });
-  }
-  return openrouterClient;
-}
 
 function uniqueModelCandidates(primary: string, fallback?: string): string[] {
   const candidates = [primary, fallback ?? '']
@@ -129,8 +84,7 @@ async function tryOpenAICompatibleProvider({
         return { answer, modelUsed: model, usedFallbackModel };
       }
     } catch (error) {
-      if (provider === 'openai' && isOpenAIAuthOrConfigError(error)) {
-        openaiChatDisabled = true;
+      if (provider === 'openai' && disableOpenAIOnAuthError(error)) {
         return null;
       }
 
@@ -149,10 +103,8 @@ async function tryOpenAICompatibleProvider({
 }
 
 async function tryOpenAI(systemPrompt: string, query: string): Promise<ProviderResult | null> {
-  if (!USE_OPENAI || openaiChatDisabled) return null;
-
   try {
-    const client = await getOpenAI();
+    const client = await getOpenAIClient();
     if (!client) return null;
 
     const result = await tryOpenAICompatibleProvider({
@@ -172,9 +124,7 @@ async function tryOpenAI(systemPrompt: string, query: string): Promise<ProviderR
       usedFallbackModel: result.usedFallbackModel,
     };
   } catch (error) {
-    if (isOpenAIAuthOrConfigError(error)) {
-      openaiChatDisabled = true;
-    } else {
+    if (!disableOpenAIOnAuthError(error)) {
       logError('OpenAI chat failed; falling back', error, {
         component: 'chat',
         model: OPENAI_CHAT_MODEL,
@@ -185,10 +135,8 @@ async function tryOpenAI(systemPrompt: string, query: string): Promise<ProviderR
 }
 
 async function tryOpenRouter(systemPrompt: string, query: string): Promise<ProviderResult | null> {
-  if (!USE_OPENROUTER) return null;
-
   try {
-    const client = await getOpenRouter();
+    const client = await getOpenRouterClient();
     if (!client) return null;
 
     const result = await tryOpenAICompatibleProvider({
@@ -211,7 +159,6 @@ async function tryOpenRouter(systemPrompt: string, query: string): Promise<Provi
     logError('OpenRouter chat failed; falling back', error, {
       component: 'chat',
       model: OPENROUTER_CHAT_MODEL,
-      baseURL: OPENROUTER_BASE_URL,
     });
     return null;
   }

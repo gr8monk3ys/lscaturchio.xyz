@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest, NextResponse } from 'next/server';
-import { withRateLimit, RATE_LIMITS } from '@/lib/with-rate-limit';
+import { withRateLimit } from '@/lib/rate-limit';
 import { IDENTITY } from '@/constants/identity';
 
 /* eslint-disable @next/next/no-img-element */
@@ -244,4 +244,4 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
   ) as unknown as NextResponse;
 };
 
-export const GET = withRateLimit(handleGet, RATE_LIMITS.STANDARD);
+export const GET = withRateLimit(handleGet, 'OG_IMAGE');

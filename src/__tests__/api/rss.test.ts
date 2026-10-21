@@ -9,12 +9,7 @@ vi.mock('@/lib/site-url', () => ({
   getSiteUrl: vi.fn(() => 'https://lscaturchio.xyz'),
 }));
 
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: <T>(handler: T) => handler,
-  RATE_LIMITS: {
-    PUBLIC: { limit: 100, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 import { GET } from '@/app/api/rss/route';
 import { getAllBlogs } from '@/lib/getAllBlogs';
@@ -28,9 +23,10 @@ function blog(overrides: Partial<Blog>): Blog {
     description: 'A post description.',
     date: '2025-01-15',
     updated: '2025-01-20',
-    content: '<p>Body</p>',
+    body: 'Body',
     tags: ['ai', 'engineering'],
     image: '/images/blog/a-post.webp',
+    published: true,
     ...overrides,
   } as Blog;
 }
@@ -115,6 +111,25 @@ describe('/api/rss', () => {
     expect(body).toContain('Vector Stores (Building RAG #2)');
     expect(body).toContain('Part 2');
     expect(body).toContain('Building RAG');
+  });
+
+  it('publishes the essay as rendered HTML, not markdown', async () => {
+    // `body` is the essay's plain markdown (the meta export is already gone;
+    // essay-sources tests pin that). Feed readers render content:encoded as
+    // HTML, so markdown syntax used to reach subscribers verbatim.
+    vi.mocked(getAllBlogs).mockResolvedValue([
+      blog({
+        body: ['## A heading', '', 'Some *emphasis* and [a link](/blog/other).'].join('\n'),
+      }),
+    ]);
+
+    const body = await (await GET(new NextRequest('http://localhost/api/rss', { method: 'GET' }))).text();
+
+    expect(body).not.toContain('## A heading');
+    expect(body).toContain('<h2>A heading</h2>');
+    expect(body).toContain('<em>emphasis</em>');
+    // Relative links would resolve against the reader app, not the site.
+    expect(body).toContain('<a href="https://lscaturchio.xyz/blog/other">a link</a>');
   });
 
   it('chooses an image MIME type by extension', async () => {

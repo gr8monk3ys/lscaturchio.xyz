@@ -58,11 +58,13 @@ export const emailSchema = z.preprocess(
  * Contact form validation
  */
 export const contactFormSchema = z.object({
+  // `.trim()` runs before `.min(1)`: trimming after the check let a field of
+  // only spaces through, and the inbox got a message with a blank name.
   name: z
     .string()
+    .trim()
     .min(1, 'Name is required')
-    .max(CONTACT_FIELD_LIMITS.name, 'Name is too long')
-    .transform((name) => name.trim()),
+    .max(CONTACT_FIELD_LIMITS.name, 'Name is too long'),
   email: emailSchema,
   /**
    * The form has always collected this, marked it required, and had it thrown
@@ -71,17 +73,20 @@ export const contactFormSchema = z.object({
    */
   subject: z
     .string()
+    .trim()
     .min(1, 'Subject is required')
-    .max(CONTACT_FIELD_LIMITS.subject, 'Subject is too long')
-    .transform((subject) => subject.trim()),
+    .max(CONTACT_FIELD_LIMITS.subject, 'Subject is too long'),
   message: z
     .string()
+    .trim()
     .min(1, 'Message is required')
     .max(
       CONTACT_FIELD_LIMITS.message,
       `Message is too long (max ${CONTACT_FIELD_LIMITS.message} characters)`
-    )
-    .transform((msg) => msg.trim()),
+    ),
+  // No honeypot or fill-time fields: the human form guard reads those from
+  // the request body itself (src/lib/form-guard/guard.ts), so this schema
+  // cannot switch it off by stripping them.
 });
 
 /**

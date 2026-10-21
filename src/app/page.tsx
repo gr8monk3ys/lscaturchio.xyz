@@ -11,7 +11,7 @@ import { getPopularPosts } from "@/lib/popular-posts";
 import type { Metadata } from "next";
 import { ogCardUrl } from "@/lib/seo";
 import { IDENTITY } from "@/constants/identity";
-import { splitHomepageBlogs } from "@/lib/blog-data";
+import { toBlogPreview } from "@/lib/blog-data";
 
 export const metadata: Metadata = {
   title: { absolute: IDENTITY.titleDefault },
@@ -55,8 +55,10 @@ export default async function Home() {
     getPopularPosts(3),
   ]);
 
-  // One split, one definition of "published", shared by both writing sections.
-  const { recentBlogs, publishedBlogs } = splitHomepageBlogs(allBlogs);
+  // Both writing sections come off the one published list the catalogue
+  // returns, so the "latest" strip and the themed index cannot disagree.
+  const publishedBlogs = allBlogs.map(toBlogPreview);
+  const recentBlogs = publishedBlogs.slice(0, 3);
 
   const popularPosts = popularPostsResult.posts.map((p) => ({
     slug: p.slug,

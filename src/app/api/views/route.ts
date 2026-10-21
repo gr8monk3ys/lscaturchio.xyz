@@ -3,7 +3,7 @@ import { getAllBlogs } from "@/lib/getAllBlogs";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { logError } from "@/lib/logger";
 import { slugQuerySchema, viewTrackingSchema, parseQuery } from "@/lib/validations";
-import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
+import { withRateLimit } from "@/lib/rate-limit";
 import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { apiSuccess, ApiErrors } from "@/lib/api-response";
 
@@ -126,7 +126,7 @@ const handleGet = async (req: NextRequest) => {
 };
 
 // Export with rate limiting (100 requests per minute - public read-only endpoint)
-export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
+export const GET = withRateLimit(handleGet, "PUBLIC_READ");
 
 /**
  * POST /api/views
@@ -135,13 +135,14 @@ export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
 export const POST = withWriteRoute(
   {
     // 30 requests per minute - standard mutation endpoint.
-    limit: RATE_LIMITS.STANDARD,
+    limit: "VIEW_COUNT",
     auth: {
       kind: "public",
       reason: "Every reader increments the counter for the post they are reading.",
     },
     csrf: { kind: "required" },
     body: { kind: "json", schema: viewTrackingSchema },
+    guard: { kind: "none", reason: "A counter bumped on page load, not a form; there is nothing for a person to fill in." },
     envelope: { kind: "standard" },
     errors: {
       log: "View Counter: Unexpected error",
@@ -157,9 +158,10 @@ export const POST = withWriteRoute(
     // without checking the slug actually exists any caller could create rows
     // for arbitrary strings — growing the table without bound and, because the
     // read paths fall back to `title: slug`, printing attacker-chosen text on
-    // the public /stats page. getAllBlogs() is cached for 60s, so this costs
-    // at most one disk read per minute.
-    const allBlogs = await getAllBlogs();
+    // the public /stats page. A scheduled essay renders at its URL, so it is
+    // a real post here. The catalogue is cached for 60s, so this costs at
+    // most one disk read per minute.
+    const allBlogs = await getAllBlogs({ includeScheduled: true });
     if (!allBlogs.some((blog) => blog.slug === slug)) {
       throw writeError.notFound(`No blog post with slug "${slug}"`);
     }

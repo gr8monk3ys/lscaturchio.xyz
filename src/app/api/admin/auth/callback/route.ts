@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withRateLimit } from "@/lib/with-rate-limit";
-import { RATE_LIMITS } from "@/lib/rate-limit";
+import { withRateLimit } from "@/lib/rate-limit";
 import { logError } from "@/lib/logger";
 import {
   ADMIN_SESSION_COOKIE,
@@ -65,4 +64,4 @@ async function handler(req: NextRequest): Promise<NextResponse> {
   }
 }
 
-export const GET = withRateLimit(handler, RATE_LIMITS.ADMIN_AUTH);
+export const GET = withRateLimit(handler, "ADMIN_SIGN_IN");

@@ -15,17 +15,7 @@ vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
 }));
 
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-}));
-
-vi.mock('@/lib/rate-limit', () => ({
-  // Mirrors src/lib/rate-limit.ts. /api/summarize takes SUMMARIZE, not AI_HEAVY.
-  RATE_LIMITS: {
-    SUMMARIZE: { limit: 2, window: 60000 },
-    AI_HEAVY: { limit: 5, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 import { POST } from '@/app/api/summarize/route';
 import { summarizeContent, generateKeyTakeaways } from '@/lib/summarize';

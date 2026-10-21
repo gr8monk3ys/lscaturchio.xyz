@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { NextRequest } from "next/server";
 
+import { withBotId } from "botid/next/config";
+
+import { BOTID_PATH_PREFIX } from "@/lib/botid-paths";
 import { proxy } from "@/proxy";
 
 /**
@@ -38,6 +41,23 @@ describe("proxy", () => {
         expect(isPassThrough(proxy(request(pathname)))).toBe(true);
       }
     );
+
+    // A locale redirect here sends the challenge to /es/149e…, which 404s,
+    // and BotID then classifies the reader as a bot.
+    it("passes BotID's challenge paths through even with a locale cookie set", () => {
+      const response = proxy(request(`${BOTID_PATH_PREFIX}2d206a39/session`, "es"));
+      expect(isPassThrough(response)).toBe(true);
+      expect(redirectedTo(response)).toBeNull();
+    });
+
+    it("skips the prefix withBotId actually rewrites", async () => {
+      const config = withBotId({});
+      const rewrites = await (config.rewrites as () => Promise<{ source: string }[]>)();
+      expect(rewrites.length).toBeGreaterThan(0);
+      for (const { source } of rewrites) {
+        expect(source.startsWith(BOTID_PATH_PREFIX)).toBe(true);
+      }
+    });
 
     it.each(["/images/hero.png", "/my-data/blog-notes.md", "/robots.txt"])(
       "treats %s as a public file even with a locale cookie set",

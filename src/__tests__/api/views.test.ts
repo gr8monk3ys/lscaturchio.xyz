@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 // Create a mock sql tagged template function
 const mockSql = vi.fn();
@@ -23,20 +23,27 @@ vi.mock('@/lib/getAllBlogs', () => ({
   getAllBlogs: vi.fn(),
 }));
 
-// Mock rate limiting to pass through for tests
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-  RATE_LIMITS: {
-    STANDARD: { limit: 30, window: 60000 },
-    PUBLIC: { limit: 100, window: 60000 },
-    AI_HEAVY: { limit: 5, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 import { GET, POST } from '@/app/api/views/route';
 import { isDatabaseConfigured } from '@/lib/db';
 import { validateCsrf } from '@/lib/csrf';
-import { getAllBlogs } from '@/lib/getAllBlogs';
+import { getAllBlogs, type BlogPost } from '@/lib/getAllBlogs';
+
+function post(slug: string, title = slug): BlogPost {
+  return {
+    slug,
+    title,
+    description: '',
+    date: '2025-01-01',
+    image: '/images/blog/default.webp',
+    tags: [],
+    body: '',
+    published: true,
+    readingTimeMinutes: 1,
+    words: 200,
+  };
+}
 
 describe('Views API Route', () => {
   beforeEach(() => {
@@ -118,9 +125,9 @@ describe('Views API Route', () => {
         { slug: 'post-2', count: 50 },
       ]);
 
-      (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue([
-        { slug: 'post-1', title: 'First Post' },
-        { slug: 'post-2', title: 'Second Post' },
+      vi.mocked(getAllBlogs).mockResolvedValue([
+        post('post-1', 'First Post'),
+        post('post-2', 'Second Post'),
       ]);
 
       const request = new NextRequest('http://localhost/api/views?format=detailed');
@@ -143,9 +150,7 @@ describe('Views API Route', () => {
         { slug: 'buy-cheap-stuff', count: 9999 },
         { slug: 'post-1', count: 100 },
       ]);
-      (getAllBlogs as ReturnType<typeof vi.fn>).mockResolvedValue([
-        { slug: 'post-1', title: 'First Post' },
-      ]);
+      vi.mocked(getAllBlogs).mockResolvedValue([post('post-1', 'First Post')]);
 
       const request = new NextRequest('http://localhost/api/views?format=detailed');
       const data = await (await GET(request)).json();
@@ -176,7 +181,7 @@ describe('Views API Route', () => {
 
   describe('POST /api/views', () => {
     it('increments view count for a valid slug', async () => {
-      vi.mocked(getAllBlogs).mockResolvedValue([{ slug: 'test-post' }] as never);
+      vi.mocked(getAllBlogs).mockResolvedValue([post('test-post')]);
       mockSql.mockResolvedValue([{ increment_view_count: 43 }]);
 
       const request = new NextRequest('http://localhost/api/views', {
@@ -193,13 +198,16 @@ describe('Views API Route', () => {
 
       expect(response.status).toBe(200);
       expect(data).toEqual({ data: { slug: 'test-post', views: 43 }, success: true });
+      // A scheduled essay renders at its URL, so the existence check must be
+      // able to see it; the catalogue hides it unless asked.
+      expect(getAllBlogs).toHaveBeenCalledWith({ includeScheduled: true });
     });
 
     it('rejects a well-formed slug that is not a real post', async () => {
       // increment_view_count upserts, so an unchecked slug creates a row for
       // any string. Those rows then rendered on /stats with the raw slug as
       // the post title, which is attacker-controlled text on a public page.
-      vi.mocked(getAllBlogs).mockResolvedValue([{ slug: 'real-post' }] as never);
+      vi.mocked(getAllBlogs).mockResolvedValue([post('real-post')]);
 
       const request = new NextRequest('http://localhost/api/views', {
         method: 'POST',
@@ -215,9 +223,10 @@ describe('Views API Route', () => {
     });
 
     it('returns 403 when CSRF validation fails', async () => {
-      (validateCsrf as ReturnType<typeof vi.fn>).mockReturnValue(
-        NextResponse.json({ error: 'CSRF validation failed' }, { status: 403 })
-      );
+      (validateCsrf as ReturnType<typeof vi.fn>).mockReturnValue({
+        status: 403,
+        error: 'CSRF validation failed',
+      });
 
       const request = new NextRequest('http://localhost/api/views', {
         method: 'POST',
@@ -264,7 +273,7 @@ describe('Views API Route', () => {
     });
 
     it('returns 500 on RPC error', async () => {
-      vi.mocked(getAllBlogs).mockResolvedValue([{ slug: 'test-post' }] as never);
+      vi.mocked(getAllBlogs).mockResolvedValue([post('test-post')]);
       mockSql.mockRejectedValue(new Error('RPC failed'));
 
       const request = new NextRequest('http://localhost/api/views', {

@@ -4,6 +4,8 @@ import { IconBrandGithub, IconBrandLinkedin, IconBrandTwitter } from "@tabler/ic
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { contactFormSchema } from "@/lib/validations";
+import { useFormGuard } from "@/hooks/use-form-guard";
+import { submitWrite, type WriteResult } from "@/lib/fetcher";
 
 import { CONTACT_FIELD_LIMITS } from "@/lib/validations";
 
@@ -24,6 +26,45 @@ type ContactField = keyof typeof CONTACT_FIELD_LIMITS;
  * where the number is worth reading.
  */
 const COUNTDOWN_THRESHOLD = 0.9;
+
+/**
+ * The rate-limit sentence, with the wait the server named when it named one.
+ *
+ * The form always had this sentence, behind `body?.error ?? ...` — and the
+ * 429 always carries `error: "Too many requests"`, so the fallback could never
+ * win and readers saw the bare phrase instead.
+ */
+function rateLimitedMessage(retryAfter: number | null): string {
+  const wait =
+    retryAfter === null
+      ? "in a few minutes"
+      : retryAfter <= 60
+        ? "in a minute"
+        : `in ${Math.ceil(retryAfter / 60)} minutes`;
+  return `Too many messages from this address in a short window. Try again ${wait}.`;
+}
+
+/** What the form says for each way a send can fail. */
+function describeFailure(
+  result: Exclude<WriteResult<unknown>, { kind: "ok" }>
+): { message: string; field?: string } {
+  switch (result.kind) {
+    case "invalid-field":
+      return { message: result.message, field: result.field };
+    case "rate-limited":
+      return { message: rateLimitedMessage(result.retryAfter) };
+    case "refused":
+    case "server-error":
+      // The server diagnoses each of these in its own sentence — a BotID
+      // refusal, a missing mail key, a Resend outage — so relay it.
+      return { message: result.message ?? "The message did not send." };
+    case "network":
+      return {
+        message:
+          "The message did not reach the server — a dropped connection, or a browser extension blocking the site's bot check, rather than anything you typed.",
+      };
+  }
+}
 
 export function ContactForm() {
   const [formData, setFormData] = useState({
@@ -52,6 +93,9 @@ export function ContactForm() {
   const emailRef = useRef<HTMLInputElement>(null);
   const subjectRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
+
+  /** The honeypot and fill-time signals the route's human form guard judges. */
+  const guard = useFormGuard();
 
   /**
    * Send focus to the input the server rejected.
@@ -111,44 +155,23 @@ export function ContactForm() {
     setIsSubmitting(true);
     setFailure(null);
 
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    const result = await submitWrite("/api/contact", {
+      ...formData,
+      ...guard.fields(),
+    });
+    setIsSubmitting(false);
 
-      if (response.ok) {
-        setSubmitStatus("success");
-        setFormData({ name: "", email: "", subject: "", message: "" });
-        return;
-      }
-
-      // The typed message is never cleared on failure; it is the most expensive
-      // thing on the page to retype.
-      const body = (await response.json().catch(() => null)) as {
-        error?: string;
-        field?: string;
-      } | null;
-
-      setSubmitStatus("error");
-      setFailure({
-        message:
-          body?.error ??
-          (response.status === 429
-            ? "Too many messages from this address in a short window. Try again in a few minutes."
-            : "The message did not send."),
-        field: body?.field,
-      });
-    } catch {
-      setSubmitStatus("error");
-      setFailure({
-        message:
-          "The request never reached the server — usually a dropped connection rather than anything you typed.",
-      });
-    } finally {
-      setIsSubmitting(false);
+    if (result.kind === "ok") {
+      setSubmitStatus("success");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      guard.reset();
+      return;
     }
+
+    // The typed message is never cleared on failure; it is the most expensive
+    // thing on the page to retype.
+    setSubmitStatus("error");
+    setFailure(describeFailure(result));
   };
 
   /** The message rendered under a field, when the failure named that field. */
@@ -368,6 +391,7 @@ export function ContactForm() {
               )}
               {countdown("message")}
             </div>
+            {guard.honeypot}
             <button
               type="submit"
               disabled={isSubmitting}

@@ -21,11 +21,27 @@ This repo powers the public `lscaturchio.xyz` site. It is part marketing site, p
 - Static pages live in `src/app/<route>/page.tsx`
 - API handlers live in `src/app/api/**/route.ts`
 - Site metadata routes such as sitemap and robots live directly under `src/app`
-- Blog posts live in `src/app/blog/<slug>/`
+- Blog posts live in `src/app/blog/<slug>/content.mdx`, rendered by one route,
+  `src/app/blog/[slug]/page.tsx`
 
 ## Blog And Content Model
 
-Blog routes are backed by per-slug folders under `src/app/blog/<slug>/`. Shared metadata and archive logic are aggregated by helpers in `src/lib/getAllBlogs.ts` and `src/lib/blog-data.ts`.
+An essay is one file, `src/app/blog/<slug>/content.mdx`; there is no per-essay
+`page.tsx`. The dynamic route `src/app/blog/[slug]/page.tsx` prerenders every
+slug the catalogue lists (`generateStaticParams`, `dynamicParams = false`, so
+anything else is a 404), takes its metadata, clamped dates, reading time and
+default cover from the catalogue's `BlogPost` (`getBlogPost`), and imports the
+MDX only for its body (`src/lib/essay-content.ts`). Scheduled essays are
+prerendered and reachable at their URL but left out of every listing, the feed
+and the sitemap. Adding an essay is adding its folder and `content.mdx`.
+
+Shared metadata and archive logic are aggregated by helpers in `src/lib/getAllBlogs.ts` and `src/lib/blog-data.ts`.
+
+Anything that needs an essay's text (reading time, the RSS feed, the chat
+corpus and chat context, embeddings, TTS, webmentions) reads `EssaySource.body`
+from `src/lib/essay-sources.ts`: the MDX with its meta export, imports and
+tag-only lines removed by one rule. Do not strip MDX again in a new consumer;
+the meta block is wherever `parseMetaExport` in `src/lib/blog-meta.ts` says it is.
 
 Related content inputs also live under `public/my-data/`, including:
 
@@ -42,16 +58,18 @@ Related content inputs also live under `public/my-data/`, including:
 exports committed under `public/my-data/`. Two things about those files have
 already caused bugs:
 
-- **Parse them with `src/lib/csv.ts` (`parseCsv`), never by splitting on
-  newlines.** Both services quote free-text fields (reviews, notes) that contain
-  literal newlines. Splitting the file into lines first shreds those records and
-  silently shifts every following column.
+- **Read and write them through the tables in `src/lib/letterboxd-format.ts`
+  and `src/lib/goodreads-format.ts`, never by splitting on newlines.** Both
+  services quote free-text fields (reviews, notes) that contain literal
+  newlines. Splitting the file into lines first shreds those records and
+  silently shifts every following column. The tables are also the only place a
+  column name is spelled, for the site and the refresh script alike.
 - **Letterboxd uses two URI namespaces.** `ratings.csv`, `watchlist.csv`, and the
   profile's `Favorite Films` column store the *film* URI (`boxd.it/251c`).
   `diary.csv` and `reviews.csv` store the *entry* URI for one specific viewing
   (`boxd.it/8mdUF3`). Joining across those files on `Letterboxd URI` matches
   nothing and fails quietly. Join on title + year — `filmKey()` in
-  `src/lib/letterboxd.ts` — and let the most recent viewing win.
+  `src/lib/letterboxd-format.ts` — and let the most recent viewing win.
 
 To refresh the data, replace the CSVs in place; no build step is required. The
 top four films on `/movies` are read from the profile export, so re-pinning

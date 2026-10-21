@@ -8,9 +8,13 @@ import { useCommandPalette } from "@/hooks/use-command-palette";
  *
  * This is the half of the palette a review found broken in a different way:
  * Cmd+K opened a dialog whose input never received focus, so the documented
- * accelerator was inert. Focus is fixed in the dialog (it mounts with
- * `autoFocus`), and these tests pin the rest of the contract — the parts that
- * live in this hook and had no coverage at all.
+ * accelerator was inert. Focus is fixed in the dialog, and these tests pin the
+ * rest of the contract — the parts that live in this hook and had no coverage
+ * at all.
+ *
+ * Escape, the Tab trap and focus return are not here: the dialog hands them to
+ * `useModalOverlay`, and `use-modal-overlay.test.tsx` covers them once for all
+ * three overlays.
  */
 const push = vi.fn();
 vi.mock("next/navigation", () => ({
@@ -59,13 +63,6 @@ describe("command palette keyboard contract", () => {
     press("Enter");
     expect(result.current.isOpen).toBe(false);
     expect(push).not.toHaveBeenCalled();
-  });
-
-  it("closes on Escape", () => {
-    const { result } = renderHook(() => useCommandPalette());
-    press("k", { metaKey: true });
-    press("Escape");
-    expect(result.current.isOpen).toBe(false);
   });
 
   it("moves the selection down and wraps at the end", () => {
@@ -135,57 +132,11 @@ describe("command palette keyboard contract", () => {
     act(() => {
       result.current.setQuery("boredom");
     });
-    press("Escape");
+    act(() => {
+      result.current.closePalette();
+    });
     press("k", { metaKey: true });
     expect(result.current.query).toBe("");
-  });
-
-  it("hands focus back to whatever opened it", async () => {
-    // A first attempt captured the opener in an effect inside the dialog, which
-    // runs after commit — by which point React had applied the input's
-    // `autoFocus`, so the "opener" was the input and closing restored focus to
-    // a node that had just unmounted. Focus landed on <body>. The capture has
-    // to happen synchronously in `openPalette`.
-    const trigger = document.createElement("button");
-    document.body.appendChild(trigger);
-    trigger.focus();
-    expect(document.activeElement).toBe(trigger);
-
-    const { result } = renderHook(() => useCommandPalette());
-    act(() => {
-      result.current.openPalette();
-    });
-    act(() => {
-      result.current.closePalette();
-    });
-    // The restore is deferred a frame so the dialog has unmounted first.
-    await act(async () => {
-      await new Promise((r) => requestAnimationFrame(() => r(null)));
-    });
-
-    expect(document.activeElement).toBe(trigger);
-    trigger.remove();
-  });
-
-  it("does not throw when the opener has left the document", async () => {
-    // Executing a command closes the palette and navigates; the trigger may be
-    // gone by the time the restore runs.
-    const trigger = document.createElement("button");
-    document.body.appendChild(trigger);
-    trigger.focus();
-
-    const { result } = renderHook(() => useCommandPalette());
-    act(() => {
-      result.current.openPalette();
-    });
-    trigger.remove();
-    act(() => {
-      result.current.closePalette();
-    });
-    await act(async () => {
-      await new Promise((r) => requestAnimationFrame(() => r(null)));
-    });
-    expect(result.current.isOpen).toBe(false);
   });
 
   it("groups destinations under navigation and the theme toggle under action", () => {

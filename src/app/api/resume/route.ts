@@ -3,7 +3,7 @@ import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 import { z } from "zod";
 import { logInfo, logWarn, logError } from "@/lib/logger";
-import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
+import { withRateLimit } from "@/lib/rate-limit";
 import { withWriteRoute } from "@/lib/api/write-route";
 
 // Resume file path - stored in public directory
@@ -97,7 +97,7 @@ const handleGet = async (req: NextRequest) => {
   }
 }
 
-export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC)
+export const GET = withRateLimit(handleGet, "PUBLIC_READ")
 
 /**
  * POST /api/resume
@@ -112,13 +112,14 @@ const resumeTrackSchema = z.object({
 
 export const POST = withWriteRoute(
   {
-    limit: RATE_LIMITS.STANDARD,
+    limit: "RESUME_DOWNLOAD",
     auth: {
       kind: "public",
       reason: "Fire-and-forget download telemetry from the public download button.",
     },
     csrf: { kind: "required" },
     body: { kind: "json", schema: resumeTrackSchema },
+    guard: { kind: "none", reason: "Download telemetry with no form behind it; a scripted count costs accuracy, not money or mail." },
     envelope: { kind: "standard" },
     errors: {
       log: "Resume: Error tracking download",

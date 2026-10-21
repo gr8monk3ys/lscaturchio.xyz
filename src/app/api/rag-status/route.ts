@@ -1,5 +1,4 @@
-import { withRateLimit } from "@/lib/with-rate-limit";
-import { RATE_LIMITS } from "@/lib/rate-limit";
+import { withRateLimit } from "@/lib/rate-limit";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import {
   getEmbeddingProvider,
@@ -95,5 +94,5 @@ const handleGet = async () => {
   );
 };
 
-export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
+export const GET = withRateLimit(handleGet, "PUBLIC_READ");
 

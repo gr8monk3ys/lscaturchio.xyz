@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 
 import { getAllBlogs } from '@/lib/getAllBlogs'
 import { listRoutableProjects } from '@/lib/project-catalogue'
-import { TOPIC_HUBS } from '@/constants/topics'
+import { BLOG_THEMES } from '@/lib/blog-themes'
 import { getBlogLastModified } from '@/lib/blog-data'
 import { absoluteSitePath } from '@/lib/site-locale'
 
@@ -67,7 +67,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3,
     }))
 
-  const topicEntries = TOPIC_HUBS.map((hub) => ({
+  const topicEntries = BLOG_THEMES.map((hub) => ({
     path: `/topics/${hub.slug}`,
     lastModified: now,
     changeFrequency: 'weekly' as ChangeFrequency,

@@ -1,11 +1,10 @@
 import { NextRequest } from 'next/server';
 import { getDb } from '@/lib/db';
 import { getAllBlogs } from '@/lib/getAllBlogs';
-import { withRateLimit } from '@/lib/with-rate-limit';
-import { RATE_LIMITS } from '@/lib/rate-limit';
+import { withRateLimit } from '@/lib/rate-limit';
 import { logError } from '@/lib/logger';
 import { validateApiKey } from '@/lib/api-auth';
-import { apiSuccess, ApiErrors } from '@/lib/api-response';
+import { apiSuccess, ApiErrors, refusalResponse } from '@/lib/api-response';
 
 interface AnalyticsData {
   newsletter: {
@@ -33,8 +32,8 @@ interface AnalyticsData {
 
 const handleGet = async (request: NextRequest) => {
   // Require API key authentication
-  const authError = validateApiKey(request, { component: 'analytics' });
-  if (authError) return authError;
+  const refusal = validateApiKey(request, { component: 'analytics' });
+  if (refusal) return refusalResponse(refusal);
 
   try {
     const sql = getDb();
@@ -55,7 +54,8 @@ const handleGet = async (request: NextRequest) => {
       viewsData,
       reactionsData,
     ] = await Promise.all([
-      getAllBlogs(),
+      // Admin: name every essay, scheduled ones included.
+      getAllBlogs({ includeScheduled: true }),
       sql`SELECT count_active_subscribers() as count`,
       sql`SELECT COUNT(*) as count FROM newsletter_subscribers`,
       sql`SELECT COUNT(*) as count FROM newsletter_subscribers WHERE is_active = false`,
@@ -148,4 +148,4 @@ const handleGet = async (request: NextRequest) => {
   }
 };
 
-export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
+export const GET = withRateLimit(handleGet, 'ANALYTICS');

@@ -467,6 +467,46 @@ describe('Logger', () => {
     })
   })
 
+  describe('notice (visible in production, never an alert)', () => {
+    it('prints the message as given in production, without a Sentry event', async () => {
+      vi.stubEnv('NODE_ENV', 'production')
+      vi.resetModules()
+      const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {})
+      const Sentry = await import('@sentry/nextjs')
+      vi.mocked(Sentry.captureMessage).mockClear()
+      vi.mocked(Sentry.captureException).mockClear()
+
+      const { logNotice } = await import('@/lib/logger')
+      logNotice('[contact] dropped submission: honeypot')
+
+      expect(consoleSpy).toHaveBeenCalledWith('[contact] dropped submission: honeypot')
+      expect(Sentry.captureMessage).not.toHaveBeenCalled()
+      expect(Sentry.captureException).not.toHaveBeenCalled()
+    })
+
+    it('passes context through in development', async () => {
+      vi.stubEnv('NODE_ENV', 'development')
+      vi.resetModules()
+      const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {})
+
+      const { logNotice } = await import('@/lib/logger')
+      logNotice('Counted', { component: 'test' })
+
+      expect(consoleSpy).toHaveBeenCalledWith('Counted', { component: 'test' })
+    })
+
+    it('stays silent under test', async () => {
+      vi.stubEnv('NODE_ENV', 'test')
+      vi.resetModules()
+      const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {})
+
+      const { logNotice } = await import('@/lib/logger')
+      logNotice('Counted')
+
+      expect(consoleSpy).not.toHaveBeenCalled()
+    })
+  })
+
   describe('logger singleton', () => {
     beforeEach(() => {
       vi.stubEnv('NODE_ENV', 'development')

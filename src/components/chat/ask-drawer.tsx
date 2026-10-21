@@ -6,6 +6,7 @@ import { RotateCcw, X, ArrowUp } from "lucide-react";
 
 import { useAskConversation } from "@/hooks/use-ask-conversation";
 import { useAskDrawer } from "@/components/chat/ask-drawer-provider";
+import { useModalOverlay } from "@/hooks/use-modal-overlay";
 import {
   ChatBubble,
   ChatBubbleAvatar,
@@ -64,12 +65,6 @@ export function AskDrawer() {
     clearSeed?.();
   }, [isOpen, seed, setInput, clearSeed]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const id = window.requestAnimationFrame(() => inputRef.current?.focus());
-    return () => window.cancelAnimationFrame(id);
-  }, [isOpen]);
-
   // An armed discard does not survive the panel closing. Otherwise a reader
   // who arms it, closes the drawer and reopens it later finds a button that
   // throws away their conversation on the first click. Adjusted during render
@@ -81,37 +76,19 @@ export function AskDrawer() {
     if (!isOpen) setConfirmingReset(false);
   }
 
-  // Trap focus only while the drawer covers the page. In push mode it sits
-  // beside fully usable content and trapping would strand the reader; in
-  // overlay mode the panel is modal, and without this Tab walked straight out
-  // of it into content hidden behind the scrim.
-  useEffect(() => {
-    if (!isOpen || !isOverlay) return;
-    const panel = panelRef.current;
-    if (!panel) return;
-
-    const onKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.key !== "Tab") return;
-      const focusables = panel.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusables.length === 0) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement;
-
-      if (event.shiftKey && (active === first || !panel.contains(active))) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && active === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener("keydown", onKeyDown, true);
-    return () => document.removeEventListener("keydown", onKeyDown, true);
-  }, [isOpen, isOverlay]);
+  // Focus moves to the composer on open and back to the opener on close, in
+  // both modes; Escape closes in both. The Tab trap runs only while the drawer
+  // covers the page. In push mode it sits beside fully usable content and
+  // trapping would strand the reader; in overlay mode the panel is modal, and
+  // without the trap Tab walked straight out of it into content hidden behind
+  // the scrim.
+  useModalOverlay({
+    open: isOpen,
+    onClose: () => drawer?.close(),
+    containerRef: panelRef,
+    initialFocusRef: inputRef,
+    trapFocus: isOverlay,
+  });
 
   if (!drawer) return null;
 
@@ -147,7 +124,7 @@ export function AskDrawer() {
       // already. The drawer separates from the page with a hairline, the way
       // every other surface here does.
       className={[
-        "ask-drawer fixed inset-y-0 z-[55] flex w-full flex-col border-border bg-background",
+        "ask-drawer fixed inset-y-0 z-drawer flex w-full flex-col border-border bg-background",
         "border-s md:w-96",
         isOpen ? "translate-x-0" : "translate-x-full",
         isOpen ? "visible" : "invisible",

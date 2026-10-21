@@ -191,6 +191,15 @@ const RULES: Rule[] = [
     appliesTo: (line) => !line.includes("immediate"),
   },
   {
+    id: "raw-z-on-fixed",
+    because:
+      "Everything `position: fixed` stacks against everything else fixed, so its z-index is a position in one site-wide order, and that order is the `--z-index-*` tokens in globals.css (`z-menu`, `z-palette`, …). Chosen as numbers file by file, the command palette landed at z-50 under the z-55 mobile menu that opens it — a dialog that took focus and could not be seen — and the ask drawer at z-55 under the z-60 phone bar, which covered its close button. Name the layer; add one to the token block if none fits.",
+    test: /(?<![\w-])z-(?:\d+|\[[^\]]+\])(?![\w-])/,
+    // A class list that positions the element as fixed. `absolute z-10` inside
+    // an overlay stacks within that overlay and is not part of the order.
+    appliesTo: (line) => /(?:^|["'`\s])(?:[a-z0-9]+:)*fixed(?=["'`\s])/.test(line),
+  },
+  {
     id: "image-hover-lift",
     because:
       "The Flat Paper Rule: a hovered surface changes tint and border colour, it does not rise. Scale on an image is a lift.",
@@ -225,7 +234,7 @@ const ALLOWED: Array<{ file: string; rule: string; reason: string }> = [
       "The one module allowed to name the glyph, because it is the module that decides when the glyph is true.",
   },
   {
-    file: "src/lib/email.ts",
+    file: "src/lib/mail/templates.ts",
     rule: "inline-css-type-ramp",
     reason:
       "Email is a different coordinate space, not a lapse. Mail clients strip <style> blocks and treat rem unreliably, so an HTML email has to inline px on every element — the same reason the Satori OG card is allowed its own literals. The site's ramp has no jurisdiction inside a message Gmail will re-render; the rule's scope is CSS a browser paints as part of this document.",
@@ -280,7 +289,7 @@ describe("design drift", () => {
       if (!fs.existsSync(dir)) continue;
 
       for (const file of walk(dir)) {
-        const relative = path.relative(process.cwd(), file);
+        const relative = path.relative(process.cwd(), file).split(path.sep).join("/");
         if (ALLOWED.some((a) => a.file === relative && a.rule === rule.id)) continue;
 
         const lines = stripComments(fs.readFileSync(file, "utf-8")).split("\n");
@@ -327,7 +336,7 @@ describe("icon libraries", () => {
 
       for (const file of walk(dir)) {
         const source = stripComments(fs.readFileSync(file, "utf-8"));
-        const relative = path.relative(process.cwd(), file);
+        const relative = path.relative(process.cwd(), file).split(path.sep).join("/");
 
         for (const match of source.matchAll(
           /import\s*\{([^}]*)\}\s*from\s*['"]@tabler\/icons-react['"]/g
@@ -402,16 +411,16 @@ describe("heading case", () => {
       if (!fs.existsSync(dir)) continue;
 
       for (const file of walk(dir)) {
-        const relative = path.relative(process.cwd(), file);
+        const relative = path.relative(process.cwd(), file).split(path.sep).join("/");
         // Email bodies are not pages. The headings in there ("New Contact
         // Form Submission", "Welcome to My Newsletter!") are transactional mail
         // — one an internal notification to the site's owner — and the site's
-        // style guide governs the site. `src/lib/email.ts` joins the API
-        // routes here for the same reason, and because it is HTML in a
+        // style guide governs the site. `src/lib/mail/templates.ts` joins the
+        // API routes here for the same reason, and because it is HTML in a
         // template string that no page renders; it surfaced only when the
         // word-count floor dropped to three.
-        if (relative.startsWith(path.join("src", "app", "api"))) continue;
-        if (relative === path.join("src", "lib", "email.ts")) continue;
+        if (relative.startsWith("src/app/api/")) continue;
+        if (relative === "src/lib/mail/templates.ts") continue;
 
         const source = fs.readFileSync(file, "utf-8");
 
@@ -518,5 +527,119 @@ describe("navigation vocabulary", () => {
         ...conflicts,
       ].join("\n")
     ).toEqual([]);
+  });
+});
+
+/**
+ * One overlay module, and nothing that competes with it.
+ *
+ * Modal-overlay behaviour — initial focus, the Tab trap, Escape, focus return —
+ * was hand-rolled three times: the mobile menu, the ask drawer and the command
+ * palette, with three focusable selectors and three different answers to
+ * "which elements are tab stops". The menu's own comment said it "mirrors" the
+ * palette, and a critique loop then rewrote `mobile-navbar.tsx` six times, each
+ * pass finding the next place one copy had drifted from another.
+ *
+ * `useModalOverlay` is the only implementation now, and these two rules keep it
+ * that way. `aria-modal` is a promise to assistive tech that the rest of the
+ * page is unavailable, so a file that makes the promise must use the module
+ * that keeps it. And handling Tab anywhere else is a fourth trap being born.
+ */
+describe("modal overlays", () => {
+  const OVERLAY_MODULE = "src/hooks/use-modal-overlay.ts";
+  const IMPORTS_OVERLAY = /from\s*["']@\/hooks\/use-modal-overlay["']/;
+  const HANDLES_TAB = /\.key\s*[!=]==?\s*["']Tab["']|case\s+["']Tab["']/;
+
+  function sources() {
+    return SCAN_ROOTS.flatMap((root) => {
+      const dir = path.join(process.cwd(), root);
+      if (!fs.existsSync(dir)) return [];
+      return walk(dir).map((file) => ({
+        relative: path.relative(process.cwd(), file).split(path.sep).join("/"),
+        source: stripComments(fs.readFileSync(file, "utf-8")),
+      }));
+    });
+  }
+
+  it("routes every aria-modal surface through useModalOverlay", () => {
+    const surfaces = sources().filter(({ source }) => source.includes("aria-modal"));
+    const offenders = surfaces
+      .filter(({ source }) => !IMPORTS_OVERLAY.test(source))
+      .map(({ relative }) => relative);
+
+    // The four known surfaces (menu, drawer, palette, photo lightbox), so a
+    // scan that silently matched nothing cannot pass this by finding no
+    // candidates.
+    expect(surfaces.length).toBeGreaterThanOrEqual(4);
+    expect(
+      offenders,
+      [
+        "These files declare aria-modal without useModalOverlay.",
+        "Call useModalOverlay from @/hooks/use-modal-overlay for initial focus, the Tab trap, Escape and focus return.",
+        "",
+        ...offenders,
+      ].join("\n")
+    ).toEqual([]);
+  });
+
+  it("handles Tab nowhere but the overlay module", () => {
+    const offenders: string[] = [];
+    for (const { relative, source } of sources()) {
+      if (relative === OVERLAY_MODULE) continue;
+      source.split("\n").forEach((line, index) => {
+        if (HANDLES_TAB.test(line)) offenders.push(`${relative}:${index + 1} — ${line.trim()}`);
+      });
+    }
+
+    expect(
+      offenders,
+      [
+        "A Tab handler outside use-modal-overlay is a hand-rolled focus trap.",
+        "Pass the container to useModalOverlay, and list any outside control in `alsoReachable`.",
+        "",
+        ...offenders,
+      ].join("\n")
+    ).toEqual([]);
+  });
+});
+
+/**
+ * The overlay stacking order, as an order.
+ *
+ * `raw-z-on-fixed` makes every fixed element name a layer; this holds what the
+ * layers mean relative to each other. Each pair is a reader-visible failure the
+ * site has had or would have: the palette opens from inside the menu and the
+ * drawer, so it has to sit above both; the phone bar carries the menu's close
+ * toggle, so it has to sit above the menu; the drawer is a modal on a phone,
+ * so it has to cover the bar or the bar covers its close button.
+ */
+describe("overlay layers", () => {
+  const css = fs.readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf-8");
+  const layers = new Map(
+    [...css.matchAll(/--z-index-([a-z-]+):\s*(-?\d+)\s*;/g)].map(([, name, value]) => [
+      name,
+      Number(value),
+    ])
+  );
+
+  const ABOVE: Array<[upper: string, lower: string, because: string]> = [
+    ["menu-bar", "menu", "the menu's close toggle lives in the bar"],
+    ["drawer", "menu-bar", "on a phone the drawer covers the bar, or the bar covers the drawer's close button"],
+    ["lightbox", "drawer", "the lightbox covers the push-mode drawer beside it"],
+    ["palette", "menu", "the menu's Search button opens the palette"],
+    ["palette", "drawer", "⌘K opens the palette from inside the drawer"],
+    ["palette", "lightbox", "⌘K opens the palette over the lightbox"],
+    ["menu", "chrome", "the menu overlay covers the page's own header"],
+  ];
+
+  it.each(ABOVE)("puts %s above %s: %s", (upper, lower) => {
+    expect(layers.get(upper), `--z-index-${upper} is not defined in globals.css`).toBeTypeOf("number");
+    expect(layers.get(lower), `--z-index-${lower} is not defined in globals.css`).toBeTypeOf("number");
+    expect(layers.get(upper)!).toBeGreaterThan(layers.get(lower)!);
+  });
+
+  it("reads the stacking z-index in globals.css from the tokens", () => {
+    const raw = [...css.matchAll(/^\s*z-index:\s*(-?\d+)\s*;/gm)].map(([line]) => line.trim());
+    expect(raw, "Use var(--z-index-<layer>) so CSS-only layers sit in the same order.").toEqual([]);
   });
 });

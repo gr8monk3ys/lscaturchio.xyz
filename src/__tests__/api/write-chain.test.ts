@@ -6,16 +6,25 @@
  * when a layer is dropped from a route — and `contact.test.ts` used to
  * reimplement the sanitisers inside its own mock, asserting a copy of the code
  * rather than the code. This file stubs only the two OUTBOUND side effects the
- * routes reach for — the mailer (Resend, via global fetch) and the database
- * (Neon) — and lets everything between the request and those sinks run for
- * real: the in-memory rate limiter, Origin validation, Zod, the sanitisers in
- * `src/lib/sanitize.ts`, and the response envelope.
+ * routes reach for — the mailer (the in-memory outbox transport in place of
+ * Resend) and the database (Neon) — and lets everything between the request
+ * and those sinks run for real: the in-memory rate limiter, Origin validation,
+ * Zod, the human form guard, the sanitisers in `src/lib/sanitize.ts`, the mail
+ * templates and delivery module, and the response envelope. The guard's BotID
+ * classifier is the off-Vercel one that lets everyone through, except where a
+ * test installs one that says "bot".
  *
  * It therefore also pins the LAYER ORDER, which is the property `withWriteRoute`
- * exists to guarantee: rate limit -> auth -> CSRF -> Zod -> handler -> envelope.
+ * exists to guarantee:
+ * rate limit -> auth -> CSRF -> Zod -> guard -> handler -> envelope.
+ *
+ * The last section is the browser's side of the same contract: `submitWrite`
+ * (src/lib/fetcher.ts), the decoder every form posts through, fed these real
+ * responses rather than hand-written fixtures. A fixture is how the contact
+ * form's 429 test came to mock a `{}` body the server never sends.
  */
 
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 
 // ---------------------------------------------------------------------------
@@ -28,19 +37,20 @@ vi.mock('@/lib/db', () => ({
   isDatabaseConfigured: () => true,
 }));
 
-vi.mock('@/lib/email', () => ({
-  sendWelcomeEmail: vi.fn(async () => true),
-  sendOnboardingEmail: vi.fn(async () => true),
-}));
-
-// Resend is reached through global fetch; this is the mailer.
-const mailer = vi.fn();
-vi.stubGlobal('fetch', mailer);
-
 import { POST as contactPost } from '@/app/api/contact/route';
 import { POST as subscribePost } from '@/app/api/newsletter/subscribe/route';
 import { POST as dripPost } from '@/app/api/newsletter/drip/route';
-import { RATE_LIMITS } from '@/lib/rate-limit';
+import { RATE_LIMIT_POLICIES } from '@/lib/rate-limit';
+import { installMailTransport } from '@/lib/mail/deliver';
+import { createOutbox } from '@/lib/mail/outbox';
+import { submitWrite } from '@/lib/fetcher';
+import { installBotClassifier } from '@/lib/form-guard/guard';
+
+// The mailer. Every route that sends mail goes through deliverMail, so this
+// one transport catches all of it.
+const outbox = createOutbox();
+let restoreTransport: () => void;
+afterAll(() => restoreTransport());
 
 const GOOD_ORIGIN = 'http://localhost:3000';
 
@@ -89,6 +99,10 @@ const validContact = {
   email: 'jane@example.com',
   subject: 'Project scoping',
   message: 'Hello there.',
+  // What the real form sends: an empty honeypot and the time the form was
+  // open (src/hooks/use-form-guard.tsx).
+  contact_ref: '',
+  elapsedMs: 30_000,
 };
 
 beforeAll(() => {
@@ -98,7 +112,7 @@ beforeAll(() => {
   delete process.env.UPSTASH_REDIS_REST_TOKEN;
   delete process.env.KV_REST_API_URL;
   delete process.env.KV_REST_API_TOKEN;
-  process.env.RESEND_API_KEY = 'test_resend_key';
+  restoreTransport = installMailTransport(outbox);
   process.env.CONTACT_EMAIL = 'inbox@example.com';
   process.env.CONTACT_FROM_EMAIL = 'noreply@example.com';
   process.env.NEWSLETTER_ADMIN_API_KEY = 'test-drip-key';
@@ -106,7 +120,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mailer.mockResolvedValue({ ok: true, json: async () => ({ id: 'sent' }) });
+  outbox.clear();
   mockSql.mockResolvedValue([]);
 });
 
@@ -123,8 +137,10 @@ describe('CSRF layer (real @/lib/csrf)', () => {
     );
 
     expect(res.status).toBe(403);
-    expect((await res.json()).error).toBe('Missing origin header');
-    expect(mailer).not.toHaveBeenCalled();
+    // The standard envelope. CSRF used to answer a bare `{ error }`, the one
+    // write-route failure without `success: false`.
+    expect(await res.json()).toEqual({ success: false, error: 'Missing origin header' });
+    expect(outbox.sent).toHaveLength(0);
   });
 
   it('rejects a POST from a foreign Origin', async () => {
@@ -137,7 +153,7 @@ describe('CSRF layer (real @/lib/csrf)', () => {
 
     expect(res.status).toBe(403);
     expect((await res.json()).error).toBe('Invalid origin');
-    expect(mailer).not.toHaveBeenCalled();
+    expect(outbox.sent).toHaveLength(0);
   });
 
   it('guards the database route the same way', async () => {
@@ -174,6 +190,10 @@ describe('auth layer (real @/lib/api-auth)', () => {
     );
 
     expect(res.status).toBe(401);
+    expect(await res.json()).toEqual({
+      success: false,
+      error: 'Unauthorized - valid API key required',
+    });
     expect(mockSql).not.toHaveBeenCalled();
   });
 
@@ -214,7 +234,29 @@ describe('schema layer (real Zod schemas)', () => {
       field: 'email',
       success: false,
     });
-    expect(mailer).not.toHaveBeenCalled();
+    expect(outbox.sent).toHaveLength(0);
+  });
+
+  it('returns 400, not a logged 500, for a body that is not JSON', async () => {
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', { rawBody: '{' })
+    );
+
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe('Request body must be valid JSON');
+    expect(outbox.sent).toHaveLength(0);
+  });
+
+  it('returns 400 for a field that is only whitespace', async () => {
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', {
+        body: { ...validContact, message: '   \n  ' },
+      })
+    );
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ error: 'Message is required', field: 'message' });
+    expect(outbox.sent).toHaveLength(0);
   });
 
   it('returns 400 with the field error for an over-long message', async () => {
@@ -248,8 +290,7 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
     const res = await contactPost(
       makeRequest('http://localhost:3000/api/contact', {
         body: {
-          name: 'Jane Doe',
-          email: 'jane@example.com',
+          ...validContact,
           // The subject is reader-controlled and now leads the header line, so
           // this is where a header-injection attempt would go.
           subject: 'Audit\r\nBcc: attacker@evil.example',
@@ -259,9 +300,9 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
     );
 
     expect(res.status).toBe(200);
-    expect(mailer).toHaveBeenCalledTimes(1);
+    expect(outbox.sent).toHaveLength(1);
 
-    const payload = JSON.parse(mailer.mock.calls[0][1].body);
+    const payload = outbox.sent[0];
 
     // Header injection: no bare CR or LF survives into the subject.
     expect(payload.subject).not.toMatch(/[\r\n]/);
@@ -284,19 +325,209 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
     );
 
     expect(res.status).toBe(200);
-    const payload = JSON.parse(mailer.mock.calls[0][1].body);
+    const payload = outbox.sent[0];
     expect(payload.html).not.toContain('<img');
     expect(payload.html).toContain('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;');
   });
 });
 
 // ---------------------------------------------------------------------------
-// Rate limit — the real withRateLimit over the real in-memory limiter
+// Mail — the real templates and deliverMail; the outbox at the end
 // ---------------------------------------------------------------------------
-describe('rate-limit layer (real @/lib/with-rate-limit)', () => {
-  it('engages after RATE_LIMITS.NEWSLETTER.limit requests from one IP', async () => {
+describe('mail delivery (real @/lib/mail)', () => {
+  it('delivers a contact message to the inbox, replying to the sender', async () => {
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', { body: validContact })
+    );
+
+    expect(res.status).toBe(200);
+    expect(outbox.sent).toEqual([
+      expect.objectContaining({
+        from: 'noreply@example.com',
+        to: 'inbox@example.com',
+        replyTo: 'jane@example.com',
+        subject: 'Project scoping — Jane Doe',
+      }),
+    ]);
+  });
+
+  it('queues a welcome email for a new subscriber', async () => {
+    const res = await subscribePost(
+      makeRequest('http://localhost:3000/api/newsletter/subscribe', {
+        body: { email: 'reader@example.com' },
+      })
+    );
+
+    expect(res.status).toBe(200);
+    await vi.waitFor(() => expect(outbox.sent).toHaveLength(1));
+    expect(outbox.sent[0]).toMatchObject({
+      from: 'newsletter@lscaturchio.xyz',
+      to: 'reader@example.com',
+      subject: "Welcome to Lorenzo's Newsletter!",
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Human form guard — the real guard; BotID's classifier is the one seam
+// ---------------------------------------------------------------------------
+describe('human form guard (real @/lib/form-guard)', () => {
+  const SENT = {
+    data: { message: "Message sent successfully! I'll get back to you soon." },
+    success: true,
+  };
+  const SUBSCRIBED = {
+    data: { message: 'Thanks! Check your inbox to confirm your subscription.' },
+    success: true,
+  };
+  const validSubscribe = { email: 'reader@example.com', contact_ref: '', elapsedMs: 30_000 };
+
+  // A dropped submission is answered exactly like a real one, so a bot
+  // iterating on its payload cannot tell which part gave it away.
+  it.each([
+    ['a filled honeypot', { contact_ref: 'https://spam.example' }],
+    ['a fill time under the floor', { elapsedMs: 800 }],
+  ])('drops %s on contact: the success envelope, nothing mailed', async (_, overrides) => {
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', { body: { ...validContact, ...overrides } })
+    );
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual(SENT);
+    expect(outbox.sent).toHaveLength(0);
+  });
+
+  it.each([
+    ['a filled honeypot', { contact_ref: 'https://spam.example' }],
+    ['a fill time under the floor', { elapsedMs: 200 }],
+  ])('drops %s on subscribe: the success envelope, no SQL, nothing mailed', async (_, overrides) => {
+    const res = await subscribePost(
+      makeRequest('http://localhost:3000/api/newsletter/subscribe', {
+        body: { ...validSubscribe, ...overrides },
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual(SUBSCRIBED);
+    expect(mockSql).not.toHaveBeenCalled();
+    expect(outbox.sent).toHaveLength(0);
+  });
+
+  it('holds each form to its own floor: two seconds is a script on contact, a person on subscribe', async () => {
+    const contact = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', { body: { ...validContact, elapsedMs: 2000 } })
+    );
+    expect(contact.status).toBe(200);
+    expect(outbox.sent).toHaveLength(0);
+
+    const subscribe = await subscribePost(
+      makeRequest('http://localhost:3000/api/newsletter/subscribe', {
+        body: { ...validSubscribe, elapsedMs: 2000 },
+      })
+    );
+    expect(subscribe.status).toBe(200);
+    expect(mockSql).toHaveBeenCalled();
+  });
+
+  // A tab opened before a deploy runs the old bundle. Dropping its message
+  // would lose it while saying it arrived.
+  it('mails a submission that sends no guard fields at all', async () => {
+    const { name, email, subject, message } = validContact;
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', { body: { name, email, subject, message } })
+    );
+
+    expect(res.status).toBe(200);
+    expect(outbox.sent).toHaveLength(1);
+  });
+
+  // A 400 naming the honeypot would tell a bot which part of its payload to fix.
+  it('never answers its own fields with a field error', async () => {
+    const res = await contactPost(
+      makeRequest('http://localhost:3000/api/contact', {
+        body: { ...validContact, elapsedMs: 'soon' },
+      })
+    );
+
+    expect(res.status).toBe(200);
+    expect(outbox.sent).toHaveLength(1);
+  });
+
+  describe('when BotID says bot', () => {
+    const classifier = vi.fn(async () => true);
+    let restore: () => void;
+    beforeEach(() => {
+      classifier.mockClear();
+      restore = installBotClassifier(classifier);
+    });
+    afterEach(() => restore());
+
+    // A refusal the reader can see, unlike a drop: BotID can misjudge a
+    // person, and they need to know to use email instead.
+    it('refuses contact with a 403 that says so, and mails nothing', async () => {
+      const res = await contactPost(
+        makeRequest('http://localhost:3000/api/contact', { body: validContact })
+      );
+
+      expect(res.status).toBe(403);
+      expect(await res.json()).toEqual({
+        success: false,
+        error: 'This message was flagged as automated and was not sent.',
+      });
+      expect(outbox.sent).toHaveLength(0);
+    });
+
+    it('refuses subscribe with a 403, before any SQL', async () => {
+      const res = await subscribePost(
+        makeRequest('http://localhost:3000/api/newsletter/subscribe', { body: validSubscribe })
+      );
+
+      expect(res.status).toBe(403);
+      expect((await res.json()).error).toBe(
+        'This signup was flagged as automated and was not saved.'
+      );
+      expect(mockSql).not.toHaveBeenCalled();
+    });
+
+    it('is not consulted by a route that declares no guard', async () => {
+      const res = await dripPost(
+        makeRequest('http://localhost:3000/api/newsletter/drip', {
+          origin: null,
+          headers: { 'x-api-key': 'test-drip-key' },
+        })
+      );
+
+      expect(res.status).toBe(200);
+      expect(classifier).not.toHaveBeenCalled();
+    });
+
+    // The guard runs AFTER Zod, so a person is told about a malformed field
+    // before anything can answer them with a silent success or a refusal.
+    it('runs after Zod: a malformed email is a 400 naming the field, even with a filled honeypot', async () => {
+      const res = await contactPost(
+        makeRequest('http://localhost:3000/api/contact', {
+          body: { ...validContact, email: 'not-an-email', contact_ref: 'https://spam.example' },
+        })
+      );
+
+      expect(res.status).toBe(400);
+      expect(await res.json()).toEqual({
+        success: false,
+        error: 'Invalid email format',
+        field: 'email',
+      });
+      expect(classifier).not.toHaveBeenCalled();
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Rate limit — the real withRateLimit over the real in-memory store
+// ---------------------------------------------------------------------------
+describe('rate-limit layer (real @/lib/rate-limit)', () => {
+  it('engages after the CONTACT policy limit from one IP', async () => {
     const ip = freshIp();
-    const limit = RATE_LIMITS.NEWSLETTER.limit;
+    const { limit } = RATE_LIMIT_POLICIES.CONTACT;
 
     for (let i = 0; i < limit; i += 1) {
       const ok = await contactPost(
@@ -312,14 +543,36 @@ describe('rate-limit layer (real @/lib/with-rate-limit)', () => {
 
     expect(blocked.status).toBe(429);
     expect(blocked.headers.get('Retry-After')).toBeTruthy();
-    expect((await blocked.json()).error).toBe('Too many requests');
+    // The standard error envelope, like every other failure on this route.
+    expect(await blocked.json()).toEqual({
+      success: false,
+      error: 'Too many requests',
+      retryAfter: expect.any(Number),
+    });
     // The mailer was reached exactly `limit` times, never on the blocked call.
-    expect(mailer).toHaveBeenCalledTimes(limit);
+    expect(outbox.sent).toHaveLength(limit);
+  });
+
+  it('does not spend the newsletter signup allowance on contact messages', async () => {
+    // Both policies are 3 per 5 minutes. They used to be one bucket.
+    const ip = freshIp();
+    for (let i = 0; i <= RATE_LIMIT_POLICIES.CONTACT.limit; i += 1) {
+      await contactPost(makeRequest('http://localhost:3000/api/contact', { ip, body: validContact }));
+    }
+
+    const res = await subscribePost(
+      makeRequest('http://localhost:3000/api/newsletter/subscribe', {
+        ip,
+        body: { email: 'reader@example.com' },
+      })
+    );
+
+    expect(res.status).toBe(200);
   });
 
   it('runs FIRST: an exhausted bucket 429s even a request that would fail CSRF', async () => {
     const ip = freshIp();
-    for (let i = 0; i < RATE_LIMITS.NEWSLETTER.limit; i += 1) {
+    for (let i = 0; i < RATE_LIMIT_POLICIES.CONTACT.limit; i += 1) {
       await contactPost(makeRequest('http://localhost:3000/api/contact', { ip, body: validContact }));
     }
 
@@ -367,5 +620,190 @@ describe('envelope layer', () => {
       field: 'email',
       success: false,
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The browser's decoder, over the real chain
+// ---------------------------------------------------------------------------
+describe('submitWrite: every layer decodes to its own kind (real routes)', () => {
+  const ROUTES: Record<string, (req: NextRequest) => Promise<Response>> = {
+    '/api/contact': contactPost,
+    '/api/newsletter/subscribe': subscribePost,
+    '/api/newsletter/drip': dripPost,
+  };
+
+  /**
+   * `fetch` as a browser on `origin` would make it: the request submitWrite
+   * builds, handed to the real route handler. The browser, not the page,
+   * attaches Origin, which is why it is a parameter here.
+   */
+  function browser(options: Pick<ReqOptions, 'origin' | 'ip'> = {}): void {
+    vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
+      const path = String(input);
+      const route = ROUTES[path];
+      if (!route) throw new Error(`no route stubbed for ${path}`);
+      return route(
+        makeRequest(`http://localhost:3000${path}`, {
+          ...options,
+          rawBody: String(init?.body),
+          headers: init?.headers as Record<string, string>,
+        })
+      );
+    });
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it('a success is ok, with the envelope unwrapped', async () => {
+    browser();
+    expect(
+      await submitWrite('/api/newsletter/subscribe', { email: 'reader@example.com' })
+    ).toEqual({
+      kind: 'ok',
+      data: { message: 'Thanks! Check your inbox to confirm your subscription.' },
+    });
+  });
+
+  it("a CSRF 403 is refused, with the layer's reason", async () => {
+    browser({ origin: 'https://evil.example' });
+    expect(await submitWrite('/api/contact', validContact)).toEqual({
+      kind: 'refused',
+      status: 403,
+      message: 'Invalid origin',
+    });
+  });
+
+  it('an API-key 401 is refused', async () => {
+    browser();
+    expect(await submitWrite('/api/newsletter/drip', {})).toEqual({
+      kind: 'refused',
+      status: 401,
+      message: 'Unauthorized - valid API key required',
+    });
+  });
+
+  it('a Zod 400 is invalid-field, naming the field', async () => {
+    browser();
+    expect(await submitWrite('/api/contact', { ...validContact, email: 'not-an-email' })).toEqual({
+      kind: 'invalid-field',
+      field: 'email',
+      message: 'Invalid email format',
+    });
+  });
+
+  it('a 429 is rate-limited, with the wait in seconds', async () => {
+    const ip = freshIp();
+    browser({ ip });
+    for (let i = 0; i < RATE_LIMIT_POLICIES.CONTACT.limit; i += 1) {
+      expect((await submitWrite('/api/contact', validContact)).kind).toBe('ok');
+    }
+
+    const result = await submitWrite('/api/contact', validContact);
+
+    expect(result).toEqual({
+      kind: 'rate-limited',
+      retryAfter: expect.any(Number),
+      message: 'Too many requests',
+    });
+    const windowSeconds = RATE_LIMIT_POLICIES.CONTACT.windowMs / 1000;
+    expect(result.kind === 'rate-limited' && result.retryAfter).toBeGreaterThan(0);
+    expect(result.kind === 'rate-limited' && result.retryAfter).toBeLessThanOrEqual(windowSeconds);
+  });
+
+  it("a guard refusal is refused, with the route's sentence", async () => {
+    browser();
+    const restore = installBotClassifier(async () => true);
+    try {
+      expect(await submitWrite('/api/contact', validContact)).toEqual({
+        kind: 'refused',
+        status: 403,
+        message: 'This message was flagged as automated and was not sent.',
+      });
+    } finally {
+      restore();
+    }
+  });
+
+  it("a handler writeError.internal is server-error, with the handler's sentence", async () => {
+    browser();
+    outbox.respondWith({ status: 'failed', reason: 'provider outage' });
+    expect(await submitWrite('/api/contact', validContact)).toEqual({
+      kind: 'server-error',
+      status: 500,
+      message: 'Failed to send message. Please try again later.',
+    });
+  });
+
+  it('a 5xx that is not JSON is still server-error, not a network failure', async () => {
+    // What a gateway answers when the function behind it dies: HTML, no envelope.
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response('<html><body>502 Bad Gateway</body></html>', {
+          status: 502,
+          headers: { 'content-type': 'text/html' },
+        })
+    );
+    expect(await submitWrite('/api/contact', validContact)).toEqual({
+      kind: 'server-error',
+      status: 502,
+      message: null,
+    });
+  });
+
+  it('a platform 429 with no envelope still reads the Retry-After header', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response('Too Many Requests', { status: 429, headers: { 'retry-after': '42' } })
+    );
+    expect(await submitWrite('/api/contact', validContact)).toEqual({
+      kind: 'rate-limited',
+      retryAfter: 42,
+      message: null,
+    });
+  });
+
+  it('a request that cannot leave is network/unreachable', async () => {
+    vi.stubGlobal('fetch', async () => {
+      throw new TypeError('Failed to fetch');
+    });
+    expect(await submitWrite('/api/contact', validContact)).toEqual({
+      kind: 'network',
+      cause: 'unreachable',
+    });
+  });
+
+  it('a send that never answers is network/timeout after 20s', async () => {
+    // BotID's fetch wrapper can wait on its challenge forever, before the
+    // request exists for an AbortSignal to cancel.
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    vi.stubGlobal('fetch', () => new Promise<Response>(() => {}));
+
+    let settled: unknown = 'pending';
+    void submitWrite('/api/contact', validContact).then((result) => {
+      settled = result;
+    });
+
+    await vi.advanceTimersByTimeAsync(19_999);
+    expect(settled).toBe('pending');
+    await vi.advanceTimersByTimeAsync(1);
+    expect(settled).toEqual({ kind: 'network', cause: 'timeout' });
+  });
+
+  it('timeoutMs: null waits for as long as the server takes', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    let answer!: (response: Response) => void;
+    vi.stubGlobal('fetch', () => new Promise<Response>((resolve) => (answer = resolve)));
+
+    const pending = submitWrite('/api/chat', {}, { timeoutMs: null });
+    await vi.advanceTimersByTimeAsync(120_000);
+    answer(new Response(JSON.stringify({ data: { answer: 'late' }, success: true }), { status: 200 }));
+
+    expect(await pending).toEqual({ kind: 'ok', data: { answer: 'late' } });
   });
 });

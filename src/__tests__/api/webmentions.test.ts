@@ -9,15 +9,7 @@ vi.mock('@/lib/site-url', () => ({
   getSiteUrl: vi.fn(() => 'https://lscaturchio.xyz'),
 }));
 
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: <T>(handler: T) => handler,
-}));
-
-vi.mock('@/lib/rate-limit', () => ({
-  RATE_LIMITS: {
-    PUBLIC: { limit: 100, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 import { GET } from '@/app/api/webmentions/route';
 import { fetchWebmentions } from '@/lib/webmentions';

@@ -3,10 +3,9 @@ import { buildPageMetadata } from "@/lib/seo";
 import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { nowData, getNowFreshness } from "@/lib/now-data";
-import { getCurrentlyReading } from "@/lib/goodreads";
-import { getRecentWatches } from "@/lib/letterboxd";
+import { getGoodreadsLibrary } from "@/lib/goodreads";
+import { getLetterboxdLibrary } from "@/lib/letterboxd";
 import { getAllBlogs } from "@/lib/getAllBlogs";
-import { getPublishedBlogs, sortBlogsByDateDescending } from "@/lib/blog-data";
 import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
@@ -24,9 +23,9 @@ export default async function NowPage() {
 
   // These three read straight from the data exports and the blog, so they stay
   // current whether or not the hand-written sections above have been reviewed.
-  const reading = getCurrentlyReading();
-  const watching = getRecentWatches(5);
-  const recentPosts = sortBlogsByDateDescending(getPublishedBlogs(await getAllBlogs())).slice(0, 4);
+  const reading = getGoodreadsLibrary().currentlyReading();
+  const watching = getLetterboxdLibrary().recentWatches(5);
+  const recentPosts = (await getAllBlogs()).slice(0, 4);
 
   return (
     <Container className="mt-4">

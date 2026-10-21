@@ -61,10 +61,15 @@ const ROUTES = [
  * lands, which is the only way a 129-route site stays checkable by a list
  * nobody maintains.
  *
+ * Essays are the one dynamic route expanded here: `blog/[slug]` becomes every
+ * `src/app/blog/<slug>/content.mdx`, the files its generateStaticParams lists.
+ * They were 84 `page.tsx` files until one route replaced them, and the site's
+ * most-read pages should not have left this list when that happened.
+ *
  * Excluded, with reasons — an exclusion here is a route that cannot answer a
  * plain GET, not a route that is inconvenient:
- *   - `[slug]`/`[tag]`: no concrete path to visit. `ROUTES` covers one of each
- *     by hand (`/blog/building-rag-systems`).
+ *   - other `[slug]`/`[tag]` routes: no concrete path to visit. `ROUTES`
+ *     covers them by hand.
  *   - `admin/**`: session-gated, and `redirect('/admin/login')` is the correct
  *     response. `e2e/admin.spec.ts` owns that gate.
  *   - `offline`: the service worker's fallback document. It is served by the
@@ -72,6 +77,15 @@ const ROUTES = [
  */
 function staticRoutes(): string[] {
   const appDir = path.join(process.cwd(), 'src/app')
+  const blogDir = path.join(appDir, 'blog')
+
+  function essayRoutes(): string[] {
+    return fs
+      .readdirSync(blogDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .filter((entry) => fs.existsSync(path.join(blogDir, entry.name, 'content.mdx')))
+      .map((entry) => `/blog/${entry.name}`)
+  }
 
   function walk(dir: string): string[] {
     return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -83,6 +97,7 @@ function staticRoutes(): string[] {
         .split(path.sep)
         .filter((segment) => segment !== '' && !segment.startsWith('('))
 
+      if (segments.join('/') === 'blog/[slug]') return essayRoutes()
       if (segments.some((segment) => segment.startsWith('['))) return []
       if (segments[0] === 'admin' || segments[0] === 'offline') return []
 
@@ -643,6 +658,63 @@ test.describe('design invariants, in the DOM', () => {
       expect(stillInPanel, `tab ${i + 1} should stay inside the drawer`).toBe(true)
     }
     await expect(themeToggle).not.toBeFocused()
+  })
+
+  test('an overlay opened from another overlay paints on top of it', async ({ page }) => {
+    // The command palette sat at z-50 and the phone menu at z-55, at 98%
+    // opacity. The menu's Search button opened the palette *behind* the menu:
+    // the dialog mounted, took focus, and could not be seen — `elementFromPoint`
+    // at the palette input's centre returned a menu link. The ask drawer had
+    // the same defect against the z-60 phone bar, which covered the drawer's
+    // close button, so tapping "close" opened the menu instead.
+    //
+    // Hit-testing, not a z-index comparison: what matters is which element a
+    // finger or a pointer lands on, and that also folds in stacking contexts a
+    // number cannot see. The layer order itself is the `--z-index-*` tokens in
+    // globals.css, held by `overlay layers` in design-drift.test.ts.
+    const topmostIsInside = (selector: string) =>
+      page.evaluate((target) => {
+        const element = document.querySelector(target)
+        if (!element) return false
+        const box = element.getBoundingClientRect()
+        const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)
+        return hit !== null && element.contains(hit)
+      }, selector)
+
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.route('**/api/views', (route) => route.abort())
+    await page.goto('/', { waitUntil: 'networkidle' })
+
+    const toggle = page.getByRole('button', { name: 'Toggle menu' })
+    await toggle.click()
+    const menu = page.getByRole('dialog', { name: 'Menu' })
+    await expect(menu).toBeVisible()
+
+    await menu.locator('[data-command-palette-trigger]').click()
+    const palette = page.getByRole('dialog', { name: 'Search and navigate' })
+    await expect(palette).toBeVisible()
+    // The menu stays open beneath it; that is the case being tested.
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true')
+
+    await expect
+      .poll(() => topmostIsInside('[role="dialog"][aria-label="Search and navigate"] input'), {
+        message: 'the palette input should be the topmost element at its own centre, not the menu',
+      })
+      .toBe(true)
+
+    // Escape closes only the top overlay, then the drawer opens from the menu.
+    await page.keyboard.press('Escape')
+    await expect(palette).toHaveCount(0)
+    await expect(menu).toBeVisible()
+
+    await menu.getByRole('button', { name: 'Ask the site' }).click()
+    await expect(page.locator('#ask-drawer')).toBeVisible()
+
+    await expect
+      .poll(() => topmostIsInside('#ask-drawer button[aria-label="Close the ask panel"]'), {
+        message: "the drawer's close button should not be covered by the phone bar",
+      })
+      .toBe(true)
   })
 
   test('nothing in flow renders past the viewport on a phone', async ({ page }) => {

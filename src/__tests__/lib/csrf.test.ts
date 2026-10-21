@@ -180,8 +180,7 @@ describe('validateCsrf', () => {
       const request = createMockRequest('POST');
       const result = validateCsrf(request);
       expect(result).not.toBeNull();
-      const data = await result!.json();
-      expect(data.error).toBe('Missing origin header');
+      expect(result!.error).toBe('Missing origin header');
       expect(result!.status).toBe(403);
     });
 

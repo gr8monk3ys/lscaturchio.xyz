@@ -12,7 +12,12 @@
  * 3. Cross-origin requests without proper headers are rejected
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import type { Refusal } from './api-response';
+
+function refuse(error: string): Refusal {
+  return { status: 403, error };
+}
 
 // Get allowed origins from environment or use defaults
 function getAllowedOrigins(): string[] {
@@ -67,10 +72,12 @@ function getAllowedOrigins(): string[] {
 }
 
 /**
- * Validates that the request is from an allowed origin
- * Returns null if valid, or an error response if invalid
+ * Validates that the request is from an allowed origin.
+ *
+ * Returns null if valid, or a 403 `Refusal` for the caller to render through
+ * `refusalResponse` — this module does not spell a response envelope.
  */
-export function validateCsrf(request: NextRequest): NextResponse | null {
+export function validateCsrf(request: NextRequest): Refusal | null {
   // Skip CSRF check for safe methods
   const method = request.method.toUpperCase();
   if (['GET', 'HEAD', 'OPTIONS'].includes(method)) {
@@ -102,10 +109,7 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
     if (allowedOrigins.includes(candidate)) {
       return null;
     }
-    return NextResponse.json(
-      { error: 'Invalid origin' },
-      { status: 403 }
-    );
+    return refuse('Invalid origin');
   }
 
   // Fall back to Referer header
@@ -119,17 +123,11 @@ export function validateCsrf(request: NextRequest): NextResponse | null {
     } catch {
       // Invalid referer URL
     }
-    return NextResponse.json(
-      { error: 'Invalid referer' },
-      { status: 403 }
-    );
+    return refuse('Invalid referer');
   }
 
   // No origin or referer - reject the request.
   // Modern browsers always send Origin on cross-origin and same-origin POST/DELETE.
   // Allowing requests without both headers is a CSRF bypass vector.
-  return NextResponse.json(
-    { error: 'Missing origin header' },
-    { status: 403 }
-  );
+  return refuse('Missing origin header');
 }

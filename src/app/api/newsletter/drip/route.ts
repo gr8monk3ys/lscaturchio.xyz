@@ -1,8 +1,8 @@
-import { RATE_LIMITS } from "@/lib/rate-limit";
 import { withWriteRoute, writeError } from "@/lib/api/write-route";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
-import { logError, logInfo } from "@/lib/logger";
-import { sendOnboardingEmail } from "@/lib/email";
+import { logInfo } from "@/lib/logger";
+import { deliverMail } from "@/lib/mail/deliver";
+import { renderOnboardingEmail } from "@/lib/mail/templates";
 
 type OnboardingState = {
   step?: number;
@@ -54,11 +54,10 @@ function buildOnboardingState(
 
 export const POST = withWriteRoute(
   {
-    // Was RATE_LIMITS.PUBLIC (100/min). This endpoint sends up to BATCH_SIZE
-    // onboarding emails per call, so 100 calls a minute from one IP is 5,000
-    // sends; the scheduled caller runs on the order of once an hour. STANDARD
-    // (30/min) is still far above any legitimate cadence.
-    limit: RATE_LIMITS.STANDARD,
+    // 30/min, not the 100/min of a public read: this endpoint sends up to
+    // BATCH_SIZE onboarding emails per call, so 100 calls a minute from one IP
+    // is 5,000 sends. The scheduled caller runs about once an hour.
+    limit: "NEWSLETTER_DRIP",
     auth: { kind: "apiKey", envKey: "NEWSLETTER_ADMIN_API_KEY" },
     csrf: {
       kind: "skip",
@@ -69,6 +68,7 @@ export const POST = withWriteRoute(
       kind: "none",
       reason: "Takes no request body; its only input is the ?dryRun query flag.",
     },
+    guard: { kind: "none", reason: "Called by a cron job holding the API key; there is no person and no form." },
     envelope: { kind: "standard" },
     errors: {
       log: "Newsletter drip failed",
@@ -156,16 +156,15 @@ export const POST = withWriteRoute(
         continue;
       }
 
-      let ok = false;
-      try {
-        ok = await sendOnboardingEmail(email, token, nextStep, { topics });
-      } catch (error) {
-        logError("Newsletter drip send failed", error, {
-          component: "newsletter/drip",
-          email,
-          step: nextStep,
-        });
-      }
+      // deliverMail logs its own failures, and never with the address.
+      const rendered = renderOnboardingEmail(token, nextStep, { topics });
+      const outcome = rendered
+        ? await deliverMail(
+            { to: email, ...rendered },
+            { component: "newsletter/drip", action: "POST" }
+          )
+        : null;
+      const ok = outcome?.status === "delivered";
 
       if (!ok) {
         failed++;

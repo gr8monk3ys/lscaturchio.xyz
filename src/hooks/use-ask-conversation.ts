@@ -1,13 +1,32 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { submitWrite, type WriteResult } from "@/lib/fetcher";
 import { logError, logWarn } from "@/lib/logger";
 
-/** A non-2xx from /api/chat, with the status so the caller can tell a refusal from a failure. */
-class ChatRequestError extends Error {
-  constructor(message: string, readonly status: number) {
-    super(message);
-    this.name = "ChatRequestError";
+/**
+ * The reader sees ERROR_COPY whatever went wrong; this decides who else hears.
+ * A declined request — rate limit, CSRF origin, validation — is the server
+ * working as intended, so it is a warning. A 5xx, a lost request, or a 200
+ * with no answer in it is something to fix.
+ */
+function logFailure(result: WriteResult<unknown>): void {
+  const context = { component: "useAskConversation", action: "send" };
+  switch (result.kind) {
+    case "invalid-field":
+    case "rate-limited":
+    case "refused":
+      logWarn("Chat request rejected", { ...context, kind: result.kind, reason: result.message });
+      return;
+    case "server-error":
+      logError("Chat request failed", new Error(result.message ?? `status ${result.status}`), context);
+      return;
+    case "network":
+      logError("Chat request failed", new Error(`network: ${result.cause}`), context);
+      return;
+    case "ok":
+      logError("Chat request failed", new Error("Chat response missing answer"), context);
+      return;
   }
 }
 
@@ -95,66 +114,40 @@ export function useAskConversation({
       setInput("");
       setIsLoading(true);
 
-      try {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query,
-            contextSlug: contextRef.current || undefined,
-          }),
-        });
+      const result = await submitWrite<{ answer?: unknown }>(
+        "/api/chat",
+        { query, contextSlug: contextRef.current || undefined },
+        // A model-backed answer can legitimately outlast the forms' 20s: the
+        // provider client alone allows 30s and one retry (src/lib/ai-provider.ts).
+        { timeoutMs: null }
+      );
+      setIsLoading(false);
 
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) {
-          throw new ChatRequestError(
-            data?.message ||
-              data?.error ||
-              `Chat request failed with status ${response.status}`,
-            response.status
-          );
-        }
+      const answer =
+        result.kind === "ok" &&
+        typeof result.data?.answer === "string" &&
+        result.data.answer.trim().length > 0
+          ? result.data.answer
+          : null;
 
-        const payload = data?.data ?? data;
-        const answer =
-          typeof payload?.answer === "string" && payload.answer.trim().length > 0
-            ? payload.answer
-            : null;
-        if (!answer) throw new Error("Chat response missing answer");
-
+      if (answer) {
         setMessages((prev) => [
           ...prev,
           { id: prev.length + 1, content: answer, sender: "ai" },
         ]);
-      } catch (error) {
-        // A 4xx is the server declining on purpose — rate limit, CSRF origin,
-        // validation. The user sees ERROR_COPY either way; only a 5xx or a
-        // network failure is something to fix.
-        if (error instanceof ChatRequestError && error.status < 500) {
-          logWarn("Chat request rejected", {
-            component: "useAskConversation",
-            action: "send",
-            status: error.status,
-            reason: error.message,
-          });
-        } else {
-          logError("Chat request failed", error, {
-            component: "useAskConversation",
-            action: "send",
-          });
-        }
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: prev.length + 1,
-            content: ERROR_COPY,
-            sender: "ai",
-            failedQuery: query,
-          },
-        ]);
-      } finally {
-        setIsLoading(false);
+        return;
       }
+
+      logFailure(result);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          content: ERROR_COPY,
+          sender: "ai",
+          failedQuery: query,
+        },
+      ]);
     },
     []
   );

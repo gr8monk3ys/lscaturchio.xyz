@@ -10,8 +10,10 @@ vi.mock('@upstash/redis', () => ({
 }));
 
 vi.mock('@gr8monk3ys/next-kit/rate-limit', () => ({
-  RedisStore: vi.fn(),
-  createRateLimiter: vi.fn(),
+  // Constructible, like the real class.
+  RedisStore: vi.fn(function () {
+    return {};
+  }),
 }));
 
 describe('pingRedis', () => {
@@ -107,5 +109,40 @@ describe('pingRedis', () => {
     const pingRedis = await load();
 
     await expect(pingRedis()).resolves.toBe('unavailable');
+  });
+});
+
+describe('getUpstashStore', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+    process.env = { ...originalEnv };
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+  });
+
+  it('is null without credentials, which sends the limiter to its memory store', async () => {
+    const { getUpstashStore } = await import('@/lib/rate-limit-redis');
+
+    expect(getUpstashStore()).toBeNull();
+  });
+
+  it('builds one store for the process and fails closed, so the limiter can fall back', async () => {
+    process.env.UPSTASH_REDIS_REST_URL = 'https://example.upstash.io';
+    process.env.UPSTASH_REDIS_REST_TOKEN = 'token';
+    const { RedisStore } = await import('@gr8monk3ys/next-kit/rate-limit');
+    const { getUpstashStore } = await import('@/lib/rate-limit-redis');
+
+    expect(getUpstashStore()).toBe(getUpstashStore());
+    expect(RedisStore).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(RedisStore).mock.calls[0][1]).toMatchObject({ onError: 'closed' });
   });
 });

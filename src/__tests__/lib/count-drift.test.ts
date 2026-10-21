@@ -162,7 +162,7 @@ describe("count drift", () => {
       if (!fs.existsSync(dir)) continue;
 
       for (const file of walk(dir)) {
-        const relative = path.relative(process.cwd(), file);
+        const relative = path.relative(process.cwd(), file).split(path.sep).join("/");
         const source = stripComments(fs.readFileSync(file, "utf-8"));
 
         for (const match of source.matchAll(COUNT_CLAIM)) {

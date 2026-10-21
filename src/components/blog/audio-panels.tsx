@@ -32,6 +32,7 @@ export function AudioPanels({
           <button
             type="button"
             onClick={onToggleChapters}
+            aria-expanded={showChapters}
             className={cn(
               "inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors",
               showChapters
@@ -45,6 +46,7 @@ export function AudioPanels({
           <button
             type="button"
             onClick={onToggleTranscript}
+            aria-expanded={showTranscript}
             className={cn(
               "inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors",
               showTranscript

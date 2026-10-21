@@ -66,12 +66,11 @@ function serializeCell(value: string): string {
 }
 
 /**
- * Serialize header-keyed records back to CSV text, preserving column order.
- * The inverse of parseCsv for round-tripping the committed data exports:
+ * Serialize header-keyed records back to CSV text, preserving column order:
  * missing keys become empty cells, and cells containing commas, quotes, or
  * newlines are quoted.
  */
-export function serializeCsv(headers: string[], records: Record<string, string>[]): string {
+function serializeCsv(headers: string[], records: Record<string, string>[]): string {
   const lines = [headers.map(serializeCell).join(',')];
   for (const record of records) {
     lines.push(headers.map((h) => serializeCell(record[h] ?? '')).join(','));
@@ -79,17 +78,13 @@ export function serializeCsv(headers: string[], records: Record<string, string>[
   return lines.join('\n') + '\n';
 }
 
-/**
- * Parse CSV text into header-keyed records. Cells are trimmed, missing trailing
- * columns become empty strings, and rows that are entirely empty are dropped.
- */
-export function parseCsv(text: string): Record<string, string>[] {
+/** The header row and the header-keyed records of a CSV document. */
+function parseDocument(text: string): { headers: string[]; records: Record<string, string>[] } {
   const rows = parseRows(text.trim());
-  if (rows.length < 2) return [];
+  const headers = (rows[0] ?? []).map((h) => h.trim());
+  if (rows.length < 2) return { headers, records: [] };
 
-  const headers = rows[0].map((h) => h.trim());
-
-  return rows
+  const records = rows
     .slice(1)
     .filter((row) => row.some((cell) => cell.trim() !== ''))
     .map((row) => {
@@ -99,4 +94,72 @@ export function parseCsv(text: string): Record<string, string>[] {
       });
       return record;
     });
+  return { headers, records };
+}
+
+/**
+ * Parse CSV text into header-keyed records. Cells are trimmed, missing trailing
+ * columns become empty strings, and rows that are entirely empty are dropped.
+ */
+export function parseCsv(text: string): Record<string, string>[] {
+  return parseDocument(text).records;
+}
+
+/**
+ * One CSV file's schema: the mapping between its column names and the field
+ * names code uses, in both directions. The column names are spelled once, in
+ * `defineCsvTable`, and nowhere else — reader and writer both go through here.
+ */
+export interface CsvTable<F extends string> {
+  /** Column names in file order. */
+  readonly columns: readonly string[];
+  /**
+   * Rows as field-keyed records. Every field is present; a column the file
+   * lacks reads as ''. With `strict`, a header row that differs from
+   * `columns` throws instead — a writer must not silently drop a column.
+   */
+  parse(text: string, options?: { strict?: boolean }): Record<F, string>[];
+  /** The inverse of `parse`: records back to CSV text in column order, LF-terminated. */
+  serialize(records: readonly Record<F, string>[]): string;
+  /** A record with every field empty, for building a new row. */
+  empty(): Record<F, string>;
+}
+
+/** The record type a `CsvTable` parses to and serializes from. */
+export type CsvRecord<T> = T extends CsvTable<infer F> ? Record<F, string> : never;
+
+/** Define a CSV table from `{ field: 'Column Name' }`, in column order. */
+export function defineCsvTable<F extends string>(columnsByField: Record<F, string>): CsvTable<F> {
+  const fields = Object.keys(columnsByField) as F[];
+  const columns = fields.map((field) => columnsByField[field]);
+
+  return {
+    columns,
+    parse(text, { strict = false } = {}) {
+      const { headers, records } = parseDocument(text);
+      if (strict && headers.join(',') !== columns.join(',')) {
+        throw new Error(
+          `CSV header mismatch: expected "${columns.join(',')}", found "${headers.join(',')}"`,
+        );
+      }
+      return records.map((row) => {
+        const record = {} as Record<F, string>;
+        for (const field of fields) record[field] = row[columnsByField[field]] ?? '';
+        return record;
+      });
+    },
+    empty() {
+      return Object.fromEntries(fields.map((field) => [field, ''])) as Record<F, string>;
+    },
+    serialize(records) {
+      return serializeCsv(
+        columns,
+        records.map((record) => {
+          const row: Record<string, string> = {};
+          for (const field of fields) row[columnsByField[field]] = record[field] ?? '';
+          return row;
+        }),
+      );
+    },
+  };
 }

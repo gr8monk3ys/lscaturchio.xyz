@@ -20,9 +20,16 @@ export const metadata: Metadata = {
 };
 export const dynamic = "force-dynamic";
 
-async function resolveUnsubscribeState(
-  token: string
-): Promise<{ status: UnsubscribeStatus; message: string }> {
+type UnsubscribeState = { status: UnsubscribeStatus; message: string };
+
+/**
+ * Reads the subscription and never writes it. Mail security scanners (Outlook
+ * Safe Links, Gmail's link checks) GET every link in a message, so when this
+ * page performed the UPDATE, subscribers were removed without clicking. An
+ * active subscriber now gets a button that POSTs to
+ * /api/newsletter/unsubscribe, which is CSRF-checked and rate limited.
+ */
+async function resolveUnsubscribeState(token: string): Promise<UnsubscribeState> {
   const sql = getDb();
   const rows = await sql`SELECT is_active FROM newsletter_subscribers WHERE unsubscribe_token = ${token}`;
   const subscriber = rows[0];
@@ -35,8 +42,7 @@ async function resolveUnsubscribeState(
     return { status: "success", message: "Already unsubscribed" };
   }
 
-  await sql`UPDATE newsletter_subscribers SET is_active = false WHERE unsubscribe_token = ${token}`;
-  return { status: "success", message: "Successfully unsubscribed" };
+  return { status: "confirm", message: "" };
 }
 
 export default async function UnsubscribePage({
@@ -51,7 +57,7 @@ export default async function UnsubscribePage({
     return <UnsubscribePageClient status="no-token" message="No unsubscribe token provided" />;
   }
 
-  let state: { status: UnsubscribeStatus; message: string };
+  let state: UnsubscribeState;
   try {
     state = await resolveUnsubscribeState(token);
   } catch (error) {
@@ -64,5 +70,5 @@ export default async function UnsubscribePage({
     };
   }
 
-  return <UnsubscribePageClient status={state.status} message={state.message} />;
+  return <UnsubscribePageClient status={state.status} message={state.message} token={token} />;
 }

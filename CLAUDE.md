@@ -30,6 +30,11 @@ Personal site at https://lscaturchio.xyz: Next.js 16 App Router, React 19, TypeS
 - **`@gr8monk3ys/next-kit` is pinned to a commit SHA, not a tag.** Bun records no
   integrity hash for a URL dependency, so a moved tag installs different code
   silently — in the module that owns rate limiting. Keep the SHA form when bumping.
+- **Modal overlays go through `useModalOverlay`** (`src/hooks/use-modal-overlay.ts`):
+  initial focus, the Tab trap, Escape and focus return. A new `aria-modal`
+  surface calls it rather than copying a trap; `modal overlays` in
+  `design-drift.test.ts` fails a file that declares `aria-modal` without it, or
+  handles Tab anywhere else.
 - `design-drift.test.ts` scans `src/constants` too. It did not until 2026-09-15,
   which is why `products.tsx` — the largest source file here — had never been
   checked by any rule in it.

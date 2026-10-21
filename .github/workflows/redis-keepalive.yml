@@ -8,9 +8,10 @@ name: Redis keepalive
 # August 2026: not over quota, just ignored long enough to be archived.
 #
 # Waking it is a free click in the Upstash console; keeping it awake is this
-# workflow. `/api/health` PINGs Redis on every call, so one request a week is
-# enough. Weekly, not daily: the point is to stay well inside the 60-day
-# window, not to monitor uptime (uptime.yml does that every 15 minutes). If the
+# workflow. `/api/health` PINGs Redis on every call, so one request every two
+# weeks is enough. Twice a month, not daily: the point is to stay well inside
+# the 60-day window (a missed run still leaves only a ~31-day gap), not to
+# monitor uptime (uptime.yml does that hourly). If the
 # store is asleep, this run goes red and GitHub's scheduled-workflow-failed
 # email says so.
 #
@@ -22,7 +23,7 @@ name: Redis keepalive
 
 on:
   schedule:
-    - cron: '41 9 * * 1'
+    - cron: '41 9 1,15 * *'
   workflow_dispatch:
 
 permissions:

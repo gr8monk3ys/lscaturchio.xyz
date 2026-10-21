@@ -1,15 +1,7 @@
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
 import { MoviesList } from "@/components/movies/MoviesList";
-
-import {
-  getLetterboxdStats,
-  getFavoriteFilms,
-  getTopRatedMovies,
-  getReviewedFilms,
-  getRecentWatches,
-  getLetterboxdWatchlist,
-} from "@/lib/letterboxd";
+import { getLetterboxdLibrary } from "@/lib/letterboxd";
 import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
@@ -20,12 +12,13 @@ export const metadata = buildPageMetadata({
 });
 
 export default function MoviesPage() {
-  const stats = getLetterboxdStats();
-  const favorites = getFavoriteFilms();
-  const fiveStar = getTopRatedMovies();
-  const reviewed = getReviewedFilms();
-  const recentWatches = getRecentWatches(40);
-  const watchlist = getLetterboxdWatchlist().slice(0, 40);
+  const library = getLetterboxdLibrary();
+  const stats = library.stats();
+  const favorites = library.favorites();
+  const fiveStar = library.topRated();
+  const reviewed = library.reviewed();
+  const recentWatches = library.recentWatches(40);
+  const watchlist = library.watchlist(40);
 
   return (
     <Container className="mt-4">

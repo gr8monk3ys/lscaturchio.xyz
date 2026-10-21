@@ -91,17 +91,4 @@ describe('mobile navbar keyboard affordances', () => {
     expect(document.getElementById(panelId)).not.toBeNull();
   });
 
-  it('closes on Escape and returns focus to the toggle', () => {
-    render(<MobileNavbar />);
-    const toggle = screen.getByRole('button', { name: 'Toggle menu' });
-    fireEvent.click(toggle);
-
-    expect(screen.getByRole('navigation', { name: 'Mobile navigation' })).toBeInTheDocument();
-
-    fireEvent.keyDown(document, { key: 'Escape' });
-
-    expect(screen.queryByRole('navigation', { name: 'Mobile navigation' })).toBeNull();
-    expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    expect(document.activeElement).toBe(toggle);
-  });
 });

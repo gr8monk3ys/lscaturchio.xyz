@@ -156,6 +156,9 @@ Behaviour and failure modes:
   committed. If a bad commit ever lands anyway, the failed Vercel build
   leaves the previous deploy live — the failure mode is "not published",
   never "site down".
+- A post is one file: the portal commits `src/app/blog/<slug>/content.mdx`
+  (plus the cover webp, when one is uploaded). There is no `page.tsx` to
+  generate; `src/app/blog/[slug]` renders any essay the catalogue lists.
 - Photo uploads are converted server-side to webp (q85, max 1920px) and the
   gallery entry is written to `src/data/photos.json` in the same commit.
 - The `/now` and `/links` editors write `src/data/now.json` and
@@ -232,7 +235,7 @@ baseline stays current.
 ## Deployment Notes
 
 - Production deploys target Vercel from `main`
-- CI runs lint, knip, type-check, unit tests with coverage thresholds, Playwright e2e, build, and Lighthouse; CodeQL scans on pushes to `main` and weekly
+- CI runs lint, knip, type-check, unit tests with coverage thresholds, Playwright e2e, build, and Lighthouse; CodeQL scans on pushes to `main` and monthly
 - Post-deploy smoke and the scheduled uptime probe are separate safety nets:
   the smoke job only runs on push to `main`, so a dependency that rots
   *between* deploys is invisible to it (see Monitoring below)
@@ -247,7 +250,7 @@ baseline stays current.
 
 ## Monitoring
 
-- `.github/workflows/uptime.yml` probes production every 15 minutes and on
+- `.github/workflows/uptime.yml` probes production hourly and on
   `workflow_dispatch`. It sorts every failure into one of two buckets, and they
   escalate very differently:
 
@@ -255,7 +258,7 @@ baseline stays current.
 | --- | --- | --- | --- |
 | healthy | 0 | green | closes any open `uptime` / `uptime-blocked` issue |
 | **blocked** — every failure was refused *before* reaching the app | 75 | green + warning | none, until blocked continuously for 6h (then one `uptime-blocked` issue) |
-| **down** — a failure the app produced, or nothing answered | 1 | red | one `uptime` issue after **2 consecutive** down runs (~30 min) |
+| **down** — a failure the app produced, or nothing answered | 1 | red | one `uptime` issue after **2 consecutive** down runs (~1 h) |
 
 - **A 403 is not an outage.** `lscaturchio.xyz` is proxied through Cloudflare in
   front of Vercel, and Cloudflare's bot/WAF layer intermittently refuses the

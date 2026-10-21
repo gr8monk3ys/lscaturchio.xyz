@@ -1,17 +1,17 @@
 import { summarizeContent, generateKeyTakeaways } from '@/lib/summarize'
-import { RATE_LIMITS } from '@/lib/rate-limit'
 import { withWriteRoute } from '@/lib/api/write-route'
 import { summarizeSchema } from '@/lib/validations'
 
 export const POST = withWriteRoute(
   {
-    limit: RATE_LIMITS.SUMMARIZE,
+    limit: 'SUMMARIZE',
     auth: {
       kind: 'public',
-      reason: 'Any reader can summarise the post they are on; cost is bounded by RATE_LIMITS.SUMMARIZE.',
+      reason: 'Any reader can summarise the post they are on; cost is bounded by the SUMMARIZE rate-limit policy.',
     },
     csrf: { kind: 'required' },
     body: { kind: 'json', schema: summarizeSchema },
+    guard: { kind: 'none', reason: 'No form behind it; cost is bounded by the SUMMARIZE rate-limit policy.' },
     envelope: { kind: 'standard' },
     errors: {
       log: 'Summarize API: Unexpected error',

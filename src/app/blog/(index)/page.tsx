@@ -1,5 +1,5 @@
 import { Container } from "@/components/Container";
-import { getAllBlogs } from "@/lib/getAllBlogs";
+import { getAllBlogs, getBlogsByTag } from "@/lib/getAllBlogs";
 import { BlogGrid } from "@/components/blog/BlogGrid";
 import { ThemedBlogSections } from "@/components/blog/ThemedBlogSections";
 import { BLOG_STAGES, STAGE_LABELS, filterByStage } from "@/lib/blog-stage";
@@ -34,7 +34,7 @@ const BLOGS_PER_PAGE = 12;
  * essay landed — the same failure mode `/books` shipped with "three books".
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const published = (await getAllBlogs()).filter((blog) => blog.published);
+  const published = await getAllBlogs();
 
   return buildPageMetadata({
     title: "Writing",
@@ -62,9 +62,7 @@ export default async function Blog({
   const blogs = await getAllBlogs();
   const normalizedTag = tagFilter.trim().toLowerCase();
   const tagFilteredBlogs = normalizedTag
-    ? blogs.filter((blog) =>
-        blog.tags.some((tag) => tag.toLowerCase() === normalizedTag)
-      )
+    ? await getBlogsByTag(normalizedTag)
     : blogs;
   const filteredBlogs = filterByStage(tagFilteredBlogs, stageFilter);
   const totalPages = Math.max(1, Math.ceil(filteredBlogs.length / BLOGS_PER_PAGE));

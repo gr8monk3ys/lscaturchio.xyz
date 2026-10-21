@@ -1,54 +1,25 @@
-import { hybridSearch } from '@/lib/embeddings';
+import { groundingFor } from '@/lib/retrieval';
 import { logError } from '@/lib/logger';
-import { RATE_LIMITS } from '@/lib/rate-limit';
 import { withWriteRoute } from '@/lib/api/write-route';
 import { chatRequestSchema } from '@/lib/validations';
 import { generateChatAnswer } from '@/lib/chat/providers';
-import {
-  buildSystemPromptWithContext,
-  loadBlogContext,
-  type SemanticRetrieval,
-} from '@/lib/chat/context';
+import { buildSystemPromptWithContext, loadBlogContext } from '@/lib/chat/context';
 import {
   SYSTEM_PROMPT,
   buildFallbackAnswer,
   sanitizeChatInput,
 } from '@/lib/chat/security';
 
-async function loadSemanticRetrieval(query: string): Promise<SemanticRetrieval> {
-  try {
-    // hybridSearch degrades to lexical-only when no embedding provider is
-    // configured, so there is no separate availability gate to check.
-    const { results, confidence } = await hybridSearch(query);
-    const context = results.map((r) => r.content).join('\n\n');
-
-    const seen = new Set<string>();
-    const closest: Array<{ title: string; url: string }> = [];
-    for (const r of results) {
-      const url = typeof r.metadata?.url === 'string' ? r.metadata.url : '';
-      if (!url || seen.has(url)) continue;
-      seen.add(url);
-      const title = typeof r.metadata?.title === 'string' ? r.metadata.title : url;
-      closest.push({ title, url });
-      if (closest.length >= 3) break;
-    }
-
-    return { context, confidence, closest };
-  } catch (error) {
-    logError('Hybrid retrieval failed', error, { component: 'chat' });
-    return { context: '', confidence: 'none', closest: [] };
-  }
-}
-
 export const POST = withWriteRoute(
   {
-    limit: RATE_LIMITS.CHAT,
+    limit: 'CHAT',
     auth: {
       kind: 'public',
-      reason: 'The site-wide chat box is open to every reader; abuse is bounded by RATE_LIMITS.CHAT.',
+      reason: 'The site-wide chat box is open to every reader; abuse is bounded by the CHAT rate-limit policy.',
     },
     csrf: { kind: 'required' },
     body: { kind: 'json', schema: chatRequestSchema },
+    guard: { kind: 'none', reason: 'Answers the reader who asked and sends nothing onward; the CHAT rate-limit policy bounds what a script can spend.' },
     envelope: { kind: 'standard' },
     errors: {
       log: 'Chat API request failed',
@@ -62,9 +33,11 @@ export const POST = withWriteRoute(
     const { contextSlug } = data;
 
     // Retrieval and the open essay's context do not depend on each other, so
-    // they load together rather than one after the other.
+    // they load together rather than one after the other. Retrieval degrades to
+    // keyword-only grounding without an embedding provider, and to none without
+    // a database; it does not throw.
     const [retrieval, postContext] = await Promise.all([
-      loadSemanticRetrieval(query),
+      groundingFor(query),
       contextSlug
         ? loadBlogContext(contextSlug).catch((error: unknown) => {
             logError('Failed to load blog context', error, { component: 'chat', contextSlug });

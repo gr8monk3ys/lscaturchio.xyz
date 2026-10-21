@@ -33,7 +33,7 @@ export function ScrollToTop() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-40">
+    <div className="fixed bottom-6 right-6 z-float">
       {/* A hairline paper square, not a floating action button: no shadow, no
           fill, no lift. Hover warms the border and tints the ground. */}
       <Button

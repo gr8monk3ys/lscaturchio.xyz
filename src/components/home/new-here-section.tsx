@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { LedgerRows } from "@/components/ui/ledger-section";
-import { getTopicHubsForTags } from "@/constants/topics";
+import { rankThemesForTags } from "@/lib/blog-themes";
 import { spellCount, pluralize } from "@/lib/spell-count";
 
 interface PopularPostData {
@@ -75,7 +75,7 @@ export function NewHereSection({ popularPosts, essayCount }: NewHereSectionProps
 
   const recommendedHub = useMemo(() => {
     if (!lastRead?.tags || lastRead.tags.length === 0) return null;
-    return getTopicHubsForTags(lastRead.tags, 1)[0] ?? null;
+    return rankThemesForTags(lastRead.tags, 1)[0] ?? null;
   }, [lastRead]);
 
   // Only claim someone stopped partway through when the stored progress says

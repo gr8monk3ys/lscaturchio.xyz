@@ -2,12 +2,7 @@ import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
 import { BooksList } from "@/components/books/BooksList";
 import {
-  getGoodreadsStats,
-  getCurrentlyReading,
-  getReadBooks,
-  getToReadBooks,
-  getTopRatedBooks,
-  getCustomShelves,
+  getGoodreadsLibrary,
   type GoodreadsBook,
   type ListedBook,
 } from "@/lib/goodreads";
@@ -21,7 +16,7 @@ import { spellCountLower, pluralize } from "@/lib/spell-count";
  * renders and no drift check read.
  */
 export function generateMetadata() {
-  const perfectScores = getTopRatedBooks().length;
+  const perfectScores = getGoodreadsLibrary().topRated().length;
 
   return buildPageMetadata({
     title: "Books",
@@ -33,7 +28,8 @@ export function generateMetadata() {
 }
 
 export default function BooksPage() {
-  const stats = getGoodreadsStats();
+  const library = getGoodreadsLibrary();
+  const stats = library.stats();
 
   // Only rendered fields cross to the client component. The memo keeps one
   // object per book, so a book on two lists is still serialized once.
@@ -57,11 +53,11 @@ export default function BooksPage() {
       return entry;
     });
 
-  const perfectScores = slim(getTopRatedBooks());
-  const currentlyReading = slim(getCurrentlyReading());
-  const recentlyRead = slim(getReadBooks(40));
-  const toRead = slim(getToReadBooks(40));
-  const shelves = getCustomShelves().map((shelf) => ({
+  const perfectScores = slim(library.topRated());
+  const currentlyReading = slim(library.currentlyReading());
+  const recentlyRead = slim(library.read(40));
+  const toRead = slim(library.toRead(40));
+  const shelves = library.customShelves().map((shelf) => ({
     name: shelf.name,
     label: shelf.label,
     books: slim(shelf.books),

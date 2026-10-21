@@ -448,13 +448,24 @@ the obvious alternative and is the wrong shape: the arrow is a *sibling* of the
 href, so any regex has to guess at a relationship across two lines.
 
 **The ask drawer covering the header controls below 1536 is a modal, not a
-bug.** It carries `role="dialog"`, `aria-modal="true"`, a full-viewport scrim at
-`z-54` with `pointer-events: auto` gated to exactly `max-width: 1535px`, a focus
+bug.** It carries `role="dialog"`, `aria-modal="true"`, a full-viewport scrim on
+the `drawer` layer with `pointer-events: auto` gated to exactly `max-width: 1535px`, a focus
 trap, and its own close button. Covered chrome is what a modal does, announced
 by a scrim. Lowering the push breakpoint to 1280 is ruled out against a
 measurement recorded in `globals.css`: pushing the shell there took the prose
 column from 672px to about 492px and reflowed the paragraph under the reader —
 the drawer crushing the thing it exists to keep in view.
+
+**Overlays stack in one named order.** Everything `position: fixed` takes its
+z-index from one named order, the `--z-index-*` tokens in `globals.css`: float,
+chrome, menu, menu-bar, drawer, lightbox, palette, then the paper grain and the
+skip link. Each generates a `z-<name>` utility, and a numeric `z-*` on a fixed
+element is drift (`raw-z-on-fixed`). The order follows what opens what: the
+palette opens from inside the menu, the drawer and the lightbox, so it is the
+top overlay; the phone bar carries the menu's close toggle, so it sits above the
+menu; the drawer is a modal on a phone, so it covers the bar. Chosen as numbers
+file by file, the palette landed under the menu that opens it, and the bar over
+the drawer's close button.
 
 **A separator leads its item; it never trails.** Every `·` is glued to the item
 *after* it inside an `inline-flex`. This is chosen, not accidental: a trailing

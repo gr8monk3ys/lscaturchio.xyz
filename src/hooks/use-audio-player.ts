@@ -64,6 +64,16 @@ export function useAudioPlayer({ slug, audioSrc }: UseAudioPlayerArgs): UseAudio
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const [state, dispatch] = useReducer(playerReducer, INITIAL_STATE)
+  // Speech synthesis queues on the window, not on this component, so a
+  // client-side navigation away from the essay would leave it reading aloud
+  // over the next page. Cancel on unmount, but only if this player spoke.
+  const spokeRef = useRef(false)
+
+  useEffect(() => {
+    return () => {
+      if (spokeRef.current) window.speechSynthesis?.cancel()
+    }
+  }, [])
 
   useEffect(() => {
     const fallbackSupported =
@@ -249,6 +259,7 @@ export function useAudioPlayer({ slug, audioSrc }: UseAudioPlayerArgs): UseAudio
     utterance.rate = 0.9
     utterance.onend = () => dispatch({ type: "SET_FALLBACK_PLAYING", value: false })
     window.speechSynthesis.speak(utterance)
+    spokeRef.current = true
     dispatch({ type: "SET_FALLBACK_PLAYING", value: true })
   }, [state.fallbackPlaying])
 

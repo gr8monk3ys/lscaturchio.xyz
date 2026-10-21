@@ -1,6 +1,6 @@
 import { getAllBlogs } from "@/lib/getAllBlogs";
 import { logError } from "@/lib/logger";
-import { withRateLimit, RATE_LIMITS } from "@/lib/with-rate-limit";
+import { withRateLimit } from "@/lib/rate-limit";
 import { apiSuccess, ApiErrors } from "@/lib/api-response";
 import { getBlogStats } from "@/lib/blog-data";
 
@@ -26,4 +26,4 @@ const handleGet = async () => {
   }
 };
 
-export const GET = withRateLimit(handleGet, RATE_LIMITS.PUBLIC);
+export const GET = withRateLimit(handleGet, "PUBLIC_READ");

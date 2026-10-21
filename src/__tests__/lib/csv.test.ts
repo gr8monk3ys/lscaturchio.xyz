@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseCsv } from '@/lib/csv';
+import { defineCsvTable, parseCsv } from '@/lib/csv';
 
 describe('parseCsv', () => {
   it('maps rows onto header keys', () => {
@@ -63,5 +63,28 @@ describe('parseCsv', () => {
     expect(parseCsv('a,b,c')).toEqual([]);
     expect(parseCsv('')).toEqual([]);
     expect(parseCsv('   \n  ')).toEqual([]);
+  });
+});
+
+describe('defineCsvTable', () => {
+  const table = defineCsvTable({ name: 'Full Name', note: 'Note' });
+
+  it('maps columns to fields on parse, and reads a missing column as empty', () => {
+    expect(table.parse('Full Name,Other\nAda,x')).toEqual([{ name: 'Ada', note: '' }]);
+  });
+
+  it('throws on a mismatched header only when strict', () => {
+    expect(() => table.parse('Note,Full Name\n', { strict: true })).toThrow(/header mismatch/);
+    expect(table.parse('Full Name,Note\nAda,hi', { strict: true })).toEqual([{ name: 'Ada', note: 'hi' }]);
+  });
+
+  it('serializes in column order, quoting commas, quotes and newlines', () => {
+    expect(table.serialize([{ name: 'Lovelace, Ada', note: 'said "hi"\nthen left' }])).toBe(
+      'Full Name,Note\n"Lovelace, Ada","said ""hi""\nthen left"\n',
+    );
+  });
+
+  it('builds an all-empty record', () => {
+    expect(table.empty()).toEqual({ name: '', note: '' });
   });
 });

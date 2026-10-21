@@ -1,31 +1,14 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { NextRequest, NextResponse } from 'next/server';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, it, expect, vi } from 'vitest';
+import { NextRequest } from 'next/server';
 
 // Mock dependencies before importing the route
 vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
+  logInfo: vi.fn(),
+  logNotice: vi.fn(),
 }));
 
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-  // Mirrors src/lib/rate-limit.ts — these values drifted once (STANDARD 60 vs
-  // the real 30, AI_HEAVY 10 vs the real 5) and nothing caught it.
-  RATE_LIMITS: {
-    NEWSLETTER: { limit: 3, window: 300000 },
-    STANDARD: { limit: 30, window: 60000 },
-    AI_HEAVY: { limit: 5, window: 60000 },
-  },
-}));
-
-vi.mock('@/lib/rate-limit', () => ({
-  // Mirrors src/lib/rate-limit.ts — these values drifted once (STANDARD 60 vs
-  // the real 30, AI_HEAVY 10 vs the real 5) and nothing caught it.
-  RATE_LIMITS: {
-    NEWSLETTER: { limit: 3, window: 300000 },
-    STANDARD: { limit: 30, window: 60000 },
-    AI_HEAVY: { limit: 5, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 // @/lib/sanitize is deliberately NOT mocked. It used to be reimplemented here,
 // which meant these tests asserted a copy of the sanitisers rather than the
@@ -35,15 +18,24 @@ vi.mock('@/lib/csrf', () => ({
   validateCsrf: vi.fn(),
 }));
 
-// Mock fetch globally for Resend API calls
-const mockFetch = vi.fn();
-vi.stubGlobal('fetch', mockFetch);
-
 import { POST } from '@/app/api/contact/route';
-import { logError } from '@/lib/logger';
 import { validateCsrf } from '@/lib/csrf';
+import { installMailTransport } from '@/lib/mail/deliver';
+import { createOutbox } from '@/lib/mail/outbox';
 
-// Helper to create mock request
+// The mailer. What Resend's HTTP request looks like is resend.ts's concern
+// (src/__tests__/lib/mail.test.ts); here, what the route asked to deliver.
+const outbox = createOutbox();
+let restoreTransport: () => void;
+beforeAll(() => {
+  restoreTransport = installMailTransport(outbox);
+});
+afterAll(() => restoreTransport());
+
+/**
+ * A request as the real form sends it: an empty honeypot and a fill time well
+ * past the floor, unless the test overrides them.
+ */
 function createMockRequest(body: Record<string, unknown>): NextRequest {
   return new NextRequest('http://localhost:3000/api/contact', {
     method: 'POST',
@@ -51,32 +43,29 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
       'Content-Type': 'application/json',
       origin: 'http://localhost:3000',
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ contact_ref: '', elapsedMs: 30_000, ...body }),
   });
 }
 
-// Store original env
-const originalEnv = { ...process.env };
+const validBody = {
+  name: 'John Doe',
+  email: 'john@example.com',
+  subject: 'Project scoping',
+  message: 'Hello world',
+};
 
 describe('/api/contact', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    outbox.clear();
     // Default: CSRF passes
     vi.mocked(validateCsrf).mockReturnValue(null);
-    // Default: Resend API configured
-    process.env.RESEND_API_KEY = 'test_resend_key';
-    process.env.CONTACT_EMAIL = 'test@example.com';
-    process.env.CONTACT_FROM_EMAIL = 'noreply@example.com';
-    // Default: Resend API succeeds
-    mockFetch.mockResolvedValue({
-      ok: true,
-      json: async () => ({ id: 'test-email-id' }),
-    });
+    vi.stubEnv('CONTACT_EMAIL', 'inbox@example.com');
+    vi.stubEnv('CONTACT_FROM_EMAIL', 'noreply@example.com');
   });
 
   afterEach(() => {
-    // Restore original env
-    process.env = { ...originalEnv };
+    vi.unstubAllEnvs();
   });
 
   describe('validation', () => {
@@ -211,297 +200,121 @@ describe('/api/contact', () => {
     });
   });
 
-  describe('successful email send', () => {
-    it('sends email successfully with valid data', async () => {
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'john@example.com',
-        subject: 'Project scoping',
-        message: 'Hello, this is my message.',
-      });
-      const response = await POST(request);
+
+  describe('delivery', () => {
+    it('answers 200 with the success message', async () => {
+      const response = await POST(createMockRequest(validBody));
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
-      expect(data.data.message).toContain('successfully');
+      expect(data).toEqual({
+        success: true,
+        data: { message: "Message sent successfully! I'll get back to you soon." },
+      });
     });
 
-    it('calls Resend API with correct parameters', async () => {
-      const request = createMockRequest({
-        name: 'Jane Doe',
-        email: 'jane@example.com',
-        subject: 'Project scoping',
-        message: 'Test message content',
-      });
-      await POST(request);
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.resend.com/emails',
-        expect.objectContaining({
-          method: 'POST',
-          headers: expect.objectContaining({
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer test_resend_key',
-          }),
+    it('delivers to the inbox from the contact address, replying to the sender', async () => {
+      await POST(
+        createMockRequest({
+          name: 'Jane Doe',
+          email: 'jane@example.com',
+          subject: 'Project scoping',
+          message: 'Test message content',
         })
       );
 
-      // Verify body content
-      const fetchCall = mockFetch.mock.calls[0];
-      const bodyJson = JSON.parse(fetchCall[1].body);
-      expect(bodyJson.from).toBe('noreply@example.com');
-      expect(bodyJson.to).toBe('test@example.com');
-      expect(bodyJson.reply_to).toBe('jane@example.com');
-      expect(bodyJson.subject).toContain('Jane Doe');
-    });
-
-    it('uses default contact email when CONTACT_EMAIL is not set', async () => {
-      delete process.env.CONTACT_EMAIL;
-
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'john@example.com',
-        subject: 'Project scoping',
-        message: 'Test message',
+      expect(outbox.sent).toHaveLength(1);
+      expect(outbox.sent[0]).toMatchObject({
+        from: 'noreply@example.com',
+        to: 'inbox@example.com',
+        replyTo: 'jane@example.com',
+        subject: 'Project scoping — Jane Doe',
       });
-      await POST(request);
-
-      const fetchCall = mockFetch.mock.calls[0];
-      const bodyJson = JSON.parse(fetchCall[1].body);
-      expect(bodyJson.to).toBe('lorenzosca7@protonmail.ch');
-    });
-
-    it('uses default from email when CONTACT_FROM_EMAIL is not set', async () => {
-      delete process.env.CONTACT_FROM_EMAIL;
-
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'john@example.com',
-        subject: 'Project scoping',
-        message: 'Test message',
-      });
-      await POST(request);
-
-      const fetchCall = mockFetch.mock.calls[0];
-      const bodyJson = JSON.parse(fetchCall[1].body);
-      expect(bodyJson.from).toBe('contact@lscaturchio.xyz');
+      expect(outbox.sent[0].html).toContain('Test message content');
     });
 
     it('trims whitespace from name and message', async () => {
-      const request = createMockRequest({
-        name: '  John Doe  ',
-        email: 'john@example.com',
-        subject: 'Project scoping',
-        message: '  Hello world  ',
-      });
-      await POST(request);
+      await POST(createMockRequest({ ...validBody, name: '  John Doe  ', message: '  Hello world  ' }));
 
-      const fetchCall = mockFetch.mock.calls[0];
-      const bodyJson = JSON.parse(fetchCall[1].body);
-      expect(bodyJson.subject).toContain('John Doe');
-      expect(bodyJson.html).toContain('John Doe');
+      expect(outbox.sent[0].subject).toBe('Project scoping — John Doe');
+      expect(outbox.sent[0].html).toContain('<strong>From:</strong> John Doe</p>');
     });
 
-    it('normalizes email to lowercase', async () => {
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'JOHN@EXAMPLE.COM',
-        subject: 'Project scoping',
-        message: 'Hello world',
-      });
-      await POST(request);
+    it('replies to the sender address lowercased', async () => {
+      await POST(createMockRequest({ ...validBody, email: 'JOHN@EXAMPLE.COM' }));
 
-      const fetchCall = mockFetch.mock.calls[0];
-      const bodyJson = JSON.parse(fetchCall[1].body);
-      expect(bodyJson.reply_to).toBe('john@example.com');
+      expect(outbox.sent[0].replyTo).toBe('john@example.com');
     });
 
     it('escapes HTML in name to prevent XSS', async () => {
-      const request = createMockRequest({
-        name: '<script>alert("xss")</script>',
-        email: 'test@example.com',
-        subject: 'Project scoping',
-        message: 'Test message',
-      });
-      await POST(request);
+      await POST(createMockRequest({ ...validBody, name: '<script>alert("xss")</script>' }));
 
-      const fetchCall = mockFetch.mock.calls[0];
-      const bodyJson = JSON.parse(fetchCall[1].body);
-      expect(bodyJson.html).not.toContain('<script>');
-      expect(bodyJson.html).toContain('&lt;script&gt;');
+      expect(outbox.sent[0].html).not.toContain('<script>');
+      expect(outbox.sent[0].html).toContain('&lt;script&gt;');
     });
 
     it('sanitizes message content for HTML email', async () => {
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'test@example.com',
-        subject: 'Project scoping',
-        message: '<img src=x onerror="alert(1)">Hello\nWorld',
-      });
-      await POST(request);
+      await POST(
+        createMockRequest({ ...validBody, message: '<img src=x onerror="alert(1)">Hello\nWorld' })
+      );
 
-      const fetchCall = mockFetch.mock.calls[0];
-      const bodyJson = JSON.parse(fetchCall[1].body);
-      expect(bodyJson.html).not.toContain('<img');
-      expect(bodyJson.html).toContain('&lt;img');
-      expect(bodyJson.html).toContain('<br>'); // newlines converted to <br>
+      expect(outbox.sent[0].html).not.toContain('<img');
+      expect(outbox.sent[0].html).toContain('&lt;img');
+      expect(outbox.sent[0].html).toContain('<br>'); // newlines converted to <br>
+    });
+
+    it('mails only the four fields a person wrote, not the guard fields', async () => {
+      await POST(createMockRequest({ ...validBody, elapsedMs: 987_654 }));
+
+      const mailed = JSON.stringify(outbox.sent[0]);
+      expect(mailed).not.toContain('987654');
+      expect(mailed).not.toContain('contact_ref');
+      expect(mailed).not.toContain('elapsedMs');
     });
 
     it('sanitizes subject to prevent header injection', async () => {
-      const request = createMockRequest({
-        name: "John\r\nBcc: attacker@evil.com",
-        email: 'test@example.com',
-        subject: 'Project scoping',
-        message: 'Test message',
-      });
-      await POST(request);
+      await POST(createMockRequest({ ...validBody, name: 'John\r\nBcc: attacker@evil.com' }));
 
-      const fetchCall = mockFetch.mock.calls[0];
-      const bodyJson = JSON.parse(fetchCall[1].body);
-      expect(bodyJson.subject).not.toContain('\r');
-      expect(bodyJson.subject).not.toContain('\n');
+      expect(outbox.sent[0].subject).not.toMatch(/[\r\n]/);
     });
   });
 
-  describe('when RESEND_API_KEY is missing', () => {
-    beforeEach(() => {
-      delete process.env.RESEND_API_KEY;
-    });
+  describe('when mail is not configured', () => {
+    it('answers 500 "temporarily unavailable"', async () => {
+      outbox.respondWith({ status: 'not-configured', missing: 'RESEND_API_KEY' });
 
-    it('returns 500 when API key is not configured', async () => {
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'john@example.com',
-        subject: 'Project scoping',
-        message: 'Hello world',
-      });
-      const response = await POST(request);
+      const response = await POST(createMockRequest(validBody));
       const data = await response.json();
 
       expect(response.status).toBe(500);
-      expect(data.success).toBe(false);
-      expect(data.error).toContain('temporarily unavailable');
-    });
-
-    it('logs a configuration error when API key is missing', async () => {
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'john@example.com',
-        subject: 'Project scoping',
-        message: 'Hello world',
+      expect(data).toEqual({
+        success: false,
+        error: 'Contact form is temporarily unavailable. Please try again later.',
       });
-      await POST(request);
-
-      expect(logError).toHaveBeenCalledWith(
-        'Contact Form: RESEND_API_KEY is not configured',
-        null,
-        expect.objectContaining({
-          component: 'contact',
-          action: 'POST',
-        })
-      );
-    });
-
-    it('does not call Resend API when key is missing', async () => {
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'john@example.com',
-        subject: 'Project scoping',
-        message: 'Hello world',
-      });
-      await POST(request);
-
-      expect(mockFetch).not.toHaveBeenCalled();
+      expect(outbox.sent).toHaveLength(0);
     });
   });
 
-  describe('Resend API error handling', () => {
-    it('returns 500 when Resend API returns error', async () => {
-      mockFetch.mockResolvedValue({
-        ok: false,
-        json: async () => ({ message: 'Invalid API key' }),
-      });
+  describe('when delivery fails', () => {
+    it('answers 500 "Failed to send message"', async () => {
+      outbox.respondWith({ status: 'failed', reason: 'Resend API error' });
 
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'john@example.com',
-        subject: 'Project scoping',
-        message: 'Hello world',
-      });
-      const response = await POST(request);
+      const response = await POST(createMockRequest(validBody));
       const data = await response.json();
 
       expect(response.status).toBe(500);
-      expect(data.error).toContain('Failed to send message');
-      expect(data.success).toBe(false);
-    });
-
-    it('logs error when Resend API fails', async () => {
-      mockFetch.mockResolvedValue({
-        ok: false,
-        json: async () => ({ message: 'Rate limit exceeded' }),
+      expect(data).toEqual({
+        success: false,
+        error: 'Failed to send message. Please try again later.',
       });
-
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'john@example.com',
-        subject: 'Project scoping',
-        message: 'Hello world',
-      });
-      await POST(request);
-
-      expect(logError).toHaveBeenCalledWith(
-        'Contact Form: Resend API error',
-        expect.objectContaining({ message: 'Rate limit exceeded' }),
-        expect.objectContaining({ component: 'contact', action: 'POST' })
-      );
-    });
-
-    it('returns 500 when fetch throws network error', async () => {
-      mockFetch.mockRejectedValue(new Error('Network error'));
-
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'john@example.com',
-        subject: 'Project scoping',
-        message: 'Hello world',
-      });
-      const response = await POST(request);
-      const data = await response.json();
-
-      expect(response.status).toBe(500);
-      expect(data.error).toContain('unexpected error');
-      expect(data.success).toBe(false);
-    });
-
-    it('logs unexpected errors', async () => {
-      mockFetch.mockRejectedValue(new Error('Connection timeout'));
-
-      const request = createMockRequest({
-        name: 'John Doe',
-        email: 'john@example.com',
-        subject: 'Project scoping',
-        message: 'Hello world',
-      });
-      await POST(request);
-
-      expect(logError).toHaveBeenCalledWith(
-        'Contact Form: Unexpected error',
-        expect.any(Error),
-        expect.objectContaining({ component: 'contact', action: 'POST' })
-      );
     });
   });
 
   describe('edge cases', () => {
-    // Note: The current validation schema trims AFTER min(1) check,
-    // so whitespace-only strings pass validation. These tests document
-    // actual behavior - consider using z.preprocess or refine for stricter validation.
+    // The schema trims BEFORE its min(1) check, so a field of only
+    // whitespace is rejected rather than mailed as a blank line.
 
-    it('allows whitespace-only name (trims after min check)', async () => {
-      // Current behavior: "   " passes min(1), then gets trimmed to ""
-      // The API still sends the email with empty name
+    it('rejects a whitespace-only name', async () => {
       const request = createMockRequest({
         name: '   ',
         email: 'test@example.com',
@@ -511,13 +324,11 @@ describe('/api/contact', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      // Documents current behavior - validation passes
-      expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
+      expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
     });
 
-    it('allows whitespace-only message (trims after min check)', async () => {
-      // Current behavior: "   " passes min(1), then gets trimmed to ""
+    it('rejects a whitespace-only message', async () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'test@example.com',
@@ -527,9 +338,8 @@ describe('/api/contact', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      // Documents current behavior - validation passes
-      expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
+      expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
     });
 
     it('handles malformed JSON body', async () => {
@@ -545,13 +355,12 @@ describe('/api/contact', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      expect(response.status).toBe(500);
-      expect(data.error).toBeDefined();
+      expect(response.status).toBe(400);
+      expect(data.error).toBe('Request body must be valid JSON');
       expect(data.success).toBe(false);
     });
 
-    it('allows message with only newlines (trims after min check)', async () => {
-      // Current behavior: "\n\n\n" passes min(1), then gets trimmed to ""
+    it('rejects a message of only newlines', async () => {
       const request = createMockRequest({
         name: 'John Doe',
         email: 'test@example.com',
@@ -561,9 +370,8 @@ describe('/api/contact', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      // Documents current behavior - validation passes
-      expect(response.status).toBe(200);
-      expect(data.success).toBe(true);
+      expect(response.status).toBe(400);
+      expect(data.success).toBe(false);
     });
 
     it('accepts message at exactly 5000 characters', async () => {
@@ -611,9 +419,7 @@ describe('/api/contact', () => {
 
   describe('CSRF protection', () => {
     it('returns 403 when CSRF validation fails', async () => {
-      vi.mocked(validateCsrf).mockReturnValue(
-        NextResponse.json({ error: 'Invalid origin' }, { status: 403 })
-      );
+      vi.mocked(validateCsrf).mockReturnValue({ status: 403, error: 'Invalid origin' });
 
       const request = createMockRequest({
         name: 'John Doe',

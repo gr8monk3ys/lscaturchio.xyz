@@ -1,15 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 
-vi.mock('@/lib/with-rate-limit', () => ({
-  withRateLimit: (handler: (req: NextRequest) => Promise<Response>) => handler,
-}));
-
-vi.mock('@/lib/rate-limit', () => ({
-  RATE_LIMITS: {
-    STANDARD: { limit: 30, window: 60000 },
-  },
-}));
+vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),

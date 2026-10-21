@@ -10,10 +10,17 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { parseCsv, serializeCsv } from '../src/lib/csv';
+import type { CsvTable } from '../src/lib/csv';
 import {
   parseLetterboxdRss,
-  parseGoodreadsRss,
+  diaryTable,
+  ratingsTable,
+  watchedTable,
+  reviewsTable,
+} from '../src/lib/letterboxd-format';
+import { parseGoodreadsRss, libraryTable } from '../src/lib/goodreads-format';
+import {
+  datedEntries,
   mergeDiary,
   mergeRatings,
   mergeWatched,
@@ -41,19 +48,19 @@ async function fetchText(url: string): Promise<string> {
   return res.text();
 }
 
-/** Header order comes from the file itself so serialization round-trips. */
-function readCsv(file: string): { headers: string[]; rows: Record<string, string>[] } {
-  const text = fs.readFileSync(file, 'utf-8');
-  const headers = text.slice(0, text.indexOf('\n')).split(',').map((h) => h.trim());
-  return { headers, rows: parseCsv(text) };
-}
-
-function apply(
+/**
+ * Read one export through its table, merge, and (with --write) serialize it
+ * back. The parse is strict: a full export whose columns no longer match the
+ * table fails here instead of losing a column on write.
+ */
+function refresh<F extends string, E>(
   file: string,
-  headers: string[],
-  result: MergeResult<Record<string, string>>,
+  table: CsvTable<F>,
+  merge: (rows: Record<F, string>[], entries: E[]) => MergeResult<Record<F, string>>,
+  entries: E[],
   label: string,
 ) {
+  const result = merge(table.parse(fs.readFileSync(file, 'utf-8'), { strict: true }), entries);
   const delta = result.added + result.updated;
   changes += delta;
   if (delta === 0) {
@@ -62,7 +69,7 @@ function apply(
   }
   console.log(`  ${label}: +${result.added} added, ~${result.updated} updated`);
   if (write) {
-    fs.writeFileSync(file, serializeCsv(headers, result.rows));
+    fs.writeFileSync(file, table.serialize(result.rows));
   }
 }
 
@@ -70,18 +77,15 @@ async function main() {
   console.log(`Mode: ${write ? 'write' : 'dry-run (pass --write to apply)'}`);
 
   console.log('Letterboxd:');
-  const entries = parseLetterboxdRss(await fetchText(LETTERBOXD_RSS));
+  // The live feed also lists films with no watch date; there is no export row
+  // for those to become, so the refresh skips them.
+  const entries = datedEntries(parseLetterboxdRss(await fetchText(LETTERBOXD_RSS)));
   console.log(`  feed: ${entries.length} diary entries`);
-  for (const [file, merge] of [
-    ['diary.csv', mergeDiary],
-    ['ratings.csv', mergeRatings],
-    ['watched.csv', mergeWatched],
-    ['reviews.csv', mergeReviews],
-  ] as const) {
-    const filePath = path.join(LETTERBOXD_DIR, file);
-    const { headers, rows } = readCsv(filePath);
-    apply(filePath, headers, merge(rows, entries), file);
-  }
+  const letterboxd = (file: string) => path.join(LETTERBOXD_DIR, file);
+  refresh(letterboxd('diary.csv'), diaryTable, mergeDiary, entries, 'diary.csv');
+  refresh(letterboxd('ratings.csv'), ratingsTable, mergeRatings, entries, 'ratings.csv');
+  refresh(letterboxd('watched.csv'), watchedTable, mergeWatched, entries, 'watched.csv');
+  refresh(letterboxd('reviews.csv'), reviewsTable, mergeReviews, entries, 'reviews.csv');
 
   console.log('Goodreads:');
   const books = [];
@@ -93,8 +97,7 @@ async function main() {
     console.log(`  feed ${shelf}: ${parsed.length} items`);
     books.push(...parsed);
   }
-  const { headers, rows } = readCsv(GOODREADS_CSV);
-  apply(GOODREADS_CSV, headers, upsertGoodreads(rows, books), 'library export');
+  refresh(GOODREADS_CSV, libraryTable, upsertGoodreads, books, 'library export');
 
   console.log('');
   console.log(

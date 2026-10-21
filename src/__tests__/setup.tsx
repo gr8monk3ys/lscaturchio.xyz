@@ -41,6 +41,17 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
+// `after()` throws outside a real request scope, and route tests call handlers
+// directly. Run the task on the next microtask instead — after the handler
+// has returned its response, which is the ordering Next guarantees — so a test
+// can await the side effect without any route knowing it is under test.
+vi.mock('next/server', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('next/server')>()),
+  after: (task: Promise<unknown> | (() => unknown)) => {
+    void Promise.resolve().then(() => (typeof task === 'function' ? task() : task));
+  },
+}));
+
 // Mock Next.js Image component
 vi.mock('next/image', () => ({
   default: ({ src, alt, ...props }: { src: string; alt: string }) => {

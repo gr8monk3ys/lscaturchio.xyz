@@ -1,0 +1,201 @@
+import { describe, it, expect } from 'vitest';
+import {
+  splitIntoChunks,
+  buildEmbeddingInput,
+  sourceContentHash,
+  shouldSkipSource,
+} from '@/lib/embedding-ingest';
+
+describe('splitIntoChunks', () => {
+  it('returns an empty array for empty or whitespace-only input', () => {
+    expect(splitIntoChunks('')).toEqual([]);
+    expect(splitIntoChunks('   \n  \t ')).toEqual([]);
+  });
+
+  it('keeps short text as a single trimmed chunk', () => {
+    const chunks = splitIntoChunks('A short sentence. Another one.', 1000);
+    expect(chunks).toHaveLength(1);
+    expect(chunks[0]).toBe(chunks[0].trim());
+    expect(chunks[0]).toContain('A short sentence.');
+    expect(chunks[0]).toContain('Another one.');
+  });
+
+  it('does not split a decimal number into two segments', () => {
+    // The old regex /[^.!?]+[.!?]+/g treated the '.' in 44.5 as a sentence end,
+    // so search snippets rendered "44. 5%", "89. 9%" and "23. 7MB".
+    const text = 'Their system hit 44.5% exact match, cutting weight by 89.9% from 23.7MB.';
+    const joined = splitIntoChunks(text, 1000).join(' ');
+    expect(joined).toContain('44.5%');
+    expect(joined).toContain('89.9%');
+    expect(joined).toContain('23.7MB');
+    expect(joined).not.toContain('44. 5');
+    expect(joined).not.toContain('89. 9');
+  });
+
+  it('still splits on genuine sentence boundaries around numbers', () => {
+    const text = 'Version 3.11 shipped. Then 3.12 did too.';
+    const chunks = splitIntoChunks(text, 24);
+    expect(chunks.length).toBeGreaterThan(1);
+    expect(chunks.join(' ')).toContain('3.11');
+    expect(chunks.join(' ')).toContain('3.12');
+  });
+
+  it('retains trailing text that lacks terminal punctuation', () => {
+    // The old regex /[^.!?]+[.!?]+/g silently dropped any tail without . ! or ?
+    const text = 'First sentence. Second sentence. Trailing heading without a period';
+    const joined = splitIntoChunks(text, 1000).join(' ');
+    expect(joined).toContain('Trailing heading without a period');
+  });
+
+  it('retains a trailing markdown list whose items have no terminal punctuation', () => {
+    const text = 'Intro paragraph about the topic.\n- item one\n- item two\n- item three';
+    const joined = splitIntoChunks(text, 1000).join('\n');
+    expect(joined).toContain('item one');
+    expect(joined).toContain('item two');
+    expect(joined).toContain('item three');
+  });
+
+  it('retains a trailing markdown heading line', () => {
+    const text = 'Some body content here that is a full sentence.\n## Conclusion';
+    const joined = splitIntoChunks(text, 1000).join('\n');
+    expect(joined).toContain('## Conclusion');
+  });
+
+  it('preserves every word token across chunks (no silent drops)', () => {
+    const text = Array.from(
+      { length: 30 },
+      (_, i) => `Distinctword${i} appears in sentence ${i} here.`,
+    ).join(' ') + '\n- finaltoken without punctuation';
+
+    const joined = splitIntoChunks(text, 200).join(' ');
+    const tokens = Array.from(new Set(text.split(/\s+/).filter(Boolean)));
+    for (const token of tokens) {
+      expect(joined).toContain(token);
+    }
+  });
+
+  it('produces multiple overlapping chunks for long input', () => {
+    // Each sentence carries a unique marker so we can detect shared content
+    // between consecutive chunks.
+    const text = Array.from(
+      { length: 40 },
+      (_, i) => `Marker${i} this is filler sentence ${i} with enough length to matter.`,
+    ).join(' ');
+
+    const chunks = splitIntoChunks(text, 250);
+    expect(chunks.length).toBeGreaterThan(1);
+
+    const markersOf = (chunk: string) =>
+      new Set((chunk.match(/Marker\d+/g) ?? []));
+
+    for (let i = 1; i < chunks.length; i++) {
+      const prev = markersOf(chunks[i - 1]);
+      const curr = markersOf(chunks[i]);
+      const shared = Array.from(curr).some((m) => prev.has(m));
+      expect(shared).toBe(true); // consecutive chunks overlap
+    }
+  });
+
+  it('trims every chunk and emits no empty chunks', () => {
+    const text = Array.from(
+      { length: 25 },
+      (_, i) => `Sentence number ${i} with some content.`,
+    ).join('  \n\n  ');
+
+    const chunks = splitIntoChunks(text, 150);
+    for (const chunk of chunks) {
+      expect(chunk).toBe(chunk.trim());
+      expect(chunk.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('hard-splits a single unbroken token longer than maxChunkLength', () => {
+    // A long run with no whitespace — a data URI, a minified blob, a giant URL —
+    // used to pass through whole as one chunk far larger than maxChunkLength,
+    // risking the embedding model's token limit. It must be broken up.
+    const max = 300;
+    // Heterogeneous (cycling a–z) so a dropped slice is actually detectable —
+    // a uniform run would mask any loss of distinct characters.
+    const token = Array.from({ length: 2000 }, (_, i) =>
+      String.fromCharCode(97 + (i % 26)),
+    ).join('');
+    const chunks = splitIntoChunks(token, max);
+
+    expect(chunks.length).toBeGreaterThan(1); // not kept as one giant chunk
+    const longest = Math.max(...chunks.map((c) => c.length));
+    // Bounded like any normal chunk: at most a near-full body and one carried
+    // overlap segment, each <= max, plus the joining space — never the whole
+    // 2000-char token.
+    expect(longest).toBeLessThanOrEqual(max * 2 + 1);
+    // No character is lost — every max-sized slice of the token survives intact.
+    const joined = chunks.join(' ');
+    for (let i = 0; i < token.length; i += max) {
+      expect(joined).toContain(token.slice(i, i + max));
+    }
+  });
+
+  it('keeps chunks bounded even with a pathological overlap ratio', () => {
+    // The chunk-size bound must be structural, not an accident of the default
+    // overlapRatio: a caller passing a large ratio must not blow up chunk size.
+    const text = Array.from(
+      { length: 80 },
+      (_, i) => `Sentence ${i} padded out with several extra words for length.`,
+    ).join(' ');
+    const max = 300;
+    for (const ratio of [0.5, 0.9, 1.5, 5]) {
+      const chunks = splitIntoChunks(text, max, ratio);
+      for (const chunk of chunks) {
+        expect(chunk.length).toBeLessThanOrEqual(max * 2 + 1);
+      }
+    }
+  });
+
+  it('keeps chunk sizes within a reasonable bound of maxChunkLength', () => {
+    const text = Array.from(
+      { length: 60 },
+      (_, i) => `Sentence ${i} padded out with extra words for length.`,
+    ).join(' ');
+
+    const max = 300;
+    const chunks = splitIntoChunks(text, max);
+    // Same structural bound as the hard-split/pathological-ratio cases: a body
+    // plus one carried overlap segment (each <= max) and the joining space.
+    for (const chunk of chunks) {
+      expect(chunk.length).toBeLessThanOrEqual(max * 2 + 1);
+    }
+  });
+});
+
+describe('buildEmbeddingInput', () => {
+  it('prepends a Title/Type/URL preamble before the chunk body', () => {
+    const out = buildEmbeddingInput(
+      { title: 'On Gardens', type: 'blog', url: '/blog/on-gardens' },
+      'A chunk of prose.',
+    );
+    expect(out).toBe(
+      'Title: On Gardens\nType: blog\nURL: /blog/on-gardens\n\nA chunk of prose.',
+    );
+  });
+
+  it('omits absent preamble lines but keeps the present ones', () => {
+    expect(buildEmbeddingInput({ title: 'T' }, 'body')).toBe('Title: T\n\nbody');
+  });
+
+  it('returns the chunk unchanged when there is no metadata', () => {
+    expect(buildEmbeddingInput({}, 'body')).toBe('body');
+  });
+});
+
+describe('sourceContentHash / shouldSkipSource', () => {
+  it('is deterministic and differs for different content', () => {
+    expect(sourceContentHash('abc')).toBe(sourceContentHash('abc'));
+    expect(sourceContentHash('abc')).not.toBe(sourceContentHash('abd'));
+  });
+
+  it('skips a source only when every existing chunk already carries the new hash', () => {
+    const h = sourceContentHash('content');
+    expect(shouldSkipSource([h, h, h], h)).toBe(true);
+    expect(shouldSkipSource([h, 'stale', h], h)).toBe(false); // a chunk predates the change
+    expect(shouldSkipSource([], h)).toBe(false); // never indexed → don't skip
+  });
+});

@@ -1,6 +1,5 @@
 import { apiSuccess } from '@/lib/api-response';
-import { withRateLimit } from '@/lib/with-rate-limit';
-import { RATE_LIMITS } from '@/lib/rate-limit';
+import { withRateLimit } from '@/lib/rate-limit';
 import { getGithubContributions } from '@/lib/github-contributions';
 
 const CACHE_HEADERS = {
@@ -24,4 +23,4 @@ const handleGet = async () => {
   });
 };
 
-export const GET = withRateLimit(handleGet, RATE_LIMITS.STANDARD);
+export const GET = withRateLimit(handleGet, 'GITHUB_CONTRIBUTIONS');
