@@ -24,7 +24,7 @@ describe('ErrorPage', () => {
     expect(screen.getByRole('heading', { name: 'This page broke' })).toBeInTheDocument();
     // Same wording as not-found.tsx and /offline: one destination, one name.
     expect(
-      screen.getByRole('link', { name: '← Back to the entrance' })
+      screen.getByRole('link', { name: 'Back to the entrance' })
     ).toHaveAttribute('href', '/');
   });
 

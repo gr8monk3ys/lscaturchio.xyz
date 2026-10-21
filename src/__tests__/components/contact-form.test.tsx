@@ -498,7 +498,7 @@ describe("ContactForm", () => {
     });
   });
 
-  it("disables the button and shows Sending... while the request is in flight", async () => {
+  it("disables the button and shows Sending… while the request is in flight", async () => {
     let resolveSend!: (value: WriteResult<unknown>) => void;
     submitMock.mockImplementationOnce(
       () =>

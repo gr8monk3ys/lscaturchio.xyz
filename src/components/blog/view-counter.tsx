@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { Eye } from "lucide-react";
 import { logError } from "@/lib/logger";
 import { useViewCount } from "@/hooks/use-view-counts";
@@ -12,25 +12,36 @@ interface ViewCounterProps {
 export function ViewCounter({ slug }: ViewCounterProps) {
   const { viewCount, trackView } = useViewCount(slug);
 
+  // `trackView` is a new function on every render (the context wraps it per
+  // slug), so it cannot be an effect dependency: each re-render — including
+  // the one when view counts arrive — re-ran this effect, and a second run
+  // before the first POST resolved counted the view twice. An Effect Event
+  // reads the latest `trackView` without re-subscribing (advanced-use-latest).
+  const recordView = useEffectEvent(async (viewedKey: string) => {
+    try {
+      await trackView();
+      try {
+        sessionStorage.setItem(viewedKey, "true");
+      } catch {
+        // Storage disabled: the view is recorded, just not remembered.
+      }
+    } catch (error) {
+      logError("Failed to record/fetch views", error, { component: "ViewCounter", slug });
+    }
+  });
+
   useEffect(() => {
     // Check if this post has been viewed in this session
     const viewedKey = `viewed_${slug}`;
-    const hasViewed = sessionStorage.getItem(viewedKey);
+    let hasViewed: string | null = null;
+    try {
+      hasViewed = sessionStorage.getItem(viewedKey);
+    } catch {
+      // Storage disabled (some private modes): treat as not yet viewed.
+    }
 
-    const recordView = async () => {
-      try {
-        // Record view if not already viewed in this session
-        if (!hasViewed) {
-          await trackView();
-          sessionStorage.setItem(viewedKey, "true");
-        }
-      } catch (error) {
-        logError("Failed to record/fetch views", error, { component: "ViewCounter", slug });
-      }
-    };
-
-    recordView();
-  }, [slug, trackView]);
+    if (!hasViewed) void recordView(viewedKey);
+  }, [slug]);
 
   // One fixed footprint for both states.
   //

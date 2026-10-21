@@ -5,12 +5,15 @@ import type { LinksContent, LinkData } from "@/types/links";
 import { inputClass, labelClass, fieldClass, submitButtonClass } from "./form-styles";
 import { PublishResult, type PublishState } from "./publish-result";
 import { publishRequest } from "./publish";
+import { useUnsavedChangesWarning } from "./use-unsaved-changes";
 
 const EMPTY_LINK: LinkData = { title: "", link: "", linkDescription: "" };
 
 export function LinksEditor({ initial }: { initial: LinksContent }) {
   const [content, setContent] = useState<LinksContent>(initial);
   const [result, setResult] = useState<PublishState>({ state: "idle" });
+  const [dirty, setDirty] = useState(false);
+  useUnsavedChangesWarning(dirty);
 
   function updateLink(sectionKey: string, index: number, patch: Partial<LinkData>) {
     setContent((prev) => ({
@@ -23,6 +26,7 @@ export function LinksEditor({ initial }: { initial: LinksContent }) {
   }
 
   function setLinks(sectionKey: string, links: LinkData[]) {
+    setDirty(true);
     setContent((prev) => ({ ...prev, [sectionKey]: { ...prev[sectionKey], links } }));
   }
 
@@ -37,21 +41,22 @@ export function LinksEditor({ initial }: { initial: LinksContent }) {
         },
       ])
     );
-    setResult(
-      await publishRequest(
-        "/api/admin/data/links",
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(cleaned),
-        },
-        "/links"
-      )
+    const published = await publishRequest(
+      "/api/admin/data/links",
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cleaned),
+      },
+      "/links"
     );
+    setResult(published);
+    if (published.state === "done") setDirty(false);
   }
 
   return (
     <form
+      onChange={() => setDirty(true)}
       onSubmit={(e) => {
         e.preventDefault();
         void publish();
@@ -64,44 +69,52 @@ export function LinksEditor({ initial }: { initial: LinksContent }) {
           {section.links.map((l, i) => (
             <fieldset key={i} className="mb-3 rounded-md border border-border p-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className={fieldClass}>
-                  <label className={labelClass}>Title</label>
+                <label className={fieldClass}>
+                  <span className={labelClass}>Title</span>
                   <input
+                    name="title"
+                    autoComplete="off"
                     className={inputClass}
                     value={l.title}
                     onChange={(e) => updateLink(key, i, { title: e.target.value })}
                     required
                   />
-                </div>
-                <div className={fieldClass}>
-                  <label className={labelClass}>URL</label>
+                </label>
+                <label className={fieldClass}>
+                  <span className={labelClass}>URL</span>
                   <input
+                    name="url"
+                    autoComplete="off"
                     type="url"
                     className={inputClass}
                     value={l.link}
                     onChange={(e) => updateLink(key, i, { link: e.target.value })}
                     required
                   />
-                </div>
+                </label>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className={fieldClass}>
-                  <label className={labelClass}>Description</label>
+                <label className={fieldClass}>
+                  <span className={labelClass}>Description</span>
                   <input
+                    name="description"
+                    autoComplete="off"
                     className={inputClass}
                     value={l.linkDescription}
                     onChange={(e) => updateLink(key, i, { linkDescription: e.target.value })}
                     required
                   />
-                </div>
-                <div className={fieldClass}>
-                  <label className={labelClass}>RSS (optional)</label>
+                </label>
+                <label className={fieldClass}>
+                  <span className={labelClass}>RSS (optional)</span>
                   <input
+                    name="rss"
+                    autoComplete="off"
                     className={inputClass}
                     value={l.rss ?? ""}
                     onChange={(e) => updateLink(key, i, { rss: e.target.value })}
                   />
-                </div>
+                </label>
               </div>
               <button
                 type="button"

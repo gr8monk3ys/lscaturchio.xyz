@@ -20,6 +20,23 @@ export interface GoodreadsBook {
   isbn: string | null;
 }
 
+/**
+ * The fields the /books page actually renders. The page passes these across the
+ * server/client boundary instead of whole `GoodreadsBook` rows, which also
+ * carry dates, the average rating, the shelf and the ISBN that nothing on the
+ * client reads.
+ */
+export type ListedBook = Pick<
+  GoodreadsBook,
+  'id' | 'title' | 'author' | 'link' | 'rating' | 'bookshelves' | 'pages' | 'yearPublished'
+>;
+
+export interface ListedShelf {
+  name: string;
+  label: string;
+  books: ListedBook[];
+}
+
 export interface GoodreadsStats {
   totalBooks: number;
   booksRead: number;

@@ -17,7 +17,7 @@ export default function ChangelogError({
       error={error}
       reset={reset}
       title="Failed to load changelog"
-      description="We couldn't load the changelog. Please try again."
+      description="The changelog didn't load. Try again in a moment."
     />
   )
 }

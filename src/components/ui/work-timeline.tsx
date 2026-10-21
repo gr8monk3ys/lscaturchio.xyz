@@ -4,27 +4,17 @@ import {
   useTransform,
   m,
 } from '@/lib/motion';
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { timeline } from "@/constants/timeline";
 
 export const WorkTimeline = () => {
-  const ref = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState(0);
-
-  useEffect(() => {
-    if (ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      setHeight(rect.height);
-    }
-  }, [ref]);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start 10%", "end 50%"],
   });
 
-  const heightTransform = useTransform(scrollYProgress, [0, 1], [0, height]);
   const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
   return (
@@ -32,7 +22,7 @@ export const WorkTimeline = () => {
       className="w-full bg-background font-sans"
       ref={containerRef}
     >
-      <div ref={ref} className="relative max-w-6xl mx-auto pb-20">
+      <div className="relative max-w-6xl mx-auto pb-20">
         {timeline.map((item) => (
           <div
             key={`${item.company}-${item.title}-${item.date}`}
@@ -81,18 +71,19 @@ export const WorkTimeline = () => {
             </div>
           </div>
         ))}
+        {/* The track spans its container with `top-0 bottom-0` rather than a
+            height measured once with getBoundingClientRect (which also went
+            stale on resize), and the progress line grows with `scaleY`, not
+            `height`, so the scroll-linked motion stays on the compositor. */}
         <div
-          style={{
-            height: height + "px",
-          }}
-          className="absolute md:left-8 left-8 top-0 overflow-hidden w-[2px] bg-border mask-[linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
+          className="absolute md:left-8 left-8 top-0 bottom-0 overflow-hidden w-[2px] bg-border mask-[linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]"
         >
           <m.div
             style={{
-              height: heightTransform,
+              scaleY: scrollYProgress,
               opacity: opacityTransform,
             }}
-            className="absolute inset-x-0 top-0 w-[2px] bg-primary rounded-full"
+            className="absolute inset-0 w-[2px] origin-top bg-primary rounded-full"
           />
         </div>
       </div>

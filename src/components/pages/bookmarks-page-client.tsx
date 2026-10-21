@@ -43,35 +43,49 @@ export function BookmarksPageClient() {
   // Capture initial time on first client render via useState initializer
   const [currentTime] = useState<number | null>(() => (typeof window !== "undefined" ? Date.now() : null));
 
-  // Remove a bookmark
-  const removeBookmark = (slug: string) => {
-    const updated = bookmarks.filter((b) => b.slug !== slug);
-    setBookmarks(updated);
-    safeStorage.setJSON("blog-bookmarks", updated);
+  // Destructive actions are never immediate: "Clear All" asks once (the same
+  // button, so focus stays put), and a single removal keeps an undo until the
+  // next one.
+  const [confirmingClear, setConfirmingClear] = useState(false);
+  const [lastRemoved, setLastRemoved] = useState<{ bookmark: BookmarkedPost; index: number } | null>(null);
 
-    // Also update the individual blog's reaction state
+  // Keep the post's own reaction state in step with this list.
+  const setReactionBookmarked = (slug: string, bookmarked: boolean) => {
     const reactionKey = `blog-reactions-${slug}`;
     const storedReactions = safeStorage.getJSON<{ bookmarked?: boolean }>(reactionKey);
     if (storedReactions) {
-      storedReactions.bookmarked = false;
+      storedReactions.bookmarked = bookmarked;
       safeStorage.setJSON(reactionKey, storedReactions);
     }
   };
 
+  // Remove a bookmark
+  const removeBookmark = (slug: string) => {
+    const index = bookmarks.findIndex((b) => b.slug === slug);
+    if (index === -1) return;
+    const updated = bookmarks.filter((b) => b.slug !== slug);
+    setBookmarks(updated);
+    safeStorage.setJSON("blog-bookmarks", updated);
+    setReactionBookmarked(slug, false);
+    setLastRemoved({ bookmark: bookmarks[index], index });
+  };
+
+  const undoRemove = () => {
+    if (!lastRemoved) return;
+    const restored = [...bookmarks];
+    restored.splice(Math.min(lastRemoved.index, restored.length), 0, lastRemoved.bookmark);
+    setBookmarks(restored);
+    safeStorage.setJSON("blog-bookmarks", restored);
+    setReactionBookmarked(lastRemoved.bookmark.slug, true);
+    setLastRemoved(null);
+  };
+
   // Clear all bookmarks
   const clearAllBookmarks = () => {
-    // Clear each individual reaction state
-    bookmarks.forEach((bookmark) => {
-      const reactionKey = `blog-reactions-${bookmark.slug}`;
-      const storedReactions = safeStorage.getJSON<{ bookmarked?: boolean }>(reactionKey);
-      if (storedReactions) {
-        storedReactions.bookmarked = false;
-        safeStorage.setJSON(reactionKey, storedReactions);
-      }
-    });
-
+    bookmarks.forEach((bookmark) => setReactionBookmarked(bookmark.slug, false));
     setBookmarks([]);
     safeStorage.setJSON("blog-bookmarks", []);
+    setLastRemoved(null);
   };
 
   // Export bookmarks as JSON
@@ -93,6 +107,10 @@ export function BookmarksPageClient() {
         month: "short",
         day: "numeric",
         year: "numeric",
+        // A post date ("2026-01-15") is a calendar day, parsed as UTC
+        // midnight; in the viewer's zone it printed the day before west of
+        // UTC. A bookmark timestamp is a real instant and stays local.
+        timeZone: /^\d{4}-\d{2}-\d{2}$/.test(dateStr) ? "UTC" : undefined,
       });
     } catch {
       return dateStr;
@@ -178,15 +196,40 @@ export function BookmarksPageClient() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={clearAllBookmarks}
+                  onClick={() => {
+                    if (confirmingClear) {
+                      clearAllBookmarks();
+                      setConfirmingClear(false);
+                    } else {
+                      setConfirmingClear(true);
+                    }
+                  }}
+                  onBlur={() => setConfirmingClear(false)}
                   className="gap-2 text-destructive hover:text-destructive"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Clear All
+                  {confirmingClear
+                    ? `Clear ${bookmarks.length} Bookmark${bookmarks.length === 1 ? "" : "s"}?`
+                    : "Clear All"}
                 </Button>
               </div>
             )}
           </div>
+
+          <p role="status" aria-live="polite" className="mb-6 min-h-6 text-sm text-muted-foreground">
+            {lastRemoved && (
+              <>
+                Removed &ldquo;{lastRemoved.bookmark.title}&rdquo;.{" "}
+                <button
+                  type="button"
+                  onClick={undoRemove}
+                  className="text-foreground underline underline-offset-4 transition-colors hover:text-primary"
+                >
+                  Undo
+                </button>
+              </>
+            )}
+          </p>
 
           {/* Empty State */}
           {bookmarks.length === 0 && (
@@ -201,9 +244,9 @@ export function BookmarksPageClient() {
                 When you find articles you want to read later, click the bookmark icon to save
                 them here.
               </Paragraph>
-              <Link href="/blog">
-                <Button className="mt-6">Browse Articles</Button>
-              </Link>
+              <Button asChild className="mt-6">
+                <Link href="/blog">Browse Articles</Link>
+              </Button>
             </div>
           )}
 
@@ -259,7 +302,7 @@ export function BookmarksPageClient() {
                   {/* Read Link */}
                   <Link
                     href={`/blog/${bookmark.slug}`}
-                    className="absolute bottom-4 right-4 p-2 rounded-full bg-primary/10 text-primary opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute bottom-4 right-4 p-2 rounded-full bg-primary/10 text-primary opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
                     aria-label="Read article"
                   >
                     <ExternalLink className="h-4 w-4" />

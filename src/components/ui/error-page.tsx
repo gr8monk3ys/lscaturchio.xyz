@@ -80,7 +80,7 @@ export function ErrorPage({
             href="/"
             className="label-mono label-link text-muted-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
-            ← {homeLabel}
+            <span aria-hidden="true">←</span> {homeLabel}
           </Link>
         </div>
       </div>

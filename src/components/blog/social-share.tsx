@@ -37,32 +37,21 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
     setHasNativeShare(typeof navigator.share === "function");
   }, []);
 
-  const handleTwitterShare = () => {
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-      title
-    )}&url=${encodeURIComponent(url)}`;
-    window.open(twitterUrl, "_blank", "noopener,noreferrer");
-  };
-
-  const handleLinkedInShare = () => {
-    const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-      url
-    )}`;
-    window.open(linkedinUrl, "_blank", "noopener,noreferrer");
-  };
-
-  const handleBlueskyShare = () => {
-    const text = `${title}\n${url}`;
-    const blueskyUrl = `https://bsky.app/intent/compose?text=${encodeURIComponent(text)}`;
-    window.open(blueskyUrl, "_blank", "noopener,noreferrer");
-  };
-
-  const handleHackerNewsShare = () => {
-    const hnUrl = `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(
-      url
-    )}&t=${encodeURIComponent(title)}`;
-    window.open(hnUrl, "_blank", "noopener,noreferrer");
-  };
+  // Share intents are navigation, so they are links: Cmd/Ctrl-click and
+  // middle-click work, and the URL is visible on hover. They used to be
+  // buttons calling window.open.
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    title
+  )}&url=${encodeURIComponent(url)}`;
+  const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+    url
+  )}`;
+  const blueskyUrl = `https://bsky.app/intent/compose?text=${encodeURIComponent(
+    `${title}\n${url}`
+  )}`;
+  const hnUrl = `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(
+    url
+  )}&t=${encodeURIComponent(title)}`;
 
   const handleCopyLink = async () => {
     try {
@@ -92,27 +81,27 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
       <span className="label-mono">Share</span>
 
-      <button type="button" onClick={handleTwitterShare} className={shareLinkClass} aria-label="Share on Twitter">
+      <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className={shareLinkClass} aria-label="Share on Twitter">
         <IconBrandTwitter className="h-3.5 w-3.5" aria-hidden="true" />
         <span>Twitter</span>
-      </button>
+      </a>
 
-      <button type="button" onClick={handleLinkedInShare} className={shareLinkClass} aria-label="Share on LinkedIn">
+      <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className={shareLinkClass} aria-label="Share on LinkedIn">
         <IconBrandLinkedin className="h-3.5 w-3.5" aria-hidden="true" />
         <span>LinkedIn</span>
-      </button>
+      </a>
 
-      <button type="button" onClick={handleBlueskyShare} className={shareLinkClass} aria-label="Share on Bluesky">
+      <a href={blueskyUrl} target="_blank" rel="noopener noreferrer" className={shareLinkClass} aria-label="Share on Bluesky">
         <Globe className="h-3.5 w-3.5" aria-hidden="true" />
         <span>Bluesky</span>
-      </button>
+      </a>
 
       {/* WCAG 2.5.3 (Label in Name): the accessible name must contain the
           visible label, so it leads with "HN" rather than Hacker News alone. */}
-      <button type="button" onClick={handleHackerNewsShare} className={shareLinkClass} aria-label="Share on HN (Hacker News)">
+      <a href={hnUrl} target="_blank" rel="noopener noreferrer" className={shareLinkClass} aria-label="Share on HN (Hacker News)">
         <Zap className="h-3.5 w-3.5" aria-hidden="true" />
         <span>HN</span>
-      </button>
+      </a>
 
       <button
         type="button"

@@ -97,6 +97,8 @@ export function ToySimilarity() {
           </label>
           <textarea
             id="toy-similarity-text-a"
+            name="text-a"
+            autoComplete="off"
             value={a}
             onChange={(e) => setA(e.target.value)}
             rows={5}
@@ -112,6 +114,8 @@ export function ToySimilarity() {
           </label>
           <textarea
             id="toy-similarity-text-b"
+            name="text-b"
+            autoComplete="off"
             value={b}
             onChange={(e) => setB(e.target.value)}
             rows={5}
@@ -130,8 +134,8 @@ export function ToySimilarity() {
         </div>
         <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
           <div
-            className="h-full bg-primary transition-all"
-            style={{ width: `${pct}%` }}
+            className="h-full w-full origin-left bg-primary transition-transform"
+            style={{ transform: `scaleX(${pct / 100})` }}
           />
         </div>
         {overlap.length > 0 && (

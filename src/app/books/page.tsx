@@ -1,7 +1,11 @@
 import { Container } from "@/components/Container";
 import { buildPageMetadata } from "@/lib/seo";
 import { BooksList } from "@/components/books/BooksList";
-import { getGoodreadsLibrary } from "@/lib/goodreads";
+import {
+  getGoodreadsLibrary,
+  type GoodreadsBook,
+  type ListedBook,
+} from "@/lib/goodreads";
 import { PageHead } from "@/components/ui/page-head";
 import { spellCountLower, pluralize } from "@/lib/spell-count";
 
@@ -26,11 +30,38 @@ export function generateMetadata() {
 export default function BooksPage() {
   const library = getGoodreadsLibrary();
   const stats = library.stats();
-  const perfectScores = library.topRated();
-  const currentlyReading = library.currentlyReading();
-  const recentlyRead = library.read(40);
-  const toRead = library.toRead(40);
-  const shelves = library.customShelves();
+
+  // Only rendered fields cross to the client component. The memo keeps one
+  // object per book, so a book on two lists is still serialized once.
+  const listed = new Map<GoodreadsBook, ListedBook>();
+  const slim = (books: GoodreadsBook[]): ListedBook[] =>
+    books.map((book) => {
+      let entry = listed.get(book);
+      if (!entry) {
+        entry = {
+          id: book.id,
+          title: book.title,
+          author: book.author,
+          link: book.link,
+          rating: book.rating,
+          bookshelves: book.bookshelves,
+          pages: book.pages,
+          yearPublished: book.yearPublished,
+        };
+        listed.set(book, entry);
+      }
+      return entry;
+    });
+
+  const perfectScores = slim(library.topRated());
+  const currentlyReading = slim(library.currentlyReading());
+  const recentlyRead = slim(library.read(40));
+  const toRead = slim(library.toRead(40));
+  const shelves = library.customShelves().map((shelf) => ({
+    name: shelf.name,
+    label: shelf.label,
+    books: slim(shelf.books),
+  }));
   // Also derived. "roughly five times" was true when it was typed (4.7x) and
   // would have stayed on the page as the shelves moved underneath it.
   const queueRatio = stats.booksRead > 0 ? Math.round(stats.toRead / stats.booksRead) : 0;

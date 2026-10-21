@@ -69,6 +69,7 @@ const handleGet = async (request: NextRequest) => {
       : title;
     const essays = await relevantEssays(query, { limit: limit + 20 });
 
+    const blogsBySlug = new Map(allBlogs.map((b) => [b.slug, b]));
     for (const essay of essays) {
       const { slug } = essay;
       if (!slug || slug === currentSlug || essay.url === currentUrl) continue;
@@ -77,7 +78,7 @@ const handleGet = async (request: NextRequest) => {
         relatedPostsMap.get(slug)!.score += score;
         continue;
       }
-      const blog = allBlogs.find((b) => b.slug === slug);
+      const blog = blogsBySlug.get(slug);
       relatedPostsMap.set(slug, {
         title: blog?.title ?? 'Untitled',
         url: `/blog/${slug}`,

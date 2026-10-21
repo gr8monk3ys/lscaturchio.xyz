@@ -51,7 +51,7 @@ export default async function Projects({
             href="/contact"
             className="label-mono label-link mt-6 inline-block text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
-            Discuss a similar build →
+            Discuss a similar build <span aria-hidden="true">→</span>
           </Link>
         </PageHead>
 

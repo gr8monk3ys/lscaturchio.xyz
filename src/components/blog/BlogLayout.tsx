@@ -164,7 +164,7 @@ export function BlogLayout({
                   href="/about"
                   className="label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
                 >
-                  About the author →
+                  About the author <span aria-hidden="true">→</span>
                 </Link>
               </p>
 

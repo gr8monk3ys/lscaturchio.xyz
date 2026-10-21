@@ -51,19 +51,16 @@ export function ProjectGallery({ projects }: { projects: Product[] }): React.Rea
     [projects]
   )
 
-  const [{ activeSlug, browseMode }, dispatch] = useReducer(projectGalleryReducer, {
+  const [{ activeSlug: selectedSlug, browseMode }, dispatch] = useReducer(projectGalleryReducer, {
     activeSlug: list[0]?.slug ?? '',
     browseMode: false,
   })
 
-  useEffect(() => {
-    if (list.length === 0) return
-    if (!activeSlug || !list.some((p) => p.slug === activeSlug)) {
-      dispatch({ type: 'setActiveSlug', payload: list[0].slug })
-    }
-  }, [activeSlug, list])
-
-  const active = useMemo(() => list.find((p) => p.slug === activeSlug) ?? list[0], [activeSlug, list])
+  // Derived, not synced. When a filter removes the selected project the first
+  // one in the list is active; an effect used to write that back into state,
+  // which cost an extra render with a stale selection first.
+  const active = useMemo(() => list.find((p) => p.slug === selectedSlug) ?? list[0], [selectedSlug, list])
+  const activeSlug = active?.slug ?? ''
 
   const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({})
   const slugs = useMemo(() => list.map((p) => p.slug), [list])

@@ -42,7 +42,7 @@ export function ResumeDownloadButton({
       download="Lorenzo_Scaturchio_Resume.pdf"
       onClick={handleDownload}
       className={cn(
-        "group relative inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all",
+        "group relative inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-[color,background-color,border-color,box-shadow,filter]",
         variant === "default" && [
           "border border-border bg-card text-foreground",
           "hover:border-primary/45 hover:bg-primary/6 hover:text-primary",

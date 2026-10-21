@@ -25,13 +25,7 @@ export const POST = withWriteRoute(
   },
   async ({ data: input }) => {
     const contentPath = `src/app/blog/${input.slug}/content.mdx`;
-    const existing = await getFile(contentPath);
-    if (existing && !input.overwrite) {
-      throw writeError.conflict(`A post with slug "${input.slug}" already exists`);
-    }
-    if (!existing && input.overwrite) {
-      throw writeError.notFound(`No post with slug "${input.slug}" to update`);
-    }
+    const coverPath = `public/images/blog/${input.slug}.webp`;
 
     const meta: PostMeta = {
       title: input.title,
@@ -43,24 +37,37 @@ export const POST = withWriteRoute(
       series: input.series,
       seriesOrder: input.seriesOrder,
       stage: input.stage,
-      image: input.image,
+      // A new cover's path is known before it is converted, so the MDX can be
+      // built (and compiled) without waiting for the image.
+      image: input.coverImage ? `/images/blog/${input.slug}.webp` : input.image,
     };
+    const mdx = buildContentMdx(meta, input.body);
+
+    // The existence check, the cover conversion and the MDX compile do not
+    // depend on each other; they used to run one after another.
+    const [existing, coverData, mdxCheck] = await Promise.all([
+      getFile(contentPath),
+      input.coverImage
+        ? toWebp(
+            Buffer.from(input.coverImage.slice(input.coverImage.indexOf(",") + 1), "base64")
+          ).then(({ data }) => data)
+        : Promise.resolve(null),
+      validateMdx(mdx),
+    ]);
+
+    if (existing && !input.overwrite) {
+      throw writeError.conflict(`A post with slug "${input.slug}" already exists`);
+    }
+    if (!existing && input.overwrite) {
+      throw writeError.notFound(`No post with slug "${input.slug}" to update`);
+    }
+    if (!mdxCheck.ok) throw writeError.badRequest(`MDX does not compile: ${mdxCheck.error}`);
 
     // Order matters for the commit: content.mdx, then the cover. There is no
     // page.tsx to write: `src/app/blog/[slug]` renders any essay the catalogue
     // lists, so the content file is the whole post.
     const files: CommitFile[] = [];
-    let cover: CommitFile | null = null;
-    if (input.coverImage) {
-      const base64 = input.coverImage.slice(input.coverImage.indexOf(",") + 1);
-      const { data } = await toWebp(Buffer.from(base64, "base64"));
-      cover = { path: `public/images/blog/${input.slug}.webp`, content: data };
-      meta.image = `/images/blog/${input.slug}.webp`;
-    }
-
-    const mdx = buildContentMdx(meta, input.body);
-    const mdxCheck = await validateMdx(mdx);
-    if (!mdxCheck.ok) throw writeError.badRequest(`MDX does not compile: ${mdxCheck.error}`);
+    const cover: CommitFile | null = coverData ? { path: coverPath, content: coverData } : null;
 
     files.push({ path: contentPath, content: mdx });
     if (cover) files.push(cover);

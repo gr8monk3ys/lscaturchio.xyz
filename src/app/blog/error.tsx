@@ -18,7 +18,7 @@ export default function BlogError({
       error={error}
       reset={reset}
       title="Failed to load blog"
-      description="We couldn't load the blog content. Please try again or browse other sections."
+      description="The blog didn't load. Try again, or browse another section."
       icon={
         <svg
           className="h-8 w-8 text-destructive"

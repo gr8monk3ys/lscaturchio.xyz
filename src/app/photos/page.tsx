@@ -64,7 +64,7 @@ export default async function PhotosPage({
             href="/garden"
             className="label-mono label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
           >
-            ← Back to the garden
+            <span aria-hidden="true">←</span> Back to the garden
           </Link>
           <Link
             href="/uses"

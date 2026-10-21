@@ -7,6 +7,7 @@ import type { PostMeta } from "@/lib/admin/blog-content";
 import { inputClass, labelClass, fieldClass, submitButtonClass } from "./form-styles";
 import { PublishResult, type PublishState } from "./publish-result";
 import { publishRequest } from "./publish";
+import { useUnsavedChangesWarning } from "./use-unsaved-changes";
 
 export type PostEditorInitial = PostMeta & { slug: string; body: string };
 
@@ -26,6 +27,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
   const [body, setBody] = useState(initial?.body ?? "");
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [result, setResult] = useState<PublishState>({ state: "idle" });
+  const [dirty, setDirty] = useState(false);
+  useUnsavedChangesWarning(dirty);
 
   function onTitleChange(value: string) {
     setTitle(value);
@@ -44,36 +47,37 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
 
   async function publish() {
     setResult({ state: "saving" });
-    setResult(
-      await publishRequest("/api/admin/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          slug,
-          description,
-          date,
-          // Edits stamp today's date as `updated`; syndication rides through.
-          updated: editing ? new Date().toISOString().slice(0, 10) : undefined,
-          tags: tags
-            .split(",")
-            .map((t) => t.trim())
-            .filter(Boolean),
-          syndication: initial?.syndication,
-          series: series || undefined,
-          seriesOrder: seriesOrder ? Number(seriesOrder) : undefined,
-          stage: stage || undefined,
-          image: initial?.image,
-          body,
-          coverImage: coverImage || undefined,
-          overwrite: editing,
-        }),
-      })
-    );
+    const published = await publishRequest("/api/admin/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title,
+        slug,
+        description,
+        date,
+        // Edits stamp today's date as `updated`; syndication rides through.
+        updated: editing ? new Date().toISOString().slice(0, 10) : undefined,
+        tags: tags
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean),
+        syndication: initial?.syndication,
+        series: series || undefined,
+        seriesOrder: seriesOrder ? Number(seriesOrder) : undefined,
+        stage: stage || undefined,
+        image: initial?.image,
+        body,
+        coverImage: coverImage || undefined,
+        overwrite: editing,
+      }),
+    });
+    setResult(published);
+    if (published.state === "done") setDirty(false);
   }
 
   return (
     <form
+      onChange={() => setDirty(true)}
       onSubmit={(e) => {
         e.preventDefault();
         void publish();
@@ -85,6 +89,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
         </label>
         <input
           id="post-title"
+          name="title"
+          autoComplete="off"
           className={inputClass}
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
@@ -97,6 +103,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
         </label>
         <input
           id="post-slug"
+          name="slug"
+          autoComplete="off"
           className={inputClass}
           value={slug}
           onChange={(e) => {
@@ -113,6 +121,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
         </label>
         <textarea
           id="post-description"
+          name="description"
+          autoComplete="off"
           className={inputClass}
           rows={2}
           value={description}
@@ -127,6 +137,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
           </label>
           <input
             id="post-date"
+            name="date"
+            autoComplete="off"
             type="date"
             className={inputClass}
             value={date}
@@ -140,6 +152,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
           </label>
           <select
             id="post-stage"
+            name="stage"
+            autoComplete="off"
             className={inputClass}
             value={stage}
             onChange={(e) => setStage(e.target.value)}
@@ -158,6 +172,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
           </label>
           <input
             id="post-tags"
+            name="tags"
+            autoComplete="off"
             className={inputClass}
             value={tags}
             onChange={(e) => setTags(e.target.value)}
@@ -171,6 +187,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
           </label>
           <input
             id="post-series"
+            name="series"
+            autoComplete="off"
             className={inputClass}
             value={series}
             onChange={(e) => setSeries(e.target.value)}
@@ -182,6 +200,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
           </label>
           <input
             id="post-series-order"
+            name="series-order"
+            autoComplete="off"
             type="number"
             min={1}
             className={inputClass}
@@ -195,6 +215,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
           </label>
           <input
             id="post-cover"
+            name="cover"
+            autoComplete="off"
             type="file"
             accept="image/png,image/jpeg,image/webp"
             className={inputClass}
@@ -208,6 +230,8 @@ export function PostEditor({ initial }: { initial?: PostEditorInitial }) {
         </label>
         <textarea
           id="post-body"
+          name="body"
+          autoComplete="off"
           className={`${inputClass} font-mono`}
           rows={24}
           value={body}

@@ -52,7 +52,10 @@ export function EssayRows({ posts }: { posts: BlogPreview[] }) {
   return (
     <ul className="max-w-2xl divide-y divide-border border-b border-border">
       {posts.map((post) => (
-        <li key={post.slug}>
+        // `content-visibility: auto`: /blog renders every essay (83) in one
+        // list, so rows off-screen skip layout and paint until scrolled near.
+        // `auto 8rem` reserves an estimate, then remembers the real height.
+        <li key={post.slug} className="[content-visibility:auto] [contain-intrinsic-size:auto_8rem]">
           <Link href={`/blog/${post.slug}`} prefetch={false} className="group block py-4">
             {/* The wall label the row pattern asks for. Every essay authors a
                 stage, and the index used to show none of them — a seedling and

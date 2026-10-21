@@ -99,6 +99,7 @@ async function Episodes() {
                   year: "numeric",
                   month: "short",
                   day: "numeric",
+                  timeZone: "UTC",
                 })}
               </span>
             </div>

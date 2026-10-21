@@ -124,6 +124,7 @@ export function SeriesPageClient({ allSeries }: { allSeries: Series[] }) {
                             year: "numeric",
                             month: "long",
                             day: "numeric",
+                            timeZone: "UTC",
                           })}
                         </time>
                       </div>

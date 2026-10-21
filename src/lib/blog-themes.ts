@@ -86,10 +86,18 @@ function normalizeTags(tags: readonly string[]): Set<string> {
  * so every essay has exactly one. An essay matching nothing gets the fallback
  * rather than vanishing from the index.
  */
+// Tag -> theme, built once. The first theme listing a tag wins, which is what
+// `BLOG_THEMES.find(...)` returned when this was a scan per tag per post.
+const THEME_BY_TAG = new Map<string, BlogTheme>();
+for (const theme of BLOG_THEMES) {
+  for (const tag of theme.tags) {
+    if (!THEME_BY_TAG.has(tag)) THEME_BY_TAG.set(tag, theme);
+  }
+}
+
 export function primaryThemeForTags(tags: readonly string[]): BlogTheme {
   for (const tag of tags) {
-    const needle = tag.toLowerCase();
-    const theme = BLOG_THEMES.find((t) => t.tags.includes(needle));
+    const theme = THEME_BY_TAG.get(tag.toLowerCase());
     if (theme) return theme;
   }
   return FALLBACK_THEME;
