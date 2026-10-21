@@ -758,7 +758,7 @@ export const products: Product[] = [
     href: "https://github.com/gr8monk3ys/merge-gate",
     title: "merge-gate",
     description:
-      "Keeps about 70 repositories patched without a person reading every dependency update. It merges only changes that cannot alter behaviour, judged from the diff itself, and never grants standing permission to merge later changes.",
+      "Keeps a fleet of repositories patched without a person reading every dependency update. It merges only changes that cannot alter behaviour, judged from the diff itself, and never grants standing permission to merge later changes.",
     thumbnail: mergeGate,
     stack: ["Python", "GitHub API", "pytest"],
     slug: "merge-gate",
@@ -766,7 +766,7 @@ export const products: Product[] = [
     homeCard: {
       kicker: "Automation",
       blurb:
-        "Keeps about 70 repositories patched without one person reading every update. Updates that cannot change behaviour merge on their own; anything that could waits for a human.",
+        "Keeps a fleet of repositories patched without one person reading every update. Updates that cannot change behaviour merge on their own; anything that could waits for a human.",
       metrics: ["~70 repos kept current", "Behaviour changes always wait", "49 tests"],
       coverSrc: "/images/projects/covers/merge-gate.webp",
     },
