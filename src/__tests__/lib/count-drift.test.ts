@@ -124,9 +124,9 @@ const ALLOWED: Array<{ file: string; match: string; reason: string }> = [
   },
   {
     file: "src/constants/products.tsx",
-    match: "70 repos",
+    match: "80 repos",
     reason:
-      "merge-gate's governed repo count, already hedged with a tilde. ~/code/CLAUDE.md currently says ~72, so this is drifting.",
+      "merge-gate's governed repo count, hedged with a tilde: 78 repos in the sweep's repos.yml on 2026-10-21.",
   },
   {
     file: "src/constants/products.tsx",
