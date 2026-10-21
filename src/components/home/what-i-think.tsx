@@ -4,43 +4,34 @@ import { StageBadge } from "@/components/blog/stage-badge";
 import { formatDate } from "@/lib/formatDate";
 import { groupByTheme } from "@/lib/blog-themes";
 import type { BlogPreview } from "@/lib/blog-data";
-import { spellCount, spellCountLower, pluralize } from "@/lib/spell-count";
+import { spellCount, pluralize } from "@/lib/spell-count";
 
-/** Themes whose essays argue about people and power, as opposed to systems. */
-const ARGUMENT_THEMES = ["power-institutions", "philosophy-self", "money-work"];
-const ENGINEERING_THEME = "technology-attention";
+/**
+ * The themes the homepage shows, in order. Technology leads because the
+ * projects above it are the same subject; the other themes stay on /blog and
+ * /topics, one click away, and the description below says so.
+ */
+const HOME_THEMES = ["technology-attention", "money-work", "philosophy-self"];
 
 export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
   const byTheme = groupByTheme(posts);
 
-  // Top three themes by volume; the homepage is a doorway, not the archive.
-  const groups = [...byTheme].sort((a, b) => b.posts.length - a.posts.length).slice(0, 3);
-
-  // Both numbers in the description are counted, not asserted. "Eighty-three
-  // essays … three to one" was accurate the day it was typed and had no way to
-  // stay accurate; the ratio in particular moves every time an essay is tagged.
-  const countIn = (slugs: string[]) =>
-    byTheme
-      .filter((group) => slugs.includes(group.theme.slug))
-      .reduce((sum, group) => sum + group.posts.length, 0);
-
-  const engineering = countIn([ENGINEERING_THEME]);
-  const ratio = engineering > 0 ? Math.round(countIn(ARGUMENT_THEMES) / engineering) : 0;
+  const groups = HOME_THEMES.flatMap((slug) =>
+    byTheme.filter((group) => group.theme.slug === slug)
+  );
 
   return (
     <LedgerSection
       head={
         <>
           <LedgerHead
-            index="01"
-            eyebrow="What I think"
-            title="Mostly arguments."
+            index="02"
+            eyebrow="What I write"
+            title="Essays, technology first."
             description={`${spellCount(posts.length)} ${pluralize(
               posts.length,
               "essay"
-            )}, grouped by what they are actually about. Politics, philosophy and economics outnumber the engineering ${spellCountLower(
-              ratio
-            )} to one.`}
+            )}, grouped by what they are actually about. Technology leads here; the archive also argues about politics, philosophy and money.`}
           />
           <Link
             href="/blog"

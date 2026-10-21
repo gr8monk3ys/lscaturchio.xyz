@@ -38,8 +38,12 @@ music, books, photos and work history in one place, and every number on it is
 sourced. Breadth plus verified truth is the position; a neighbouring personal
 site can copy the breadth or the honesty, but rarely both.
 
-The current hero line, "builds systems, suspicious of them", is a tagline, not
-a commitment. Future work may replace it. (Confirmed 2026-09-01.)
+The hero line is "builds AI that shows its sources" (2026-10-21), replacing
+"builds systems, suspicious of them". It is a tagline, not a commitment. The
+home page now shows the projects before the essays, and its essay index leads
+with technology; the political essays stay on /blog and /topics. The owner was
+job-hunting for technical sales and solutions roles at the time, and a home
+page that opened on politics was working against that.
 
 ## Operating Context
 
