@@ -11,7 +11,7 @@ name: Uptime
 #   down     a check failed in a way that means the site is broken (5xx, a
 #            connection error, a timeout, or a 200 carrying a bad body). Turns
 #            the run red immediately; opens an issue only after DOWN_STREAK
-#            consecutive runs, i.e. ~30 minutes of sustained failure.
+#            consecutive runs, i.e. ~1 hour of sustained failure.
 #   blocked  every failure was an edge refusal that never reached the app —
 #            Cloudflare's bot/WAF layer answering 403 to a datacentre IP. The
 #            run stays green with a warning. Between 2026-08-29 and 08-31 this
@@ -22,14 +22,17 @@ name: Uptime
 #            verifying anything, which is itself worth one issue.
 #
 # Caveat worth knowing: GitHub's scheduled runners are best-effort and get
-# delayed under load, so treat this as "we will hear about it within the hour",
-# not as a real SLA monitor. It is free and lives with the code; a hosted
+# delayed under load, so treat this as "we will hear about it within an hour or
+# two", not as a real SLA monitor. It is free and lives with the code; a hosted
 # checker (Better Stack, Vercel monitoring) probes from an IP the edge trusts
 # and is strictly better if this ever needs to page someone.
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    # Hourly. Every 15 minutes was ~1,170 runs a month for a personal site;
+    # hourly still flags an outage within about an hour, and the first down
+    # run turns red (and emails) before the issue opens.
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 # Never let a slow run pile up on the next scheduled one.
