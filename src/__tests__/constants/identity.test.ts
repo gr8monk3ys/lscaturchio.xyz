@@ -8,9 +8,9 @@ describe('IDENTITY', () => {
   });
 
   it('uses the agreed self-description', () => {
-    expect(IDENTITY.role).toBe('builds systems, suspicious of them');
+    expect(IDENTITY.role).toBe('builds AI that shows its sources');
     expect(IDENTITY.titleDefault).toBe(
-      'Lorenzo Scaturchio — builds systems, suspicious of them'
+      'Lorenzo Scaturchio — builds AI that shows its sources'
     );
   });
 

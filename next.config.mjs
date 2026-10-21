@@ -26,6 +26,9 @@ const nextConfig = {
       { source: '/topics/work-economy', destination: '/topics/money-work', permanent: true },
       { source: '/topics/places-infrastructure', destination: '/topics/place-climate', permanent: true },
       { source: '/topics/open-source-tools', destination: '/topics/technology-attention', permanent: true },
+      // The resume lives behind /api/resume (it logs downloads), so the URL
+      // people actually type or paste was a 404.
+      { source: '/resume', destination: '/api/resume', permanent: false },
       {
         source: '/services',
         destination: '/work-with-me#services',
