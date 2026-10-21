@@ -36,7 +36,7 @@ bun run test:e2e        # playwright, builds and serves the app itself
 bun run predeploy       # all of the above
 ```
 
-CI runs the same five jobs on every PR and they are all required. `codeql.yml` scans every push to `main` and monthly; `uptime.yml` probes production hourly and opens an issue after two consecutive runs find it genuinely down — an edge/WAF refusal that never reached the app is reported as blocked, not as an outage.
+CI runs the same five jobs on every PR and they are all required. GitHub's default CodeQL setup scans every push to `main`; `uptime.yml` probes production hourly and opens an issue after two consecutive runs find it genuinely down — an edge/WAF refusal that never reached the app is reported as blocked, not as an outage.
 
 ## Content
 
