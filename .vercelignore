@@ -4,8 +4,7 @@ node_modules
 out
 build
 
-# Local env/config and VCS metadata
-.git
+# Local env/config. Keep .git: vercel.json's ignoreCommand runs git diff.
 .env
 .env.local
 .env*.local
