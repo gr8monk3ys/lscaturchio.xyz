@@ -7,17 +7,13 @@ import fraudStream from "../../public/images/projects/covers/fraud-stream.webp";
 import feedless from "../../public/images/projects/covers/feedless.webp";
 import qsensorSim from "../../public/images/projects/covers/qsensor-sim.webp";
 import tidyRoll from "../../public/images/projects/covers/tidy-roll.webp";
-import piLab from "../../public/images/projects/covers/pi-lab.webp";
 import tradingBot from "../../public/images/projects/covers/trading-bot.webp";
 import TAlker from "../../public/images/projects/covers/talker.webp";
 import blogAI from "../../public/images/projects/covers/blog-ai.webp";
-import paperSummarizer from "../../public/images/projects/covers/paper-summarizer.webp";
 import mergeGate from "../../public/images/projects/covers/merge-gate.webp";
 import healthcalc from "../../public/images/projects/covers/healthcalc.webp";
 import remedi from "../../public/images/projects/covers/remedi.webp";
-import numerology from "../../public/images/projects/covers/numerology.webp";
 import albumConceptualizer from "../../public/images/projects/covers/album-conceptualizer.webp";
-import linkFlame from "../../public/images/projects/covers/link-flame.webp";
 import monkeySmp from "../../public/images/projects/covers/monkey-smp.webp";
 import frontDesk from "../../public/images/projects/covers/front-desk.webp";
 import hollowCrown from "../../public/images/projects/covers/hollow-crown.webp";
@@ -556,65 +552,6 @@ export const products: Product[] = [
     ],
   },
   {
-    href: "/projects/pi-lab",
-    title: "pi-lab",
-    description:
-      "The first version of the homelab: a Raspberry Pi 5 running a few dozen Docker Compose services — DNS ad-blocking, VPN, media, documents and passwords — behind one reverse proxy. Superseded by the Kubernetes homelab.",
-    thumbnail: piLab,
-    stack: ["Docker Compose", "Nginx Proxy Manager", "Pi-hole", "WireGuard"],
-    slug: "pi-lab",
-    thesis: "A whole homelab on one Raspberry Pi",
-    featured: false,
-    categories: ["tools"],
-    status: "archived",
-    startDate: "2026-02",
-    sourcePrivate: true,
-    caseStudy: {
-      challenge:
-        "Self-hosting advice is either a single-service tutorial or a rack-mounted enterprise build. There was no honest middle: what can one 8 GB Raspberry Pi actually carry, and what does it cost in complexity to run the services that would otherwise be a dozen subscriptions?",
-      solution:
-        "Each service a Docker Compose stack in its own directory, all reachable behind Nginx Proxy Manager with wildcard TLS on a real domain. The Pi answered the question, and then outgrew it: the next version moved to Kubernetes on a bigger machine.",
-      results: [
-        "DNS, VPN, media, documents, passwords, automation and monitoring on one Pi",
-        "Wildcard TLS via Nginx Proxy Manager and Let's Encrypt",
-        "A later hardening pass removed services the Pi no longer needed",
-        "Superseded by the K3s homelab",
-      ],
-      metrics: [
-        { label: "Compose stacks", value: "31" },
-        { label: "Hardware", value: "Pi 5, 8 GB" },
-        { label: "Arch", value: "aarch64" },
-        { label: "Successor", value: "homelab (K3s)" },
-      ],
-      process: [
-        {
-          title: "One stack per directory",
-          description:
-            "Kept each service self-contained so a single broken image can be rebuilt without touching the rest.",
-        },
-        {
-          title: "One front door",
-          description:
-            "Put everything behind Nginx Proxy Manager with wildcard certificates instead of exposing ports per service.",
-        },
-        {
-          title: "Prune, then move",
-          description:
-            "Removed the services that were not earning their memory before deciding the estate needed a bigger host.",
-        },
-        {
-          title: "Graduate to Kubernetes",
-          description:
-            "Started a K3s homelab with a declarative catalogue rather than growing the compose sprawl further.",
-        },
-      ],
-    },
-    details: [
-      "Ran a self-hosted homelab of Docker Compose stacks on a Raspberry Pi 5 (8 GB, aarch64) covering DNS ad-blocking, VPN, media, documents and passwords behind wildcard TLS.",
-      "Superseded by a K3s homelab with a declarative service catalogue.",
-    ],
-  },
-  {
     href: "/projects/qsensor-sim",
     title: "qsensor-sim",
     description:
@@ -737,25 +674,6 @@ export const products: Product[] = [
   // ============================================
   // ARCHIVED
   // ============================================
-  {
-    href: "https://github.com/gr8monk3ys/paper-summarizer",
-    title: "Paper Summarizer",
-    description:
-      "A FastAPI service that summarizes research papers from an upload or a URL, with a local T5-small model or DeepSeek-R1 as the backend, batch processing and rate limiting.",
-    thumbnail: paperSummarizer,
-    stack: ["Python", "FastAPI", "T5", "DeepSeek-R1"],
-    slug: "paper-summarizer",
-    thesis: "Summarise an academic paper",
-    featured: false,
-    categories: ["ai-ml", "tools"],
-    status: "archived",
-    startDate: "2022-12",
-    sourceUrl: "https://github.com/gr8monk3ys/paper-summarizer",
-    details: [
-      "Built a research-paper summarization API in FastAPI with two backends (local T5-small, DeepSeek-R1 via Together AI), accepting file uploads, URLs and batches.",
-      "Added rate limiting, async processing and configurable summary parameters behind a documented OpenAPI interface.",
-    ],
-  },
   // ============================================
   // ADDED 2026-08-30 — recent public work with live deployments
   // ============================================
@@ -772,7 +690,7 @@ export const products: Product[] = [
       kicker: "Automation",
       blurb:
         "Keeps a fleet of repositories patched without one person reading every update. Updates that cannot change behaviour merge on their own; anything that could waits for a human.",
-      metrics: ["~80 repos kept current", "Behaviour changes always wait", "109 tests"],
+      metrics: ["~80 repos kept current", "Behaviour changes always wait", "162 tests"],
       coverSrc: "/images/projects/covers/merge-gate.webp",
     },
     featured: true,
@@ -786,14 +704,14 @@ export const products: Product[] = [
       solution:
         "Classify every PR by the shape of its diff, and merge only the shapes that cannot carry behaviour: lockfiles, tests, data artifacts, whitelisted CI fixes, and dependency bumps whose every version delta is patch or minor. Content never auto-merges. The gate merges a green PR immediately against the exact SHA it judged, and disables any standing arm it finds.",
       results: [
-        "109 tests covering the classifier and the merge decision, with DECISIONS.md recording why each rule exists",
+        "162 tests covering the classifier and the merge decision, with DECISIONS.md recording why each rule exists",
         "v0.8.0 (October 2026): REST transport with a GraphQL fallback, at most one merge per base branch per sweep, and parallel reads behind a cache",
         "Version deltas read from the PR body, not the title \u2014 a group bump titled '21 updates' names no versions but its body tabulates the majors that must block it",
         "A group is as risky as its riskiest member: bump_kind() takes the max",
         "requirements*.txt treated as a manifest, not a lockfile \u2014 the bug that let pytest 7\u21929 and cryptography 48\u219250 through",
       ],
       metrics: [
-        { label: "Tests", value: "109" },
+        { label: "Tests", value: "162" },
         { label: "Repos governed", value: "~80" },
         { label: "Arms granted", value: "Zero" },
         { label: "Policy surface", value: "3 constants" },
@@ -826,7 +744,7 @@ export const products: Product[] = [
       ],
     },
     details: [
-      "Extracted the fleet's merge policy into a standalone public engine with 109 tests and a DECISIONS.md that records the reasoning behind each rule.",
+      "Extracted the fleet's merge policy into a standalone public engine with 162 tests and a DECISIONS.md that records the reasoning behind each rule.",
       "Proved a tempting optimisation wrong with measurement: grouping Dependabot PRs to cut noise makes them strictly less mergeable here, because one 0.x minor or SHA-pinned action in a group demotes the whole PR.",
     ],
   },
@@ -897,38 +815,6 @@ export const products: Product[] = [
     },
   },
   {
-    href: "https://numerology-sigma-vert.vercel.app",
-    title: "Numen",
-    description:
-      "A complete esoteric numerology suite \u2014 Pythagorean, Chaldean and Kabbalistic systems computed from a name and birth date, rendered as a full reading rather than a single lucky number.",
-    thumbnail: numerology,
-    stack: ["Next.js", "TypeScript", "Tailwind"],
-    slug: "numen",
-    thesis: "Numerology as a reading, not a lucky number",
-    featured: false,
-    categories: ["web-apps"],
-    status: "active",
-    startDate: "2026-07",
-    demoUrl: "https://numerology-sigma-vert.vercel.app",
-    sourceUrl: "https://github.com/gr8monk3ys/numerology",
-    caseStudy: {
-      challenge:
-        "Numerology sites compute one number and stop. The systems they draw from disagree with each other in interesting ways, and flattening that into a single answer throws away the only thing that makes the subject worth building.",
-      solution:
-        "Compute all three systems side by side and show where they diverge \u2014 life path, soul urge, karmic debts, tarot correspondences, life-cycle forecasts. The design commits fully to the subject matter instead of apologising for it with a generic SaaS layout.",
-      results: [
-        "Three numerological systems computed and compared",
-        "Full reading: core chart, karmic debts, angel numbers, forecast",
-        "A visual identity that matches the subject rather than a default template",
-      ],
-      metrics: [
-        { label: "Systems", value: "3" },
-        { label: "Core numbers", value: "5" },
-        { label: "Input", value: "Name + birth date" },
-      ],
-    },
-  },
-  {
     href: "https://album-conceptualizer.vercel.app",
     title: "Album Conceptualizer",
     description:
@@ -958,37 +844,6 @@ export const products: Product[] = [
         { label: "Unit of work", value: "The album" },
         { label: "Export", value: "MIDI · ChordPro · MusicXML" },
         { label: "Generates audio", value: "No, deliberately" },
-      ],
-    },
-  },
-  {
-    href: "https://link-flame-rouge.vercel.app",
-    title: "Link Flame",
-    description:
-      "An eco-commerce storefront where every product is screened for what it is made of and who made it \u2014 the screening criteria are the product, and they are visible.",
-    thumbnail: linkFlame,
-    stack: ["Next.js", "TypeScript", "Prisma", "Tailwind"],
-    slug: "link-flame",
-    thesis: "A storefront where the screening is the product",
-    featured: false,
-    categories: ["web-apps"],
-    status: "maintained",
-    startDate: "2023-06",
-    demoUrl: "https://link-flame-rouge.vercel.app",
-    sourceUrl: "https://github.com/gr8monk3ys/link-flame",
-    caseStudy: {
-      challenge:
-        "\u2018Sustainable\u2019 in commerce is an unpoliced adjective. A storefront that uses the word without showing its criteria is indistinguishable from one that does not mean it.",
-      solution:
-        "Make the screening explicit and browsable: shop by what matters to you, with the material and sourcing criteria surfaced on the product rather than buried in an About page.",
-      results: [
-        "Products screened on material and sourcing, with criteria shown",
-        "Browse by value, not just by category",
-        "1% for the Planet member, stated on the storefront",
-      ],
-      metrics: [
-        { label: "Screening", value: "Visible" },
-        { label: "Browse axis", value: "By value" },
       ],
     },
   },
@@ -1142,6 +997,7 @@ export const products: Product[] = [
     status: "active",
     startDate: "2026-10",
     sourcePrivate: true,
+    videoSrc: "/videos/hollow-crown-trailer.mp4",
     caseStudy: {
       challenge:
         "Stealth games usually end the moment the heist does. The question here was whether what you steal could matter after you get home — whether a village with needs could turn a run of rooftop thefts into a reason to go out again.",
