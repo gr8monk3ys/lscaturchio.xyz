@@ -1,7 +1,7 @@
 import { StaticImageData } from "next/image";
 
 export type ProjectStatus = 'active' | 'maintained' | 'archived';
-export type ProjectCategory = 'ai-ml' | 'web-apps' | 'tools' | 'open-source' | 'data-science';
+export type ProjectCategory = 'ai-ml' | 'web-apps' | 'tools' | 'open-source' | 'data-science' | 'games';
 
 export interface CaseStudyMetric {
   label: string;
