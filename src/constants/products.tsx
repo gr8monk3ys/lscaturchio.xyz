@@ -7,17 +7,21 @@ import fraudStream from "../../public/images/projects/covers/fraud-stream.webp";
 import feedless from "../../public/images/projects/covers/feedless.webp";
 import qsensorSim from "../../public/images/projects/covers/qsensor-sim.webp";
 import tidyRoll from "../../public/images/projects/covers/tidy-roll.webp";
-import piLab from "../../public/images/projects/covers/pi-lab.webp";
 import tradingBot from "../../public/images/projects/covers/trading-bot.webp";
 import TAlker from "../../public/images/projects/covers/talker.webp";
 import blogAI from "../../public/images/projects/covers/blog-ai.webp";
-import paperSummarizer from "../../public/images/projects/covers/paper-summarizer.webp";
 import mergeGate from "../../public/images/projects/covers/merge-gate.webp";
 import healthcalc from "../../public/images/projects/covers/healthcalc.webp";
 import remedi from "../../public/images/projects/covers/remedi.webp";
-import numerology from "../../public/images/projects/covers/numerology.webp";
 import albumConceptualizer from "../../public/images/projects/covers/album-conceptualizer.webp";
-import linkFlame from "../../public/images/projects/covers/link-flame.webp";
+import monkeySmp from "../../public/images/projects/covers/monkey-smp.webp";
+import frontDesk from "../../public/images/projects/covers/front-desk.webp";
+import hollowCrown from "../../public/images/projects/covers/hollow-crown.webp";
+import fleetOrchestrator from "../../public/images/projects/covers/fleet-orchestrator.webp";
+import homelab from "../../public/images/projects/covers/homelab.webp";
+import financeOwl from "../../public/images/projects/covers/finance-owl.webp";
+import mtgDeckLab from "../../public/images/projects/covers/mtg-deck-lab.webp";
+import backtestAudit from "../../public/images/projects/covers/backtest-audit.webp";
 
 export const products: Product[] = [
   // ============================================
@@ -298,116 +302,121 @@ export const products: Product[] = [
     href: "https://github.com/gr8monk3ys/TAlker",
     title: "Talker",
     description:
-      "An open source teaching assistant that answers course questions from the syllabus, slides and lecture materials — with citations, and YouTube timestamps when a video covers the answer.",
+      "An open source teaching assistant, built as a USC master's capstone, that drafts answers to course-forum questions from the lecture notes, with hybrid retrieval, a reranker, and an evaluation harness that scores its own retrieval.",
     thumbnail: TAlker,
-    stack: ["Python", "FAISS", "OLlama2", "RAG"],
+    stack: ["Python", "LangChain", "ChromaDB", "Streamlit"],
     slug: "talker",
-    thesis: "A teaching assistant that cites the syllabus",
+    thesis: "A teaching assistant that answers from the lecture notes",
     featured: true,
     categories: ["ai-ml", "open-source"],
     status: "archived",
-    startDate: "2024-01",
+    startDate: "2024-03",
     sourceUrl: "https://github.com/gr8monk3ys/TAlker",
     caseStudy: {
-      challenge: "Students struggled to get timely answers to course-specific questions outside of office hours, leading to bottlenecks and disengagement.",
-      solution: "Built a RAG-powered teaching assistant using OLlama2 and FAISS that answers questions based on class syllabus, slides, and materials. Added multi-modal support including YouTube videos with timestamp links.",
+      challenge:
+        "Students wait on course forums for answers that are already somewhere in the lecture notes. A chatbot that answers from general knowledge is worse than waiting: it is confident about a course it has never seen.",
+      solution:
+        "A retrieval-augmented assistant over the course's own material. Questions run through hybrid retrieval (BM25 plus vector search in ChromaDB), a cross-encoder reranker and LLM query expansion, and the answer is drafted from what was retrieved. An optional Piazza bot closes the loop on the course forum itself.",
       results: [
-        "Answers grounded in course materials, returned with the source cited",
-        "Multi-modal responses that deep-link to the timestamp in a lecture video",
-        "Ran on a local OLlama2 model, so no course material left the machine",
-        "Open source, with outside contributions merged",
+        "Hybrid BM25 + vector retrieval, so exact course terms and paraphrased questions both find their passage",
+        "Five model providers behind one interface — OpenAI, Anthropic, Gemini, Cohere and Ollama — with Ollama for a fully local setup, and token cost tracked per provider",
+        "A RAGAS-style LLM-as-judge harness that scores retrieval and answer quality instead of eyeballing it",
       ],
       metrics: [
-        { label: "Retrieval", value: "FAISS" },
-        { label: "Model", value: "Local OLlama2" },
-        { label: "Answer style", value: "Citations-first" },
-        { label: "Modalities", value: "Text + video" },
+        { label: "Retrieval", value: "BM25 + vector" },
+        { label: "Providers", value: "5" },
+        { label: "Evaluation", value: "LLM-as-judge" },
+        { label: "Context", value: "MS capstone" },
       ],
       process: [
         {
-          title: "Source corpus",
-          description: "Collected course syllabus, slides, and materials; normalized formats for consistent chunking.",
+          title: "Retrieval before generation",
+          description:
+            "Combined lexical and semantic search in one ensemble retriever, because course vocabulary is exactly the kind of term pure embeddings blur.",
         },
         {
-          title: "Index + retrieval",
-          description: "Chunked content into semantically coherent spans and indexed with FAISS for fast retrieval.",
+          title: "Rerank the shortlist",
+          description:
+            "Added a cross-encoder pass over the retrieved passages so the context window holds the best few, not merely the first few.",
         },
         {
-          title: "Grounded generation",
-          description: "Used retrieved context to generate answers with citations and optional video timestamps when available.",
+          title: "Measure the retriever",
+          description:
+            "Built a RAGAS-style evaluation harness so a change to chunking or retrieval comes with a score, not an impression.",
         },
         {
-          title: "Iteration",
-          description: "Measured usage/feedback, tightened prompts/guardrails, and improved citations and fallback behavior.",
+          title: "Meet students where they ask",
+          description:
+            "Wired an optional Piazza bot so drafted answers land on the course forum instead of in a separate app nobody opens.",
         },
-      ],
-      whatIdDoNext: [
-        "Add an eval harness for retrieval quality (recall@k, faithfulness) and regression tests.",
-        "Introduce caching + rate limiting for peak traffic periods and more robust context selection.",
-        "Improve citation UX: quote snippets, highlight sources, and add per-source confidence.",
       ],
     },
     details: [
-      "Built an open source teaching assistant on a local OLlama2 model with a FAISS knowledge base, answering student questions from the course syllabus, slides and materials.",
-      "Added multi-modal retrieval that returns lecture videos deep-linked to the timestamp covering the question, rather than the whole recording.",
+      "Built a retrieval-augmented teaching assistant as a USC MS capstone, with hybrid BM25 + vector retrieval over ChromaDB, a cross-encoder reranker, and five interchangeable model providers.",
+      "Added a RAGAS-style LLM-as-judge evaluation harness and an optional Piazza bot that drafts answers on the course forum.",
     ],
   },
   {
     href: "https://github.com/gr8monk3ys/trading-bot",
-    title: "AI-Powered Trading Bot",
+    title: "trading-bot",
     description:
-      "An advanced AI-driven stock trading bot leveraging FinBERT sentiment analysis, technical indicators, and sophisticated risk management for automated intelligent trading.",
+      "An Alpaca paper-trading bot built to answer one question — can a retail momentum system beat the market? — and the measurement work that showed the answer is no. Over 2020–2024 the best validated strategy returned +16.3% against SPY's +95.3%.",
     thumbnail: tradingBot,
-    stack: ["Python", "FinBERT", "Alpaca Trading API", "Pandas"],
+    stack: ["Python", "Alpaca API", "pandas", "TA-Lib"],
     slug: "ai-powered-trading-bot",
-    thesis: "Trade on sentiment, with the risk management attached",
-    featured: true,
-    categories: ["ai-ml", "data-science"],
+    thesis: "Measure the edge before you believe it",
+    featured: false,
+    categories: ["data-science", "open-source"],
     status: "maintained",
-    startDate: "2023-08",
+    startDate: "2024-01",
     sourceUrl: "https://github.com/gr8monk3ys/trading-bot",
     caseStudy: {
-      challenge: "Manual trading is emotional and time-consuming. Traders need systematic approaches that combine market sentiment with technical analysis while managing risk.",
-      solution: "Built an automated trading system combining FinBERT sentiment analysis of financial news with technical indicators (SMA, RSI). Implemented strict risk management with portfolio-wide and position-level limits.",
+      challenge:
+        "The first backtests said +646%, then +53%, then +42.9%. Every one was a measurement bug rather than an edge, and a backtest that flatters you is more dangerous than one that fails, because it is the one you trade.",
+      solution:
+        "Fix the measurement first. The four defects behind those numbers — exits that could never fire, a strategy blind to its own positions, short sales that booked no liability, and sizing off idle cash — were fixed, then turned into mechanical checks in a separate tool, backtest-audit, which now audits every committed result.",
       results: [
-        "Automated trading with sentiment + technical signals",
-        "Real-time and paper trading modes",
-        "Portfolio-wide risk management",
-        "Integration with Alpaca Trading API"
+        "An honest headline: +16.3% (Sharpe 0.16) for the best validated strategy against +95.3% (0.75) for SPY buy-and-hold, 2020–2024",
+        "Strategy and benchmark compared at matched gross exposure, so the comparison is like-for-like",
+        "Superseded runs still audit as NOT TRUSTWORTHY, reconstructing their defects from the trade log alone",
+        "Unvalidated research moved off main to an archive branch rather than left looking finished",
       ],
       metrics: [
-        { label: "Signals", value: "Sentiment + TA" },
-        { label: "Risk controls", value: "Portfolio + position" },
-        { label: "Modes", value: "Paper + live" },
-        { label: "Broker", value: "Alpaca API" },
+        { label: "Best strategy", value: "+16.3%" },
+        { label: "SPY, same window", value: "+95.3%" },
+        { label: "Real capital", value: "None — paper only" },
+        { label: "Audited by", value: "backtest-audit" },
       ],
       process: [
         {
-          title: "Feature design",
-          description: "Combined FinBERT news sentiment with technical indicators (SMA/RSI) to produce a single signal.",
+          title: "Make exits reachable",
+          description:
+            "Found that the signal generator never emitted a sell and the engine never called the method holding exit logic, so every early run measured enter-and-hold.",
         },
         {
-          title: "Risk layer",
-          description: "Implemented portfolio-wide and per-position limits to bound downside before any order is placed.",
+          title: "Book every liability",
+          description:
+            "Fixed position detection and naked shorts, which together had invented tens of thousands of dollars of cash in the backtest.",
         },
         {
-          title: "Paper trading",
-          description: "Validated the strategy against live data with no capital at risk before enabling execution.",
+          title: "A/B the filter",
+          description:
+            "Turned the Bollinger filter off to reach a statistically meaningful trade count, and found the unfiltered signal loses money.",
         },
         {
-          title: "Execution + monitoring",
-          description: "Wired the Alpaca API for order placement and logged fills, signals, and risk states for review.",
+          title: "Make the lesson mechanical",
+          description:
+            "Extracted the four defects into backtest-audit so they are checked on every result instead of remembered.",
         },
       ],
       whatIdDoNext: [
-        "Add walk-forward backtesting with transaction costs and slippage modeled honestly.",
-        "Introduce regime detection so the strategy stands down in conditions it was not designed for.",
-        "Track live-vs-paper divergence as a first-class metric.",
+        "Revisit pairs trading, the one archived research thread with a case for a second look.",
+        "Push trade counts past the 50-trade significance bar before quoting any new result.",
       ],
     },
     details: [
-      "Engineered an AI-powered trading bot that automates stock trading by analyzing market sentiment using FinBERT and integrating key technical indicators such as SMA and RSI. The bot employs strict risk management strategies, including portfolio-wide and individual position risk limits.",
-      "Integrated with the Alpaca Trading API, enabling real-time trading and paper trading for safe strategy testing before live deployment.",
+      "Built an Alpaca paper-trading bot in async Python with a backtest engine modelling slippage and spread, a risk manager (VaR, correlation, sizing) and a daily-loss circuit breaker.",
+      "Traced three inflated backtest results (+646%, +53%, +42.9%) to measurement bugs, published the honest result that the strategy does not beat buy-and-hold, and extracted the defects into an audit tool.",
     ],
   },
   // ============================================
@@ -543,70 +552,6 @@ export const products: Product[] = [
     ],
   },
   {
-    href: "/projects/pi-lab",
-    title: "pi-lab",
-    description:
-      "A self-hosted homelab running 37 Docker Compose services on a Raspberry Pi 5 — DNS ad-blocking, VPN, media, documents, passwords, and intrusion detection behind wildcard TLS.",
-    thumbnail: piLab,
-    stack: ["Docker Compose", "Nginx Proxy Manager", "Pi-hole", "WireGuard"],
-    slug: "pi-lab",
-    thesis: "A whole homelab on one Raspberry Pi",
-    featured: false,
-    categories: ["tools", "open-source"],
-    status: "maintained",
-    startDate: "2026-02",
-    sourcePrivate: true,
-    caseStudy: {
-      challenge:
-        "Self-hosting advice is either a single-service tutorial or a rack-mounted enterprise build. There was no honest middle: what can one 8 GB Raspberry Pi actually carry, and what does it cost in complexity to run the services that would otherwise be a dozen subscriptions?",
-      solution:
-        "Thirty-seven services on one Pi 5, each a Docker Compose stack in its own directory, all reachable behind Nginx Proxy Manager with wildcard TLS on a real domain. DNS resolves through Pi-hole to Unbound to DNSCrypt, so there is no upstream resolver watching the queries either.",
-      results: [
-        "37 services covering DNS, VPN, media, documents, passwords, automation, and monitoring",
-        "Recursive DNS chain — Pi-hole to Unbound to DNSCrypt — with no upstream dependency",
-        "Wildcard TLS on *.lscaturchio.xyz via Nginx Proxy Manager and Let's Encrypt",
-        "Authelia for single sign-on and CrowdSec for intrusion detection across the estate",
-      ],
-      metrics: [
-        { label: "Services", value: "37" },
-        { label: "Hardware", value: "Pi 5, 8 GB" },
-        { label: "Arch", value: "aarch64" },
-        { label: "TLS", value: "Wildcard" },
-      ],
-      process: [
-        {
-          title: "One stack per directory",
-          description:
-            "Kept each service self-contained so a single broken image can be rebuilt without touching the other thirty-six.",
-        },
-        {
-          title: "Own the resolver",
-          description:
-            "Chained Pi-hole to a local Unbound recursive resolver rather than a public upstream, so ad-blocking does not just relocate the surveillance.",
-        },
-        {
-          title: "One front door",
-          description:
-            "Put everything behind Nginx Proxy Manager with wildcard certificates instead of exposing ports per service.",
-        },
-        {
-          title: "Assume it will be attacked",
-          description:
-            "Added Authelia in front and CrowdSec underneath, on the assumption that anything reachable will eventually be probed.",
-        },
-      ],
-      whatIdDoNext: [
-        "Move the compose sprawl to K3s and reuse the Helm work from the homelab repo.",
-        "Add automated restore drills — backups that have never been restored are not backups.",
-        "Publish per-service memory ceilings so the 8 GB budget is legible to anyone copying this.",
-      ],
-    },
-    details: [
-      "Deployed and maintain a 37-service self-hosted homelab on a Raspberry Pi 5 (8 GB, aarch64) covering DNS ad-blocking, VPN, media streaming, document management with OCR, password management, workflow automation, and intrusion detection.",
-      "Fronted the estate with Nginx Proxy Manager and wildcard Let's Encrypt TLS, with Authelia for SSO and a Pi-hole to Unbound to DNSCrypt resolver chain that removes the upstream DNS dependency.",
-    ],
-  },
-  {
     href: "/projects/qsensor-sim",
     title: "qsensor-sim",
     description:
@@ -674,83 +619,61 @@ export const products: Product[] = [
     href: "https://github.com/gr8monk3ys/blog-AI",
     title: "Blog-AI",
     description:
-      "An AI content generation tool using GPT-4 and LangChain to create SEO-optimized blog posts and structured books. Outputs clean MDX for blogs and DOCX for books.",
+      "Generates blog posts and books in a trained brand voice: research, outline, per-section drafting, voice scoring, fact-checking and SEO, behind a Next.js front end and a FastAPI service.",
     thumbnail: blogAI,
-    stack: ["Python", "OpenAI GPT-4", "LangChain", "MDX"],
+    stack: ["Next.js", "FastAPI", "Python", "OpenAI / Anthropic / Gemini"],
     slug: "blog-ai",
-    thesis: "One idea, out as MDX or as a book",
+    thesis: "Long-form drafts in a voice you trained",
     featured: false,
     categories: ["ai-ml", "tools"],
     status: "maintained",
     startDate: "2023-11",
+    demoUrl: "https://blog-ai.vivancedata.com",
     sourceUrl: "https://github.com/gr8monk3ys/blog-AI",
     caseStudy: {
-      challenge: "Creating high-quality, SEO-optimized blog content is time-consuming. Writers need assistance generating structured content while maintaining their voice.",
-      solution: "Constructed an automated blog content generation system using GPT-4 and LangChain. Implements workflows for generating SEO-optimized titles, descriptions, and detailed sections with context memory.",
+      challenge:
+        "Generated content is cheap; generated content that sounds like the brand, makes claims it can support, and is structured for search is not. A single prompt produces the first kind.",
+      solution:
+        "Split generation into stages a person can inspect: research, outline, per-section drafting, a brand-voice score, a fact-check pass and SEO. Models sit behind one generate_text() interface, so OpenAI, Anthropic and Gemini are interchangeable per stage.",
       results: [
-        "SEO-optimized content generation",
-        "MDX output for static site blogs",
-        "DOCX export for book formats",
-        "Context-aware writing with memory"
+        "Staged pipeline from research to SEO rather than one long prompt",
+        "Brand-voice scoring against a trained voice profile",
+        "Fact-check stage for claims that need support",
+        "Web app, API and a browser extension over the same pipeline",
       ],
       metrics: [
-        { label: "Outputs", value: "MDX + DOCX" },
-        { label: "Workflows", value: "SEO-aware" },
-        { label: "Context", value: "Memory buffer" },
-        { label: "Structure", value: "Sectioned" },
+        { label: "Stages", value: "Research → SEO" },
+        { label: "Providers", value: "3, swappable" },
+        { label: "Outputs", value: "Posts + books" },
+        { label: "Front end", value: "Next.js" },
       ],
       process: [
         {
-          title: "Brief → outline",
-          description: "Turned topic + keywords into a stable outline with clear sections and intent.",
+          title: "Stage the pipeline",
+          description: "Broke generation into research, outline, drafting, voice, fact-check and SEO so each step can be inspected and rerun alone.",
         },
         {
-          title: "Workflow orchestration",
-          description: "Used LangChain to chain steps and keep context consistent across generations.",
+          title: "One model seam",
+          description: "Put every provider behind generate_text() so swapping models is configuration rather than a rewrite.",
         },
         {
-          title: "Draft + refine",
-          description: "Generated drafts with iterative passes for clarity, tone, and SEO constraints.",
+          title: "Score the voice",
+          description: "Added a brand-voice score so 'sounds like us' is a number a draft has to clear.",
         },
         {
-          title: "Export + publish",
-          description: "Emitted clean MDX for static sites and DOCX for book-friendly formatting.",
+          title: "Check the claims",
+          description: "Added a fact-check stage for claims that need a source.",
         },
-      ],
-      whatIdDoNext: [
-        "Add citations + fact checks for claims that require sources.",
-        "Introduce a style guide layer to preserve voice and enforce editorial constraints.",
-        "Add multilingual generation pipelines for international SEO and distribution.",
       ],
     },
     details: [
-      "Constructed an automated blog content generation system using OpenAI's GPT-4 model and LangChain.",
-      "Accomplished workflows for generating SEO-optimized blog titles, descriptions, and detailed sections.",
-      "Used Python and ConversationBufferMemory for maintaining context and orchestrating tasks.",
+      "Built a staged long-form generation pipeline (research, outline, per-section drafting, brand-voice scoring, fact-check, SEO) behind a FastAPI service and Next.js front end.",
+      "Abstracted OpenAI, Anthropic and Gemini behind a single generation interface, with a browser extension over the same API.",
     ],
   },
   // ============================================
   // ARCHIVED
   // ============================================
-  {
-    href: "https://github.com/gr8monk3ys/Paper-Summarizer",
-    title: "Paper Summarizer",
-    description:
-      "A tool for summarizing academic papers using advanced NLP techniques.",
-    thumbnail: paperSummarizer,
-    stack: ["Python", "NLP", "Transformers"],
-    slug: "paper-summarizer",
-    thesis: "Summarise an academic paper",
-    featured: false,
-    categories: ["ai-ml", "tools"],
-    status: "archived",
-    startDate: "2021-02",
-    sourceUrl: "https://github.com/gr8monk3ys/Paper-Summarizer",
-    details: [
-      "A tool for summarizing academic papers using NLP techniques. Extracts key points and generates concise summaries from research documents.",
-      "Built with transformers for accurate extraction. Accepts papers from various sources.",
-    ],
-  },
   // ============================================
   // ADDED 2026-08-30 — recent public work with live deployments
   // ============================================
@@ -767,7 +690,7 @@ export const products: Product[] = [
       kicker: "Automation",
       blurb:
         "Keeps a fleet of repositories patched without one person reading every update. Updates that cannot change behaviour merge on their own; anything that could waits for a human.",
-      metrics: ["~80 repos kept current", "Behaviour changes always wait", "49 tests"],
+      metrics: ["~80 repos kept current", "Behaviour changes always wait", "162 tests"],
       coverSrc: "/images/projects/covers/merge-gate.webp",
     },
     featured: true,
@@ -781,13 +704,14 @@ export const products: Product[] = [
       solution:
         "Classify every PR by the shape of its diff, and merge only the shapes that cannot carry behaviour: lockfiles, tests, data artifacts, whitelisted CI fixes, and dependency bumps whose every version delta is patch or minor. Content never auto-merges. The gate merges a green PR immediately against the exact SHA it judged, and disables any standing arm it finds.",
       results: [
-        "49 tests covering the classifier and the merge decision, with DECISIONS.md recording why each rule exists",
+        "162 tests covering the classifier and the merge decision, with DECISIONS.md recording why each rule exists",
+        "v0.8.0 (October 2026): REST transport with a GraphQL fallback, at most one merge per base branch per sweep, and parallel reads behind a cache",
         "Version deltas read from the PR body, not the title \u2014 a group bump titled '21 updates' names no versions but its body tabulates the majors that must block it",
         "A group is as risky as its riskiest member: bump_kind() takes the max",
         "requirements*.txt treated as a manifest, not a lockfile \u2014 the bug that let pytest 7\u21929 and cryptography 48\u219250 through",
       ],
       metrics: [
-        { label: "Tests", value: "49 passing" },
+        { label: "Tests", value: "162" },
         { label: "Repos governed", value: "~80" },
         { label: "Arms granted", value: "Zero" },
         { label: "Policy surface", value: "3 constants" },
@@ -820,7 +744,7 @@ export const products: Product[] = [
       ],
     },
     details: [
-      "Extracted the fleet's merge policy into a standalone public engine with 49 tests and a DECISIONS.md that records the reasoning behind each rule.",
+      "Extracted the fleet's merge policy into a standalone public engine with 162 tests and a DECISIONS.md that records the reasoning behind each rule.",
       "Proved a tempting optimisation wrong with measurement: grouping Dependabot PRs to cut noise makes them strictly less mergeable here, because one 0.x minor or SHA-pinned action in a group demotes the whole PR.",
     ],
   },
@@ -836,7 +760,7 @@ export const products: Product[] = [
     featured: false,
     categories: ["web-apps", "tools"],
     status: "active",
-    startDate: "2026-03",
+    startDate: "2025-02",
     demoUrl: "https://healthcalc.xyz",
     sourceUrl: "https://github.com/gr8monk3ys/healthcalc.xyz",
     caseStudy: {
@@ -859,7 +783,7 @@ export const products: Product[] = [
     },
   },
   {
-    href: "https://remedi-iota.vercel.app",
+    href: "https://remedi.vivancedata.com",
     title: "Remedi",
     description:
       "Search a drug or supplement and get evidence-based natural alternatives, with the strength of evidence and the dosage guidance attached \u2014 not just a list of herbs.",
@@ -870,8 +794,8 @@ export const products: Product[] = [
     featured: false,
     categories: ["web-apps", "ai-ml"],
     status: "active",
-    startDate: "2026-01",
-    demoUrl: "https://remedi-iota.vercel.app",
+    startDate: "2025-02",
+    demoUrl: "https://remedi.vivancedata.com",
     sourceUrl: "https://github.com/gr8monk3ys/remedi",
     caseStudy: {
       challenge:
@@ -891,38 +815,6 @@ export const products: Product[] = [
     },
   },
   {
-    href: "https://numerology-sigma-vert.vercel.app",
-    title: "Numen",
-    description:
-      "A complete esoteric numerology suite \u2014 Pythagorean, Chaldean and Kabbalistic systems computed from a name and birth date, rendered as a full reading rather than a single lucky number.",
-    thumbnail: numerology,
-    stack: ["Next.js", "TypeScript", "Tailwind"],
-    slug: "numen",
-    thesis: "Numerology as a reading, not a lucky number",
-    featured: false,
-    categories: ["web-apps"],
-    status: "active",
-    startDate: "2026-08",
-    demoUrl: "https://numerology-sigma-vert.vercel.app",
-    sourceUrl: "https://github.com/gr8monk3ys/numerology",
-    caseStudy: {
-      challenge:
-        "Numerology sites compute one number and stop. The systems they draw from disagree with each other in interesting ways, and flattening that into a single answer throws away the only thing that makes the subject worth building.",
-      solution:
-        "Compute all three systems side by side and show where they diverge \u2014 life path, soul urge, karmic debts, tarot correspondences, life-cycle forecasts. The design commits fully to the subject matter instead of apologising for it with a generic SaaS layout.",
-      results: [
-        "Three numerological systems computed and compared",
-        "Full reading: core chart, karmic debts, angel numbers, forecast",
-        "A visual identity that matches the subject rather than a default template",
-      ],
-      metrics: [
-        { label: "Systems", value: "3" },
-        { label: "Core numbers", value: "5" },
-        { label: "Input", value: "Name + birth date" },
-      ],
-    },
-  },
-  {
     href: "https://album-conceptualizer.vercel.app",
     title: "Album Conceptualizer",
     description:
@@ -934,7 +826,7 @@ export const products: Product[] = [
     featured: false,
     categories: ["ai-ml", "web-apps"],
     status: "active",
-    startDate: "2026-06",
+    startDate: "2026-01",
     demoUrl: "https://album-conceptualizer.vercel.app",
     sourceUrl: "https://github.com/gr8monk3ys/album-conceptualizer",
     caseStudy: {
@@ -955,35 +847,469 @@ export const products: Product[] = [
       ],
     },
   },
+  // ============================================
+  // ADDED 2026-10-28 — September and October work
+  // ============================================
   {
-    href: "https://link-flame-rouge.vercel.app",
-    title: "Link Flame",
+    href: "https://monkeysmp.lscaturchio.xyz",
+    title: "Monkey SMP",
     description:
-      "An eco-commerce storefront where every product is screened for what it is made of and who made it \u2014 the screening criteria are the product, and they are visible.",
-    thumbnail: linkFlame,
-    stack: ["Next.js", "TypeScript", "Prisma", "Tailwind"],
-    slug: "link-flame",
-    thesis: "A storefront where the screening is the product",
-    featured: false,
-    categories: ["web-apps"],
-    status: "maintained",
-    startDate: "2024-06",
-    demoUrl: "https://link-flame-rouge.vercel.app",
-    sourceUrl: "https://github.com/gr8monk3ys/link-flame",
+      "A whitelisted, modded Minecraft Java factions server I run, with a one-command installer for every platform, a live world map, and pull-based deploys that update the server overnight after a backup.",
+    thumbnail: monkeySmp,
+    stack: ["Fabric", "PowerShell", "Python", "Docker"],
+    slug: "monkey-smp",
+    thesis: "A modded server friends can join in one command",
+    homeCard: {
+      kicker: "Games",
+      blurb:
+        "For a group of friends who want a modded Minecraft season without an afternoon of setup: one installer on any platform, a live map, and a server that updates itself overnight.",
+      metrics: ["166 server mods", "Windows · macOS · Linux", "v2.8.0 live"],
+      coverSrc: "/images/projects/covers/monkey-smp.webp",
+    },
+    featured: true,
+    categories: ["games", "tools"],
+    status: "active",
+    startDate: "2026-10",
+    demoUrl: "https://monkeysmp.lscaturchio.xyz",
+    sourcePrivate: true,
     caseStudy: {
       challenge:
-        "\u2018Sustainable\u2019 in commerce is an unpoliced adjective. A storefront that uses the word without showing its criteria is indistinguishable from one that does not mean it.",
+        "A modded server is only as good as the number of friends who manage to join it. Every client needs the exact same mod versions, nobody wants to read a setup guide, and the person running it does not want to SSH in every time a mod updates.",
       solution:
-        "Make the screening explicit and browsable: shop by what matters to you, with the material and sourcing criteria surfaced on the product rather than buried in an About page.",
+        "Pin every mod by hash in one manifest and download it from its original source, so nothing is redistributed and nothing drifts. One installer, run through a pinned PowerShell 7, installs the matching client on Windows, macOS and Linux. The server pulls its own releases: it polls for new tags and deploys in a 4 AM window, after a backup and an in-game warning.",
       results: [
-        "Products screened on material and sourcing, with criteria shown",
-        "Browse by value, not just by category",
-        "1% for the Planet member, stated on the storefront",
+        "Moved from Paper to Fabric in v2.0.0",
+        "One installer for Windows, macOS, Linux and Docker",
+        "An HTTPS world map, clipped to the world border, at map.monkeysmp.lscaturchio.xyz",
+        "Traced server lag to a permissions mod and removed it in v2.7.0",
+        "Season I opens Saturday 21 November 2026",
       ],
       metrics: [
-        { label: "Screening", value: "Visible" },
-        { label: "Browse axis", value: "By value" },
+        { label: "Server mods", value: "166" },
+        { label: "Releases", value: "10" },
+        { label: "Tests", value: "451 pytest + 127 Pester" },
+        { label: "ADRs", value: "8" },
+      ],
+      process: [
+        {
+          title: "Verify, don't redistribute",
+          description:
+            "Every mod is downloaded from its own author's host and checked against a hash pinned in the manifest. The pack never ships anyone else's jar.",
+        },
+        {
+          title: "One installer, every platform",
+          description:
+            "Rather than three scripts that drift, the installer runs on a pinned PowerShell 7 everywhere, so a fix lands on every platform at once.",
+        },
+        {
+          title: "Pull, don't push",
+          description:
+            "The server watches for tagged releases and deploys itself overnight, after a backup and a warning in chat. Shipping a release is tagging it.",
+        },
+        {
+          title: "Rehearse the release",
+          description:
+            "Releases go through a rehearsal before they are tagged, and a consolidation pass after v2.7.0 simplified the architecture they ship.",
+        },
+      ],
+      whatIdDoNext: [
+        "A season calendar and a job runner on the server, planned for v2.9.0.",
+        "Publish the client pack on Modrinth once its review allows it.",
       ],
     },
+    details: [
+      "Built and run a whitelisted, modded Minecraft Java server on Fabric, with hash-pinned mods, a cross-platform installer and a live HTTPS world map.",
+      "Automated deploys as a pull: the server polls for tagged releases and updates itself in an overnight window after a backup.",
+    ],
+  },
+  {
+    href: "https://github.com/gr8monk3ys/discord-server",
+    title: "Front Desk",
+    description:
+      "The bot that runs the Chill Gamers Discord: levels, roles, moderation, a Minecraft bridge, and a catch-up summary of what you missed, written by a local model. It replaced two hosted bots.",
+    thumbnail: frontDesk,
+    stack: ["Python", "discord.py", "SQLite", "Ollama"],
+    slug: "front-desk",
+    thesis: "One bot instead of two hosted ones",
+    featured: false,
+    categories: ["tools", "open-source"],
+    status: "active",
+    startDate: "2026-09",
+    demoUrl: "https://discord.lscaturchio.xyz",
+    sourceUrl: "https://github.com/gr8monk3ys/discord-server",
+    caseStudy: {
+      challenge:
+        "A small community server ends up renting its personality from hosted bots: one for levels, one for moderation, each with a paywall on the feature you actually want and no way to make them talk to each other.",
+      solution:
+        "Write the server's one bot. Front Desk replaces Lurkr and MEE6 with cogs it owns, bridges chat to the Minecraft server, and summarises a channel you missed with a model running locally, so a conversation never leaves the machine to be summarised.",
+      results: [
+        "Replaced Lurkr and MEE6 with one bot the server owns",
+        "A Minecraft bridge, and a ping when three or more players are online, read from the public status protocol only",
+        "/catchup summaries from a local Ollama model",
+        "A security pass on the rewards system, and a self-check that reports missing permissions before a command fails",
+        "A landing page and ban-appeal form at discord.lscaturchio.xyz",
+      ],
+      metrics: [
+        { label: "Tests", value: "4,334 bot + 278 server" },
+        { label: "Cogs", value: "48" },
+        { label: "Release", value: "v1.0.0" },
+        { label: "Hosted bots replaced", value: "2" },
+      ],
+      process: [
+        {
+          title: "Replace, then extend",
+          description:
+            "Rebuilt what the hosted bots did as cogs the server owns, then added what they could not do: the Minecraft bridge and local summaries.",
+        },
+        {
+          title: "Keep logic out of cogs",
+          description:
+            "Discord handlers are thin; the rules live in plain modules that the test suite exercises without a gateway connection.",
+        },
+        {
+          title: "Audit the economy",
+          description:
+            "Ran a security pass over the rewards system before the server relied on it.",
+        },
+        {
+          title: "Fail loudly about permissions",
+          description:
+            "A self-check names the permissions the bot is missing, instead of a command failing silently later.",
+        },
+      ],
+    },
+    details: [
+      "Built the single bot that runs a community Discord, replacing two hosted bots with owned cogs, a Minecraft bridge and local-model catch-up summaries.",
+      "Covered it with a CI-run test suite of over four thousand tests and a startup permission self-check.",
+    ],
+  },
+  {
+    href: "/projects/hollow-crown",
+    title: "Hollow Crown",
+    description:
+      "A rooftop stealth game in Godot about a thief who robs a greedy crown to feed a village, with a ten-night roguelite mode, The Long Winter.",
+    thumbnail: hollowCrown,
+    stack: ["Godot", "GDScript", "Jolt"],
+    slug: "hollow-crown",
+    thesis: "Steal from the crown, keep the village alive",
+    featured: false,
+    categories: ["games"],
+    status: "active",
+    startDate: "2026-10",
+    sourcePrivate: true,
+    videoSrc: "/videos/hollow-crown-trailer.mp4",
+    caseStudy: {
+      challenge:
+        "Stealth games usually end the moment the heist does. The question here was whether what you steal could matter after you get home — whether a village with needs could turn a run of rooftop thefts into a reason to go out again.",
+      solution:
+        "A loop in two halves: rooftop heists through the town with a kit of vault powers, and a village that the take goes back to. The Long Winter compresses that into a ten-night run.",
+      results: [
+        "Three waves of greybox gameplay, then two architecture passes",
+        "The Long Winter, a ten-night roguelite mode",
+        "Every note from the 26 October playtest fixed",
+        "A first trailer",
+      ],
+      metrics: [
+        { label: "Engine", value: "Godot 4.7" },
+        { label: "Test functions", value: "117" },
+        { label: "Vault powers", value: "7" },
+        { label: "Public build", value: "Not yet" },
+      ],
+      process: [
+        {
+          title: "Greybox in waves",
+          description:
+            "Built the game in greybox waves and played each one, so the feel was settled before anything was expensive to change.",
+        },
+        {
+          title: "Headless tests for a game",
+          description:
+            "Scenes run headless in a test harness, so a guard's sight cone or a vault's timing is checked the same way a function would be.",
+        },
+        {
+          title: "Playtest, then fix everything",
+          description:
+            "Took a full playtest's notes as a backlog and closed every one, instead of picking the convenient half.",
+        },
+      ],
+      whatIdDoNext: [
+        "Five more vault tricks.",
+        "Seed codes so a Long Winter run can be shared and replayed.",
+        "Voiced guard barks.",
+      ],
+    },
+    details: [
+      "Building a rooftop stealth game in Godot 4.7 with a village-economy loop and a ten-night roguelite mode, tested with headless scene suites.",
+    ],
+  },
+  {
+    href: "/projects/fleet-orchestrator",
+    title: "Fleet Orchestrator",
+    description:
+      "Scheduled Claude routines that keep my repositories healthy without me: dependency hygiene, CI repair, test backfill and PR shepherding, with every merge decision handed to merge-gate.",
+    thumbnail: fleetOrchestrator,
+    stack: ["Python", "Claude Code", "GitHub API"],
+    slug: "fleet-orchestrator",
+    thesis: "Maintenance that runs while I'm doing something else",
+    featured: false,
+    categories: ["ai-ml", "tools"],
+    status: "active",
+    startDate: "2026-06",
+    sourcePrivate: true,
+    caseStudy: {
+      challenge:
+        "Dozens of repositories each need the same unglamorous care — dependencies bumped, flaky CI repaired, untested code covered, stale PRs moved along. Done by hand it never happens; done by agents with no structure, it happens noisily and occasionally wrong.",
+      solution:
+        "A registry of repositories, a declared schedule of loops per repository, and a hard boundary: agents propose, but whether anything merges is decided by merge-gate, a separate deterministic policy engine. Each run passes an admission step and records what it did in a ledger.",
+      results: [
+        "986 fleet PRs merged in the 60 days to 6 September 2026, about 115 a week",
+        "Every repository audited against one scorecard before the first loop ran",
+        "Merge policy moved out into merge-gate rather than vendored into each loop",
+        "A run that cannot reach GitHub now fails, instead of reporting an empty queue as success",
+      ],
+      metrics: [
+        { label: "In the registry", value: "78" },
+        { label: "With active loops", value: "42" },
+        { label: "PRs merged / week", value: "~115" },
+        { label: "ADRs", value: "10" },
+      ],
+      process: [
+        {
+          title: "Audit before automating",
+          description:
+            "Scored every repository on one scorecard first, so the loops started from a known baseline rather than discovering it.",
+        },
+        {
+          title: "Separate proposing from merging",
+          description:
+            "Agents open PRs; merge-gate decides. The judgement that can lose data is the one part that is not a model.",
+        },
+        {
+          title: "Admission and a ledger",
+          description:
+            "Each run passes an admission step and records what it did, so a week of automation can be read back afterwards.",
+        },
+        {
+          title: "Declare the schedule",
+          description:
+            "Which loop runs where, and when, is one declared file rather than a set of hand-made scheduled tasks.",
+        },
+      ],
+    },
+    details: [
+      "Built a scheduler of Claude routines that maintains a fleet of repositories — dependency hygiene, CI repair, test backfill, PR shepherding — with merges delegated to a deterministic policy engine.",
+    ],
+  },
+  {
+    href: "https://github.com/gr8monk3ys/homelab",
+    title: "homelab",
+    description:
+      "The second version of my homelab: a K3s cluster with a declarative service catalogue, TLS from cert-manager, secrets encrypted in git, and a Prometheus stack watching all of it. It replaced a Raspberry Pi running Docker Compose.",
+    thumbnail: homelab,
+    stack: ["Kubernetes", "K3s", "Traefik", "Prometheus"],
+    slug: "homelab",
+    thesis: "Self-hosting as a catalogue, not a pile",
+    featured: false,
+    categories: ["tools", "open-source"],
+    status: "active",
+    startDate: "2026-01",
+    sourceUrl: "https://github.com/gr8monk3ys/homelab",
+    caseStudy: {
+      challenge:
+        "pi-lab answered whether one Raspberry Pi could carry a homelab, and then hit the limits of Compose: every service its own snowflake, secrets in env files, and no way to say which services should exist without reading every directory.",
+      solution:
+        "Describe each service once in a catalogue, choose what is installed per environment, and let the cluster converge. Traefik and cert-manager handle ingress and TLS, External Secrets with SOPS and age keep secrets encrypted in git, and kube-prometheus-stack watches everything. ArgoCD is optional.",
+      results: [
+        "A 65-entry service catalogue: 18 installed by default, the rest opt-in",
+        "58 of 64 manifests applied cleanly to a real API server, not just linted",
+        "31 of 31 Prometheus targets up on the first real deploy",
+        "Garage replaced MinIO for object storage",
+      ],
+      metrics: [
+        { label: "Catalogue", value: "65 entries" },
+        { label: "Default install", value: "18" },
+        { label: "Prometheus targets", value: "31/31 up" },
+        { label: "ADRs", value: "10" },
+      ],
+      process: [
+        {
+          title: "Catalogue first",
+          description:
+            "Refactored the service list into a catalogue so adding a service is one entry, and choosing what runs is configuration.",
+        },
+        {
+          title: "Test against a real API server",
+          description:
+            "Applied the manifests to a real Kubernetes API server, which catches failures that schema linting passes.",
+        },
+        {
+          title: "Deploy, then measure",
+          description:
+            "Counted Prometheus targets after the first real deploy rather than assuming the monitoring was wired.",
+        },
+      ],
+    },
+    details: [
+      "Rebuilt a self-hosted homelab as a K3s cluster with a declarative service catalogue, cert-manager TLS, SOPS-encrypted secrets and a Prometheus stack.",
+    ],
+  },
+  {
+    href: "https://github.com/gr8monk3ys/finance-owl",
+    title: "Finance Owl",
+    description:
+      "A personal finance app — bank sync, budgets, investments — across web and mobile, where the AI features are optional and can run on a local model.",
+    thumbnail: financeOwl,
+    stack: ["NestJS", "SvelteKit", "Expo", "Postgres"],
+    slug: "finance-owl",
+    thesis: "Personal finance with the AI optional",
+    featured: false,
+    categories: ["web-apps", "ai-ml"],
+    status: "active",
+    startDate: "2026-02",
+    sourceUrl: "https://github.com/gr8monk3ys/finance-owl",
+    caseStudy: {
+      challenge:
+        "Finance apps want your bank login and then send your transactions to a model you did not choose. The useful parts — a budget, a categorised ledger, an investment view — do not need either compromise.",
+      solution:
+        "A NestJS API with Drizzle on Postgres, a SvelteKit web app and an Expo mobile app over the same API. Plaid handles bank sync; a rules-based categorizer runs before any model is asked; and the AI layer can point at a local Ollama model or be switched off.",
+      results: [
+        "Rules-based categorisation first, AI only for what the rules cannot place",
+        "Passkeys and TOTP, with the 2FA QR code rendered locally rather than by a third party",
+        "An idempotent Stripe webhook and a real job scheduler",
+        "One pricing source instead of prices restated across the app",
+      ],
+      metrics: [
+        { label: "API modules", value: "26" },
+        { label: "Test files", value: "59" },
+        { label: "Merged PRs", value: "91" },
+        { label: "Status", value: "Pre-launch" },
+      ],
+      process: [
+        {
+          title: "Rules before models",
+          description:
+            "Put a deterministic categorizer in front of the AI, so most transactions never reach a model at all.",
+        },
+        {
+          title: "Make payments idempotent",
+          description:
+            "Made the Stripe webhook safe to receive twice, because webhooks are delivered at least once.",
+        },
+        {
+          title: "Keep secrets local",
+          description:
+            "Rendered the TOTP enrolment QR code on the server instead of sending the secret to an image service.",
+        },
+      ],
+    },
+    details: [
+      "Building a personal finance app with a NestJS API, SvelteKit web and Expo mobile clients, Plaid sync, passkeys, and an optional local-model AI layer.",
+    ],
+  },
+  {
+    href: "/projects/mtg-deck-lab",
+    title: "MTG Deck Lab",
+    description:
+      "Builds Magic: The Gathering Commander decks as an optimisation problem: a mixed-integer program picks 99 cards for a commander, bracket and budget, then a Monte Carlo simulator goldfishes the result ten thousand times.",
+    thumbnail: mtgDeckLab,
+    stack: ["Python", "SciPy", "Next.js", "Neon"],
+    slug: "mtg-deck-lab",
+    thesis: "Deckbuilding as an optimisation problem",
+    featured: false,
+    categories: ["data-science", "web-apps"],
+    status: "active",
+    startDate: "2026-10",
+    sourcePrivate: true,
+    caseStudy: {
+      challenge:
+        "Commander deckbuilding is a constrained search: 99 singleton cards, a colour identity, a power bracket the table agreed on, and a budget. People do it by intuition and spreadsheets, and the result is rarely checked before it is played.",
+      solution:
+        "Model the deck as a mixed-integer linear program with constraints for colour identity, bracket and budget. Combos flagged by the Commander Spellbook estimator are forbidden outright, so a deck cannot drift above its bracket. All eight budget tiers are solved together so each cheaper deck is nested inside the next.",
+      results: [
+        "Eight nested budget tiers from one solve",
+        "Bracket-breaking combos excluded as hard constraints",
+        "A 10,000-game goldfish simulation for every deck",
+        "Forty decks each for two commanders",
+      ],
+      metrics: [
+        { label: "Cards per deck", value: "99" },
+        { label: "Budget tiers", value: "8, nested" },
+        { label: "Simulated games", value: "10,000" },
+        { label: "Test functions", value: "656" },
+      ],
+      process: [
+        {
+          title: "Constraints, not heuristics",
+          description:
+            "Wrote the rules of a legal, on-bracket deck as constraints, so the solver cannot return one that breaks them.",
+        },
+        {
+          title: "Nest the budgets",
+          description:
+            "Solved every budget tier together so upgrading a deck is adding cards, not rebuilding it.",
+        },
+        {
+          title: "Simulate before trusting",
+          description:
+            "Goldfished every deck ten thousand times to check it actually curves out the way the model claims.",
+        },
+      ],
+    },
+    details: [
+      "Built a Commander deck optimiser as a mixed-integer program with nested budget tiers and bracket constraints, verified by a 10,000-game Monte Carlo simulation.",
+    ],
+  },
+  {
+    href: "https://github.com/gr8monk3ys/backtest-audit",
+    title: "backtest-audit",
+    description:
+      "Audits a trading backtest from its trade log and returns a verdict: TRUSTWORTHY or NOT TRUSTWORTHY. Built from the measurement bugs that made my own trading bot look profitable.",
+    thumbnail: backtestAudit,
+    stack: ["Python", "GitHub Actions"],
+    slug: "backtest-audit",
+    thesis: "A verdict on a backtest, from its trade log alone",
+    featured: false,
+    categories: ["data-science", "tools", "open-source"],
+    status: "active",
+    startDate: "2026-08",
+    sourceUrl: "https://github.com/gr8monk3ys/backtest-audit",
+    caseStudy: {
+      challenge:
+        "My trading bot's backtests said +646%, then +53%, then +42.9%. Each was a measurement bug, and each looked like a result. A backtest that flatters you is the one you end up trusting.",
+      solution:
+        "Turn each bug into a mechanical check over the trade log: exits that never fire, positions the strategy cannot see, shorts with no liability booked, sizing off idle cash. The audit returns a verdict, and an unjudged check is never a pass.",
+      results: [
+        "Reconstructs all three of trading-bot's inflated results from their trade logs alone",
+        "Runs as a GitHub Action, so a committed result is audited before it is quoted",
+        "Zero runtime dependencies",
+        "An unjudged check counts against the verdict, never for it",
+      ],
+      metrics: [
+        { label: "Checks", value: "8" },
+        { label: "Tests", value: "43" },
+        { label: "Dependencies", value: "Zero" },
+        { label: "Release", value: "v0.1.0" },
+      ],
+      process: [
+        {
+          title: "Start from real failures",
+          description:
+            "Every check began as a bug that had already produced a convincing number, not as a hypothetical.",
+        },
+        {
+          title: "Need only the trade log",
+          description:
+            "The audit reads the log a backtest already writes, so it works on results from code it has never seen.",
+        },
+        {
+          title: "Fail closed",
+          description:
+            "If a check cannot decide, the verdict is NOT TRUSTWORTHY. Silence is not evidence.",
+        },
+      ],
+    },
+    details: [
+      "Extracted four backtest measurement bugs into a zero-dependency audit tool that returns a verdict from a trade log and runs as a CI action.",
+    ],
   },
 ];

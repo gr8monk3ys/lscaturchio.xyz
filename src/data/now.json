@@ -1,29 +1,34 @@
 {
-  "lastUpdated": "2026-07-31",
+  "lastUpdated": "2026-10-28",
   "location": {
-    "label": "Southern California",
-    "detail": "Working remotely as a freelance AI consultant and developer."
+    "label": "Los Angeles",
+    "detail": "building VivanceData and taking on a few AI consulting projects."
   },
   "building": [
     {
-      "title": "Verso",
-      "href": "/projects/verso",
-      "note": "A diary for artworks, built on the bet that logging individual works instead of gallery visits is what makes the habit stick."
+      "title": "VivanceData",
+      "href": "https://www.vivancedata.com",
+      "note": "AI for construction, HVAC, logistics and manufacturing: after-hours calls answered and booked, permits and delivery paperwork read instead of re-keyed."
     },
     {
-      "title": "Cocoon and Feedless",
-      "href": "/projects/cocoon",
-      "note": "Two browser extensions aimed at the same problem from different angles: giving people back control of what a page does to their attention."
+      "title": "Monkey SMP",
+      "href": "/projects/monkey-smp",
+      "note": "A modded Minecraft server for friends, with one installer for every platform and a server that updates itself overnight. Season I opens on 21 November."
     },
     {
-      "title": "unlinkd",
-      "href": "/projects/unlinkd",
-      "note": "Encrypted, local-only evidence keeping for data-broker removal, because the hard part of disappearing is proving you asked."
+      "title": "Hollow Crown",
+      "href": "/projects/hollow-crown",
+      "note": "A rooftop stealth game in Godot about robbing the crown to keep a village alive. Still greybox, with a ten-night roguelite mode taking shape."
     },
     {
       "title": "The repo fleet",
-      "href": "https://github.com/gr8monk3ys",
-      "note": "Roughly seventy repositories run by scheduled agents that open pull requests rather than pushing. I review a queue instead of seventy inboxes."
+      "href": "/projects/fleet-orchestrator",
+      "note": "78 repositories in the registry, 42 of them with scheduled agents that open pull requests rather than pushing. merge-gate decides what merges; I review what it holds back."
+    },
+    {
+      "title": "A five-song EP",
+      "href": "/music",
+      "note": "Recording now. It will be on the music page when it is out."
     }
   ],
   "thinkingAbout": [

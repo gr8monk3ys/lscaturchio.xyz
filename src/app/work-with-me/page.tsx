@@ -179,6 +179,22 @@ export default function WorkWithMePage() {
             <LedgerList items={leaveWith} />
           </LedgerRow>
 
+          <LedgerRow label="In the trades?">
+            <p className="text-sm leading-relaxed text-foreground/85">
+              If you run a construction, HVAC, logistics or manufacturing business,{" "}
+              <a
+                href="https://www.vivancedata.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-foreground underline underline-offset-4 transition-colors hover:text-primary"
+              >
+                VivanceData
+              </a>{" "}
+              is the version of this work built for you: after-hours calls answered and booked,
+              and permits and delivery paperwork read instead of re-keyed.
+            </p>
+          </LedgerRow>
+
           <LedgerRow label="Availability">
             <p className="text-sm leading-relaxed text-foreground/85">
               Taking on new consulting and build engagements. Remote-first, with short advisory

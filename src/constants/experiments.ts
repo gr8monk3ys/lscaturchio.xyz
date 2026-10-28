@@ -90,6 +90,41 @@ export const EXPERIMENTS: Experiment[] = [
       "The 75 Hard format bent toward creative work: five daily tasks, seventy-five days, and a log of the output at the end. Runs entirely in the browser with no backend and no account.",
   },
   {
+    title: "bounty-scout",
+    href: "https://github.com/gr8monk3ys/bounty-scout",
+    tag: "Open source",
+    description:
+      "Ranks open-source bounties by expected dollars per hour, and by whether finishing one is a hiring signal. Read-only by design: it finds the work and never touches it.",
+  },
+  {
+    title: "ui",
+    href: "https://ui.lscaturchio.xyz",
+    tag: "Design",
+    description:
+      "A shadcn registry holding the theme and components my apps share, installed straight from the shadcn CLI, so a fix to a button lands everywhere instead of being copied around.",
+  },
+  {
+    title: "skills",
+    href: "https://github.com/gr8monk3ys/skills",
+    tag: "Agents",
+    description:
+      "A Claude Code plugin for Next.js, React and Supabase work: slash commands, skills, agents and hooks, packaged so the conventions travel between repositories.",
+  },
+  {
+    title: "Moneta",
+    href: "https://github.com/gr8monk3ys/moneta",
+    tag: "Education",
+    description:
+      "An iOS and Android app that teaches personal finance in five-minute lessons.",
+  },
+  {
+    title: "resume-AI",
+    href: "https://github.com/gr8monk3ys/resume-AI",
+    tag: "Careers",
+    description:
+      "A job-search toolkit whose ATS score is deterministic, so the same resume gets the same number twice. Tailoring and cover letters on top, across five model providers.",
+  },
+  {
     title: "polyvox",
     href: "https://github.com/gr8monk3ys/polyvox",
     tag: "Fediverse",
