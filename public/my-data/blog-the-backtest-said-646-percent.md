@@ -1,0 +1,63 @@
+# The Backtest Said 646 Percent
+
+Anyone who has written a backtest, or trusted one. No finance background
+  needed: a backtest here just means replaying old prices through a strategy to
+  see what it would have made.
+
+The first number was +646%.
+
+That was my [trading bot](https://github.com/gr8monk3ys/trading-bot), replayed over 2020 through 2024: an RSI, MACD and ADX momentum system, the kind of thing a retail trader builds in a weekend and tunes for a year. Six hundred and forty-six percent, Sharpe 1.36. Over the same five years, buying the S&P 500 and doing nothing returned 95.3%.
+
+I did not believe it, which is the only part of this I'm proud of. I didn't disbelieve it fast enough, either. It took months and four different numbers to reach the real one, and every number on the way looked like an edge.
+
+## A number is a claim about the harness
+
+A backtest reports one figure and hides the machine that produced it. The figure feels like a fact about the strategy. It's a fact about the strategy plus the data plus the engine plus every assumption the engine makes without telling you, and the strategy is usually the smallest term.
+
+The codebase I started from had learned this once and then forgotten it. It described itself as institutional-grade on the strength of a +42.68% backtest with nine trades, a number its own research notes admitted meant nothing. Nine trades is an anecdote with a decimal point.
+
+## Six hundred and forty-six
+
+The +646% came from ten tickers I chose: SPY, QQQ, Apple, Microsoft, Google, Amazon, Meta, Nvidia, Tesla and JPMorgan. Chosen with hindsight, tested on the years that hindsight covered. I picked the winners after the race and then congratulated the strategy for betting on them.
+
+Survivorship bias is the textbook name. The concrete version is that Nvidia was on the list because I knew how Nvidia's five years had gone, and any strategy that holds Nvidia through 2023 looks like a genius. The bookkeeping was honest. The universe was the result.
+
+So I took the stocks away. The honest test ran on four index funds, SPY, QQQ, IWM and EFA, which nobody picked for their future.
+
+## Fifty-three, and a drawdown that was too good
+
+On the index funds the bot returned +53.4% against SPY's 95.3%. It lost on return. But its worst drawdown was 7%, against 33.7% for SPY, and that looked like the real story: a bot that doesn't win but keeps you from losing. I wrote it up that way. The notes from then call the drawdown control "genuinely interesting."
+
+It was idle cash. The bot sized each position as 10% of the cash it had left, so after a few entries most of the account sat uninvested, and an account that is mostly cash can't fall very far. The shallow drawdown measured how little money was in the market.
+
+The fix for that ([#74](https://github.com/gr8monk3ys/trading-bot/pull/74), in August) turned up two more defects. The strategy couldn't see its own positions: the lookup came back empty, so it kept buying what it already held. And short sales credited the proceeds as cash without booking the borrow as a debt. A short you never cover is free money in a backtest. In a brokerage account it's a margin call.
+
+## Forty-two point nine
+
+With sizing on equity, positions visible and shorts accounted for, the bot returned +42.9% at 92% average exposure. Less impressive, more believable. Exactly the kind of number you stop checking.
+
+Three days later it turned out the exits had never run ([#84](https://github.com/gr8monk3ys/trading-bot/pull/84)). The signal generator never emitted a sell, and the backtest engine never called the method where every exit rule lived. Trailing stops, take-profits, opposite-signal exits: all written, none reachable. When an exit did fire elsewhere, a second bug swallowed it, an `await` on a broker method that wasn't asynchronous.
+
+So every run until then had measured one strategy. Buy, then hold until the backtest ends. The +42.9% was market beta wearing the strategy's name, a buy-and-hold with extra steps scored against a buy-and-hold without them.
+
+## Sixteen point three
+
+With exits working, the bot returns +16.3% over five years at a Sharpe of 0.16, against SPY's +95.3% and 0.75. Twenty-six trades, under the fifty I set as the bar for taking any result seriously.
+
+The strategy's own timing subtracts value at every exposure I tried. At 25%, 50% and 100% targets it trails holding the index. One more experiment closed the last door: switching off the Bollinger filter was the first configuration to clear fifty trades, and it lost money, −1.88% over five years, with significance. The filter was carrying the strategy, and the strategy wasn't carrying anything.
+
+The bot does not beat the index. It runs on paper and will stay there. That is the result, and it's the first number in this story I trust.
+
+## The bugs became a tool
+
+What bothered me wasn't that the strategy lost. Most do. It was that every wrong number had looked plausible on its own, and I'd caught each one by suspicion, in a different way each time, weeks or months apart. That doesn't carry over to the next strategy, or to anyone else's.
+
+The defects had a shape, though, and the shape shows up in the trade log whatever framework wrote it. Buys that add to a position the run already holds mean the strategy can't see its own book. Exits that only happen on the final bar mean the harness liquidated and the exit rules never ran. Shorts opened and never covered mean invented cash. A half-deployed book compared with a fully invested benchmark means the drawdown is idle money. Fills at identical prices with no fees mean no friction. And under fifty round trips, a Sharpe ratio is a mood.
+
+[backtest-audit](https://github.com/gr8monk3ys/backtest-audit) reads a trade log and checks for those six. It answers TRUSTWORTHY, TRUSTWORTHY WITH CAVEATS or NOT TRUSTWORTHY, and exits non-zero on anything blocking, so it can fail a build. Pointed at the trading bot's superseded runs, it reconstructs the position and short-selling defects from the trade log alone, without reading a line of the bot. The current run comes back trustworthy with caveats, and the caveats are the two I already knew: 59% average exposure against a fully invested benchmark, and too few trades.
+
+## What the first number was for
+
+The +646% is still in the repository, under a banner that says it's superseded. It's the most useful file there. Less as a warning about greed than as a record of how reasonable a wrong number looks when the harness is the one telling you.
+
+Every figure in this story was arithmetic done correctly on a question I hadn't meant to ask. The 646 answered what would happen if you'd known which stocks would win. The 53 answered what would happen if you mostly held cash. The 42.9 answered what would happen if you bought and never sold. Only the last number answered the question I was asking, and it was the smallest.
