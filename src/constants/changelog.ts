@@ -13,6 +13,18 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.2.0",
+    date: "2026-10-28",
+    changes: [
+      { type: "highlight", text: "Projects catch up with September and October: Monkey SMP, Front Desk, Hollow Crown, the fleet orchestrator, homelab, Finance Owl, MTG Deck Lab and backtest-audit" },
+      { type: "added", text: "A Games category on /projects, and Monkey SMP on the home page" },
+      { type: "added", text: "Five more experiments on /lab, and a VivanceData link on /work-with-me" },
+      { type: "changed", text: "/now, /uses and /music brought up to date: VivanceData, the K3s homelab, the current machines, and an EP in progress" },
+      { type: "fixed", text: "Talker, trading-bot, Blog-AI and Paper Summarizer described as they are built, not as they were planned; the trading bot no longer claims an edge it does not have" },
+      { type: "fixed", text: "Two job titles on the timeline now match the resume" },
+    ],
+  },
+  {
     version: "2.1.0",
     date: "2026-08-03",
     changes: [
