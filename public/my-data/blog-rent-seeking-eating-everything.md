@@ -30,7 +30,7 @@ And it scales. Private equity firms have moved into mobile home parks, buying th
 
 You probably know this story, but it bears repeating because it's so clean.
 
-Frederick Banting and Charles Best discovered insulin in 1921. Banting sold the patent to the University of Toronto for $1, saying: "Insulin does not belong to me. It belongs to the world." The three companies that now dominate the global insulin market (Eli Lilly, Novo Nordisk, and Sanofi) have made incremental modifications to the molecule over decades, each time extending patent protection and raising prices.
+Frederick Banting and Charles Best discovered insulin in 1921, and James Collip worked out how to purify it for patients. The three sold their patent rights to the University of Toronto for $1 each. "Insulin does not belong to me. It belongs to the world" is the line usually credited to Banting, though it's hard to trace to anything he wrote. The three companies that now dominate the global insulin market (Eli Lilly, Novo Nordisk, and Sanofi) have made incremental modifications to the molecule over decades, each time extending patent protection and raising prices.
 
 In 1999, a vial of Humalog (Eli Lilly's insulin analog) cost about $21. By 2019, it cost over $275. The drug didn't get 13 times more effective, and the manufacturing process didn't get 13 times more expensive. The companies controlling the patent learned, year by year, how much they could charge people who would die without their product.
 
