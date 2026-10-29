@@ -44,7 +44,7 @@ What replaced embodied repair knowledge is the YouTube tutorial, which is genuin
 
 ## 6.9 million tons
 
-The EPA estimated that the United States generated 6.9 million tons of e-waste in 2021. Phones, laptops, TVs, appliances, cables, chargers, all the detritus of a disposable electronics culture. Only about 17% of it was recycled. The rest went to landfills, where heavy metals leached into groundwater, or got shipped to developing countries where workers dismantled it by hand in conditions that would be illegal here.
+The United States generated about 6.9 million metric tons of e-waste in 2019, according to the UN's Global E-waste Monitor 2020. Phones, laptops, TVs, appliances, cables, chargers, all the detritus of a disposable electronics culture. Worldwide, only 17.4% of that year's e-waste was documented as recycled. The rest went to landfills, where heavy metals leached into groundwater, or got shipped to developing countries where workers dismantled it by hand in conditions that would be illegal here.
 
 The number grows every year, and it will keep growing as long as the economic logic favors replacement over repair. Every glued battery and proprietary screw and firmware lockout pushes material toward the waste stream. The environmental cost is externalized. The manufacturer doesn't pay for disposal. You do, through taxes that fund waste management, or nobody does and the lead and cadmium enter the water table.
 

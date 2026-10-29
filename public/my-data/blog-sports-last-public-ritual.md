@@ -16,7 +16,7 @@ Durkheim argued this was the actual basis of religious experience. Not the theol
 
 For most of human history the rituals that delivered this were everywhere: religious services, harvest festivals, civic ceremonies, union meetings, political rallies, town dances. The calendar was thick with occasions for collective feeling.
 
-Now look around. Church attendance in the US has dropped below 50% for the first time in Gallup's tracking history. Civic organizations are hollowed out, union membership sits at historic lows, and political gatherings have curdled into polarized spectacles most people avoid. Town dances don't exist.
+Now look around. In 2020, Gallup found that fewer than half of Americans belonged to a church, synagogue or mosque, the first time since it started asking in 1937. As recently as 1999 it was 70%. Civic organizations are hollowed out, union membership sits at historic lows, and political gatherings have curdled into polarized spectacles most people avoid. Town dances don't exist.
 
 So what's left that still produces real collective effervescence for millions of people on a regular schedule? Sports. Pretty much just sports.
 
