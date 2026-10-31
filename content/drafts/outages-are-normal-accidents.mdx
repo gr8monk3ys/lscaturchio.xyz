@@ -1,0 +1,76 @@
+export const meta = {
+  title: "Your Outage Was a Normal Accident",
+  description:
+    "Charles Perrow argued in 1984 that some systems are built to fail in ways nobody can foresee, and the large software outages since then read like chapters he left for someone else to write.",
+  date: "2026-10-26",
+  tags: ["technology", "institutions", "history"],
+  stage: "seedling",
+};
+
+<AssumedAudience>
+  People who run software other people depend on, or who have sat through a
+  postmortem and suspected the "root cause" section was a little too tidy. No
+  background in safety science assumed.
+</AssumedAudience>
+
+## A light that told the truth about the wrong thing
+
+Early on March 28, 1979, the feedwater pumps at Unit 2 of the Three Mile Island plant in Pennsylvania stopped. The reactor responded as designed. Pressure rose, a relief valve on the pressurizer opened to bleed it off, and the valve was then supposed to close.
+
+It stuck open. On the control panel, a light went out indicating the valve had closed. The light was wired to the signal sent to the valve, not to the valve itself, so it reported what the system had asked for rather than what had happened. Coolant kept escaping. Other readings suggested the system had too much water rather than too little, and the operators, trained to fear exactly that, throttled back the emergency cooling that would have saved the core. Part of it melted.
+
+Every component in that story is ordinary. A pump trips. A valve sticks. An indicator is designed a little lazily. A crew follows its training. None of it, alone, was dangerous.
+
+## Two dials
+
+Charles Perrow, a sociologist at Yale, took that ordinariness as the point. His 1984 book *Normal Accidents: Living with High-Risk Technologies* argued that some accidents are not failures of the system so much as properties of it. He called them system accidents, or normal accidents. Normal in the sense of expected, the way a certain number of defects per thousand units is normal.
+
+Perrow sorted systems along two dials. The first is interaction. In a linear system, parts affect each other in sequences you can see and predict, like an assembly line. In an interactively complex system, parts touch each other in ways the designers didn't plan and the operators can't observe directly, so two small faults can meet somewhere unexpected and produce a third thing nobody has a procedure for.
+
+The second dial is coupling. In a loosely coupled system there is slack: buffers, delays, substitutes, time to notice and improvise. A university is complex but loose. Departments interact in strange ways, but almost nothing that goes wrong in one has to be fixed within the hour. A tightly coupled system has little slack. Steps happen in a fixed order, fast, and a fault propagates before anyone can step in. A dam is tight but fairly linear.
+
+The dangerous quadrant is both: complex and tight. There, Perrow argued, you will eventually get accidents that no amount of operator diligence prevents, because the failure only becomes legible after it has already spread. Adding safety devices can make it worse. Every alarm and backup is one more component, one more interaction, one more thing that can tell the truth about the wrong thing.
+
+## The quadrant we built on purpose
+
+Perrow was writing about nuclear plants, chemical plants, aircraft and tankers. He wasn't writing about cloud infrastructure, which didn't exist yet. It sits squarely in his worst quadrant anyway, and much of the engineering since has pushed it further in.
+
+Interactive complexity is the whole premise of a modern service. A request crosses a load balancer, a service mesh, a dozen services, three caches and a database, each owned by a different team, each configured by files that change several times a day. Nobody holds the full graph in their head. The architecture diagram on the wiki is a hopeful sketch of it.
+
+Coupling has tightened for reasons that are individually sensible. Continuous deployment shortens the gap between a change and its consequences. Shared infrastructure means one control plane serves everything. Automation removes the human who used to sit between a decision and its execution, and that human was slack. [Optimization](/blog/against-optimization) is mostly the art of removing slack, and slack is what Perrow's loosely coupled systems used to absorb surprise.
+
+## Two outages, read with Perrow open
+
+On October 4, 2021, Facebook, Instagram and WhatsApp disappeared from the internet for about six hours. The company's engineering write-up describes the sequence. During routine maintenance, a command meant to assess capacity on the global backbone instead took down all of its connections. An audit tool that should have blocked the command had a bug and didn't. With the backbone gone, Facebook's DNS servers concluded their data centers were unreachable and withdrew the routes that told the rest of the internet where to find them, which is exactly what they were built to do. And the internal tools engineers would normally use to diagnose and fix the problem ran on the same network that was down, so people had to get physical access to the hardware.
+
+Read it again for the dials. One faulty command meets one faulty safeguard, the complexity half. The DNS behavior, a safety feature, turned a backbone failure into a global disappearance in the time it took routes to propagate, which is the coupling half. And the recovery path depended on the thing that had failed, which is about as tight as coupling gets.
+
+On July 19, 2024, a content update to CrowdStrike's Falcon sensor crashed Windows machines that downloaded it; Microsoft estimated about 8.5 million devices. CrowdStrike's root cause analysis describes a template that defined 21 input fields while the sensor code supplied 20, so the content interpreter read past the end of its inputs. A validator that checked the content didn't catch the mismatch. The sensor runs in the Windows kernel, where a bad read halts the machine. The update went to every customer at once.
+
+Again, nothing exotic. A count off by one, a test that looked somewhere else, a component placed where its failures are fatal, and a rollout with no buffer between the first machine and the last. Each is a choice a reasonable team could make. Together they grounded airlines and sent hospitals back to paper.
+
+## Why the root cause is a story
+
+Postmortems love a root cause. It's satisfying, it fits in a ticket, and it implies a fix.
+
+Richard Cook, an anesthesiologist who studied failure in medicine, wrote a short paper in 1998 called "How Complex Systems Fail." It is eighteen numbered points, most of them a sentence or two, and it reads like Perrow compressed for people on call. One point says complex systems run in degraded mode: there are always latent faults in them, and they mostly work anyway because people keep compensating. Another says catastrophe requires multiple failures. Another says, flatly, that post-accident attribution to a "root cause" is fundamentally wrong.
+
+That last one sounds contrarian until you try to apply it. Was Facebook's root cause the command, or the audit tool, or the DNS design, or the decision to run the recovery tooling in-band? Each is necessary, and none is sufficient. Picking one is a narrative choice, usually the one closest to a person who can be retrained. The [audit that only checks what it can reach](/blog/audit-only-checks-what-it-reaches) is a small version of the same thing: the guard exists, works, and is pointed at the place where the last failure happened.
+
+Diane Vaughan's 1996 study of the Challenger launch decision adds the time dimension. Engineers had seen O-ring erosion on earlier shuttle flights. Each time the flight came home, the erosion was reclassified from alarming to acceptable, and the boundary of acceptable moved. Vaughan called it the normalization of deviance. Nobody was reckless on any given day. The system learned, one survived anomaly at a time, to treat a warning as a baseline. Anyone who has watched a flaky test get a retry annotation knows the shape.
+
+## The irony in the control room
+
+The standard response to human error in a tight system is to remove the human. Lisanne Bainbridge explained the trouble with that in "Ironies of Automation," published in *Automatica* in 1983. Automate the routine work and the operator is left with two jobs: watching a system that rarely needs them, and taking over when it fails in a way the automation couldn't handle. The first job erodes the skills the second one requires. The rarer the intervention, the less ready anyone is for it.
+
+That irony has a new audience. Agents that take actions on infrastructure, open pull requests, or roll out changes are automation in Bainbridge's exact sense, and they tighten coupling in Perrow's. A model that can act faster than a human can read compresses the delay that used to serve as slack. Its failures will be the interesting kind, where it did precisely what each of its inputs said and the combination was something nobody would have signed off on.
+
+None of this argues against automation, which [is not a neutral tool](/blog/myth-of-neutral-tool) but is often a better one. It argues for knowing which dial you're turning.
+
+## Putting slack back
+
+Perrow's own conclusion was bleak. For a few technologies, nuclear power and nuclear weapons among them, he argued the catastrophic potential was high enough that we should abandon or sharply restrict them. Software rarely carries those stakes, so the useful reading is the milder one: if you can't make a system simple, you can at least make it looser.
+
+Most of the practices the industry settled on after its worst days are, read this way, slack reintroduced by hand. Staged rollouts put time between the first failure and the last. Feature flags and fast rollback make a change reversible. Running the recovery tools somewhere the outage can't reach decouples the cure from the disease. Blameless postmortems, at their best, refuse the single root cause and ask how the system made the failure reasonable. None of these make the system less complex. They make the coupling less tight, which is the dial that's actually within reach.
+
+What none of them do is let you predict the next one. That was Perrow's real claim, and it is the uncomfortable one. The next large outage will come from two ordinary faults that have never met before, in a place no dashboard watches, and the indicator light will be telling the truth about something nearby.
