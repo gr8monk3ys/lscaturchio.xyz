@@ -60,7 +60,7 @@ The Copyright Office's triennial DMCA exemption process, where citizens petition
 
 ## The environmental cost nobody mentions
 
-Americans generate roughly 6.9 million tons of e-waste per year. The EPA estimates that only about 25% of it gets recycled. The rest goes to landfills or gets shipped to developing countries where it's processed under conditions that poison workers and contaminate soil and groundwater.
+The United States threw out about 6.9 million metric tons of electronics in 2019, according to the UN's Global E-waste Monitor 2020. Worldwide, only 17.4% of that year's e-waste was documented as collected and recycled. The rest went to landfills or got shipped to developing countries where it's processed under conditions that poison workers and contaminate soil and groundwater.
 
 Every device thrown away because it's too expensive or too difficult to repair is a device that didn't need to become waste. Repair is the most effective form of recycling: it keeps the product in use, preserving all the energy and materials that went into making it. A repaired phone produces zero additional manufacturing emissions. A new one requires mining rare earth minerals, often under exploitative conditions in the DRC or China.
 
