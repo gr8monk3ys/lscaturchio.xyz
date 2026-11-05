@@ -5,7 +5,7 @@ Before that I was a machine learning engineer at Sizzle, a data engineer at the 
 What I build on my own time:
 
 - Tools that keep my own work maintained. A fleet of scheduled Claude routines looks after my repositories, and merge-gate, a deterministic policy engine, decides which of their pull requests can merge without me.
-- Games and communities. Monkey SMP is a modded Minecraft server for friends, and Front Desk is the Discord bot for the Chill Gamers community, bridged to that server. Hollow Crown is a rooftop stealth game I am building in Godot.
+- Games and communities. Monkey SMP is a modded Minecraft factions server, and Front Desk is the Discord bot for the Chill Gamers community, bridged to that server. Hollow Crown is a rooftop stealth game I am building in Godot.
 - Software that respects attention and privacy: Cocoon and Feedless (browser extensions), Verso (an offline-first art diary) and unlinkd (local-first evidence for data-broker removal).
 - Self-hosting: a K3s homelab with a declarative service catalogue, after an earlier Raspberry Pi version.
 

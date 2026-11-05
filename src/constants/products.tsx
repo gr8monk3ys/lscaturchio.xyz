@@ -319,12 +319,12 @@ export const products: Product[] = [
         "A retrieval-augmented assistant over the course's own material. Questions run through hybrid retrieval (BM25 plus vector search in ChromaDB), a cross-encoder reranker and LLM query expansion, and the answer is drafted from what was retrieved. An optional Piazza bot closes the loop on the course forum itself.",
       results: [
         "Hybrid BM25 + vector retrieval, so exact course terms and paraphrased questions both find their passage",
-        "Five model providers behind one interface — OpenAI, Anthropic, Gemini, Cohere and Ollama — with Ollama for a fully local setup, and token cost tracked per provider",
+        "Six model providers behind one interface — OpenAI, Anthropic, Gemini, Cohere, Ollama and HuggingFace — with Ollama for a fully local setup, and token cost tracked per provider",
         "A RAGAS-style LLM-as-judge harness that scores retrieval and answer quality instead of eyeballing it",
       ],
       metrics: [
         { label: "Retrieval", value: "BM25 + vector" },
-        { label: "Providers", value: "5" },
+        { label: "Providers", value: "6" },
         { label: "Evaluation", value: "LLM-as-judge" },
         { label: "Context", value: "MS capstone" },
       ],
@@ -352,7 +352,7 @@ export const products: Product[] = [
       ],
     },
     details: [
-      "Built a retrieval-augmented teaching assistant as a USC MS capstone, with hybrid BM25 + vector retrieval over ChromaDB, a cross-encoder reranker, and five interchangeable model providers.",
+      "Built a retrieval-augmented teaching assistant as a USC MS capstone, with hybrid BM25 + vector retrieval over ChromaDB, a cross-encoder reranker, and six interchangeable model providers.",
       "Added a RAGAS-style LLM-as-judge evaluation harness and an optional Piazza bot that drafts answers on the course forum.",
     ],
   },
@@ -690,7 +690,7 @@ export const products: Product[] = [
       kicker: "Automation",
       blurb:
         "Keeps a fleet of repositories patched without one person reading every update. Updates that cannot change behaviour merge on their own; anything that could waits for a human.",
-      metrics: ["~80 repos kept current", "Behaviour changes always wait", "162 tests"],
+      metrics: ["~80 repos kept current", "Behaviour changes always wait", "163 tests"],
       coverSrc: "/images/projects/covers/merge-gate.webp",
     },
     featured: true,
@@ -704,14 +704,14 @@ export const products: Product[] = [
       solution:
         "Classify every PR by the shape of its diff, and merge only the shapes that cannot carry behaviour: lockfiles, tests, data artifacts, whitelisted CI fixes, and dependency bumps whose every version delta is patch or minor. Content never auto-merges. The gate merges a green PR immediately against the exact SHA it judged, and disables any standing arm it finds.",
       results: [
-        "162 tests covering the classifier and the merge decision, with DECISIONS.md recording why each rule exists",
+        "163 tests covering the classifier and the merge decision, with DECISIONS.md recording why each rule exists",
         "v0.8.0 (October 2026): REST transport with a GraphQL fallback, at most one merge per base branch per sweep, and parallel reads behind a cache",
         "Version deltas read from the PR body, not the title \u2014 a group bump titled '21 updates' names no versions but its body tabulates the majors that must block it",
         "A group is as risky as its riskiest member: bump_kind() takes the max",
         "requirements*.txt treated as a manifest, not a lockfile \u2014 the bug that let pytest 7\u21929 and cryptography 48\u219250 through",
       ],
       metrics: [
-        { label: "Tests", value: "162" },
+        { label: "Tests", value: "163" },
         { label: "Repos governed", value: "~80" },
         { label: "Arms granted", value: "Zero" },
         { label: "Policy surface", value: "3 constants" },
@@ -744,7 +744,7 @@ export const products: Product[] = [
       ],
     },
     details: [
-      "Extracted the fleet's merge policy into a standalone public engine with 162 tests and a DECISIONS.md that records the reasoning behind each rule.",
+      "Extracted the fleet's merge policy into a standalone public engine with 163 tests and a DECISIONS.md that records the reasoning behind each rule.",
       "Proved a tempting optimisation wrong with measurement: grouping Dependabot PRs to cut noise makes them strictly less mergeable here, because one 0.x minor or SHA-pinned action in a group demotes the whole PR.",
     ],
   },
@@ -858,12 +858,12 @@ export const products: Product[] = [
     thumbnail: monkeySmp,
     stack: ["Fabric", "PowerShell", "Python", "Docker"],
     slug: "monkey-smp",
-    thesis: "A modded server friends can join in one command",
+    thesis: "A modded server players can join in one command",
     homeCard: {
       kicker: "Games",
       blurb:
-        "For a group of friends who want a modded Minecraft season without an afternoon of setup: one installer on any platform, a live map, and a server that updates itself overnight.",
-      metrics: ["166 server mods", "Windows · macOS · Linux", "v2.8.0 live"],
+        "For players who want a modded Minecraft season without an afternoon of setup: one installer on any platform, a live map, and a server that updates itself overnight.",
+      metrics: ["170 server mods", "Windows · macOS · Linux", "v3.1.0 live"],
       coverSrc: "/images/projects/covers/monkey-smp.webp",
     },
     featured: true,
@@ -871,10 +871,10 @@ export const products: Product[] = [
     status: "active",
     startDate: "2026-10",
     demoUrl: "https://monkeysmp.lscaturchio.xyz",
-    sourcePrivate: true,
+    sourceUrl: "https://github.com/gr8monk3ys/monkey-smp-server",
     caseStudy: {
       challenge:
-        "A modded server is only as good as the number of friends who manage to join it. Every client needs the exact same mod versions, nobody wants to read a setup guide, and the person running it does not want to SSH in every time a mod updates.",
+        "A modded server is only as good as the number of players who manage to join it. Every client needs the exact same mod versions, nobody wants to read a setup guide, and the person running it does not want to SSH in every time a mod updates.",
       solution:
         "Pin every mod by hash in one manifest and download it from its original source, so nothing is redistributed and nothing drifts. One installer, run through a pinned PowerShell 7, installs the matching client on Windows, macOS and Linux. The server pulls its own releases: it polls for new tags and deploys in a 4 AM window, after a backup and an in-game warning.",
       results: [
@@ -882,12 +882,12 @@ export const products: Product[] = [
         "One installer for Windows, macOS, Linux and Docker",
         "An HTTPS world map, clipped to the world border, at map.monkeysmp.lscaturchio.xyz",
         "Traced server lag to a permissions mod and removed it in v2.7.0",
-        "Season I opens Saturday 21 November 2026",
+        "Season I: Saturday 7 November 2026",
       ],
       metrics: [
-        { label: "Server mods", value: "166" },
-        { label: "Releases", value: "10" },
-        { label: "Tests", value: "451 pytest + 127 Pester" },
+        { label: "Server mods", value: "170" },
+        { label: "Releases", value: "15" },
+        { label: "Tests", value: "1,680 pytest + 316 Pester" },
         { label: "ADRs", value: "8" },
       ],
       process: [
@@ -913,7 +913,6 @@ export const products: Product[] = [
         },
       ],
       whatIdDoNext: [
-        "A season calendar and a job runner on the server, planned for v2.9.0.",
         "Publish the client pack on Modrinth once its review allows it.",
       ],
     },
@@ -1069,7 +1068,7 @@ export const products: Product[] = [
       ],
       metrics: [
         { label: "In the registry", value: "78" },
-        { label: "With active loops", value: "42" },
+        { label: "With active loops", value: "41" },
         { label: "PRs merged / week", value: "~115" },
         { label: "ADRs", value: "10" },
       ],

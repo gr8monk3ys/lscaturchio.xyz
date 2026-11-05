@@ -40,19 +40,19 @@ January 2020 - May 2021
 
 Key Projects (case studies at lscaturchio.xyz/projects; source linked where the repo is public):
 - Monkey SMP: a whitelisted, modded Minecraft Java server on Fabric with a cross-platform installer,
-  hash-pinned mods, a live world map and pull-based overnight deploys. Season I opens 21 November 2026.
+  hash-pinned mods, a live world map and pull-based overnight deploys. Season I: 7 November 2026.
 - Front Desk: the Discord bot for the Chill Gamers community; replaced Lurkr and MEE6, bridges to the
   Minecraft server, and writes catch-up summaries with a local Ollama model.
 - Hollow Crown: a rooftop stealth game in Godot 4.7 with a ten-night roguelite mode, The Long Winter.
   In greybox; no public build yet.
 - Fleet Orchestrator: scheduled Claude routines that maintain a fleet of repositories (78 in the
-  registry, 42 with active loops), with every merge decided by merge-gate.
+  registry, 41 with active loops), with every merge decided by merge-gate.
 - merge-gate: a deterministic policy engine that auto-merges only pull requests that cannot change
-  behaviour (lockfiles, tests, patch/minor bumps); everything else waits for a human. v0.8.0.
+  behaviour (lockfiles, tests, patch/minor bumps); everything else waits for a human. v0.8.1.
 - homelab: a K3s cluster with a declarative service catalogue, cert-manager TLS, SOPS-encrypted
   secrets and a Prometheus stack. Successor to pi-lab, a Docker Compose homelab on a Raspberry Pi 5.
 - Talker: a USC MS capstone RAG teaching assistant with hybrid BM25 + vector retrieval over ChromaDB,
-  cross-encoder reranking, five model providers and an LLM-as-judge evaluation harness.
+  cross-encoder reranking, six model providers and an LLM-as-judge evaluation harness.
 - trading-bot: an Alpaca paper-trading momentum bot. Over 2020-2024 its best validated strategy
   returned +16.3% against SPY's +95.3%; it does not beat buy-and-hold and is paper only. Its inflated
   early backtests were measurement bugs, now caught by backtest-audit.

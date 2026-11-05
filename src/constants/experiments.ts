@@ -115,6 +115,6 @@ export const EXPERIMENTS: Experiment[] = [
     href: "https://github.com/gr8monk3ys/resume-AI",
     tag: "Careers",
     description:
-      "A job-search toolkit whose ATS score is deterministic, so the same resume gets the same number twice. Tailoring and cover letters on top, across five model providers.",
+      "A job-search toolkit whose ATS score is deterministic, so the same resume gets the same number twice. Tailoring and cover letters on top, across OpenAI, Anthropic, Google or a local Ollama model.",
   },
 ];
