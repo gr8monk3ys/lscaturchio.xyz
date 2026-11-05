@@ -13,6 +13,16 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: "2.1.1",
+    date: "2026-11-04",
+    changes: [
+      { type: "changed", text: "/now brought up to date: VivanceData, Monkey SMP, Patina & Chime, the repo fleet, and an EP in progress" },
+      { type: "added", text: "Patina & Chime on /lab" },
+      { type: "changed", text: "SpotifyForge and Free VST Plugins on /lab described as they work today" },
+      { type: "fixed", text: "/lab no longer links to repositories that have gone private or been archived" },
+    ],
+  },
+  {
     version: "2.1.0",
     date: "2026-08-03",
     changes: [
