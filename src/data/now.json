@@ -1,19 +1,24 @@
 {
-  "lastUpdated": "2026-10-28",
+  "lastUpdated": "2026-11-04",
   "location": {
     "label": "Los Angeles",
-    "detail": "building VivanceData and taking on a few AI consulting projects."
+    "detail": "Building VivanceData and taking on a few AI consulting projects."
   },
   "building": [
     {
       "title": "VivanceData",
       "href": "https://www.vivancedata.com",
-      "note": "AI for construction, HVAC, logistics and manufacturing: after-hours calls answered and booked, permits and delivery paperwork read instead of re-keyed."
+      "note": "Small AI systems for trades and field operations: after-hours calls answered and booked, permits and delivery paperwork read instead of re-keyed."
     },
     {
       "title": "Monkey SMP",
       "href": "/projects/monkey-smp",
-      "note": "A modded Minecraft server for friends, with one installer for every platform and a server that updates itself overnight. Season I opens on 21 November."
+      "note": "A modded Minecraft factions server on Fabric and 26.2, packaged so anyone can host it from one download. Season I: 7 November 2026."
+    },
+    {
+      "title": "Patina & Chime",
+      "href": "https://github.com/gr8monk3ys/patina-and-chime",
+      "note": "A small Fabric mod where copper ages into different jobs and amethyst responds to music. Out now for Minecraft 26.2."
     },
     {
       "title": "Hollow Crown",
@@ -23,12 +28,12 @@
     {
       "title": "The repo fleet",
       "href": "/projects/fleet-orchestrator",
-      "note": "78 repositories in the registry, 42 of them with scheduled agents that open pull requests rather than pushing. merge-gate decides what merges; I review what it holds back."
+      "note": "Scheduled agents open pull requests across my repositories rather than pushing. merge-gate decides what merges, and I review what it holds back."
     },
     {
       "title": "A five-song EP",
       "href": "/music",
-      "note": "Recording now. It will be on the music page when it is out."
+      "note": "In progress. It will be on the music page when it is out."
     }
   ],
   "thinkingAbout": [

@@ -20,18 +20,18 @@ export const EXPERIMENTS: Experiment[] = [
       "A deck of lateral-thinking prompts in the spirit of Brian Eno and Peter Schmidt's Oblique Strategies, with entirely original card text. Tap, get a card, tap again. Static Astro, and the built output ships zero framework JavaScript.",
   },
   {
+    title: "Patina & Chime",
+    href: "https://github.com/gr8monk3ys/patina-and-chime",
+    tag: "Minecraft",
+    description:
+      "A vanilla+ Fabric mod for Minecraft 26.2. Copper ages, and each age has its own job: a hopper changes what it does as it oxidizes, and wax locks the one you want. Amethyst hears, so a jukebox nearby grows crystals faster and one note block harvests them.",
+  },
+  {
     title: "Numen",
     href: "https://github.com/gr8monk3ys/numerology",
     tag: "Esoterica",
     description:
       "Numerology read across both the Pythagorean and Chaldean systems, with tarot birth cards and astrological correspondences, styled as a dark grimoire. Nonsense taken seriously enough to implement correctly.",
-  },
-  {
-    title: "qsensor-sim",
-    href: "https://github.com/gr8monk3ys/qsensor-sim",
-    tag: "Physics",
-    description:
-      "Simulated quantum inertial sensors for GPS-denied navigation research — trajectories with decoherence effects, run through Kalman filtering. Built because the hardware is scarce and the signal processing downstream of it should not have to wait.",
   },
   {
     title: "Movie Conceptualizer",
@@ -49,17 +49,10 @@ export const EXPERIMENTS: Experiment[] = [
   },
   {
     title: "Free VST Plugins",
-    href: "https://github.com/gr8monk3ys/free-vst-plugins",
+    href: "https://github.com/gr8monk3ys/VSTs",
     tag: "Music",
     description:
-      "A curated, containerized catalogue of free audio plugins, because the existing lists are affiliate-farmed and half the links are dead.",
-  },
-  {
-    title: "Kindle Classics",
-    href: "https://github.com/gr8monk3ys/kindle_classics",
-    tag: "Books",
-    description:
-      "Scripts that pull the most-downloaded public-domain classics from Project Gutenberg via Gutendex, convert them, and sideload a whole library onto a Kindle without going through a store.",
+      "A manifest of free audio plugins, each pinned to a download URL and a SHA-256 hash, and a downloader that refuses any file that no longer matches. The existing lists are affiliate-farmed and half the links are dead; these at least know when something changed.",
   },
   {
     title: "HuggingFace portfolio",
@@ -73,7 +66,7 @@ export const EXPERIMENTS: Experiment[] = [
     href: "https://github.com/gr8monk3ys/spotify",
     tag: "Music",
     description:
-      "A CLI and REST API for people who curate playlists seriously, backed by a local cache database and a scheduler so the automation survives Spotify's rate limits.",
+      "A CLI and MCP server that turn a library of liked songs into genre playlists sequenced to flow. It also keeps its own listening log, because Spotify only remembers your last fifty plays, and the tests run against an in-memory Spotify rather than mocks.",
   },
   {
     title: "discogs",
@@ -123,12 +116,5 @@ export const EXPERIMENTS: Experiment[] = [
     tag: "Careers",
     description:
       "A job-search toolkit whose ATS score is deterministic, so the same resume gets the same number twice. Tailoring and cover letters on top, across five model providers.",
-  },
-  {
-    title: "polyvox",
-    href: "https://github.com/gr8monk3ys/polyvox",
-    tag: "Fediverse",
-    description:
-      "A Fediverse server MVP with timelines, moderation workflows, privacy export and delete, and NodeInfo/WebFinger discovery. In progress, and mostly an excuse to read the ActivityPub spec properly.",
   },
 ];
