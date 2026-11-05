@@ -1,0 +1,78 @@
+export const meta = {
+  title: "Change Is Cheapest Before You Know You Need It",
+  description:
+    "David Collingridge argued in 1980 that a technology is easy to steer only while nobody knows where it goes, and a century of leaded gasoline, address spaces and software defaults bears him out.",
+  date: "2026-11-05",
+  tags: ["technology", "institutions", "history"],
+  stage: "seedling",
+};
+
+<AssumedAudience>
+  People who build things other people come to depend on, or who have watched
+  a temporary decision outlive everyone who made it. No background in
+  technology policy assumed.
+</AssumedAudience>
+
+## Two horns, one animal
+
+In 1980 a British policy researcher named David Collingridge published a book called *The Social Control of Technology*. Its argument fits in one sentence, and the sentence is the reason anyone still reads him:
+
+> When change is easy, the need for it cannot be foreseen; when the need for change is apparent, change has become expensive, difficult and time consuming.
+
+People call this the Collingridge dilemma. Early on, a technology is soft. Few people use it, little has been built on top of it, and changing it costs a meeting. But early on you also don't know what it will do, because what a technology does depends on how it gets used, and nobody has used it yet. Later you know exactly what it does. By then it is under everything.
+
+The two horns look like separate problems. One is about knowledge, the other about cost. Collingridge's point was that they are the same problem seen at two different times. The thing that makes a technology hard to change is the same thing that tells you what it does: people building on it.
+
+## The gas station on the corner
+
+In December 1921 Thomas Midgley, an engineer working for General Motors, found that a little tetraethyl lead stopped engines from knocking. It went on sale in 1923.
+
+The usual telling makes this the first horn: nobody could have known. That telling is wrong, and the way it is wrong matters. In October 1924 workers at a Standard Oil plant in Bayway, New Jersey, began hallucinating and convulsing. Five of them died. Newspapers called the stuff "loony gas." Public health researchers, including Alice Hamilton and Yandell Henderson, warned in plain language that putting lead into the exhaust of every car would put lead into everyone. In 1925 the Surgeon General convened a conference on the question, sales were briefly suspended, a small study found no immediate danger, and the product went back on the market.
+
+So the need for change was not unforeseeable. It was foreseen, argued in public, and set aside. What made it easy to set aside was that leaded gasoline was already a product with a factory and a sales force behind it, while the harm was diffuse and slow and fell mostly on people who had not been in the room.
+
+The United States finished banning leaded gasoline for road vehicles at the start of 1996. The geochemist Clair Patterson had spent the intervening decades proving, against well-funded opposition, that the lead in human bodies was overwhelmingly industrial. The last country to sell it for cars, Algeria, stopped in July 2021.
+
+Collingridge had a word for what happened between 1925 and 1996. He called it entrenchment. It is usually read as a technical property: the pipelines are built, the engines are tuned, the refineries are paid for. Leaded gasoline shows it is also a political one. Entrenchment is the moment a technology acquires a constituency. After that, the people who would pay for changing it are organized, and the people who would benefit are not.
+
+## Thirty-two bits
+
+Software is where the dilemma runs fastest, because software hardens faster than steel.
+
+In 1981 the specification for the Internet Protocol, RFC 791, gave every machine a 32-bit address. That is about 4.3 billion addresses, which at the time was absurdly generous for a research network connecting a few hundred hosts. Nobody was being careless. They were being reasonable about the world in front of them.
+
+The central pool of unallocated addresses ran out in February 2011. Its replacement, IPv6, had been specified more than a decade earlier. Around half of the traffic reaching Google uses it now, roughly thirty years after the fix was written for a problem everyone could see coming. The rest runs on address translation and other workarounds, each one a small new thing that something else depends on.
+
+The two-digit year is the same story compressed. Programmers in the 1960s and 70s stored years as two digits because memory cost real money and the year 2000 was decades away. By the late 1990s the bill for that saving was being estimated in the hundreds of billions of dollars worldwide, paid mostly by people who had not written the code and in many cases could not find the people who had.
+
+None of these decisions was wrong when it was made. That is what makes them good examples.
+
+## Every behavior is a promise
+
+There is a version of this that every working programmer learns, usually by breaking something. It has a name too. Hyrum Wright, an engineer at Google, put it like this:
+
+> With a sufficient number of users of an API, it does not matter what you promise in the contract: all observable behaviors of your system will be depended on by somebody.
+
+Hyrum's law is the Collingridge dilemma at the scale of a single function. The order a list comes back in, how long a call takes, the exact wording of an error message: none of it was a decision, and all of it becomes one the moment someone builds on it. You don't get to choose which of your accidents become load-bearing. Your users choose, and they don't tell you.
+
+This changes what a default is. We talk about defaults as choices made once, at the start, by whoever was in the room. A default is closer to a loan. It is cheap when you take it out, and the interest compounds every time someone builds on top of it without knowing it was ever optional.
+
+## Steering instead of predicting
+
+The obvious response to the dilemma is to forecast better. If the problem is that we change things before we understand them, then understand them sooner. Collingridge thought this was hopeless. The effects of a technology come from its use, and use cannot be forecast from a lab bench or a design document. Better prediction attacks the first horn and leaves the second untouched.
+
+What he argued for instead was what he called corrigibility. Don't try to be right in advance. Try to be cheap to correct. Prefer the option that tells you quickly whether it was a mistake, and the one that costs little to back out of. Keep many small units instead of one large one, short lead times instead of long ones, and a running record of what you assumed so you can notice when the assumption breaks.
+
+Software people will recognize most of this, because the good habits of the trade are corrigibility under other names. Migrations that can run backwards. Feature flags. Deprecation periods with real end dates. Versioned interfaces, so the old promise can be kept while a new one is made. Each of these buys a little more time on the first horn.
+
+They also have a ceiling, and Hyrum's law is where it sits. A flag that has been on for three years is not a flag. A deprecated endpoint with a large customer behind it is not deprecated. Corrigibility is a property of the design and also of the constituency, and the constituency grows whether or not you designed for it. That was the lesson of 1925. The study found nothing alarming, the market reopened, and from then on the question was never really about chemistry.
+
+## The soft period
+
+What makes the dilemma uncomfortable right now is that it is easy to see which technologies are still in their soft period. The conventions for how software agents call tools, what a language model is allowed to read, which actions it can take without a person approving them: these are being written now, mostly by whoever ships first, in documents that say "initial version" at the top. Nobody can say yet what they will do at scale. That is not a failure of imagination. It is the first horn, exactly as described.
+
+The usual argument about this treats it as a choice between [the tool is neutral](/blog/myth-of-neutral-tool), so let it run, and stop everything until we know. Collingridge offers neither. He offers a question you can ask of any design while it is still cheap: if this turns out to be wrong, who will be able to change it, and who will be paying them not to?
+
+Cities have been answering that question badly for a long time. A road grid laid down in the 1950s still decides where people can afford to live, and the [arithmetic that keeps it in place](/blog/suburbs-are-ponzi-scheme) was set long before anyone ran it. Nobody voted for that outcome. They voted for the road.
+
+There was a last pump. Somewhere in Algeria, in the summer of 2021, the last of the leaded gasoline meant for cars was sold. Ninety-eight years after the first, and ninety-six after a room full of people heard the warnings and decided to keep selling. Which of the decisions being made this year is the 1923 one, nobody in the room can say. That has always been the problem. It is also the only time anyone gets to choose.
