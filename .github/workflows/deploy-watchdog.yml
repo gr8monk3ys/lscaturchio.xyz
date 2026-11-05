@@ -21,6 +21,7 @@ on:
 permissions:
   contents: read
   deployments: read
+  statuses: read
 
 jobs:
   verify:
@@ -46,12 +47,32 @@ jobs:
               return;
             }
 
+            // vercel.json's ignoreCommand (scripts/vercel-ignore-build.sh) skips
+            // the build when a commit changes only docs, tests or CI files.
+            // Vercel then attaches no deployment and marks the commit's Vercel
+            // status "Ignored Build Step", and production keeps the previous
+            // build. Check the newest commit Vercel actually built instead.
+            let sha = head.sha;
+            for (let i = 0; i < 30; i++) {
+              const { data: combined } = await github.rest.repos.getCombinedStatusForRef({
+                owner, repo, ref: sha,
+              });
+              const vercel = combined.statuses.filter((s) => s.context.startsWith('Vercel'));
+              const skipped = vercel.length > 0 &&
+                vercel.every((s) => /Ignored Build Step/i.test(s.description ?? ''));
+              if (!skipped) break;
+              const { data: commit } = await github.rest.repos.getCommit({ owner, repo, ref: sha });
+              if (commit.parents.length === 0) break;
+              core.info(`${sha.slice(0, 7)}: Vercel skipped it (Ignored Build Step); checking its parent.`);
+              sha = commit.parents[0].sha;
+            }
+
             const { data: deployments } = await github.rest.repos.listDeployments({
-              owner, repo, sha: head.sha, environment: 'Production', per_page: 5,
+              owner, repo, sha: sha, environment: 'Production', per_page: 5,
             });
             if (deployments.length === 0) {
               core.setFailed(
-                `No Production deployment exists for ${branch}@${head.sha.slice(0, 7)}. ` +
+                `No Production deployment exists for ${branch}@${sha.slice(0, 7)}. ` +
                 'This is what the 2026-09-14/15 outage looked like: merges land, nothing deploys ' +
                 '(Vercel free tier, 100 deploys/day cap). Check the Vercel deployments list and the ' +
                 'Git connection (vercel git connect).'
@@ -65,7 +86,7 @@ jobs:
             const state = statuses[0]?.state ?? 'missing';
             if (state !== 'success') {
               core.setFailed(
-                `Production deployment for ${head.sha.slice(0, 7)} is '${state}', not 'success'. ` +
+                `Production deployment for ${sha.slice(0, 7)} is '${state}', not 'success'. ` +
                 'Inspect the deployment in Vercel.'
               );
               return;
