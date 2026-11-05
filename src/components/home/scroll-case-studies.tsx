@@ -3,6 +3,7 @@ import Image from "next/image";
 import { LinkArrow } from "@/components/ui/link-arrow";
 
 import { listHomeCaseStudies } from "@/lib/project-catalogue";
+import { spellCount } from "@/lib/spell-count";
 import {
   LedgerHead,
   LedgerRows,
@@ -11,10 +12,10 @@ import {
 } from "@/components/ui/ledger-section";
 
 /**
- * The three projects the home page leads with. Their copy, metrics and cover
+ * The projects the home page leads with. Their copy, metrics and cover
  * live on the project records, so this names an order and nothing else.
  */
-const FEATURED_SLUGS = ["cocoon", "verso", "merge-gate"] as const;
+const FEATURED_SLUGS = ["cocoon", "verso", "merge-gate", "monkey-smp"] as const;
 
 const CASE_STUDIES = listHomeCaseStudies(FEATURED_SLUGS);
 
@@ -28,7 +29,7 @@ export function ScrollCaseStudies() {
             index="01"
             eyebrow="Things I made"
             title="Things I actually shipped."
-            description="Three tools, each written up as who it is for and what changes for them. All three are running; none of them are demos."
+            description={`${spellCount(CASE_STUDIES.length)} things I built, each written up as who it is for and what changes for them. All of them are running; none of them are demos.`}
           />
 
           <LedgerRows items={CASE_STUDIES} numbered className="mt-8 border-t border-border">

@@ -39,9 +39,9 @@ export default function MusicPage() {
           />
           <p className="label-mono">Nothing released yet</p>
           <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-            There are demos. There is not yet anything I would ask someone to sit
-            through. When that changes it will be here — an empty page beats a
-            padded one.
+            A five-song EP is being recorded now. Until it is finished there is
+            nothing here I would ask someone to sit through — an empty page beats
+            a padded one.
           </p>
         </div>
 

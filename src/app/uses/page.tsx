@@ -5,7 +5,7 @@ import { PageHead } from "@/components/ui/page-head";
 
 export const metadata = buildPageMetadata({
   title: "Uses",
-  description: "The hardware, dotfiles, and thirty-seven self-hosted services I actually run. Keyboard-driven, FOSS where it counts, and as little of it on someone else's computer as I can manage.",
+  description: "The hardware, dotfiles, and self-hosted homelab I actually run. Keyboard-driven, FOSS where it counts, and as little of it on someone else's computer as I can manage.",
   path: "/uses",
 });
 
@@ -55,9 +55,16 @@ export default function UsesPage() {
         </div>
 
         <Section title="Hardware">
+          <Item title="Desktop">
+            <p>
+              A Windows 11 desktop with an i7-8700K and 64 GB of RAM. It is always on, and it is where the
+              homelab cluster and the scheduled agents that maintain my repositories run.
+            </p>
+          </Item>
+
           <Item title="Laptop">
             <p>
-              For my laptop, I use a <a href="https://amzn.to/3V3lKhL" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Macbook Pro 15&quot;</a>.
+              An <strong>M3 MacBook Pro</strong>, for working away from the desk.
             </p>
           </Item>
 
@@ -89,12 +96,12 @@ export default function UsesPage() {
         <Section title="Software">
           <Item title="Operating System">
             <p>
-              The daily driver is <strong>macOS</strong>, bullied into behaving like a tiling window
+              The desktop runs <strong>Windows 11</strong>, but the daily shell is <a href="https://archlinux.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Arch</a> under
+              WSL, and that is where the code lives. The laptop runs <strong>macOS</strong>, bullied into behaving like a tiling window
               manager: <a href="https://github.com/nikitabobko/AeroSpace" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">AeroSpace</a> for
               i3-style workspaces, <a href="https://github.com/FelixKratz/SketchyBar" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">SketchyBar</a> in
               place of the menu bar, and <a href="https://karabiner-elements.pqrs.org/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Karabiner</a> remapping
-              caps lock into something useful. <a href="https://archlinux.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Arch</a> runs
-              on the other machines, and my <a href="https://github.com/gr8monk3ys/dotfiles" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">dotfiles</a> install
+              caps lock into something useful. My <a href="https://github.com/gr8monk3ys/dotfiles" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">dotfiles</a> install
               on both — they are tested in Ubuntu and Arch containers in CI, with an optional Nix flake
               for anyone who wants the whole thing declarative.
             </p>
@@ -196,9 +203,9 @@ export default function UsesPage() {
         <Section title="Applications">
           <div className="space-y-4">
             <p>
-              For note-taking, I used to use <a href="https://www.notion.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Notion</strong></a>.
-              Now, I am debating switching to Obsidian as it is an offline alternative but I am not sure yet since I find the best
-              note-taking to still be on pen and paper even though I am much faster at typing than I am writing.
+              For note-taking, I moved from <a href="https://www.notion.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Notion</strong></a> to{" "}
+              <a href="https://obsidian.md/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Obsidian</strong></a>: plain Markdown files, backed up with git. I still find the best
+              note-taking is pen and paper, even though I am much faster at typing than I am writing.
             </p>
             <p>
               For email application, I use <a href="https://www.thunderbird.net/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline"><strong>Thunderbird</strong></a>.
@@ -226,17 +233,19 @@ export default function UsesPage() {
         </Section>
 
         <Section title="Self-Hosted">
-          <Item title="One Raspberry Pi, thirty-seven services">
+          <Item title="A homelab, second version">
             <p>
-              Most of what would otherwise be a dozen subscriptions runs on a single Raspberry Pi 5 in
-              my apartment, as Docker Compose stacks behind{" "}
-              <a href="https://nginxproxymanager.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Nginx Proxy Manager</a> with
-              wildcard TLS. The setup is public at{" "}
-              <a href="https://github.com/gr8monk3ys/pi-lab" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">pi-lab</a>.
+              What would otherwise be a dozen subscriptions started as Docker Compose stacks on a single
+              Raspberry Pi 5. It is moving to Kubernetes: a{" "}
+              <a href="https://k3s.io/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">K3s</a> cluster on the desktop, where each service is one entry
+              in a catalogue and what gets installed is configuration. Traefik and cert-manager handle TLS,
+              secrets are encrypted in git with SOPS, and a Prometheus stack watches the lot. The setup is
+              public at{" "}
+              <a href="https://github.com/gr8monk3ys/homelab" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">homelab</a>.
             </p>
             <ul className="list-disc list-inside ml-4 mt-4 space-y-1">
-              <li><strong>DNS</strong> — Pi-hole for blocking, resolving through a local Unbound and DNSCrypt rather than a public upstream, so ad-blocking does not just relocate who is watching</li>
-              <li><strong>Access</strong> — WireGuard for the VPN, Authelia for single sign-on, CrowdSec underneath on the assumption anything reachable gets probed</li>
+              <li><strong>DNS</strong> — Pi-hole for blocking</li>
+              <li><strong>Access</strong> — WireGuard for the VPN, on the assumption anything reachable gets probed</li>
               <li><strong>Media</strong> — Jellyfin with the *arr stack and Calibre-Web</li>
               <li><strong>Documents</strong> — Paperless-ngx with OCR, Nextcloud for sync, Syncthing between machines</li>
               <li><strong>Passwords</strong> — Vaultwarden, which is why the Bitwarden clients above talk to my hardware and not somebody else&apos;s</li>

@@ -18,6 +18,10 @@
 //     them.
 //   - G&M Trailer Repair was missing entirely.
 //
+// Reconciled again 2026-10-28: the resume retitled two roles ("AI/ML
+// Freelancer" -> "Consultant AI Engineer", "Bioinformatics Data Analyst" ->
+// "Data Engineer") and the site had kept the old titles.
+//
 // Keep the two in sync. The site claiming roles, dates or numbers the resume
 // does not is worse than either being stale alone.
 export const timeline = [
@@ -35,7 +39,7 @@ export const timeline = [
   },
   {
     company: "Upwork",
-    title: "AI/ML Freelancer",
+    title: "Consultant AI Engineer",
     date: "August 2022 - Present",
     description:
       "Discovery and scoping with clients, turning open-ended business problems into delivered systems.",
@@ -59,7 +63,7 @@ export const timeline = [
   },
   {
     company: "Joint Genome Institute",
-    title: "Bioinformatics Data Analyst",
+    title: "Data Engineer",
     date: "May 2020 - August 2021",
     description:
       "Built data processing pipelines in R for genomic homology comparison, with a team of researchers.",

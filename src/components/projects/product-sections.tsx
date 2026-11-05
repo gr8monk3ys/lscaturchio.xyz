@@ -149,14 +149,26 @@ export function HeroSection({ activeImage, product, shared }: HeroSectionProps):
         layoutId={shared ? `project-cover-${product.slug}` : undefined}
         className={cn('relative aspect-video overflow-hidden', 'bg-accent/40')}
       >
-        <Image
-          src={activeImage}
-          alt={`${product.title} project visual`}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 80vw"
-          priority
-        />
+        {product.videoSrc ? (
+          <video
+            src={product.videoSrc}
+            poster={typeof activeImage === 'string' ? activeImage : activeImage.src}
+            controls
+            playsInline
+            preload="none"
+            aria-label={`${product.title} trailer`}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <Image
+            src={activeImage}
+            alt={`${product.title} project visual`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 80vw"
+            priority
+          />
+        )}
       </m.div>
     </div>
   )

@@ -31,6 +31,7 @@ export const PROJECT_CATEGORIES: readonly ProjectCategory[] = [
   "tools",
   "open-source",
   "data-science",
+  "games",
 ];
 
 export const PROJECT_CATEGORY_LABELS: Record<ProjectCategory, string> = {
@@ -39,6 +40,7 @@ export const PROJECT_CATEGORY_LABELS: Record<ProjectCategory, string> = {
   tools: "Tools",
   "open-source": "Open Source",
   "data-science": "Data Science",
+  games: "Games",
 };
 
 export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
