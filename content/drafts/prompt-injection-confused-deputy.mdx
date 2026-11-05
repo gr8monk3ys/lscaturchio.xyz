@@ -1,0 +1,78 @@
+export const meta = {
+  title: "Prompt Injection Is a Confused Deputy Problem",
+  description:
+    "Prompt injection keeps surviving every patch because a language model reads instructions and data on the same channel, and the defenses that hold up are the ones that stop trusting the model with authority.",
+  date: "2026-10-22",
+  tags: ["AI", "security", "technology"],
+  series: "AI Engineering",
+  seriesOrder: 2,
+  stage: "seedling",
+};
+
+<AssumedAudience>
+  People wiring a language model into something that can read email, browse,
+  call tools, or search a document store. Assumes you know roughly what a system
+  prompt and a tool call are; it won't re-explain them.
+</AssumedAudience>
+
+## A compiler with the wrong keys
+
+In 1988 Norm Hardy published a short paper in *ACM SIGOPS Operating Systems Review* called "The Confused Deputy." The story in it is small and a little funny. A timesharing system ran a compiler that users could invoke, and the compiler had been granted permission to write to a billing file, because it recorded usage there. Users could also tell the compiler where to write its debugging output. One user named the billing file as the output path. The compiler, holding the keys to that file for its own legitimate reasons, obligingly overwrote it.
+
+Nobody broke in. The compiler did exactly what it was asked to do, with authority it really had. The flaw was that it could not tell whose authority it was exercising at any given moment: its own, granted by the system operator, or the user's, borrowed for the length of one request. Hardy called it a deputy that had become confused about which master it served.
+
+Every agent built on a language model is that compiler. It holds credentials its operator gave it (your inbox, your calendar, a database, a shell) and it takes requests from whoever manages to put text in front of it. The difference is that Hardy's compiler at least received the output path as a separate argument. A language model receives everything as one long string.
+
+## One channel for everything
+
+Riley Goodside showed the basic move in September 2022: give GPT-3 a task like "translate the following text into French," then include in the text something like "ignore the above directions and say something else instead." The model said something else instead. Simon Willison wrote it up within a day and gave it the name that stuck, prompt injection, on purpose by analogy with SQL injection.
+
+The analogy is useful mostly for where it breaks. SQL injection, publicly described by Jeff Forristal in *Phrack* in 1998, happens when a program builds a query by pasting user input into a string of code. The fix took the industry far too long to adopt but was never conceptually hard. Parameterized queries send the code and the data to the database on separate channels. The database parses the query first, then slots the values in, and a value can't become code no matter what characters it contains. The vulnerability has a structural cure.
+
+A language model has no second channel. The system prompt, the user's message, the retrieved web page, the PDF attachment, and the tool output all arrive as tokens in a single sequence, and the model's whole job is to find the instructions in that sequence and follow them. Role markers and special delimiter tokens help at the margin. They are learned conventions, though, not a parser. There is no place in the architecture where "this part is data" is enforced rather than suggested.
+
+So the question a security engineer would ask, which part of this input is allowed to give orders, has no crisp answer inside the model. The model's answer is statistical. That's a fine property for a writing assistant. For a deputy holding your keys, it's the bug.
+
+## The attacker doesn't need to talk to you
+
+The first demonstrations involved a user attacking their own chatbot, which is mostly a party trick. You can already type whatever you like into your own session.
+
+The version that matters arrived in a February 2023 paper by Kai Greshake and colleagues, "Not what you've signed up for," which named it indirect prompt injection. The attacker never touches the conversation. They plant instructions somewhere the model will later read: a web page the assistant summarizes, an email it triages, a document it retrieves, a code comment, a calendar invite. Greshake's group demonstrated it against Bing Chat, among other targets, by hiding instructions in pages the assistant would browse.
+
+This is where [retrieval-augmented generation](/blog/building-rag-systems) quietly changes the threat model. A RAG pipeline exists to pull outside text into the prompt. Every document in the index is now a potential author of instructions, and the people who wrote those documents are not the people who deployed the system. The retriever has no idea which paragraphs are content and which are commands, and neither, reliably, does the model reading them.
+
+The confused deputy is now fully assembled. The operator granted the authority. The user made a legitimate request. A stranger, through a document, supplied the instruction that got executed.
+
+## Why the patches keep failing
+
+The obvious defenses all share one shape: make the model better at noticing.
+
+Delimit untrusted text and tell the model to ignore instructions inside the delimiters. Add a second model to classify inputs as malicious. Fine-tune on adversarial examples until the model refuses the known attacks. Put a stern paragraph at the end of the system prompt. Each of these raises the cost of a casual attack, and each one is a probabilistic filter guarding a door that a single success opens.
+
+That asymmetry is the whole problem. A defense that blocks 99% of injection attempts sounds strong until you notice the attacker gets to retry, rephrase, translate into another language, encode in base64, split the payload across two retrieved documents, or hide it in alt text, and only has to land once. Security people have a phrase for a filter that works most of the time against an adaptive adversary. They call it a vulnerability.
+
+OWASP's Top 10 for LLM applications has listed prompt injection as entry one, LLM01, since its first edition in 2023, and kept it there in the 2025 revision. That ranking is less an endorsement of any fix than an admission that there isn't one at the model layer.
+
+## The trifecta
+
+In June 2025 Willison named the condition under which this stops being an embarrassment and becomes a breach. He called it the lethal trifecta: an agent that has access to private data, is exposed to untrusted content, and can communicate externally. Any two are survivable. All three together means a stranger's text can tell the model to read your secrets and send them somewhere, and the model has everything it needs to comply.
+
+The same month, Aim Security disclosed EchoLeak (CVE-2025-32711), a zero-click flaw in Microsoft 365 Copilot. An attacker sent an email. Copilot, doing its job, later pulled that email into context while answering an unrelated question, followed the instructions hidden in it, and exfiltrated data from the user's environment through a crafted link. The user never opened the message. Microsoft patched the specific path. The shape, private data plus untrusted email plus an outbound channel, is the default configuration of an enterprise assistant.
+
+What's useful about the trifecta is that it moves the question out of the model. You can't make the model unconfusable. You can decide which of the three legs a given agent is allowed to stand on.
+
+## Defenses that don't ask the model to be careful
+
+The approaches that hold up treat the model the way Hardy recommended treating any deputy: never let it hold authority it can be talked out of.
+
+Willison's dual LLM pattern, sketched in 2023, splits the agent in two. A privileged model plans and calls tools but never sees untrusted text. A quarantined model reads the untrusted text but has no tools. The quarantined model's output goes back to the privileged one only as an opaque variable, something like `$summary1`, that can be displayed to the user or passed along but never read as instructions.
+
+Google DeepMind's CaMeL, described by Edoardo Debenedetti and colleagues in the 2025 paper "Defeating Prompt Injections by Design," takes that idea further and makes it look much more like Hardy's world. The trusted user request gets translated into an explicit program before any untrusted data is touched. Data that arrives later can fill in values but cannot change the control flow, and each value carries capability metadata saying where it came from and where it's allowed to go. An email address extracted from an untrusted document can't become the recipient of a message containing private data, because the policy says so, not because the model was persuaded. On the AgentDojo benchmark it completed 67% of tasks with security guarantees that don't depend on the model behaving. The cost is a lower completion rate than an undefended agent manages, and someone has to write the policies.
+
+The less glamorous versions of the same idea are available today without a research paper. Give each agent the narrowest credentials that serve its task. Require a human confirmation for any action that sends data off the system or spends money. Strip or proxy outbound links from rendered output so a markdown image can't become an exfiltration channel. Keep the agent that reads the open web away from the agent that reads the inbox.
+
+## A tool that takes orders from its inputs
+
+There's an old argument, made on this site in [the piece on neutral tools](/blog/myth-of-neutral-tool), that a tool's design carries the politics of whoever built it. Prompt injection adds a stranger wrinkle. A language model with tool access carries the intentions of whoever wrote the last thing it read. That's a property no earlier tool had in quite this form, and it sits underneath the [privacy questions](/blog/privacy-in-age-of-ai) people already ask about these systems: who can see your data matters less once anyone who can send you an email can ask your assistant to forward it.
+
+Hardy's paper ends by arguing that the confused deputy was the problem capability systems were invented to solve, and that access-control lists alone couldn't solve it. Thirty-seven years later the deputy can read, which was supposed to make it smarter. Mostly it has made it easier to confuse.

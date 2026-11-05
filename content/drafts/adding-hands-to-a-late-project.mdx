@@ -1,0 +1,62 @@
+export const meta = {
+  title: "Adding Hands to a Late Project",
+  description:
+    "Fred Brooks showed in 1975 that more people make a late software project later, and the arrival of tireless coding agents has moved the bottleneck he described without removing it.",
+  date: "2026-10-29",
+  tags: ["technology", "software", "history"],
+  stage: "seedling",
+};
+
+<AssumedAudience>
+  People who build software with other people, or who have watched a deadline
+  slip and been told the fix was more headcount. No management background
+  assumed.
+</AssumedAudience>
+
+## Nine months, any number of women
+
+Fred Brooks ran the development of OS/360, the operating system IBM wrote for its System/360 mainframes in the 1960s. It was one of the largest software efforts anyone had attempted, it was late, and IBM did what organizations do with a late project. It added people.
+
+In 1975 Brooks published what he had learned in *The Mythical Man-Month*, a short book of essays that is still assigned in software engineering courses. Its most quoted line is a law he named after himself: adding manpower to a late software project makes it later. Its most quoted image is a little gentler. The bearing of a child takes nine months, no matter how many women are assigned.
+
+The title names the error. A man-month, in the language of 1960s project planning, was a unit of work: one person for one month. Planners treated it as interchangeable, so a twelve man-month job could be done by one person in a year or twelve people in a month. Brooks pointed out that this holds only when a task can be split among workers who never need to talk to each other. Picking cotton, maybe. Not writing an operating system.
+
+## The arithmetic of talking
+
+Brooks gave two reasons a new person slows a late project down, and they compound.
+
+The first is ramp-up. Someone joining a project has to learn the codebase, the conventions, the unwritten reasons behind the strange parts. The people best placed to teach them are the ones already doing the work, so for a while the newcomer subtracts output instead of adding it.
+
+The second is coordination, and it scales badly. If every pair of people on a team needs some channel between them, a team of n people has n(n-1)/2 of those channels. Three people, three channels. Ten people, forty-five. Fifty people, 1,225. The work itself grows roughly with headcount. The talking about the work grows with its square.
+
+Gene Amdahl, who worked alongside Brooks as an architect of System/360, had published a cousin of this idea in 1967 about computers instead of people. If some fraction of a program has to run serially, no number of extra processors can speed it past the limit that fraction sets. Brooks's version is Amdahl's law with meetings in it. Every project has a serial part: decisions that one mind has to hold, interfaces that two teams have to agree on, a review someone has to actually read.
+
+## Software shaped like its org chart
+
+A year after Amdahl's paper, Melvin Conway noticed the same coupling from the opposite side. His 1968 article in *Datamation*, "How Do Committees Invent?", argued that organizations which design systems are constrained to produce designs that copy their own communication structures. Four teams building a compiler get a four-pass compiler.
+
+Put Conway next to Brooks and the picture gets less comfortable. Adding people doesn't only add channels. It changes the shape of the thing being built, because new people get carved into new teams, and new teams draw new boundaries in the code. The late project gets later and also gets a little more like an org chart, which is a strange thing for an operating system to resemble.
+
+Brooks's own remedy was conceptual integrity: a system should look like it came from one mind, or a very small number of agreeing ones. He borrowed Harlan Mills's idea of a surgical team, where one chief programmer does the essential design and everyone else supports that person instead of working in parallel with them. Fewer channels. A deliberately small serial core, surrounded by help.
+
+## The tireless new hire
+
+For fifty years the law described something expensive to violate. Hiring took months, ramp-up took more, and the cost of a bad staffing decision was visible on a budget. Now there is a new kind of hand that costs almost nothing to add, never needs to sleep, and ramps up in seconds by reading the whole repository.
+
+It would be easy to say coding agents repeal Brooks's law. Ramp-up mostly disappears. Communication between agents is cheap and fast. You can assign a hundred of them to a problem before lunch.
+
+What they don't remove is the serial part. Someone still has to decide what the system is for, and agents that each read the repository independently have no shared sense of that unless a person writes it down. Someone still has to review what comes back. I run a set of scheduled agents across my own repositories that open pull requests while I'm asleep, and the lesson arrived quickly. The agents were never the constraint. The queue was. Every pull request is a channel to one reviewer, and that reviewer is the serial fraction Amdahl was describing. More agents meant a longer queue, and the reviewing went at exactly the speed it always had.
+
+Conway shows up too, in a quieter form. Agents organized by repository produce changes shaped by repository. Agents organized by task type produce a dependency bump here, a test there, a draft post somewhere else, each locally reasonable and none aware of the others. The system starts to resemble the dispatch table that assigned the work. Conceptual integrity was hard to keep with twelve programmers. It doesn't keep itself with a fleet of processes that have never met.
+
+## What the law was really about
+
+Brooks returned to the book for its twentieth anniversary edition in 1995. He called his law an outrageous oversimplification and kept it anyway, which is the right relationship to have with a rule of thumb. Some late projects do get rescued by new people, usually when the newcomers arrive early, take a cleanly separable piece, and are good at what they were brought in to do. The law describes a tendency rather than a theorem.
+
+But the tendency points somewhere that outlasts the staffing question. Throughput was never the scarce resource on a hard software project. Agreement was. Understanding was. The scarce thing was a coherent idea of what was being built, held somewhere it could be consulted, and that resource does not scale by adding more of anything that can't hold it.
+
+Brooks made the same point from another angle in "No Silver Bullet," an essay from 1986. He split the difficulty of software into two kinds. Accidental complexity comes from our tools: the syntax, the build, the boilerplate, the hours lost to a misconfigured compiler. Essential complexity comes from the problem itself, from deciding precisely what a program should do in every case that matters. Better tools could shrink the first kind a great deal, he argued, but no single advance would deliver a tenfold gain, because the second kind was most of the work. Forty years on, agents are the best attack on accidental complexity anyone has built. The essential part is still sitting where he left it.
+
+The productivity pitch for agents is mostly a pitch about the parallel part, and it's often true. The work that parallelizes is getting cheaper fast. That makes the remaining serial part more visible, not less, the way [optimizing everything around a bottleneck](/blog/against-optimization) mostly reveals where the bottleneck is. The [tool isn't neutral](/blog/myth-of-neutral-tool) about this either. A system that makes output free quietly reprices attention, and the one person reading the diffs becomes the most expensive component in the building.
+
+Brooks died in November 2022, just before chat-based coding tools went mainstream. I don't know what he would have made of them. My guess is that he would have asked who on the project was holding the design, and waited a little longer than was comfortable for the answer.
