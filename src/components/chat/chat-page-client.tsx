@@ -12,6 +12,7 @@ import {
 import { ChatMessageList } from "@/components/chat/chat-message-list";
 import { ChatInput } from "@/components/chat/chat-input";
 import { SuggestedQuestions } from "@/components/chat/suggested-questions";
+import { AnswerSources } from "@/components/chat/answer-sources";
 import Link from "next/link";
 
 // POV-forward openers — the chat is an interactive version of Lorenzo's
@@ -125,6 +126,7 @@ export function ChatPageClient({
                 variant={message.sender === "user" ? "sent" : "received"}
               >
                 {message.content}
+                <AnswerSources sources={message.sources} grounded={message.grounded} />
                 {message.failedQuery && !isLoading && (
                   <button
                     type="button"

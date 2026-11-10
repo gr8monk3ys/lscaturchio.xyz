@@ -143,6 +143,34 @@ describe('/api/chat', () => {
       expect(systemMessage?.content).toContain('On Shipping (/blog/on-shipping)');
     });
 
+    it('returns the essays an answer was grounded on', async () => {
+      vi.mocked(groundingFor).mockResolvedValue({
+        context: 'I am a software engineer',
+        confidence: 'strong',
+        closest: [{ title: 'On Shipping', url: '/blog/on-shipping' }],
+      });
+
+      const response = await POST(createMockRequest({ query: 'Tell me about yourself' }));
+      const data = await response.json();
+
+      expect(data.data.sources).toEqual([{ title: 'On Shipping', url: '/blog/on-shipping' }]);
+      expect(data.data.grounded).toBe(true);
+    });
+
+    it('marks the nearest essays as not a match when nothing grounded the question', async () => {
+      vi.mocked(groundingFor).mockResolvedValue({
+        context: '',
+        confidence: 'none',
+        closest: [{ title: 'On Shipping', url: '/blog/on-shipping' }],
+      });
+
+      const response = await POST(createMockRequest({ query: 'What about llamas?' }));
+      const data = await response.json();
+
+      expect(data.data.sources).toHaveLength(1);
+      expect(data.data.grounded).toBe(false);
+    });
+
     it('works without embeddings context', async () => {
       const request = createMockRequest({ query: 'Hello' });
       const response = await POST(request);
@@ -167,7 +195,7 @@ describe('/api/chat', () => {
       expect(data.success).toBe(true);
       expect(data.data.provider).toBe('fallback');
       expect(data.data.degraded).toBe(true);
-      expect(data.data.answer).toContain('temporarily unable');
+      expect(data.data.answer).toContain('isn’t responding right now');
     });
 
     it('returns fallback response when AI chat fails', async () => {
