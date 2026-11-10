@@ -113,6 +113,24 @@ describe('ai-provider', () => {
     expect(chatCreate).not.toHaveBeenCalled();
   });
 
+  it('a key refused while chatting turns OpenAI off for embeddings too', async () => {
+    chatCreate.mockRejectedValue(refused());
+    const { createEmbedding, generateChatAnswer } = await load();
+
+    expect(await generateChatAnswer('sys', 'q')).toMatchObject({ provider: 'ollama' });
+    expect(await createEmbedding('text')).toEqual([0.5]);
+    expect(embeddingsCreate).not.toHaveBeenCalled();
+  });
+
+  it('a key refused while summarising turns OpenAI off for embeddings too', async () => {
+    chatCreate.mockRejectedValue(refused());
+    const { summarizeContent, createEmbedding } = await load();
+
+    await expect(summarizeContent('content')).rejects.toThrow('Failed to generate summary');
+    expect(await createEmbedding('text')).toEqual([0.5]);
+    expect(embeddingsCreate).not.toHaveBeenCalled();
+  });
+
   it('reports embeddings as unavailable once the key is refused, not merely set', async () => {
     embeddingsCreate.mockRejectedValue(refused());
     ollamaAvailable.mockResolvedValue(false);
@@ -130,23 +148,5 @@ describe('ai-provider', () => {
     expect(await isEmbeddingsAvailable()).toBe(true);
     expect(await isEmbeddingsAvailable()).toBe(true);
     expect(embeddingsCreate).toHaveBeenCalledTimes(1);
-  });
-
-  it('a key refused while chatting turns OpenAI off for embeddings too', async () => {
-    chatCreate.mockRejectedValue(refused());
-    const { createEmbedding, generateChatAnswer } = await load();
-
-    expect(await generateChatAnswer('sys', 'q')).toMatchObject({ provider: 'ollama' });
-    expect(await createEmbedding('text')).toEqual([0.5]);
-    expect(embeddingsCreate).not.toHaveBeenCalled();
-  });
-
-  it('a key refused while summarising turns OpenAI off for embeddings too', async () => {
-    chatCreate.mockRejectedValue(refused());
-    const { summarizeContent, createEmbedding } = await load();
-
-    await expect(summarizeContent('content')).rejects.toThrow('Failed to generate summary');
-    expect(await createEmbedding('text')).toEqual([0.5]);
-    expect(embeddingsCreate).not.toHaveBeenCalled();
   });
 });
