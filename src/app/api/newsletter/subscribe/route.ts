@@ -107,15 +107,10 @@ export const POST = withWriteRoute(
 
     if (existing) {
       if (existing.is_active) {
-        // Allow updating topic preferences even when already subscribed.
-        if (topics.length > 0 || source) {
-          const metadataJson = buildMetadataJson(topics, source, false);
-          await sql`
-            UPDATE newsletter_subscribers
-            SET metadata = COALESCE(metadata, '{}'::jsonb) || ${metadataJson}::jsonb
-            WHERE email = ${normalizedEmail}
-          `;
-        }
+        // Nothing is written for an address that is already on the list.
+        // This form is unauthenticated: merging its topics here let anyone
+        // who knew a subscriber's address overwrite that person's topic
+        // preferences.
         // Same body and status as every other outcome. Distinct responses
         // let anyone probe whether a given address is on the list.
         return { message: SUBSCRIBE_MESSAGE };

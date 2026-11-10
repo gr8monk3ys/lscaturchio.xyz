@@ -135,9 +135,8 @@ describe('/api/newsletter/subscribe', () => {
       expect(data.success).toBe(true);
     });
 
-    it('updates active subscriber preferences without restarting onboarding', async () => {
+    it('writes nothing for an active subscriber, topics included', async () => {
       mockSql.mockResolvedValueOnce([{ email: 'existing@example.com', is_active: true }]);
-      mockSql.mockResolvedValueOnce([]);
 
       const request = createMockRequest({
         email: 'existing@example.com',
@@ -148,16 +147,10 @@ describe('/api/newsletter/subscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      // Updating preferences must not change the response either.
       expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
-      expect(mockSql).toHaveBeenCalledTimes(2);
-
-      const updateCall = mockSql.mock.calls[1];
-      const metadataJson = updateCall[1] as string;
-      expect(JSON.parse(metadataJson)).toEqual({
-        topics: ['rag-llms', 'systems-craft'],
-        source: { path: '/blog/test-post' },
-      });
+      // SELECT only. The form is unauthenticated, so it must not overwrite
+      // another person's topic preferences.
+      expect(mockSql).toHaveBeenCalledTimes(1);
     });
 
     it('reactivates inactive subscriber', async () => {

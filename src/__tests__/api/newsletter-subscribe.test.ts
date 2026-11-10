@@ -179,13 +179,10 @@ describe('/api/newsletter/subscribe', () => {
       expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
     })
 
-    it('updates topic preferences for existing active subscriber', async () => {
+    it('does not change topics for an existing active subscriber', async () => {
       mockSql.mockResolvedValueOnce([
         { email: 'existing@example.com', is_active: true },
       ])
-      // Second call: UPDATE for metadata merge
-      mockSql.mockResolvedValueOnce([])
-
       const request = createMockRequest({
         email: 'existing@example.com',
         topics: ['tech', 'ai'],
@@ -195,18 +192,11 @@ describe('/api/newsletter/subscribe', () => {
       const data = await response.json()
 
       expect(response.status).toBe(200)
-      // Updating preferences must not change the response either.
+      // Same response as a new signup.
       expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
-      // SELECT + UPDATE
-      expect(mockSql).toHaveBeenCalledTimes(2)
-
-      // Verify metadata passed to the UPDATE call
-      const updateCall = mockSql.mock.calls[1]
-      const metadataJson = updateCall[1] as string
-      expect(JSON.parse(metadataJson)).toEqual({
-        topics: ['tech', 'ai'],
-        source: { path: '/blog/some-post' },
-      })
+      // SELECT only: this form is unauthenticated, so it must not rewrite
+      // an existing subscriber's topics.
+      expect(mockSql).toHaveBeenCalledTimes(1)
     })
   })
 
