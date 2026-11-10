@@ -1047,6 +1047,23 @@ test.describe('design invariants, in the DOM', () => {
     }
   })
 
+  test('a stage filter in the URL is applied, and the bare index is prerendered', async ({ page }) => {
+    // `/blog` is prerendered, so it cannot read the query string; the proxy
+    // sends a filtered request to `/blog/archive`. If that rewrite goes
+    // missing, `/blog?stage=seedling` quietly renders the unfiltered index —
+    // and the single-filter test above still passes, because "All" is then
+    // the one option marked current.
+    await page.goto('/blog?stage=seedling')
+    await expect(page.locator('nav[aria-label*="stage" i] [aria-current="page"]')).toContainText(/seedling/i)
+    expect(new URL(page.url()).pathname).toBe('/blog')
+
+    // The other half: the index a reader lands on must not be rendered per
+    // request. One `await searchParams` in the page did that for months while
+    // `revalidate = 3600` sat next to it doing nothing.
+    const response = await page.request.get('/blog')
+    expect(response.headers()['cache-control'] ?? '').not.toContain('no-store')
+  })
+
   test('the stage vocabulary is printed, not only hovered', async ({ page }) => {
     // SEEDLING / BUDDING / EVERGREEN is the site's most distinctive editorial
     // idea, and its gloss lived only in a native `title=` attribute — which
