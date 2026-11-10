@@ -85,10 +85,16 @@ Additional maintenance helpers:
 - **`.env.local` and Vercel production point at the same Neon database.**
   `generate-embeddings` run locally mutates what production serves. There is
   no staging copy.
-- The script replaces rows per source (delete, then insert). It now runs a
-  provider preflight before touching anything, because a dead `OPENAI_API_KEY`
+- The script replaces rows per source: it embeds every chunk first, then
+  deletes and inserts in one transaction (`indexSource` in
+  `src/lib/embedding-ingest.ts`). A source whose embedding fails keeps its old
+  rows and is retried on the next run; the script exits 1 and names it. The
+  provider preflight also still runs first, because a dead `OPENAI_API_KEY`
   discovered mid-run once emptied the production embeddings table
   (2026-08-03; recovered via the Ollama fallback).
+- The provider that passes preflight is pinned for the run. If OpenAI refuses
+  the key mid-run, the remaining sources fail instead of quietly switching to
+  Ollama and mixing two vector spaces in one index.
 - **Query and stored vectors must share an embedding space.** Production
   embeds queries with whatever provider its env gives it. After rotating
   `OPENAI_API_KEY` (in Vercel and `.env.local`), re-run
