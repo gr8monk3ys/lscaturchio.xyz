@@ -66,12 +66,6 @@ export const RATE_LIMIT_POLICIES = {
   NEWSLETTER_SUBSCRIBE: { limit: 3, windowMs: 5 * MINUTE },
   /** POST /api/newsletter/unsubscribe */
   NEWSLETTER_UNSUBSCRIBE: { limit: 3, windowMs: 5 * MINUTE },
-  /**
-   * POST /api/newsletter/drip. Sends up to a batch of onboarding emails per
-   * call; the scheduled caller runs about once an hour, so 30/min is far above
-   * any legitimate cadence.
-   */
-  NEWSLETTER_DRIP: { limit: 30, windowMs: MINUTE },
 
   // Public writes and expensive reads.
   /** POST /api/views */
@@ -88,8 +82,6 @@ export const RATE_LIMIT_POLICIES = {
   ADMIN_SIGN_IN: { limit: 10, windowMs: 5 * MINUTE },
   /** Admin content PUTs (posts, photos, now, links) and POST logout. */
   ADMIN_WRITE: { limit: 30, windowMs: MINUTE },
-  /** GET /api/analytics — API-key protected, so not a public read. */
-  ANALYTICS: { limit: 100, windowMs: MINUTE },
 
   /**
    * Every cheap public read of site content, sharing one per-client budget on

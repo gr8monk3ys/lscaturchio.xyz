@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { BlogLayout } from '@/components/blog/BlogLayout';
 import { getSiteUrl } from '@/lib/site-url';
@@ -49,6 +49,24 @@ function renderLayout(props: Parameters<typeof BlogLayout>[0]) {
 }
 
 describe('BlogLayout', () => {
+  describe('newsletter signup', () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it('leaves the signup out while the newsletter is paused (the default)', () => {
+      vi.stubEnv('NEWSLETTER_SIGNUP_ENABLED', undefined);
+      renderLayout({ post, children: <p>body</p> });
+      expect(screen.queryByTestId('newsletter-cta')).toBeNull();
+    });
+
+    it('shows the signup when NEWSLETTER_SIGNUP_ENABLED is "true"', () => {
+      vi.stubEnv('NEWSLETTER_SIGNUP_ENABLED', 'true');
+      renderLayout({ post, children: <p>body</p> });
+      expect(screen.getByTestId('newsletter-cta')).toBeInTheDocument();
+    });
+  });
+
   it('returns bare children for the RSS feed rendering', () => {
     const { container } = renderLayout({
       post,

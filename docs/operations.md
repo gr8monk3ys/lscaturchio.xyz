@@ -214,6 +214,31 @@ Removing the files from the index did **not** shrink existing history; the
 history rewrite (`git filter-repo` + force-push + a GitHub support ticket to
 drop cached PR refs) — a separate decision with fork-divergence costs.
 
+## Newsletter (paused)
+
+Paused on 2026-11-09. The essay pages show no signup form, and
+`POST /api/newsletter/subscribe` answers 503 without touching the database.
+Both follow `NEWSLETTER_SIGNUP_ENABLED`, which is off unless it is exactly
+`"true"` (`src/lib/newsletter-signup.ts`).
+
+Why: the form stored an address and sent one welcome note, and then nothing.
+The follow-up "drip" mails had a route but nothing ever called it, and there
+was no way to send an issue. The drip route is gone.
+
+What still runs:
+
+- `/unsubscribe` and `POST /api/newsletter/unsubscribe`. People on the list
+  hold tokens from mail they were sent, so these stay up whatever the flag says.
+- The `newsletter_subscribers` table. Nothing was deleted.
+
+Before you turn signup back on, decide how an issue gets sent. The 2026-11-09
+review preferred Resend Broadcasts, which uses the provider the site already
+mails through (free up to 1,000 contacts). Also add a confirmation step
+(double opt-in): with the flag on, the form mails a welcome note to any
+address typed into it. Then set `NEWSLETTER_SIGNUP_ENABLED=true` in Vercel
+and redeploy. Essay pages are built at deploy time, so the env change alone
+does not show the form.
+
 ## Database (Neon)
 
 Engagement data, embeddings, and newsletter state live in a single

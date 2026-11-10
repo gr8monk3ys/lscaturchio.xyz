@@ -7,6 +7,7 @@ import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { ReadingProgress } from "./reading-progress";
 import { NewsletterCTA } from "./newsletter-cta";
+import { isNewsletterSignupOpen } from "@/lib/newsletter-signup";
 import { ViewCounter } from "./view-counter";
 import { SocialShare } from "./social-share";
 import { ReadingProgressTracker } from "./reading-progress-tracker";
@@ -257,10 +258,14 @@ export function BlogLayout({
 
             <GiscusComments />
 
-            <NewsletterCTA
-              defaultTopics={relatedHubs.map((hub) => hub.slug)}
-              sourcePath={pathname}
-            />
+            {/* Paused until there is something to send; see
+                src/lib/newsletter-signup.ts. */}
+            {isNewsletterSignupOpen() && (
+              <NewsletterCTA
+                defaultTopics={relatedHubs.map((hub) => hub.slug)}
+                sourcePath={pathname}
+              />
+            )}
           </article>
         </div>
 
