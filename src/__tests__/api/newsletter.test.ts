@@ -30,7 +30,10 @@ let restoreTransport: () => void;
 beforeAll(() => {
   restoreTransport = installMailTransport(outbox);
 });
-afterAll(() => restoreTransport());
+afterAll(() => {
+  restoreTransport();
+  vi.unstubAllEnvs();
+});
 
 // Helper to create mock request
 function createMockRequest(body: Record<string, unknown>): NextRequest {
@@ -48,6 +51,8 @@ describe('/api/newsletter/subscribe', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     outbox.clear();
+    // Signup is paused by default; these tests are about the open route.
+    vi.stubEnv('NEWSLETTER_SIGNUP_ENABLED', 'true');
     // Default: no existing subscriber (empty rows)
     mockSql.mockResolvedValue([]);
   });

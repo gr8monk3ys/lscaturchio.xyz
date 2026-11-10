@@ -39,18 +39,44 @@ vi.mock('@/lib/db', () => ({
 
 import { POST as contactPost } from '@/app/api/contact/route';
 import { POST as subscribePost } from '@/app/api/newsletter/subscribe/route';
-import { POST as dripPost } from '@/app/api/newsletter/drip/route';
 import { RATE_LIMIT_POLICIES } from '@/lib/rate-limit';
 import { installMailTransport } from '@/lib/mail/deliver';
 import { createOutbox } from '@/lib/mail/outbox';
 import { submitWrite } from '@/lib/fetcher';
 import { installBotClassifier } from '@/lib/form-guard/guard';
+import { withWriteRoute } from '@/lib/api/write-route';
+
+/**
+ * No shipped route declares API-key auth or `csrf: skip` since the newsletter
+ * drip was removed, but `withWriteRoute` still offers both. This stand-in is
+ * the machine caller those options exist for, built from the real chain.
+ */
+const machinePost = withWriteRoute(
+  {
+    limit: 'ADMIN_WRITE',
+    auth: { kind: 'apiKey', envKey: 'TEST_MACHINE_API_KEY' },
+    csrf: { kind: 'skip', reason: 'Test stand-in for a scheduled machine caller.' },
+    body: { kind: 'none', reason: 'Takes no body.' },
+    guard: { kind: 'none', reason: 'No person and no form.' },
+    envelope: { kind: 'standard' },
+    errors: {
+      log: 'Machine route failed',
+      component: 'test/machine',
+      action: 'POST',
+      message: 'Machine route failed',
+    },
+  },
+  async () => ({ ran: true })
+);
 
 // The mailer. Every route that sends mail goes through deliverMail, so this
 // one transport catches all of it.
 const outbox = createOutbox();
 let restoreTransport: () => void;
-afterAll(() => restoreTransport());
+afterAll(() => {
+  restoreTransport();
+  vi.unstubAllEnvs();
+});
 
 const GOOD_ORIGIN = 'http://localhost:3000';
 
@@ -115,7 +141,8 @@ beforeAll(() => {
   restoreTransport = installMailTransport(outbox);
   process.env.CONTACT_EMAIL = 'inbox@example.com';
   process.env.CONTACT_FROM_EMAIL = 'noreply@example.com';
-  process.env.NEWSLETTER_ADMIN_API_KEY = 'test-drip-key';
+  process.env.TEST_MACHINE_API_KEY = 'test-machine-key';
+  vi.stubEnv('NEWSLETTER_SIGNUP_ENABLED', 'true');
 });
 
 beforeEach(() => {
@@ -184,9 +211,9 @@ describe('CSRF layer (real @/lib/csrf)', () => {
 // Auth — the real validateApiKey, and the one route that declares csrf: skip
 // ---------------------------------------------------------------------------
 describe('auth layer (real @/lib/api-auth)', () => {
-  it('rejects the drip endpoint without an API key, before touching the body', async () => {
-    const res = await dripPost(
-      makeRequest('http://localhost:3000/api/newsletter/drip', { rawBody: 'not json at all' })
+  it('rejects an API-key route without the key, before touching the body', async () => {
+    const res = await machinePost(
+      makeRequest('http://localhost:3000/api/test/machine', { rawBody: 'not json at all' })
     );
 
     expect(res.status).toBe(401);
@@ -198,18 +225,18 @@ describe('auth layer (real @/lib/api-auth)', () => {
   });
 
   it('honours the declared csrf: skip — an API-key call with no Origin succeeds', async () => {
-    const res = await dripPost(
-      makeRequest('http://localhost:3000/api/newsletter/drip', {
+    const res = await machinePost(
+      makeRequest('http://localhost:3000/api/test/machine', {
         origin: null,
-        headers: { 'x-api-key': 'test-drip-key' },
+        headers: { 'x-api-key': 'test-machine-key' },
       })
     );
 
     // A missing Origin is a 403 on every other write route; this one is
-    // declared `csrf: { kind: "skip" }` because its caller is a cron job.
+    // declared `csrf: { kind: "skip" }` because its caller is a machine.
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({
-      data: { processed: 0, sent: 0, failed: 0, skipped: 0, dryRun: false },
+      data: { ran: true },
       success: true,
     });
   });
@@ -492,10 +519,10 @@ describe('human form guard (real @/lib/form-guard)', () => {
     });
 
     it('is not consulted by a route that declares no guard', async () => {
-      const res = await dripPost(
-        makeRequest('http://localhost:3000/api/newsletter/drip', {
+      const res = await machinePost(
+        makeRequest('http://localhost:3000/api/test/machine', {
           origin: null,
-          headers: { 'x-api-key': 'test-drip-key' },
+          headers: { 'x-api-key': 'test-machine-key' },
         })
       );
 
@@ -632,7 +659,7 @@ describe('submitWrite: every layer decodes to its own kind (real routes)', () =>
   const ROUTES: Record<string, (req: NextRequest) => Promise<Response>> = {
     '/api/contact': contactPost,
     '/api/newsletter/subscribe': subscribePost,
-    '/api/newsletter/drip': dripPost,
+    '/api/test/machine': machinePost,
   };
 
   /**
@@ -681,7 +708,7 @@ describe('submitWrite: every layer decodes to its own kind (real routes)', () =>
 
   it('an API-key 401 is refused', async () => {
     browser();
-    expect(await submitWrite('/api/newsletter/drip', {})).toEqual({
+    expect(await submitWrite('/api/test/machine', {})).toEqual({
       kind: 'refused',
       status: 401,
       message: 'Unauthorized - valid API key required',

@@ -126,6 +126,7 @@ export const writeError = {
   notFound: (message: string) => new WriteRouteError(404, message),
   conflict: (message: string) => new WriteRouteError(409, message),
   internal: (message: string) => new WriteRouteError(500, message),
+  unavailable: (message: string) => new WriteRouteError(503, message),
 };
 
 type RouteHandler = (req: NextRequest) => Promise<NextResponse>;

@@ -36,7 +36,10 @@ let restoreTransport: () => void
 beforeAll(() => {
   restoreTransport = installMailTransport(outbox)
 })
-afterAll(() => restoreTransport())
+afterAll(() => {
+  restoreTransport()
+  vi.unstubAllEnvs()
+})
 
 // Helper to create mock request
 function createMockRequest(body: Record<string, unknown>): NextRequest {
@@ -54,10 +57,32 @@ describe('/api/newsletter/subscribe', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     outbox.clear()
+    // Signup is paused by default; most of this file is about the open route.
+    vi.stubEnv('NEWSLETTER_SIGNUP_ENABLED', 'true')
     // Default: CSRF passes
     vi.mocked(validateCsrf).mockReturnValue(null)
     // Default: no existing subscriber
     mockSql.mockResolvedValue([])
+  })
+
+  describe('while signup is paused', () => {
+    it.each([
+      ['unset', undefined],
+      ['anything but "true"', '1'],
+    ])('refuses with 503 and touches nothing when the flag is %s', async (_label, value) => {
+      vi.stubEnv('NEWSLETTER_SIGNUP_ENABLED', value)
+
+      const response = await POST(createMockRequest({ email: 'new@example.com', topics: ['ai'] }))
+      const data = await response.json()
+
+      expect(response.status).toBe(503)
+      expect(data.success).toBe(false)
+      expect(data.error).toBe(
+        'The newsletter is paused. Nothing was saved. The RSS feed still carries every new essay.'
+      )
+      expect(mockSql).not.toHaveBeenCalled()
+      await vi.waitFor(() => expect(outbox.sent).toHaveLength(0))
+    })
   })
 
   describe('validation', () => {
@@ -116,7 +141,7 @@ describe('/api/newsletter/subscribe', () => {
   })
 
   describe('new subscription', () => {
-    it('returns 201 for new subscriber with valid email', async () => {
+    it('returns 200 for new subscriber with valid email', async () => {
       // First call: SELECT returns no existing subscriber
       mockSql.mockResolvedValueOnce([])
       // Second call: INSERT succeeds

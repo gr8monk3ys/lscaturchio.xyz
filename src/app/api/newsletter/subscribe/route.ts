@@ -1,30 +1,18 @@
 import { after } from 'next/server';
 import { getDb } from '@/lib/db';
 import crypto from 'crypto';
-import { withWriteRoute } from '@/lib/api/write-route';
+import { withWriteRoute, writeError } from '@/lib/api/write-route';
 import { newsletterSubscribeSchema } from '@/lib/validations';
 import { deliverMail } from '@/lib/mail/deliver';
 import { renderWelcomeEmail } from '@/lib/mail/templates';
 import { NEWSLETTER_TOPIC_IDS } from '@/constants/newsletter';
+import { isNewsletterSignupOpen, SIGNUP_PAUSED_MESSAGE } from '@/lib/newsletter-signup';
 
-function buildMetadataJson(
-  topics: string[],
-  source: string | undefined,
-  includeOnboarding: boolean
-): string {
-  const metadata: Record<string, unknown> = {
+function buildMetadataJson(topics: string[], source: string | undefined): string {
+  return JSON.stringify({
     ...(topics.length > 0 ? { topics } : {}),
     ...(source ? { source: { path: source } } : {}),
-  };
-
-  if (includeOnboarding) {
-    metadata.onboarding = {
-      step: 0,
-      nextAt: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
-    };
-  }
-
-  return JSON.stringify(metadata);
+  });
 }
 
 /**
@@ -89,6 +77,12 @@ export const POST = withWriteRoute(
     },
   },
   async ({ data }) => {
+    // Paused: the form is hidden too, so this answers a stale page or a
+    // script. Refused before the database, so nothing is stored or mailed.
+    if (!isNewsletterSignupOpen()) {
+      throw writeError.unavailable(SIGNUP_PAUSED_MESSAGE);
+    }
+
     const normalizedEmail = data.email;
     const allowedTopics = new Set<string>(NEWSLETTER_TOPIC_IDS);
     const topics = Array.from(new Set((data.topics ?? []).map((t: string) => t.trim())))
@@ -117,7 +111,7 @@ export const POST = withWriteRoute(
       }
 
       // Reactivate subscription
-      const metadataJson = buildMetadataJson(topics, source, true);
+      const metadataJson = buildMetadataJson(topics, source);
       await sql`
         UPDATE newsletter_subscribers
         SET
@@ -134,7 +128,7 @@ export const POST = withWriteRoute(
     }
 
     // Insert new subscriber (no IP/user-agent for GDPR compliance)
-    const metadataJson = buildMetadataJson(topics, source, true);
+    const metadataJson = buildMetadataJson(topics, source);
     // Two requests for one new address can both pass the SELECT above. Without
     // ON CONFLICT the second INSERT hit the unique index and the reader got a
     // 500 for a signup that had worked. The welcome note goes only to the
