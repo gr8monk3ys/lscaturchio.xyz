@@ -33,3 +33,21 @@ export function getBlogArchiveHref(
   const query = params.toString();
   return query ? `/blog?${query}` : "/blog";
 }
+
+/** Where a filtered index is rendered. Readers never see this path. */
+export const BLOG_ARCHIVE_PATH = "/blog/archive";
+
+/**
+ * The route that renders a `/blog` request.
+ *
+ * `/blog` is prerendered, so it cannot read the query string. A request that
+ * carries a tag or a stage is rendered by the archive route instead; the
+ * proxy rewrites to it, so the address bar keeps the `/blog?stage=` form that
+ * `getBlogArchiveHref` builds. `?page=` alone is not a filter: the unfiltered
+ * index is not paginated.
+ */
+export function resolveBlogIndexPath(pathname: string, searchParams: URLSearchParams): string {
+  if (pathname !== "/blog" && pathname !== "/blog/") return pathname;
+  const filtered = Boolean(searchParams.get("tag") || searchParams.get("stage"));
+  return filtered ? BLOG_ARCHIVE_PATH : pathname;
+}
