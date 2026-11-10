@@ -35,13 +35,12 @@ const refused = () => Object.assign(new Error('Incorrect API key provided'), { s
 /** Fresh module state per test: the disable flag lives for the process. */
 async function load() {
   vi.resetModules();
-  const [provider, embeddings, chat, summarize] = await Promise.all([
+  const [provider, embeddings, chat] = await Promise.all([
     import('@/lib/ai-provider'),
     import('@/lib/embeddings'),
     import('@/lib/chat/providers'),
-    import('@/lib/summarize'),
   ]);
-  return { ...provider, ...embeddings, ...chat, ...summarize };
+  return { ...provider, ...embeddings, ...chat };
 }
 
 describe('ai-provider', () => {
@@ -70,11 +69,10 @@ describe('ai-provider', () => {
   });
 
   it('builds one client, with the shared timeout and retry budget, for every consumer', async () => {
-    const { createEmbedding, generateChatAnswer, summarizeContent } = await load();
+    const { createEmbedding, generateChatAnswer } = await load();
 
     await createEmbedding('text');
     await generateChatAnswer('sys', 'q');
-    await summarizeContent('content');
 
     expect(MockOpenAI).toHaveBeenCalledTimes(1);
     expect(MockOpenAI).toHaveBeenCalledWith({ apiKey: 'sk-test', timeout: 30_000, maxRetries: 1 });
@@ -87,7 +85,7 @@ describe('ai-provider', () => {
     expect(isOpenAIEnabled()).toBe(true);
   });
 
-  // /api/summarize sends reader text to OpenAI. An error whose MESSAGE merely
+  // Chat sends reader text to OpenAI. An error whose MESSAGE merely
   // contains an auth word must not switch OpenAI off for every reader; only a
   // real 401/403 from the API may.
   it('falls back on an auth-worded message without a 401/403, but leaves OpenAI on', async () => {
@@ -100,16 +98,14 @@ describe('ai-provider', () => {
     expect(isOpenAIEnabled()).toBe(true);
   });
 
-  it('a key refused while embedding turns OpenAI off for chat and summaries too', async () => {
+  it('a key refused while embedding turns OpenAI off for chat too', async () => {
     embeddingsCreate.mockRejectedValue(refused());
-    const { createEmbedding, generateChatAnswer, summarizeContent, getEmbeddingProvider } =
-      await load();
+    const { createEmbedding, generateChatAnswer, getEmbeddingProvider } = await load();
 
     expect(await createEmbedding('text')).toEqual([0.5]); // fell back to Ollama
     expect(getEmbeddingProvider()).toBe('ollama');
 
     expect(await generateChatAnswer('sys', 'q')).toMatchObject({ provider: 'ollama' });
-    await expect(summarizeContent('content')).rejects.toThrow('Failed to generate summary');
     expect(chatCreate).not.toHaveBeenCalled();
   });
 
@@ -118,15 +114,6 @@ describe('ai-provider', () => {
     const { createEmbedding, generateChatAnswer } = await load();
 
     expect(await generateChatAnswer('sys', 'q')).toMatchObject({ provider: 'ollama' });
-    expect(await createEmbedding('text')).toEqual([0.5]);
-    expect(embeddingsCreate).not.toHaveBeenCalled();
-  });
-
-  it('a key refused while summarising turns OpenAI off for embeddings too', async () => {
-    chatCreate.mockRejectedValue(refused());
-    const { summarizeContent, createEmbedding } = await load();
-
-    await expect(summarizeContent('content')).rejects.toThrow('Failed to generate summary');
     expect(await createEmbedding('text')).toEqual([0.5]);
     expect(embeddingsCreate).not.toHaveBeenCalled();
   });

@@ -49,10 +49,13 @@ export const RATE_LIMIT_POLICIES = {
   // Model-backed endpoints: each request costs real money.
   /** POST /api/chat */
   CHAT: { limit: 3, windowMs: MINUTE },
-  /** POST /api/summarize */
-  SUMMARIZE: { limit: 2, windowMs: MINUTE },
-  /** GET + POST /api/search — one query embedding per request, either verb. */
-  SEARCH: { limit: 5, windowMs: MINUTE },
+  /**
+   * GET + POST /api/search — one query embedding per request, either verb.
+   * 20, not the 5 it was: the command palette and the /lab demo search as the
+   * reader types, so five queries was one slowly typed phrase, and the sixth
+   * keystroke got a 429. A query embedding costs a few millionths of a cent.
+   */
+  SEARCH: { limit: 20, windowMs: MINUTE },
   /** GET /api/related-posts */
   RELATED_POSTS: { limit: 10, windowMs: MINUTE },
 

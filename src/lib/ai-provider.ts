@@ -2,11 +2,11 @@
  * The one place OpenAI-compatible clients are built, and the one place that
  * remembers OpenAI's key has been refused.
  *
- * Chat, embeddings and summaries all spend the same OPENAI_API_KEY. When that
- * key is missing, wrong or deactivated, every consumer is equally stuck, so
+ * Chat and embeddings spend the same OPENAI_API_KEY. When that
+ * key is missing, wrong or deactivated, both are equally stuck, so
  * the first auth/config failure any of them sees turns OpenAI off for the rest
  * of the process: chat and embeddings fall through to their next provider
- * without paying for another refused request, and summaries fail fast.
+ * without paying for another refused request.
  */
 
 import type OpenAI from 'openai';
@@ -50,10 +50,10 @@ export async function getOpenAIClient(): Promise<OpenAI | null> {
  *
  * Only a real 401/403 from the API turns OpenAI off for every consumer. The
  * message-text matches in `isOpenAIAuthOrConfigError` still make THIS call fall
- * back, but they must not flip the process-wide switch: /api/summarize sends
- * reader-supplied text to OpenAI, and an error that echoed a word like
- * "unauthorized" would otherwise disable chat and search for every reader
- * until the instance recycled.
+ * back, but they must not flip the process-wide switch: chat sends reader
+ * text to the provider, and an error that echoed a word like "unauthorized"
+ * would otherwise disable chat and search for every reader until the instance
+ * recycled.
  */
 export function disableOpenAIOnAuthError(error: unknown): boolean {
   if (!isOpenAIAuthOrConfigError(error)) return false;

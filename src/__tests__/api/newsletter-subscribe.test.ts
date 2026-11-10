@@ -120,7 +120,7 @@ describe('/api/newsletter/subscribe', () => {
       // First call: SELECT returns no existing subscriber
       mockSql.mockResolvedValueOnce([])
       // Second call: INSERT succeeds
-      mockSql.mockResolvedValueOnce([])
+      mockSql.mockResolvedValueOnce([{ email: 'new@example.com' }])
 
       const request = createMockRequest({ email: 'new@example.com' })
       const response = await POST(request)
@@ -128,12 +128,12 @@ describe('/api/newsletter/subscribe', () => {
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.')
+      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
     })
 
     it('queues the welcome email, with the stored unsubscribe token', async () => {
       mockSql.mockResolvedValueOnce([])
-      mockSql.mockResolvedValueOnce([])
+      mockSql.mockResolvedValueOnce([{ email: 'new@example.com' }])
 
       const request = createMockRequest({ email: 'new@example.com' })
       await POST(request)
@@ -146,6 +146,19 @@ describe('/api/newsletter/subscribe', () => {
         subject: "Welcome to Lorenzo's Newsletter!",
       })
       expect(outbox.sent[0].html).toContain(`/unsubscribe?token=${token}`)
+    })
+
+    it('answers 200 and mails nothing when another request stored the address first', async () => {
+      // Both requests passed the SELECT; this one lost the INSERT to ON CONFLICT.
+      mockSql.mockResolvedValueOnce([])
+      mockSql.mockResolvedValueOnce([])
+
+      const response = await POST(createMockRequest({ email: 'new@example.com' }))
+
+      expect(response.status).toBe(200)
+      expect(String(mockSql.mock.calls[1][0].join(''))).toContain('ON CONFLICT (email) DO NOTHING')
+      await new Promise((resolve) => setTimeout(resolve, 20))
+      expect(outbox.sent).toHaveLength(0)
     })
   })
 
@@ -163,7 +176,7 @@ describe('/api/newsletter/subscribe', () => {
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.')
+      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
     })
 
     it('updates topic preferences for existing active subscriber', async () => {
@@ -183,7 +196,7 @@ describe('/api/newsletter/subscribe', () => {
 
       expect(response.status).toBe(200)
       // Updating preferences must not change the response either.
-      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.')
+      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
       // SELECT + UPDATE
       expect(mockSql).toHaveBeenCalledTimes(2)
 
@@ -210,7 +223,7 @@ describe('/api/newsletter/subscribe', () => {
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.')
+      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
     })
 
     it('queues the welcome email for a reactivated subscriber', async () => {
@@ -274,7 +287,7 @@ describe('/api/newsletter/subscribe', () => {
   describe('topic filtering', () => {
     it('filters invalid topic IDs', async () => {
       mockSql.mockResolvedValueOnce([])
-      mockSql.mockResolvedValueOnce([])
+      mockSql.mockResolvedValueOnce([{ email: 'new@example.com' }])
 
       const request = createMockRequest({
         email: 'new@example.com',
@@ -302,7 +315,7 @@ describe('/api/newsletter/subscribe', () => {
       // Instead, test that the .slice(0, 6) is applied by submitting duplicates
       // and checking deduplication + slice behavior.
       mockSql.mockResolvedValueOnce([])
-      mockSql.mockResolvedValueOnce([])
+      mockSql.mockResolvedValueOnce([{ email: 'new@example.com' }])
 
       // All three are valid; route deduplicates and slices to max 6
       const request = createMockRequest({
