@@ -10,7 +10,7 @@
  */
 
 import type OpenAI from 'openai';
-import { logWarn } from './logger';
+import { logError } from './logger';
 import { getErrorMessage, getErrorStatus, isOpenAIAuthOrConfigError } from './openai-errors';
 
 const CLIENT_OPTIONS = { timeout: 30_000, maxRetries: 1 } as const;
@@ -37,6 +37,11 @@ export function isOpenAIEnabled(): boolean {
   return !!process.env.OPENAI_API_KEY && !openaiDisabled;
 }
 
+/** OpenAI has a key and the API refused it (401/403) in this process. */
+export function isOpenAIRefused(): boolean {
+  return !!process.env.OPENAI_API_KEY && openaiDisabled;
+}
+
 /** The shared OpenAI client, or null when there is no key or it was refused. */
 export async function getOpenAIClient(): Promise<OpenAI | null> {
   if (!isOpenAIEnabled()) return null;
@@ -61,12 +66,15 @@ export function disableOpenAIOnAuthError(error: unknown): boolean {
   if (status !== 401 && status !== 403) return true;
   if (!openaiDisabled) {
     openaiDisabled = true;
-    if (process.env.NODE_ENV !== 'production') {
-      logWarn('OpenAI auth/config failed; disabling OpenAI for this process', {
-        component: 'ai-provider',
-        reason: getErrorMessage(error),
-      });
-    }
+    // Logged in production too, and as an error. This used to be a dev-only
+    // warning, so a refused production key took chat and semantic search down
+    // without one line in the logs. The status is enough to act on; the
+    // provider's message can echo part of the key, so it stays out of prod logs.
+    logError('OpenAI refused the API key; OpenAI is off for this process', undefined, {
+      component: 'ai-provider',
+      status,
+      ...(process.env.NODE_ENV !== 'production' && { reason: getErrorMessage(error) }),
+    });
   }
   return true;
 }

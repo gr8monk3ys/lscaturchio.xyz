@@ -130,4 +130,23 @@ describe('ai-provider', () => {
     expect(await createEmbedding('text')).toEqual([0.5]);
     expect(embeddingsCreate).not.toHaveBeenCalled();
   });
+
+  it('reports embeddings as unavailable once the key is refused, not merely set', async () => {
+    embeddingsCreate.mockRejectedValue(refused());
+    ollamaAvailable.mockResolvedValue(false);
+    const { isEmbeddingsAvailable, isOpenAIRefused } = await load();
+
+    // A key is set, which is all the old check looked at.
+    expect(isOpenAIRefused()).toBe(false);
+    expect(await isEmbeddingsAvailable()).toBe(false);
+    expect(isOpenAIRefused()).toBe(true);
+  });
+
+  it('probes embeddings once and reuses the answer', async () => {
+    const { isEmbeddingsAvailable } = await load();
+
+    expect(await isEmbeddingsAvailable()).toBe(true);
+    expect(await isEmbeddingsAvailable()).toBe(true);
+    expect(embeddingsCreate).toHaveBeenCalledTimes(1);
+  });
 });
