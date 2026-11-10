@@ -142,6 +142,20 @@ describe('BlogLayout', () => {
     expect(hubLinks.length).toBeGreaterThan(0);
   });
 
+  it('puts the topic hubs after the essay, not in its header', () => {
+    // The header on a phone already runs past the first screen. Links to other
+    // pages belong where the reader has finished this one.
+    const { container } = renderLayout({ post, children: <p>body</p> });
+    const header = container.querySelector('article header');
+    expect(header).not.toBeNull();
+    expect(header!.querySelector('a[href^="/topics/"]')).toBeNull();
+    const hub = container.querySelector('article a[href^="/topics/"]');
+    expect(hub).not.toBeNull();
+    expect(
+      header!.compareDocumentPosition(hub!) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
+
   it('renders syndication links only when provided', () => {
     renderLayout({
       post: { ...post, syndication: ['https://bsky.app/profile/x/post/1'] },
