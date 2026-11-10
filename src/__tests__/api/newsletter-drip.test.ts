@@ -173,5 +173,31 @@ describe('/api/newsletter/drip', () => {
     const releasePayload = JSON.parse(mockSql.mock.calls[2][1] as string);
     expect(releasePayload.step).toBe(0);
     expect(releasePayload.processingAt).toBeNull();
+    // First failure: counted, and not due again until the backoff has passed.
+    expect(releasePayload.attempts).toBe(1);
+    expect(new Date(releasePayload.nextAt).getTime()).toBeGreaterThan(Date.now());
+  });
+
+  it('stops retrying an address after the fifth failed send', async () => {
+    mockSql
+      .mockResolvedValueOnce([
+        {
+          email: 'user@example.com',
+          unsubscribe_token: 'token-123',
+          metadata: {
+            onboarding: { step: 0, nextAt: '2026-03-01T00:00:00.000Z', attempts: 4 },
+          },
+        },
+      ])
+      .mockResolvedValueOnce([{ email: 'user@example.com' }])
+      .mockResolvedValueOnce([]);
+    outbox.respondWith({ status: 'failed', reason: 'Resend API error' });
+
+    await POST(createRequest());
+
+    const releasePayload = JSON.parse(mockSql.mock.calls[2][1] as string);
+    expect(releasePayload.attempts).toBe(5);
+    // A null nextAt takes the row out of the drip query for good.
+    expect(releasePayload.nextAt).toBeNull();
   });
 });

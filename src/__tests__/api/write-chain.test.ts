@@ -352,6 +352,8 @@ describe('mail delivery (real @/lib/mail)', () => {
   });
 
   it('queues a welcome email for a new subscriber', async () => {
+    // SELECT finds nobody; the INSERT returns the row it stored.
+    mockSql.mockResolvedValueOnce([]).mockResolvedValueOnce([{ email: 'reader@example.com' }]);
     const res = await subscribePost(
       makeRequest('http://localhost:3000/api/newsletter/subscribe', {
         body: { email: 'reader@example.com' },
@@ -377,7 +379,7 @@ describe('human form guard (real @/lib/form-guard)', () => {
     success: true,
   };
   const SUBSCRIBED = {
-    data: { message: 'Thanks! Check your inbox to confirm your subscription.' },
+    data: { message: "Thanks. You're on the list. If the address is new here, a welcome note is on its way." },
     success: true,
   };
   const validSubscribe = { email: 'reader@example.com', contact_ref: '', elapsedMs: 30_000 };
@@ -601,7 +603,7 @@ describe('envelope layer', () => {
 
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({
-      data: { message: 'Thanks! Check your inbox to confirm your subscription.' },
+      data: { message: "Thanks. You're on the list. If the address is new here, a welcome note is on its way." },
       success: true,
     });
   });
@@ -664,7 +666,7 @@ describe('submitWrite: every layer decodes to its own kind (real routes)', () =>
       await submitWrite('/api/newsletter/subscribe', { email: 'reader@example.com' })
     ).toEqual({
       kind: 'ok',
-      data: { message: 'Thanks! Check your inbox to confirm your subscription.' },
+      data: { message: "Thanks. You're on the list. If the address is new here, a welcome note is on its way." },
     });
   });
 

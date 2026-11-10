@@ -99,20 +99,20 @@ describe('/api/newsletter/subscribe', () => {
       // First call: SELECT returns no existing subscriber
       mockSql.mockResolvedValueOnce([]);
       // Second call: INSERT succeeds
-      mockSql.mockResolvedValueOnce([]);
+      mockSql.mockResolvedValueOnce([{ email: 'new@example.com' }]);
 
       const request = createMockRequest({ email: 'new@example.com' });
       const response = await POST(request);
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.');
+      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
     });
 
     it('sends welcome email after successful subscription', async () => {
       mockSql.mockResolvedValueOnce([]);
-      mockSql.mockResolvedValueOnce([]);
+      mockSql.mockResolvedValueOnce([{ email: 'new@example.com' }]);
 
       const request = createMockRequest({ email: 'new@example.com' });
       await POST(request);
@@ -131,13 +131,12 @@ describe('/api/newsletter/subscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.');
+      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
     });
 
-    it('updates active subscriber preferences without restarting onboarding', async () => {
+    it('writes nothing for an active subscriber, topics included', async () => {
       mockSql.mockResolvedValueOnce([{ email: 'existing@example.com', is_active: true }]);
-      mockSql.mockResolvedValueOnce([]);
 
       const request = createMockRequest({
         email: 'existing@example.com',
@@ -148,16 +147,10 @@ describe('/api/newsletter/subscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      // Updating preferences must not change the response either.
-      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.');
-      expect(mockSql).toHaveBeenCalledTimes(2);
-
-      const updateCall = mockSql.mock.calls[1];
-      const metadataJson = updateCall[1] as string;
-      expect(JSON.parse(metadataJson)).toEqual({
-        topics: ['rag-llms', 'systems-craft'],
-        source: { path: '/blog/test-post' },
-      });
+      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
+      // SELECT only. The form is unauthenticated, so it must not overwrite
+      // another person's topic preferences.
+      expect(mockSql).toHaveBeenCalledTimes(1);
     });
 
     it('reactivates inactive subscriber', async () => {
@@ -171,7 +164,7 @@ describe('/api/newsletter/subscribe', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.');
+      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
     });
 
@@ -201,7 +194,7 @@ describe('/api/newsletter/subscribe', () => {
 
     it('still succeeds if the welcome email fails, and logs the failure', async () => {
       mockSql.mockResolvedValueOnce([]);
-      mockSql.mockResolvedValueOnce([]);
+      mockSql.mockResolvedValueOnce([{ email: 'new@example.com' }]);
       outbox.respondWith({ status: 'failed', reason: 'Resend API error' });
 
       const request = createMockRequest({ email: 'test@example.com' });
@@ -210,7 +203,7 @@ describe('/api/newsletter/subscribe', () => {
 
       // The subscription stands; the welcome email is not awaited.
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe('Thanks! Check your inbox to confirm your subscription.');
+      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
       // It used to be `.catch(() => {})`: a failure went nowhere.
       await vi.waitFor(() =>
@@ -224,7 +217,7 @@ describe('/api/newsletter/subscribe', () => {
 
     it('logs a missing mail configuration instead of skipping the welcome email silently', async () => {
       mockSql.mockResolvedValueOnce([]);
-      mockSql.mockResolvedValueOnce([]);
+      mockSql.mockResolvedValueOnce([{ email: 'new@example.com' }]);
       outbox.respondWith({ status: 'not-configured', missing: 'RESEND_API_KEY' });
 
       const response = await POST(createMockRequest({ email: 'test@example.com' }));

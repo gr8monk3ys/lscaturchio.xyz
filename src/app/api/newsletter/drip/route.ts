@@ -9,6 +9,8 @@ type OnboardingState = {
   nextAt?: string | null;
   lastSentAt?: string;
   processingAt?: string | null;
+  /** Failed sends of the current step; reset when one is delivered. */
+  attempts?: number;
 };
 
 type NewsletterMetadata = {
@@ -21,6 +23,13 @@ type NewsletterMetadata = {
 const MAX_STEP = 2;
 const BATCH_SIZE = 50;
 const PROCESSING_LEASE_MINUTES = 30;
+/**
+ * Failed sends before an address is left alone. Without a cap, an address the
+ * provider keeps refusing was picked up again on every run, at the front of
+ * the batch, for as long as the row existed.
+ */
+const MAX_SEND_ATTEMPTS = 5;
+const RETRY_BACKOFF_HOURS = 6;
 
 function safeParseMetadata(raw: unknown): NewsletterMetadata {
   if (!raw) return {};
@@ -168,6 +177,13 @@ export const POST = withWriteRoute(
 
       if (!ok) {
         failed++;
+        // Back off a little longer each time, then stop: `nextAt: null` takes
+        // the row out of the query above for good.
+        const attempts = Number(metadata.onboarding?.attempts ?? 0) + 1;
+        const retryAt =
+          attempts >= MAX_SEND_ATTEMPTS
+            ? null
+            : new Date(Date.now() + attempts * RETRY_BACKOFF_HOURS * 60 * 60 * 1000).toISOString();
         await sql`
           UPDATE newsletter_subscribers
           SET metadata = jsonb_set(
@@ -176,6 +192,8 @@ export const POST = withWriteRoute(
             ${JSON.stringify(
               buildOnboardingState(metadata.onboarding, {
                 processingAt: null,
+                attempts,
+                nextAt: retryAt,
               })
             )}::jsonb,
             true
@@ -199,6 +217,7 @@ export const POST = withWriteRoute(
               lastSentAt: sentAt,
               nextAt: nextOnboardingAt(nextStep),
               processingAt: null,
+              attempts: 0,
             })
           )}::jsonb,
           true

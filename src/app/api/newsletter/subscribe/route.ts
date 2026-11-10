@@ -31,8 +31,13 @@ function buildMetadataJson(
  * One message for every outcome — new subscriber, already subscribed, or
  * reactivated. The side effects still differ; the response must not, or the
  * endpoint becomes a membership oracle for any address someone cares to try.
+ *
+ * It used to say "check your inbox to confirm your subscription". There is no
+ * confirmation step: the address is active the moment it is stored. The line
+ * now promises only the welcome note, and only to a new address.
  */
-const SUBSCRIBE_MESSAGE = 'Thanks! Check your inbox to confirm your subscription.';
+const SUBSCRIBE_MESSAGE =
+  "Thanks. You're on the list. If the address is new here, a welcome note is on its way.";
 
 /**
  * After the response, not awaited by it: the subscription stands whether or
@@ -102,15 +107,10 @@ export const POST = withWriteRoute(
 
     if (existing) {
       if (existing.is_active) {
-        // Allow updating topic preferences even when already subscribed.
-        if (topics.length > 0 || source) {
-          const metadataJson = buildMetadataJson(topics, source, false);
-          await sql`
-            UPDATE newsletter_subscribers
-            SET metadata = COALESCE(metadata, '{}'::jsonb) || ${metadataJson}::jsonb
-            WHERE email = ${normalizedEmail}
-          `;
-        }
+        // Nothing is written for an address that is already on the list.
+        // This form is unauthenticated: merging its topics here let anyone
+        // who knew a subscriber's address overwrite that person's topic
+        // preferences.
         // Same body and status as every other outcome. Distinct responses
         // let anyone probe whether a given address is on the list.
         return { message: SUBSCRIBE_MESSAGE };
@@ -135,12 +135,18 @@ export const POST = withWriteRoute(
 
     // Insert new subscriber (no IP/user-agent for GDPR compliance)
     const metadataJson = buildMetadataJson(topics, source, true);
-    await sql`
+    // Two requests for one new address can both pass the SELECT above. Without
+    // ON CONFLICT the second INSERT hit the unique index and the reader got a
+    // 500 for a signup that had worked. The welcome note goes only to the
+    // request whose row was stored: its token is the one that unsubscribes.
+    const inserted = await sql`
       INSERT INTO newsletter_subscribers (email, unsubscribe_token, metadata)
       VALUES (${normalizedEmail}, ${unsubscribeToken}, ${metadataJson}::jsonb)
+      ON CONFLICT (email) DO NOTHING
+      RETURNING email
     `;
 
-    sendWelcome(normalizedEmail, unsubscribeToken);
+    if (inserted.length > 0) sendWelcome(normalizedEmail, unsubscribeToken);
 
     // 200, not 201: a distinct status code discloses that this address was new.
     return { message: SUBSCRIBE_MESSAGE };

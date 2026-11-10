@@ -192,14 +192,6 @@ export const chatRequestSchema = z.object({
 });
 
 /**
- * Summarize API request validation
- */
-export const summarizeSchema = z.object({
-  content: z.string().min(1, 'Content is required').max(50000, 'Content too long (max 50000 characters)'),
-  type: z.enum(['summary', 'takeaways']).default('summary'),
-});
-
-/**
  * Newsletter unsubscribe token validation
  */
 export const unsubscribeSchema = z.object({
