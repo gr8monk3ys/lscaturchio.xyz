@@ -6,15 +6,7 @@ import {
   getProviderEmbeddingDimensions,
   isEmbeddingsAvailable,
 } from '../src/lib/embeddings';
-import {
-  splitIntoChunks,
-  storeEmbedding,
-  deleteEmbeddingsBySource,
-  getSourceContentHashes,
-  buildEmbeddingInput,
-  sourceContentHash,
-  shouldSkipSource,
-} from '../src/lib/embedding-ingest';
+import { indexSource, neonIndexStore, type Embedder } from '../src/lib/embedding-ingest';
 import { getEssaySource } from '../src/lib/essay-sources';
 import { slugFromCorpusFileName } from '../src/lib/retrieval-corpus';
 
@@ -62,56 +54,54 @@ async function getSourceMetadata(fileName: string): Promise<Record<string, unkno
   };
 }
 
-async function processFile(filePath: string, appendMode: boolean) {
-  const content = fs.readFileSync(filePath, 'utf-8');
-  const fileName = path.basename(filePath);
-  const sourceMetadata = await getSourceMetadata(fileName);
-  const fileHash = sourceContentHash(content);
+/**
+ * The provider that passed preflight, for the whole run. `createEmbedding`
+ * switches to Ollama when OpenAI refuses a key; mid-run that would mix two
+ * vector spaces in one index, so a switch fails the chunk instead.
+ */
+function pinnedEmbedder(provider: string): Embedder {
+  return {
+    provider,
+    async embed(text) {
+      const embedding = await createEmbedding(text);
+      if (getEmbeddingProvider() !== provider) {
+        throw new Error(`Embedding provider changed mid-run from ${provider} to ${getEmbeddingProvider()}`);
+      }
+      // Pace requests to the provider.
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return embedding;
+    },
+  };
+}
 
-  // Split content into chunks
-  const chunks = splitIntoChunks(content);
+async function processFile(
+  filePath: string,
+  deps: Omit<Parameters<typeof indexSource>[1], 'mode'>,
+  appendMode: boolean,
+): Promise<boolean> {
+  const name = path.basename(filePath);
+  const metadata = await getSourceMetadata(name);
+  const outcome = await indexSource(
+    { name, text: fs.readFileSync(filePath, 'utf-8'), metadata },
+    { ...deps, mode: appendMode ? 'append' : 'replace' },
+  );
 
-  if (!appendMode) {
-    // Incremental: skip a source already fully embedded at this content hash.
-    const existingHashes = await getSourceContentHashes(fileName);
-    if (shouldSkipSource(existingHashes, fileHash)) {
-      console.log(`↷ Skipping ${fileName} (unchanged, ${existingHashes.length} chunks)`);
-      return;
-    }
-    const removed = await deleteEmbeddingsBySource(fileName);
-    if (removed > 0) {
-      console.log(`Removed ${removed} existing embedding chunks for ${fileName}`);
-    }
-  }
-
-  const type = slugFromCorpusFileName(fileName) === null ? 'page' : 'blog';
-  const title = typeof sourceMetadata.title === 'string' ? sourceMetadata.title : '';
-  const url = typeof sourceMetadata.url === 'string' ? sourceMetadata.url : '';
-
-  console.log(`Processing ${fileName}: ${chunks.length} chunks`);
-
-  // Process each chunk
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i];
-    try {
-      // Embed the chunk with a Title/Type/URL preamble for topical context, but
-      // store the raw chunk as content so FTS and snippets stay clean.
-      const embedding = await createEmbedding(buildEmbeddingInput({ title, type, url }, chunk));
-
-      await storeEmbedding(
-        chunk,
-        embedding,
-        { ...sourceMetadata, chunk_index: i, chunk_total: chunks.length },
-        fileHash,
+  switch (outcome.status) {
+    case 'skipped':
+      console.log(`↷ Skipping ${name} (unchanged, ${outcome.chunks} chunks)`);
+      return true;
+    case 'indexed':
+      console.log(
+        `✓ ${name}: ${outcome.chunks} chunks` +
+          (outcome.removed > 0 ? ` (replaced ${outcome.removed})` : ''),
       );
-
-      console.log(`✓ Processed chunk ${i + 1}/${chunks.length} of ${fileName}`);
-    } catch (error) {
-      console.error(`Error processing chunk ${i + 1} of ${fileName}:`, error);
-    }
-
-    // Rate limiting - wait 500ms between chunks (Ollama is faster than OpenAI)
-    await new Promise((resolve) => setTimeout(resolve, 500));
+      return true;
+    case 'failed':
+      console.error(
+        `✗ ${name}: chunk ${outcome.chunk + 1}/${outcome.chunks} failed; existing rows kept.`,
+        outcome.error,
+      );
+      return false;
   }
 }
 
@@ -180,13 +170,20 @@ async function main() {
 
   console.log(`Found ${files.length} files to process`);
 
-  // Process each file
+  const deps = { embedder: pinnedEmbedder(provider), store: neonIndexStore() };
+  const failed: string[] = [];
   for (const file of files) {
-    const filePath = path.join(DATA_DIR, file);
-    await processFile(filePath, appendMode);
+    const ok = await processFile(path.join(DATA_DIR, file), deps, appendMode);
+    if (!ok) failed.push(file);
   }
 
   console.log('');
+  if (failed.length > 0) {
+    console.error(`Finished with ${failed.length} failed source(s): ${failed.join(', ')}`);
+    console.error('Their previous rows are untouched; re-run to retry them.');
+    process.exitCode = 1;
+    return;
+  }
   console.log('Finished processing all files');
 }
 
