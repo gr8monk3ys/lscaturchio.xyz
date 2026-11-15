@@ -12,6 +12,7 @@ package-lock.json
 /coverage
 /playwright-report
 /test-results
+/reports
 .playwright-mcp/
 .playwright-cli/
 .lighthouseci/
