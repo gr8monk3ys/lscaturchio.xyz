@@ -14,6 +14,7 @@ import {
 } from "@/components/chat/chat-bubble";
 import { ChatMessageList } from "@/components/chat/chat-message-list";
 import { SuggestedQuestions } from "@/components/chat/suggested-questions";
+import { AnswerSources } from "@/components/chat/answer-sources";
 
 /** Rendered by `SuggestedQuestions`, which owns the one form these take. */
 const SUGGESTIONS = [
@@ -220,6 +221,7 @@ export function AskDrawer() {
                   variant={message.sender === "user" ? "sent" : "received"}
                 >
                   {message.content}
+                  <AnswerSources sources={message.sources} grounded={message.grounded} />
                   {message.failedQuery && !isLoading && (
                     <button
                       type="button"

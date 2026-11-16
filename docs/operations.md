@@ -85,10 +85,16 @@ Additional maintenance helpers:
 - **`.env.local` and Vercel production point at the same Neon database.**
   `generate-embeddings` run locally mutates what production serves. There is
   no staging copy.
-- The script replaces rows per source (delete, then insert). It now runs a
-  provider preflight before touching anything, because a dead `OPENAI_API_KEY`
+- The script replaces rows per source: it embeds every chunk first, then
+  deletes and inserts in one transaction (`indexSource` in
+  `src/lib/embedding-ingest.ts`). A source whose embedding fails keeps its old
+  rows and is retried on the next run; the script exits 1 and names it. The
+  provider preflight also still runs first, because a dead `OPENAI_API_KEY`
   discovered mid-run once emptied the production embeddings table
   (2026-08-03; recovered via the Ollama fallback).
+- The provider that passes preflight is pinned for the run. If OpenAI refuses
+  the key mid-run, the remaining sources fail instead of quietly switching to
+  Ollama and mixing two vector spaces in one index.
 - **Query and stored vectors must share an embedding space.** Production
   embeds queries with whatever provider its env gives it. After rotating
   `OPENAI_API_KEY` (in Vercel and `.env.local`), re-run
@@ -213,6 +219,31 @@ Removing the files from the index did **not** shrink existing history; the
 ~459MB of MP3 blobs (plus old `.next/` caches) remain in the pack until a
 history rewrite (`git filter-repo` + force-push + a GitHub support ticket to
 drop cached PR refs) — a separate decision with fork-divergence costs.
+
+## Newsletter (paused)
+
+Paused on 2026-11-09. The essay pages show no signup form, and
+`POST /api/newsletter/subscribe` answers 503 without touching the database.
+Both follow `NEWSLETTER_SIGNUP_ENABLED`, which is off unless it is exactly
+`"true"` (`src/lib/newsletter-signup.ts`).
+
+Why: the form stored an address and sent one welcome note, and then nothing.
+The follow-up "drip" mails had a route but nothing ever called it, and there
+was no way to send an issue. The drip route is gone.
+
+What still runs:
+
+- `/unsubscribe` and `POST /api/newsletter/unsubscribe`. People on the list
+  hold tokens from mail they were sent, so these stay up whatever the flag says.
+- The `newsletter_subscribers` table. Nothing was deleted.
+
+Before you turn signup back on, decide how an issue gets sent. The 2026-11-09
+review preferred Resend Broadcasts, which uses the provider the site already
+mails through (free up to 1,000 contacts). Also add a confirmation step
+(double opt-in): with the flag on, the form mails a welcome note to any
+address typed into it. Then set `NEWSLETTER_SIGNUP_ENABLED=true` in Vercel
+and redeploy. Essay pages are built at deploy time, so the env change alone
+does not show the form.
 
 ## Database (Neon)
 

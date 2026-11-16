@@ -2,7 +2,7 @@
 
 ## The trilemma structure
 
-Bostrom's argument is a disjunction. At least one of three things must be true:
+Nick Bostrom's argument, from "Are You Living in a Computer Simulation?" (*Philosophical Quarterly*, 2003), is a disjunction. At least one of three things must be true:
 
 | Proposition | Description |
 |-------------|-------------|
@@ -84,7 +84,7 @@ If we're simulated, our simulators might be simulated too, and theirs, down some
 
 "It's just philosophy" misreads what philosophical arguments do. The trilemma is valid. Grant the premises, that posthuman civilizations are possible, that consciousness is substrate-independent, that simulations are computationally feasible, and the conclusion follows necessarily. Whether the premises are true is an empirical question we can't currently answer, which is a different complaint.
 
-"Technology will never get there" assumes too much. Moore's Law skeptics are right that exponential growth can't run forever, but Bostrom only needs *some* civilizations to reach posthuman capability, not most of them. Development could plateau at a level still sufficient for ancestor simulation. We don't actually know the physical limits of computation; estimates run from 10^120 operations (the Bekenstein bound for the observable universe) to far higher under physics we don't yet understand.
+"Technology will never get there" assumes too much. Moore's Law skeptics are right that exponential growth can't run forever, but Bostrom only needs *some* civilizations to reach posthuman capability, not most of them. Development could plateau at a level still sufficient for ancestor simulation. We don't actually know the physical limits of computation; estimates run from about 10^120 operations, which is Seth Lloyd's count of everything the observable universe could have computed since the Big Bang (*Physical Review Letters*, 2002), to far higher under physics we don't yet understand.
 
 "The argument proves nothing" is correct, and less devastating than the people who say it imagine. The argument doesn't prove we're simulated. It proves that accepting common assumptions about technology and consciousness corners you into one of three uncomfortable conclusions. Find all three implausible and you have to say which premise is false. That's productive work, even though the argument settles nothing on its own.
 

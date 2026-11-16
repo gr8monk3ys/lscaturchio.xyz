@@ -6,8 +6,13 @@ Personal site at https://lscaturchio.xyz: Next.js 16 App Router, React 19, TypeS
 
 - `bun install --frozen-lockfile`, then `bun run dev`
 - `bun run lint` (ESLint + `knip` + retrieval-corpus drift check in CI), `bun run typecheck`, `bun run test:coverage`, `bun run build`, `bun run test:e2e`
-- `bun run predeploy` runs all of the above; CI (`.github/workflows/ci.yml`) gates PRs on Lint, Type Check, Test, Build, E2E
+- `bun run predeploy` runs `verify` + `verify:e2e`; CI (`.github/workflows/ci.yml`) gates PRs on Lint, Type Check, Test, Build, E2E
 - Build needs `DATABASE_URL` (Neon); see `.env.example` for the rest
+
+## Checks
+
+- `bun run verify` is exactly what the gating CI jobs run: `verify:lint` (ESLint, knip, corpus drift), `typecheck`, `verify:test` (vitest + coverage), `build`. E2E is the separate stage `bun run verify:e2e`.
+- Run `verify` (and `verify:e2e` for UI changes) before opening a PR, and paste the `VERIFY stage=...` lines it prints into the PR body under **Evidence**. CI writes the same lines to the job summary and uploads screenshots + traces as the `ui-evidence` artifact.
 
 ## Where things live
 

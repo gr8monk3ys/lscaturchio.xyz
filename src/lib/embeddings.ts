@@ -84,10 +84,31 @@ export function getEmbeddingProvider(): string {
   return isOpenAIEnabled() ? 'openai' : 'ollama';
 }
 
+const PROBE_OK_TTL_MS = 5 * 60_000;
+const PROBE_FAILED_TTL_MS = 30_000;
+let probe: { at: number; ok: boolean } | null = null;
+
 /**
- * Check if embeddings are available (provider is configured)
+ * Whether a query can be embedded right now, found out by embedding one word.
+ *
+ * This used to answer "is a key set?", which stayed true after OpenAI refused
+ * the key: /api/rag-status reported embeddings as available on every fresh
+ * instance, and the uptime probe that reads it passed for as long as chat was
+ * down. The result is kept per instance (five minutes when it works, thirty
+ * seconds when it does not), so a status page cannot be used to spend money.
  */
 export async function isEmbeddingsAvailable(): Promise<boolean> {
-  if (isOpenAIEnabled()) return true;
-  return isOllamaAvailable();
+  const now = Date.now();
+  if (probe && now - probe.at < (probe.ok ? PROBE_OK_TTL_MS : PROBE_FAILED_TTL_MS)) {
+    return probe.ok;
+  }
+  let ok: boolean;
+  try {
+    await createEmbedding('ping');
+    ok = true;
+  } catch {
+    ok = false;
+  }
+  probe = { at: now, ok };
+  return ok;
 }

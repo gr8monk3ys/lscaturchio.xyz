@@ -96,6 +96,36 @@ describe("proxy", () => {
     });
   });
 
+  // `/blog` is prerendered and cannot read a query string, so a filtered
+  // request has to reach the archive route. If this rewrite goes missing the
+  // stage and tag filters silently show the unfiltered index.
+  describe("the writing index", () => {
+    it("leaves the unfiltered index alone, so it is served prerendered", () => {
+      expect(isPassThrough(proxy(request("/blog")))).toBe(true);
+      expect(isPassThrough(proxy(request("/blog?page=2")))).toBe(true);
+      expect(isPassThrough(proxy(request("/blog?utm_source=rss")))).toBe(true);
+    });
+
+    it.each(["/blog?stage=seedling", "/blog?tag=attention", "/blog?tag=attention&stage=budding&page=2"])(
+      "rewrites %s to the archive route and keeps the query",
+      (url) => {
+        const response = proxy(request(url));
+        expect(rewrittenTo(response)).toBe("/blog/archive");
+        const target = new URL(response.headers.get("x-middleware-rewrite")!);
+        expect(target.search).toBe(new URL(url, "https://lscaturchio.xyz").search);
+      }
+    );
+
+    it("does the same under a locale prefix", () => {
+      expect(rewrittenTo(proxy(request("/es/blog?stage=seedling")))).toBe("/blog/archive");
+      expect(rewrittenTo(proxy(request("/es/blog")))).toBe("/blog");
+    });
+
+    it("never rewrites an essay", () => {
+      expect(isPassThrough(proxy(request("/blog/attention-is-not-a-resource?stage=seedling")))).toBe(true);
+    });
+  });
+
   describe("a supported locale prefix", () => {
     it("is rewritten to the bare path, not redirected", () => {
       const response = proxy(request("/es/blog"));

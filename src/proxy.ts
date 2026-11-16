@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { resolveBlogIndexPath } from "@/lib/blog-archive-href";
 import { BOTID_PATH_PREFIX } from "@/lib/botid-paths";
 import {
   DEFAULT_LOCALE,
@@ -77,7 +78,7 @@ export function proxy(request: NextRequest) {
     }
 
     const rewriteUrl = request.nextUrl.clone();
-    rewriteUrl.pathname = barePath;
+    rewriteUrl.pathname = resolveBlogIndexPath(barePath, request.nextUrl.searchParams);
     const response = NextResponse.rewrite(rewriteUrl);
     setLocaleCookies(response, pathLocale);
     return response;
@@ -90,6 +91,15 @@ export function proxy(request: NextRequest) {
     const response = NextResponse.redirect(redirectUrl);
     setLocaleCookies(response, cookieLocale);
     return response;
+  }
+
+  // `/blog` is prerendered; a filtered `/blog?tag=` or `?stage=` is rendered by
+  // the archive route. The query string is carried over untouched.
+  const indexPath = resolveBlogIndexPath(pathname, request.nextUrl.searchParams);
+  if (indexPath !== pathname) {
+    const rewriteUrl = request.nextUrl.clone();
+    rewriteUrl.pathname = indexPath;
+    return NextResponse.rewrite(rewriteUrl);
   }
 
   return NextResponse.next();

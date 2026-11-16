@@ -128,7 +128,7 @@ export function SocialShare({ title, description, url }: SocialShareProps) {
           type="button"
           onClick={handleNativeShare}
           className={cn(shareLinkClass, "sm:hidden")}
-          aria-label="Share via native share"
+          aria-label="More ways to share"
         >
           <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
           <span>More</span>

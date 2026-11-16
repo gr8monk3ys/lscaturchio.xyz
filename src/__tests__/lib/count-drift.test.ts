@@ -108,22 +108,6 @@ const ALLOWED: Array<{ file: string; match: string; reason: string }> = [
   // of entry in this list and it should shrink, not grow.
   {
     file: "src/constants/products.tsx",
-    match: "Thirty-seven services",
-    reason:
-      "pi-lab's Docker Compose stack count. External to this repo. Duplicated at src/app/uses/page.tsx — if one moves and the other does not, that is the /books bug again.",
-  },
-  {
-    file: "src/constants/products.tsx",
-    match: "37 services",
-    reason: "Same pi-lab count in numeral form.",
-  },
-  {
-    file: "src/app/uses/page.tsx",
-    match: "thirty-seven services",
-    reason: "The second copy of pi-lab's service count. See the products.tsx entry.",
-  },
-  {
-    file: "src/constants/products.tsx",
     match: "80 repos",
     reason:
       "merge-gate's governed repo count, hedged with a tilde: 78 repos in the sweep's repos.yml on 2026-10-21.",
