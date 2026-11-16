@@ -39,7 +39,7 @@ Collingridge had a word for what happened between 1925 and 1996. He called it en
 
 Software is where the dilemma runs fastest, because software hardens faster than steel.
 
-In 1981 the specification for the Internet Protocol, RFC 791, gave every machine a 32-bit address. That is about 4.3 billion addresses, which at the time was absurdly generous for a research network connecting a few hundred hosts. At the time it was a reasonable call for the world in front of them.
+In 1981 the specification for the Internet Protocol, RFC 791, gave every machine a 32-bit address. That is about 4.3 billion addresses, which at the time was absurdly generous for a research network connecting a few hundred hosts, and a reasonable call for the world in front of them.
 
 The central pool of unallocated addresses ran out in February 2011. Its replacement, IPv6, had been specified more than a decade earlier. Around half of the traffic reaching Google uses it now, roughly thirty years after the fix was written for a problem everyone could see coming. The rest runs on address translation and other workarounds, each one a small new thing that something else depends on.
 
@@ -59,11 +59,11 @@ This changes what a default is. We talk about defaults as choices made once, at 
 
 ## Steering instead of predicting
 
-The obvious response to the dilemma is to forecast better. If the problem is that we change things before we understand them, then understand them sooner. Collingridge thought this was hopeless. The effects of a technology come from its use, and use cannot be forecast from a lab bench or a design document. Better prediction attacks the first horn and leaves the second untouched.
+The obvious response to the dilemma is to forecast better. If the problem is that we change things before we understand them, then understand them sooner. Collingridge thought this was hopeless. The effects of a technology come from its use, and use cannot be forecast from a lab bench or a design document. Better prediction would help with the first horn, though only partly, and it does little about the second.
 
 What he argued for instead was what he called corrigibility. Try to be cheap to correct. Prefer the option that tells you quickly whether it was a mistake, and the one that costs little to back out of. Keep many small units instead of one large one, short lead times instead of long ones, and a running record of what you assumed so you can notice when the assumption breaks.
 
-Software people will recognize most of this, because the good habits of the trade are corrigibility under other names. Migrations that can run backwards. Feature flags. Deprecation periods with real end dates. Versioned interfaces, so the old promise can be kept while a new one is made. Each of these buys a little more time on the first horn.
+Software people will recognize most of this, because the good habits of the trade are corrigibility under other names. Migrations that can run backwards. Feature flags. Deprecation periods with real end dates. Versioned interfaces, so the old promise can be kept while a new one is made. Each of these buys a little more time on the first horn, some of them more than others.
 
 They also have a ceiling, and Hyrum's law is where it sits. A flag that has been on for three years is effectively permanent, and a deprecated endpoint with a large customer behind it tends to stay up. Corrigibility is a property of the design and also of the constituency, and the constituency grows whether or not you designed for it. The lesson of 1925 is in how it went: the study found nothing alarming, the market reopened, and from then on the question was never really about chemistry.
 
@@ -71,8 +71,6 @@ They also have a ceiling, and Hyrum's law is where it sits. A flag that has been
 
 What makes the dilemma uncomfortable right now is that it is easy to see which technologies are still in their soft period. The conventions for how software agents call tools, and for which actions they can take without a person approving them, are being written now, mostly by whoever ships first, in documents that say "initial version" at the top. Nobody can say yet what they will do at scale, which is the first horn, exactly as described.
 
-The usual argument about this treats it as a choice between [the tool is neutral](/blog/myth-of-neutral-tool), so let it run, and stop everything until we know. What Collingridge offers instead is a question you can ask of any design while it is still cheap: if this turns out to be wrong, who will be able to change it, and who will be paying them not to?
-
-Cities have been answering that question badly for a long time. A road grid laid down in the 1950s still decides where people can afford to live, and the [arithmetic that keeps it in place](/blog/suburbs-are-ponzi-scheme) was set long before anyone ran it.
+Collingridge's suggestion is a question you can ask of any design while it is still cheap: if this turns out to be wrong, who will be able to change it, and who will be paying them not to? It sits between the two usual positions, that [the tool is neutral](/blog/myth-of-neutral-tool) so it should be left to run, and that everything should stop until we know more, and it applies to older systems too, such as the [arithmetic of suburban development](/blog/suburbs-are-ponzi-scheme), though there it is being asked very late.
 
 There was a last pump. Somewhere in Algeria, in the summer of 2021, the last of the leaded gasoline meant for cars was sold. Ninety-eight years after the first, and ninety-six after a room full of people heard the warnings and decided to keep selling. Which of the decisions being made this year is the 1923 one, nobody in the room can say. That has always been the problem. It is also the only time anyone gets to choose.
