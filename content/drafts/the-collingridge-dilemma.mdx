@@ -19,9 +19,9 @@ In 1980 a British policy researcher named David Collingridge published a book ca
 
 > When change is easy, the need for it cannot be foreseen; when the need for change is apparent, change has become expensive, difficult and time consuming.
 
-People call this the Collingridge dilemma. Early on, a technology is soft. Few people use it, little has been built on top of it, and changing it costs a meeting. But early on you also don't know what it will do, because what a technology does depends on how it gets used, and nobody has used it yet. Later you know exactly what it does. By then it is under everything.
+People call this the Collingridge dilemma. Early on, a technology is soft. Few people use it, little has been built on top of it, and changing it costs a meeting. But early on you also don't know what it will do, because what a technology does depends on how it gets used, and nobody has used it yet. Later you know exactly what it does, and by then a good deal has been built on top of it, most of which would have to move.
 
-The two horns look like separate problems. One is about knowledge, the other about cost. Collingridge's point was that they are the same problem seen at two different times. The thing that makes a technology hard to change is the same thing that tells you what it does: people building on it.
+The two horns look like separate problems. One is about knowledge, the other about cost. Collingridge's point was that they are the same problem seen at two different times. The thing that makes a technology hard to change is the same thing that tells you what it does, which is people building on it, usually over years and usually without asking.
 
 ## The gas station on the corner
 
@@ -33,7 +33,7 @@ So the need for change was not unforeseeable. It was foreseen, argued in public,
 
 The United States finished banning leaded gasoline for road vehicles at the start of 1996. The geochemist Clair Patterson had spent the intervening decades proving, against well-funded opposition, that the lead in human bodies was overwhelmingly industrial. The last country to sell it for cars, Algeria, stopped in July 2021.
 
-Collingridge had a word for what happened between 1925 and 1996. He called it entrenchment. It is usually read as a technical property: the pipelines are built, the engines are tuned, the refineries are paid for. Leaded gasoline shows it is also a political one. Entrenchment is the moment a technology acquires a constituency. After that, the people who would pay for changing it are organized, and the people who would benefit are not.
+Collingridge had a word for what happened between 1925 and 1996. He called it entrenchment. The usual examples are technical, such as pipelines that are already built and refineries that are already paid for, and leaded gasoline adds a political kind. Entrenchment is the moment a technology acquires a constituency. After that, the people who would pay for changing it are organized, and the people who would benefit are not.
 
 ## Thirty-two bits
 
@@ -45,7 +45,7 @@ The central pool of unallocated addresses ran out in February 2011. Its replacem
 
 The two-digit year is the same story compressed. Programmers in the 1960s and 70s stored years as two digits because memory cost real money and the year 2000 was decades away. By the late 1990s the bill for that saving was being estimated in the hundreds of billions of dollars worldwide, paid mostly by people who had not written the code and in many cases could not find the people who had.
 
-None of these decisions was wrong when it was made. That is what makes them good examples.
+None of these decisions was wrong when it was made, which is part of why they are useful here.
 
 ## Every behavior is a promise
 
@@ -65,14 +65,14 @@ What he argued for instead was what he called corrigibility. Don't try to be rig
 
 Software people will recognize most of this, because the good habits of the trade are corrigibility under other names. Migrations that can run backwards. Feature flags. Deprecation periods with real end dates. Versioned interfaces, so the old promise can be kept while a new one is made. Each of these buys a little more time on the first horn.
 
-They also have a ceiling, and Hyrum's law is where it sits. A flag that has been on for three years is not a flag. A deprecated endpoint with a large customer behind it is not deprecated. Corrigibility is a property of the design and also of the constituency, and the constituency grows whether or not you designed for it. That was the lesson of 1925. The study found nothing alarming, the market reopened, and from then on the question was never really about chemistry.
+They also have a ceiling, and Hyrum's law is where it sits. A flag that has been on for three years is not a flag. A deprecated endpoint with a large customer behind it is not deprecated. Corrigibility is a property of the design and also of the constituency, and the constituency grows whether or not you designed for it. The lesson of 1925 is in how it went: the study found nothing alarming, the market reopened, and from then on the question was never really about chemistry.
 
 ## The soft period
 
-What makes the dilemma uncomfortable right now is that it is easy to see which technologies are still in their soft period. The conventions for how software agents call tools, what a language model is allowed to read, which actions it can take without a person approving them: these are being written now, mostly by whoever ships first, in documents that say "initial version" at the top. Nobody can say yet what they will do at scale. That is not a failure of imagination. It is the first horn, exactly as described.
+What makes the dilemma uncomfortable right now is that it is easy to see which technologies are still in their soft period. The conventions for how software agents call tools, and for which actions they can take without a person approving them, are being written now, mostly by whoever ships first, in documents that say "initial version" at the top. Nobody can say yet what they will do at scale, which is the first horn, exactly as described.
 
 The usual argument about this treats it as a choice between [the tool is neutral](/blog/myth-of-neutral-tool), so let it run, and stop everything until we know. Collingridge offers neither. He offers a question you can ask of any design while it is still cheap: if this turns out to be wrong, who will be able to change it, and who will be paying them not to?
 
-Cities have been answering that question badly for a long time. A road grid laid down in the 1950s still decides where people can afford to live, and the [arithmetic that keeps it in place](/blog/suburbs-are-ponzi-scheme) was set long before anyone ran it. Nobody voted for that outcome. They voted for the road.
+Cities have been answering that question badly for a long time. A road grid laid down in the 1950s still decides where people can afford to live, and the [arithmetic that keeps it in place](/blog/suburbs-are-ponzi-scheme) was set long before anyone ran it.
 
 There was a last pump. Somewhere in Algeria, in the summer of 2021, the last of the leaded gasoline meant for cars was sold. Ninety-eight years after the first, and ninety-six after a room full of people heard the warnings and decided to keep selling. Which of the decisions being made this year is the 1923 one, nobody in the room can say. That has always been the problem. It is also the only time anyone gets to choose.
