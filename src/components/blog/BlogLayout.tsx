@@ -7,6 +7,7 @@ import { BreadcrumbNav } from "@/components/ui/breadcrumb-nav";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { ReadingProgress } from "./reading-progress";
 import { NewsletterCTA } from "./newsletter-cta";
+import { isNewsletterSignupOpen } from "@/lib/newsletter-signup";
 import { ViewCounter } from "./view-counter";
 import { SocialShare } from "./social-share";
 import { ReadingProgressTracker } from "./reading-progress-tracker";
@@ -168,29 +169,6 @@ export function BlogLayout({
                 </Link>
               </p>
 
-              {/* Separated, like the byline row directly above it.
-                  Two hub links in the same uppercase tracked mono with only a
-                  gap between them read as one phrase, not two destinations:
-                  "EXPLORE PHILOSOPHY & THE SELF TECHNOLOGY & ATTENTION" is six
-                  words and two links, and nothing on screen said where one
-                  ended. The row above already used `·` for exactly this job. */}
-              {relatedHubs.length > 0 && (
-                <p className="label-mono mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <span className="text-foreground/70">Explore</span>
-                  {relatedHubs.map((hub) => (
-                    <span key={hub.slug} className="inline-flex items-center gap-x-3">
-                      <span aria-hidden className="text-foreground/25">·</span>
-                      <Link
-                        href={`/topics/${hub.slug}`}
-                        className="label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
-                      >
-                        {hub.title}
-                      </Link>
-                    </span>
-                  ))}
-                </p>
-              )}
-
               <EssayContentsInline slug={slug} />
 
               <hr className="gallery-rule mt-8" />
@@ -239,6 +217,31 @@ export function BlogLayout({
               )}
             </footer>
 
+            {/* The topic hubs, at the point where a reader picks what to read
+                next. This row used to sit in the header between the byline and
+                the cover. At 375px it was 112px of links to other pages placed
+                before the first sentence of this one, on a header that already
+                pushed the essay past the first screen. It is server-rendered,
+                so it is also the way onward when the related-essays request
+                below fails or JavaScript is off. Separators stay `·`, like the
+                byline row, so two hubs read as two destinations. */}
+            {relatedHubs.length > 0 && (
+              <p className="label-mono mt-12 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="text-foreground/70">Explore</span>
+                {relatedHubs.map((hub) => (
+                  <span key={hub.slug} className="inline-flex items-center gap-x-3">
+                    <span aria-hidden className="text-foreground/25">·</span>
+                    <Link
+                      href={`/topics/${hub.slug}`}
+                      className="label-link text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                    >
+                      {hub.title}
+                    </Link>
+                  </span>
+                ))}
+              </p>
+            )}
+
             {/* End matter, ordered by what the reader is most likely to want.
                 Another essay comes first, because that is the site's stated
                 success condition — "a reader who stays, reads a second essay".
@@ -257,10 +260,14 @@ export function BlogLayout({
 
             <GiscusComments />
 
-            <NewsletterCTA
-              defaultTopics={relatedHubs.map((hub) => hub.slug)}
-              sourcePath={pathname}
-            />
+            {/* Paused until there is something to send; see
+                src/lib/newsletter-signup.ts. */}
+            {isNewsletterSignupOpen() && (
+              <NewsletterCTA
+                defaultTopics={relatedHubs.map((hub) => hub.slug)}
+                sourcePath={pathname}
+              />
+            )}
           </article>
         </div>
 

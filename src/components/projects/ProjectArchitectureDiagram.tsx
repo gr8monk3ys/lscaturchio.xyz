@@ -166,22 +166,22 @@ function TalkerDiagram() {
   return (
     <DiagramShell
       title="Architecture"
-      subtitle="RAG pipeline with retrieval-first responses and citations."
+      subtitle="Hybrid retrieval over the course material, reranked before anything is generated."
     >
       <SvgBase viewBox="0 0 980 240">
-        <Box x={24} y={78} w={210} h={86} title="Learner" subtitle="Question + context" />
-        <Box x={270} y={42} w={260} h={86} title="Retriever" subtitle="FAISS vector index" />
-        <Box x={270} y={140} w={260} h={78} title="Sources" subtitle="Slides, syllabus, notes" />
-        <Box x={570} y={78} w={260} h={86} title="Generator" subtitle="Ollama2 + guardrails" tone="primary" />
+        <Box x={24} y={78} w={210} h={86} title="Student" subtitle="Forum question" />
+        <Box x={270} y={42} w={260} h={86} title="Retriever" subtitle="BM25 + ChromaDB vectors" />
+        <Box x={270} y={140} w={260} h={78} title="Sources" subtitle="Lecture notes, syllabus" />
+        <Box x={570} y={78} w={260} h={86} title="Generator" subtitle="Six providers, one interface" tone="primary" />
         <Box x={866} y={78} w={90} h={86} title="Answer" subtitle="Citations" />
 
-        <Arrow x1={234} y1={121} x2={270} y2={85} label="embed + search" />
+        <Arrow x1={234} y1={121} x2={270} y2={85} label="hybrid search" />
         <Arrow x1={400} y1={128} x2={400} y2={140} label="grounding" />
-        <Arrow x1={530} y1={85} x2={570} y2={121} label="contexts" />
+        <Arrow x1={530} y1={85} x2={570} y2={121} label="reranked" />
         <Arrow x1={830} y1={121} x2={866} y2={121} label="final" />
 
-        <Box x={570} y={168} w={260} h={54} title="Optional" subtitle="YouTube timestamps" />
-        <Arrow x1={700} y1={164} x2={700} y2={156} label="multi-modal" />
+        <Box x={570} y={168} w={260} h={54} title="Evaluation" subtitle="LLM-as-judge harness" />
+        <Arrow x1={700} y1={164} x2={700} y2={156} label="scored" />
       </SvgBase>
     </DiagramShell>
   );
@@ -191,21 +191,21 @@ function TradingBotDiagram() {
   return (
     <DiagramShell
       title="Architecture"
-      subtitle="Signals + risk engine feeding an execution layer."
+      subtitle="Momentum signals and a risk engine on paper; every backtest audited before it is believed."
     >
       <SvgBase viewBox="0 0 980 240">
-        <Box x={24} y={48} w={230} h={78} title="News" subtitle="Real-time headlines" />
+        <Box x={24} y={48} w={230} h={78} title="Backtest" subtitle="Slippage + spread" />
         <Box x={24} y={140} w={230} h={78} title="Market Data" subtitle="Price + volume" />
 
-        <Box x={286} y={48} w={250} h={78} title="Sentiment" subtitle="FinBERT scoring" />
-        <Box x={286} y={140} w={250} h={78} title="Indicators" subtitle="SMA, RSI, etc." />
+        <Box x={286} y={48} w={250} h={78} title="Audit" subtitle="backtest-audit" />
+        <Box x={286} y={140} w={250} h={78} title="Indicators" subtitle="RSI, MACD, ADX" />
 
         <Box x={572} y={78} w={240} h={86} title="Risk Engine" subtitle="Limits + sizing" tone="primary" />
-        <Box x={836} y={78} w={120} h={86} title="Execution" subtitle="Alpaca API" />
+        <Box x={836} y={78} w={120} h={86} title="Execution" subtitle="Alpaca paper" />
 
-        <Arrow x1={254} y1={87} x2={286} y2={87} label="score" />
+        <Arrow x1={254} y1={87} x2={286} y2={87} label="trade log" />
         <Arrow x1={254} y1={179} x2={286} y2={179} label="compute" />
-        <Arrow x1={536} y1={87} x2={572} y2={121} label="signals" />
+        <Arrow x1={536} y1={87} x2={572} y2={121} label="verdict" />
         <Arrow x1={536} y1={179} x2={572} y2={121} label="features" />
         <Arrow x1={812} y1={121} x2={836} y2={121} label="orders" />
       </SvgBase>
@@ -261,12 +261,12 @@ function BlogAIDiagram() {
   return (
     <DiagramShell
       title="Architecture"
-      subtitle="Workflow-driven generation with clean export formats."
+      subtitle="Staged generation: each step can be inspected and rerun on its own."
     >
       <SvgBase viewBox="0 0 980 240">
         <Box x={24} y={78} w={220} h={86} title="Brief" subtitle="Topic + keywords" />
-        <Box x={272} y={78} w={260} h={86} title="Workflow" subtitle="LangChain orchestration" />
-        <Box x={564} y={78} w={250} h={86} title="Generator" subtitle="GPT-4 drafting" tone="primary" />
+        <Box x={272} y={78} w={260} h={86} title="Pipeline" subtitle="Research, outline, voice" />
+        <Box x={564} y={78} w={250} h={86} title="Generator" subtitle="OpenAI / Anthropic / Gemini" tone="primary" />
         <Box x={846} y={42} w={110} h={78} title="MDX" subtitle="Blog" />
         <Box x={846} y={128} w={110} h={78} title="DOCX" subtitle="Book" />
 

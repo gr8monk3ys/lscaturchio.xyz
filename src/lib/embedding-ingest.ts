@@ -6,7 +6,7 @@
 
 import { createHash } from 'crypto';
 import { getDb } from './db';
-import { getEmbeddingProvider } from './embeddings';
+import { slugFromCorpusFileName } from './retrieval-corpus';
 
 /**
  * Break text into segments on line boundaries first (so markdown structure —
@@ -148,52 +148,143 @@ export function splitIntoChunks(
   return chunks.filter((chunk) => chunk.length > 0);
 }
 
-/**
- * Store an embedding in the database
- */
-export async function storeEmbedding(
-  text: string,
-  embedding: number[],
-  metadata: Record<string, unknown> = {},
-  contentHash: string | null = null,
-) {
-  const sql = getDb();
-  const embeddingStr = `[${embedding.join(',')}]`;
-  const metadataJson = JSON.stringify({
-    ...metadata,
-    provider: getEmbeddingProvider(),
-    dimensions: embedding.length,
-  });
-  await sql`INSERT INTO embeddings (content, embedding, metadata, content_hash) VALUES (${text}, ${embeddingStr}::vector, ${metadataJson}::jsonb, ${contentHash})`;
+// --- Indexing a source ------------------------------------------------------
+
+/** One stored chunk: the raw text (not the embedding input), its vector, metadata. */
+export interface IndexRow {
+  content: string;
+  embedding: number[];
+  metadata: Record<string, unknown>;
+  contentHash: string;
 }
 
 /**
- * Delete embeddings for a given source.
- * Used by ingestion scripts to make reruns idempotent.
+ * Where the index lives. `neonIndexStore` is the production adapter; tests
+ * pass an in-memory one.
  */
-export async function deleteEmbeddingsBySource(source: string): Promise<number> {
-  const sql = getDb();
-  const rows = await sql`DELETE FROM embeddings WHERE metadata->>'source' = ${source} RETURNING id`;
-  return rows.length;
+export interface IndexStore {
+  /** Content hashes already stored for `source` by `provider` (see below). */
+  hashesFor(source: string, provider: string): Promise<string[]>;
+  /** Delete every row for `source` and insert `rows`, all or nothing. */
+  replace(source: string, rows: IndexRow[]): Promise<{ removed: number }>;
+  /** Insert `rows`, leaving existing rows alone. */
+  append(rows: IndexRow[]): Promise<void>;
 }
 
 /**
- * Content hashes already stored for a source, for incremental re-embedding.
- * Empty when the source was never indexed (or predates content_hash).
+ * The embedding model for one run. `provider` is fixed for the run and stamped
+ * on every row; `embed` must throw rather than answer from another provider,
+ * because vectors from two models do not share a space.
+ */
+export interface Embedder {
+  provider: string;
+  embed(text: string): Promise<number[]>;
+}
+
+export interface CorpusSource {
+  /** File name in `public/my-data`; stored as `metadata.source`. */
+  name: string;
+  text: string;
+  /** Extra row metadata (slug, url, title, ...). `title` and `url` also go in the embedding preamble. */
+  metadata: Record<string, unknown>;
+}
+
+export type IndexOutcome =
+  | { status: 'skipped'; chunks: number }
+  | { status: 'indexed'; chunks: number; removed: number }
+  | { status: 'failed'; chunk: number; chunks: number; error: unknown };
+
+/**
+ * Bring one corpus source's rows up to date.
  *
- * Scoped to the CURRENT provider: query vectors and stored vectors must share
- * an embedding space, so rows embedded by a different provider (or rows old
- * enough to predate provider metadata) must not count as "already embedded" —
- * otherwise switching providers leaves the whole index in the wrong space
- * while every source reports unchanged.
+ * - `replace` mode (the default) skips a source that is already fully
+ *   embedded at this content hash by this provider; otherwise it embeds every
+ *   chunk first and only then swaps the source's rows in one transaction.
+ * - `append` mode embeds and inserts without looking at existing rows.
+ *
+ * If any chunk fails to embed, nothing is written and the old rows stay. A
+ * partial source stored under the new hash would look complete to the skip
+ * check, so the missing chunks would never be retried.
  */
-export async function getSourceContentHashes(source: string): Promise<string[]> {
+export async function indexSource(
+  source: CorpusSource,
+  deps: { embedder: Embedder; store: IndexStore; mode?: 'replace' | 'append' },
+): Promise<IndexOutcome> {
+  const { embedder, store, mode = 'replace' } = deps;
+  const contentHash = sourceContentHash(source.text);
+  const chunks = splitIntoChunks(source.text);
+
+  if (mode === 'replace') {
+    const existing = await store.hashesFor(source.name, embedder.provider);
+    if (shouldSkipSource(existing, contentHash)) {
+      return { status: 'skipped', chunks: existing.length };
+    }
+  }
+
+  const str = (v: unknown) => (typeof v === 'string' ? v : '');
+  const preamble = {
+    title: str(source.metadata.title),
+    type: slugFromCorpusFileName(source.name) === null ? 'page' : 'blog',
+    url: str(source.metadata.url),
+  };
+
+  const rows: IndexRow[] = [];
+  for (let i = 0; i < chunks.length; i++) {
+    try {
+      const embedding = await embedder.embed(buildEmbeddingInput(preamble, chunks[i]));
+      rows.push({
+        content: chunks[i],
+        embedding,
+        contentHash,
+        metadata: {
+          source: source.name,
+          ...source.metadata,
+          chunk_index: i,
+          chunk_total: chunks.length,
+          provider: embedder.provider,
+          dimensions: embedding.length,
+        },
+      });
+    } catch (error) {
+      return { status: 'failed', chunk: i, chunks: chunks.length, error };
+    }
+  }
+
+  if (mode === 'append') {
+    await store.append(rows);
+    return { status: 'indexed', chunks: rows.length, removed: 0 };
+  }
+  const { removed } = await store.replace(source.name, rows);
+  return { status: 'indexed', chunks: rows.length, removed };
+}
+
+/** The `embeddings` table in Neon. */
+export function neonIndexStore(): IndexStore {
   const sql = getDb();
-  const provider = getEmbeddingProvider();
-  const rows = await sql`SELECT content_hash FROM embeddings WHERE metadata->>'source' = ${source} AND metadata->>'provider' = ${provider} AND content_hash IS NOT NULL`;
-  return (rows as Array<Record<string, unknown>>)
-    .map((r) => (typeof r.content_hash === 'string' ? r.content_hash : ''))
-    .filter(Boolean);
+  const insert = (row: IndexRow) =>
+    sql`INSERT INTO embeddings (content, embedding, metadata, content_hash) VALUES (${row.content}, ${`[${row.embedding.join(',')}]`}::vector, ${JSON.stringify(row.metadata)}::jsonb, ${row.contentHash})`;
+
+  return {
+    async hashesFor(source, provider) {
+      // Scoped to the provider: rows from another model (or old enough to
+      // predate provider metadata) live in a different vector space, so they
+      // must not count as "already embedded".
+      const rows = await sql`SELECT content_hash FROM embeddings WHERE metadata->>'source' = ${source} AND metadata->>'provider' = ${provider} AND content_hash IS NOT NULL`;
+      return (rows as Array<Record<string, unknown>>)
+        .map((r) => (typeof r.content_hash === 'string' ? r.content_hash : ''))
+        .filter(Boolean);
+    },
+    async replace(source, rows) {
+      const [deleted] = await sql.transaction([
+        sql`DELETE FROM embeddings WHERE metadata->>'source' = ${source} RETURNING id`,
+        ...rows.map(insert),
+      ]);
+      return { removed: (deleted as unknown[]).length };
+    },
+    async append(rows) {
+      if (rows.length > 0) await sql.transaction(rows.map(insert));
+    },
+  };
 }
 
 /**
@@ -202,7 +293,7 @@ export async function getSourceContentHashes(source: string): Promise<string[]> 
  * raw chunk (not this) is stored as the row's `content`, so full-text search and
  * snippets stay clean.
  */
-export function buildEmbeddingInput(
+function buildEmbeddingInput(
   meta: { title?: string; type?: string; url?: string },
   chunk: string,
 ): string {
@@ -218,7 +309,7 @@ export function buildEmbeddingInput(
 }
 
 /** Stable content hash for per-source incremental re-embedding. */
-export function sourceContentHash(text: string): string {
+function sourceContentHash(text: string): string {
   return createHash('sha256').update(text).digest('hex');
 }
 
@@ -227,6 +318,6 @@ export function sourceContentHash(text: string): string {
  * the current hash — i.e. it has existing chunks and every one carries `newHash`.
  * Any stale chunk (older edit) or a never-indexed source forces a re-embed.
  */
-export function shouldSkipSource(existingHashes: string[], newHash: string): boolean {
+function shouldSkipSource(existingHashes: string[], newHash: string): boolean {
   return existingHashes.length > 0 && existingHashes.every((h) => h === newHash);
 }

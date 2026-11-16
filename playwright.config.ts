@@ -14,15 +14,17 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : localWorkers,
-  reporter: 'html',
+  // json feeds scripts/verify-summary.mjs (the VERIFY e2e line)
+  reporter: [['html'], ['json', { outputFile: 'reports/e2e.json' }]],
   expect: {
     timeout: 15000,
   },
   use: {
     baseURL: E2E_BASE_URL,
     navigationTimeout: 90000,
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    // Always on: CI uploads test-results/ as the `ui-evidence` artifact on every run.
+    trace: 'on',
+    screenshot: 'on',
   },
   projects: [
     {

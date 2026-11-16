@@ -124,6 +124,7 @@ const CHECKS = [
       if (status !== 200) return `expected 200, got ${status}`;
       const rag = body?.data;
       if (!rag?.database?.ok) return "database not ok";
+      if (rag?.chat?.openaiRefused) return "OpenAI refused the API key";
       if (!rag?.embeddings?.available) return "embeddings provider unavailable";
       if (!(rag?.embeddings?.count > 0)) return `embedding count is ${rag?.embeddings?.count}`;
       return null;

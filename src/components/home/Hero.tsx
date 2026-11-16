@@ -18,6 +18,20 @@ export function Hero() {
             what it read, automation that only decides what it safely can. I also
             write essays about technology, attention and work.
           </p>
+
+          {/* Underlined at rest: colour alone does not mark a link (WCAG 1.4.1). */}
+          <p className="max-w-xl text-base text-muted-foreground">
+            Right now that work is{" "}
+            <a
+              href="https://www.vivancedata.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline underline-offset-4"
+            >
+              VivanceData
+            </a>
+            , which brings it to construction, HVAC, logistics and manufacturing businesses.
+          </p>
         </div>
 
         {/* Framed portrait plate with a mono caption, like a gallery placard. */}

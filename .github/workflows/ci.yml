@@ -13,6 +13,8 @@ on:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # verify-summary.mjs writes <stage>.json here; merged by the verify-report job.
+  VERIFY_STAGE_DIR: verify-stages
 
 permissions:
   contents: read
@@ -41,16 +43,11 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Run ESLint
-        run: bun run lint
-
-      - name: Run knip (dead code / unused deps)
-        run: bun run knip
-
-      # The chat retrieval corpus (public/my-data/blog-*.md) is derived from
-      # the essays; this fails when an essay was edited without regenerating it.
-      - name: Verify retrieval corpus is in sync
-        run: bun run sync-retrieval-corpus -- --check
+      # ESLint, knip (dead code / unused deps) and the retrieval-corpus drift
+      # check (public/my-data/blog-*.md is derived from the essays). Same
+      # command `bun run verify` runs locally.
+      - name: Lint, knip, retrieval corpus sync
+        run: bun run verify:lint
 
   typecheck:
     name: Type Check
@@ -101,8 +98,17 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # Coverage thresholds, plus the VERIFY stage=unit line in the job summary.
       - name: Run unit tests with coverage thresholds
-        run: bun run test:coverage
+        run: bun run verify:test
+
+      - name: Upload VERIFY stage counts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: verify-stage-test
+          path: verify-stages/
+          retention-days: 1
 
   e2e:
     name: E2E
@@ -145,8 +151,9 @@ jobs:
 
       # The Playwright webServer builds and serves the app itself, so this job
       # needs the same env as the build job.
+      # Also writes the VERIFY stage=e2e line to the job summary.
       - name: Run e2e tests
-        run: bun run test:e2e
+        run: bun run verify:e2e
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -163,6 +170,14 @@ jobs:
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
 
+      - name: Upload VERIFY stage counts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: verify-stage-e2e
+          path: verify-stages/
+          retention-days: 1
+
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@v7
@@ -170,6 +185,28 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+      # Screenshots + traces of every e2e test, on every run, as UI evidence.
+      - name: Upload UI evidence
+        id: ui-evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-evidence
+          path: test-results/
+          retention-days: 14
+
+      - name: List UI evidence in job summary
+        if: always()
+        env:
+          ARTIFACT_URL: ${{ steps.ui-evidence.outputs.artifact-url }}
+        run: |
+          {
+            echo "### UI evidence"
+            echo "Artifact: [ui-evidence](${ARTIFACT_URL:-none uploaded}) (screenshots + trace.zip per test; open traces with \`bunx playwright show-trace\`)"
+            echo
+            find test-results -name '*.png' 2>/dev/null | sort | sed 's/^/- /'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   build:
     name: Build
@@ -340,3 +377,44 @@ jobs:
 
       - name: Verify production chat endpoint
         run: node scripts/smoke-chat.mjs --base-url https://lscaturchio.xyz --attempts 30 --interval-ms 20000 --timeout-ms 20000 --allow-edge-block
+
+  verify-report:
+    # Merges every job's VERIFY stage counts into one machine-readable artifact for the merge gate
+    # (job summaries aren't readable via the REST API). Fails if any expected stage is missing.
+    name: Verify Report
+    runs-on: ubuntu-latest
+    needs: [test, e2e]
+    if: always()
+
+    steps:
+      - name: Download stage counts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: verify-stage-*
+          path: verify-stages
+          merge-multiple: true
+
+      - name: Merge into verify-report.json
+        env:
+          EXPECTED_STAGES: unit e2e
+          REPO: ${{ github.repository }}
+          COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          for s in $EXPECTED_STAGES; do
+            f="verify-stages/$s.json"
+            [ -f "$f" ] || { echo "::error::missing VERIFY stage '$s'"; exit 1; }
+            jq -e --arg s "$s" '.stage == $s and ([.tests, .passed, .failed, .skipped] | all(type == "number" and . == floor and . >= 0))
+              and (.passed_ids | type == "array" and all(type == "string"))' "$f" > /dev/null \
+              || { echo "::error::unparseable VERIFY stage '$s'"; cat "$f"; exit 1; }
+          done
+          jq -n --arg repo "$REPO" --arg commit "$COMMIT" '{schema: 1, repo: $repo, commit: $commit, stages: [inputs | .passed_ids |= (unique | sort)]}' \
+            $(for s in $EXPECTED_STAGES; do echo "verify-stages/$s.json"; done) > verify-report.json
+          cat verify-report.json
+
+      - name: Upload verify-report
+        uses: actions/upload-artifact@v7
+        with:
+          name: verify-report
+          path: verify-report.json
+          retention-days: 30

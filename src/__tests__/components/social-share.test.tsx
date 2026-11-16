@@ -132,7 +132,7 @@ describe("SocialShare", () => {
     render(<SocialShare {...props} />);
 
     expect(
-      screen.queryByRole("button", { name: "Share via native share" })
+      screen.queryByRole("button", { name: "More ways to share" })
     ).not.toBeInTheDocument();
   });
 
@@ -146,7 +146,7 @@ describe("SocialShare", () => {
     render(<SocialShare {...props} />);
 
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Share via native share" }));
+      fireEvent.click(screen.getByRole("button", { name: "More ways to share" }));
     });
 
     expect(share).toHaveBeenCalledWith({

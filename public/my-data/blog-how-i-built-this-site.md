@@ -1,5 +1,7 @@
 # How I Built This Site: A Technical Deep Dive
 
+> **Update, October 2026:** parts of this have changed since I wrote it. The database moved from Supabase to Neon, which is still Postgres with pgvector, so search works the same way. Embeddings now come from OpenAI's `text-embedding-3-small` at 768 dimensions, and when there's no OpenAI key the site falls back to `nomic-embed-text` running in Ollama. The code and setup notes below show the original version.
+
 ## Why I built this
 
 I wanted a portfolio that showed off my AI and web work, and I also wanted a place to break things while trying out new tech. Those two goals pull in opposite directions, which is half the fun. The constraints I gave myself were sub-2s load times, some actual AI features rather than a chatbot bolted on for show, a TypeScript codebase I could refactor without fear, and a front end that felt good to use.
@@ -98,17 +100,17 @@ The APIs are public, which means anyone can hammer them. I added an in-memory ra
 
 ```typescript
 // src/lib/rate-limit.ts
-export const RATE_LIMITS = {
-  AI_HEAVY: { requests: 5, window: 60 * 1000 },      // 5 req/min
-  NEWSLETTER: { requests: 3, window: 5 * 60 * 1000 }, // 3 req/5min
-  PUBLIC: { requests: 100, window: 60 * 1000 },       // 100 req/min
+export const RATE_LIMIT_POLICIES = {
+  CHAT: { limit: 3, windowMs: MINUTE },                     // 3 req/min
+  NEWSLETTER_SUBSCRIBE: { limit: 3, windowMs: 5 * MINUTE }, // 3 req/5min
+  PUBLIC_READ: { limit: 100, windowMs: MINUTE },            // 100 req/min
 };
 
-// Usage
-export const POST = withRateLimit(handler, RATE_LIMITS.AI_HEAVY);
+// Usage: a route names its policy
+export const POST = withRateLimit(handler, "CHAT");
 ```
 
-The AI endpoints get 5 requests a minute, the newsletter and contact form get 3 per five minutes, and everything else gets 100 a minute. I kept it in-memory because it has no external dependencies, the lookups are microsecond-fast, and it's plenty for a personal site. If I ever need it to survive across instances I'll move it to Redis, but that day hasn't come.
+Chat gets 3 requests a minute, the newsletter and contact form get 3 per five minutes, and cheap public reads share 100 a minute. I kept it in-memory because it has no external dependencies, the lookups are microsecond-fast, and it's plenty for a personal site. If I ever need it to survive across instances I'll move it to Redis, but that day hasn't come.
 
 ---
 
@@ -226,14 +228,13 @@ export default {
 
 ### Supabase setup
 
-Three tables do the work: `embeddings` for vector search (1536-dimensional, from OpenAI's ada-002), `newsletter_subscribers` with unsubscribe tokens, and a planned `views` table for page-view tracking. Two RPC functions sit on top, `match_embeddings(query_embedding, threshold, count)` for semantic search and `count_active_subscribers()` for the newsletter stats.
+Three tables do the work: `embeddings` for vector search (1536-dimensional, from OpenAI's ada-002 at the time; it's 768 dimensions from `text-embedding-3-small` now), `newsletter_subscribers` with unsubscribe tokens, and a planned `views` table for page-view tracking. Two RPC functions sit on top, `match_embeddings(query_embedding, threshold, count)` for semantic search and `count_active_subscribers()` for the newsletter stats.
 
 ### API route patterns
 
 ```typescript
 // Standard pattern for all routes
-import { withRateLimit } from '@/lib/with-rate-limit';
-import { RATE_LIMITS } from '@/lib/rate-limit';
+import { withRateLimit } from '@/lib/rate-limit';
 
 async function handler(req: NextRequest) {
   // Validation
@@ -246,7 +247,7 @@ async function handler(req: NextRequest) {
   return NextResponse.json({ data: result });
 }
 
-export const POST = withRateLimit(handler, RATE_LIMITS.STANDARD);
+export const POST = withRateLimit(handler, "PUBLIC_READ");
 ```
 
 ---

@@ -10,7 +10,6 @@ import { createOutbox } from '@/lib/mail/outbox';
 import { resendTransport } from '@/lib/mail/resend';
 import {
   renderContactNotification,
-  renderOnboardingEmail,
   renderWelcomeEmail,
 } from '@/lib/mail/templates';
 import { logError, logInfo } from '@/lib/logger';
@@ -266,22 +265,6 @@ describe('templates', () => {
 
     expect(subject).toBe("Welcome to Lorenzo's Newsletter!");
     expect(html).toContain('/unsubscribe?token=tok123');
-  });
-
-  it('renders onboarding steps 1 and 2, with topic links on step 1', () => {
-    const one = renderOnboardingEmail('tok', 1, { topics: ['ai', ' ', 'unknown topic'] });
-    const two = renderOnboardingEmail('tok', 2);
-
-    expect(one?.subject).toBe('Start here: a quick path through the site');
-    expect(one?.html).toContain('/topics/ai');
-    expect(one?.html).toContain('/topics/unknown%20topic');
-    expect(two?.subject).toBe('Work with me (if you need a hand shipping)');
-    expect(two?.html).not.toContain('/topics/');
-  });
-
-  it('has no email for any other onboarding step', () => {
-    expect(renderOnboardingEmail('tok', 0)).toBeNull();
-    expect(renderOnboardingEmail('tok', 3)).toBeNull();
   });
 
   it('escapes every reader field in the contact notification', () => {

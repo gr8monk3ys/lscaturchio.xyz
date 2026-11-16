@@ -1,7 +1,7 @@
 import { StaticImageData } from "next/image";
 
 export type ProjectStatus = 'active' | 'maintained' | 'archived';
-export type ProjectCategory = 'ai-ml' | 'web-apps' | 'tools' | 'open-source' | 'data-science';
+export type ProjectCategory = 'ai-ml' | 'web-apps' | 'tools' | 'open-source' | 'data-science' | 'games';
 
 export interface CaseStudyMetric {
   label: string;
@@ -64,6 +64,11 @@ export type Product = {
   /** Repo exists but is private — render an explanation, never a dead link. */
   sourcePrivate?: boolean;
   startDate?: string; // Format: "YYYY-MM"
+  /**
+   * A video under `public/` that replaces the cover in the case-study hero.
+   * The cover stays as its poster, so nothing downloads until play.
+   */
+  videoSrc?: string;
   caseStudy?: CaseStudy;
   /** Set only on projects featured on the home page. */
   homeCard?: ProjectHomeCard;

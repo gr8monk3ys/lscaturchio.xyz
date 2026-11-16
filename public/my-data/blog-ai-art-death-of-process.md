@@ -44,9 +44,9 @@ Those skills aren't only instrumental. They're constitutive. Learning to draw ch
 
 When photography was invented, painters panicked, and the panic was partly justified: portrait painting as a trade collapsed. But painting didn't die. Freed from the job of representing reality accurately, painters went off into abstraction and expressionism and the rest of the movements that made twentieth-century art what it was. AI art advocates love this analogy. New tools just push art in new directions.
 
-The analogy breaks in a specific place. Photography didn't replace the process of making visual art; it replaced one application of that process. Photographers still needed skill, vision, timing, an eye for light and composition. The camera extended human capability without removing human agency. AI image generation replaces the process itself, reducing the human contribution to description — telling the machine what you want. That's closer to being a patron than an artist. The Medici didn't paint the Sistine Chapel; they told Michelangelo what they wanted and he figured out how to do it.
+The analogy breaks in a specific place. Photography didn't replace the process of making visual art; it replaced one application of that process. Photographers still needed skill, vision, timing, an eye for light and composition. The camera extended human capability without removing human agency. AI image generation replaces the process itself, reducing the human contribution to description — telling the machine what you want. That's closer to being a patron than an artist. Pope Julius II didn't paint the Sistine Chapel ceiling; he told Michelangelo what he wanted, and Michelangelo figured out how to do it.
 
-Prompt engineers are the new Medici. That's fine as far as it goes. Patronage is a legitimate role. It just isn't artistry.
+Prompt engineers are patrons with a text box. That's fine as far as it goes. Patronage is a legitimate role. It just isn't artistry.
 
 ## What we actually lose
 

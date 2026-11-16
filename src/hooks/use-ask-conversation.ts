@@ -50,6 +50,29 @@ export interface AskMessage {
   sender: "user" | "ai";
   /** Set on a failed turn so the reader can resend the question that failed. */
   failedQuery?: string;
+  /** Essays retrieval found for this answer, best first. */
+  sources?: AskSource[];
+  /** False when those essays are only the nearest ones, not a real match. */
+  grounded?: boolean;
+}
+
+export interface AskSource {
+  title: string;
+  url: string;
+}
+
+/** Keep only well-formed, same-site links: the list is rendered as anchors. */
+function readSources(value: unknown): AskSource[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (s): s is AskSource =>
+      !!s &&
+      typeof s === "object" &&
+      typeof (s as AskSource).title === "string" &&
+      typeof (s as AskSource).url === "string" &&
+      (s as AskSource).url.startsWith("/") &&
+      !(s as AskSource).url.startsWith("//")
+  );
 }
 
 /**
@@ -114,7 +137,7 @@ export function useAskConversation({
       setInput("");
       setIsLoading(true);
 
-      const result = await submitWrite<{ answer?: unknown }>(
+      const result = await submitWrite<{ answer?: unknown; sources?: unknown; grounded?: unknown }>(
         "/api/chat",
         { query, contextSlug: contextRef.current || undefined },
         // A model-backed answer can legitimately outlast the forms' 20s: the
@@ -131,9 +154,11 @@ export function useAskConversation({
           : null;
 
       if (answer) {
+        const sources = result.kind === "ok" ? readSources(result.data?.sources) : [];
+        const grounded = result.kind === "ok" && result.data?.grounded === true;
         setMessages((prev) => [
           ...prev,
-          { id: prev.length + 1, content: answer, sender: "ai" },
+          { id: prev.length + 1, content: answer, sender: "ai", sources, grounded },
         ]);
         return;
       }

@@ -20,7 +20,7 @@ describe('buildSystemPromptWithContext (strictly grounded)', () => {
       closest: [],
     });
     expect(out).toContain('I wrote about RAG systems.');
-    expect(out).not.toContain("haven't written about this yet");
+    expect(out).not.toContain("hasn't written about this yet");
   });
 
   it('fences the retrieved context as data, not instructions', () => {
@@ -45,7 +45,7 @@ describe('buildSystemPromptWithContext (strictly grounded)', () => {
       confidence: 'none',
       closest: [{ title: 'On Gardens', url: '/blog/on-gardens' }],
     });
-    expect(out).toContain("haven't written about this yet");
+    expect(out).toContain("hasn't written about this yet");
     expect(out).toContain('On Gardens');
     expect(out).toContain('/blog/on-gardens');
   });

@@ -259,13 +259,13 @@ describe('withRateLimit', () => {
 
   it('never runs the handler once the policy is exhausted', async () => {
     const handler = vi.fn(async () => NextResponse.json({ ok: true }));
-    const route = withRateLimit(handler, 'SUMMARIZE');
+    const route = withRateLimit(handler, 'CHAT');
 
-    for (let i = 0; i < RATE_LIMIT_POLICIES.SUMMARIZE.limit; i += 1) await route(request());
+    for (let i = 0; i < RATE_LIMIT_POLICIES.CHAT.limit; i += 1) await route(request());
     const res = await route(request());
 
     expect(res.status).toBe(429);
-    expect(handler).toHaveBeenCalledTimes(RATE_LIMIT_POLICIES.SUMMARIZE.limit);
+    expect(handler).toHaveBeenCalledTimes(RATE_LIMIT_POLICIES.CHAT.limit);
   });
 
   it('answers a throwing handler with the standard 500, headers included', async () => {
