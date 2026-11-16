@@ -9,7 +9,7 @@ type RagStatus = {
   timestamp: string;
   database: { configured: boolean; ok: boolean };
   embeddings: { provider: string; available: boolean; dimensions: number; count: number | null };
-  chat: { openaiConfigured: boolean; ollamaAvailable: boolean | null };
+  chat: { openaiConfigured: boolean; openaiRefused?: boolean; ollamaAvailable: boolean | null };
 };
 
 function Pill({ ok, label }: { ok: boolean; label: string }) {
@@ -113,10 +113,12 @@ export function RagStatusCard() {
                 Chat
               </div>
               <Pill
-                ok={!!status?.chat.openaiConfigured || !!status?.chat.ollamaAvailable}
+                ok={(!!status?.chat.openaiConfigured && !status?.chat.openaiRefused) || !!status?.chat.ollamaAvailable}
                 label={
                   status
-                    ? status.chat.openaiConfigured
+                    ? status.chat.openaiRefused
+                      ? "Key refused"
+                      : status.chat.openaiConfigured
                       ? "OpenAI"
                       : status.chat.ollamaAvailable
                         ? "Ollama"
@@ -127,7 +129,9 @@ export function RagStatusCard() {
             </div>
             <div className="mt-2 text-xs text-muted-foreground">
               {status ? (
-                status.chat.openaiConfigured
+                status.chat.openaiRefused
+                  ? "OpenAI refused the API key."
+                  : status.chat.openaiConfigured
                   ? "OpenAI configured."
                   : status.chat.ollamaAvailable
                     ? "Ollama reachable."

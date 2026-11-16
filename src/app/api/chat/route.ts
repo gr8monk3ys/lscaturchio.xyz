@@ -50,12 +50,20 @@ export const POST = withWriteRoute(
 
     const result = await generateChatAnswer(systemPrompt, query);
 
+    // Every answer carries the essays it was grounded on, so a reader can check
+    // it, and so a turn with no model behind it still leads somewhere.
+    const grounding = {
+      sources: retrieval.closest,
+      grounded: retrieval.confidence !== 'none',
+    };
+
     if (result) {
       return {
         answer: result.answer,
         provider: result.provider,
         model: result.model,
         degraded: result.usedFallbackModel,
+        ...grounding,
       };
     }
 
@@ -64,6 +72,7 @@ export const POST = withWriteRoute(
       provider: 'fallback' as const,
       model: null,
       degraded: true,
+      ...grounding,
     };
   }
 );

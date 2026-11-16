@@ -1,38 +1,31 @@
 import { after } from 'next/server';
 import { getDb } from '@/lib/db';
 import crypto from 'crypto';
-import { withWriteRoute } from '@/lib/api/write-route';
+import { withWriteRoute, writeError } from '@/lib/api/write-route';
 import { newsletterSubscribeSchema } from '@/lib/validations';
 import { deliverMail } from '@/lib/mail/deliver';
 import { renderWelcomeEmail } from '@/lib/mail/templates';
 import { NEWSLETTER_TOPIC_IDS } from '@/constants/newsletter';
+import { isNewsletterSignupOpen, SIGNUP_PAUSED_MESSAGE } from '@/lib/newsletter-signup';
 
-function buildMetadataJson(
-  topics: string[],
-  source: string | undefined,
-  includeOnboarding: boolean
-): string {
-  const metadata: Record<string, unknown> = {
+function buildMetadataJson(topics: string[], source: string | undefined): string {
+  return JSON.stringify({
     ...(topics.length > 0 ? { topics } : {}),
     ...(source ? { source: { path: source } } : {}),
-  };
-
-  if (includeOnboarding) {
-    metadata.onboarding = {
-      step: 0,
-      nextAt: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
-    };
-  }
-
-  return JSON.stringify(metadata);
+  });
 }
 
 /**
  * One message for every outcome — new subscriber, already subscribed, or
  * reactivated. The side effects still differ; the response must not, or the
  * endpoint becomes a membership oracle for any address someone cares to try.
+ *
+ * It used to say "check your inbox to confirm your subscription". There is no
+ * confirmation step: the address is active the moment it is stored. The line
+ * now promises only the welcome note, and only to a new address.
  */
-const SUBSCRIBE_MESSAGE = 'Thanks! Check your inbox to confirm your subscription.';
+const SUBSCRIBE_MESSAGE =
+  "Thanks. You're on the list. If the address is new here, a welcome note is on its way.";
 
 /**
  * After the response, not awaited by it: the subscription stands whether or
@@ -84,6 +77,12 @@ export const POST = withWriteRoute(
     },
   },
   async ({ data }) => {
+    // Paused: the form is hidden too, so this answers a stale page or a
+    // script. Refused before the database, so nothing is stored or mailed.
+    if (!isNewsletterSignupOpen()) {
+      throw writeError.unavailable(SIGNUP_PAUSED_MESSAGE);
+    }
+
     const normalizedEmail = data.email;
     const allowedTopics = new Set<string>(NEWSLETTER_TOPIC_IDS);
     const topics = Array.from(new Set((data.topics ?? []).map((t: string) => t.trim())))
@@ -102,22 +101,17 @@ export const POST = withWriteRoute(
 
     if (existing) {
       if (existing.is_active) {
-        // Allow updating topic preferences even when already subscribed.
-        if (topics.length > 0 || source) {
-          const metadataJson = buildMetadataJson(topics, source, false);
-          await sql`
-            UPDATE newsletter_subscribers
-            SET metadata = COALESCE(metadata, '{}'::jsonb) || ${metadataJson}::jsonb
-            WHERE email = ${normalizedEmail}
-          `;
-        }
+        // Nothing is written for an address that is already on the list.
+        // This form is unauthenticated: merging its topics here let anyone
+        // who knew a subscriber's address overwrite that person's topic
+        // preferences.
         // Same body and status as every other outcome. Distinct responses
         // let anyone probe whether a given address is on the list.
         return { message: SUBSCRIBE_MESSAGE };
       }
 
       // Reactivate subscription
-      const metadataJson = buildMetadataJson(topics, source, true);
+      const metadataJson = buildMetadataJson(topics, source);
       await sql`
         UPDATE newsletter_subscribers
         SET
@@ -134,13 +128,19 @@ export const POST = withWriteRoute(
     }
 
     // Insert new subscriber (no IP/user-agent for GDPR compliance)
-    const metadataJson = buildMetadataJson(topics, source, true);
-    await sql`
+    const metadataJson = buildMetadataJson(topics, source);
+    // Two requests for one new address can both pass the SELECT above. Without
+    // ON CONFLICT the second INSERT hit the unique index and the reader got a
+    // 500 for a signup that had worked. The welcome note goes only to the
+    // request whose row was stored: its token is the one that unsubscribes.
+    const inserted = await sql`
       INSERT INTO newsletter_subscribers (email, unsubscribe_token, metadata)
       VALUES (${normalizedEmail}, ${unsubscribeToken}, ${metadataJson}::jsonb)
+      ON CONFLICT (email) DO NOTHING
+      RETURNING email
     `;
 
-    sendWelcome(normalizedEmail, unsubscribeToken);
+    if (inserted.length > 0) sendWelcome(normalizedEmail, unsubscribeToken);
 
     // 200, not 201: a distinct status code discloses that this address was new.
     return { message: SUBSCRIBE_MESSAGE };

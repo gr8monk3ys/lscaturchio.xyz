@@ -1,10 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import {
   splitIntoChunks,
-  buildEmbeddingInput,
-  sourceContentHash,
-  shouldSkipSource,
+  indexSource,
+  type Embedder,
+  type IndexRow,
+  type IndexStore,
 } from '@/lib/embedding-ingest';
+import { corpusFileName } from '@/lib/retrieval-corpus';
 
 describe('splitIntoChunks', () => {
   it('returns an empty array for empty or whitespace-only input', () => {
@@ -166,36 +168,158 @@ describe('splitIntoChunks', () => {
   });
 });
 
-describe('buildEmbeddingInput', () => {
-  it('prepends a Title/Type/URL preamble before the chunk body', () => {
-    const out = buildEmbeddingInput(
-      { title: 'On Gardens', type: 'blog', url: '/blog/on-gardens' },
-      'A chunk of prose.',
+// --- indexSource ------------------------------------------------------------
+
+/** The `embeddings` table as an array, with the same replace/append semantics. */
+function memoryStore(initial: IndexRow[] = []) {
+  const rows = [...initial];
+  const store: IndexStore = {
+    async hashesFor(source, provider) {
+      return rows
+        .filter((r) => r.metadata.source === source && r.metadata.provider === provider)
+        .map((r) => r.contentHash);
+    },
+    async replace(source, next) {
+      const before = rows.length;
+      const kept = rows.filter((r) => r.metadata.source !== source);
+      rows.splice(0, rows.length, ...kept, ...next);
+      return { removed: before - kept.length };
+    },
+    async append(next) {
+      rows.push(...next);
+    },
+  };
+  return { store, rows };
+}
+
+/** Records every embedding input; fails on the call numbers in `failOn`. */
+function fakeEmbedder(provider = 'openai', failOn: number[] = []) {
+  const inputs: string[] = [];
+  const embedder: Embedder = {
+    provider,
+    async embed(text: string) {
+      inputs.push(text);
+      if (failOn.includes(inputs.length)) throw new Error('provider down');
+      return [inputs.length, 0, 0];
+    },
+  };
+  return { embedder, inputs };
+}
+
+const essay = corpusFileName('on-gardens');
+const longText = Array.from({ length: 80 }, (_, i) => `Sentence number ${i} about gardens.`).join(' ');
+
+describe('indexSource', () => {
+  it('stores raw chunks with source, chunk position, provider and dimensions', async () => {
+    const { store, rows } = memoryStore();
+    const { embedder } = fakeEmbedder();
+
+    const outcome = await indexSource(
+      { name: essay, text: 'A short essay.', metadata: { title: 'On Gardens', url: '/blog/on-gardens' } },
+      { embedder, store },
     );
-    expect(out).toBe(
-      'Title: On Gardens\nType: blog\nURL: /blog/on-gardens\n\nA chunk of prose.',
+
+    expect(outcome).toEqual({ status: 'indexed', chunks: 1, removed: 0 });
+    expect(rows).toHaveLength(1);
+    expect(rows[0].content).toBe('A short essay.');
+    expect(rows[0].metadata).toEqual({
+      source: essay,
+      title: 'On Gardens',
+      url: '/blog/on-gardens',
+      chunk_index: 0,
+      chunk_total: 1,
+      provider: 'openai',
+      dimensions: 3,
+    });
+  });
+
+  it('embeds each chunk behind a Title/Type/URL preamble, typed blog or page by file name', async () => {
+    const blog = fakeEmbedder();
+    await indexSource(
+      { name: essay, text: 'Body.', metadata: { title: 'On Gardens', url: '/blog/on-gardens' } },
+      { embedder: blog.embedder, store: memoryStore().store },
     );
+    expect(blog.inputs).toEqual(['Title: On Gardens\nType: blog\nURL: /blog/on-gardens\n\nBody.']);
+
+    const page = fakeEmbedder();
+    await indexSource(
+      { name: 'about.md', text: 'Body.', metadata: {} },
+      { embedder: page.embedder, store: memoryStore().store },
+    );
+    expect(page.inputs).toEqual(['Type: page\n\nBody.']);
   });
 
-  it('omits absent preamble lines but keeps the present ones', () => {
-    expect(buildEmbeddingInput({ title: 'T' }, 'body')).toBe('Title: T\n\nbody');
+  it('skips a source already embedded at this content by this provider', async () => {
+    const { store, rows } = memoryStore();
+    await indexSource({ name: essay, text: longText, metadata: {} }, { embedder: fakeEmbedder().embedder, store });
+    const stored = rows.length;
+    expect(stored).toBeGreaterThan(1);
+
+    const again = fakeEmbedder();
+    const outcome = await indexSource({ name: essay, text: longText, metadata: {} }, { embedder: again.embedder, store });
+
+    expect(outcome).toEqual({ status: 'skipped', chunks: stored });
+    expect(again.inputs).toHaveLength(0);
   });
 
-  it('returns the chunk unchanged when there is no metadata', () => {
-    expect(buildEmbeddingInput({}, 'body')).toBe('body');
-  });
-});
+  it('re-embeds when the text changed, replacing the old rows', async () => {
+    const { store, rows } = memoryStore();
+    await indexSource({ name: essay, text: 'First draft.', metadata: {} }, { embedder: fakeEmbedder().embedder, store });
 
-describe('sourceContentHash / shouldSkipSource', () => {
-  it('is deterministic and differs for different content', () => {
-    expect(sourceContentHash('abc')).toBe(sourceContentHash('abc'));
-    expect(sourceContentHash('abc')).not.toBe(sourceContentHash('abd'));
+    const outcome = await indexSource({ name: essay, text: 'Second draft.', metadata: {} }, { embedder: fakeEmbedder().embedder, store });
+
+    expect(outcome).toEqual({ status: 'indexed', chunks: 1, removed: 1 });
+    expect(rows.map((r) => r.content)).toEqual(['Second draft.']);
   });
 
-  it('skips a source only when every existing chunk already carries the new hash', () => {
-    const h = sourceContentHash('content');
-    expect(shouldSkipSource([h, h, h], h)).toBe(true);
-    expect(shouldSkipSource([h, 'stale', h], h)).toBe(false); // a chunk predates the change
-    expect(shouldSkipSource([], h)).toBe(false); // never indexed → don't skip
+  it('re-embeds rows written by another provider, since they are in another vector space', async () => {
+    const { store, rows } = memoryStore();
+    await indexSource({ name: essay, text: 'Same text.', metadata: {} }, { embedder: fakeEmbedder('ollama').embedder, store });
+
+    const outcome = await indexSource({ name: essay, text: 'Same text.', metadata: {} }, { embedder: fakeEmbedder('openai').embedder, store });
+
+    expect(outcome.status).toBe('indexed');
+    expect(rows.map((r) => r.metadata.provider)).toEqual(['openai']);
+  });
+
+  it('leaves other sources alone', async () => {
+    const { store, rows } = memoryStore();
+    await indexSource({ name: 'about.md', text: 'About page.', metadata: {} }, { embedder: fakeEmbedder().embedder, store });
+    await indexSource({ name: essay, text: 'Essay.', metadata: {} }, { embedder: fakeEmbedder().embedder, store });
+    await indexSource({ name: essay, text: 'Essay, edited.', metadata: {} }, { embedder: fakeEmbedder().embedder, store });
+
+    expect(rows.map((r) => r.content).sort()).toEqual(['About page.', 'Essay, edited.']);
+  });
+
+  it('writes nothing and keeps the old rows when any chunk fails to embed', async () => {
+    const { store, rows } = memoryStore();
+    await indexSource({ name: essay, text: 'Old version.', metadata: {} }, { embedder: fakeEmbedder().embedder, store });
+    const chunkCount = splitIntoChunks(longText).length;
+    expect(chunkCount).toBeGreaterThan(1);
+
+    const outcome = await indexSource(
+      { name: essay, text: longText, metadata: {} },
+      { embedder: fakeEmbedder('openai', [2]).embedder, store },
+    );
+
+    expect(outcome).toMatchObject({ status: 'failed', chunk: 1, chunks: chunkCount });
+    expect(rows.map((r) => r.content)).toEqual(['Old version.']);
+
+    // Nothing partial was stored under the new hash, so the next run retries.
+    const retry = await indexSource({ name: essay, text: longText, metadata: {} }, { embedder: fakeEmbedder().embedder, store });
+    expect(retry).toMatchObject({ status: 'indexed', chunks: chunkCount, removed: 1 });
+  });
+
+  it('append mode inserts without checking or removing existing rows', async () => {
+    const { store, rows } = memoryStore();
+    await indexSource({ name: essay, text: 'Same.', metadata: {} }, { embedder: fakeEmbedder().embedder, store });
+
+    const outcome = await indexSource(
+      { name: essay, text: 'Same.', metadata: {} },
+      { embedder: fakeEmbedder().embedder, store, mode: 'append' },
+    );
+
+    expect(outcome).toEqual({ status: 'indexed', chunks: 1, removed: 0 });
+    expect(rows).toHaveLength(2);
   });
 });

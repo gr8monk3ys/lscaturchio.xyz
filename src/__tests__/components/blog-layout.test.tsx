@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { BlogLayout } from '@/components/blog/BlogLayout';
 import { getSiteUrl } from '@/lib/site-url';
@@ -49,6 +49,24 @@ function renderLayout(props: Parameters<typeof BlogLayout>[0]) {
 }
 
 describe('BlogLayout', () => {
+  describe('newsletter signup', () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it('leaves the signup out while the newsletter is paused (the default)', () => {
+      vi.stubEnv('NEWSLETTER_SIGNUP_ENABLED', undefined);
+      renderLayout({ post, children: <p>body</p> });
+      expect(screen.queryByTestId('newsletter-cta')).toBeNull();
+    });
+
+    it('shows the signup when NEWSLETTER_SIGNUP_ENABLED is "true"', () => {
+      vi.stubEnv('NEWSLETTER_SIGNUP_ENABLED', 'true');
+      renderLayout({ post, children: <p>body</p> });
+      expect(screen.getByTestId('newsletter-cta')).toBeInTheDocument();
+    });
+  });
+
   it('returns bare children for the RSS feed rendering', () => {
     const { container } = renderLayout({
       post,
@@ -122,6 +140,20 @@ describe('BlogLayout', () => {
       .getAllByRole('link')
       .filter((l) => l.getAttribute('href')?.startsWith('/topics/'));
     expect(hubLinks.length).toBeGreaterThan(0);
+  });
+
+  it('puts the topic hubs after the essay, not in its header', () => {
+    // The header on a phone already runs past the first screen. Links to other
+    // pages belong where the reader has finished this one.
+    const { container } = renderLayout({ post, children: <p>body</p> });
+    const header = container.querySelector('article header');
+    expect(header).not.toBeNull();
+    expect(header!.querySelector('a[href^="/topics/"]')).toBeNull();
+    const hub = container.querySelector('article a[href^="/topics/"]');
+    expect(hub).not.toBeNull();
+    expect(
+      header!.compareDocumentPosition(hub!) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
   });
 
   it('renders syndication links only when provided', () => {

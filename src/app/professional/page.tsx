@@ -30,13 +30,55 @@ export default function ProfessionalPage() {
           }
         />
 
-        <ProvenSkills />
+        {/* The call and the resume, directly under the masthead.
+            They used to be the last section, below the tool matrix, the
+            timeline and two essays' worth of approach: a hiring manager with
+            thirty seconds had to scroll the whole page to find the one thing
+            they came for. The block was moved, not copied, so the page still
+            paints exactly one filled CTA. */}
+        <section aria-labelledby="resume-heading" className="border-b border-border pb-8">
+          <h2 id="resume-heading" className="text-card-title">
+            The resume
+          </h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground">
+            The same history as a PDF, kept in sync with this page. A call works too if you
+            would rather ask than read.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-4">
+            {/* The call is the primary action, not the download.
+                This went the other way for two commits, and the way it happened
+                is worth recording. A DOM assertion found the page had zero
+                filled CTAs; the assertion's own comment said the Calendly link
+                had been demoted "on the belief that the résumé button was
+                primary, which it was not" — and the fix promoted the résumé
+                button anyway, satisfying a count of one with the element the
+                comment had just named as wrong. The guard went green and the
+                conversion path got worse.
+                A PDF is a thing to take away. A call is the conversation the
+                page exists to start, and no rule that counts to one can tell
+                the difference. */}
+            <a
+              href="https://calendly.com/gr8monk3ys/30min"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cta-primary inline-flex h-11 items-center justify-center rounded-xl px-6 text-sm font-medium"
+            >
+              Schedule a call
+            </a>
+            <ResumeDownloadButton />
+          </div>
+        </section>
 
         {/* Work Experience */}
         <section>
           <h2 className="text-section-title mb-8">Work experience</h2>
           <WorkTimeline />
         </section>
+
+        {/* The tool matrix follows the history it is evidence for. It used to
+            sit above it, so the first screen of a page titled "Hire me" was a
+            table of library names. */}
+        <ProvenSkills />
 
         {/* Philosophy & Approach */}
         <section className="border-y border-border py-10">
@@ -79,46 +121,13 @@ export default function ProfessionalPage() {
           </div>
         </section>
 
-        {/* The resume. This block used to be centre-aligned — the only centred
-            composition on a site whose every other placard, row and rule hangs
-            off the left margin. */}
-        <section className="border-t border-border pt-10">
-          <h2 className="text-section-title">The resume</h2>
-          <p className="mt-4 max-w-2xl text-muted-foreground">
-            The same history as a PDF, kept in sync with this page. A call works too if you
-            would rather ask than read.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-4">
-            {/* The call is the primary action, not the download.
-                This went the other way for two commits, and the way it happened
-                is worth recording. A DOM assertion found the page had zero
-                filled CTAs; the assertion's own comment said the Calendly link
-                had been demoted "on the belief that the résumé button was
-                primary, which it was not" — and the fix promoted the résumé
-                button anyway, satisfying a count of one with the element the
-                comment had just named as wrong. The guard went green and the
-                conversion path got worse.
-                A PDF is a thing to take away. A call is the conversation the
-                page exists to start, and no rule that counts to one can tell
-                the difference. */}
-            <a
-              href="https://calendly.com/gr8monk3ys/30min"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="cta-primary inline-flex h-11 items-center justify-center rounded-xl px-6 text-sm font-medium"
-            >
-              Schedule a call
-            </a>
-            <ResumeDownloadButton />
-          </div>
-          <p className="mt-6 text-sm text-muted-foreground">
-            Hiring for a project?{" "}
-            <Link href="/work-with-me" className="text-primary underline-offset-4 hover:underline">
-              See how I work with clients
-            </Link>
-            .
-          </p>
-        </section>
+        <p className="border-t border-border pt-8 text-sm text-muted-foreground">
+          Hiring for a project?{" "}
+          <Link href="/work-with-me" className="text-primary underline-offset-4 hover:underline">
+            See how I work with clients
+          </Link>
+          .
+        </p>
       </div>
     </Container>
   );

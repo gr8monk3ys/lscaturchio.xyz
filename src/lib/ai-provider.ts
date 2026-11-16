@@ -2,15 +2,15 @@
  * The one place OpenAI-compatible clients are built, and the one place that
  * remembers OpenAI's key has been refused.
  *
- * Chat, embeddings and summaries all spend the same OPENAI_API_KEY. When that
- * key is missing, wrong or deactivated, every consumer is equally stuck, so
+ * Chat and embeddings spend the same OPENAI_API_KEY. When that
+ * key is missing, wrong or deactivated, both are equally stuck, so
  * the first auth/config failure any of them sees turns OpenAI off for the rest
  * of the process: chat and embeddings fall through to their next provider
- * without paying for another refused request, and summaries fail fast.
+ * without paying for another refused request.
  */
 
 import type OpenAI from 'openai';
-import { logWarn } from './logger';
+import { logError } from './logger';
 import { getErrorMessage, getErrorStatus, isOpenAIAuthOrConfigError } from './openai-errors';
 
 const CLIENT_OPTIONS = { timeout: 30_000, maxRetries: 1 } as const;
@@ -37,6 +37,11 @@ export function isOpenAIEnabled(): boolean {
   return !!process.env.OPENAI_API_KEY && !openaiDisabled;
 }
 
+/** OpenAI has a key and the API refused it (401/403) in this process. */
+export function isOpenAIRefused(): boolean {
+  return !!process.env.OPENAI_API_KEY && openaiDisabled;
+}
+
 /** The shared OpenAI client, or null when there is no key or it was refused. */
 export async function getOpenAIClient(): Promise<OpenAI | null> {
   if (!isOpenAIEnabled()) return null;
@@ -50,10 +55,10 @@ export async function getOpenAIClient(): Promise<OpenAI | null> {
  *
  * Only a real 401/403 from the API turns OpenAI off for every consumer. The
  * message-text matches in `isOpenAIAuthOrConfigError` still make THIS call fall
- * back, but they must not flip the process-wide switch: /api/summarize sends
- * reader-supplied text to OpenAI, and an error that echoed a word like
- * "unauthorized" would otherwise disable chat and search for every reader
- * until the instance recycled.
+ * back, but they must not flip the process-wide switch: chat sends reader
+ * text to the provider, and an error that echoed a word like "unauthorized"
+ * would otherwise disable chat and search for every reader until the instance
+ * recycled.
  */
 export function disableOpenAIOnAuthError(error: unknown): boolean {
   if (!isOpenAIAuthOrConfigError(error)) return false;
@@ -61,12 +66,15 @@ export function disableOpenAIOnAuthError(error: unknown): boolean {
   if (status !== 401 && status !== 403) return true;
   if (!openaiDisabled) {
     openaiDisabled = true;
-    if (process.env.NODE_ENV !== 'production') {
-      logWarn('OpenAI auth/config failed; disabling OpenAI for this process', {
-        component: 'ai-provider',
-        reason: getErrorMessage(error),
-      });
-    }
+    // Logged in production too, and as an error. This used to be a dev-only
+    // warning, so a refused production key took chat and semantic search down
+    // without one line in the logs. The status is enough to act on; the
+    // provider's message can echo part of the key, so it stays out of prod logs.
+    logError('OpenAI refused the API key; OpenAI is off for this process', undefined, {
+      component: 'ai-provider',
+      status,
+      ...(process.env.NODE_ENV !== 'production' && { reason: getErrorMessage(error) }),
+    });
   }
   return true;
 }

@@ -6,6 +6,7 @@ import {
   isEmbeddingsAvailable,
 } from "@/lib/embeddings";
 import { isOllamaAvailable } from "@/lib/ollama";
+import { isOpenAIRefused } from "@/lib/ai-provider";
 import { logError } from "@/lib/logger";
 import { apiSuccess } from "@/lib/api-response";
 
@@ -13,8 +14,6 @@ const handleGet = async () => {
   const timestamp = new Date().toISOString();
 
   const openaiConfigured = !!process.env.OPENAI_API_KEY;
-  const embeddingsProvider = getEmbeddingProvider();
-  const embeddingsDimensions = getProviderEmbeddingDimensions();
 
   const databaseConfigured = isDatabaseConfigured();
 
@@ -63,6 +62,12 @@ const handleGet = async () => {
     checkDatabase(),
     checkOllama(),
   ]);
+  // Read after the probe: it is the probe that finds out the key is refused.
+  // A refused key is still the configured provider, so it is reported as
+  // OpenAI and refused, not as an Ollama that production never had.
+  const openaiRefused = isOpenAIRefused();
+  const embeddingsProvider = openaiRefused ? "openai" : getEmbeddingProvider();
+  const embeddingsDimensions = openaiRefused ? 768 : getProviderEmbeddingDimensions();
   const databaseOk = database.ok;
   const embeddingsCount = database.count;
 
@@ -81,6 +86,7 @@ const handleGet = async () => {
       },
       chat: {
         openaiConfigured,
+        openaiRefused,
         ollamaAvailable,
       },
     },

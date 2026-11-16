@@ -15,6 +15,12 @@ import { toBlogPreview } from "@/lib/blog-data";
 
 export const metadata: Metadata = {
   title: { absolute: IDENTITY.titleDefault },
+  // The home page was the one indexable page without a canonical link. A page's
+  // `alternates` replaces the layout's, so the feed link is restated here.
+  alternates: {
+    canonical: "/",
+    types: { "application/rss+xml": "/api/rss" },
+  },
   description:
     "The AI and web tools Lorenzo Scaturchio builds, essays on technology, attention and work, films watched, books read, and what he is doing now.",
   openGraph: {
