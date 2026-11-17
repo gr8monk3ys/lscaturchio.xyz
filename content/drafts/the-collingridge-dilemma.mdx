@@ -15,7 +15,7 @@ export const meta = {
 
 ## Two horns, one animal
 
-In 1980 a British policy researcher named David Collingridge published a book called *The Social Control of Technology*. Its argument fits in one sentence, and the sentence is the reason anyone still reads him:
+In 1980 David Collingridge, a policy researcher at Aston University, published a book called *The Social Control of Technology*. Its argument fits in one sentence, and the sentence is the reason anyone still reads him:
 
 > When change is easy, the need for it cannot be foreseen; when the need for change is apparent, change has become expensive, difficult and time-consuming.
 
@@ -33,7 +33,7 @@ So the need for change was not unforeseeable. It was foreseen, and after a publi
 
 The United States finished banning leaded gasoline for road vehicles at the start of 1996. The geochemist Clair Patterson had spent the intervening decades proving, against well-funded opposition, that the lead in human bodies was overwhelmingly industrial. The last country to sell it for cars, Algeria, stopped in July 2021.
 
-Collingridge had a word for what happened between 1925 and 1996. He called it entrenchment. The usual examples are technical, such as pipelines that are already built and refineries that are already paid for, and leaded gasoline adds a political kind. Entrenchment is the moment a technology acquires a constituency. After that, the people who would pay for changing it are organized, and the people who would benefit are not.
+A useful word for what happened between 1925 and 1996 is entrenchment. The usual examples are technical, such as pipelines that are already built and refineries that are already paid for, and leaded gasoline adds a political kind. Entrenchment is the moment a technology acquires a constituency. After that, the people who would pay for changing it are organized, and the people who would benefit are not.
 
 ## Thirty-two bits
 
@@ -41,7 +41,7 @@ Software is where the dilemma runs fastest, because software hardens faster than
 
 In 1981 the specification for the Internet Protocol, RFC 791, gave every machine a 32-bit address. That is about 4.3 billion addresses, which at the time was absurdly generous for a research network connecting a few hundred hosts, and a reasonable call for the world in front of them.
 
-The central pool of unallocated addresses ran out in February 2011. Its replacement, IPv6, had been specified more than a decade earlier. Around half of the traffic reaching Google uses it now, roughly thirty years after the fix was written for a problem everyone could see coming. The rest runs on address translation and other workarounds, and each of those is by now something other systems depend on.
+The central pool of unallocated addresses ran out in February 2011. Its replacement, IPv6, had been specified more than a decade earlier. Around half of Google's users now reach it over IPv6, roughly thirty years after the fix was written for a problem everyone could see coming. The rest runs on address translation and other workarounds, and each of those is by now something other systems depend on.
 
 The two-digit year is the same story compressed. Programmers in the 1960s and 70s stored years as two digits because memory cost real money and the year 2000 was decades away. By the late 1990s the bill for that saving was being estimated in the hundreds of billions of dollars worldwide, paid mostly by people who had not written the code, often working from listings whose authors had long since moved on.
 
@@ -61,11 +61,11 @@ This changes what a default is. We talk about defaults as choices made once, at 
 
 The obvious response to the dilemma is to forecast better. If the problem is that we change things before we understand them, then understand them sooner. Collingridge thought this was hopeless. The effects of a technology come from its use, and use cannot be forecast from a lab bench or a design document. Better prediction would help with the first horn, though only partly, and it does little about the second.
 
-What he argued for instead was what he called corrigibility. Try to be cheap to correct. Prefer the option that tells you quickly whether it was a mistake, and the one that costs little to back out of. Keep lead times short, and keep a running record of what you assumed so you can notice when the assumption breaks.
+What he argued for instead was keeping decisions cheap to correct. Prefer the option that tells you quickly whether it was a mistake, and the one that costs little to back out of. Keep lead times short, and keep a running record of what you assumed so you can notice when the assumption breaks.
 
-Software people will recognize most of this, because the good habits of the trade are corrigibility under other names. Migrations that can run backwards. Feature flags. Deprecation periods with real end dates. Versioned interfaces, so the old promise can be kept while a new one is made. Each of these buys a little more time on the first horn.
+Software people will recognize most of this, because the good habits of the trade are that idea under other names. Migrations that can run backwards. Feature flags. Deprecation periods with real end dates. Versioned interfaces, so the old promise can be kept while a new one is made. Each of these buys a little more time on the first horn.
 
-They also have a ceiling, and Hyrum's law is where it sits. A flag that has been on for three years is effectively permanent, and a deprecated endpoint with a large customer behind it tends to stay up. Corrigibility is a property of the design and also of the constituency, and the constituency grows whether or not you designed for it. The lesson of 1925 is in how it went: once the study found nothing alarming and the market reopened, the question was never really about chemistry again.
+They also have a ceiling, and Hyrum's law is where it sits. A flag that has been on for three years is effectively permanent, and a deprecated endpoint with a large customer behind it tends to stay up. Being cheap to correct is a property of the design and also of the constituency, and the constituency grows whether or not you designed for it. The lesson of 1925 is in how it went: once the study found nothing alarming and the market reopened, the question was never really about chemistry again.
 
 ## The soft period
 
