@@ -115,7 +115,8 @@ set the chat answers from.
   from the author's own notes in the `lorenzo-obsidian` vault.
 - Existing identity assets: `public/signature.png`, `public/cursive.svg`, the
   favicon and app icons, a hero portrait. Typefaces currently loaded: Fraunces
-  (display), Instrument Sans (body), IBM Plex Mono. These are the incumbent
+  (display), Instrument Sans (body), IBM Plex Mono, and Lorenzo Hand (my own
+  handwriting, the hero greeting). These are the incumbent
   implementation, not a stated binding constraint; see DESIGN.md when it exists.
 
 ## Evidence on Hand

@@ -172,7 +172,7 @@ The system deliberately is not three things. It is not neumorphic: the soft doub
 - One paper ground, warm off-white with a fixed 3.5% noise grain; dark mode is a night variant of the same page.
 - One ink accent, Forest Ink, spent sparingly: links, text selection, the single primary CTA.
 - Hairline rules and tint shifts structure the page; there are no floating cards and no decorative shadows.
-- Three type voices with fixed jobs: Fraunces speaks, Instrument Sans reads, IBM Plex Mono catalogues.
+- Four type voices with fixed jobs: Fraunces speaks, Instrument Sans reads, IBM Plex Mono catalogues, and my own handwriting greets.
 - Motion is a soft settle, never a performance: 150–300ms on hover and focus, one 300ms drawer, nothing that animates the page in, all off under reduced motion.
 
 ## Colors
@@ -209,6 +209,7 @@ A warm, low-chroma paper palette with one deep green ink and a sand-toned hairli
 **Display Font:** Fraunces (with ui-sans-serif, system-ui fallback), variable optical size, loaded via next/font with `preload: false`.
 **Body Font:** Instrument Sans (with ui-sans-serif, system-ui fallback).
 **Label/Mono Font:** IBM Plex Mono, weights 400/500/600 (with ui-monospace, Menlo fallback).
+**Hand Font:** Lorenzo Hand, my own print handwriting, the Bold cut only (with the Fraunces stack as fallback), self-hosted via next/font/local with `preload: false`.
 
 **Character:** A high-contrast, slightly wonky serif doing the talking, a plain humanist sans doing the reading, and a monospace doing the filing. Fraunces at heavy weights and tight tracking gives headings a printed, editorial presence; Instrument Sans at 1.65 line-height stays out of the way; Plex Mono, small, uppercase and widely tracked, is the wall label beside the work.
 
@@ -225,6 +226,8 @@ A warm, low-chroma paper palette with one deep green ink and a sand-toned hairli
 **The Wall Label Rule.** Every piece of metadata (a date, a count, a place, a category) is set as a Label: mono, small, uppercase, tracked, muted. Metadata never borrows the body or heading voice.
 
 **The Serif Speaks Rule.** Fraunces appears only where the site is speaking: headings and the masthead. Never in body copy, UI controls or labels.
+
+**The Hand Signs Rule.** The handwriting (the `hand` utility) is for a greeting, a signature or one short pencilled aside, in my own first person. Today that is the hero's "Hey, I'm" and nothing else. Its x-height is 0.35em against Fraunces' 0.44em, so it is set 1.25x the text it sits in. Never body copy, never a control, never more than a line.
 
 **The Fluid Heading Rule.** Headings scale with `clamp()`, not breakpoints; weights step down the hierarchy (720 → 700 → 650 → 620 → 560) and tracking loosens as size falls.
 
