@@ -10,8 +10,7 @@ export function Hero() {
           <span className="label-mono block">Systems · Essays · Los Angeles</span>
 
           <h1 className="text-balance text-display">
-            <span className="hand">Hey, I&apos;m</span>{" "}
-            <span className="text-primary">Lorenzo Scaturchio</span>
+            Hey, I&apos;m <span className="text-primary">Lorenzo Scaturchio</span>
           </h1>
 
           <p className="max-w-xl text-lg text-muted-foreground sm:text-xl">

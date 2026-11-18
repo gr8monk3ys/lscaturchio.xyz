@@ -18,14 +18,13 @@
 
 @theme {
   --font-display:
-    var(--site-font-display), ui-sans-serif, system-ui, sans-serif,
+    var(--site-font-hand), var(--site-font-display), ui-sans-serif, system-ui, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji';
   --font-body:
     var(--site-font-body), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji';
   --font-mono:
     var(--site-font-mono), ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
-  --font-hand: var(--site-font-hand), var(--site-font-display), ui-serif, serif;
 
   /* NOTE: do not define --spacing-xs/sm/md/lg/xl/2xl/... tokens here. In
    * Tailwind v4 they generate spacing-suffixed utilities (max-w-2xl, w-lg, …)
@@ -155,16 +154,6 @@
 
 @utility font-mono {
   font-family: var(--font-mono);
-}
-
-/* The hand signs and annotates: a signature, a greeting, a short pencilled
- * aside. Never body copy, never a control. Its x-height is 0.35em against
- * Fraunces' 0.44em, so it is set a step larger than the text it sits in. */
-@utility hand {
-  font-family: var(--font-hand);
-  font-weight: 700;
-  font-size: 1.25em;
-  letter-spacing: 0;
 }
 
 /* Wall label: the small mono caption beside the work — kickers,
@@ -424,7 +413,7 @@
   /* Display text - for hero sections */
   /* Fluid, more distinctive scale */
   font-size: clamp(2.4rem, 5.2vw, 4.9rem);
-  line-height: 1.02;
+  line-height: 1.1;
   letter-spacing: -0.035em;
   font-weight: 720;
   font-variant-numeric: oldstyle-nums;

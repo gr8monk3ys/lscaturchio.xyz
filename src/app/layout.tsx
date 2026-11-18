@@ -27,14 +27,19 @@ const displayFont = Fraunces({
   variable: "--site-font-display",
 });
 
-// My own print handwriting: the hero greeting. Not preloaded, like Fraunces,
-// so it never competes with the portrait for the mobile LCP.
+// Lorenzo Hand, my own print handwriting: the display face. Every heading is
+// in it; Fraunces stays behind it for any glyph the hand lacks (accents).
+// `size-adjust` because its x-height is 0.39em against Fraunces' 0.44em, so
+// at the same font-size it would read a step smaller than the scale intends.
+// Not preloaded, like Fraunces, so it never competes with the portrait for
+// the mobile LCP.
 const handFont = localFont({
   src: "./fonts/LorenzoHand-Bold.woff2",
   weight: "700",
   display: "swap",
   preload: false,
   variable: "--site-font-hand",
+  declarations: [{ prop: "size-adjust", value: "125%" }],
 });
 
 const bodyFont = Instrument_Sans({

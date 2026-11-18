@@ -24,25 +24,25 @@ colors:
   signal-info: "#3c83f6"
 typography:
   display:
-    fontFamily: "Fraunces, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Lorenzo Hand, Fraunces, ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(2.4rem, 5.2vw, 4.9rem)"
     fontWeight: 720
     lineHeight: 1.02
     letterSpacing: "-0.035em"
   headline:
-    fontFamily: "Fraunces, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Lorenzo Hand, Fraunces, ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(1.9rem, 3.6vw, 3.2rem)"
     fontWeight: 700
     lineHeight: 1.12
     letterSpacing: "-0.03em"
   title:
-    fontFamily: "Fraunces, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Lorenzo Hand, Fraunces, ui-sans-serif, system-ui, sans-serif"
     fontSize: "clamp(1.55rem, 2.4vw, 2.25rem)"
     fontWeight: 650
     lineHeight: 1.18
     letterSpacing: "-0.026em"
   card-title:
-    fontFamily: "Fraunces, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Lorenzo Hand, Fraunces, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.25rem"
     fontWeight: 620
     lineHeight: 1.2
@@ -172,7 +172,7 @@ The system deliberately is not three things. It is not neumorphic: the soft doub
 - One paper ground, warm off-white with a fixed 3.5% noise grain; dark mode is a night variant of the same page.
 - One ink accent, Forest Ink, spent sparingly: links, text selection, the single primary CTA.
 - Hairline rules and tint shifts structure the page; there are no floating cards and no decorative shadows.
-- Four type voices with fixed jobs: Fraunces speaks, Instrument Sans reads, IBM Plex Mono catalogues, and my own handwriting greets.
+- Three type voices with fixed jobs: my own handwriting (Lorenzo Hand) speaks, Instrument Sans reads, IBM Plex Mono catalogues.
 - Motion is a soft settle, never a performance: 150–300ms on hover and focus, one 300ms drawer, nothing that animates the page in, all off under reduced motion.
 
 ## Colors
@@ -206,18 +206,17 @@ A warm, low-chroma paper palette with one deep green ink and a sand-toned hairli
 
 ## Typography
 
-**Display Font:** Fraunces (with ui-sans-serif, system-ui fallback), variable optical size, loaded via next/font with `preload: false`.
+**Display Font:** Lorenzo Hand, my own print handwriting, Bold cut only, self-hosted via next/font/local with `preload: false` and `size-adjust: 125%` (its x-height is 0.39em against Fraunces' 0.44em). Fraunces stays behind it in the stack for any glyph the hand lacks (accented letters).
 **Body Font:** Instrument Sans (with ui-sans-serif, system-ui fallback).
 **Label/Mono Font:** IBM Plex Mono, weights 400/500/600 (with ui-monospace, Menlo fallback).
-**Hand Font:** Lorenzo Hand, my own print handwriting, the Bold cut only (with the Fraunces stack as fallback), self-hosted via next/font/local with `preload: false`.
 
 **Character:** A high-contrast, slightly wonky serif doing the talking, a plain humanist sans doing the reading, and a monospace doing the filing. Fraunces at heavy weights and tight tracking gives headings a printed, editorial presence; Instrument Sans at 1.65 line-height stays out of the way; Plex Mono, small, uppercase and widely tracked, is the wall label beside the work.
 
 ### Hierarchy
-- **Display** (Fraunces 720, clamp 2.4–4.9rem, 1.02, -0.035em, oldstyle numerals): the home masthead and nothing else. The hero itself uses the Tailwind 5xl/6xl/7xl steps at weight 600 and line-height 0.98, with the name in Forest Ink.
-- **Headline** (Fraunces 700, clamp 1.9–3.2rem, 1.12, -0.03em): one per page, the page title.
-- **Title** (Fraunces 650, clamp 1.55–2.25rem, 1.18, -0.026em): section headings. Framer-motion section headings use the 3xl/4xl steps at weight 700.
-- **Card Title** (Fraunces 620, 1.25rem, 1.2, -0.02em): headings inside a list row or card. A subsection step exists at 1.075rem / 560.
+- **Display** (Lorenzo Hand, clamp 2.4–4.9rem, 1.1, -0.035em, oldstyle numerals): the home masthead and nothing else. The hero itself uses the Tailwind 5xl/6xl/7xl steps at weight 600 and line-height 0.98, with the name in Forest Ink.
+- **Headline** (Lorenzo Hand, clamp 1.9–3.2rem, 1.12, -0.03em): one per page, the page title.
+- **Title** (Lorenzo Hand, clamp 1.55–2.25rem, 1.18, -0.026em): section headings. Framer-motion section headings use the 3xl/4xl steps at weight 700.
+- **Card Title** (Lorenzo Hand, 1.25rem, 1.2, -0.02em): headings inside a list row or card. A subsection step exists at 1.075rem / 560.
 - **Body** (Instrument Sans 400, 1rem, 1.65): reading text. Essays use the typography plugin's `prose-lg` at full width of the reading column. There is no drop cap: the rule that specified one never matched the rendered DOM, and 81 of the 83 essays open on a section heading rather than a paragraph, so there is no opening letter to set.
 - **Description** (Instrument Sans 400, 0.875–1rem, Ink Muted): secondary copy under a title.
 - **Label** (IBM Plex Mono 500, 0.72rem, 0.16em tracking, uppercase, tabular numerals, Ink Muted): the wall label. Kickers ("Essays · Systems · Los Angeles"), dates, counts, captions, footer links, suggested-question chips. The same class with normal case and tracking is the small mono link style.
@@ -225,9 +224,7 @@ A warm, low-chroma paper palette with one deep green ink and a sand-toned hairli
 ### Named Rules
 **The Wall Label Rule.** Every piece of metadata (a date, a count, a place, a category) is set as a Label: mono, small, uppercase, tracked, muted. Metadata never borrows the body or heading voice.
 
-**The Serif Speaks Rule.** Fraunces appears only where the site is speaking: headings and the masthead. Never in body copy, UI controls or labels.
-
-**The Hand Signs Rule.** The handwriting (the `hand` utility) is for a greeting, a signature or one short pencilled aside, in my own first person. Today that is the hero's "Hey, I'm" and nothing else. Its x-height is 0.35em against Fraunces' 0.44em, so it is set 1.25x the text it sits in. Never body copy, never a control, never more than a line.
+**The Hand Speaks Rule.** The handwriting appears wherever the site is speaking: every heading and the masthead. It is the brand's signature, so it is not rationed. Never in body copy, UI controls or labels.
 
 **The Fluid Heading Rule.** Headings scale with `clamp()`, not breakpoints; weights step down the hierarchy (720 → 700 → 650 → 620 → 560) and tracking loosens as size falls.
 
@@ -328,10 +325,10 @@ The controls are refined and restrained: hairline borders, tint on hover, a fill
 The `label-mono` utility: IBM Plex Mono 500, 0.72rem, 0.16em tracking, uppercase, tabular numerals, Ink Muted. It is the placard beside every piece of work: the masthead kicker and portrait caption, the "Ask the site anything" heading, section counts, dates on rows, footer links. With `normal-case tracking-normal` it becomes the small mono link. Any new section should introduce itself with one.
 
 ### Masthead (signature)
-Wall-label kicker, a Fraunces name at the Display step with the surname in Forest Ink, a one-sentence muted thesis, and a square hairline-bordered portrait with a mono caption at the right edge. Below a hairline, the underline ask field with a round primary "Ask" inside it and three mono suggested questions. It is the notebook's title page.
+Wall-label kicker, a handwritten name at the Display step with the surname in Forest Ink, a one-sentence muted thesis, and a square hairline-bordered portrait with a mono caption at the right edge. Below a hairline, the underline ask field with a round primary "Ask" inside it and three mono suggested questions. It is the notebook's title page.
 
 ### Essay Body (signature)
-`prose prose-lg` at the reading width, Fraunces headings with 6rem scroll margin, hairline rules between sections.
+`prose prose-lg` at the reading width, handwritten headings with 6rem scroll margin, hairline rules between sections.
 
 ### Motion
 **Content does not animate itself in.** Nothing on a page mounts hidden and waits for a scroll observer, a mount transition or an idle callback to become readable — the failure mode is a blank page, and it has happened here twice under `LazyMotion strict`. Six components still carry entrance variants; all six pass `initial={false}`, which is the doctrine written as a prop.
@@ -533,7 +530,7 @@ nothing.
 - **Don't** reintroduce neumorphic double shadows, inset "pressed" shadows or glassy card grids; the `--neu-shadow-*` tokens are legacy and must not spread.
 - **Don't** build SaaS landing-page furniture: gradient blobs, three-column feature tiles, pill badges as decoration, glowing buttons.
 - **Don't** use monospace as a voice. It is the label beside the work, never headings or body copy; the site is not a terminal.
-- **Don't** set Fraunces in body text, controls or labels, and don't set body copy in anything but Instrument Sans.
+- **Don't** set the handwriting in body text, controls or labels, and don't set body copy in anything but Instrument Sans.
 - **Don't** use neutral grey for rules or muted surfaces; every neutral is warm paper (hue 30–38) in light mode and cool night (hue 220) in dark.
 - **Don't** introduce a second accent colour; Moss exists for secondary fills and the four signal colours are for status only.
 - **Don't** round the portrait plate or box the underline input; squareness marks the work, roundness marks the interface.
