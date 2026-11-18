@@ -173,7 +173,7 @@ The system deliberately is not three things. It is not neumorphic: the soft doub
 - One ink accent, Forest Ink, spent sparingly: links, text selection, the single primary CTA.
 - Hairline rules and tint shifts structure the page; there are no floating cards and no decorative shadows.
 - Three type voices with fixed jobs: my own handwriting (Lorenzo Hand) speaks, Instrument Sans reads, IBM Plex Mono catalogues.
-- Motion is a soft settle, never a performance: 150–300ms on hover and focus, one 300ms drawer, nothing that animates the page in, all off under reduced motion.
+- The hand writes; everything else settles. Headings in my handwriting are inked in from the left; beyond that, motion is 150–300ms on hover and focus and one 300ms drawer. Nothing waits on a script to become readable, and all of it is off under reduced motion.
 
 ## Colors
 
@@ -331,9 +331,16 @@ Wall-label kicker, a handwritten name at the Display step with the surname in Fo
 `prose prose-lg` at the reading width, handwritten headings with 6rem scroll margin, hairline rules between sections.
 
 ### Motion
-**Content does not animate itself in.** Nothing on a page mounts hidden and waits for a scroll observer, a mount transition or an idle callback to become readable — the failure mode is a blank page, and it has happened here twice under `LazyMotion strict`. Six components still carry entrance variants; all six pass `initial={false}`, which is the doctrine written as a prop.
+**The hand writes; everything else settles.** Headings are set in my own handwriting, so they are written rather than faded: ink wiped in from the left edge with `clip-path`, on the site's standard ease. This is the one authored movement on the site and the one thing that animates itself in.
 
-What moves is the interface responding to the reader, not the page introducing itself:
+- **The home masthead** is the focal moment: "Hey, I'm" writes in over 450ms, then the name over 850ms, each on its own line (`.ink-line`).
+- **A page's one h1** writes in over 700ms each time the page opens, and the hairline that closes its placard is ruled from the left after it.
+- **Section headings** (`text-section-title`, and an essay's h2s) are written as they are scrolled to, with `animation-timeline: view()` over the heading's own entry. The progress is the scroll position: a heading wholly inside the viewport is wholly written. Card titles are excluded, because a card that clips its overflow is a scroll container and would time its title against itself.
+- **Hairline rules** below the fold are ruled across the first eighth of the viewport the same way.
+
+**Nothing waits on a script to become readable.** This rule is older than the write-on and the write-on is built to keep it. Nothing on a page mounts hidden and waits for a scroll observer, a mount transition or an idle callback — the failure mode is a blank page, and it has happened here twice under `LazyMotion strict`. Every rule above is CSS only and starts from the finished page: the timed ones use `backwards` fill, never `both`, and the scroll-driven ones sit behind `@supports (animation-timeline: view())`, so where an animation does not run the heading is simply there. Six components still carry framer-motion entrance variants; all six pass `initial={false}`, which is the doctrine written as a prop. The portrait, the mobile LCP element, is never animated.
+
+Everything else that moves is the interface responding to the reader:
 
 - **Hover and focus** transition at 150ms (fast), 200ms (default) or 300ms (slow) with `ease`, from `--duration-fast` / `-default` / `-slow`.
 - **The ask drawer** — the one composed movement on the site — pushes the shell and the header at 300ms on `cubic-bezier(0.22, 1, 0.36, 1)`. That curve is the site's standard ease; anything larger than a hover uses it.
