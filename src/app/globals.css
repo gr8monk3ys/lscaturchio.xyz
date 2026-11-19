@@ -18,7 +18,7 @@
 
 @theme {
   --font-display:
-    var(--site-font-display), ui-sans-serif, system-ui, sans-serif,
+    var(--site-font-hand), var(--site-font-display), ui-sans-serif, system-ui, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji';
   --font-body:
     var(--site-font-body), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
@@ -389,7 +389,7 @@
     background: currentColor;
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform var(--duration-slow) cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   &:hover::after,
@@ -413,7 +413,7 @@
   /* Display text - for hero sections */
   /* Fluid, more distinctive scale */
   font-size: clamp(2.4rem, 5.2vw, 4.9rem);
-  line-height: 1.02;
+  line-height: 1.1;
   letter-spacing: -0.035em;
   font-weight: 720;
   font-variant-numeric: oldstyle-nums;
@@ -963,4 +963,95 @@ html.lenis body {
   transition-property: overflow;
   transition-duration: 1ms;
   transition-behavior: allow-discrete;
+}
+
+/* ============================================================
+ * THE HAND WRITES
+ *
+ * Headings are in my handwriting, so they are written rather than faded:
+ * ink wiped in from the left edge. It is the one thing on the site that
+ * animates itself in, and it does so without breaking the rule that nothing
+ * waits on a script to become readable. Every rule below is CSS only and
+ * starts from the finished page: where an animation does not run (no
+ * support, reduced motion, a failed stylesheet rule) the heading is simply
+ * there. `backwards`, never `both`, on the timed ones for the same reason.
+ *
+ * The inset is negative on the open sides so a tail or an ascender that
+ * leaves the box is never cut, during the write or after it.
+ * ============================================================ */
+
+@keyframes ink-write {
+  from {
+    clip-path: inset(-0.5em 100% -0.5em -1em);
+  }
+  to {
+    clip-path: inset(-0.5em -1em);
+  }
+}
+
+@keyframes rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* A line of the home masthead: the greeting, then the name, each on its own
+ * line at every width. As wide as its words, so the wipe ends where the ink
+ * does. Set at all times, not only while animating, so the h1 is the same
+ * shape with motion on and off. */
+.ink-line {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The page's one h1, each time the page opens. */
+  main h1:not(:has(.ink-line)) {
+    animation: ink-write 700ms cubic-bezier(0.22, 1, 0.36, 1) 80ms backwards;
+  }
+
+  /* The home masthead is the authored moment: the greeting, then the name. */
+  .ink-line {
+    animation: ink-write 450ms cubic-bezier(0.22, 1, 0.36, 1) 120ms backwards;
+  }
+
+  .ink-line + .ink-line {
+    animation-duration: 850ms;
+    animation-delay: 430ms;
+  }
+
+  /* Section headings and hairlines are written as they are scrolled to. The
+   * progress is the scroll position, so there is no timer to wait on and
+   * nothing to arm: a heading wholly inside the viewport is wholly written. */
+  @supports (animation-timeline: view()) {
+    /* Section headings only. A card title is an h2 too, and a card that
+     * clips its overflow is a scroll container: its title would be timed
+     * against the card, which never scrolls, instead of the page. */
+    main :is(.text-section-title, .prose h2) {
+      animation: ink-write linear both;
+      animation-timeline: view();
+      /* Ends when the heading has fully entered, not later: a longer range
+       * left a heading half-written while it sat low in the viewport. */
+      animation-range: entry 0% entry 100%;
+    }
+
+    /* A hairline is one pixel tall, so its own entry is no range at all; it
+     * is ruled across the first eighth of the viewport instead. Decoration,
+     * so a part-drawn rule low on the screen costs nothing to read. */
+    .gallery-rule {
+      transform-origin: left center;
+      animation: rule-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 12%;
+    }
+  }
+
+  /* The rule that closes a page's placard is on screen when the page opens,
+   * so it is ruled on a timer, after the title. */
+  header > .gallery-rule {
+    transform-origin: left center;
+    animation: rule-draw 700ms cubic-bezier(0.22, 1, 0.36, 1) 320ms backwards;
+    animation-timeline: auto;
+  }
 }

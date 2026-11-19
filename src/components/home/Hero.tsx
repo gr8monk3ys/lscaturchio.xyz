@@ -9,8 +9,10 @@ export function Hero() {
         <div className="min-w-0 space-y-6">
           <span className="label-mono block">Systems · Essays · Los Angeles</span>
 
+          {/* Two inked lines, written one after the other (see `.ink-line`). */}
           <h1 className="text-balance text-display">
-            Hey, I&apos;m <span className="text-primary">Lorenzo Scaturchio</span>
+            <span className="ink-line">Hey, I&apos;m</span>{" "}
+            <span className="ink-line text-primary">Lorenzo Scaturchio</span>
           </h1>
 
           <p className="max-w-xl text-lg text-muted-foreground sm:text-xl">
