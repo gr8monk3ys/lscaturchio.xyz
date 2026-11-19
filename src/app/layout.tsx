@@ -9,6 +9,7 @@ import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Fraunces, IBM_Plex_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { SITE_URL } from "@/lib/site-url";
+import { ADSENSE_PUBLISHER_ID } from "@/lib/adsense";
 import { IDENTITY } from "@/constants/identity";
 import { DeferredLayoutExtras } from "@/components/layout/deferred-layout-extras";
 import { AskDrawerProvider } from "@/components/chat/ask-drawer-provider";
@@ -121,6 +122,8 @@ export const metadata: Metadata = {
       'application/rss+xml': '/api/rss',
     },
   },
+  // Lets AdSense verify the root domain without loading any ad script here.
+  other: { 'google-adsense-account': ADSENSE_PUBLISHER_ID },
 }
 
 export default async function RootLayout({
