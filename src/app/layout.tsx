@@ -7,6 +7,7 @@ import { Metadata } from 'next'
 import Script from "next/script";
 import { ogCardUrl } from "@/lib/seo";
 import { Instrument_Sans, Fraunces, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { SITE_URL } from "@/lib/site-url";
 import { IDENTITY } from "@/constants/identity";
 import { DeferredLayoutExtras } from "@/components/layout/deferred-layout-extras";
@@ -24,6 +25,21 @@ const displayFont = Fraunces({
   display: "swap",
   preload: false,
   variable: "--site-font-display",
+});
+
+// Lorenzo Hand, my own print handwriting: the display face. Every heading is
+// in it; Fraunces stays behind it for any glyph the hand lacks (accents).
+// `size-adjust` because its x-height is 0.39em against Fraunces' 0.44em, so
+// at the same font-size it would read a step smaller than the scale intends.
+// Not preloaded, like Fraunces, so it never competes with the portrait for
+// the mobile LCP.
+const handFont = localFont({
+  src: "./fonts/LorenzoHand-Bold.woff2",
+  weight: "700",
+  display: "swap",
+  preload: false,
+  variable: "--site-font-hand",
+  declarations: [{ prop: "size-adjust", value: "125%" }],
 });
 
 const bodyFont = Instrument_Sans({
@@ -176,7 +192,7 @@ export default async function RootLayout({
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable}`}
+      className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable} ${handFont.variable}`}
     >
       <head>
         {/* RSS Feed Autodiscovery */}
