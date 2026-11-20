@@ -1,6 +1,6 @@
 # Issue tracker: GitHub
 
-Issues and specs for this repo live as GitHub issues on `gr8monk3ys/lscaturchio.xyz`. Use the `gh` CLI for all operations.
+Issues and specs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
 
 ## Conventions
 
@@ -12,15 +12,6 @@ Issues and specs for this repo live as GitHub issues on `gr8monk3ys/lscaturchio.
 - **Close**: `gh issue close <number> --comment "..."`
 
 Infer the repo from `git remote -v`; `gh` does this automatically when run inside a clone.
-
-## Local `gh` traps that apply here
-
-These are fleet-wide rules from `~/code/CLAUDE.md`, repeated because they bite issue and PR work in this repo too.
-
-- `--paginate` with `--jq '[...]'` emits one array **per page**, which is not valid JSON. Use `--jq '.[].field'` and split lines.
-- Check names contain commas (`"Lint, Test & Build"`). Never join or split contexts on `,`; parse the JSON array.
-- Never open a draft PR. A draft cannot merge and cannot be armed, whatever its checks say.
-- Never arm auto-merge. `gh pr merge --auto` grants standing permission to merge future content on a judgement about past content.
 
 ## Pull requests as a triage surface
 
