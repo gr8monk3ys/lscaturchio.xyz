@@ -100,3 +100,7 @@ skills-lock.json
 
 # Lighthouse reports written by scripts/check-lighthouse-score.mjs (uploaded as a CI artifact)
 /artifacts/
+
+# Evalite keeps its run history in node_modules/.evalite (already ignored);
+# `evalite export` writes a static copy of the UI here.
+/evalite-export/

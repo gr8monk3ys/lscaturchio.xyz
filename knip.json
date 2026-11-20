@@ -2,7 +2,9 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignoreExportsUsedInFile": true,
   "entry": [
-    "src/app/blog/*/content.mdx"
+    "src/app/blog/*/content.mdx",
+    "evals/*.eval.ts",
+    "evalite.config.ts"
   ],
   "ignoreDependencies": [],
   "ignoreBinaries": [
