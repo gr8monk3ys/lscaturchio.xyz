@@ -80,6 +80,28 @@ Additional maintenance helpers:
 - `npm run smoke:chat`: smoke-test a target deployment
 - `npm run smoke:chat:prod`: smoke-test production chat
 
+### Chat Evals
+
+`bun run eval` runs the Evalite suite in `evals/` against 15 questions in
+`evals/cases.ts`: twelve answered by a named essay, three the chat should
+decline. Every scorer is deterministic: no model judges another model.
+
+| File | Needs | Scores |
+|---|---|---|
+| `corpus.eval.ts` | nothing | each case's facts are still in its essay; a BM25 keyword baseline finds the essay (a proxy, not production retrieval) |
+| `retrieval.eval.ts` | `DATABASE_URL` | `groundingFor` puts the right essay in its top 3 (Hit@3, reciprocal rank) |
+| `chat.eval.ts` | `DATABASE_URL` and a chat model | answers state the required facts and do not decline; out-of-scope questions are declined with no forbidden content |
+
+A file whose needs are missing skips with a message naming what is missing.
+`bun run` loads `.env.local`, so the live files read the same variables as the
+app. The chat model is the app's ladder: `OPENAI_API_KEY`, then
+`OPENROUTER_API_KEY` (both billed, about 15 short completions a run), then a
+running Ollama (free). The live files only read Neon, but that is the
+production database. Run the suite before and after a prompt, grounding or
+retrieval change and compare; `bun run eval:watch` opens Evalite's UI with
+each answer and score. If an essay edit removes a fact a case depends on,
+`corpus.eval.ts` names the case: update the case, not the essay.
+
 ### Embeddings: Cautions Learned The Hard Way
 
 - **`.env.local` and Vercel production point at the same Neon database.**
