@@ -81,17 +81,15 @@ the finding, not to make a fourth pass.
 
 ### Issue tracker
 
-GitHub issues on `gr8monk3ys/lscaturchio.xyz`, via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+GitHub Issues on `gr8monk3ys/lscaturchio.xyz`, via the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
-The five canonical roles, unrenamed. See `docs/agents/triage-labels.md`.
+The five canonical roles, label string equal to role name. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
-Single-context: one root `CONTEXT.md` plus `docs/adr/`, neither created yet. See `docs/agents/domain.md`.
-
-<!-- BEGIN:nextjs-agent-rules -->
+Single-context: `GLOSSARY.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
 
 # This is NOT the Next.js you know
 
