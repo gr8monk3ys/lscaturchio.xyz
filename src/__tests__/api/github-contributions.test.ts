@@ -105,9 +105,9 @@ describe('/api/github/contributions', () => {
     const data = await readJson(response);
 
     expect(response.status).toBe(200);
-    expect(data.data.degraded).toBe(true);
-    expect(data.data.totalContributions).toBe(0);
-    expect(data.data.weeks).toEqual([]);
+    expect(data.data?.degraded).toBe(true);
+    expect(data.data?.totalContributions).toBe(0);
+    expect(data.data?.weeks).toEqual([]);
     expect(logError).toHaveBeenCalledWith(
       'GitHub Contributions: API error',
       expect.any(Error),

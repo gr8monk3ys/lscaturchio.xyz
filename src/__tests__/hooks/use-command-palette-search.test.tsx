@@ -78,7 +78,7 @@ describe("command palette content search", () => {
     await waitFor(() => {
       expect(result.current.groupedCommands.blog).toHaveLength(1);
     });
-    expect(result.current.groupedCommands.blog[0].title).toBe("Boredom Is a Skill");
+    expect(result.current.groupedCommands.blog[0]?.title).toBe("Boredom Is a Skill");
     expect(result.current.searchFailed).toBe(false);
   });
 

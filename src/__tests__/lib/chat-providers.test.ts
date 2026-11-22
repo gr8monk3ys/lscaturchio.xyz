@@ -103,6 +103,17 @@ describe('generateChatAnswer', () => {
       });
     });
 
+    it('tries the fallback model when the primary returns no choices at all', async () => {
+      mockCreate
+        .mockResolvedValueOnce({ choices: [] })
+        .mockResolvedValueOnce(completionWith('fallback answer'));
+      const { generateChatAnswer } = await importProviders();
+
+      const result = await generateChatAnswer('sys', 'q');
+
+      expect(result).toMatchObject({ answer: 'fallback answer', usedFallbackModel: true });
+    });
+
     it('tries the fallback model when the primary returns empty content', async () => {
       mockCreate
         .mockResolvedValueOnce(completionWith(null))

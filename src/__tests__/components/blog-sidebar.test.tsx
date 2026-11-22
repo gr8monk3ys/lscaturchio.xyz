@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { assert, describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { BlogSidebar, EssayContentsInline } from '@/components/blog/blog-sidebar';
 
@@ -137,6 +137,7 @@ describe('BlogSidebar', () => {
     render(<BlogSidebar slug="essay" />);
 
     const [first, second] = Array.from(root.querySelectorAll('h2'));
+    assert(first && second);
     // `classList`, not a substring match: the base class carries
     // `hover:text-primary`, which contains the active class as a substring.
     const activeFor = (name: string) =>

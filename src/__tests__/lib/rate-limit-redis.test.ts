@@ -143,6 +143,6 @@ describe('getUpstashStore', () => {
 
     expect(getUpstashStore()).toBe(getUpstashStore());
     expect(RedisStore).toHaveBeenCalledTimes(1);
-    expect(vi.mocked(RedisStore).mock.calls[0][1]).toMatchObject({ onError: 'closed' });
+    expect(vi.mocked(RedisStore).mock.calls[0]?.[1]).toMatchObject({ onError: 'closed' });
   });
 });

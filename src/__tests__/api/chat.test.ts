@@ -118,8 +118,8 @@ describe('/api/chat', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.answer).toBe('Test response from Ollama');
-      expect(data.data.provider).toBe('ollama');
+      expect(data.data?.answer).toBe('Test response from Ollama');
+      expect(data.data?.provider).toBe('ollama');
     });
 
     it('includes context from embeddings in AI prompt', async () => {
@@ -138,7 +138,7 @@ describe('/api/chat', () => {
       // Verify Ollama was called with context in the system prompt
       expect(createOllamaChatCompletion).toHaveBeenCalled();
       const callArgs = vi.mocked(createOllamaChatCompletion).mock.calls[0];
-      const systemMessage = callArgs[0].find((m) => m.role === 'system');
+      const systemMessage = callArgs?.[0].find((m) => m.role === 'system');
       expect(systemMessage?.content).toContain('I am a software engineer');
       expect(systemMessage?.content).toContain('I work on web applications');
       expect(systemMessage?.content).toContain('On Shipping (/blog/on-shipping)');
@@ -154,8 +154,8 @@ describe('/api/chat', () => {
       const response = await POST(createMockRequest({ query: 'Tell me about yourself' }));
       const data = await readJson(response);
 
-      expect(data.data.sources).toEqual([{ title: 'On Shipping', url: '/blog/on-shipping' }]);
-      expect(data.data.grounded).toBe(true);
+      expect(data.data?.sources).toEqual([{ title: 'On Shipping', url: '/blog/on-shipping' }]);
+      expect(data.data?.grounded).toBe(true);
     });
 
     it('marks the nearest essays as not a match when nothing grounded the question', async () => {
@@ -168,8 +168,8 @@ describe('/api/chat', () => {
       const response = await POST(createMockRequest({ query: 'What about llamas?' }));
       const data = await readJson(response);
 
-      expect(data.data.sources).toHaveLength(1);
-      expect(data.data.grounded).toBe(false);
+      expect(data.data?.sources).toHaveLength(1);
+      expect(data.data?.grounded).toBe(false);
     });
 
     it('works without embeddings context', async () => {
@@ -179,7 +179,7 @@ describe('/api/chat', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.answer).toBe('Test response from Ollama');
+      expect(data.data?.answer).toBe('Test response from Ollama');
       expect(groundingFor).toHaveBeenCalled();
     });
   });
@@ -194,9 +194,9 @@ describe('/api/chat', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.provider).toBe('fallback');
-      expect(data.data.degraded).toBe(true);
-      expect(data.data.answer).toContain('isn’t responding right now');
+      expect(data.data?.provider).toBe('fallback');
+      expect(data.data?.degraded).toBe(true);
+      expect(data.data?.answer).toContain('isn’t responding right now');
     });
 
     it('returns fallback response when AI chat fails', async () => {
@@ -208,8 +208,8 @@ describe('/api/chat', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.provider).toBe('fallback');
-      expect(data.data.degraded).toBe(true);
+      expect(data.data?.provider).toBe('fallback');
+      expect(data.data?.degraded).toBe(true);
     });
   });
 });

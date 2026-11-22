@@ -112,7 +112,7 @@ describe('/api/newsletter/subscribe', () => {
       const data = await readJson(response);
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
     });
 
@@ -124,7 +124,7 @@ describe('/api/newsletter/subscribe', () => {
       await POST(request);
 
       await vi.waitFor(() => expect(outbox.sent).toHaveLength(1));
-      expect(outbox.sent[0].to).toBe('new@example.com');
+      expect(outbox.sent[0]?.to).toBe('new@example.com');
     });
   });
 
@@ -137,7 +137,7 @@ describe('/api/newsletter/subscribe', () => {
       const data = await readJson(response);
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
     });
 
@@ -153,7 +153,7 @@ describe('/api/newsletter/subscribe', () => {
       const data = await readJson(response);
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       // SELECT only. The form is unauthenticated, so it must not overwrite
       // another person's topic preferences.
       expect(mockSql).toHaveBeenCalledTimes(1);
@@ -170,7 +170,7 @@ describe('/api/newsletter/subscribe', () => {
       const data = await readJson(response);
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
     });
 
@@ -209,7 +209,7 @@ describe('/api/newsletter/subscribe', () => {
 
       // The subscription stands; the welcome email is not awaited.
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
       // It used to be `.catch(() => {})`: a failure went nowhere.
       await vi.waitFor(() =>

@@ -28,7 +28,7 @@ describe('BlogJsonLd', () => {
     expect(schema.headline).toBe(base.title);
     expect(schema.datePublished).toBe('2025-09-01');
     expect(schema.image).toBe(`${SITE_URL}${base.image}`);
-    expect(schema.mainEntityOfPage['@id']).toBe(base.url);
+    expect(schema.mainEntityOfPage?.['@id']).toBe(base.url);
     expect(schema.keywords).toBe('economics, environment');
   });
 

@@ -116,8 +116,8 @@ describe('Views API Route', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.available).toBe(false);
-      expect(data.data.views).toEqual([]);
+      expect(data.data?.available).toBe(false);
+      expect(data.data?.views).toEqual([]);
     });
 
     it('returns all views with titles via format=detailed', async () => {
@@ -137,11 +137,11 @@ describe('Views API Route', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.views).toHaveLength(2);
-      expect(data.data.views[0]).toEqual({ slug: 'post-1', title: 'First Post', views: 100 });
-      expect(data.data.views[1]).toEqual({ slug: 'post-2', title: 'Second Post', views: 50 });
-      expect(data.data.total).toBe(2);
-      expect(data.data.available).toBe(true);
+      expect(data.data?.views).toHaveLength(2);
+      expect(data.data?.views?.[0]).toEqual({ slug: 'post-1', title: 'First Post', views: 100 });
+      expect(data.data?.views?.[1]).toEqual({ slug: 'post-2', title: 'Second Post', views: 50 });
+      expect(data.data?.total).toBe(2);
+      expect(data.data?.available).toBe(true);
     });
 
     it('omits rows whose slug is no longer a real post from format=detailed', async () => {
@@ -156,8 +156,8 @@ describe('Views API Route', () => {
       const request = new NextRequest('http://localhost/api/views?format=detailed');
       const data = await readJson(await GET(request));
 
-      expect(data.data.views).toEqual([{ slug: 'post-1', title: 'First Post', views: 100 }]);
-      expect(data.data.total).toBe(1);
+      expect(data.data?.views).toEqual([{ slug: 'post-1', title: 'First Post', views: 100 }]);
+      expect(data.data?.total).toBe(1);
     });
 
     it('returns an unavailable detailed payload when the database is not configured', async () => {

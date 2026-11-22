@@ -488,7 +488,7 @@ test.describe('design invariants, in the DOM', () => {
     for (const [href, names] of Object.entries(navNames)) {
       await page.goto(href, { waitUntil: 'domcontentloaded' })
       // The layout appends " | Lorenzo Scaturchio"; the route owns the first part.
-      const tab = (await page.title()).split('|')[0].trim()
+      const tab = (await page.title()).split('|', 1)[0]?.trim()
       if (!tab) continue
       const matches = names.some(
         (name) => tab.toLowerCase() === name.toLowerCase()

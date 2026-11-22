@@ -102,7 +102,7 @@ describe("NewsletterForm", () => {
     });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    const [url, init] = fetchMock.mock.calls[0];
+    const [url, init] = fetchMock.mock.calls[0] ?? [];
     expect(url).toBe("/api/newsletter/subscribe");
     expect(init?.method).toBe("POST");
     expect(init?.headers).toEqual({ "Content-Type": "application/json" });
@@ -138,7 +138,7 @@ describe("NewsletterForm", () => {
       submitForm();
 
       await waitFor(() => expect(screen.getByText("Welcome aboard!")).toBeInTheDocument());
-      const body = parseJson(String(fetchMock.mock.calls[0][1]?.body));
+      const body = parseJson(String(fetchMock.mock.calls[0]?.[1]?.body));
       expect(body.contact_ref).toBe("https://spam.example");
       expect(body.elapsedMs).toBe(8_500);
       expect(honeypot).toHaveValue("");

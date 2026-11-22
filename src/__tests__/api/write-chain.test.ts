@@ -333,16 +333,16 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
     const payload = outbox.sent[0];
 
     // Header injection: no bare CR or LF survives into the subject.
-    expect(payload.subject).not.toMatch(/[\r\n]/);
+    expect(payload?.subject).not.toMatch(/[\r\n]/);
     // Each of CR and LF becomes its own space — this is the real
     // sanitizeEmailSubject's output, not a paraphrase of it.
-    expect(payload.subject).toBe('Audit  Bcc: attacker@evil.example — Jane Doe');
+    expect(payload?.subject).toBe('Audit  Bcc: attacker@evil.example — Jane Doe');
 
     // XSS: the script tag is escaped, not stripped-and-forgotten.
-    expect(payload.html).not.toContain('<script>');
-    expect(payload.html).toContain('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
+    expect(payload?.html).not.toContain('<script>');
+    expect(payload?.html).toContain('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
     // ...and sanitizeForHtmlEmail still turns real newlines into <br>.
-    expect(payload.html).toContain('<br>second line');
+    expect(payload?.html).toContain('<br>second line');
   });
 
   it('escapes an <img onerror> payload in the message', async () => {
@@ -354,8 +354,8 @@ describe('sanitiser layer (real @/lib/sanitize)', () => {
 
     expect(res.status).toBe(200);
     const payload = outbox.sent[0];
-    expect(payload.html).not.toContain('<img');
-    expect(payload.html).toContain('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;');
+    expect(payload?.html).not.toContain('<img');
+    expect(payload?.html).toContain('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;');
   });
 });
 

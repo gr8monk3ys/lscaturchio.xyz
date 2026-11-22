@@ -134,10 +134,10 @@ describe('/api/newsletter/subscribe', () => {
 
       const [first, ...rest] = observed
       for (const other of rest) {
-        expect(other.status).toBe(first.status)
-        expect(other.body).toEqual(first.body)
+        expect(other.status).toBe(first?.status)
+        expect(other.body).toEqual(first?.body)
       }
-      expect(JSON.stringify(first.body)).not.toMatch(/alreadySubscribed|resubscribed/)
+      expect(JSON.stringify(first?.body)).not.toMatch(/alreadySubscribed|resubscribed/)
     })
   })
 
@@ -154,7 +154,7 @@ describe('/api/newsletter/subscribe', () => {
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
     })
 
     it('queues the welcome email, with the stored unsubscribe token', async () => {
@@ -165,13 +165,13 @@ describe('/api/newsletter/subscribe', () => {
       await POST(request)
 
       // INSERT args: [templateStrings, email, token, metadataJson]
-      const token = mockSql.mock.calls[1][2]
+      const token = mockSql.mock.calls[1]?.[2]
       await vi.waitFor(() => expect(outbox.sent).toHaveLength(1))
       expect(outbox.sent[0]).toMatchObject({
         to: 'new@example.com',
         subject: "Welcome to Lorenzo's Newsletter!",
       })
-      expect(outbox.sent[0].html).toContain(`/unsubscribe?token=${token}`)
+      expect(outbox.sent[0]?.html).toContain(`/unsubscribe?token=${token}`)
     })
 
     it('answers 200 and mails nothing when another request stored the address first', async () => {
@@ -182,7 +182,7 @@ describe('/api/newsletter/subscribe', () => {
       const response = await POST(createMockRequest({ email: 'new@example.com' }))
 
       expect(response.status).toBe(200)
-      expect(String(mockSql.mock.calls[1][0].join(''))).toContain('ON CONFLICT (email) DO NOTHING')
+      expect(String(mockSql.mock.calls[1]?.[0].join(''))).toContain('ON CONFLICT (email) DO NOTHING')
       await new Promise((resolve) => setTimeout(resolve, 20))
       expect(outbox.sent).toHaveLength(0)
     })
@@ -202,7 +202,7 @@ describe('/api/newsletter/subscribe', () => {
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
     })
 
     it('does not change topics for an existing active subscriber', async () => {
@@ -219,7 +219,7 @@ describe('/api/newsletter/subscribe', () => {
 
       expect(response.status).toBe(200)
       // Same response as a new signup.
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
       // SELECT only: this form is unauthenticated, so it must not rewrite
       // an existing subscriber's topics.
       expect(mockSql).toHaveBeenCalledTimes(1)
@@ -239,7 +239,7 @@ describe('/api/newsletter/subscribe', () => {
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.")
     })
 
     it('queues the welcome email for a reactivated subscriber', async () => {
@@ -252,7 +252,7 @@ describe('/api/newsletter/subscribe', () => {
       await POST(request)
 
       await vi.waitFor(() => expect(outbox.sent).toHaveLength(1))
-      expect(outbox.sent[0].to).toBe('inactive@example.com')
+      expect(outbox.sent[0]?.to).toBe('inactive@example.com')
     })
   })
 
@@ -319,7 +319,7 @@ describe('/api/newsletter/subscribe', () => {
       // Tagged template: sql`...${email}, ${token}, ${metadata}...`
       // mockSql args: [templateStrings, email, token, metadataJson]
       const insertCall = mockSql.mock.calls[1]
-      const metadataJson = insertCall[3] as string
+      const metadataJson = insertCall?.[3] as string
       const metadata = parseJson(metadataJson)
       expect(metadata.topics).toEqual(['tech', 'ai'])
     })
@@ -347,11 +347,11 @@ describe('/api/newsletter/subscribe', () => {
       // Tagged template: sql`...${email}, ${token}, ${metadata}...`
       // mockSql args: [templateStrings, email, token, metadataJson]
       const insertCall = mockSql.mock.calls[1]
-      const metadataJson = insertCall[3] as string
+      const metadataJson = insertCall?.[3] as string
       const metadata = parseJson(metadataJson)
       // Deduplication should reduce to 3 unique topics (all within the 6 limit)
       expect(metadata.topics).toEqual(['tech', 'ai', 'web'])
-      expect(metadata.topics.length).toBeLessThanOrEqual(6)
+      expect(metadata.topics?.length).toBeLessThanOrEqual(6)
     })
   })
 })

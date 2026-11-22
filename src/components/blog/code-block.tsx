@@ -71,7 +71,7 @@ export function CodeBlock({
   // Extract language from className
   const language = useMemo(() => {
     const match = className?.match(/language-(\w+)/);
-    return match ? match[1].toLowerCase() : "text";
+    return match?.[1]?.toLowerCase() ?? "text";
   }, [className]);
 
   // Get language info

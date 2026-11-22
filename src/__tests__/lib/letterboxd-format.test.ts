@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { assert, describe, it, expect } from 'vitest';
 import type { CsvTable } from '@/lib/csv';
 import { roundTripCommitted } from './committed-csv';
 import {
@@ -37,6 +37,7 @@ describe('export tables round-trip the committed CSVs', () => {
         '2026-08-12,"Comma, The Movie",2024,https://boxd.it/x,4.0,Yes,,2026-08-11',
     );
 
+    assert(row);
     expect(row).toEqual({
       date: '2026-08-12',
       title: 'Comma, The Movie',
@@ -114,9 +115,9 @@ describe('parseLetterboxdRss', () => {
   it('drops an out-of-range rating rather than passing it on', () => {
     // One rule for every consumer: the homepage must not render "999★", and
     // the refresh must not write it into ratings.csv.
-    expect(parseLetterboxdRss(film('<letterboxd:memberRating>999</letterboxd:memberRating>'))[0].rating).toBe('');
-    expect(parseLetterboxdRss(film('<letterboxd:memberRating>0</letterboxd:memberRating>'))[0].rating).toBe('');
-    expect(parseLetterboxdRss(film(''))[0].rating).toBe('');
+    expect(parseLetterboxdRss(film('<letterboxd:memberRating>999</letterboxd:memberRating>'))[0]?.rating).toBe('');
+    expect(parseLetterboxdRss(film('<letterboxd:memberRating>0</letterboxd:memberRating>'))[0]?.rating).toBe('');
+    expect(parseLetterboxdRss(film(''))[0]?.rating).toBe('');
   });
 
   it('keeps an entry without a watch date, marked null', () => {
@@ -127,14 +128,14 @@ describe('parseLetterboxdRss', () => {
 
   it('treats the "Watched on <date>." filler as no review', () => {
     const [, odyssey] = parseLetterboxdRss(LETTERBOXD_XML);
-    expect(odyssey.review).toBe('');
+    expect(odyssey?.review).toBe('');
   });
 
   it('drops the spoiler notice from a review', () => {
     const [entry] = parseLetterboxdRss(
       film('<description><![CDATA[ <p><img src="p.jpg"/></p> <p>This review may contain spoilers.</p> <p>The ending.</p> ]]></description>'),
     );
-    expect(entry.review).toBe('The ending.');
+    expect(entry?.review).toBe('The ending.');
   });
 
   it('does not double-unescape entities, and decodes only after stripping tags', () => {
@@ -146,18 +147,18 @@ describe('parseLetterboxdRss', () => {
     </item></channel></rss>`);
 
     // "&amp;amp;" is the literal text "&amp;" — one decode, not two.
-    expect(entry.title).toBe('Fear &amp; Loathing');
+    expect(entry?.title).toBe('Fear &amp; Loathing');
     // The member's escaped "&lt;3" is a literal "<3": tags must strip before
     // entities decode, or the heart gets eaten as a half-open tag.
-    expect(entry.review).toBe('I <3 this & that "a" it\'s >');
+    expect(entry?.review).toBe('I <3 this & that "a" it\'s >');
   });
 
   it('leaves no angle bracket behind, even for nested or unbalanced markup', () => {
     const [entry] = parseLetterboxdRss(
       film('<description><![CDATA[ <p><img src="p.jpg"/></p> <p>a <scr<script>ipt> b <em>fine</em> c <</p> ]]></description>'),
     );
-    expect(entry.review).not.toMatch(/[<>]/);
-    expect(entry.review).toContain('fine');
+    expect(entry?.review).not.toMatch(/[<>]/);
+    expect(entry?.review).toContain('fine');
   });
 
   it('returns nothing for a document with no film items', () => {

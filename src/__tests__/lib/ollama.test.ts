@@ -44,7 +44,7 @@ describe('createOllamaEmbedding', () => {
     const embedding = await createOllamaEmbedding('hello world');
 
     expect(embedding).toEqual([0.1, 0.2, 0.3]);
-    const [url, init] = fn.mock.calls[0];
+    const [url, init] = fn.mock.calls[0] ?? [];
     expect(url).toBe('http://localhost:11434/api/embeddings');
     expect(JSON.parse(init!.body as string)).toEqual({
       model: 'nomic-embed-text',
@@ -82,7 +82,7 @@ describe('createOllamaChatCompletion', () => {
 
     await createOllamaChatCompletion([{ role: 'user', content: 'hi' }]);
 
-    const body = JSON.parse(fn.mock.calls[0][1]!.body as string);
+    const body = JSON.parse(fn.mock.calls[0]?.[1]?.body as string);
     expect(body).toMatchObject({
       model: 'llama3.2',
       stream: false,
@@ -99,7 +99,7 @@ describe('createOllamaChatCompletion', () => {
       maxTokens: 42,
     });
 
-    const body = JSON.parse(fn.mock.calls[0][1]!.body as string);
+    const body = JSON.parse(fn.mock.calls[0]?.[1]?.body as string);
     expect(body).toMatchObject({
       model: 'mistral',
       options: { temperature: 0.9, num_predict: 42 },

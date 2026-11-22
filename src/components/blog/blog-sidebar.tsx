@@ -38,7 +38,7 @@ function useEssayHeadings(slug?: string) {
     const seen = new Set<string>();
     const headingElements: Heading[] = [];
     for (const element of elements) {
-      const level = parseInt(element.tagName[1]);
+      const level = parseInt(element.tagName.charAt(1));
       const text = element.textContent?.trim() || "";
       let id = element.id || slugify(text);
       if (!id) continue;

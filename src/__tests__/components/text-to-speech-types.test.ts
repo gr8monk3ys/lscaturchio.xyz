@@ -144,8 +144,8 @@ describe('buildChapters', () => {
     );
     const chapters = buildChapters(root, 100);
     expect(chapters[0]).toMatchObject({ id: 'start', title: 'Start', startTime: 0 });
-    expect(chapters[1].id).toBe('the-first-section');
-    expect(chapters[1].level).toBe(2);
+    expect(chapters[1]?.id).toBe('the-first-section');
+    expect(chapters[1]?.level).toBe(2);
   });
 
   it('estimates start times proportionally to words before each heading', () => {

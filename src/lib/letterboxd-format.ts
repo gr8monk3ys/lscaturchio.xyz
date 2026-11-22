@@ -150,7 +150,7 @@ function stripTags(html: string): string {
  */
 function extractReview(rawDescription: string): string {
   const paragraphs = Array.from(rawDescription.matchAll(/<p>([\s\S]*?)<\/p>/g))
-    .map((m) => m[1])
+    .map((m) => m[1] ?? '')
     .filter((p) => !/<img\s/i.test(p))
     .map((p) => decodeEntities(stripTags(p)))
     .filter(Boolean)

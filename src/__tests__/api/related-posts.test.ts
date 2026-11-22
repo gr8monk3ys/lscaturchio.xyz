@@ -52,7 +52,7 @@ describe('Related Posts API (semantic-first)', () => {
 
     const res = await GET(req('carceral', 'The Prison System'));
     const body = await readJson<{ data: { related: { url: string; similarity: number }[] } }>(res);
-    expect(body.data.related[0].url).toBe('/blog/bureaucratic');
+    expect(body.data.related[0]?.url).toBe('/blog/bureaucratic');
   });
 
   it('ranks a keyword-only match by its relevance, not as zero similarity', async () => {
@@ -67,7 +67,7 @@ describe('Related Posts API (semantic-first)', () => {
       '/blog/shares-tag',
     ]);
     // The displayed similarity stays the cosine, which is 0 for a keyword match.
-    expect(body.data.related[0].similarity).toBe(0);
+    expect(body.data.related[0]?.similarity).toBe(0);
   });
 
   it('queries on the current post’s title and description, with headroom past the limit', async () => {

@@ -19,8 +19,9 @@ function extractMdxHeadings(source: string): string[] {
   const headings: string[] = [];
   for (const line of source.split('\n')) {
     const m = line.match(/^#{2,3}\s+(.+?)\s*$/);
-    if (!m) continue;
-    const text = m[1].replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').trim();
+    const heading = m?.[1];
+    if (heading === undefined) continue;
+    const text = heading.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').trim();
     if (text) headings.push(text);
     if (headings.length >= MAX_HEADINGS) break;
   }

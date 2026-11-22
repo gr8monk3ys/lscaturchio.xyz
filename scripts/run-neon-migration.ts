@@ -73,8 +73,7 @@ async function main() {
   let success = 0
   let failed = 0
 
-  for (let i = 0; i < statements.length; i++) {
-    const stmt = statements[i]
+  for (const [i, stmt] of statements.entries()) {
     // Get first non-comment line for display
     const displayLine =
       stmt

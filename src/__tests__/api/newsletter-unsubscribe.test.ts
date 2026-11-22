@@ -97,7 +97,7 @@ describe('/api/newsletter/unsubscribe', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.message).toBe('Successfully unsubscribed');
+      expect(data.data?.message).toBe('Successfully unsubscribed');
     });
 
     it('calls sql with correct token for lookup', async () => {
@@ -122,7 +122,7 @@ describe('/api/newsletter/unsubscribe', () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.message).toBe('Already unsubscribed');
+      expect(data.data?.message).toBe('Already unsubscribed');
     });
 
     it('does not attempt to update when already unsubscribed', async () => {

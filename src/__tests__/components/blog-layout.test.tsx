@@ -119,7 +119,7 @@ describe('BlogLayout', () => {
     const schema = parseJson(
       document.getElementById('blog-schema')?.textContent ?? '{}'
     );
-    expect(schema.mainEntityOfPage['@id']).toBe(canonical);
+    expect(schema.mainEntityOfPage?.['@id']).toBe(canonical);
   });
 
   it('shows an updated line only when the record has one', () => {

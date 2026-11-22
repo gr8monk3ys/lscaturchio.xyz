@@ -38,7 +38,7 @@ describe('/api/webmentions', () => {
     expect(res.status).toBe(200);
 
     const json = await readJson(res);
-    expect(json.data.counts.like).toBe(2);
+    expect(json.data?.counts?.like).toBe(2);
     expect(vi.mocked(fetchWebmentions)).toHaveBeenCalledWith(
       'https://lscaturchio.xyz/blog/post',
     );
@@ -82,10 +82,10 @@ describe('/api/webmentions', () => {
     expect(res.status).toBe(200);
 
     const json = await readJson(res);
-    expect(json.data.degraded).toBe(true);
-    expect(json.data.target).toBe('https://lscaturchio.xyz/blog/post');
-    expect(json.data.counts).toEqual({ like: 0, repost: 0, reply: 0, mention: 0 });
-    expect(json.data.entries).toEqual([]);
+    expect(json.data?.degraded).toBe(true);
+    expect(json.data?.target).toBe('https://lscaturchio.xyz/blog/post');
+    expect(json.data?.counts).toEqual({ like: 0, repost: 0, reply: 0, mention: 0 });
+    expect(json.data?.entries).toEqual([]);
   });
 
   it('still sets Cache-Control on the degraded path', async () => {

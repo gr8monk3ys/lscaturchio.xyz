@@ -101,8 +101,8 @@ describe('Search API Route', () => {
       const json = await readJson(response);
 
       expect(response.status).toBe(200);
-      expect(json.data.results).toEqual([]);
-      expect(json.data.count).toBe(0);
+      expect(json.data?.results).toEqual([]);
+      expect(json.data?.count).toBe(0);
     });
 
     it.each([

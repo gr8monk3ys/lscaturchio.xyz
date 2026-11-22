@@ -52,7 +52,8 @@ export function useGalleryKeyboard({
     const index = Math.max(0, list.findIndex((s) => s === activeSlug))
     const move = (delta: number) => {
       const i = Math.min(list.length - 1, Math.max(0, index + delta))
-      onSetSlug(list[i])
+      const slug = list[i]
+      if (slug !== undefined) onSetSlug(slug)
     }
 
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'j' || e.key === 'J') {
