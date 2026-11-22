@@ -1,3 +1,4 @@
+import { parseJson } from '@/__tests__/helpers/json';
 import { afterEach, describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { BlogLayout } from '@/components/blog/BlogLayout';
@@ -115,7 +116,7 @@ describe('BlogLayout', () => {
     renderLayout({ post, children: <p>body</p> });
     const canonical = `${getSiteUrl()}/blog/strikes-work`;
     expect(screen.getByTestId('social-share')).toHaveTextContent(canonical);
-    const schema = JSON.parse(
+    const schema = parseJson(
       document.getElementById('blog-schema')?.textContent ?? '{}'
     );
     expect(schema.mainEntityOfPage['@id']).toBe(canonical);

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { useCommandPalette } from "@/hooks/use-command-palette";
+import { fromPartial } from '@total-typescript/shoehorn';
 
 /**
  * The palette's content search was silently returning nothing, for every
@@ -54,7 +55,7 @@ afterEach(() => {
 });
 
 function jsonResponse(body: unknown, ok = true, status = 200) {
-  return { ok, status, json: async () => body } as unknown as Response;
+  return fromPartial<Response>({ ok, status, json: async () => body });
 }
 
 /** The hook debounces by 300ms before it will search at all. */

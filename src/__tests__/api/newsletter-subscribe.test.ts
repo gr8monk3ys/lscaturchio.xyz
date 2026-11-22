@@ -29,6 +29,7 @@ import { installMailTransport } from '@/lib/mail/deliver'
 import { createOutbox } from '@/lib/mail/outbox'
 import { validateCsrf } from '@/lib/csrf'
 import { logError } from '@/lib/logger'
+import { parseJson, readJson } from '@/__tests__/helpers/json';
 
 // The mailer: an in-memory outbox in place of Resend.
 const outbox = createOutbox()
@@ -73,7 +74,7 @@ describe('/api/newsletter/subscribe', () => {
       vi.stubEnv('NEWSLETTER_SIGNUP_ENABLED', value)
 
       const response = await POST(createMockRequest({ email: 'new@example.com', topics: ['ai'] }))
-      const data = await response.json()
+      const data = await readJson(response)
 
       expect(response.status).toBe(503)
       expect(data.success).toBe(false)
@@ -89,7 +90,7 @@ describe('/api/newsletter/subscribe', () => {
     it('returns 400 when email is missing', async () => {
       const request = createMockRequest({})
       const response = await POST(request)
-      const data = await response.json()
+      const data = await readJson(response)
 
       expect(response.status).toBe(400)
       expect(data.success).toBe(false)
@@ -99,7 +100,7 @@ describe('/api/newsletter/subscribe', () => {
     it('returns 400 when email is invalid format', async () => {
       const request = createMockRequest({ email: 'not-an-email' })
       const response = await POST(request)
-      const data = await response.json()
+      const data = await readJson(response)
 
       expect(response.status).toBe(400)
       expect(data.success).toBe(false)
@@ -128,7 +129,7 @@ describe('/api/newsletter/subscribe', () => {
         mockSql.mockResolvedValue([])
 
         const response = await POST(createMockRequest({ email }))
-        observed.push({ status: response.status, body: await response.json() })
+        observed.push({ status: response.status, body: await readJson(response) })
       }
 
       const [first, ...rest] = observed
@@ -149,7 +150,7 @@ describe('/api/newsletter/subscribe', () => {
 
       const request = createMockRequest({ email: 'new@example.com' })
       const response = await POST(request)
-      const data = await response.json()
+      const data = await readJson(response)
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
@@ -195,7 +196,7 @@ describe('/api/newsletter/subscribe', () => {
 
       const request = createMockRequest({ email: 'existing@example.com' })
       const response = await POST(request)
-      const data = await response.json()
+      const data = await readJson(response)
       // Already subscribed: no second welcome email.
       expect(outbox.sent).toHaveLength(0)
 
@@ -214,7 +215,7 @@ describe('/api/newsletter/subscribe', () => {
         source: '/blog/some-post',
       })
       const response = await POST(request)
-      const data = await response.json()
+      const data = await readJson(response)
 
       expect(response.status).toBe(200)
       // Same response as a new signup.
@@ -234,7 +235,7 @@ describe('/api/newsletter/subscribe', () => {
 
       const request = createMockRequest({ email: 'inactive@example.com' })
       const response = await POST(request)
-      const data = await response.json()
+      const data = await readJson(response)
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
@@ -262,7 +263,7 @@ describe('/api/newsletter/subscribe', () => {
 
       const request = createMockRequest({ email: 'test@example.com' })
       const response = await POST(request)
-      const data = await response.json()
+      const data = await readJson(response)
 
       expect(response.status).toBe(500)
       expect(data.success).toBe(false)
@@ -290,7 +291,7 @@ describe('/api/newsletter/subscribe', () => {
 
       const request = createMockRequest({ email: 'test@example.com' })
       const response = await POST(request)
-      const data = await response.json()
+      const data = await readJson(response)
 
       expect(response.status).toBe(403)
       expect(data.error).toBe('Invalid origin')
@@ -309,7 +310,7 @@ describe('/api/newsletter/subscribe', () => {
         topics: ['tech', 'invalid-topic', 'ai', 'bogus'],
       })
       const response = await POST(request)
-      const data = await response.json()
+      const data = await readJson(response)
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
@@ -319,7 +320,7 @@ describe('/api/newsletter/subscribe', () => {
       // mockSql args: [templateStrings, email, token, metadataJson]
       const insertCall = mockSql.mock.calls[1]
       const metadataJson = insertCall[3] as string
-      const metadata = JSON.parse(metadataJson)
+      const metadata = parseJson(metadataJson)
       expect(metadata.topics).toEqual(['tech', 'ai'])
     })
 
@@ -338,7 +339,7 @@ describe('/api/newsletter/subscribe', () => {
         topics: ['tech', 'ai', 'web', 'tech', 'ai', 'web'],
       })
       const response = await POST(request)
-      const data = await response.json()
+      const data = await readJson(response)
 
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
@@ -347,7 +348,7 @@ describe('/api/newsletter/subscribe', () => {
       // mockSql args: [templateStrings, email, token, metadataJson]
       const insertCall = mockSql.mock.calls[1]
       const metadataJson = insertCall[3] as string
-      const metadata = JSON.parse(metadataJson)
+      const metadata = parseJson(metadataJson)
       // Deduplication should reduce to 3 unique topics (all within the 6 limit)
       expect(metadata.topics).toEqual(['tech', 'ai', 'web'])
       expect(metadata.topics.length).toBeLessThanOrEqual(6)

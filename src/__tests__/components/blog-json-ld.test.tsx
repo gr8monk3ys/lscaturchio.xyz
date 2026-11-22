@@ -1,3 +1,4 @@
+import { parseJson } from '@/__tests__/helpers/json';
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { BlogJsonLd } from '@/components/blog/blog-json-ld';
@@ -17,7 +18,7 @@ function renderSchema(props = {}) {
   const script = document.getElementById('blog-schema');
   expect(script).not.toBeNull();
   expect(script).toHaveAttribute('type', 'application/ld+json');
-  return JSON.parse(script!.textContent ?? '{}');
+  return parseJson(script!.textContent ?? '{}');
 }
 
 describe('BlogJsonLd', () => {

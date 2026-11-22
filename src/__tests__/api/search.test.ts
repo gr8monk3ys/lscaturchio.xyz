@@ -22,6 +22,7 @@ import { GET, POST } from '@/app/api/search/route';
 import { relevantEssays, type RelevantEssay } from '@/lib/retrieval';
 import { validateCsrf } from '@/lib/csrf';
 import { logError } from '@/lib/logger';
+import { readJson } from '@/__tests__/helpers/json';
 
 const mockEssays = vi.mocked(relevantEssays);
 
@@ -60,7 +61,7 @@ describe('Search API Route', () => {
       mockEssays.mockResolvedValue([essay()]);
 
       const response = await GET(new NextRequest('http://localhost/api/search?q=typescript'));
-      const json = await response.json();
+      const json = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(json.success).toBe(true);
@@ -87,7 +88,7 @@ describe('Search API Route', () => {
       ]);
 
       const response = await GET(new NextRequest('http://localhost/api/search?q=react'));
-      const json = await response.json();
+      const json = await readJson<{ data: { results: { title: string }[] } }>(response);
 
       expect(json.data.results.map((r: { title: string }) => r.title)).toEqual([
         'Keyword Match',
@@ -97,7 +98,7 @@ describe('Search API Route', () => {
 
     it('returns empty results for no matches', async () => {
       const response = await GET(new NextRequest('http://localhost/api/search?q=nonexistent'));
-      const json = await response.json();
+      const json = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(json.data.results).toEqual([]);
@@ -110,7 +111,7 @@ describe('Search API Route', () => {
       ['whitespace-only', 'http://localhost/api/search?q=%20%20%20'],
     ])('returns 400 for a %s query', async (_label, url) => {
       const response = await GET(new NextRequest(url));
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBe('Search query is required');
@@ -119,7 +120,7 @@ describe('Search API Route', () => {
 
     it('returns 400 for query exceeding 500 characters', async () => {
       const response = await GET(new NextRequest(`http://localhost/api/search?q=${'a'.repeat(501)}`));
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBe('Search query too long (max 500 characters)');
@@ -145,7 +146,7 @@ describe('Search API Route', () => {
       mockEssays.mockRejectedValue(new Error('Database connection failed'));
 
       const response = await GET(new NextRequest('http://localhost/api/search?q=test'));
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(500);
       expect(data.error).toBe('Search failed. Please try again later.');
@@ -161,7 +162,7 @@ describe('Search API Route', () => {
       mockEssays.mockResolvedValue([essay()]);
 
       const response = await POST(postRequest({ query: 'typescript' }));
-      const json = await response.json();
+      const json = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(json.data).toEqual({
@@ -196,7 +197,7 @@ describe('Search API Route', () => {
       ['whitespace-only', { query: '   ' }],
     ])('returns 400 for a %s query in body', async (_label, body) => {
       const response = await POST(postRequest(body));
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBe('Search query is required');
@@ -204,7 +205,7 @@ describe('Search API Route', () => {
 
     it('returns 400 for query exceeding 500 characters in body', async () => {
       const response = await POST(postRequest({ query: 'a'.repeat(501) }));
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBe('Search query too long (max 500 characters)');
@@ -223,7 +224,7 @@ describe('Search API Route', () => {
       mockEssays.mockRejectedValue(new Error('OpenAI API error'));
 
       const response = await POST(postRequest({ query: 'test' }));
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(500);
       expect(data.error).toBe('Search failed. Please try again later.');

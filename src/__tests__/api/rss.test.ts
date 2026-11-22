@@ -13,11 +13,12 @@ vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }
 
 import { GET } from '@/app/api/rss/route';
 import { getAllBlogs } from '@/lib/getAllBlogs';
+import { fromPartial } from '@total-typescript/shoehorn';
 
 type Blog = Awaited<ReturnType<typeof getAllBlogs>>[number];
 
 function blog(overrides: Partial<Blog>): Blog {
-  return {
+  return fromPartial<Blog>({
     slug: 'a-post',
     title: 'A Post',
     description: 'A post description.',
@@ -28,7 +29,7 @@ function blog(overrides: Partial<Blog>): Blog {
     image: '/images/blog/a-post.webp',
     published: true,
     ...overrides,
-  } as Blog;
+  });
 }
 
 describe('/api/rss', () => {
@@ -103,7 +104,7 @@ describe('/api/rss', () => {
         title: 'Vector Stores',
         series: 'Building RAG',
         seriesOrder: 2,
-      } as Partial<Blog>),
+      }),
     ]);
 
     const body = await (await GET(new NextRequest('http://localhost/api/rss', { method: 'GET' }))).text();

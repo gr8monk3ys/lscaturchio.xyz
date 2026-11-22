@@ -45,6 +45,7 @@ import { createOutbox } from '@/lib/mail/outbox';
 import { submitWrite } from '@/lib/fetcher';
 import { installBotClassifier } from '@/lib/form-guard/guard';
 import { withWriteRoute } from '@/lib/api/write-route';
+import { readJson } from '@/__tests__/helpers/json';
 
 /**
  * No shipped route declares API-key auth or `csrf: skip` since the newsletter
@@ -166,7 +167,7 @@ describe('CSRF layer (real @/lib/csrf)', () => {
     expect(res.status).toBe(403);
     // The standard envelope. CSRF used to answer a bare `{ error }`, the one
     // write-route failure without `success: false`.
-    expect(await res.json()).toEqual({ success: false, error: 'Missing origin header' });
+    expect(await readJson(res)).toEqual({ success: false, error: 'Missing origin header' });
     expect(outbox.sent).toHaveLength(0);
   });
 
@@ -179,7 +180,7 @@ describe('CSRF layer (real @/lib/csrf)', () => {
     );
 
     expect(res.status).toBe(403);
-    expect((await res.json()).error).toBe('Invalid origin');
+    expect((await readJson(res)).error).toBe('Invalid origin');
     expect(outbox.sent).toHaveLength(0);
   });
 
@@ -217,7 +218,7 @@ describe('auth layer (real @/lib/api-auth)', () => {
     );
 
     expect(res.status).toBe(401);
-    expect(await res.json()).toEqual({
+    expect(await readJson(res)).toEqual({
       success: false,
       error: 'Unauthorized - valid API key required',
     });
@@ -235,7 +236,7 @@ describe('auth layer (real @/lib/api-auth)', () => {
     // A missing Origin is a 403 on every other write route; this one is
     // declared `csrf: { kind: "skip" }` because its caller is a machine.
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({
+    expect(await readJson(res)).toEqual({
       data: { ran: true },
       success: true,
     });
@@ -256,7 +257,7 @@ describe('schema layer (real Zod schemas)', () => {
     expect(res.status).toBe(400);
     // `field` travels with the message so the form can render it beside the
     // input it is about rather than as a banner under the submit button.
-    expect(await res.json()).toEqual({
+    expect(await readJson(res)).toEqual({
       error: 'Invalid email format',
       field: 'email',
       success: false,
@@ -270,7 +271,7 @@ describe('schema layer (real Zod schemas)', () => {
     );
 
     expect(res.status).toBe(400);
-    expect((await res.json()).error).toBe('Request body must be valid JSON');
+    expect((await readJson(res)).error).toBe('Request body must be valid JSON');
     expect(outbox.sent).toHaveLength(0);
   });
 
@@ -282,7 +283,7 @@ describe('schema layer (real Zod schemas)', () => {
     );
 
     expect(res.status).toBe(400);
-    expect(await res.json()).toMatchObject({ error: 'Message is required', field: 'message' });
+    expect(await readJson(res)).toMatchObject({ error: 'Message is required', field: 'message' });
     expect(outbox.sent).toHaveLength(0);
   });
 
@@ -294,7 +295,7 @@ describe('schema layer (real Zod schemas)', () => {
     );
 
     expect(res.status).toBe(400);
-    expect((await res.json()).error).toBe('Message is too long (max 5000 characters)');
+    expect((await readJson(res)).error).toBe('Message is too long (max 5000 characters)');
   });
 
   it('stops the subscribe route before any SQL runs', async () => {
@@ -422,7 +423,7 @@ describe('human form guard (real @/lib/form-guard)', () => {
     );
 
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual(SENT);
+    expect(await readJson(res)).toEqual(SENT);
     expect(outbox.sent).toHaveLength(0);
   });
 
@@ -437,7 +438,7 @@ describe('human form guard (real @/lib/form-guard)', () => {
     );
 
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual(SUBSCRIBED);
+    expect(await readJson(res)).toEqual(SUBSCRIBED);
     expect(mockSql).not.toHaveBeenCalled();
     expect(outbox.sent).toHaveLength(0);
   });
@@ -499,7 +500,7 @@ describe('human form guard (real @/lib/form-guard)', () => {
       );
 
       expect(res.status).toBe(403);
-      expect(await res.json()).toEqual({
+      expect(await readJson(res)).toEqual({
         success: false,
         error: 'This message was flagged as automated and was not sent.',
       });
@@ -512,7 +513,7 @@ describe('human form guard (real @/lib/form-guard)', () => {
       );
 
       expect(res.status).toBe(403);
-      expect((await res.json()).error).toBe(
+      expect((await readJson(res)).error).toBe(
         'This signup was flagged as automated and was not saved.'
       );
       expect(mockSql).not.toHaveBeenCalled();
@@ -540,7 +541,7 @@ describe('human form guard (real @/lib/form-guard)', () => {
       );
 
       expect(res.status).toBe(400);
-      expect(await res.json()).toEqual({
+      expect(await readJson(res)).toEqual({
         success: false,
         error: 'Invalid email format',
         field: 'email',
@@ -573,7 +574,7 @@ describe('rate-limit layer (real @/lib/rate-limit)', () => {
     expect(blocked.status).toBe(429);
     expect(blocked.headers.get('Retry-After')).toBeTruthy();
     // The standard error envelope, like every other failure on this route.
-    expect(await blocked.json()).toEqual({
+    expect(await readJson(blocked)).toEqual({
       success: false,
       error: 'Too many requests',
       retryAfter: expect.any(Number),
@@ -629,7 +630,7 @@ describe('envelope layer', () => {
     );
 
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({
+    expect(await readJson(res)).toEqual({
       data: { message: "Thanks. You're on the list. If the address is new here, a welcome note is on its way." },
       success: true,
     });
@@ -644,7 +645,7 @@ describe('envelope layer', () => {
 
     // `field` travels with the message so the form can render it beside the
     // input it is about rather than as a banner under the submit button.
-    expect(await res.json()).toEqual({
+    expect(await readJson(res)).toEqual({
       error: 'Invalid email format',
       field: 'email',
       success: false,

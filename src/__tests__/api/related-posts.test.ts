@@ -10,6 +10,7 @@ vi.mock('@/lib/logger', () => ({ logError: vi.fn() }));
 vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }));
 
 import { GET } from '@/app/api/related-posts/route';
+import { readJson } from '@/__tests__/helpers/json';
 
 const BLOGS = [
   { slug: 'carceral', title: 'The Prison System', description: 'on mass incarceration', date: '2026-02-01', image: '/a.webp', tags: ['justice'] },
@@ -50,7 +51,7 @@ describe('Related Posts API (semantic-first)', () => {
     relevantEssays.mockResolvedValue([essay('bureaucratic', 1), essay('shares-tag', 0.45)]);
 
     const res = await GET(req('carceral', 'The Prison System'));
-    const body = await res.json();
+    const body = await readJson<{ data: { related: { url: string; similarity: number }[] } }>(res);
     expect(body.data.related[0].url).toBe('/blog/bureaucratic');
   });
 
@@ -60,7 +61,7 @@ describe('Related Posts API (semantic-first)', () => {
     relevantEssays.mockResolvedValue([essay('bureaucratic', 1, 0), essay('shares-tag', 0.5)]);
 
     const res = await GET(req('carceral', 'The Prison System'));
-    const body = await res.json();
+    const body = await readJson<{ data: { related: { url: string; similarity: number }[] } }>(res);
     expect(body.data.related.map((p: { url: string }) => p.url)).toEqual([
       '/blog/bureaucratic',
       '/blog/shares-tag',
@@ -78,14 +79,14 @@ describe('Related Posts API (semantic-first)', () => {
   it('excludes the current post from results', async () => {
     relevantEssays.mockResolvedValue([essay('carceral', 1), essay('bureaucratic', 0.5)]);
     const res = await GET(req('carceral', 'The Prison System'));
-    const body = await res.json();
+    const body = await readJson<{ data: { related: { url: string; similarity: number }[] } }>(res);
     expect(body.data.related.every((p: { url: string }) => p.url !== '/blog/carceral')).toBe(true);
   });
 
   it('falls back to shared tags when embeddings return nothing', async () => {
     relevantEssays.mockResolvedValue([]);
     const res = await GET(req('carceral', 'The Prison System'));
-    const body = await res.json();
+    const body = await readJson<{ data: { related: { url: string; similarity: number }[] } }>(res);
     // 'shares-tag' shares the 'justice' tag with current post.
     expect(body.data.related.map((p: { url: string }) => p.url)).toContain('/blog/shares-tag');
   });

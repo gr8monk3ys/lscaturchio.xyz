@@ -41,6 +41,7 @@ import { POST } from '@/app/api/chat/route';
 import { groundingFor } from '@/lib/retrieval';
 import { isOllamaAvailable, createOllamaChatCompletion } from '@/lib/ollama';
 import { validateCsrf } from '@/lib/csrf';
+import { readJson } from '@/__tests__/helpers/json';
 
 // Helper to create mock request
 function createMockRequest(body: Record<string, unknown>): NextRequest {
@@ -70,7 +71,7 @@ describe('/api/chat', () => {
     it('returns 400 when query is missing', async () => {
       const request = createMockRequest({});
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -80,7 +81,7 @@ describe('/api/chat', () => {
     it('returns 400 when query is empty string', async () => {
       const request = createMockRequest({ query: '' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -90,7 +91,7 @@ describe('/api/chat', () => {
     it('returns 400 when query is not a string', async () => {
       const request = createMockRequest({ query: 123 });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -101,7 +102,7 @@ describe('/api/chat', () => {
       const longQuery = 'a'.repeat(1001);
       const request = createMockRequest({ query: longQuery });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -113,7 +114,7 @@ describe('/api/chat', () => {
     it('returns AI response for valid query', async () => {
       const request = createMockRequest({ query: 'What do you do?' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
@@ -151,7 +152,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(createMockRequest({ query: 'Tell me about yourself' }));
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(data.data.sources).toEqual([{ title: 'On Shipping', url: '/blog/on-shipping' }]);
       expect(data.data.grounded).toBe(true);
@@ -165,7 +166,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(createMockRequest({ query: 'What about llamas?' }));
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(data.data.sources).toHaveLength(1);
       expect(data.data.grounded).toBe(false);
@@ -174,7 +175,7 @@ describe('/api/chat', () => {
     it('works without embeddings context', async () => {
       const request = createMockRequest({ query: 'Hello' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
@@ -189,7 +190,7 @@ describe('/api/chat', () => {
 
       const request = createMockRequest({ query: 'test query' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
@@ -203,7 +204,7 @@ describe('/api/chat', () => {
 
       const request = createMockRequest({ query: 'test query' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);

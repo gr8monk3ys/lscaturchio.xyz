@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useAskConversation, ASK_OPENER } from "@/hooks/use-ask-conversation";
 import { logError, logWarn } from "@/lib/logger";
+import { parseJson } from "@/__tests__/helpers/json";
 
 vi.mock("@/lib/logger", () => ({ logError: vi.fn(), logWarn: vi.fn() }));
 
@@ -64,7 +65,7 @@ describe("useAskConversation", () => {
       await result.current.send("Does this hold up?");
     });
 
-    const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+    const body = parseJson(fetchMock.mock.calls[0][1].body);
     expect(body.contextSlug).toBe("strikes-work");
   });
 
@@ -76,7 +77,7 @@ describe("useAskConversation", () => {
       await result.current.send("Anything");
     });
 
-    const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+    const body = parseJson(fetchMock.mock.calls[0][1].body);
     expect(body.contextSlug).toBeUndefined();
   });
 

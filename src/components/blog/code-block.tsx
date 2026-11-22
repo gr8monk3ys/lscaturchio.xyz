@@ -114,7 +114,7 @@ export function CodeBlock({
 
   // Get code content - extract text from children recursively
   const codeText = useMemo(() => {
-    const getCodeText = (node: React.ReactNode): string => {
+    const getCodeText = (node: unknown): string => {
       if (typeof node === "string") return node;
       if (Array.isArray(node)) return node.map(getCodeText).join("");
       if (node && typeof node === "object" && "props" in node) {

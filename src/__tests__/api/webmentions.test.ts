@@ -13,6 +13,7 @@ vi.mock('@/lib/rate-limit', () => ({ withRateLimit: <T>(handler: T) => handler }
 
 import { GET } from '@/app/api/webmentions/route';
 import { fetchWebmentions } from '@/lib/webmentions';
+import { readJson } from '@/__tests__/helpers/json';
 
 function req(path: string | null): NextRequest {
   const url = path === null
@@ -36,7 +37,7 @@ describe('/api/webmentions', () => {
     const res = await GET(req('/blog/post'));
     expect(res.status).toBe(200);
 
-    const json = await res.json();
+    const json = await readJson(res);
     expect(json.data.counts.like).toBe(2);
     expect(vi.mocked(fetchWebmentions)).toHaveBeenCalledWith(
       'https://lscaturchio.xyz/blog/post',
@@ -80,7 +81,7 @@ describe('/api/webmentions', () => {
     const res = await GET(req('/blog/post'));
     expect(res.status).toBe(200);
 
-    const json = await res.json();
+    const json = await readJson(res);
     expect(json.data.degraded).toBe(true);
     expect(json.data.target).toBe('https://lscaturchio.xyz/blog/post');
     expect(json.data.counts).toEqual({ like: 0, repost: 0, reply: 0, mention: 0 });

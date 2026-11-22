@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { fromAny } from '@total-typescript/shoehorn';
 import {
   playerReducer,
   INITIAL_STATE,
@@ -89,7 +90,7 @@ describe('getSafeDuration', () => {
     end: (i: number) => ends[i],
   });
   const audio = (over: object) =>
-    ({ duration: NaN, seekable: ranges([]), buffered: ranges([]), ...over }) as unknown as HTMLAudioElement;
+    fromAny<HTMLAudioElement, object>({ duration: NaN, seekable: ranges([]), buffered: ranges([]), ...over });
 
   it('prefers a finite positive duration', () => {
     expect(getSafeDuration(audio({ duration: 120 }))).toBe(120);
