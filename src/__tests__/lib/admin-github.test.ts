@@ -57,7 +57,7 @@ describe("commitToMain", () => {
     expect(result.sha).toBe("commit1");
     expect(result.url).toBe("https://github.com/owner/repo/commit/commit1");
     expect(fetchMock).toHaveBeenCalledTimes(6);
-    expect(String(fetchMock.mock.calls[0][0])).toContain("/git/blobs");
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/git/blobs");
   });
 
   it("retries once without re-uploading blobs when the ref update is rejected", async () => {

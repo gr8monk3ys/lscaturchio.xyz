@@ -84,11 +84,11 @@ describe("POST /api/admin/photos", () => {
       "public/images/photos/travel/sunset.webp",
       "src/data/photos.json",
     ]);
-    const entries = JSON.parse(files[1].content as string) as Array<{
+    const entries = JSON.parse(files[1]?.content as string) as Array<{
       aspectRatio: string;
       src: string;
     }>;
-    expect(entries[0].aspectRatio).toBe("landscape");
-    expect(entries[0].src).toBe("/images/photos/travel/sunset.webp");
+    expect(entries[0]?.aspectRatio).toBe("landscape");
+    expect(entries[0]?.src).toBe("/images/photos/travel/sunset.webp");
   });
 });

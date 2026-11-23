@@ -28,8 +28,9 @@ describe("OG card palette", () => {
   /** `  forest-ink: "#184e35"` in the frontmatter palette block. */
   function token(name: string): string {
     const match = designMd.match(new RegExp(`^\\s*${name}:\\s*"(#[0-9a-fA-F]{6})"`, "m"));
-    if (!match) throw new Error(`DESIGN.md declares no \`${name}\` token`);
-    return match[1].toLowerCase();
+    const hex = match?.[1];
+    if (hex === undefined) throw new Error(`DESIGN.md declares no \`${name}\` token`);
+    return hex.toLowerCase();
   }
 
   /** `const GREEN = '#184e35';` — the declaration, never a comment. */
@@ -37,8 +38,9 @@ describe("OG card palette", () => {
     const match = route.match(
       new RegExp(`^\\s*const ${name}\\s*=\\s*['"](#[0-9a-fA-F]{6})['"]`, "m")
     );
-    if (!match) throw new Error(`og/route.tsx declares no \`${name}\` constant`);
-    return match[1].toLowerCase();
+    const hex = match?.[1];
+    if (hex === undefined) throw new Error(`og/route.tsx declares no \`${name}\` constant`);
+    return hex.toLowerCase();
   }
 
   const PAIRS: Array<[string, string]> = [
@@ -59,11 +61,12 @@ describe("OG card palette", () => {
     // `rgba(19, 92, 52, …)` shipped here — the decimal form of the rogue
     // `#135c34`, which is how the drift hid from a search for the hex.
     const forestInk = token("forest-ink");
-    const [r, g, b] = [1, 3, 5].map((i) => parseInt(forestInk.slice(i, i + 2), 16));
+    const channel = (i: number) => parseInt(forestInk.slice(i, i + 2), 16);
+    const [r, g, b] = [channel(1), channel(3), channel(5)];
     const rgbaTints = [...route.matchAll(/rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,/g)];
 
     const strays = rgbaTints
-      .map((m) => [Number(m[1]), Number(m[2]), Number(m[3])])
+      .map((m): [number, number, number] => [Number(m[1]), Number(m[2]), Number(m[3])])
       // Ink-based tints are legitimate too; only greens must be Forest Ink.
       .filter(([tr, tg, tb]) => tg > tr && tg > tb)
       .filter(([tr, tg, tb]) => tr !== r || tg !== g || tb !== b)

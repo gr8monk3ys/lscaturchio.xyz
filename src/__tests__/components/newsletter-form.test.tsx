@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { NewsletterForm } from "@/components/newsletter/newsletter-form";
 import { NEWSLETTER_TOPICS } from "@/constants/newsletter";
+import { parseJson } from "@/__tests__/helpers/json";
 
 const fetchMock = vi.fn<typeof fetch>();
 
@@ -101,7 +102,7 @@ describe("NewsletterForm", () => {
     });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    const [url, init] = fetchMock.mock.calls[0];
+    const [url, init] = fetchMock.mock.calls[0] ?? [];
     expect(url).toBe("/api/newsletter/subscribe");
     expect(init?.method).toBe("POST");
     expect(init?.headers).toEqual({ "Content-Type": "application/json" });
@@ -137,7 +138,7 @@ describe("NewsletterForm", () => {
       submitForm();
 
       await waitFor(() => expect(screen.getByText("Welcome aboard!")).toBeInTheDocument());
-      const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
+      const body = parseJson(String(fetchMock.mock.calls[0]?.[1]?.body));
       expect(body.contact_ref).toBe("https://spam.example");
       expect(body.elapsedMs).toBe(8_500);
       expect(honeypot).toHaveValue("");

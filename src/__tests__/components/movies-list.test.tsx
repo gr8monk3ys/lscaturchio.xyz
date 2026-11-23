@@ -45,8 +45,8 @@ function renderList() {
   );
 }
 
-const TABS_UNDER_TEST = ['five-star', 'reviewed'];
-const LABELS_UNDER_TEST = [/Five Stars/, /Written About/];
+const TABS_UNDER_TEST = ['five-star', 'reviewed'] as const;
+const LABELS_UNDER_TEST = [/Five Stars/, /Written About/] as const;
 const renderUnderTest = () => renderList();
 
 describe('MoviesList', () => {
@@ -146,7 +146,7 @@ describe('MoviesList list in the URL', () => {
     renderUnderTest();
     const pressed = screen.getAllByRole('button').filter((b) => b.getAttribute('aria-pressed') === 'true');
     expect(pressed).toHaveLength(1);
-    expect(pressed[0].textContent).toMatch(LABELS_UNDER_TEST[1]);
+    expect(pressed[0]?.textContent).toMatch(LABELS_UNDER_TEST[1]);
 
     fireEvent.click(screen.getAllByRole('button').find((b) => LABELS_UNDER_TEST[0].test(b.textContent ?? ''))!);
     // The default list keeps the URL clean.

@@ -173,7 +173,7 @@ describe('getSiteStats', () => {
 
     const stats = await getSiteStats();
 
-    expect(stats.rankedViews.rows[0].views).toBe(0);
+    expect(stats.rankedViews.rows[0]?.views).toBe(0);
     expect(stats.overview.totalViews.value).toBe(0);
   });
 });

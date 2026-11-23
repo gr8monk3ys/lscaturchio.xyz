@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { assert, describe, it, expect, vi } from 'vitest';
 import { createRef } from 'react';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 
@@ -55,8 +55,8 @@ describe('command palette dialog announces its selection', () => {
     const options = within(listbox).getAllByRole('option');
 
     expect(input).toHaveAttribute('aria-controls', listbox.id);
-    expect(input.getAttribute('aria-activedescendant')).toBe(options[0].id);
-    expect(options[0].id).toBeTruthy();
+    expect(input.getAttribute('aria-activedescendant')).toBe(options[0]?.id);
+    expect(options[0]?.id).toBeTruthy();
     expect(options[0]).toHaveAttribute('aria-selected', 'true');
 
     unmount();
@@ -64,7 +64,7 @@ describe('command palette dialog announces its selection', () => {
     renderDialog(1);
     const movedInput = screen.getByRole('combobox');
     const movedOptions = within(screen.getByRole('listbox')).getAllByRole('option');
-    expect(movedInput.getAttribute('aria-activedescendant')).toBe(movedOptions[1].id);
+    expect(movedInput.getAttribute('aria-activedescendant')).toBe(movedOptions[1]?.id);
     expect(movedOptions[1]).toHaveAttribute('aria-selected', 'true');
   });
 });
@@ -85,6 +85,7 @@ describe('mobile navbar keyboard affordances', () => {
     }
 
     const first = disclosures[0];
+    assert(first);
     fireEvent.click(first);
     expect(first).toHaveAttribute('aria-expanded', 'true');
     const panelId = first.getAttribute('aria-controls') as string;

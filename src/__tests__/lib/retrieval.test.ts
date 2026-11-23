@@ -50,10 +50,10 @@ describe('reciprocalRankFusion', () => {
       { key, k: 60 },
     );
     expect(scored.map((s) => s.item.id)).toEqual(['a', 'b']);
-    expect(scored[0].score).toBeGreaterThan(scored[1].score);
+    expect(scored[0]?.score).toBeGreaterThan(scored[1]?.score ?? Infinity);
     // a is in both lists (rank 0 + rank 0), b only in the first (rank 1)
-    expect(scored[0].score).toBeCloseTo(1 / 60 + 1 / 60, 6);
-    expect(scored[1].score).toBeCloseTo(1 / 61, 6);
+    expect(scored[0]?.score).toBeCloseTo(1 / 60 + 1 / 60, 6);
+    expect(scored[1]?.score).toBeCloseTo(1 / 61, 6);
   });
 
   it('keeps the first-list instance as the representative for a duplicated key', () => {
@@ -65,13 +65,13 @@ describe('reciprocalRankFusion', () => {
       { key, k: 60 },
     );
     expect(fused).toHaveLength(1);
-    expect(fused[0].src).toBe('vector');
+    expect(fused[0]?.src).toBe('vector');
   });
 
   it('uses the RRF_K default when k is omitted', () => {
     // The real callers rely on the default k; lock the scoring to RRF_K.
     const scored = reciprocalRankFusionScored([{ items: [{ id: 'a' }] }], { key });
-    expect(scored[0].score).toBeCloseTo(1 / RRF_K, 10);
+    expect(scored[0]?.score).toBeCloseTo(1 / RRF_K, 10);
   });
 
   it('sums contributions additively across three lists', () => {
@@ -85,8 +85,8 @@ describe('reciprocalRankFusion', () => {
       { key, k: 60 },
     );
     expect(scored.map((s) => s.item.id)).toEqual(['a', 'b']);
-    expect(scored[0].score).toBeCloseTo(1 / 60 + 1 / 60 + 1 / 60, 10);
-    expect(scored[1].score).toBeCloseTo(1 / 61, 10);
+    expect(scored[0]?.score).toBeCloseTo(1 / 60 + 1 / 60 + 1 / 60, 10);
+    expect(scored[1]?.score).toBeCloseTo(1 / 61, 10);
   });
 });
 

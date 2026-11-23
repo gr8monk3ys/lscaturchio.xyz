@@ -29,6 +29,7 @@ import { GET, POST } from '@/app/api/views/route';
 import { isDatabaseConfigured } from '@/lib/db';
 import { validateCsrf } from '@/lib/csrf';
 import { getAllBlogs, type BlogPost } from '@/lib/getAllBlogs';
+import { readJson } from '@/__tests__/helpers/json';
 
 function post(slug: string, title = slug): BlogPost {
   return {
@@ -58,7 +59,7 @@ describe('Views API Route', () => {
 
       const request = new NextRequest('http://localhost/api/views?slug=test-post');
       const response = await GET(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data).toEqual({ data: { slug: 'test-post', views: 42 }, success: true });
@@ -69,7 +70,7 @@ describe('Views API Route', () => {
 
       const request = new NextRequest('http://localhost/api/views?slug=new-post');
       const response = await GET(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data).toEqual({ data: { slug: 'new-post', views: 0 }, success: true });
@@ -78,7 +79,7 @@ describe('Views API Route', () => {
     it('returns 400 for invalid slug', async () => {
       const request = new NextRequest('http://localhost/api/views?slug=');
       const response = await GET(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -88,7 +89,7 @@ describe('Views API Route', () => {
     it('returns 400 for missing slug parameter', async () => {
       const request = new NextRequest('http://localhost/api/views');
       const response = await GET(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -99,7 +100,7 @@ describe('Views API Route', () => {
 
       const request = new NextRequest('http://localhost/api/views?slug=test-post');
       const response = await GET(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
@@ -111,12 +112,12 @@ describe('Views API Route', () => {
 
       const request = new NextRequest('http://localhost/api/views?all=true');
       const response = await GET(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.available).toBe(false);
-      expect(data.data.views).toEqual([]);
+      expect(data.data?.available).toBe(false);
+      expect(data.data?.views).toEqual([]);
     });
 
     it('returns all views with titles via format=detailed', async () => {
@@ -132,15 +133,15 @@ describe('Views API Route', () => {
 
       const request = new NextRequest('http://localhost/api/views?format=detailed');
       const response = await GET(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.views).toHaveLength(2);
-      expect(data.data.views[0]).toEqual({ slug: 'post-1', title: 'First Post', views: 100 });
-      expect(data.data.views[1]).toEqual({ slug: 'post-2', title: 'Second Post', views: 50 });
-      expect(data.data.total).toBe(2);
-      expect(data.data.available).toBe(true);
+      expect(data.data?.views).toHaveLength(2);
+      expect(data.data?.views?.[0]).toEqual({ slug: 'post-1', title: 'First Post', views: 100 });
+      expect(data.data?.views?.[1]).toEqual({ slug: 'post-2', title: 'Second Post', views: 50 });
+      expect(data.data?.total).toBe(2);
+      expect(data.data?.available).toBe(true);
     });
 
     it('omits rows whose slug is no longer a real post from format=detailed', async () => {
@@ -153,10 +154,10 @@ describe('Views API Route', () => {
       vi.mocked(getAllBlogs).mockResolvedValue([post('post-1', 'First Post')]);
 
       const request = new NextRequest('http://localhost/api/views?format=detailed');
-      const data = await (await GET(request)).json();
+      const data = await readJson(await GET(request));
 
-      expect(data.data.views).toEqual([{ slug: 'post-1', title: 'First Post', views: 100 }]);
-      expect(data.data.total).toBe(1);
+      expect(data.data?.views).toEqual([{ slug: 'post-1', title: 'First Post', views: 100 }]);
+      expect(data.data?.total).toBe(1);
     });
 
     it('returns an unavailable detailed payload when the database is not configured', async () => {
@@ -164,7 +165,7 @@ describe('Views API Route', () => {
 
       const request = new NextRequest('http://localhost/api/views?format=detailed');
       const response = await GET(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data).toEqual({
@@ -194,7 +195,7 @@ describe('Views API Route', () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data).toEqual({ data: { slug: 'test-post', views: 43 }, success: true });
@@ -248,7 +249,7 @@ describe('Views API Route', () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -266,7 +267,7 @@ describe('Views API Route', () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -286,7 +287,7 @@ describe('Views API Route', () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(500);
       expect(data.error).toBe('Failed to record view');

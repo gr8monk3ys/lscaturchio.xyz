@@ -9,7 +9,7 @@ describe('parseCsv', () => {
 
   it('keeps commas inside quoted fields', () => {
     const rows = parseCsv('title,year\n"Comma, The Movie",2024');
-    expect(rows[0].title).toBe('Comma, The Movie');
+    expect(rows[0]?.title).toBe('Comma, The Movie');
   });
 
   // The whole reason this parser exists: the Goodreads and Letterboxd exports
@@ -19,13 +19,13 @@ describe('parseCsv', () => {
     const rows = parseCsv('name,review\nIkiru,"first line\nsecond line"\nRan,short');
 
     expect(rows).toHaveLength(2);
-    expect(rows[0].review).toBe('first line\nsecond line');
+    expect(rows[0]?.review).toBe('first line\nsecond line');
     expect(rows[1]).toEqual({ name: 'Ran', review: 'short' });
   });
 
   it('unescapes doubled quotes', () => {
     const rows = parseCsv('name,note\nMishima,"a ""text to be perfected"" idea"');
-    expect(rows[0].note).toBe('a "text to be perfected" idea');
+    expect(rows[0]?.note).toBe('a "text to be perfected" idea');
   });
 
   it('fills missing trailing columns with empty strings', () => {

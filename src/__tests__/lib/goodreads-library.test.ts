@@ -57,8 +57,8 @@ describe('book mapping', () => {
   it('reports a null ISBN when the export has none, and splits multi-value shelves', () => {
     const [brave, siddhartha] = library().read();
 
-    expect(siddhartha.isbn).toBeNull();
-    expect(brave.bookshelves).toEqual(['books-for-existential-crises', 'rainy-day-reads']);
+    expect(siddhartha?.isbn).toBeNull();
+    expect(brave?.bookshelves).toEqual(['books-for-existential-crises', 'rainy-day-reads']);
   });
 });
 
@@ -96,8 +96,8 @@ describe('customShelves', () => {
       'books-that-changed-my-life',
       'rainy-day-reads',
     ]);
-    expect(shelves[0].label).toBe('Books for existential crises');
-    expect(shelves[0].books.map((b) => b.title)).toEqual(['Brave New World', 'The Trial']);
+    expect(shelves[0]?.label).toBe('Books for existential crises');
+    expect(shelves[0]?.books.map((b) => b.title)).toEqual(['Brave New World', 'The Trial']);
   });
 
   it('returns an empty list when nothing is shelved', () => {

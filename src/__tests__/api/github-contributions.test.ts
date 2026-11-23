@@ -12,6 +12,7 @@ vi.stubGlobal('fetch', mockFetch);
 
 import { GET } from '@/app/api/github/contributions/route';
 import { logError } from '@/lib/logger';
+import { readJson } from '@/__tests__/helpers/json';
 
 describe('/api/github/contributions', () => {
   const originalEnv = process.env;
@@ -25,7 +26,7 @@ describe('/api/github/contributions', () => {
     delete process.env.GITHUB_TOKEN;
 
     const response = await GET(new NextRequest('http://localhost/api/github/contributions'));
-    const data = await response.json();
+    const data = await readJson(response);
 
     expect(response.status).toBe(200);
     expect(data).toEqual({
@@ -69,7 +70,7 @@ describe('/api/github/contributions', () => {
     });
 
     const response = await GET(new NextRequest('http://localhost/api/github/contributions'));
-    const data = await response.json();
+    const data = await readJson(response);
 
     expect(response.status).toBe(200);
     expect(data).toEqual({
@@ -101,12 +102,12 @@ describe('/api/github/contributions', () => {
     });
 
     const response = await GET(new NextRequest('http://localhost/api/github/contributions'));
-    const data = await response.json();
+    const data = await readJson(response);
 
     expect(response.status).toBe(200);
-    expect(data.data.degraded).toBe(true);
-    expect(data.data.totalContributions).toBe(0);
-    expect(data.data.weeks).toEqual([]);
+    expect(data.data?.degraded).toBe(true);
+    expect(data.data?.totalContributions).toBe(0);
+    expect(data.data?.weeks).toEqual([]);
     expect(logError).toHaveBeenCalledWith(
       'GitHub Contributions: API error',
       expect.any(Error),

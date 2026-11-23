@@ -60,6 +60,7 @@ function readTokens(): Map<string, { light?: [number, number, number]; dark?: [n
   const pattern = /--([a-z-]+):\s*([\d.]+)\s+([\d.]+)%\s+([\d.]+)%\s*;/g;
   for (const match of CSS.matchAll(pattern)) {
     const [, name, h, s, l] = match;
+    if (name === undefined) continue;
     const count = (seen.get(name) ?? 0) + 1;
     seen.set(name, count);
     const triple: [number, number, number] = [Number(h), Number(s), Number(l)];
@@ -96,7 +97,7 @@ function inksPaintedAsText(): string[] {
     if (!fs.existsSync(dir)) continue;
     for (const file of walk(dir)) {
       for (const match of fs.readFileSync(file, "utf-8").matchAll(/\btext-([a-z-]+)\b/g)) {
-        found.add(match[1]);
+        if (match[1] !== undefined) found.add(match[1]);
       }
     }
   }

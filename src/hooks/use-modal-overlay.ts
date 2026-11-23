@@ -136,10 +136,10 @@ export function useModalOverlay({
     // menu is `md:hidden`, so widening the window with it open hides the lot.
     // Holding Tab there would strand the reader on an overlay they cannot see.
     const cycle = tabCycle(container, alsoReachable);
-    if (cycle.length === 0) return;
-
     const first = cycle[0];
-    const last = cycle[cycle.length - 1];
+    const last = cycle.at(-1);
+    if (!first || !last) return;
+
     const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const index = active ? cycle.indexOf(active) : -1;
 

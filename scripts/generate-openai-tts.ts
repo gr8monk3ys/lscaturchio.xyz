@@ -101,14 +101,16 @@ function parseArgs(): {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i]
+    if (arg === undefined) continue
+    const next = args[i + 1]
 
     if (arg === '--force') {
       force = true
       continue
     }
 
-    if (arg === '--voice' && args[i + 1] && !args[i + 1].startsWith('--')) {
-      voice = args[i + 1]
+    if (arg === '--voice' && next && !next.startsWith('--')) {
+      voice = next
       i++
       continue
     }
@@ -117,8 +119,8 @@ function parseArgs(): {
       continue
     }
 
-    if (arg === '--model' && args[i + 1] && !args[i + 1].startsWith('--')) {
-      model = args[i + 1]
+    if (arg === '--model' && next && !next.startsWith('--')) {
+      model = next
       i++
       continue
     }
@@ -127,8 +129,8 @@ function parseArgs(): {
       continue
     }
 
-    if (arg === '--instructions' && args[i + 1] && !args[i + 1].startsWith('--')) {
-      instructions = args[i + 1]
+    if (arg === '--instructions' && next && !next.startsWith('--')) {
+      instructions = next
       i++
       continue
     }
@@ -172,8 +174,9 @@ function cleanupSlugTmp(slug: string): void {
 }
 
 function concatMp3Chunks(inputFiles: string[], outputFile: string): void {
-  if (inputFiles.length === 1) {
-    fs.copyFileSync(inputFiles[0], outputFile)
+  const [onlyFile] = inputFiles
+  if (inputFiles.length === 1 && onlyFile !== undefined) {
+    fs.copyFileSync(onlyFile, outputFile)
     return
   }
 
@@ -211,8 +214,7 @@ async function synthesizeSlug(
   cleanupSlugTmp(slug)
   const tempChunkFiles: string[] = []
 
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i]
+  for (const [i, chunk] of chunks.entries()) {
     console.log(`  Chunk ${i + 1}/${chunks.length} (${chunk.length} chars)`)
 
     const response = await client.audio.speech.create({

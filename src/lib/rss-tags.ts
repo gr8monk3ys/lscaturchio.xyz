@@ -24,8 +24,9 @@ export function decodeEntities(text: string): string {
 /** CDATA-unwrapped raw value — no entity decoding (for HTML-bearing fields). '' when absent. */
 export function rawTagValue(block: string, tag: string): string {
   const m = block.match(new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`));
-  if (!m) return '';
-  return m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
+  const inner = m?.[1];
+  if (inner === undefined) return '';
+  return inner.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
 }
 
 /** A tag's decoded, trimmed text. '' when absent. */

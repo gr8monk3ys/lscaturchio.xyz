@@ -84,8 +84,8 @@ describe('groupByTheme', () => {
   it('omits empty themes and puts the fallback last', () => {
     const groups = groupByTheme([{ tags: ['politics'] }, { tags: ['nonsense'] }]);
     expect(groups).toHaveLength(2);
-    expect(groups[0].theme.slug).toBe('power-institutions');
-    expect(groups[groups.length - 1].theme.slug).toBe(FALLBACK_THEME_SLUG);
+    expect(groups[0]?.theme.slug).toBe('power-institutions');
+    expect(groups[groups.length - 1]?.theme.slug).toBe(FALLBACK_THEME_SLUG);
   });
 
   it('defines five real themes plus a fallback', () => {

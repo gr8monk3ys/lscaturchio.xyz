@@ -17,7 +17,7 @@ describe('splitIntoChunks', () => {
   it('keeps short text as a single trimmed chunk', () => {
     const chunks = splitIntoChunks('A short sentence. Another one.', 1000);
     expect(chunks).toHaveLength(1);
-    expect(chunks[0]).toBe(chunks[0].trim());
+    expect(chunks[0]).toBe(chunks[0]?.trim());
     expect(chunks[0]).toContain('A short sentence.');
     expect(chunks[0]).toContain('Another one.');
   });
@@ -90,9 +90,10 @@ describe('splitIntoChunks', () => {
     const markersOf = (chunk: string) =>
       new Set((chunk.match(/Marker\d+/g) ?? []));
 
-    for (let i = 1; i < chunks.length; i++) {
-      const prev = markersOf(chunks[i - 1]);
-      const curr = markersOf(chunks[i]);
+    for (const [i, chunk] of chunks.entries()) {
+      if (i === 0) continue;
+      const prev = markersOf(chunks[i - 1] ?? '');
+      const curr = markersOf(chunk);
       const shared = Array.from(curr).some((m) => prev.has(m));
       expect(shared).toBe(true); // consecutive chunks overlap
     }
@@ -221,8 +222,8 @@ describe('indexSource', () => {
 
     expect(outcome).toEqual({ status: 'indexed', chunks: 1, removed: 0 });
     expect(rows).toHaveLength(1);
-    expect(rows[0].content).toBe('A short essay.');
-    expect(rows[0].metadata).toEqual({
+    expect(rows[0]?.content).toBe('A short essay.');
+    expect(rows[0]?.metadata).toEqual({
       source: essay,
       title: 'On Gardens',
       url: '/blog/on-gardens',

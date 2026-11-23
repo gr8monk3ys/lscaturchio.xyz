@@ -4,6 +4,7 @@ import { AUDIO_BYTES_BY_SLUG } from '@/generated/audio-manifest';
 import { getAudioUrl } from '@/lib/audio-url';
 
 const SLUG_WITH_AUDIO = Object.keys(AUDIO_BYTES_BY_SLUG)[0];
+if (!SLUG_WITH_AUDIO) throw new Error('The audio manifest lists no slug to test against');
 const SLUG_WITHOUT_AUDIO = 'a-slug-that-has-no-recording';
 
 afterEach(() => {

@@ -67,7 +67,7 @@ export async function createOllamaEmbedding(text: string): Promise<number[]> {
     throw new Error(`Ollama embedding failed: ${error}`);
   }
 
-  const data: OllamaEmbeddingResponse = await response.json();
+  const data = (await response.json()) as OllamaEmbeddingResponse;
   return data.embedding;
 }
 
@@ -103,7 +103,7 @@ export async function createOllamaChatCompletion(
     throw new Error(`Ollama chat failed: ${error}`);
   }
 
-  const data: OllamaChatResponse = await response.json();
+  const data = (await response.json()) as OllamaChatResponse;
   return data.message.content;
 }
 

@@ -70,8 +70,8 @@ describe("PUT /api/admin/data/now", () => {
     const res = await PUT(await authedRequest(validNow, "data/now", "PUT"));
     expect(res.status).toBe(200);
     const [files] = commitToMain.mock.calls[0] as [Array<{ path: string; content: string }>];
-    expect(files[0].path).toBe("src/data/now.json");
-    expect(JSON.parse(files[0].content)).toEqual(validNow);
+    expect(files[0]?.path).toBe("src/data/now.json");
+    expect(JSON.parse(files[0]?.content ?? "")).toEqual(validNow);
   });
 });
 
@@ -88,7 +88,7 @@ describe("PUT /api/admin/data/links", () => {
     const res = await PUT(await authedRequest(validLinks, "data/links", "PUT"));
     expect(res.status).toBe(200);
     const [files] = commitToMain.mock.calls[0] as [Array<{ path: string; content: string }>];
-    expect(files[0].path).toBe("src/data/links.json");
-    expect(JSON.parse(files[0].content)).toEqual(validLinks);
+    expect(files[0]?.path).toBe("src/data/links.json");
+    expect(JSON.parse(files[0]?.content ?? "")).toEqual(validLinks);
   });
 });

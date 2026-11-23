@@ -21,6 +21,7 @@ vi.mock('@/lib/rate-limit-redis', () => ({
 import { GET } from '@/app/api/blog-stats/route';
 import { getAllBlogs, type BlogPost } from '@/lib/getAllBlogs';
 import { logError } from '@/lib/logger';
+import { readJson } from '@/__tests__/helpers/json';
 
 function post(slug: string, readingTimeMinutes: number, tags: string[]): BlogPost {
   return {
@@ -54,7 +55,7 @@ describe('/api/blog-stats', () => {
     ]);
 
     const response = await GET(request());
-    const data = await response.json();
+    const data = await readJson(response);
 
     expect(response.status).toBe(200);
     expect(data).toEqual({
@@ -77,7 +78,7 @@ describe('/api/blog-stats', () => {
     vi.mocked(getAllBlogs).mockRejectedValue(error);
 
     const response = await GET(request());
-    const data = await response.json();
+    const data = await readJson(response);
 
     expect(response.status).toBe(500);
     expect(data.success).toBe(false);

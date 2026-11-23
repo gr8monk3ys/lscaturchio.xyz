@@ -1,10 +1,16 @@
-import { describe, it, expect } from "vitest";
+import { assert, describe, it, expect } from "vitest";
 import {
   buildBlogMetadata,
   buildPageMetadata,
   buildProjectMetadata,
   ogCardUrl,
 } from "@/lib/seo";
+
+function ogImageUrl(meta: ReturnType<typeof buildPageMetadata>): string {
+  const url = (meta.openGraph?.images as { url: string }[])[0]?.url;
+  assert(url);
+  return url;
+}
 
 function cardParams(url: string) {
   return Object.fromEntries(new URL(url).searchParams.entries());
@@ -64,11 +70,11 @@ describe("buildPageMetadata", () => {
     const og = meta.openGraph?.images as { url: string }[];
     const twitter = meta.twitter?.images as string[];
     expect(og).toHaveLength(1);
-    expect(twitter).toEqual([og[0].url]);
+    expect(twitter).toEqual([og[0]?.url]);
   });
 
   it("defaults to the default card and honours an explicit type", () => {
-    const og = (meta.openGraph?.images as { url: string }[])[0].url;
+    const og = ogImageUrl(meta);
     expect(cardParams(og).type).toBe("default");
 
     const project = buildPageMetadata({
@@ -77,7 +83,7 @@ describe("buildPageMetadata", () => {
       path: "/projects",
       cardType: "project",
     });
-    const projectOg = (project.openGraph?.images as { url: string }[])[0].url;
+    const projectOg = ogImageUrl(project);
     expect(cardParams(projectOg).type).toBe("project");
   });
 });
@@ -89,7 +95,7 @@ describe("buildBlogMetadata", () => {
       "/blog/strikes-work"
     );
     expect((meta.openGraph as { type?: string })?.type).toBe("article");
-    const og = (meta.openGraph?.images as { url: string }[])[0].url;
+    const og = ogImageUrl(meta);
     expect(cardParams(og)).toMatchObject({ type: "blog", cover: "/c.webp" });
     expect(meta.alternates?.canonical).toBe("/blog/strikes-work");
   });
@@ -108,7 +114,7 @@ describe("buildProjectMetadata", () => {
       "/projects/merge-gate"
     );
     expect((meta.openGraph as { type?: string })?.type).toBe("website");
-    const og = (meta.openGraph?.images as { url: string }[])[0].url;
+    const og = ogImageUrl(meta);
     expect(cardParams(og).type).toBe("project");
   });
 });
