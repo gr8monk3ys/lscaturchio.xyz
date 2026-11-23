@@ -40,7 +40,9 @@ export async function createEmbedding(text: string): Promise<number[]> {
         input: text,
         dimensions: 768,
       });
-      return response.data[0].embedding;
+      const embedding = response.data[0]?.embedding;
+      if (!embedding) throw new Error('OpenAI returned no embedding');
+      return embedding;
     } catch (error) {
       // An auth/config failure turns OpenAI off everywhere; fall back to Ollama.
       if (!disableOpenAIOnAuthError(error)) throw error;

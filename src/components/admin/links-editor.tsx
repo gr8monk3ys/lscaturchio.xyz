@@ -16,18 +16,26 @@ export function LinksEditor({ initial }: { initial: LinksContent }) {
   useUnsavedChangesWarning(dirty);
 
   function updateLink(sectionKey: string, index: number, patch: Partial<LinkData>) {
-    setContent((prev) => ({
-      ...prev,
-      [sectionKey]: {
-        ...prev[sectionKey],
-        links: prev[sectionKey].links.map((l, i) => (i === index ? { ...l, ...patch } : l)),
-      },
-    }));
+    setContent((prev) => {
+      const section = prev[sectionKey];
+      if (!section) return prev;
+      return {
+        ...prev,
+        [sectionKey]: {
+          ...section,
+          links: section.links.map((l, i) => (i === index ? { ...l, ...patch } : l)),
+        },
+      };
+    });
   }
 
   function setLinks(sectionKey: string, links: LinkData[]) {
     setDirty(true);
-    setContent((prev) => ({ ...prev, [sectionKey]: { ...prev[sectionKey], links } }));
+    setContent((prev) => {
+      const section = prev[sectionKey];
+      if (!section) return prev;
+      return { ...prev, [sectionKey]: { ...section, links } };
+    });
   }
 
   async function publish() {

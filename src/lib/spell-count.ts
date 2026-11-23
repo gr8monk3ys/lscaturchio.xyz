@@ -60,13 +60,13 @@ const TENS = [
 export function spellCountLower(n: number): string {
   if (!Number.isInteger(n) || n < 0 || n > 999) return String(n);
   if (n === 0) return "no";
-  if (n < 20) return ONES[n];
+  if (n < 20) return ONES[n] ?? String(n);
   if (n < 100) {
-    const tens = TENS[Math.floor(n / 10)];
+    const tens = TENS[Math.floor(n / 10)] ?? String(n);
     const ones = n % 10;
-    return ones === 0 ? tens : `${tens}-${ONES[ones]}`;
+    return ones === 0 ? tens : `${tens}-${ONES[ones] ?? ones}`;
   }
-  const hundreds = `${ONES[Math.floor(n / 100)]} hundred`;
+  const hundreds = `${ONES[Math.floor(n / 100)] ?? Math.floor(n / 100)} hundred`;
   const rest = n % 100;
   return rest === 0 ? hundreds : `${hundreds} ${spellCountLower(rest)}`;
 }

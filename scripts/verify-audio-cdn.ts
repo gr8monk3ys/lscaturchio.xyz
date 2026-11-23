@@ -103,12 +103,11 @@ async function check(slug: string, expectedBytes: number): Promise<Check> {
 
 async function mapLimit<T, R>(items: T[], limit: number, worker: (item: T) => Promise<R>): Promise<R[]> {
   const results = new Array<R>(items.length)
-  let cursor = 0
+  const queue = items.entries()
   await Promise.all(
     Array.from({ length: Math.min(limit, items.length) }, async () => {
-      while (cursor < items.length) {
-        const i = cursor++
-        results[i] = await worker(items[i])
+      for (const [i, item] of queue) {
+        results[i] = await worker(item)
       }
     }),
   )

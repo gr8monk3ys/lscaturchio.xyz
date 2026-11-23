@@ -21,6 +21,17 @@ export interface ContributionCalendar {
   message?: string
 }
 
+interface ContributionsResponse {
+  errors?: unknown
+  data?: {
+    user?: {
+      contributionsCollection?: {
+        contributionCalendar?: { totalContributions: number; weeks: ContributionWeek[] }
+      }
+    }
+  }
+}
+
 /**
  * A calendar that says so when it has nothing.
  *
@@ -91,15 +102,11 @@ export async function getGithubContributions(): Promise<ContributionCalendar> {
       throw new Error(`GitHub API request failed with status ${response.status}`)
     }
 
-    const data = await response.json()
+    const data = (await response.json()) as ContributionsResponse
 
-    if (data.errors || !data.data?.user?.contributionsCollection?.contributionCalendar) {
+    const calendar = data.data?.user?.contributionsCollection?.contributionCalendar
+    if (data.errors || !calendar) {
       throw new Error('GitHub API returned an invalid contribution payload')
-    }
-
-    const calendar = data.data.user.contributionsCollection.contributionCalendar as {
-      totalContributions: number
-      weeks: ContributionWeek[]
     }
 
     return {

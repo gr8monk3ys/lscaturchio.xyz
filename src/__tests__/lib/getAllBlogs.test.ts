@@ -68,7 +68,7 @@ afterAll(() => {
   fs.rmSync(tmpRoot, { recursive: true, force: true });
 });
 
-const slugs = (posts: Array<{ slug: string }>) => posts.map((p) => p.slug);
+const slugs = (posts: Array<{ slug: string }> = []) => posts.map((p) => p.slug);
 
 describe("getAllBlogs", () => {
   it("answers published essays only, newest first", async () => {
@@ -159,12 +159,12 @@ describe("listSeries", () => {
 
     const [series] = await catalogue().listSeries();
 
-    expect(series.name).toBe("S");
-    expect(slugs(series.posts)).toEqual(["new-philosophy", "old-politics"]);
-    expect(series.totalPosts).toBe(2);
-    expect(series.totalReadingTime).toBe(minutes("new-philosophy") + minutes("old-politics"));
+    expect(series?.name).toBe("S");
+    expect(slugs(series?.posts)).toEqual(["new-philosophy", "old-politics"]);
+    expect(series?.totalPosts).toBe(2);
+    expect(series?.totalReadingTime).toBe(minutes("new-philosophy") + minutes("old-politics"));
     // Not the old flat five minutes a post.
-    expect(series.totalReadingTime).not.toBe(series.totalPosts * 5);
+    expect(series?.totalReadingTime).not.toBe((series?.totalPosts ?? 0) * 5);
   });
 });
 

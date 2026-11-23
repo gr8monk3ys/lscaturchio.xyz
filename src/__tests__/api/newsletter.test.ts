@@ -23,6 +23,7 @@ import { POST } from '@/app/api/newsletter/subscribe/route';
 import { logError } from '@/lib/logger';
 import { installMailTransport } from '@/lib/mail/deliver';
 import { createOutbox } from '@/lib/mail/outbox';
+import { readJson } from '@/__tests__/helpers/json';
 
 // The mailer: an in-memory outbox in place of Resend.
 const outbox = createOutbox();
@@ -61,7 +62,7 @@ describe('/api/newsletter/subscribe', () => {
     it('returns 400 when email is missing', async () => {
       const request = createMockRequest({});
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -71,7 +72,7 @@ describe('/api/newsletter/subscribe', () => {
     it('returns 400 when email is empty string', async () => {
       const request = createMockRequest({ email: '' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -81,7 +82,7 @@ describe('/api/newsletter/subscribe', () => {
     it('returns 400 when email is invalid format', async () => {
       const request = createMockRequest({ email: 'not-an-email' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -91,7 +92,7 @@ describe('/api/newsletter/subscribe', () => {
     it('returns 400 when email has invalid domain', async () => {
       const request = createMockRequest({ email: 'test@invalid' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -108,10 +109,10 @@ describe('/api/newsletter/subscribe', () => {
 
       const request = createMockRequest({ email: 'new@example.com' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
     });
 
@@ -123,7 +124,7 @@ describe('/api/newsletter/subscribe', () => {
       await POST(request);
 
       await vi.waitFor(() => expect(outbox.sent).toHaveLength(1));
-      expect(outbox.sent[0].to).toBe('new@example.com');
+      expect(outbox.sent[0]?.to).toBe('new@example.com');
     });
   });
 
@@ -133,10 +134,10 @@ describe('/api/newsletter/subscribe', () => {
 
       const request = createMockRequest({ email: 'existing@example.com' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
     });
 
@@ -149,10 +150,10 @@ describe('/api/newsletter/subscribe', () => {
         source: '/blog/test-post',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       // SELECT only. The form is unauthenticated, so it must not overwrite
       // another person's topic preferences.
       expect(mockSql).toHaveBeenCalledTimes(1);
@@ -166,10 +167,10 @@ describe('/api/newsletter/subscribe', () => {
 
       const request = createMockRequest({ email: 'inactive@example.com' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
     });
 
@@ -190,7 +191,7 @@ describe('/api/newsletter/subscribe', () => {
 
       const request = createMockRequest({ email: 'test@example.com' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(500);
       expect(data.error).toBe('Failed to subscribe. Please try again later.');
@@ -204,11 +205,11 @@ describe('/api/newsletter/subscribe', () => {
 
       const request = createMockRequest({ email: 'test@example.com' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       // The subscription stands; the welcome email is not awaited.
       expect(response.status).toBe(200);
-      expect(data.data.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
+      expect(data.data?.message).toBe("Thanks. You're on the list. If the address is new here, a welcome note is on its way.");
       expect(data.success).toBe(true);
       // It used to be `.catch(() => {})`: a failure went nowhere.
       await vi.waitFor(() =>

@@ -27,7 +27,7 @@ const SUGGESTIONS = [
 function essaySlugFrom(pathname: string | null): string {
   if (!pathname) return "";
   const match = pathname.match(/^\/blog\/([^/]+)\/?$/);
-  return match ? match[1] : "";
+  return match?.[1] ?? "";
 }
 
 export function AskDrawer() {

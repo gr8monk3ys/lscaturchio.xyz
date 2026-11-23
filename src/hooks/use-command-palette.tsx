@@ -379,7 +379,10 @@ export function useCommandPalette(): CommandPaletteModel {
           return
         case 'Enter':
           event.preventDefault()
-          executeCommand(filteredCommands[activeSelectedIndex])
+          {
+            const selected = filteredCommands[activeSelectedIndex]
+            if (selected) executeCommand(selected)
+          }
           return
         default:
           return

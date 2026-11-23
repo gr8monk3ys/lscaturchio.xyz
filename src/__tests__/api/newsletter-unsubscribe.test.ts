@@ -21,6 +21,7 @@ vi.mock('@/lib/csrf', () => ({
 import { POST } from '@/app/api/newsletter/unsubscribe/route';
 import { logError } from '@/lib/logger';
 import { validateCsrf } from '@/lib/csrf';
+import { readJson } from '@/__tests__/helpers/json';
 
 // Helper to create mock request
 function createMockRequest(body: Record<string, unknown>): NextRequest {
@@ -45,7 +46,7 @@ describe('/api/newsletter/unsubscribe', () => {
     it('returns 400 when token is missing', async () => {
       const request = createMockRequest({});
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -55,7 +56,7 @@ describe('/api/newsletter/unsubscribe', () => {
     it('returns 400 when token is empty string', async () => {
       const request = createMockRequest({ token: '' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -65,7 +66,7 @@ describe('/api/newsletter/unsubscribe', () => {
     it('returns 400 when token is not a string', async () => {
       const request = createMockRequest({ token: 12345 });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -75,7 +76,7 @@ describe('/api/newsletter/unsubscribe', () => {
     it('returns 400 when token is null', async () => {
       const request = createMockRequest({ token: null });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -92,11 +93,11 @@ describe('/api/newsletter/unsubscribe', () => {
 
       const request = createMockRequest({ token: 'valid-unsubscribe-token' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.message).toBe('Successfully unsubscribed');
+      expect(data.data?.message).toBe('Successfully unsubscribed');
     });
 
     it('calls sql with correct token for lookup', async () => {
@@ -117,11 +118,11 @@ describe('/api/newsletter/unsubscribe', () => {
 
       const request = createMockRequest({ token: 'inactive-subscriber-token' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.data.message).toBe('Already unsubscribed');
+      expect(data.data?.message).toBe('Already unsubscribed');
     });
 
     it('does not attempt to update when already unsubscribed', async () => {
@@ -141,7 +142,7 @@ describe('/api/newsletter/unsubscribe', () => {
 
       const request = createMockRequest({ token: 'nonexistent-token' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(404);
       expect(data.success).toBe(false);
@@ -155,7 +156,7 @@ describe('/api/newsletter/unsubscribe', () => {
 
       const request = createMockRequest({ token: 'valid-token' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(500);
       expect(data.error).toBe('Failed to unsubscribe. Please try again later.');
@@ -167,7 +168,7 @@ describe('/api/newsletter/unsubscribe', () => {
 
       const request = createMockRequest({ token: 'valid-token' });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(500);
       expect(data.error).toBe('Failed to unsubscribe. Please try again later.');
@@ -200,7 +201,7 @@ describe('/api/newsletter/unsubscribe', () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBe('Request body must be valid JSON');

@@ -25,6 +25,8 @@ Personal site at https://lscaturchio.xyz: Next.js 16 App Router, React 19, TypeS
 
 ## Gotchas
 
+- Domain terms are defined in [GLOSSARY.md](./GLOSSARY.md); decisions are in `docs/adr/`. Import boundaries are enforced by `bun run lint:boundaries` (`.dependency-cruiser.cjs`).
+
 - Server Components by default; blog metadata helpers stay in `src/lib/blog-data.ts` and `src/lib/getAllBlogs.ts`
 - The sitemap is `src/app/sitemap.ts`; do not add a postbuild sitemap script
 - Editing an essay without `sync-retrieval-corpus` fails CI's drift check

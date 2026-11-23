@@ -132,8 +132,7 @@ function deriveBody(source: string, metaSpan: MetaExportSpan | null): string {
   let inFence = false;
   const lines = source.split("\n");
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+  for (const [i, line] of lines.entries()) {
     if (FENCE_RE.test(line)) {
       inFence = !inFence;
       out.push(line);

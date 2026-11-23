@@ -98,14 +98,14 @@ describe('recentWatches', () => {
   it('leaves rating null for unrated entries and isRewatch false by default', () => {
     const [unrated] = library().recentWatches();
     expect(unrated).toMatchObject({ title: 'Unrated Film', rating: null, isRewatch: false });
-    expect(unrated.review).toBeUndefined();
+    expect(unrated?.review).toBeUndefined();
   });
 
   it('respects the limit and does not reorder the snapshot it reads from', () => {
     const lib = library();
     expect(lib.recentWatches(2)).toHaveLength(2);
     // A second query sees the same answer — the first one's sort did not leak.
-    expect(lib.recentWatches(1)[0].title).toBe('Unrated Film');
+    expect(lib.recentWatches(1)[0]?.title).toBe('Unrated Film');
   });
 });
 

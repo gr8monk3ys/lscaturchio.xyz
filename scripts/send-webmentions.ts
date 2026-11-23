@@ -85,12 +85,12 @@ async function mapWithConcurrency<T, R>(
   fn: (item: T) => Promise<R>
 ): Promise<R[]> {
   const results: R[] = new Array(items.length) as R[];
-  let index = 0;
+
+  const queue = items.entries();
 
   const workers = Array.from({ length: Math.max(1, concurrency) }).map(async () => {
-    while (index < items.length) {
-      const i = index++;
-      results[i] = await fn(items[i]);
+    for (const [i, item] of queue) {
+      results[i] = await fn(item);
     }
   });
 

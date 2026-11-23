@@ -6,5 +6,5 @@ export function hasAudioForSlug(slug: string): boolean {
 
 export function getAudioByteLength(slug: string): number | null {
   const size = AUDIO_BYTES_BY_SLUG[slug];
-  return Number.isFinite(size) ? size : null;
+  return size !== undefined && Number.isFinite(size) ? size : null;
 }

@@ -58,8 +58,7 @@ async function tryOpenAICompatibleProvider({
 }): Promise<{ answer: string; modelUsed: string; usedFallbackModel: boolean } | null> {
   const models = uniqueModelCandidates(primaryModel, fallbackModel);
 
-  for (let i = 0; i < models.length; i += 1) {
-    const model = models[i];
+  for (const [i, model] of models.entries()) {
     try {
       const completion = await client.chat.completions.create({
         model,
@@ -71,7 +70,7 @@ async function tryOpenAICompatibleProvider({
         max_tokens: 1000,
       });
 
-      const answer = completion.choices[0].message?.content || null;
+      const answer = completion.choices[0]?.message?.content || null;
       if (answer) {
         const usedFallbackModel = model !== primaryModel;
         if (usedFallbackModel) {

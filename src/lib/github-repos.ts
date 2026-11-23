@@ -39,7 +39,7 @@ export async function getGithubPortfolioRepos(): Promise<PortfolioRepo[]> {
       throw new Error(`Failed to fetch repositories: ${response.status}`)
     }
 
-    const allRepos: GitHubRepo[] = await response.json()
+    const allRepos = (await response.json()) as GitHubRepo[]
     const repos = allRepos.filter((repo) => !repo.fork)
 
     const portfolioRepos: PortfolioRepo[] = repos.map((repo) => {

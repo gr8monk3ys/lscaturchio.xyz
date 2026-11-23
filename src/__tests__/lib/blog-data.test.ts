@@ -107,7 +107,7 @@ describe("sortBlogsByDateDescending", () => {
     const input = [{ date: "2024-01-01" }, { date: "2025-01-01" }];
     const sorted = sortBlogsByDateDescending(input);
     expect(sorted.map((b) => b.date)).toEqual(["2025-01-01", "2024-01-01"]);
-    expect(input[0].date).toBe("2024-01-01");
+    expect(input[0]?.date).toBe("2024-01-01");
   });
 });
 

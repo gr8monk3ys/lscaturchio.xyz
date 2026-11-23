@@ -85,7 +85,7 @@ describe('deliverMail', () => {
     await deliverMail({ to: 'owner@example.com', replyTo: READER, subject: 's', html: 'h' }, origin);
     await deliverMail({ to: READER, subject: 's', html: 'h' }, origin);
 
-    expect(outbox.sent[0].replyTo).toBe(READER);
+    expect(outbox.sent[0]?.replyTo).toBe(READER);
     expect(outbox.sent[1]).not.toHaveProperty('replyTo');
   });
 
@@ -186,7 +186,7 @@ describe('resendTransport', () => {
 
     expect(await resendTransport.send(envelope)).toEqual({ status: 'delivered' });
 
-    const [url, init] = fetchMock.mock.calls[0];
+    const [url, init] = fetchMock.mock.calls[0] ?? [];
     expect(url).toBe('https://api.resend.com/emails');
     expect(init.method).toBe('POST');
     expect(init.headers).toEqual({
@@ -208,7 +208,7 @@ describe('resendTransport', () => {
 
     await resendTransport.send({ ...envelope, replyTo: undefined });
 
-    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).not.toHaveProperty('reply_to');
+    expect(JSON.parse(fetchMock.mock.calls[0]?.[1].body)).not.toHaveProperty('reply_to');
   });
 
   it('reports a JSON error body as a Resend API error', async () => {

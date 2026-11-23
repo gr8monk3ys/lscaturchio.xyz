@@ -22,6 +22,7 @@ import { POST } from '@/app/api/contact/route';
 import { validateCsrf } from '@/lib/csrf';
 import { installMailTransport } from '@/lib/mail/deliver';
 import { createOutbox } from '@/lib/mail/outbox';
+import { readJson } from '@/__tests__/helpers/json';
 
 // The mailer. What Resend's HTTP request looks like is resend.ts's concern
 // (src/__tests__/lib/mail.test.ts); here, what the route asked to deliver.
@@ -76,7 +77,7 @@ describe('/api/contact', () => {
         message: 'Hello world',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -91,7 +92,7 @@ describe('/api/contact', () => {
         message: 'Hello world',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -106,7 +107,7 @@ describe('/api/contact', () => {
         message: 'Hello world',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toContain('too long');
@@ -119,7 +120,7 @@ describe('/api/contact', () => {
         message: 'Hello world',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -134,7 +135,7 @@ describe('/api/contact', () => {
         message: 'Hello world',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -149,7 +150,7 @@ describe('/api/contact', () => {
         message: 'Hello world',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -162,7 +163,7 @@ describe('/api/contact', () => {
         email: 'test@example.com',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -177,7 +178,7 @@ describe('/api/contact', () => {
         message: '',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBeDefined();
@@ -192,7 +193,7 @@ describe('/api/contact', () => {
         message: 'a'.repeat(5001),
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toContain('5000');
@@ -204,7 +205,7 @@ describe('/api/contact', () => {
   describe('delivery', () => {
     it('answers 200 with the success message', async () => {
       const response = await POST(createMockRequest(validBody));
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data).toEqual({
@@ -230,27 +231,27 @@ describe('/api/contact', () => {
         replyTo: 'jane@example.com',
         subject: 'Project scoping — Jane Doe',
       });
-      expect(outbox.sent[0].html).toContain('Test message content');
+      expect(outbox.sent[0]?.html).toContain('Test message content');
     });
 
     it('trims whitespace from name and message', async () => {
       await POST(createMockRequest({ ...validBody, name: '  John Doe  ', message: '  Hello world  ' }));
 
-      expect(outbox.sent[0].subject).toBe('Project scoping — John Doe');
-      expect(outbox.sent[0].html).toContain('<strong>From:</strong> John Doe</p>');
+      expect(outbox.sent[0]?.subject).toBe('Project scoping — John Doe');
+      expect(outbox.sent[0]?.html).toContain('<strong>From:</strong> John Doe</p>');
     });
 
     it('replies to the sender address lowercased', async () => {
       await POST(createMockRequest({ ...validBody, email: 'JOHN@EXAMPLE.COM' }));
 
-      expect(outbox.sent[0].replyTo).toBe('john@example.com');
+      expect(outbox.sent[0]?.replyTo).toBe('john@example.com');
     });
 
     it('escapes HTML in name to prevent XSS', async () => {
       await POST(createMockRequest({ ...validBody, name: '<script>alert("xss")</script>' }));
 
-      expect(outbox.sent[0].html).not.toContain('<script>');
-      expect(outbox.sent[0].html).toContain('&lt;script&gt;');
+      expect(outbox.sent[0]?.html).not.toContain('<script>');
+      expect(outbox.sent[0]?.html).toContain('&lt;script&gt;');
     });
 
     it('sanitizes message content for HTML email', async () => {
@@ -258,9 +259,9 @@ describe('/api/contact', () => {
         createMockRequest({ ...validBody, message: '<img src=x onerror="alert(1)">Hello\nWorld' })
       );
 
-      expect(outbox.sent[0].html).not.toContain('<img');
-      expect(outbox.sent[0].html).toContain('&lt;img');
-      expect(outbox.sent[0].html).toContain('<br>'); // newlines converted to <br>
+      expect(outbox.sent[0]?.html).not.toContain('<img');
+      expect(outbox.sent[0]?.html).toContain('&lt;img');
+      expect(outbox.sent[0]?.html).toContain('<br>'); // newlines converted to <br>
     });
 
     it('mails only the four fields a person wrote, not the guard fields', async () => {
@@ -275,7 +276,7 @@ describe('/api/contact', () => {
     it('sanitizes subject to prevent header injection', async () => {
       await POST(createMockRequest({ ...validBody, name: 'John\r\nBcc: attacker@evil.com' }));
 
-      expect(outbox.sent[0].subject).not.toMatch(/[\r\n]/);
+      expect(outbox.sent[0]?.subject).not.toMatch(/[\r\n]/);
     });
   });
 
@@ -284,7 +285,7 @@ describe('/api/contact', () => {
       outbox.respondWith({ status: 'not-configured', missing: 'RESEND_API_KEY' });
 
       const response = await POST(createMockRequest(validBody));
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(500);
       expect(data).toEqual({
@@ -300,7 +301,7 @@ describe('/api/contact', () => {
       outbox.respondWith({ status: 'failed', reason: 'Resend API error' });
 
       const response = await POST(createMockRequest(validBody));
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(500);
       expect(data).toEqual({
@@ -322,7 +323,7 @@ describe('/api/contact', () => {
         message: 'Hello world',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -336,7 +337,7 @@ describe('/api/contact', () => {
         message: '   ',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -353,7 +354,7 @@ describe('/api/contact', () => {
       });
 
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.error).toBe('Request body must be valid JSON');
@@ -368,7 +369,7 @@ describe('/api/contact', () => {
         message: '\n\n\n',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(400);
       expect(data.success).toBe(false);
@@ -382,7 +383,7 @@ describe('/api/contact', () => {
         message: 'a'.repeat(5000),
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
@@ -396,7 +397,7 @@ describe('/api/contact', () => {
         message: 'Hello world',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
@@ -410,7 +411,7 @@ describe('/api/contact', () => {
         message: 'Hello from Tokyo! Greetings.',
       });
       const response = await POST(request);
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);

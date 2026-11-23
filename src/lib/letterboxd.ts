@@ -182,7 +182,7 @@ export function createLetterboxdLibrary(records: LetterboxdExports): LetterboxdL
         averageRating: Math.round(averageRating * 100) / 100,
         fiveStarFilms: ratings.filter((m) => m.rating === 5).length,
         thisYearFilms: diary.filter(
-          (m) => m.dateWatched !== null && parseInt(m.dateWatched.split('-')[0]) === currentYear,
+          (m) => m.dateWatched !== null && parseInt(m.dateWatched.split('-')[0] ?? '') === currentYear,
         ).length,
       };
     },
