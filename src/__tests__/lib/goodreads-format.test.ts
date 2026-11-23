@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { assert, describe, it, expect } from 'vitest';
 import { exportIsbn, libraryTable, parseGoodreadsRss } from '@/lib/goodreads-format';
 import { roundTripCommitted } from './committed-csv';
 
@@ -24,6 +24,7 @@ describe('libraryTable', () => {
     const [row] = libraryTable.parse(
       `${libraryTable.columns.join(',')}\n1,T,A,,,"=""0141439512""","=""""",0,,,,,,,,,,,read,,,,0,0`,
     );
+    assert(row);
     expect(row.isbn).toBe(exportIsbn('0141439512'));
     expect(row.isbn13).toBe(exportIsbn(''));
     expect(libraryTable.serialize([row])).toContain(',"=""0141439512""","=""""",');

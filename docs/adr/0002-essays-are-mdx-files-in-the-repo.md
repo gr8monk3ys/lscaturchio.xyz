@@ -1,0 +1,3 @@
+# Essays are MDX files in the repo, not rows in a database
+
+An essay is `src/app/blog/<slug>/content.mdx` and nothing else; one dynamic route (`src/app/blog/[slug]/page.tsx`) prerenders every slug the catalogue lists and `dynamicParams = false` makes anything else a 404. The files are the source of truth, and everything derived from them (the catalogue, the feed, the retrieval corpus in `public/my-data`, embeddings, TTS) is regenerated from `EssaySource.body` in `src/lib/essay-sources.ts`, with CI failing on corpus drift. We chose files over a CMS or database so essays are versioned, reviewable and prerendered with the site, at the cost that publishing is a deploy.

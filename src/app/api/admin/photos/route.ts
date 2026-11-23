@@ -36,8 +36,12 @@ export const POST = withWriteRoute(
 
     // Validate everything cheaply before the expensive sharp conversions.
     const targets = entries.map((entry, i) => {
+      const upload = uploads[i];
+      if (!upload) {
+        throw writeError.badRequest("Each uploaded file needs exactly one metadata entry");
+      }
       const base = slugify(entry.filename.replace(/\.[^.]+$/, ""));
-      return { entry, upload: uploads[i], base, src: `/images/photos/${entry.category}/${base}.webp` };
+      return { entry, upload, base, src: `/images/photos/${entry.category}/${base}.webp` };
     });
     for (const t of targets) {
       if (t.upload.size > MAX_UPLOAD_BYTES) {

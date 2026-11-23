@@ -62,7 +62,7 @@ describe("getActiveLanguage", () => {
 
 describe("SITE_LANGUAGES", () => {
   it("leads with English and carries unique codes", () => {
-    expect(SITE_LANGUAGES[0].code).toBe("en");
+    expect(SITE_LANGUAGES[0]?.code).toBe("en");
     const codes = SITE_LANGUAGES.map((entry) => entry.code);
     expect(new Set(codes).size).toBe(codes.length);
   });

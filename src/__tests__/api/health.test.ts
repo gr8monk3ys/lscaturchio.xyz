@@ -22,6 +22,7 @@ import { GET } from '@/app/api/health/route'
 import { isDatabaseConfigured } from '@/lib/db'
 import { logError } from '@/lib/logger'
 import { pingRedis } from '@/lib/rate-limit-redis'
+import { readJson } from '@/__tests__/helpers/json';
 
 const callGet = () => GET()
 
@@ -44,14 +45,14 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
       expect(response.status).toBe(200)
-      expect(data.status).toBe('healthy')
-      expect(data.checks.database).toBe('ok')
-      expect(data.checks.environment).toBe('ok')
-      expect(data.checks.redis).toBe('ok')
-      expect(data.redis).toBe('connected')
+      expect(data?.status).toBe('healthy')
+      expect(data?.checks?.database).toBe('ok')
+      expect(data?.checks?.environment).toBe('ok')
+      expect(data?.checks?.redis).toBe('ok')
+      expect(data?.redis).toBe('connected')
     })
 
     it('serialises redis state in the exact form the keepalive workflow greps for', async () => {
@@ -70,15 +71,15 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
       expect(response.status).toBe(503)
-      expect(data.status).toBe('unhealthy')
-      expect(data.redis).toBe('unavailable')
-      expect(data.checks.redis).toBe('error')
+      expect(data?.status).toBe('unhealthy')
+      expect(data?.redis).toBe('unavailable')
+      expect(data?.checks?.redis).toBe('error')
       // The other checks still report truthfully so the failure is attributable
-      expect(data.checks.database).toBe('ok')
-      expect(data.checks.environment).toBe('ok')
+      expect(data?.checks?.database).toBe('ok')
+      expect(data?.checks?.environment).toBe('ok')
     })
 
     it('returns 503 with redis not-configured when no credentials are set', async () => {
@@ -86,11 +87,11 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
       expect(response.status).toBe(503)
-      expect(data.redis).toBe('not-configured')
-      expect(data.checks.redis).toBe('error')
+      expect(data?.redis).toBe('not-configured')
+      expect(data?.checks?.redis).toBe('error')
     })
 
     it('returns 503 with unhealthy status when DATABASE_URL is missing', async () => {
@@ -98,48 +99,48 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
       expect(response.status).toBe(503)
-      expect(data.status).toBe('unhealthy')
-      expect(data.checks.environment).toBe('error')
+      expect(data?.status).toBe('unhealthy')
+      expect(data?.checks?.environment).toBe('error')
     })
 
     it('returns 503 with unhealthy status when database query fails', async () => {
       mockSql.mockRejectedValue(new Error('Connection refused'))
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
       expect(response.status).toBe(503)
-      expect(data.status).toBe('unhealthy')
-      expect(data.checks.database).toBe('error')
+      expect(data?.status).toBe('unhealthy')
+      expect(data?.checks?.database).toBe('error')
     })
 
     it('returns 503 when isDatabaseConfigured returns false', async () => {
       vi.mocked(isDatabaseConfigured).mockReturnValue(false)
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
       expect(response.status).toBe(503)
-      expect(data.status).toBe('unhealthy')
-      expect(data.checks.database).toBe('error')
+      expect(data?.status).toBe('unhealthy')
+      expect(data?.checks?.database).toBe('error')
     })
 
     it('response includes timestamp, version, and checks object', async () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
       expect(data).toHaveProperty('timestamp')
       expect(data).toHaveProperty('version')
       expect(data).toHaveProperty('checks')
-      expect(data.checks).toHaveProperty('database')
-      expect(data.checks).toHaveProperty('environment')
+      expect(data?.checks).toHaveProperty('database')
+      expect(data?.checks).toHaveProperty('environment')
       // Validate timestamp is a valid ISO string
-      expect(new Date(data.timestamp).toISOString()).toBe(data.timestamp)
+      expect(new Date(String(data?.timestamp)).toISOString()).toBe(data?.timestamp)
     })
 
     it('sets no-cache headers', async () => {
@@ -156,11 +157,11 @@ describe('Health API Route', () => {
       mockSql.mockRejectedValue(new TypeError('Cannot read properties of undefined'))
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
       expect(response.status).toBe(503)
-      expect(data.status).toBe('unhealthy')
-      expect(data.checks.database).toBe('error')
+      expect(data?.status).toBe('unhealthy')
+      expect(data?.checks?.database).toBe('error')
     })
 
     it('uses fallback version 0.1.0 when no version env vars are set', async () => {
@@ -169,9 +170,9 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
-      expect(data.version).toBe('0.1.0')
+      expect(data?.version).toBe('0.1.0')
     })
 
     it('uses npm_package_version when available', async () => {
@@ -179,9 +180,9 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
-      expect(data.version).toBe('2.5.0')
+      expect(data?.version).toBe('2.5.0')
     })
 
     it('uses truncated VERCEL_GIT_COMMIT_SHA when npm_package_version is absent', async () => {
@@ -190,9 +191,9 @@ describe('Health API Route', () => {
       mockSql.mockResolvedValue([{ slug: 'some-post' }])
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
-      expect(data.version).toBe('abc1234')
+      expect(data?.version).toBe('abc1234')
     })
 
     it('logs error and returns 503 when handler throws unexpectedly', async () => {
@@ -202,13 +203,13 @@ describe('Health API Route', () => {
       })
 
       const response = await callGet()
-      const { data } = await response.json()
+      const { data } = await readJson(response)
 
       expect(response.status).toBe(503)
-      expect(data.status).toBe('unhealthy')
-      expect(data.checks.database).toBe('error')
-      expect(data.checks.environment).toBe('error')
-      expect(data.redis).toBe('unavailable')
+      expect(data?.status).toBe('unhealthy')
+      expect(data?.checks?.database).toBe('error')
+      expect(data?.checks?.environment).toBe('error')
+      expect(data?.redis).toBe('unavailable')
       expect(logError).toHaveBeenCalledWith(
         'Health check failed',
         expect.any(Error),

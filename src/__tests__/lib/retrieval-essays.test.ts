@@ -99,8 +99,8 @@ describe('relevantEssays', () => {
 
     expect(essays.map((e) => e.slug)).toEqual(['boredom', 'gardens']);
     expect(essays[0]).toMatchObject({ similarity: 0, relevance: 1 });
-    expect(essays[1].relevance).toBeGreaterThan(0);
-    expect(essays[1].relevance).toBeLessThan(1);
+    expect(essays[1]?.relevance).toBeGreaterThan(0);
+    expect(essays[1]?.relevance).toBeLessThan(1);
   });
 
   it('ranks an essay found by both legs above one found by either', async () => {
@@ -115,8 +115,8 @@ describe('relevantEssays', () => {
 
     const essays = await relevantEssays('rag', { limit: 5 });
 
-    expect(essays[0].slug).toBe('rag');
-    expect(essays[0].similarity).toBe(0.7);
+    expect(essays[0]?.slug).toBe('rag');
+    expect(essays[0]?.similarity).toBe(0.7);
   });
 
   it('chooses presentable snippets: no code, no repeated title, no duplicates, at most two', async () => {
@@ -134,7 +134,7 @@ describe('relevantEssays', () => {
 
     const [result] = await relevantEssays('shipping', { limit: 10 });
 
-    expect(result.snippets).toEqual([
+    expect(result?.snippets).toEqual([
       'people who have shipped know better.',
       'A second real sentence.',
     ]);

@@ -55,8 +55,8 @@ describe('getPopularPosts', () => {
 
     expect(source).toBe('views');
     expect(posts).toHaveLength(1);
-    expect(posts[0].slug).toBe('real-post');
-    expect(posts[0].title).toBe('Title for real-post');
+    expect(posts[0]?.slug).toBe('real-post');
+    expect(posts[0]?.title).toBe('Title for real-post');
   });
 
   it('still returns the requested count when junk rows rank above real posts', async () => {

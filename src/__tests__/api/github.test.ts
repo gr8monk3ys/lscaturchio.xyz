@@ -10,6 +10,7 @@ vi.mock('@/lib/github-repos', () => ({
 }));
 
 import { GET } from '@/app/api/github/route';
+import { readJson } from '@/__tests__/helpers/json';
 
 function createMockRequest(): NextRequest {
   return new NextRequest('http://localhost:3000/api/github');
@@ -50,23 +51,23 @@ describe('GitHub API Route', () => {
       mockGetGithubPortfolioRepos.mockResolvedValue(mockPortfolioRepos);
 
       const response = await GET(createMockRequest());
-      const { data } = await response.json();
+      const { data } = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(Array.isArray(data)).toBe(true);
-      expect(data.length).toBe(2);
+      expect(data?.length).toBe(2);
       // Should be sorted by stars (descending) - already sorted by the shared helper
-      expect(data[0].stars).toBe(100);
-      expect(data[1].stars).toBe(50);
+      expect(data?.[0]?.stars).toBe(100);
+      expect(data?.[1]?.stars).toBe(50);
     });
 
     it('returns repos with correct fields', async () => {
       mockGetGithubPortfolioRepos.mockResolvedValue([mockPortfolioRepos[0]]);
 
       const response = await GET(createMockRequest());
-      const { data } = await response.json();
+      const { data } = await readJson(response);
 
-      expect(data[0]).toMatchObject({
+      expect(data?.[0]).toMatchObject({
         title: 'awesome-project',
         description: 'An awesome project',
         href: 'https://github.com/gr8monk3ys/awesome-project',
@@ -75,9 +76,9 @@ describe('GitHub API Route', () => {
         forks: 25,
         logo: '/images/projects/logos/awesome-project.svg',
       });
-      expect(data[0].stack).toContain('TypeScript');
-      expect(data[0].stack).toContain('web');
-      expect(data[0].stack).toContain('typescript');
+      expect(data?.[0]?.stack).toContain('TypeScript');
+      expect(data?.[0]?.stack).toContain('web');
+      expect(data?.[0]?.stack).toContain('typescript');
     });
 
     it('returns Cache-Control header', async () => {
@@ -94,7 +95,7 @@ describe('GitHub API Route', () => {
       mockGetGithubPortfolioRepos.mockRejectedValue(new Error('GitHub API error'));
 
       const response = await GET(createMockRequest());
-      const data = await response.json();
+      const data = await readJson(response);
 
       expect(response.status).toBe(500);
       expect(data.error).toBe('Failed to fetch repositories');
@@ -104,7 +105,7 @@ describe('GitHub API Route', () => {
       mockGetGithubPortfolioRepos.mockResolvedValue([]);
 
       const response = await GET(createMockRequest());
-      const { data } = await response.json();
+      const { data } = await readJson(response);
 
       expect(response.status).toBe(200);
       expect(data).toEqual([]);

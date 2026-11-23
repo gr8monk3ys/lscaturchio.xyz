@@ -62,12 +62,13 @@ export function BookmarksPageClient() {
   // Remove a bookmark
   const removeBookmark = (slug: string) => {
     const index = bookmarks.findIndex((b) => b.slug === slug);
-    if (index === -1) return;
+    const removed = bookmarks[index];
+    if (!removed) return;
     const updated = bookmarks.filter((b) => b.slug !== slug);
     setBookmarks(updated);
     safeStorage.setJSON("blog-bookmarks", updated);
     setReactionBookmarked(slug, false);
-    setLastRemoved({ bookmark: bookmarks[index], index });
+    setLastRemoved({ bookmark: removed, index });
   };
 
   const undoRemove = () => {

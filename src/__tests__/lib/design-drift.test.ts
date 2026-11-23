@@ -341,7 +341,7 @@ describe("icon libraries", () => {
         for (const match of source.matchAll(
           /import\s*\{([^}]*)\}\s*from\s*['"]@tabler\/icons-react['"]/g
         )) {
-          const generic = match[1]
+          const generic = (match[1] ?? "")
             .split(",")
             .map((name) => name.trim())
             .filter(Boolean)
@@ -425,7 +425,7 @@ describe("heading case", () => {
         const source = fs.readFileSync(file, "utf-8");
 
         for (const match of source.matchAll(/<h[1-6][^>]*>([^<>{}]+)<\/h[1-6]>/g)) {
-          const text = match[1].replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+          const text = match[1]?.replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
           if (!text) continue;
           if (ALLOWED_HEADINGS.some((a) => a.text === text)) continue;
 

@@ -204,8 +204,7 @@ async function main(): Promise<void> {
     adversarial: [],
   }
 
-  for (let i = 0; i < queries.length; i++) {
-    const q = queries[i]
+  for (const [i, q] of queries.entries()) {
     console.log(`[eval-chat] (${i + 1}/${queries.length}) [${q.intent}] ${q.query}`)
     const retrieved = await groundingFor(q.query).catch((error: unknown) => {
       console.warn(

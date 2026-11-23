@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useAskConversation, ASK_OPENER } from "@/hooks/use-ask-conversation";
 import { logError, logWarn } from "@/lib/logger";
+import { parseJson } from "@/__tests__/helpers/json";
 
 vi.mock("@/lib/logger", () => ({ logError: vi.fn(), logWarn: vi.fn() }));
 
@@ -30,7 +31,7 @@ describe("useAskConversation", () => {
   it("starts with the opener and reports itself empty", () => {
     const { result } = renderHook(() => useAskConversation());
     expect(result.current.messages).toHaveLength(1);
-    expect(result.current.messages[0].content).toBe(ASK_OPENER);
+    expect(result.current.messages[0]?.content).toBe(ASK_OPENER);
     expect(result.current.isEmpty).toBe(true);
   });
 
@@ -64,7 +65,7 @@ describe("useAskConversation", () => {
       await result.current.send("Does this hold up?");
     });
 
-    const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+    const body = parseJson(fetchMock.mock.calls[0]?.[1].body);
     expect(body.contextSlug).toBe("strikes-work");
   });
 
@@ -76,7 +77,7 @@ describe("useAskConversation", () => {
       await result.current.send("Anything");
     });
 
-    const body = JSON.parse(fetchMock.mock.calls[0][1].body);
+    const body = parseJson(fetchMock.mock.calls[0]?.[1].body);
     expect(body.contextSlug).toBeUndefined();
   });
 
@@ -94,7 +95,7 @@ describe("useAskConversation", () => {
     });
 
     await waitFor(() => expect(result.current.messages).toHaveLength(3));
-    expect(result.current.messages[2].failedQuery).toBe("What broke?");
+    expect(result.current.messages[2]?.failedQuery).toBe("What broke?");
   });
 
   it("treats a 200 with no answer as a failure rather than rendering nothing", async () => {
@@ -108,7 +109,7 @@ describe("useAskConversation", () => {
     });
 
     await waitFor(() => expect(result.current.messages).toHaveLength(3));
-    expect(result.current.messages[2].failedQuery).toBe("Empty?");
+    expect(result.current.messages[2]?.failedQuery).toBe("Empty?");
   });
 
   // The reader sees the same copy either way; what differs is whether anyone
@@ -137,7 +138,7 @@ describe("useAskConversation", () => {
     });
 
     await waitFor(() => expect(result.current.messages).toHaveLength(3));
-    expect(result.current.messages[2].failedQuery).toBe("Still there?");
+    expect(result.current.messages[2]?.failedQuery).toBe("Still there?");
     expect(logWarn).toHaveBeenCalledTimes(level === "warn" ? 1 : 0);
     expect(logError).toHaveBeenCalledTimes(level === "error" ? 1 : 0);
   });
@@ -165,7 +166,7 @@ describe("useAskConversation", () => {
     act(() => result.current.reset());
 
     expect(result.current.messages).toHaveLength(1);
-    expect(result.current.messages[0].content).toBe(ASK_OPENER);
+    expect(result.current.messages[0]?.content).toBe(ASK_OPENER);
     expect(result.current.isEmpty).toBe(true);
     expect(result.current.input).toBe("");
   });

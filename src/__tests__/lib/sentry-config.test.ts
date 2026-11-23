@@ -78,7 +78,7 @@ describe("sentry client config", () => {
       "excludeReplayCompressionWorker",
     ]) {
       expect(
-        new RegExp(`${flag}\\s*:\\s*true`).test(treeshake![1]),
+        new RegExp(`${flag}\\s*:\\s*true`).test(treeshake?.[1] ?? ''),
         `webpack.treeshake.${flag} is not \`true\` in next.config.mjs`
       ).toBe(true);
     }

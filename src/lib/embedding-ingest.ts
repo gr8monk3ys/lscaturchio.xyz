@@ -124,8 +124,7 @@ export function splitIntoChunks(
       const overlap: string[] = [];
       let overlapLength = 0;
       if (overlapBudget > 0) {
-        for (let i = current.length - 1; i >= 0; i -= 1) {
-          const candidate = current[i];
+        for (const candidate of [...current].reverse()) {
           const exceedsBudget = overlapLength + candidate.length + 1 > overlapBudget;
           if (overlap.length > 0 && exceedsBudget) break;
           overlap.unshift(candidate);
@@ -229,11 +228,11 @@ export async function indexSource(
   };
 
   const rows: IndexRow[] = [];
-  for (let i = 0; i < chunks.length; i++) {
+  for (const [i, chunk] of chunks.entries()) {
     try {
-      const embedding = await embedder.embed(buildEmbeddingInput(preamble, chunks[i]));
+      const embedding = await embedder.embed(buildEmbeddingInput(preamble, chunk));
       rows.push({
-        content: chunks[i],
+        content: chunk,
         embedding,
         contentHash,
         metadata: {

@@ -94,11 +94,12 @@ const handleGet = async (req: NextRequest) => {
     // Get view count from database
     const rows = await sql`SELECT count FROM views WHERE slug = ${slug}`;
 
-    if (rows.length === 0) {
+    const row = rows[0];
+    if (!row) {
       return apiSuccess({ slug, views: 0 });
     }
 
-    const views = rows[0].count || 0;
+    const views = row.count || 0;
     return apiSuccess({ slug, views });
   } catch (error) {
     logError("View Counter: Unexpected error", error, { component: 'views', action: 'GET' });
@@ -177,11 +178,12 @@ export const POST = withWriteRoute(
     // Use atomic RPC function to prevent race conditions
     const rows = await sql`SELECT increment_view_count(${slug})`;
 
-    if (!rows.length) {
+    const row = rows[0];
+    if (!row) {
       logError("View Counter: RPC returned no result", null, { component: "views", action: "POST", slug });
       throw writeError.internal("Failed to record view");
     }
 
-    return { slug, views: rows[0].increment_view_count };
+    return { slug, views: row.increment_view_count };
   }
 );

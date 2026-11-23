@@ -155,7 +155,7 @@ describe("ContactForm", () => {
       submitForm();
 
       await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1));
-      const body = submitMock.mock.calls[0][1] as Record<string, unknown>;
+      const body = submitMock.mock.calls[0]?.[1] as Record<string, unknown>;
       expect(body.contact_ref).toBe("https://spam.example");
       expect(body.elapsedMs).toBe(12_000);
 
@@ -169,7 +169,7 @@ describe("ContactForm", () => {
       submitForm();
 
       await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(2));
-      expect((submitMock.mock.calls[1][1] as Record<string, unknown>).elapsedMs).toBe(7_000);
+      expect((submitMock.mock.calls[1]?.[1] as Record<string, unknown>).elapsedMs).toBe(7_000);
     } finally {
       clock.mockRestore();
     }

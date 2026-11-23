@@ -3,6 +3,7 @@ import { act, renderHook } from '@testing-library/react';
 import type { KeyboardEvent, MouseEvent } from 'react';
 
 import { useAudioPlayer } from '@/hooks/use-audio-player';
+import { fromPartial } from '@total-typescript/shoehorn';
 
 // A recorded post plays through an HTMLAudioElement the hook creates itself.
 // happy-dom's Audio never loads anything, so this stand-in lets each test fire
@@ -144,12 +145,12 @@ describe('useAudioPlayer with a recording', () => {
 
     audio.currentTime = 50;
     act(() =>
-      result.current.handleProgressKeyDown({ key: 'ArrowRight' } as KeyboardEvent<HTMLDivElement>)
+      result.current.handleProgressKeyDown(fromPartial<KeyboardEvent<HTMLDivElement>>({ key: 'ArrowRight' }))
     );
     expect(audio.currentTime).toBe(65);
 
     act(() =>
-      result.current.handleProgressKeyDown({ key: 'ArrowLeft' } as KeyboardEvent<HTMLDivElement>)
+      result.current.handleProgressKeyDown(fromPartial<KeyboardEvent<HTMLDivElement>>({ key: 'ArrowLeft' }))
     );
     expect(audio.currentTime).toBe(50);
   });
@@ -182,16 +183,16 @@ describe('useAudioPlayer with a recording', () => {
   it('seeks to where the progress bar was clicked, clamped to the bar', () => {
     const { result, audio } = renderLoadedPlayer();
     const bar = document.createElement('div');
-    bar.getBoundingClientRect = () => ({ left: 100, width: 200 }) as DOMRect;
+    bar.getBoundingClientRect = () => fromPartial<DOMRect>({ left: 100, width: 200 });
     result.current.progressRef.current = bar;
 
     act(() =>
-      result.current.handleProgressClick({ clientX: 150 } as MouseEvent<HTMLDivElement>)
+      result.current.handleProgressClick(fromPartial<MouseEvent<HTMLDivElement>>({ clientX: 150 }))
     );
     expect(audio.currentTime).toBe(30);
 
     act(() =>
-      result.current.handleProgressClick({ clientX: 900 } as MouseEvent<HTMLDivElement>)
+      result.current.handleProgressClick(fromPartial<MouseEvent<HTMLDivElement>>({ clientX: 900 }))
     );
     expect(audio.currentTime).toBe(120);
   });
@@ -221,7 +222,7 @@ describe('useAudioPlayer with a recording', () => {
       result.current.changeSpeed();
       result.current.toggleMute();
       result.current.jumpToChapter({ id: 'one', title: 'One', level: 2, startTime: 10 });
-      result.current.handleProgressClick({ clientX: 10 } as MouseEvent<HTMLDivElement>);
+      result.current.handleProgressClick(fromPartial<MouseEvent<HTMLDivElement>>({ clientX: 10 }));
     });
 
     expect(audio.play).not.toHaveBeenCalled();

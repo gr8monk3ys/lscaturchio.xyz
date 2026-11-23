@@ -96,6 +96,20 @@ describe("command palette keyboard contract", () => {
     expect(result.current.isOpen).toBe(false);
   });
 
+  it("does nothing on Enter when the query matches no command", () => {
+    const { result } = renderHook(() => useCommandPalette());
+    press("k", { metaKey: true });
+    act(() => {
+      result.current.setQuery("zzzz-matches-nothing-zzzz");
+    });
+    expect(result.current.commandCount).toBe(0);
+
+    press("Enter");
+
+    expect(push).not.toHaveBeenCalled();
+    expect(result.current.isOpen).toBe(true);
+  });
+
   it("clamps a stale selection rather than indexing past the list", () => {
     const { result } = renderHook(() => useCommandPalette());
     press("k", { metaKey: true });
@@ -145,7 +159,7 @@ describe("command palette keyboard contract", () => {
 
     expect(result.current.groupedCommands.navigation.length).toBeGreaterThan(20);
     expect(result.current.groupedCommands.action).toHaveLength(1);
-    expect(result.current.groupedCommands.action[0].title).toBe("Switch to dark");
+    expect(result.current.groupedCommands.action[0]?.title).toBe("Switch to dark");
   });
 
   it("matches a destination by keyword without printing the keyword", () => {

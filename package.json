@@ -24,11 +24,12 @@
     "eval:watch": "evalite watch",
     "eval:chat": "tsx scripts/eval-chat.ts",
     "verify": "bun run verify:lint && bun run typecheck && bun run verify:test && bun run build",
-    "verify:lint": "bun run lint && bun run knip && bun run sync-retrieval-corpus -- --check",
+    "verify:lint": "bun run lint && bun run knip && bun run lint:boundaries && bun run sync-retrieval-corpus -- --check",
     "verify:test": "vitest run --coverage --reporter=default --reporter=json --outputFile.json=reports/unit.json && node scripts/verify-summary.mjs unit reports/unit.json",
     "verify:e2e": "env -u FORCE_COLOR -u NO_COLOR playwright test --project=chromium && node scripts/verify-summary.mjs e2e reports/e2e.json",
     "predeploy": "bun run verify && bun run verify:e2e",
     "knip": "knip",
+    "lint:boundaries": "depcruise src scripts e2e evals --config .dependency-cruiser.cjs",
     "bump-deps": "node scripts/bump-deps.mjs",
     "db:migrate": "tsx scripts/run-neon-migration.ts",
     "generate-embeddings": "tsx scripts/generate-embeddings.ts",
@@ -42,7 +43,8 @@
     "generate-project-logos": "node scripts/generate-project-logos.mjs",
     "suggest-internal-links": "tsx scripts/suggest-internal-links.ts",
     "send-webmentions": "tsx scripts/send-webmentions.ts",
-    "lighthouse:ci": "node scripts/check-lighthouse-score.mjs http://127.0.0.1:3000 / /blog /blog/building-rag-systems /work-with-me"
+    "lighthouse:ci": "node scripts/check-lighthouse-score.mjs http://127.0.0.1:3000 / /blog /blog/building-rag-systems /work-with-me",
+    "prepare": "simple-git-hooks"
   },
   "dependencies": {
     "@gr8monk3ys/next-kit": "https://github.com/gr8monk3ys/next-kit/archive/203cc48e6a232b190e712d13dae8c27f6573ecad.tar.gz",
@@ -96,13 +98,31 @@
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
+    "@total-typescript/shoehorn": "^0.1.2",
+    "@total-typescript/ts-reset": "^0.6.1",
     "@vitest/coverage-v8": "^4.1.10",
+    "dependency-cruiser": "^18.8.0",
     "eslint": "9.39.2",
     "eslint-config-next": "^16.3.0",
     "evalite": "^0.19.0",
     "happy-dom": "^20.11.2",
     "knip": "^6.32.2",
+    "lint-staged": "^17.6.2",
+    "simple-git-hooks": "^2.14.0",
     "tsx": "^4.23.12",
     "vitest": "^4.1.10"
-  }
+  },
+  "simple-git-hooks": {
+    "pre-commit": "bunx lint-staged && bun run typecheck"
+  },
+  "lint-staged": {
+    "*.{js,cjs,mjs,ts,tsx}": "eslint --max-warnings 0"
+  },
+  "overrides": {
+    "better-sqlite3": "^13.2.0"
+  },
+  "trustedDependencies": [
+    "esbuild",
+    "sharp"
+  ]
 }

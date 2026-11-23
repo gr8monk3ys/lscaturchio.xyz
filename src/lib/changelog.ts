@@ -21,8 +21,9 @@ interface GitHubPull {
 /** `feat(blog): declare series` → kind "feat", subject "declare series". */
 function parseTitle(title: string): { kind: string; subject: string } {
   const match = title.match(/^([a-z]+)(?:\([^)]*\))?!?:\s*(.+)$/);
-  if (!match) return { kind: 'change', subject: title };
-  return { kind: match[1], subject: match[2] };
+  const [, kind, subject] = match ?? [];
+  if (kind === undefined || subject === undefined) return { kind: 'change', subject: title };
+  return { kind, subject };
 }
 
 /**

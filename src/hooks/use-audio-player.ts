@@ -206,6 +206,7 @@ export function useAudioPlayer({ slug, audioSrc }: UseAudioPlayerArgs): UseAudio
     const currentIndex = SPEED_OPTIONS.indexOf(state.speed)
     const nextIndex = (currentIndex + 1) % SPEED_OPTIONS.length
     const nextSpeed = SPEED_OPTIONS[nextIndex]
+    if (nextSpeed === undefined) return
 
     audio.playbackRate = nextSpeed
     dispatch({ type: "SET_SPEED", speed: nextSpeed })

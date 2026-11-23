@@ -22,40 +22,42 @@ import { products } from "@/constants/products";
 // argument precisely so these assertions don't move when a project is added.
 const thumbnail = { src: "/x.png", height: 1, width: 1 } as Product["thumbnail"];
 
-const fixture: Product[] = [
-  {
-    title: "Beta",
-    description: "second alphabetically, newest, featured",
-    thumbnail,
-    href: "/projects/beta",
-    slug: "beta",
-    featured: true,
-    categories: ["tools"],
-    status: "active",
-    startDate: "2026-05",
-    stack: ["TypeScript", "Vite"],
-  },
-  {
-    title: "Alpha",
-    description: "first alphabetically, oldest, not featured",
-    thumbnail,
-    href: "/projects/alpha",
-    slug: "alpha",
-    categories: ["tools", "ai-ml"],
-    status: "archived",
-    startDate: "2024-01",
-    stack: ["Python"],
-  },
-  {
-    title: "Gamma",
-    description: "no start date, no slug",
-    thumbnail,
-    href: "https://example.com/gamma",
-    categories: ["ai-ml"],
-    status: "maintained",
-    stack: ["TypeScript"],
-  },
-];
+const betaProject: Product = {
+  title: "Beta",
+  description: "second alphabetically, newest, featured",
+  thumbnail,
+  href: "/projects/beta",
+  slug: "beta",
+  featured: true,
+  categories: ["tools"],
+  status: "active",
+  startDate: "2026-05",
+  stack: ["TypeScript", "Vite"],
+};
+
+const alphaProject: Product = {
+  title: "Alpha",
+  description: "first alphabetically, oldest, not featured",
+  thumbnail,
+  href: "/projects/alpha",
+  slug: "alpha",
+  categories: ["tools", "ai-ml"],
+  status: "archived",
+  startDate: "2024-01",
+  stack: ["Python"],
+};
+
+const gammaProject: Product = {
+  title: "Gamma",
+  description: "no start date, no slug",
+  thumbnail,
+  href: "https://example.com/gamma",
+  categories: ["ai-ml"],
+  status: "maintained",
+  stack: ["TypeScript"],
+};
+
+const fixture: Product[] = [betaProject, alphaProject, gammaProject];
 
 describe("listProjects", () => {
   it("defaults to featured first, then newest", () => {
@@ -129,7 +131,7 @@ describe("findRelatedProjects", () => {
   });
 
   it("returns nothing when the project has no categories", () => {
-    const uncategorised: Product = { ...fixture[0], categories: undefined };
+    const uncategorised: Product = { ...betaProject, categories: undefined };
     expect(findRelatedProjects(uncategorised, {}, fixture)).toEqual([]);
   });
 
@@ -216,23 +218,21 @@ describe("toPublicProject", () => {
   });
 
   it("never leaks the bundler's thumbnail handle", () => {
-    expect(toPublicProject(fixture[0])).not.toHaveProperty("thumbnail");
+    expect(toPublicProject(betaProject)).not.toHaveProperty("thumbnail");
   });
 });
 
 describe("listHomeCaseStudies", () => {
-  const withCard: Product[] = [
-    {
-      ...fixture[0],
-      homeCard: {
-        kicker: "Kicker",
-        blurb: "Card blurb",
-        metrics: ["one", "two"],
-        coverSrc: "/images/projects/covers/beta.webp",
-      },
+  const cardProject: Product = {
+    ...betaProject,
+    homeCard: {
+      kicker: "Kicker",
+      blurb: "Card blurb",
+      metrics: ["one", "two"],
+      coverSrc: "/images/projects/covers/beta.webp",
     },
-    fixture[1],
-  ];
+  };
+  const withCard: Product[] = [cardProject, alphaProject];
 
   it("returns cards in the order asked for", () => {
     expect(listHomeCaseStudies(["beta"], withCard)).toEqual([
@@ -254,11 +254,11 @@ describe("listHomeCaseStudies", () => {
     // "Cocoon: A Calmer Internet" on home and "Lower the sensory load of the
     // web" on /projects. One source now, so the two cannot diverge again.
     const withThesis: Product[] = [
-      { ...withCard[0], thesis: "Lower the sensory load of the web" },
-      withCard[1],
+      { ...cardProject, thesis: "Lower the sensory load of the web" },
+      alphaProject,
     ];
 
-    expect(listHomeCaseStudies(["beta"], withThesis)[0].title).toBe(
+    expect(listHomeCaseStudies(["beta"], withThesis)[0]?.title).toBe(
       "Beta: Lower the sensory load of the web"
     );
   });

@@ -113,7 +113,8 @@ describe("DESIGN.md citations", () => {
 
     for (const { file, line, cited, tail } of citations) {
       for (const match of tail.matchAll(QUOTED)) {
-        const quote = match[1].trim();
+        const quote = match[1]?.trim();
+        if (quote === undefined) continue;
         // Skip anything that is plainly code or a class name rather than prose
         // from the document: those are quoted for other reasons.
         if (!/\s/.test(quote) || /[{};<>]|=>/.test(quote)) continue;
