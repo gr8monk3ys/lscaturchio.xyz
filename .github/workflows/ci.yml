@@ -373,7 +373,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
 
       - name: Verify production chat endpoint
         run: node scripts/smoke-chat.mjs --base-url https://lscaturchio.xyz --attempts 30 --interval-ms 20000 --timeout-ms 20000 --allow-edge-block

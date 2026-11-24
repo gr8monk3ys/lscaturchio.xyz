@@ -62,7 +62,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
 
       # Streak state has to outlive the run. Cache keys are immutable, so each
       # run writes a fresh key and restores the newest one by prefix. A cache
