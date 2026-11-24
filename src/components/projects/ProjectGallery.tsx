@@ -141,7 +141,7 @@ export function ProjectGallery({ projects }: { projects: Product[] }): React.Rea
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <AnimatePresence mode="popLayout" initial={false}>
-            {list.map((project) => {
+            {list.map((project, index) => {
               const isActive = project.slug === activeSlug
               return (
                 <m.div
@@ -155,6 +155,7 @@ export function ProjectGallery({ projects }: { projects: Product[] }): React.Rea
                   <ProjectGalleryCard
                     project={project}
                     isActive={isActive}
+                    priority={index === 0}
                     onActivate={() => dispatch({ type: 'setActiveSlug', payload: project.slug })}
                     setRef={(el) => {
                       linkRefs.current[project.slug] = el
@@ -189,11 +190,13 @@ export function ProjectGallery({ projects }: { projects: Product[] }): React.Rea
 function ProjectGalleryCard({
   project,
   isActive,
+  priority,
   onActivate,
   setRef,
 }: {
   project: Product & { slug: string }
   isActive: boolean
+  priority: boolean
   onActivate: () => void
   setRef: (el: HTMLAnchorElement | null) => void
 }): React.ReactNode {
@@ -222,8 +225,8 @@ function ProjectGalleryCard({
             alt={project.title}
             fill
             className="object-cover"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            priority={isActive}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
+            priority={priority}
           />
         </m.div>
         {/* No scrim, and no type over the cover. The caption used to sit on a
