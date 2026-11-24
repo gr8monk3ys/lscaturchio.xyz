@@ -16,17 +16,17 @@ export const meta = {
 
 ## The front end they stopped building
 
-In 2001 the FBI hired Science Applications International Corp. to modernize the software its agents used to manage cases. The first job was modest. Case records lived in Automated Case Support, a system that [debuted in 1995 on a 1970s-era database](https://spectrum.ieee.org/who-killed-the-virtual-case-file) and was reached through IBM 3270 green-screen terminals, navigated with function keys. The plan was to put the bureau's [five most heavily used investigative applications behind a point-and-click web interface](https://spectrum.ieee.org/who-killed-the-virtual-case-file). A front end. The old data would stay where it was.
+In 2001 the FBI hired Science Applications International Corp. to modernize the software its agents used to manage cases. The first job was modest. Case records lived in Automated Case Support, a system that [debuted in 1995 on a 1970s-era database](https://spectrum.ieee.org/who-killed-the-virtual-case-file) and was reached through IBM 3270 green-screen terminals, navigated with function keys. The plan was to put ACS and the bureau's other most heavily used investigative applications [behind a point-and-click web interface](https://spectrum.ieee.org/who-killed-the-virtual-case-file). A front end, on the programs agents already had.
 
-In December 2001, three months after the September 11 attacks, the FBI [asked SAIC to stop building the web front end](https://spectrum.ieee.org/who-killed-the-virtual-case-file) and design a new application and database that would replace ACS outright. The delivery date moved earlier, to December 2003. The switch would be a flash cutover, which Harry Goldstein's 2005 account in *IEEE Spectrum* describes without decoration: people would log off from ACS on Friday afternoon and log on to the new system on Monday morning. There was no going back and no plan B.
+In December 2001, three months after the September 11 attacks, the FBI [asked SAIC to stop building the web front end](https://spectrum.ieee.org/who-killed-the-virtual-case-file) and design a new application and database that would replace ACS outright. The delivery date moved earlier, to December 2003. The switch would be a flash cutover, which Harry Goldstein's 2005 account in *IEEE Spectrum* describes without decoration: people would log off from ACS on Friday afternoon and log on to the new system on Monday morning.
 
 To make the date, SAIC split its developers into [eight teams working in parallel](https://spectrum.ieee.org/who-killed-the-virtual-case-file), whose pieces later proved too hard to combine into one system. The requirements came out of joint sessions between agents and engineers and settled into an 800-page document. What came back, by the bureau's account, was 700,000 lines of code too bug-ridden and off target to use. In April 2005 the FBI [scrapped the Virtual Case File](https://en.wikipedia.org/wiki/Virtual_Case_File), at a cost of nearly $170 million.
 
-One sentence in Goldstein's piece sits in parentheses and does more work than most of the rest. After the contractor was told to stop building the web interface, [FBI computer specialists built one anyway](https://spectrum.ieee.org/who-killed-the-virtual-case-file), as a stopgap, and agents were still using it when the article went to press. So the small thing got built. It was built by the people who needed it, on the side, while the large thing failed.
+One sentence in Goldstein's piece sits in parentheses and does more work than most of the rest. After the contractor was told to stop building the web interface, [FBI computer specialists built one anyway](https://spectrum.ieee.org/who-killed-the-virtual-case-file), as a stopgap, and agents were still using it when the article went to press. So the small thing got built after all, in-house and as a stopgap, while the contractor worked on the large thing.
 
 ## A pediatrician's law
 
-John Gall was a pediatrician in Ann Arbor who retired in 2001 after [more than 40 years of private practice](https://en.wikipedia.org/wiki/John_Gall_(author)), and who studied how systems fail as a sideline. His 1975 book has a subtitle that runs on for a paragraph, promising "the very first annotated compendium of basic systems axioms" for "scientists, engineers, laboratory workers, administrators, public officials, systems analysts, etc., etc., etc., and the general public." The deadpan is the method. The book reads like a joke and keeps turning out to be right.
+John Gall was a pediatrician in Ann Arbor who retired in 2001 after [more than 40 years of private practice](https://en.wikipedia.org/wiki/John_Gall_(author)), and who studied how systems fail as a sideline. His 1975 book has a subtitle that runs on for a paragraph, promising "the very first annotated compendium of basic systems axioms" for "scientists, engineers, laboratory workers, administrators, public officials, systems analysts, etc., etc., etc., and the general public."
 
 The passage people quote from it:
 
@@ -44,7 +44,7 @@ It has a section headed "Non requirements." Copyright enforcement and data secur
 
 The proposal [attracted little interest](https://en.wikipedia.org/wiki/History_of_the_World_Wide_Web). His manager, Mike Sendall, encouraged him to build it anyway on a newly acquired NeXT workstation. By December 1990 there was a protocol, a markup language, a browser that doubled as an editor, a server, and one website at info.cern.ch. In April 1993 CERN released the code into the public domain. Everything since has grown on top of a system whose founding document stated, in writing, which hard problems it was choosing not to solve.
 
-The founding gesture was a refusal. The first version of the web was allowed to be bad at most things, and it was in use while the hard problems were still being found.
+The first version of the web was allowed to be bad at most things, and it was in use while the hard problems were still being found.
 
 ## A rewrite is a new system
 
@@ -64,12 +64,14 @@ Gall was writing when designing a complex system from scratch was expensive enou
 
 That protection is going. Jorge Arango [put it plainly in June](https://jarango.com/2026/06/26/still-holds-galls-law/): "An afternoon with Claude can yield a comprehensive spec for a very complex system," and further sessions can build a first release with every instrument in the orchestra. His conclusion is that the discipline the budget used to impose now has to be imposed on purpose.
 
-I'd push one step further. The FBI's 800 pages took months of meetings, and Arango's afternoon produces something of comparable heft. It also carries the same defect, which sits underneath the prose. Nobody yet knew which of those pages described the work, and the only way to find out was to put something small in front of an agent with a case to close and watch what they did with it. There is an unlucky collision in that word now. The agents writing the specification have never closed a case. A document that reads well is mostly [a claim nobody has had a reason to check](/blog/audit-only-checks-what-it-reaches).
+I'd push one step further. The FBI's 800 pages took months of meetings, and Arango's afternoon produces something of comparable heft. It also carries the same defect, which sits underneath the prose. Nobody yet knew which of those pages described the work, and the only way to find out was to put something small in front of an agent with a case to close and watch what they did with it. A specification drafted by a language model has that problem in a stronger form, since its author has never done the work it describes. A document that reads well is mostly [a claim nobody has had a reason to check](/blog/audit-only-checks-what-it-reaches).
 
-Generating the from-scratch design has become cheap. Being wrong about it costs what it always did, and it still gets discovered in use, by people, one hair at a time.
+Generating the from-scratch design has become cheap. Being wrong about it has not, and the mistakes still turn up only once people use the thing.
 
 ## Function keys
 
 The FBI did eventually get a case management system. It was called Sentinel, and after [several delays, new leadership and a switch to agile development](https://en.wikipedia.org/wiki/Sentinel_(FBI)) it was in use across the bureau on July 1, 2012.
 
-That is eleven years after the contract for the web front end. Through the four years the Virtual Case File spent failing, and [for years after](https://en.wikipedia.org/wiki/Virtual_Case_File), the cases lived in ACS. Agents opened it on PCs that [emulated the old 3270 terminals](https://spectrum.ieee.org/who-killed-the-virtual-case-file) and pressed function keys through menus that only the patient ones ever learned, and some of them reached it through a small web interface their own colleagues had put together because nobody else was going to.
+That is eleven years after the contract for the web front end. From December 2001, when the front end was dropped, to April 2005, when the Virtual Case File was, the cases lived in ACS, and after the cancellation the bureau [continued to use it](https://en.wikipedia.org/wiki/Virtual_Case_File). In 2005 agents were still reaching it on PCs that [emulated the old 3270 terminals](https://spectrum.ieee.org/who-killed-the-virtual-case-file).
+
+Function keys, pressed one at a time, to move from one green menu to the next.
