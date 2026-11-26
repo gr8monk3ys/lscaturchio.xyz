@@ -66,7 +66,9 @@ export function ProjectRail({ project, compact = false }: ProjectRailProps): Rea
           alt={`${title} preview`}
           fill
           className="object-cover"
-          sizes={compact ? '100vw' : '380px'}
+          // 360px, not the plate's own 378: it is the width the gallery card
+          // beside it already fetched, so a hover reuses that file.
+          sizes={compact ? '100vw' : '360px'}
         />
         <div className="absolute inset-x-0 bottom-0 h-1/5 bg-linear-to-t from-background/60 to-transparent" />
       </div>
