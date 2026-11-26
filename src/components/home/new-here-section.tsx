@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Section, SectionHeader } from "@/components/ui/Section";
+import { PlateHead } from "@/components/home/plate-head";
 import { LedgerRows } from "@/components/ui/ledger-section";
 import { rankThemesForTags } from "@/lib/blog-themes";
 import { spellCount, pluralize } from "@/lib/spell-count";
@@ -137,24 +137,22 @@ export function NewHereSection({ popularPosts, essayCount }: NewHereSectionProps
   ];
 
   return (
-    <Section padding="compact" size="wide" divider topDivider>
-      <div className="mx-auto max-w-4xl">
+    <section className="plate-grid w-full border-b border-rule lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+      <div className="plate-cell py-10 md:py-14">
         {/* No description prop. "A quick path to get the most out of this
             site" was the third restatement of the same nothing, after the
             eyebrow and the title. */}
-        <SectionHeader
-          index="04"
-          eyebrow="Start here"
-          title="New here? Start with these"
-        />
+        <PlateHead index="04" eyebrow="Start here" title="New here? Start with these" />
+      </div>
 
-        <LedgerRows items={steps} numbered className="border-t border-border">
+      <div>
+        <LedgerRows items={steps} numbered className="divide-y divide-rule">
           {(step, entryNumber) => (
-            <li key={step.href} className="border-b border-border">
+            <li key={step.href}>
               <Link
                 href={step.href}
                 prefetch={false}
-                className="group grid items-baseline gap-x-6 gap-y-1 py-6 sm:grid-cols-[2.5rem_10rem_1fr]"
+                className="plate-cell group grid items-baseline gap-x-6 gap-y-1 py-6 sm:grid-cols-[2.5rem_10rem_1fr]"
               >
                 <span className="label-mono tabular-nums" aria-hidden>
                   {entryNumber}
@@ -164,14 +162,14 @@ export function NewHereSection({ popularPosts, essayCount }: NewHereSectionProps
                   <span className="block text-card-title transition-colors group-hover:text-primary">
                     {step.title}
                   </span>
-                  <span className="mt-1 block max-w-lg text-sm leading-relaxed text-muted-foreground">
+                  <span className="text-lede mt-1 block max-w-xl text-foreground">
                     {step.blurb}
                   </span>
 
                   {typeof step.progress === "number" && (
                     <span className="mt-3 block max-w-xs">
                       <span
-                        className="block h-0.5 w-full bg-border"
+                        className="block h-0.5 w-full bg-rule/25"
                         role="img"
                         aria-label={`Reading progress ${step.progress} percent`}
                       >
@@ -196,22 +194,21 @@ export function NewHereSection({ popularPosts, essayCount }: NewHereSectionProps
         </LedgerRows>
 
         {popularPosts.length > 0 && (
-          <div className="mt-10">
-            <span className="label-mono block">Most read</span>
-            <LedgerRows items={popularPosts} numbered className="mt-3 border-t border-border">
+          <div className="border-t border-rule">
+            <span className="label-mono plate-cell block pb-0">Most read</span>
+            <LedgerRows items={popularPosts} numbered className="divide-y divide-rule">
               {(post, entryNumber) => (
-                <li key={post.slug} className="border-b border-border">
+                <li key={post.slug}>
                   <Link
                     href={`/blog/${post.slug}`}
                     prefetch={false}
-                    className="group grid grid-cols-[2.5rem_1fr] items-baseline gap-x-6 py-3"
+                    className="plate-cell group grid grid-cols-[2.5rem_1fr] items-baseline gap-x-6 py-3"
                   >
                     <span className="label-mono tabular-nums" aria-hidden>
                       {entryNumber}
                     </span>
-                    {/* Same reason as the currently-strip: a truncated
-                        essay title with no `title` attribute is unrecoverable
-                        by hover or by screen reader. */}
+                    {/* A truncated essay title with no `title` attribute is
+                        unrecoverable by hover or by screen reader. */}
                     <span
                       title={post.title}
                       className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary"
@@ -225,6 +222,6 @@ export function NewHereSection({ popularPosts, essayCount }: NewHereSectionProps
           </div>
         )}
       </div>
-    </Section>
+    </section>
   );
 }

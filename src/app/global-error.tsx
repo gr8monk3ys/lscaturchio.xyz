@@ -15,11 +15,11 @@ import { useEffect } from 'react'
  */
 const paletteCss = `
   :root {
-    --ge-paper: #f9f8f5;
-    --ge-card: #fbfaf9;
+    --ge-paper: #e5e2d7;
+    --ge-card: #ebe9e0;
     --ge-ink: #1a1f23;
-    --ge-ink-muted: #606976;
-    --ge-hairline: #e2dbd5;
+    --ge-ink-muted: #49505a;
+    --ge-hairline: #c7c1b3;
     --ge-forest: #184e35;
     --ge-forest-contrast: #ffffff;
     color-scheme: light;

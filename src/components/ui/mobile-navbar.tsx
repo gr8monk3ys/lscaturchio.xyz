@@ -73,14 +73,13 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
           footer roughly 7,700px down. The desktop header carries a wordmark
           and a hairline; the phone got the hamburger and nothing else.
 
-          The structure now mirrors the desktop bar: paper at 90% with the same
-          backdrop blur and the 40% hairline beneath, wordmark left, controls
-          right. It hides while the menu overlay is open, because the overlay
+          The structure mirrors the desktop bar: flat opaque paper closed by
+          the ink rule, wordmark left, controls right. It hides while the menu overlay is open, because the overlay
           is full-screen and paints its own header area. */}
       <div
         className={[
-          "fixed inset-x-0 top-0 z-menu-bar flex h-16 items-center justify-between gap-3 border-b border-border/40 bg-background/90 px-4 backdrop-blur-sm md:hidden",
-          isMenuOpen ? "border-transparent bg-transparent backdrop-blur-none" : "",
+          "fixed inset-x-0 top-0 z-menu-bar flex h-16 items-center justify-between gap-3 border-b border-rule bg-background px-4 md:hidden",
+          isMenuOpen ? "border-transparent bg-transparent" : "",
         ].join(" ")}
       >
         {/* `flex items-center` with the bar's full height, not a bare inline
@@ -109,7 +108,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
           onClick={() =>
             isMenuOpen ? closeMenu() : setIsMenuOpen(true)
           }
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl neu-button transition-colors"
+          className="flex h-10 w-10 shrink-0 items-center justify-center border border-rule transition-colors hover:border-primary hover:text-primary"
           aria-label="Toggle menu"
           aria-expanded={isMenuOpen}
           aria-controls="mobile-navigation-menu"
@@ -173,7 +172,7 @@ function MobileNavbarContent({ pathname }: { pathname: string }) {
              beyond `aria-expanded` flipping on a button they had just left. */
           tabIndex={-1}
           data-lenis-prevent
-          className="fixed inset-0 z-menu flex flex-col overflow-y-auto overscroll-y-contain bg-background/98 backdrop-blur-md md:hidden"
+          className="fixed inset-0 z-menu flex flex-col overflow-y-auto overscroll-y-contain bg-background md:hidden"
         >
         <nav id="mobile-navigation-menu" aria-label="Mobile navigation" className="contents">
           <div className="mx-auto flex w-full max-w-md flex-col space-y-2 p-6 pt-20">

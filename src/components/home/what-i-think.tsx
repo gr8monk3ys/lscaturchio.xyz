@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LedgerHead, LedgerSection } from "@/components/ui/ledger-section";
+import { PlateHead } from "@/components/home/plate-head";
 import { StageBadge } from "@/components/blog/stage-badge";
 import { formatDate } from "@/lib/formatDate";
 import { groupByTheme } from "@/lib/blog-themes";
@@ -21,10 +21,11 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
   );
 
   return (
-    <LedgerSection
-      head={
-        <>
-          <LedgerHead
+    <section className="plate-grid w-full border-b border-rule lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+      <div className="plate-cell py-10 md:py-14">
+        {/* The placard stays in view while its themes scroll past. */}
+        <div className="lg:sticky lg:top-28">
+          <PlateHead
             index="02"
             eyebrow="What I write"
             title="Essays, technology first."
@@ -40,13 +41,14 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
           >
             Read everything <span aria-hidden="true">→</span>
           </Link>
-        </>
-      }
-    >
-      <div className="space-y-10">
+        </div>
+      </div>
+
+      {/* A ruled cell per theme. */}
+      <div className="divide-y divide-rule">
         {groups.map(({ theme, posts: themePosts }) => (
-          <section key={theme.slug}>
-            <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
+          <section key={theme.slug} className="plate-cell py-8">
+            <div className="flex items-baseline justify-between gap-4 border-b border-rule pb-2">
               {/* `text-section-title`, matching `scroll-case-studies.tsx:85`
                   two sections below — home's other `h3` — and matching
                   `ThemedBlogSections`, where the same theme name introduces
@@ -94,7 +96,7 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
                     <h4 className="mt-1 text-card-title text-foreground group-hover:text-primary">
                       {post.title}
                     </h4>
-                    <span className="mt-1 block max-w-lg text-sm text-muted-foreground line-clamp-2">
+                    <span className="text-lede mt-1 block max-w-xl text-foreground line-clamp-2">
                       {post.description}
                     </span>
                   </Link>
@@ -104,6 +106,6 @@ export function WhatIThink({ posts }: { posts: BlogPreview[] }) {
           </section>
         ))}
       </div>
-    </LedgerSection>
+    </section>
   );
 }

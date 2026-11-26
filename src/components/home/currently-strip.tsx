@@ -78,47 +78,38 @@ export async function CurrentlyStrip({ latestPost, latestRepo }: CurrentlyStripP
   }
 
   return (
-    <section aria-label="What I'm up to right now" className="w-full px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl border-y border-border/60 py-4">
-        <ul className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
-          {items.map((item) => (
-            <li key={item.key} className="min-w-0">
-              <Link
-                href={item.href}
-                prefetch={false}
-                {...(item.external
-                  ? { target: "_blank", rel: "noopener noreferrer" }
-                  : {})}
-                className="group flex items-center gap-3"
-              >
+    <section aria-label="What I'm up to right now" className="w-full border-b border-rule">
+      {/* Four ruled cells: two-up on a phone, one row from `lg`. The columns
+          are auto-sized to the items, so a missing source drops its cell and
+          the rest still fill the row; an odd last cell on a phone spans both
+          columns rather than leaving a hole in the plate. */}
+      <ul className="plate-grid grid-cols-2 lg:auto-cols-fr lg:grid-flow-col lg:grid-cols-none">
+        {items.map((item) => (
+          <li key={item.key} className="last:odd:col-span-2 lg:last:odd:col-span-1">
+            <Link
+              href={item.href}
+              prefetch={false}
+              {...(item.external
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+              className="plate-cell group flex h-full flex-col gap-3 lg:min-h-40"
+            >
+              <span className="label-mono flex items-center gap-2">
                 <item.icon
                   aria-hidden="true"
-                  className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary"
+                  className="h-3.5 w-3.5 shrink-0 transition-colors group-hover:text-primary"
                 />
-                <span className="min-w-0">
-                  <span className="label-mono block">
-                    {item.label}
-                  </span>
-                  {/* `title`, because `truncate` throws the rest away.
-                      Measured on the home page: "Designing Data-Intensive
-                      Applications — Martin Kleppmann" is a 385px string in a
-                      236px box, so 39% of it — including the author — was
-                      discarded with no way to recover it. The ellipsis says
-                      text is missing; it does not say what. A `title` gives it
-                      back on hover and to assistive tech, and costs nothing
-                      when the string does fit. */}
-                  <span
-                    title={item.text}
-                    className="block truncate text-sm text-foreground transition-colors group-hover:text-primary"
-                  >
-                    {item.text}
-                  </span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+                {item.label}
+              </span>
+              {/* Set whole, not truncated: the cell has the room, and an
+                  ellipsis says text is missing without saying what. */}
+              <span className="text-lede text-foreground transition-colors group-hover:text-primary">
+                {item.text}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

@@ -61,10 +61,10 @@ const handleGet = async (request: NextRequest): Promise<NextResponse> => {
   // the drift was possible, so the token names are in the comments: if
   // DESIGN.md changes, this is the file that will not follow on its own.
   const INK = '#1a1f23';            // ink
-  const MUTED = '#606976';          // ink-muted
+  const MUTED = '#49505a';          // ink-muted
   const GREEN = '#184e35';          // forest-ink
-  const HAIRLINE = '#e2dbd5';       // hairline
-  const PAPER = '#f9f8f5';          // paper
+  const HAIRLINE = '#c7c1b3';       // hairline
+  const PAPER = '#e5e2d7';          // paper
   const SERIF = "'Fraunces', Georgia, 'Times New Roman', serif";
   const SANS = "ui-sans-serif, system-ui, sans-serif";
 
