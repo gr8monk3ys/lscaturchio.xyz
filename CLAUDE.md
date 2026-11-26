@@ -2,6 +2,27 @@
 
 Personal site at https://lscaturchio.xyz: Next.js 16 App Router, React 19, TypeScript, Tailwind. Deployed on Vercel from `main`. Bun is the package manager (`bun.lock` is canonical; `package-lock.json` is gitignored).
 
+## How we work
+
+`.claude/settings.json` loads four plugins from the `lorenzos-claude-code`
+marketplace (gr8monk3ys/skills), in every clone and every cloud session. Use
+them every time, not only when one happens to trigger:
+
+- **Matt Pocock's skills** (`mattpocock-skills`) for the engineering process:
+  `grilling` before building something new, `tdd` for any behaviour change,
+  `diagnosing-bugs` for bugs, `code-review` before calling work done and `pr`
+  for the PR body. Prefer them over overlapping skills from other plugins.
+- **Impeccable** for any UI, layout, styling or on-screen copy: run
+  `/impeccable critique` or `/impeccable audit` on it before you're done.
+- **Ponytail** is always on: the simplest code that works, no unrequested
+  abstractions or dependencies. Run `ponytail-review` on the diff before
+  opening a PR and cut what the task didn't need.
+- **Tests:** `./scripts/verify` is the fast gate (`bun run verify` minus the
+  Next.js build: ESLint, knip, boundaries, corpus drift, types, Vitest with
+  coverage). A hook runs it before a session can finish and won't let it end
+  while it fails. Still run `bun run verify` (and `verify:e2e` for UI) before
+  a PR, as "Checks" says. Never skip, weaken or delete a test to get it green.
+
 ## Run and verify
 
 - `bun install --frozen-lockfile`, then `bun run dev`
