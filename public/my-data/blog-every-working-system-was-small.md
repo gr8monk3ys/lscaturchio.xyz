@@ -1,0 +1,63 @@
+# Every Working System Was Once a Small One
+
+People who have been handed a requirements document longer than the system it
+  describes, or who once argued for a rewrite and won. No background in systems
+  theory assumed.
+
+## The front end they stopped building
+
+In 2001 the FBI hired Science Applications International Corp. to modernize the software its agents used to manage cases. The first job was modest. Case records lived in Automated Case Support, a system that [debuted in 1995 on a 1970s-era database](https://spectrum.ieee.org/who-killed-the-virtual-case-file) and was reached through IBM 3270 green-screen terminals, navigated with function keys. The plan was to put ACS and the bureau's other most heavily used investigative applications [behind a point-and-click web interface](https://spectrum.ieee.org/who-killed-the-virtual-case-file). A front end, on the programs agents already had.
+
+In December 2001, three months after the September 11 attacks, the FBI [asked SAIC to stop building the web front end](https://spectrum.ieee.org/who-killed-the-virtual-case-file) and design a new application and database that would replace ACS outright. The delivery date moved earlier, to December 2003. The switch would be a flash cutover, which Harry Goldstein's 2005 account in *IEEE Spectrum* describes without decoration: people would log off from ACS on Friday afternoon and log on to the new system on Monday morning.
+
+To make the date, SAIC split its developers into [eight teams working in parallel](https://spectrum.ieee.org/who-killed-the-virtual-case-file), whose pieces later proved too hard to combine into one system. The requirements came out of joint sessions between agents and engineers and settled into an 800-page document. What came back, by the bureau's account, was 700,000 lines of code too bug-ridden and off target to use. In April 2005 the FBI [scrapped the Virtual Case File](https://en.wikipedia.org/wiki/Virtual_Case_File), at a cost of nearly $170 million.
+
+One sentence in Goldstein's piece sits in parentheses and does more work than most of the rest. After the contractor was told to stop building the web interface, [FBI computer specialists built one anyway](https://spectrum.ieee.org/who-killed-the-virtual-case-file), as a stopgap, and agents were still using it when the article went to press. So the small thing got built after all, in-house, while the contractor worked on the large thing.
+
+## A pediatrician's law
+
+John Gall was a pediatrician in Ann Arbor who retired in 2001 after [more than 40 years of private practice](https://en.wikipedia.org/wiki/John_Gall_(author)), and who studied how systems fail as a sideline. His 1975 book has a subtitle that runs on for a paragraph, promising "the very first annotated compendium of basic systems axioms" for "scientists, engineers, laboratory workers, administrators, public officials, systems analysts, etc., etc., etc., and the general public."
+
+The passage people quote from it:
+
+> A complex system that works is invariably found to have evolved from a simple system that worked. A complex system designed from scratch never works and cannot be patched up to make it work. You have to start over with a working simple system.
+
+Gall never called it a law. Other people did, [Grady Booch among the most persistent](https://en.wikipedia.org/wiki/John_Gall_(author)), quoting it from 1991 onward. The sentence that comes just before it in the book usually gets dropped: "A simple system may or may not work." That qualifier keeps the law honest. Gall wasn't selling simplicity as a virtue, since plenty of simple systems fail too. He was describing a direction of travel. Working complexity comes from somewhere, and where it comes from is a smaller thing that already worked.
+
+Another way to read the law is that the simple system is an instrument. It measures what the complex one has to be. The agents in the FBI's requirements sessions knew how they worked in 2002. They couldn't have known how they would work once the paper forms were gone: which searches they would run once searching was cheap, and which fields they would quietly stop filling in. Those answers exist only after something is in use. An 800-page document written before then is a forecast that has been filed as a specification.
+
+## Two people for six to twelve months
+
+In March 1989 Tim Berners-Lee gave his managers at CERN a document called ["Information Management: A Proposal"](https://www.w3.org/History/1989/proposal.html). Read now, it stands out for what it declines to do.
+
+It has a section headed "Non requirements." Copyright enforcement and data security, it says, "are of secondary importance at CERN." Sophisticated authorisation and accounting systems "could conceivably be designed" but "are not proposed here." The conclusion asks for a system in which "generality and portability are more important than fancy graphics techniques and complex extra facilities." The staffing estimate for the first phase is "two people for 6 to 12 months." And an important part of the second phase was the very thing the FBI cancelled. Berners-Lee called it "the integration of a hypertext system with existing data," so that the system would reach "critical usefulness at an early stage."
+
+The proposal [attracted little interest](https://en.wikipedia.org/wiki/History_of_the_World_Wide_Web). His manager, Mike Sendall, encouraged him to build it anyway on a newly acquired NeXT workstation. By December 1990 there was a protocol, a markup language, a browser that doubled as an editor, a server, and one website at info.cern.ch. In April 1993 CERN released the code into the public domain. Everything since has grown on top of a system whose founding document stated, in writing, which hard problems it was choosing not to solve.
+
+## A rewrite is a new system
+
+Gall's law has a second edge, and it cuts the people who already own something that works.
+
+In April 2000 Joel Spolsky wrote that Netscape had made ["the single worst strategic mistake that any software company can make"](https://www.joelonsoftware.com/2000/04/06/things-you-should-never-do-part-i/) when it decided to rewrite its browser from scratch. There was never a Netscape 5.0. Version 6.0 was only entering its first public beta, almost three years after 4.0, and Spolsky watched the company sit by while its market share plummeted.
+
+His argument was about what old code contains. A two-page function that looks like a mess has grown "little hairs," and each hair is a bug fix. One handles the user who yanks a floppy disk out halfway through reading a file. Another is an ugly `LoadLibrary` call that keeps the program running on old versions of Windows 95. Each of those bugs, he wrote, "took weeks of real-world usage before they were found," and the fix might be a couple of characters. "When you throw away code and start from scratch, you are throwing away all that knowledge."
+
+Set beside Gall, a rewrite is a complex system designed from scratch that happens to share a name with one that worked. The old code's hairs are the record of its evolution from something simple. The new code has the requirements document and none of the hairs.
+
+The Virtual Case File was a rewrite in exactly this sense. ACS was antiquated and hard to use, and [only the most dedicated agents had the patience to learn it](https://spectrum.ieee.org/who-killed-the-virtual-case-file). It was also the system that held the cases.
+
+## The cheap specification
+
+Gall was writing when designing a complex system from scratch was expensive enough that most people couldn't try. The cost worked as a kind of protection. You built something small because something small was what you could afford, and Gall's law got obeyed by default.
+
+That protection is going. Jorge Arango [put it plainly in June](https://jarango.com/2026/06/26/still-holds-galls-law/): "An afternoon with Claude can yield a comprehensive spec for a very complex system," and further sessions can build a first release with every instrument in the orchestra. His conclusion is that the discipline the budget used to impose now has to be imposed on purpose.
+
+The FBI's 800 pages took months of meetings; Arango's "comprehensive spec" takes an afternoon. What the two have in common sits underneath the prose. Nobody yet knew which of those pages described the work, and the only way to find out was to put something small in front of an agent with a case to close and watch what they did with it. A specification drafted by a language model has that problem in a stronger form, since its author has never done the work it describes. A document that reads well may still be [a claim nobody has had a reason to check](/blog/audit-only-checks-what-it-reaches), and the cheaper the document, the more of them there are likely to be.
+
+## Function keys
+
+The FBI did eventually get a case management system. It was called Sentinel, and after [several delays, new leadership and a switch to agile development](https://en.wikipedia.org/wiki/Sentinel_(FBI)) it was in use across the bureau on July 1, 2012.
+
+That is eleven years after the contract for the web front end. From December 2001, when the front end was dropped, to April 2005, when the Virtual Case File was, the cases lived in ACS. When Goldstein's article ran that year, ACS was [still in use](https://spectrum.ieee.org/who-killed-the-virtual-case-file), and agents reached it on PCs that emulated the old 3270 terminals.
+
+Function keys, pressed one at a time, to move from one green menu to the next.
