@@ -41,7 +41,7 @@ export function HeroAsk() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl border-t border-border py-10">
+    <div className="plate-cell border-t border-rule">
       <div className="flex flex-col gap-4">
         <span className="label-mono">Ask the site anything</span>
 
@@ -95,7 +95,7 @@ export function HeroAsk() {
                spare. Measured at 390px: 285px of placeholder into 299px of
                room. 16px, not 14px, because a sub-16px input font makes iOS
                zoom the whole page on focus. */
-            className="h-14 w-full rounded-none border-0 border-b border-border bg-transparent pr-12 text-base text-foreground placeholder:text-muted-foreground focus:border-b-2 focus:border-primary focus:outline-none sm:pr-28 sm:text-lg"
+            className="h-14 w-full rounded-none border-0 border-b border-rule bg-transparent pr-12 text-base text-foreground placeholder:text-muted-foreground focus:border-b-2 focus:border-primary focus:outline-none sm:pr-28 sm:text-lg"
           />
           {/* Icon-only below sm, labelled. The word "Ask" costs ~64px of the
               placeholder's line on a phone, and the wall label directly above
@@ -106,7 +106,7 @@ export function HeroAsk() {
             size="lg"
             variant="primary"
             aria-label="Ask"
-            className="absolute right-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full p-0 sm:w-auto sm:px-5"
+            className="absolute right-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-none p-0 sm:w-auto sm:px-5"
           >
             <span className="hidden sm:inline">Ask</span>
             <ArrowRight className="h-4 w-4 sm:ml-1.5" />
@@ -120,7 +120,7 @@ export function HeroAsk() {
             the three suggested questions, differing only in text colour — so
             four items looked alike while three filled the ask box and one
             navigated away. A hairline and its own line say which is which. */}
-        <div className="mt-2 border-t border-border pt-4">
+        <div className="mt-2 border-t border-rule pt-4">
           <Link
             href="/projects"
             prefetch={false}

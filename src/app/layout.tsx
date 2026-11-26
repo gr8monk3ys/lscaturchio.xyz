@@ -6,7 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Metadata } from 'next'
 import Script from "next/script";
 import { ogCardUrl } from "@/lib/seo";
-import { Instrument_Sans, Fraunces, IBM_Plex_Mono } from "next/font/google";
+import { Instrument_Sans, Fraunces, IBM_Plex_Mono, EB_Garamond } from "next/font/google";
 import localFont from "next/font/local";
 import { SITE_URL } from "@/lib/site-url";
 import { ADSENSE_PUBLISHER_ID } from "@/lib/adsense";
@@ -47,6 +47,15 @@ const bodyFont = Instrument_Sans({
   subsets: ["latin"],
   display: "swap",
   variable: "--site-font-body",
+});
+
+// The catalogue serif: statements and ledes on the full-bleed plates. Not
+// preloaded, for the same reason as the hand: the portrait is the mobile LCP.
+const serifFont = EB_Garamond({
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+  variable: "--site-font-serif",
 });
 
 // Wall-label monospace — metadata, kickers, catalogue numbers.
@@ -195,7 +204,7 @@ export default async function RootLayout({
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable} ${handFont.variable}`}
+      className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable} ${handFont.variable} ${serifFont.variable}`}
     >
       <head>
         {/* RSS Feed Autodiscovery */}
@@ -246,7 +255,7 @@ export default async function RootLayout({
             translated 300% off-screen is a keyboard trap. */}
         <a
           href="#main-content"
-          className="fixed left-4 top-4 z-skip-link -translate-y-[300%] rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-transform duration-200 focus:translate-y-0"
+          className="fixed left-4 top-4 z-skip-link -translate-y-[300%] border border-rule bg-card px-4 py-2 text-sm font-medium text-foreground transition-transform duration-200 focus:translate-y-0"
         >
           Skip to content
         </a>

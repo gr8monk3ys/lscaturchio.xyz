@@ -22,8 +22,8 @@ import path from "node:path";
 
 const CSS = fs.readFileSync(path.join(process.cwd(), "src/app/globals.css"), "utf-8");
 
-/** Approximate Paper and night paper, for contrast maths. */
-const BACKGROUNDS = { light: hslToRgb(38, 20, 97.5), dark: hslToRgb(220, 15, 7.8) };
+/** Paper (`--background`, #e5e2d7 since the museum redesign) and night paper, for contrast maths. */
+const BACKGROUNDS = { light: hslToRgb(47, 21, 87), dark: hslToRgb(220, 15, 7.8) };
 
 function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   const sn = s / 100;

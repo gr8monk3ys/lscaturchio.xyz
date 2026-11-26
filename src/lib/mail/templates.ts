@@ -36,7 +36,7 @@ export function renderWelcomeEmail(unsubscribeToken: string): RenderedMail {
         <h1 style="color: white; margin: 0; font-size: 25px;">Welcome to My Newsletter!</h1>
       </div>
 
-      <div style="background: #f9f8f5; padding: 30px; border-radius: 0 0 10px 10px;">
+      <div style="background: #e5e2d7; padding: 30px; border-radius: 0 0 10px 10px;">
         <p>Hey there!</p>
 
         <p>Thanks for subscribing to my newsletter. I'm excited to have you join the community!</p>
@@ -57,11 +57,11 @@ export function renderWelcomeEmail(unsubscribeToken: string): RenderedMail {
 
         <p>Cheers,<br>Lorenzo</p>
 
-        <hr style="border: none; border-top: 1px solid #e2dbd5; margin: 30px 0;">
+        <hr style="border: none; border-top: 1px solid #c7c1b3; margin: 30px 0;">
 
-        <p style="font-size: 12px; color: #606976; text-align: center;">
+        <p style="font-size: 12px; color: #49505a; text-align: center;">
           You're receiving this email because you subscribed to my newsletter.<br>
-          <a href="${unsubscribeHref}" style="color: #606976;">Unsubscribe</a>
+          <a href="${unsubscribeHref}" style="color: #49505a;">Unsubscribe</a>
         </p>
       </div>
     </body>

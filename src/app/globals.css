@@ -25,6 +25,8 @@
     'Segoe UI Emoji';
   --font-mono:
     var(--site-font-mono), ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+  /* The catalogue serif (EB Garamond): statements and ledes on the plates. */
+  --font-serif: var(--site-font-serif), ui-serif, Georgia, 'Times New Roman', serif;
 
   /* NOTE: do not define --spacing-xs/sm/md/lg/xl/2xl/... tokens here. In
    * Tailwind v4 they generate spacing-suffixed utilities (max-w-2xl, w-lg, …)
@@ -65,6 +67,7 @@
   --color-destructive-foreground: hsl(var(--destructive-foreground));
 
   --color-border: hsl(var(--border));
+  --color-rule: hsl(var(--rule));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
 
@@ -211,6 +214,54 @@
   border-top: 1px solid hsl(var(--border));
   width: 100%;
   margin: 0;
+}
+
+/* ============================================================
+ * PLATES
+ * The catalogue is set as full-bleed ruled plates: rows of cells that run
+ * the width of the viewport, divided by 1px rules in the ink colour
+ * (`--rule`, not `--border`, which stays the softer line of every surface
+ * not yet set this way).
+ * ============================================================ */
+
+/* A row of cells. The rules between them are the grid's own gap showing the
+ * ink beneath, so they follow whatever columns the row declares at each
+ * breakpoint and never double. `min-width: 0` because a grid item's default
+ * floor is its min-content width, which is how a `truncate` child once pushed
+ * 48 elements past a 390px viewport. */
+@utility plate-grid {
+  display: grid;
+  gap: 1px;
+  background: hsl(var(--rule));
+
+  /* `:where()`, so a cell that is itself a `plate-grid` keeps its own ink
+   * ground instead of having it painted over by its parent. */
+  :where(& > *) {
+    min-width: 0;
+    background: hsl(var(--background));
+  }
+}
+
+@utility plate-cell {
+  padding: clamp(14px, 1.5vw, 24px);
+}
+
+/* The serif voice, in its two sizes: the statement a plate opens on, and the
+ * lede or blurb that reads beneath a title. */
+@utility text-statement {
+  font-family: var(--font-serif);
+  font-size: clamp(1.7rem, 3.3vw, 3.25rem);
+  line-height: 1.12;
+  letter-spacing: -0.012em;
+  font-weight: 400;
+  text-wrap: pretty;
+}
+
+@utility text-lede {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  line-height: 1.45;
+  font-weight: 400;
 }
 
 /* ============================================================
@@ -490,8 +541,11 @@
 
 @layer base {
   :root {
-    --background: 38 25% 97%;
+    --background: 47 21% 87%;
     --foreground: 210 15% 12%;
+    /* The ink rule between plates: the text ink by day, a clear mid-grey
+       line at night (3.8:1 on the night page). */
+    --rule: 210 15% 12%;
     /* Scrim: ink, in both themes, and never `--foreground`.
        A scrim exists to push the page back behind a modal, which means it has
        to be darker than the page in light mode AND in dark mode.
@@ -504,17 +558,19 @@
        10% panel is small, so 55% does the separating that 25% cannot. */
     --scrim: 0 0% 4%;
     --scrim-alpha: 0.25;
-    --card: 38 25% 98%;
+    --card: 47 21% 90%;
     --card-foreground: 210 15% 12%;
-    --popover: 38 25% 98%;
+    --popover: 47 21% 90%;
     --popover-foreground: 210 15% 12%;
     --primary: 152 52% 20%;
     --primary-foreground: 0 0% 100%;
     --secondary: 152 38% 36%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 38 18% 92%;
-    --muted-foreground: 215 10% 42%;
-    --accent: 32 50% 92%;
+    --muted: 47 16% 82%;
+    /* 32%, not 42%. On the museum paper 42% measures 4.26:1; 32% is 6.24:1
+       on the page and 5.54:1 on --muted. */
+    --muted-foreground: 215 10% 32%;
+    --accent: 44 22% 81%;
     --accent-foreground: 215 15% 16%;
     /* 38%, not shadcn's 60.2%. At 60.2% this is #ef4444, which measures
        3.58:1 on Paper — under the 4.5:1 body-text floor, and the site renders
@@ -522,27 +578,30 @@
        7.10:1, in the same band as --primary's 9.15:1. */
     --destructive: 0 72% 38%;
     --destructive-foreground: 0 0% 98%;
-    --border: 30 18% 86%;
-    --input: 30 18% 86%;
+    --border: 42 15% 74%;
+    --input: 42 15% 74%;
     --ring: 152 52% 20%;
     --radius: 0.75rem;
 
     /* Status colors - for badges, alerts, notifications */
     /* 26%, not 36%. At 36% this measures 3.18:1 on Paper, and the site
        paints it as body copy in the newsletter form's status line. 26% is
-       5.54:1. The dark value already clears at 8.10:1 and is unchanged. */
-    --success: 142 76% 26%;
+       5.54:1. The dark value already clears at 8.10:1 and is unchanged.
+       22% since the paper darkened to 87%: 26% fell to 4.49:1 there, 22% is
+       5.71:1. */
+    --success: 142 76% 22%;
     --success-foreground: 0 0% 100%;
-    --success-muted: 142 76% 26% / 0.1;
+    --success-muted: 142 76% 22% / 0.1;
     --destructive-muted: 0 84.2% 60.2% / 0.1;
     /* 30%, not 50%. Amber at 50% measures 2.03:1 on Paper — worse than the
        3.58:1 that prompted this palette audit — and `project-catalogue.ts`
        paints it as `text-warning` the moment a project stops being Active.
        Latent today because all eighteen are. 30% is 5.13:1. The dark value
-       already clears at 8.71:1 and is unchanged. */
-    --warning: 38 92% 30%;
+       already clears at 8.71:1 and is unchanged. 25% on the museum paper,
+       where 30% fell to 4.16:1: 5.45:1. */
+    --warning: 38 92% 25%;
     --warning-foreground: 0 0% 100%;
-    --warning-muted: 38 92% 30% / 0.1;
+    --warning-muted: 38 92% 25% / 0.1;
     --info: 217 91% 60%;
     --info-foreground: 0 0% 100%;
     --info-muted: 217 91% 60% / 0.1;
@@ -559,6 +618,7 @@
   .dark {
     --background: 220 15% 8%;
     --foreground: 0 0% 98%;
+    --rule: 220 10% 46%;
     --scrim-alpha: 0.55;
     --card: 220 15% 10%;
     --card-foreground: 0 0% 98%;

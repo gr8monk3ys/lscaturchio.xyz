@@ -8,16 +8,17 @@ import { NavbarControls } from "./navbar-controls";
 import { AskDrawerTrigger } from "@/components/chat/ask-drawer-trigger";
 
 const navLinkBaseClass =
-  "relative block whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition-colors after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-left after:rounded-full after:bg-primary after:transition-transform after:duration-200";
+  "label-mono label-link relative whitespace-nowrap px-3 py-2 transition-colors after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:origin-left after:bg-primary after:transition-transform after:duration-200";
 
 export function Navbar() {
   return (
     <>
-      <header className="site-header fixed top-0 z-chrome hidden border-b border-border/40 bg-background/90 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-md md:block">
-        {/* `container` resolves to 1280px at 2xl, 128px wider than the 1152px
-            content cap, so the chrome sat wider than everything beneath it. */}
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-20 items-center justify-between">
+      {/* A flat signage row the width of the viewport, closed by the same ink
+          rule that divides the plates beneath it. Opaque paper: no shadow and
+          no blur, so nothing reads through it. */}
+      <header className="site-header fixed top-0 z-chrome hidden border-b border-rule bg-background md:block">
+        <div className="w-full px-[clamp(14px,1.5vw,24px)]">
+          <div className="flex h-[calc(5rem-1px)] items-center justify-between">
             <div className="w-[200px]">
               <Link href="/" prefetch={false} className="flex items-center">
                 {/* `priority`, and the asset's real dimensions.
@@ -44,7 +45,7 @@ export function Navbar() {
             </div>
 
             <nav aria-label="Primary" className="flex items-center">
-              <ul className="flex items-center space-x-2 rounded-full border border-border bg-background/80 px-3 py-2 backdrop-blur-sm">
+              <ul className="flex items-center gap-1">
                 {/* One treatment. The branch that used to sit here compared
                     each href to `ACCENT_HREF`, which was the empty string, so
                     no item ever matched and the filled-CTA path never ran — a
@@ -56,7 +57,7 @@ export function Navbar() {
                       href={item.href}
                       className={navLinkBaseClass}
                       activeClassName="text-foreground after:scale-x-100"
-                      inactiveClassName="text-foreground/70 hover:text-foreground/90 after:scale-x-0 hover:after:scale-x-100"
+                      inactiveClassName="text-muted-foreground hover:text-foreground after:scale-x-0 hover:after:scale-x-100"
                     >
                       {item.name}
                     </ActiveNavLink>

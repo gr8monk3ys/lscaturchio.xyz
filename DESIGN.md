@@ -1,17 +1,17 @@
 ---
 name: lscaturchio.xyz
-description: A field notebook on warm paper, written in forest ink and catalogued in monospace.
+description: A museum catalogue set as full-bleed ruled plates on warm-grey paper, in forest ink, handwriting, an old-style serif and monospace labels.
 colors:
   forest-ink: "#184e35"
   forest-ink-dark: "#42a979"
   moss: "#397f5e"
-  paper: "#f9f8f5"
-  paper-card: "#fbfaf9"
-  paper-tinted: "#eeece7"
+  paper: "#e5e2d7"
+  paper-card: "#ebe9e0"
+  paper-tinted: "#d8d5ca"
   paper-warm: "#f5ebe0"
   ink: "#1a1f23"
-  ink-muted: "#606976"
-  hairline: "#e2dbd5"
+  ink-muted: "#49505a"
+  hairline: "#c7c1b3"
   night: "#111317"
   night-card: "#16181d"
   night-tinted: "#25272d"
@@ -160,37 +160,37 @@ components:
 
 ## Overview
 
-**Creative North Star: "The Field Notebook"**
+**Creative North Star: "The Museum Catalogue"** (the field notebook, set as full-bleed ruled plates)
 
-The site is a working notebook kept on warm paper. Everything in it is a record: an essay, a film watched on a date, a book with a rating, a job with a sourced number. The page itself is the paper, off-white with a near-invisible grain; the writing is set in a serif with personality; the accent is a single green ink used the way one pen is used, for the marks that matter. Beside every entry sits a small monospace label, the way a specimen is catalogued: kicker, date, count, place. Structure comes from hairline rules and from tinted patches of the same paper, never from boxes floating above it.
+The site is a working notebook kept on warm paper. Everything in it is a record: an essay, a film watched on a date, a book with a rating, a job with a sourced number. The page itself is the paper, a pale warm grey with a near-invisible grain; titles are in my own handwriting and statements in an old-style serif; the accent is a single green ink used the way one pen is used, for the marks that matter. Beside every entry sits a small monospace label, the way a specimen is catalogued: kicker, date, count, place. Structure comes from hairline rules and from tinted patches of the same paper, never from boxes floating above it. On the surfaces set as plates (the header, the footer and the home page, as of phase 1) content runs the full width of the viewport and is divided into cells by 1px rules in the ink colour that run edge to edge, like an engraved plate; see Plates at the end of this document.
 
-The mood is quiet and unhurried. Nothing competes for attention; whitespace and rules do the organising, and the reader is trusted to move through it at their own pace. It is warm and papery: the ground, the grain, and the sand-toned borders all read as paper rather than screen. It is precise and catalogued: tabular numerals, uppercase mono labels, and dates give the site the feel of a place that keeps records honestly. And it is literary and serif-led: Fraunces carries the personality, so the display type is the only decoration the system needs.
+The mood is quiet and unhurried. Nothing competes for attention; whitespace and rules do the organising, and the reader is trusted to move through it at their own pace. It is warm and papery: the ground, the grain, and the sand-toned borders all read as paper rather than screen. It is precise and catalogued: tabular numerals, uppercase mono labels, and dates give the site the feel of a place that keeps records honestly. And it is literary: the handwriting carries the personality and EB Garamond the statements, so the type is the only decoration the system needs.
 
 The system deliberately is not three things. It is not neumorphic: the soft double-shadow blooms that once covered the site were its single biggest "AI template" signal and were removed in favour of ink-on-paper. It is not SaaS landing-page chrome: no gradient blobs, no glassy card grids, no badge-pill features in three columns. And it is not the dark-mode-first developer aesthetic: mono is a label beside the work, never the voice of the work, and dark mode is a night-reading variant of the same notebook, not a terminal.
 
 **Key Characteristics:**
-- One paper ground, warm off-white with a fixed 3.5% noise grain; dark mode is a night variant of the same page.
+- One paper ground, a pale warm grey (#e5e2d7) with a fixed 3.5% noise grain; dark mode is a night variant of the same page.
 - One ink accent, Forest Ink, spent sparingly: links, text selection, the single primary CTA.
 - Hairline rules and tint shifts structure the page; there are no floating cards and no decorative shadows.
-- Three type voices with fixed jobs: my own handwriting (Lorenzo Hand) speaks, Instrument Sans reads, IBM Plex Mono catalogues.
+- Three type voices on the plates: my own handwriting (Lorenzo Hand) speaks, EB Garamond states and reads, IBM Plex Mono catalogues. Instrument Sans is still the body and control face everywhere else.
 - The hand writes; everything else settles. Headings in my handwriting are inked in from the left; beyond that, motion is 150–300ms on hover and focus and one 300ms drawer. Nothing waits on a script to become readable, and all of it is off under reduced motion.
 
 ## Colors
 
-A warm, low-chroma paper palette with one deep green ink and a sand-toned hairline; dark mode inverts to a cool night page with the same green lifted for contrast.
+A warm-grey, low-chroma paper palette with one deep green ink, a sand-toned hairline and an ink rule between plates; dark mode inverts to a cool night page with the same green lifted for contrast.
 
 ### Primary
 - **Forest Ink** (#184e35 light / #42a979 dark; `--primary`): the one pen. Links, the hover colour of any interactive text, the 22% tint behind selected text, the fill of the single primary button, the underline that grows beneath a hovered nav item, and the border that warms on a hovered surface. The dark value is lighter so the ink stays legible on night paper.
 - **Moss** (#397f5e; `--secondary`): a lighter green for secondary fills and status tints. Rarely seen; it exists so a second green never has to be invented.
 
 ### Neutral
-- **Paper** (#f9f8f5; `--background`): the page. Warm off-white, hue 38, with the noise grain laid over it.
-- **Paper Card** (#fbfaf9; `--card`): a surface one shade lighter than the page, used for buttons, list rows and cards so they sit on the paper rather than above it.
-- **Paper Tinted** (#eeece7; `--muted`): the "recessed" tone. Used at 55% opacity for pressed or secondary surfaces, and full-strength for disabled controls.
+- **Paper** (#e5e2d7; `--background`): the page. A pale warm grey, hue 47 at 87% lightness, with the noise grain laid over it. It was #f9f8f5 until the museum redesign.
+- **Paper Card** (#ebe9e0; `--card`): a surface one shade lighter than the page, used for buttons, list rows and cards so they sit on the paper rather than above it.
+- **Paper Tinted** (#d8d5ca; `--muted`): the "recessed" tone. Used at 55% opacity for pressed or secondary surfaces, and full-strength for disabled controls.
 - **Paper Warm** (#f5ebe0; `--accent`): a sand highlight for hover fills and the rare emphasised block.
 - **Ink** (#1a1f23; `--foreground`): body text. A cool near-black with a blue cast that keeps the warm paper from going yellow.
-- **Ink Muted** (#606976; `--muted-foreground`): captions, wall labels, descriptions, placeholders. Everything that is metadata rather than the work.
-- **Hairline** (#e2dbd5; `--border`): the rule. A sand tone, never grey, drawn at 1px and often at 40–90% opacity.
+- **Ink Muted** (#49505a; `--muted-foreground`): captions, wall labels, descriptions, placeholders. Everything that is metadata rather than the work. Darkened from #606976 with the paper: the old value measured 4.26:1 on #e5e2d7, this one 6.24:1 (5.54:1 on Paper Tinted).
+- **Hairline** (#c7c1b3; `--border`): the soft rule of every surface not yet set as a plate. A sand tone, never grey, drawn at 1px and often at 40–90% opacity. **Ink Rule** (`--rule`, Tailwind `border-rule` / `bg-rule` / `divide-rule`): the 1px line between plates and cells. It is Ink (#1a1f23) by day and #6a7181 at night, 3.8:1 on the night page. It is a separate token so restyling a surface as plates never changes a border anywhere else.
 - **Night** (#111317), **Night Card** (#16181d), **Night Tinted** (#25272d), **Night Ink** (#fafafa), **Night Ink Muted** (#abb0ba), **Night Hairline** (#292c32): the dark-mode counterparts, hue 220, cool rather than warm.
 
 ### Signal
@@ -200,7 +200,7 @@ A warm, low-chroma paper palette with one deep green ink and a sand-toned hairli
 ### Named Rules
 **The One Pen Rule.** Forest Ink is the only chromatic accent on any surface, and it marks action or emphasis, never area. If a screen has green in more than a few places, it has too many.
 
-**The Sand Hairline Rule.** Dividers are 1px of Hairline, sand-toned, never neutral grey and never thicker. Depth of structure is expressed by more rules and more space, not by darker lines.
+**The Sand Hairline Rule.** Dividers are 1px of Hairline, sand-toned, never neutral grey and never thicker; on a plate they are 1px of Ink Rule instead, and never both on one surface. Depth of structure is expressed by more rules and more space, not by darker lines.
 
 **The Tinted Paper Rule.** A "contained" surface is the same paper at a different tint (Paper Card lighter, Paper Tinted darker), bordered by a hairline. It is never a white box on a grey page.
 
@@ -208,12 +208,12 @@ A warm, low-chroma paper palette with one deep green ink and a sand-toned hairli
 
 **Display Font:** Lorenzo Hand, my own print handwriting, Bold cut only, self-hosted via next/font/local with `preload: false` and `size-adjust: 125%` (its x-height is 0.39em against Fraunces' 0.44em). Fraunces stays behind it in the stack for any glyph the hand lacks (accented letters).
 **Body Font:** Instrument Sans (with ui-sans-serif, system-ui fallback).
-**Label/Mono Font:** IBM Plex Mono, weights 400/500/600 (with ui-monospace, Menlo fallback).
+**Label/Mono Font:** IBM Plex Mono, weights 400/500/600 (with ui-monospace, Menlo fallback). **Serif Font:** EB Garamond via next/font/google (`--site-font-serif`, Tailwind `font-serif`, `preload: false`), used through `text-statement` (clamp 1.7–3.25rem, 1.12) and `text-lede` (1.2rem, 1.45) on the plates only; body text site-wide is unchanged.
 
 **Character:** A high-contrast, slightly wonky serif doing the talking, a plain humanist sans doing the reading, and a monospace doing the filing. Fraunces at heavy weights and tight tracking gives headings a printed, editorial presence; Instrument Sans at 1.65 line-height stays out of the way; Plex Mono, small, uppercase and widely tracked, is the wall label beside the work.
 
 ### Hierarchy
-- **Display** (Lorenzo Hand, clamp 2.4–4.9rem, 1.1, -0.035em, oldstyle numerals): the home masthead and nothing else. The hero itself uses the Tailwind 5xl/6xl/7xl steps at weight 600 and line-height 0.98, with the name in Forest Ink.
+- **Display** (Lorenzo Hand, clamp 2.4–4.9rem, 1.1, -0.035em, oldstyle numerals): reserved. The home masthead now sets its greeting at the Headline step with the name in Forest Ink, and gives display scale to the statement beneath it in EB Garamond (`text-statement`).
 - **Headline** (Lorenzo Hand, clamp 1.9–3.2rem, 1.12, -0.03em): one per page, the page title.
 - **Title** (Lorenzo Hand, clamp 1.55–2.25rem, 1.18, -0.026em): section headings. Framer-motion section headings use the 3xl/4xl steps at weight 700.
 - **Card Title** (Lorenzo Hand, 1.25rem, 1.2, -0.02em): headings inside a list row or card. A subsection step exists at 1.075rem / 560.
@@ -230,15 +230,15 @@ A warm, low-chroma paper palette with one deep green ink and a sand-toned hairli
 
 ## Layout
 
-The page is a single centred column on open paper, with three widths: narrow (42rem) for reading, medium (56rem) for mixed content, wide (72rem) for the masthead, galleries and index pages.
+Outside the plates, the page is a single centred column on open paper, with three widths: narrow (42rem) for reading, medium (56rem) for mixed content, wide (72rem) for the masthead, galleries and index pages.
 
 An index page's *header* is wide; its **row list caps at 42rem** (the `2xl` tier). This is the resolution of a collision this document created: the width above and the Measure Rule were both applied literally to `/blog`, and a review measured the result at 1152px of hairline divider under 606px of text — 546px of rule past the content it divides, on every one of 84 rows, on the most-seen composition on the site. Moving the date and stage to the right edge would have used the width, but that contradicts the row pattern below, which puts the label above the title and the description under it. 42rem is a sanctioned tier — `width-scale` in the drift suite rejects a fourth named one, and rejected a first attempt at 48rem — and it is the reading width, which is the right measure for a list whose purpose is choosing what to read. Galleries with a preview rail keep the full 72rem, because they have something at the right edge to justify it. Horizontal padding is 16px, rising to 24px and 32px at the sm and lg breakpoints.
 
 Vertical rhythm is generous. Sections breathe at 64px, then 80px at sm and 96px at lg; small sections at 32/48/64px. Cards and list rows pad at 24px (32px at sm) or 16px (24px at sm). Between sections sits a full-width hairline, the gallery rule, rather than a background change.
 
-Two-column compositions are asymmetric editorial splits, never equal halves: the masthead is `1fr / 300px` with the portrait plate at the right edge, the theme index is `280–360px / 1fr` with a sticky left rail, the footer is `1.1fr / 2fr`. Lists are stacked rows separated by hairlines with the label above the title and the description below, not tiled cards.
+Two-column compositions are asymmetric editorial splits, never equal halves: the home plates are `2fr / 1fr` (masthead and portrait, cover and label) or `1fr / 2fr` (placard and entries), the ledger on other pages is `280–360px / 1fr` with a sticky left rail, and the footer is one ruled row of `1.5fr` plus four `1fr` columns. Lists are stacked rows separated by hairlines with the label above the title and the description below, not tiled cards.
 
-The desktop navigation is fixed, 80px tall, on 90% paper with a 12px blur and a 40%-opacity hairline beneath; the page reserves the same 80px above its content. Below the md breakpoint the desktop bar is hidden and a mobile navbar takes over. Breakpoints are Tailwind's defaults (sm 640, md 768, lg 1024, xl 1280).
+The desktop navigation is fixed, 80px tall and full-bleed, on opaque paper with an Ink Rule beneath and no shadow or blur; the page reserves the same 80px above its content. Below the md breakpoint the desktop bar is hidden and a mobile navbar takes over. Breakpoints are Tailwind's defaults (sm 640, md 768, lg 1024, xl 1280).
 
 Right-to-left scripts and long translated strings are a product commitment: keep labels and rows flex-wrapped, avoid fixed widths on text, and let the asymmetric grids collapse to one column below md.
 
@@ -246,11 +246,11 @@ Right-to-left scripts and long translated strings are a product commitment: keep
 
 Flat paper, tint shifts only. Every surface sits on one plane. Hierarchy is drawn with hairlines and with the three paper tints (Card lighter, Tinted darker, Warm for emphasis), and a hover is a colour change (border warming to Forest Ink at 45%, background tinting to Forest Ink at 5–6%), not a lift. The noise grain over the whole page is what stops large flat areas from reading as sterile screen white.
 
-Two exceptions exist and are structural, not decorative: the fixed navigation bar carries a wide, soft shadow (`0 8px 30px rgba(0,0,0,0.08)`) so it reads as a separate sheet when content scrolls under it, and the primary CTA carries a 1px ledge (`0 1px 0` of Forest Ink at 25%) beneath its border so the one filled button feels pressed onto the page.
+One exception exists and is structural, not decorative (the fixed navigation bar carried a wide, soft shadow until it became a flat signage row closed by an Ink Rule): the primary CTA carries a 1px ledge (`0 1px 0` of Forest Ink at 25%) beneath its border so the one filled button feels pressed onto the page.
 
 The old neumorphic shadow tokens (`--neu-shadow-*`) are **gone** from the stylesheet, and every `neu-*` utility is now flat: background, hairline, tint. `neu-card` no longer lifts on hover either — it warms its border and tints the paper, like everything else. What survives is only the naming: 26 files still reference `neu-*` class names that no longer mean anything neumorphic. Treat the names as debt to be renamed, not as vocabulary to extend.
 
-No unsanctioned shadow remains. The navigation's control pill lost its inset hairline, the command palette lost `shadow-2xl`, `/topics/<slug>` lost a `hover:shadow-md`, and the `/blog` stat tiles left with the component that carried them. A browser enumeration of every non-`none` `box-shadow` returns exactly the two objects this rule permits, plus one all-transparent Tailwind ring stack on the chat textarea that paints nothing. Two *visible* shadows is the assertion.
+No unsanctioned shadow remains. The navigation's control pill lost its inset hairline, the command palette lost `shadow-2xl`, `/topics/<slug>` lost a `hover:shadow-md`, and the `/blog` stat tiles left with the component that carried them. A browser enumeration of every non-`none` `box-shadow` returned exactly the two objects this rule then permitted, plus one all-transparent Tailwind ring stack on the chat textarea that paints nothing. With the navigation flat, one *visible* shadow is the assertion.
 
 One animated layout property is sanctioned, and only one: `.site-shell`'s
 `padding-inline-end`, which is how the ask drawer pushes the page open above
@@ -261,7 +261,7 @@ correct, and this paragraph is the answer.
 ### Named Rules
 **The Flat Paper Rule.** No shadow on any content surface, at rest or on hover. A hovered surface changes tint and border colour; it does not rise.
 
-**The Two Sheets Rule.** The only elevated objects are the fixed navigation and the primary CTA's 1px ledge. Nothing else may add a shadow without changing this file first.
+**The Two Sheets Rule.** The only elevated object is the primary CTA's 1px ledge (the fixed navigation was the second sheet and is now flat). Nothing else may add a shadow without changing this file first.
 
 **The Measure Rule.** Running text caps at 65–75 characters per line, **measured, not assumed**. The rule is written down because a review measured the `/blog` section descriptions and the `/lab` lede at ~96 characters. Wall labels, metadata rows and single-line captions are not running text and are exempt.
 
@@ -283,7 +283,7 @@ Two elements are deliberately square: the portrait plate in the masthead (a hair
 
 Borders are always 1px Hairline, frequently at reduced opacity (40% under the nav, 60% above the footer, 70–90% on tinted surfaces). Glass utilities (`glass`, `glass-subtle`, `glass-heavy`: 40–75% paper with 8–20px blur) exist for overlays and are not for content surfaces.
 
-This paragraph used to name the command palette as the example, and the palette does not use them: it is opaque `bg-popover` inside a 1px hairline, and it is better that way — glass over body copy at the palette's size smears the text behind it into noise. The implementation was right and the document was wrong, so the document follows it. What the palette needs to read as a layer is the scrim (see the Scrim Rule), not translucency. Glass remains available for chrome that sits over *itself* — the fixed navigation bar's 90% paper and 12px blur is the real instance.
+This paragraph used to name the command palette as the example, and the palette does not use them: it is opaque `bg-popover` inside a 1px hairline, and it is better that way — glass over body copy at the palette's size smears the text behind it into noise. The implementation was right and the document was wrong, so the document follows it. What the palette needs to read as a layer is the scrim (see the Scrim Rule), not translucency. Glass remains available for chrome that sits over *itself*; the fixed navigation bar was the real instance and no longer uses it.
 
 ## Components
 
@@ -291,7 +291,7 @@ The controls are refined and restrained: hairline borders, tint on hover, a fill
 
 ### Buttons
 - **Shape:** softly rounded (14px), 40px tall, 16px horizontal padding; small 36px / 10px radius; large 48px / 32px padding. Text is Instrument Sans 500 at 0.875rem.
-- **Primary** (`cta-primary`): Forest Ink fill, white text, a 1px border of Forest Ink at 42%, and the 1px ledge shadow. One per view. On the masthead it is a fully round "Ask →" pill inside the underline input.
+- **Primary** (`cta-primary`): Forest Ink fill, white text, a 1px border of Forest Ink at 42%, and the 1px ledge shadow. One per view. On the masthead it is a square "Ask →" block inside the underline input.
 - **Default** (`neu-button`): Paper Card fill, hairline border, Ink text.
 - **Outline**: same as default without the press; **Ghost**: transparent until hovered, then Paper Card with a hairline; **Link**: Forest Ink text, underline on hover; **Destructive**: default shape with Error text.
 - **Hover / Focus:** hover tints the fill to Forest Ink at 6% and warms the border to 45% and the text to Forest Ink; primary brightens 5%. Active presses 1px down. Focus is a 2px Forest Ink outline offset 2px. Transitions 150ms.
@@ -312,20 +312,20 @@ The controls are refined and restrained: hairline borders, tint on hover, a fill
 - **Preferred alternative:** most "cards" on the site are not cards. Index pages use stacked rows divided by hairlines: a mono label, a semibold title that turns Forest Ink on hover, a two-line clamped description in Ink Muted.
 
 ### Inputs / Fields
-- **Underline** (the masthead ask field): 56px tall, transparent, no radius, a 1px Hairline bottom rule, 1.125rem text, placeholder Ink Muted at 70%. Focus turns the rule Forest Ink with no ring. The submit button sits inside at the right.
+- **Underline** (the masthead ask field): 56px tall, transparent, no radius, a 1px Ink Rule beneath, 1.125rem text, placeholder Ink Muted at 70%. Focus turns the rule Forest Ink with no ring. The submit button sits inside at the right.
 - **Field** (`neu-input`): Paper Card fill, hairline border, 8px radius, 40px tall. Focus: border Forest Ink at 50% plus a 2px Forest Ink outline offset 2px.
 - **Error / Disabled:** errors use Error text below the field; disabled controls take the Paper Tinted / Ink Muted treatment.
 
 ### Navigation
-- **Desktop:** fixed 80px bar, 90% Paper with 12px blur, 40% hairline beneath, the one structural shadow. Logo at left (inverted in dark mode), links across, a fully round hairline pill at right holding the theme toggle and controls. Hovered links grow a 2px Forest Ink underline from the left over 300ms; the active link keeps it. Links use the body font, not mono.
-- **Mobile:** below md the bar is replaced by a mobile navbar.
-- **Footer:** hairline above at 60%, a `1.1fr / 2fr` grid, column headings in wall-label mono, links in body sans with the ink underline, turning Forest Ink on hover, and a hairline before the legal line. (This document had the two voices the other way round for a while. The implementation is the correct one: the column name is metadata, and the Wall Label Rule says metadata is mono, while the links are the thing you actually read.)
+- **Desktop:** fixed 80px full-bleed bar, opaque Paper, an Ink Rule beneath, no shadow, no blur and no pill. Logo at left (inverted in dark mode), links across, then the ask trigger, search and theme toggle. Hovered links grow a 2px Forest Ink underline from the left over 200ms; the active link keeps it. Links are wall labels (mono, uppercase, tracked): on a signage row a destination is a label.
+- **Mobile:** below md the bar is replaced by a mobile navbar: the same opaque paper and Ink Rule, 64px tall.
+- **Footer:** full-bleed, an Ink Rule above, one ruled row of five cells (the colophon, then a cell per site-map column; two-up on a phone with the colophon across), column headings in wall-label mono, links in body sans with the ink underline, turning Forest Ink on hover, and an Ink Rule before the legal line. (This document had the two voices the other way round for a while. The implementation is the correct one: the column name is metadata, and the Wall Label Rule says metadata is mono, while the links are the thing you actually read.)
 
 ### Wall Label (signature)
 The `label-mono` utility: IBM Plex Mono 500, 0.72rem, 0.16em tracking, uppercase, tabular numerals, Ink Muted. It is the placard beside every piece of work: the masthead kicker and portrait caption, the "Ask the site anything" heading, section counts, dates on rows, footer links. With `normal-case tracking-normal` it becomes the small mono link. Any new section should introduce itself with one.
 
 ### Masthead (signature)
-Wall-label kicker, a handwritten name at the Display step with the surname in Forest Ink, a one-sentence muted thesis, and a square hairline-bordered portrait with a mono caption at the right edge. Below a hairline, the underline ask field with a round primary "Ask" inside it and three mono suggested questions. It is the notebook's title page.
+A wide cell and a tall one. The wide cell holds the wall-label kicker, the handwritten greeting at the Headline step with the name in Forest Ink, the statement in EB Garamond at display scale, the VivanceData line as a serif lede and, below an Ink Rule, the underline ask field with a square primary "Ask" inside it and three mono suggested questions. The tall cell is the portrait in full colour, as tall as the cell beside it, with its mono caption in a ruled strip beneath. It is the catalogue's title page.
 
 ### Essay Body (signature)
 `prose prose-lg` at the reading width, handwritten headings with 6rem scroll margin, hairline rules between sections.
@@ -526,21 +526,34 @@ nothing.
 - **Do** introduce every section, row and figure with a wall label (mono, 0.72rem, 0.16em, uppercase, Ink Muted) before its title.
 - **Do** divide with 1px sand hairlines and 64–96px of vertical space; let whitespace and rules do the structuring.
 - **Do** spend Forest Ink on action and emphasis only: links, hover, one primary button per view.
-- **Do** build lists as stacked hairline-divided rows (label, title, clamped description), and use asymmetric editorial grids (`1fr / 300px`, `280–360px / 1fr`) when two columns are needed.
+- **Do** build lists as stacked hairline-divided rows (label, title, clamped description), and use asymmetric editorial grids (`2fr / 1fr`, `1fr / 2fr`, `280–360px / 1fr`) when two columns are needed.
 - **Do** keep numerals tabular in labels and oldstyle in display, and set every date and count in mono.
 - **Do** design dark mode as the same notebook at night: cool hue-220 page, the same green lifted to #42a979, hairlines at 18% lightness.
 - **Do** give an empty section an honest empty state in the same voice and typography as a full one.
 - **Do** collapse to one column below md, flex-wrap every row of labels, and avoid fixed text widths so right-to-left and long translated strings survive.
 
 ### Don't:
-- **Don't** add shadows to content surfaces at rest or on hover; the nav sheet and the CTA ledge are the only elevated objects.
+- **Don't** add shadows to content surfaces at rest or on hover; the CTA ledge is the only elevated object.
 - **Don't** reintroduce neumorphic double shadows, inset "pressed" shadows or glassy card grids; the `--neu-shadow-*` tokens are legacy and must not spread.
 - **Don't** build SaaS landing-page furniture: gradient blobs, three-column feature tiles, pill badges as decoration, glowing buttons.
 - **Don't** use monospace as a voice. It is the label beside the work, never headings or body copy; the site is not a terminal.
-- **Don't** set the handwriting in body text, controls or labels, and don't set body copy in anything but Instrument Sans.
+- **Don't** set the handwriting in body text, controls or labels, and don't set body copy in anything but Instrument Sans, or EB Garamond on a plate.
 - **Don't** use neutral grey for rules or muted surfaces; every neutral is warm paper (hue 30–38) in light mode and cool night (hue 220) in dark.
 - **Don't** introduce a second accent colour; Moss exists for secondary fills and the four signal colours are for status only.
-- **Don't** round the portrait plate or box the underline input; squareness marks the work, roundness marks the interface.
+- **Don't** round the portrait plate or box the underline input; squareness marks the work, roundness marks the interface. Nothing on a plate is rounded.
 - **Don't** define `--spacing-xs..4xl` tokens in `@theme`; in Tailwind v4 they shadow the `max-w-*` container scale and collapse layouts.
 
 - **Don't** ship a skeleton, shimmer or pulsing placeholder; a `loading.tsx` parks the real content behind a script, so the fallback is what a reader without JavaScript keeps.
+
+## Plates
+
+Added with the museum redesign. Phase 1 sets the header, the footer and the home page this way; every other page still uses the centred column described under Layout and will move over in later phases.
+
+- **Full bleed.** A plate has no centred max-width column. Its rows run the width of the viewport and its cells divide that width (`2fr / 1fr`, `1fr / 2fr`, four equal cells). Only text inside a cell carries a measure cap.
+- **Ruled.** Rows and cells are divided by 1px of Ink Rule (`--rule`) that runs edge to edge. `plate-grid` draws the rules between cells as the grid's own 1px gap over an ink ground, so they follow the columns at every breakpoint and never double; a section closes with `border-b border-rule`. `--border` is not used on a plate.
+- **Modest padding.** A cell pads with `plate-cell`, `clamp(14px, 1.5vw, 24px)`. Space inside a cell does the breathing; there is no 64–96px band between plates.
+- **Three voices.** The handwriting for titles, the site name and short notes; EB Garamond for the statement and for ledes and blurbs (`text-statement`, `text-lede`); IBM Plex Mono for the wall label.
+- **Images whole and in colour.** The portrait is a tall cell beside the statement. A project cover takes two thirds of its row at its own 16:10, uncropped, with its text as the ruled label cell beside it.
+- **Flat.** No shadow, no blur, no pill and no rounded corner on a plate.
+- **One column on a phone.** Every row stacks below `lg` (the masthead below `md`); the currently strip and the footer's site map sit two-up.
+- **Night.** Plates use tokens only, so the dark palette applies unchanged; the rule lifts to #6a7181 so it stays a clear hairline on the night page.
